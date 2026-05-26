@@ -1,0 +1,50 @@
+# Castle Grimvault — condition-fired reactive beats.
+
+triggers:
+  - id: courtyard_intruder
+    title: "The gate guard notices a stranger's mischief"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: adjudicated
+        within_ticks: 15
+    then:
+      director_tension: 0.6
+      director_focus: "The courtyard is tense — the guard watches every move."
+      inject_goals:
+        - entity: gate_guard
+          goal: "Determine whether the stranger threatens the crown"
+          priority: 0.8
+      schedule:
+        - tick_offset: 3
+          text: "The gate guard's hand rests nearer his sword than usual."
+
+  - id: dungeon_dread
+    title: "Something stirs below"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: violence
+        within_ticks: 20
+    then:
+      director_tension: 0.9
+      director_focus: "Violence echoes through stone — the dungeon answers."
+      schedule:
+        - tick_offset: 5
+          text: "From deep below, chains rattle — once, then silence."
+
+  - id: crown_bribe
+    title: "Coin and favour in the great hall"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: bribe
+        within_ticks: 18
+    then:
+      inject_goals:
+        - entity: gate_guard
+          goal: "Report any bribe attempt to the crown's officers"
+          priority: 0.75
+      schedule:
+        - tick_offset: 4
+          text: "Servants whisper that gold changed hands where honour should have."

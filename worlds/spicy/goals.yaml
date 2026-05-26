@@ -1,0 +1,51 @@
+# Declarative objectives — completion shifts edges and narrative; goals are
+# NOT spoken lines (engine filters planner text from dialogue).
+
+goals:
+  - id: guest_welcomed
+    title: "A Warm Welcome"
+    description: "Exchange words with Elara when she is near."
+    conditions:
+      - type: event_occurred
+        verb: speak
+        actor: player
+        target: elara
+        lookback_ticks: 30
+    reward:
+      narrative: >
+        Elara's smile reaches her eyes — tonight feels less like duty
+        and more like a choice.
+      edge_updates:
+        - source: elara
+          target: player
+          edge_kind: intimate
+          weight: 0.45
+
+  - id: night_deepens
+    title: "The Night Deepens"
+    description: "Share a moment of welcomed physical closeness."
+    conditions:
+      - type: event_occurred
+        verb: kiss
+        actor: player
+        target: elara
+        lookback_ticks: 40
+    reward:
+      narrative: >
+        The chamber seems smaller now — the world outside can wait.
+      edge_updates:
+        - source: elara
+          target: player
+          edge_kind: intimate
+          weight: 0.65
+
+  - id: madame_pressure
+    title: "Ears in the Corridor"
+    description: "Survive the night past the intrusion beat without breaking character."
+    conditions:
+      - type: tick_reached
+        tick: 50
+    reward:
+      narrative: >
+        Somewhere in the house, a door closes — the moment passes, but
+        the warning lingers.

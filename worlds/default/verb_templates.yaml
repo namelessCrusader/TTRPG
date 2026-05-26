@@ -1,0 +1,217 @@
+# Pack-declared default effects for verbs not in the engine's kernel.
+#
+# A verb template is consulted ONLY when the verb is not one of the
+# kernel verbs (move, take, give, attack, throw). It provides default
+# effects so the engine doesn't have to invent any. The LM may still
+# attach `proposed_effects` on the action; those are layered on top
+# after the template's effects, all subject to the compiler's
+# reachability validator.
+#
+# Effect payloads may reference "$actor" and "$target" as substitution
+# placeholders for the action's actor / target ids.
+#
+# Schema:
+#   verb     (str)   — the verb this template applies to
+#   contest  (opt)   — {actor_attribute, target_attribute?, difficulty?}
+#                      if present, the compiler runs a contest before
+#                      choosing effects_on_success vs effects_on_failure
+#   on_success / on_failure (list)
+#                    — TransitionProposal-shaped dicts:
+#                        kind: TransitionKind value (string)
+#                        payload: dict
+#
+# Examples are deliberately simple. The default pack ships a few
+# generic social verbs so the LM has something to land on. A romance,
+# courtly-intrigue, or merchant-economy pack would add many more.
+
+templates:
+  # Comforting another entity. A persuasion check against composure;
+  # success warms them up, failure leaves them suspicious of pity.
+  - verb: console
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  # Light social banter; rarely fails meaningfully but can either land
+  # or annoy. Uses persuasion (charm) against perception (read-the-room).
+  - verb: tease
+    contest:
+      actor_attribute: persuasion
+      target_attribute: perception
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: angry
+
+  # Negotiating price — see open_verbs.yaml (default_haggle / tavern_haggle_hard).
+
+  # A small kindness with no contest — always succeeds, just records
+  # a faint warming of relations.
+  - verb: compliment
+    on_success:
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          kind: respects
+          weight: 0.1
+
+  # Detailed inspection without the kernel perception check — the LM
+  # describes what the actor notices.  Falls back to this template when
+  # the target is out of EXAMINE range.
+  - verb: examine
+    on_success:
+      - kind: dialogue_spoken
+        payload:
+          speaker: "$actor"
+          listener: "$target"
+          content: "[observation]"
+
+  # Extended multi-offer negotiation.  Better persuasion skill → warm
+  # outcome; poor persuasion → merchant becomes impatient/suspicious.
+  - verb: haggle
+    contest:
+      actor_attribute: persuasion
+      target_attribute: persuasion
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: ally_of
+          weight: 0.05
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: barter
+    contest:
+      actor_attribute: persuasion
+      target_attribute: persuasion
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          kind: respects
+          weight: 0.15
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  # Extended multi-offer negotiation.  Better persuasion skill → warm
+  # Perception vs difficulty; no target entity needed.
+  - verb: investigate
+    contest:
+      actor_attribute: perception
+      difficulty: 40
+    on_success:
+      - kind: dialogue_spoken
+        payload:
+          speaker: "$actor"
+          listener: "$actor"
+          content: "[investigation_result]"
+    on_failure:
+      - kind: dialogue_spoken
+        payload:
+          speaker: "$actor"
+          listener: "$actor"
+          content: "[nothing_found]"
+
+  # Knowledge transfer: actor teaches target a fact they know.
+  # Persuasion check to hold attention; failure → target is bored.
+  - verb: teach
+    contest:
+      actor_attribute: persuasion
+      target_attribute: perception
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  # Learning from another entity.  The learner rolls perception;
+  # failure just records the attempt rather than the knowledge.
+  - verb: learn
+    contest:
+      actor_attribute: perception
+      difficulty: 35
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$actor"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$actor"
+          to: neutral
+
+  # Repair an item — handled by open_verbs.yaml ``default_repair`` handler.
+  # (Removed thin template stub — see worlds/default/open_verbs.yaml.)
+
+  # Generic greeting — no contest needed; always warms relations slightly.
+  - verb: greet
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          kind: respects
+          weight: 0.05
+
+  # plant, hide, stash, bury, deposit, search, threaten, manipulate —
+  # handled by open_verbs.yaml handlers (see worlds/default/open_verbs.yaml).
+  # Do not add thin stubs here — they shadow the open-verb handlers.
+
+  - verb: disguise
+    contest:
+      actor_attribute: deception
+      difficulty: 50
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$actor"
+          to: confident
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$actor"
+          to: nervous

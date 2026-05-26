@@ -1,0 +1,109 @@
+# Tavern physics — hearth, drink, cloth, flesh (subset of default world).
+#
+# hardness: 1-10 scale used by the smash/break adjudication heuristic.
+#   1-2  = fragile (glass, rope)
+#   3-4  = soft (cloth, leather, wood)
+#   5-6  = sturdy (iron, thick wood, packed stone)
+#   7-10 = very hard (granite, steel, reinforced iron)
+#
+# destructible: if true, walls/doors of this material can be broken by
+#               the smash/break heuristic given sufficient strength.
+
+ambient_temp: 22.0
+heat_spread: 0.05
+
+materials:
+
+  flesh:
+    display: "Living Flesh"
+    tags: [organic, biological]
+    conductivity: 0.08
+    ignition_point: 250
+    damage_above: 55
+    damage_per_degree: 0.04
+    hardness: 2
+
+  wood:
+    display: "Wood"
+    tags: [organic, flammable, wooden, solid, destructible]
+    conductivity: 0.12
+    ignition_point: 300
+    burn_into: ash
+    hardness: 4
+
+  cloth:
+    display: "Cloth"
+    tags: [organic, flammable, soft, cloth, destructible]
+    conductivity: 0.05
+    ignition_point: 210
+    damage_per_degree: 0.06
+    hardness: 1
+
+  oil:
+    display: "Lamp Oil"
+    tags: [organic, flammable, liquid, oil]
+    conductivity: 0.04
+    ignition_point: 180
+    damage_per_degree: 0.08
+    hardness: 0
+
+  water:
+    display: "Water"
+    tags: [liquid, fire_suppressant]
+    conductivity: 0.6
+    ignition_point: null
+    melting_point: 0
+    damage_per_degree: 0.0
+    hardness: 0
+
+  ale:
+    display: "Ale"
+    tags: [liquid, drink, fire_suppressant, slightly_alcoholic]
+    conductivity: 0.3
+    ignition_point: null
+    damage_per_degree: 0.0
+    hardness: 0
+
+  stone:
+    display: "Stone"
+    tags: [mineral, solid, hard]
+    conductivity: 0.2
+    ignition_point: null
+    damage_per_degree: 0.0
+    hardness: 8
+
+  iron:
+    display: "Iron"
+    tags: [metal, solid, conductive]
+    conductivity: 0.5
+    melting_point: 1538
+    ignition_point: null
+    hardness: 7
+
+  glass:
+    display: "Glass"
+    tags: [fragile, solid, transparent, glass]
+    conductivity: 0.08
+    ignition_point: null
+    hardness: 1
+
+  rope:
+    display: "Rope"
+    tags: [organic, flammable, fibrous, flexible, destructible]
+    conductivity: 0.04
+    ignition_point: 240
+    hardness: 1
+
+  leather:
+    display: "Leather"
+    tags: [organic, soft, flexible, durable]
+    conductivity: 0.06
+    ignition_point: 280
+    hardness: 3
+
+  ash:
+    display: "Ash"
+    tags: [organic, fine_powder, remnant]
+    conductivity: 0.03
+    ignition_point: null
+    hardness: 0

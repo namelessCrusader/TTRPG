@@ -1,0 +1,72 @@
+# Affordance rules consumed by the grounding classifier.
+#
+# Each rule answers: "when the player's intent mentions <keyword>, does
+# the world contain anything that gives this action meaning?" The
+# classifier scans the relational graph for nodes matching the rule.
+#
+# A node satisfies a rule when:
+#   node.kind in kinds
+#   AND ( any name_keyword appears in node.name.lower()
+#         OR any tag appears in node.meta.tags )
+#
+# Per-rule fields:
+#   keyword       — substring the player intent must contain
+#   kinds         — list of NodeKind values (faction | organization |
+#                                            location | entity)
+#   name_keywords — substrings checked against node.name
+#   tags          — exact tag strings checked against node.meta.tags
+#
+# This file is the entire affordance vocabulary for this world. Remove
+# a rule to make that intent unanchorable here (Zone 3 by construction).
+# Add new rules for domains your pack introduces.
+
+affordances:
+  - keyword: pray
+    kinds: [faction, organization]
+    name_keywords: [god, gods, deity, divine, holy, temple, church, faith, cult]
+    tags: [deity, divine, religious]
+
+  - keyword: god
+    kinds: [faction, organization, entity]
+    name_keywords: [god, gods, deity, divine, lord, pantheon]
+    tags: [deity, divine]
+
+  - keyword: gods
+    kinds: [faction, organization, entity]
+    name_keywords: [god, gods, deity, divine, lord, pantheon]
+    tags: [deity, divine]
+
+  - keyword: worship
+    kinds: [faction, organization]
+    name_keywords: [god, gods, deity, divine, holy, temple, cult]
+    tags: [deity, divine, religious]
+
+  - keyword: temple
+    kinds: [location, faction]
+    name_keywords: [temple, shrine, church, chapel, holy, sacred]
+    tags: [religious, sacred]
+
+  - keyword: shrine
+    kinds: [location]
+    name_keywords: [shrine, temple, sacred, altar]
+    tags: [sacred]
+
+  - keyword: curse
+    kinds: [entity, faction]
+    name_keywords: [god, deity, witch, warlock, spirit, demon]
+    tags: [supernatural, occult]
+
+  - keyword: ritual
+    kinds: [faction, organization]
+    name_keywords: [cult, order, ritual, holy, arcane, coven]
+    tags: [religious, occult, arcane]
+
+  - keyword: magic
+    kinds: [faction, organization, entity]
+    name_keywords: [mage, wizard, arcane, magic, sorcerer, guild]
+    tags: [arcane, magical]
+
+  - keyword: spell
+    kinds: [faction, entity]
+    name_keywords: [mage, wizard, arcane, magic, sorcerer]
+    tags: [arcane, magical]

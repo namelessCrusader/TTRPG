@@ -1,0 +1,48 @@
+goals:
+  - id: goal_speak_to_guard
+    title: "Speak to the Gate Guard"
+    description: "Make conversation with the guard before attempting to enter."
+    conditions:
+      - type: event_occurred
+        verb: speak
+        actor: player
+        target: gate_guard
+        same_region: true
+    reward:
+      narrative: "The guard eyes you up and down. 'State your business.'"
+
+  - id: goal_find_key
+    title: "Find the Dungeon Key"
+    description: "Obtain the iron key that unlocks the dungeon door."
+    conditions:
+      - type: item_in_inventory
+        entity_id: player
+        item_name: "Iron Dungeon Key"
+    reward:
+      xp: 20
+      narrative: "Cold iron in your hand. The dungeon waits."
+
+  - id: goal_speak_to_king
+    title: "Gain Audience with the King"
+    description: "Speak to King Aldric in the great hall."
+    conditions:
+      - type: event_occurred
+        verb: speak
+        actor: player
+        target: king
+        same_region: true
+    reward:
+      narrative: "The king regards you with tired eyes. 'So another wanderer finds their way to my door.'"
+
+  - id: goal_speak_to_jorin
+    title: "Find the Prisoner"
+    description: "Make contact with Jorin, the imprisoned scholar."
+    conditions:
+      - type: event_occurred
+        verb: speak
+        actor: player
+        target: prisoner_jorin
+        same_region: true
+    reward:
+      xp: 40
+      narrative: "Jorin grips your sleeve with bony fingers: 'You must carry the truth out of here.'"

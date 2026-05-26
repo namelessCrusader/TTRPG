@@ -1,0 +1,18 @@
+id: sandbox_intro
+title: Test room orientation
+beats:
+  - tick: 0
+    phase: 0
+    tension: 0.2
+    focus: "The guard is professional — challenge or reassure as appropriate."
+    note: Quiet room — establish stakes
+  - tick: 15
+    phase: 1
+    tension: 0.4
+    focus: "Something should change — speak, move, or provoke a reaction."
+    note: Mid-scene — pressure to act
+  - tick: 30
+    phase: 2
+    tension: 0.55
+    focus: "Night deepens — the guard's patience thins."
+    note: Late — consequences loom

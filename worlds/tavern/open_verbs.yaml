@@ -1,0 +1,52 @@
+# Tavern-specific open verbs — extends worlds/default/open_verbs.yaml
+
+rules:
+  - id: tavern_haggle_hard
+    verbs: [haggle, bargain_hard, drive_hard_bargain]
+    keywords: ["drive a hard bargain", "haggle down"]
+    requires: entity
+    contest:
+      actor_attribute: persuasion
+      target_attribute: persuasion
+      difficulty: 58
+    on_success:
+      - kind: entity_stat_changed
+        payload:
+          entity_id: "$target"
+          stat: gold
+          delta: -8
+          cause: haggled_down
+          actor: "$actor"
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          delta: 0.08
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: hostile
+
+  - id: tavern_buy_round
+    verbs: [buy_round, treat, shout_drinks]
+    keywords: ["buy a round", "drinks are on me", "shout everyone"]
+    requires: entity
+    on_success:
+      - kind: entity_stat_changed
+        payload:
+          entity_id: "$actor"
+          stat: gold
+          delta: -12
+          cause: bought_round
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          delta: 0.18

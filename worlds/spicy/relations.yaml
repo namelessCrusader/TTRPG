@@ -1,0 +1,28 @@
+# Initial relational edges for The Silken Chamber.
+#
+# Elara and the player start with mutual trust and a budding intimate edge.
+# There are no hostile factions — this world has no combat intent.
+
+edges:
+  - source: player
+    target: elara
+    kind: ally_of
+    weight: 0.7
+
+  - source: elara
+    target: player
+    kind: ally_of
+    weight: 0.8
+
+  # Elara starts with a warm intimate disposition toward the player.
+  # This edge is used by the engine to resolve whether welcoming physical
+  # contact is appropriate. Weight grows as interactions succeed.
+  - source: elara
+    target: player
+    kind: intimate
+    weight: 0.35
+
+  - source: player
+    target: elara
+    kind: intimate
+    weight: 0.35

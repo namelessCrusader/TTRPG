@@ -1,0 +1,7 @@
+policy:
+  default: lm
+
+cognition:
+  mode: lm
+  max_infer_per_npc: 2
+  infer_cooldown_ticks: 8

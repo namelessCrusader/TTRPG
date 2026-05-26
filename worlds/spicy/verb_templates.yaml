@@ -1,0 +1,354 @@
+# Verb templates for The Silken Chamber.
+#
+# These define default simulation effects for intimate and social verbs.
+# The compiler consults these BEFORE the generic freeform compiler, so they
+# take precedence over the engine's built-in defaults for the listed verbs.
+#
+# NOTE: edge payload MUST use `edge_kind:` (not `kind:`) — the relational
+# module reads `payload["edge_kind"]` when applying EDGE_CREATED/EDGE_UPDATED.
+#
+# Difficulty scale reference:
+#   10-25  — almost always succeeds (Elara is welcoming; composure is low)
+#   30-45  — modest check; only fails if the actor is very unskilled
+#   50-65  — real contest; outcome uncertain
+#   70+    — hard; reserved for things Elara isn't sure she wants
+
+templates:
+  # ── Light physical affection ────────────────────────────────────────────────
+
+  - verb: caress
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 20
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.1
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  - verb: embrace
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 15
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.1
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  - verb: kiss
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 28
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.2
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: nuzzle
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 18
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  - verb: stroke
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 22
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.1
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  # ── Playful / social ────────────────────────────────────────────────────────
+
+  - verb: tease
+    contest:
+      actor_attribute: persuasion
+      target_attribute: perception
+      difficulty: 30
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: flirt
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 25
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  - verb: compliment
+    on_success:
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.05
+
+  # ── Seduction ───────────────────────────────────────────────────────────────
+
+  - verb: seduce
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 38
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.4
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  # ── Explicit physical ───────────────────────────────────────────────────────
+
+  - verb: grope
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 30
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.15
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: grab
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 25
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: undress
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 35
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.3
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: lick
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 30
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: bite
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 40
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: spank
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 38
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: pleasure
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 20
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.5
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  # ── Social / comfort ─────────────────────────────────────────────────────────
+
+  - verb: console
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: haggle
+    contest:
+      actor_attribute: persuasion
+      target_attribute: persuasion
+    on_success:
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: intimate
+          weight: 0.05
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious

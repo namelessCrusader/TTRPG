@@ -1,0 +1,22 @@
+# ASCII terrain map. Width=20 height=14.
+# The Silken Chamber — a private room in a pleasure house.
+#
+# Layout landmarks (all rendered as floor; letter is visual only):
+#   B  bed area        (rows 3-5, cols 1-5)
+#   S  chaise/sofa     (row 7,    cols 6-11)
+#   T  low table       (rows 9-10, cols 4-6)
+#   =  window on west wall (lets in moonlight)
+####################
+#=.................#
+#..................#
+#.BBBBB............#
+#.BBBBB............#
+#.BBBBB............#
+#..................#
+#......SSSSSS......#
+#..................#
+#....TTT...........#
+#....TTT...........#
+#..................#
+#..................#
+##########+#########

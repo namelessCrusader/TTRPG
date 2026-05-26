@@ -1,0 +1,33 @@
+pressures:
+  - id: guard_watchful
+    when:
+      - type: tick_lt
+        tick: 20
+    effects:
+      director_focus: "Watch the stranger; demand business before warmth."
+      candidate_boosts:
+        - entity: guard
+          verb: speak
+          weight_delta: 0.1
+
+  - id: after_player_speaks
+    when:
+      - type: event_occurred
+        verb: speak
+        actor: player
+        lookback_ticks: 8
+    effects:
+      director_focus: "Respond to what was said — do not repeat your orders verbatim."
+      candidate_boosts:
+        - entity: guard
+          raw_input: "[npc_auto:direct_reply]"
+          weight_delta: 0.2
+
+  - id: night_pressure
+    when:
+      - type: tick_gte
+        tick: 25
+    effects:
+      director_tension: 0.6
+      ambient_probability_mult:
+        distant_bell: 1.8

@@ -1,0 +1,45 @@
+id: grimvault_arrival
+title: Arrival at Castle Grimvault
+beats:
+  - tick: 0
+    phase: 0
+    tension: 0.25
+    focus: "The courtyard is cold and watchful — earn passage or be turned away."
+    note: Arrival at the gate
+    effects:
+      director_focus: "Prove your business at the gate — credentials, bribes, or bluff."
+      inject_goals:
+        - entity: gate guard
+          goal: "Turn away anyone without proper papers"
+          priority: 0.65
+        - entity: stable hand
+          goal: "Watch the gate and collect gossip from arrivals"
+          priority: 0.55
+
+  - tick: 20
+    phase: 1
+    tension: 0.45
+    focus: "Gossip and keys — the stable hand knows more than the guard admits."
+    note: Exploration — halls and rumours
+    effects:
+      director_focus: "Secrets want air — eavesdrop, bargain, or demand passage."
+      director_tension: 0.5
+      force_ambient: wind_howls
+      inject_goals:
+        - entity: stable hand
+          goal: "Trade a rumor for a favor from the player"
+          priority: 0.7
+
+  - tick: 45
+    phase: 2
+    tension: 0.65
+    focus: "Dungeon whispers — chains and the king's burden."
+    note: Deepening — secrets below
+    effects:
+      director_tension: 0.7
+      director_focus: "The dungeon calls — keys, chains, and what lies beneath."
+      force_ambient: chain_rattles
+      inject_goals:
+        - entity: gate guard
+          goal: "Decide whether to allow descent to the dungeon"
+          priority: 0.8

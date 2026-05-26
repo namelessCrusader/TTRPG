@@ -1,0 +1,18 @@
+# Initial edges in the relational graph.
+#
+# Fields:
+#   source  — local id (entity or faction)
+#   target  — local id (entity or faction)
+#   kind    — one of: faction_member | enemy_of | ally_of | fears |
+#             respects | distrusts | owes_debt | remembers_event |
+#             witnessed | kin | employs | employed_by | believes_claim |
+#             intimate | wary_of
+#             (intimate: bidirectional ⇒ welcomes close physical contact.
+#              wary_of:  one-directional ⇒ refuses contact from source.)
+#   weight  — float in [-1, 1] (defaults to 1.0)
+#   meta    — optional dict of arbitrary metadata
+
+edges:
+  - source: guard
+    target: city_watch
+    kind: faction_member

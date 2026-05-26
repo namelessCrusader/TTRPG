@@ -1,0 +1,306 @@
+# Loose objects in the world. Items in inventories OR on the ground.
+#
+# Fields:
+#   id              — local handle (referenced from entities.yaml inventory)
+#   name            — display name
+#   passable        — can entities walk through it?
+#   position        — [x, y] for items on the ground (omit if in inventory)
+#   owner           — entity local-id that holds this item (optional)
+#   tags            — arbitrary string tags
+#   weight          — mass in kg (default 1.0)
+#   bulk            — volume in abstract units (default 1.0)
+#   slot            — equip slot name (main_hand, off_hand, head, chest, …)
+#   is_container    — true for bags/chests (default false)
+#   carry_capacity  — max weight container holds in kg (only if is_container)
+#   bulk_capacity   — max bulk units container holds (only if is_container)
+
+objects:
+  - id: throwing_knife
+    name: "throwing knife"
+    passable: true
+    owner: player
+    weight: 0.3
+    bulk: 0.2
+    slot: main_hand
+    tags:
+      - weapon
+      - throwable
+    attributes:
+      damage: 15
+
+  - id: guard_sword
+    name: "iron sword"
+    passable: true
+    owner: guard
+    weight: 1.5
+    bulk: 1.2
+    slot: main_hand
+    tags:
+      - weapon
+      - melee
+    attributes:
+      damage: 20
+
+  - id: guard_chainmail
+    name: "chainmail vest"
+    passable: true
+    owner: guard
+    weight: 8.0
+    bulk: 3.0
+    slot: chest
+    tags:
+      - armor
+    attributes:
+      protection: 10
+
+  - id: leather_satchel
+    name: "leather satchel"
+    passable: true
+    owner: player
+    weight: 0.5
+    bulk: 0.5
+    slot: back
+    is_container: true
+    carry_capacity: 8.0
+    bulk_capacity: 10.0
+    tags:
+      - container
+      - bag
+
+  # ── Grimoires (spell reference books) ──────────────────────────────────
+  # The Codex of Forms is the language reference — it teaches no operations
+  # but shows the player how to write spell programs.  Given to the player
+  # from the start so they can learn the syntax.
+  - id: codex_of_forms
+    name: "Codex of Arcane Forms"
+    passable: true
+    owner: player
+    weight: 0.8
+    bulk: 1.0
+    tags:
+      - book
+      - grimoire
+    grimoire_id: codex_of_forms
+
+  # The Treatise on Thermal Arts sits on the ground — player must find it.
+  - id: thermal_arts_treatise
+    name: "Treatise on Thermal Arts"
+    passable: true
+    position: [6, 4]
+    weight: 0.7
+    bulk: 1.0
+    tags:
+      - book
+      - grimoire
+    grimoire_id: thermal_arts
+
+  # The Vitae Codex is held by the guard — player must negotiate or fight
+  # to obtain it.
+  - id: vitae_codex
+    name: "Vitae Codex"
+    passable: true
+    owner: guard
+    weight: 0.6
+    bulk: 1.0
+    tags:
+      - book
+      - grimoire
+    grimoire_id: vitae_codex
+
+  # ── Consumables ────────────────────────────────────────────────────────
+  # Consumables are destroyed on use and apply their effect to the user
+  # (or to the target if used on Y).  The physics system also reacts to
+  # liquid flasks being thrown or dropped.
+
+  - id: healing_potion
+    name: "healing potion"
+    passable: true
+    owner: player
+    weight: 0.4
+    bulk: 0.3
+    tags: [consumable, potion, liquid]
+    meta:
+      material: water
+      description: "A ruby-red liquid that smells faintly of herbs. Restores 30 health."
+    attributes:
+      heal: 30
+
+  - id: mana_tonic
+    name: "mana tonic"
+    passable: true
+    owner: player
+    weight: 0.4
+    bulk: 0.3
+    tags: [consumable, potion, liquid]
+    meta:
+      material: water
+      description: "A shimmering blue vial. Restores 25 mana."
+    attributes:
+      mana: 25
+
+  - id: oil_flask
+    name: "oil flask"
+    passable: true
+    owner: player
+    weight: 0.5
+    bulk: 0.4
+    tags: [consumable, liquid, flammable, throwable]
+    meta:
+      material: oil
+      description: "A clay flask of lamp oil. Flammable. Can be ignited."
+    attributes:
+      splash_radius: 1
+
+  - id: acid_vial
+    name: "acid vial"
+    passable: true
+    owner: player
+    weight: 0.3
+    bulk: 0.2
+    tags: [consumable, liquid, corrosive, throwable]
+    meta:
+      material: acid
+      description: "A sealed vial of strong acid. Burns flesh and corrodes metal."
+    attributes:
+      damage: 12
+
+  - id: poison_vial
+    name: "poison vial"
+    passable: true
+    position: [3, 7]
+    weight: 0.2
+    bulk: 0.2
+    tags: [consumable, liquid, toxic, throwable]
+    meta:
+      material: poison
+      description: "A small vial of dark liquid. Coats a blade or can be thrown."
+    attributes:
+      poison_dose: 1
+
+  - id: lit_torch
+    name: "lit torch"
+    passable: true
+    owner: player
+    weight: 0.6
+    bulk: 0.5
+    tags: [light_source, flammable, on_fire, wooden]
+    meta:
+      material: wood
+      temperature: 600.0
+      description: "A burning torch. Lights the way and ignites flammable things."
+    attributes:
+      light_radius: 4
+
+  - id: water_skin
+    name: "water skin"
+    passable: true
+    owner: player
+    weight: 0.8
+    bulk: 0.6
+    tags: [consumable, liquid, fire_suppressant]
+    meta:
+      material: water
+      description: "A leather skin of cool water. Can douse fires or cool a burned ally."
+    attributes:
+      heal: 5
+      temperature_delta: -40
+
+  # ── Raw crafting materials ────────────────────────────────────────────────
+  # Items tagged raw_material / component — usable as inputs to CRAFT.
+  # The player starts with a few basic materials so open crafting is
+  # available from tick 1.
+
+  - id: cloth_strip
+    name: "strip of cloth"
+    passable: true
+    owner: player
+    weight: 0.1
+    bulk: 0.1
+    tags: [raw_material, cloth, component]
+    meta:
+      material: cloth
+      description: "A torn strip of rough cloth. Useful for bandages, rope, or padding."
+    attributes: {}
+
+  - id: wooden_stick
+    name: "sturdy stick"
+    passable: true
+    owner: player
+    weight: 0.3
+    bulk: 0.4
+    tags: [raw_material, wooden, component]
+    meta:
+      material: wood
+      description: "A straight piece of hardwood. Could become a tool, weapon, or torch handle."
+    attributes: {}
+
+  - id: iron_scrap
+    name: "iron scrap"
+    passable: true
+    owner: player
+    weight: 0.5
+    bulk: 0.3
+    tags: [raw_material, metal, component, scrap]
+    meta:
+      material: iron
+      description: "A jagged chunk of scrap iron. Rough, but workable."
+    attributes: {}
+
+  # ── Merchant goods ────────────────────────────────────────────────────────  # These items are carried by the traveling merchant and can be bought,
+  # stolen, or found as loot.  `attributes.value` is the gold price for
+  # trade/pricing checks in the compiler.
+
+  - id: map_fragment
+    name: "map fragment"
+    passable: true
+    owner: merchant
+    weight: 0.05
+    bulk: 0.1
+    tags: [document, tradeable, knowledge]
+    meta:
+      material: paper
+      description: "A torn piece of map showing routes through the western hills. Valuable to travelers."
+    attributes:
+      value: 15
+
+  - id: spice_pouch
+    name: "spice pouch"
+    passable: true
+    owner: merchant
+    weight: 0.2
+    bulk: 0.3
+    tags: [consumable, tradeable, food]
+    meta:
+      material: organic
+      description: "A small linen pouch of exotic spices. Smells of cinnamon and pepper."
+    attributes:
+      value: 20
+      heal: 2
+
+  - id: lockpick_set
+    name: "lockpick set"
+    passable: true
+    owner: merchant
+    weight: 0.15
+    bulk: 0.2
+    tags: [tool, tradeable, criminal_tool]
+    meta:
+      material: iron
+      description: "A leather roll of fine iron picks. Useful for opening locked doors and chests."
+    attributes:
+      value: 35
+      stealth_bonus: 5
+
+  - id: trade_candle
+    name: "wax candle"
+    passable: true
+    owner: merchant
+    weight: 0.1
+    bulk: 0.15
+    tags: [light_source, flammable, tradeable, wax]
+    meta:
+      material: wax
+      description: "A sturdy tallow candle. Burns for hours and can ignite tinder."
+    attributes:
+      value: 3
+      light_radius: 2

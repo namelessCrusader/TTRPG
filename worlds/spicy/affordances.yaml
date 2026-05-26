@@ -1,0 +1,22 @@
+# Affordance rules for The Silken Chamber.
+#
+# These rules allow the grounding classifier to anchor thematic verbs
+# (e.g. "seduce", "pleasure") to visible entities even without a
+# spatial referent, preventing them from falling to Zone 3 (ORPHANED).
+
+affordances:
+  - keyword: seduce
+    kinds: [entity]
+    tags: [courtesan, intimate]
+
+  - keyword: pleasure
+    kinds: [entity]
+    tags: [courtesan, intimate]
+
+  - keyword: undress
+    kinds: [entity]
+    tags: [courtesan, intimate]
+
+  - keyword: embrace
+    kinds: [entity]
+    tags: [courtesan, intimate]

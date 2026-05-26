@@ -1,0 +1,44 @@
+# World pack metadata.
+#
+# Required fields:
+#   name        — display name shown in the REPL banner
+#   spatial     — grid dimensions; the actual terrain comes from map.txt
+#
+# Optional fields:
+#   description — free text, not used by engine but useful for designers
+#   meta        — passed through to WorldState.meta (read by projection /
+#                 narrator for ambient flavor). Anything goes.
+#   clock       — { day_length_ticks: int }
+#   rng_seed    — int; seed for deterministic ambient rolls
+#   consequences — durable state policy (see WORLD_CONSEQUENCES.md)
+
+name: "Test World"
+description: |
+  A small walled room used as the default sandbox.
+  No deities, no magic system — prayer or spellcasting will fall to Zone 3.
+spatial:
+  width: 20
+  height: 20
+  map_file: "map.txt"
+meta:
+  location_name: "tavern"
+  noise_level: "quiet"
+clock:
+  day_length_ticks: 40
+rng_seed: 17
+
+consequences:
+  require_sticky: true
+  record_traces: true
+  world_memory_window: 6
+  narrative_only_verbs:
+    - wait
+    - observe
+    - inspect
+    - examine
+    - rest
+
+extra:
+  scenario: scenarios/sandbox_intro.yaml
+  learn_from_adjudication: true
+  adjudication_cache: true

@@ -1,0 +1,59 @@
+# Scenario beat sheet for NarrativeDirector (loaded via world.yaml extra.scenario)
+id: tavern_night1
+title: Opening night at the Flagon
+beats:
+  - tick: 0
+    phase: 0
+    tension: 0.2
+    focus: "Establish mood — patrons settling, ale flowing, low stakes."
+    note: Establish mood — low tension, patrons settling
+    effects:
+      director_focus: "Settle the room — greetings, ale, low drama."
+      inject_goals:
+        - entity: mira
+          goal: "Keep the room warm and orderly tonight"
+          priority: 0.6
+        - entity: linna
+          goal: "Read the room for gossip worth a song"
+          priority: 0.55
+
+  - tick: 10
+    phase: 1
+    tension: 0.45
+    focus: "Rising curiosity — secrets surface in dialogue."
+    note: Rising curiosity — secrets surface in dialogue
+    effects:
+      director_focus: "Secrets want air — gossip, eavesdrop, accuse if warranted."
+      director_tension: 0.55
+      force_ambient: door_opens
+      inject_goals:
+        - entity: linna
+          goal: "Find out who came through the door and why"
+          priority: 0.75
+        - entity: tomas
+          goal: "Gauge whether the newcomer threatens his interests"
+          priority: 0.7
+      edge_nudge:
+        - source: tomas
+          target: linna
+          edge_kind: distrusts
+          weight: 0.35
+
+  - tick: 20
+    phase: 2
+    tension: 0.7
+    focus: "Peak tension — alliances and distrust tested."
+    note: Peak tension — alliances and distrust tested
+    effects:
+      director_tension: 0.75
+      director_focus: "Alliances crack — react to slights and revelations."
+      force_ambient: laughter_burst
+      inject_goals:
+        - entity: mira
+          goal: "Prevent a brawl before last call"
+          priority: 0.85
+      edge_nudge:
+        - source: mira
+          target: tomas
+          edge_kind: wary_of
+          weight: 0.5

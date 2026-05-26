@@ -1,0 +1,19 @@
+# Factions, organizations, and locations.
+#
+# These become nodes in the relational graph. Anything an entity can
+# belong to, fear, or interact with at a group level lives here.
+#
+# Fields:
+#   id    — local handle (used by relations.yaml)
+#   name  — display name
+#   kind  — faction | organization | location
+#   tags  — optional list of tags; the grounding classifier reads these
+#           to determine affordances (e.g. tag "religious" + an
+#           affordance rule with that tag → prayer becomes grounded).
+#   meta  — free-form designer notes
+
+factions:
+  - id: city_watch
+    name: "City Watch"
+    kind: faction
+    tags: []

@@ -1,0 +1,128 @@
+# Ambient events for The Tarnished Flagon.
+
+events:
+  - id: crowd_murmur
+    trigger:
+      every_ticks: 3
+      probability: 0.60
+    narrative: "The low murmur of the crowd swells briefly, then settles back."
+
+  - id: fireplace_pop
+    trigger:
+      every_ticks: 4
+      probability: 0.55
+    narrative: "The fireplace pops and throws a brief gust of warmth across the nearest table."
+
+  - id: ale_mug_clunk
+    trigger:
+      every_ticks: 5
+      probability: 0.50
+    narrative: "Someone at a far table sets down a mug with a decisive clunk."
+
+  - id: dog_under_table
+    trigger:
+      every_ticks: 11
+      probability: 0.30
+    narrative: "A scruffy dog appears briefly from under a table, sniffs the air, then retreats."
+
+  - id: door_opens
+    trigger:
+      every_ticks: 8
+      probability: 0.40
+    narrative: "The front door swings open; cold air rushes in for a moment before it closes again."
+
+  - id: laughter_burst
+    trigger:
+      every_ticks: 7
+      probability: 0.35
+    narrative: "A burst of laughter from the back of the room — someone's joke landed well."
+
+  - id: night_bell
+    trigger:
+      time_of_day: night
+      every_ticks: 12
+      probability: 0.50
+    narrative: "The distant city bell strikes; the hour is late."
+
+  - id: dawn_creak
+    trigger:
+      time_of_day: dawn
+      every_ticks: 6
+      probability: 0.45
+    narrative: "The tavern timbers creak as the morning cold seeps through the walls."
+
+  - id: candle_low
+    trigger:
+      time_of_day: night
+      every_ticks: 9
+      probability: 0.45
+    narrative: "A candle on the nearest table burns down to a stub; shadows lengthen."
+
+  - id: rain_starts
+    trigger:
+      every_ticks: 23
+      probability: 0.25
+    narrative: "Rain begins outside; patrons near the window pull their cloaks tighter."
+
+  # ── Mechanical micro-events (state-changing, not just narration) ──────
+
+  - id: drink_slosh
+    trigger:
+      every_ticks: 9
+      probability: 0.45
+    narrative: "Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards."
+    effects:
+      - kind: fluid_changed
+        payload:
+          target_kind: tile
+          x: 5
+          y: 11
+          material: ale
+          volume_ml: 80.0
+          cause: ambient_slosh
+          wet: true
+
+  - id: hearth_pop_ember
+    trigger:
+      every_ticks: 6
+      probability: 0.45
+    narrative: "The hearth pops; a glowing ember leaps onto the boards and dims to grey."
+    effects:
+      - kind: environment_state_changed
+        payload:
+          x: 3
+          y: 12
+          key: warmth
+          value: ember_landed
+
+  - id: smoke_thickens
+    trigger:
+      every_ticks: 15
+      probability: 0.35
+    narrative: "Pipe smoke thickens near the rafters; the room feels closer."
+    effects:
+      - kind: environment_state_changed
+        payload:
+          key: smoke
+          value: thick
+
+  - id: shutters_rattle
+    trigger:
+      every_ticks: 13
+      probability: 0.40
+    narrative: "Wind catches the shutters — they rattle, briefly drawing every eye."
+    effects:
+      - kind: noise_event
+        payload:
+          source_pos:
+            x: 14
+            y: 1
+          noise_level: 25
+          description: "rattling shutters"
+
+  - id: stew_steams
+    trigger:
+      every_ticks: 10
+      probability: 0.50
+    narrative: "Steam rises off the stew pot in slow curls."
+    effects: []

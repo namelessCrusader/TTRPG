@@ -1,0 +1,67 @@
+# Ambient events for The Silken Chamber.
+#
+# These events fire autonomously between turns to give the world a heartbeat.
+# They are perceived by both the player and Elara via their projections.
+
+events:
+  - id: candle_flicker
+    trigger:
+      every_ticks: 4
+      probability: 0.55
+    narrative: "A candle on the mantle gutters, sending long shadows dancing across the ceiling."
+
+  - id: distant_music
+    trigger:
+      every_ticks: 7
+      probability: 0.45
+    narrative: "Faint music drifts up from the floor below — a lute and a low voice singing."
+
+  - id: incense_curl
+    trigger:
+      every_ticks: 9
+      probability: 0.40
+    narrative: "A thread of incense smoke curls lazily toward the rafters, carrying the scent of sandalwood."
+
+  - id: fabric_rustle
+    trigger:
+      every_ticks: 5
+      probability: 0.35
+    narrative: "The silk curtains stir in a barely-there draft, whispering against the window frame."
+
+  - id: night_sounds
+    trigger:
+      time_of_day: night
+      every_ticks: 6
+      probability: 0.50
+    narrative: "Night insects call from the garden below; the city has grown still."
+
+  - id: dawn_light
+    trigger:
+      time_of_day: dawn
+      every_ticks: 5
+      probability: 0.60
+    narrative: "A thin line of silver light appears beneath the curtain — the first suggestion of dawn."
+
+  - id: rain_on_window
+    trigger:
+      every_ticks: 19
+      probability: 0.30
+    narrative: "Rain begins to patter softly against the shuttered window, adding a gentle rhythm to the room."
+
+  - id: laughter_below
+    trigger:
+      every_ticks: 11
+      probability: 0.25
+    narrative: "Muffled laughter rises from a room below, then fades."
+
+  - id: footsteps_corridor
+    trigger:
+      every_ticks: 14
+      probability: 0.2
+    narrative: "Footsteps pause outside the door — then continue down the hall."
+
+  - id: fire_crackle
+    trigger:
+      every_ticks: 3
+      probability: 0.45
+    narrative: "The brazier snaps and pops; a small ember arcs into the air and dies."

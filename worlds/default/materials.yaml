@@ -1,0 +1,232 @@
+# worlds/default/materials.yaml
+#
+# Physical / chemical material catalog for the default world.
+#
+# Each material is a named bundle of physical constants.  Entities and
+# objects reference a material by name in their meta["material"] field,
+# or are matched automatically from their tags (see physics.py tag_material
+# priority list).
+#
+# Temperature thresholds are in degrees Celsius.
+# conductivity is the fraction of temperature difference transferred to
+#   each adjacent entity per tick (higher = faster heat spread).
+# damage_per_degree = health lost per tick per °C above / below threshold.
+#
+# Tags declared here are NOT automatically added to entities; they are
+# consulted by the physics engine to determine category-level behavior.
+
+ambient_temp: 20.0       # global ambient temperature
+heat_spread: 0.04        # default ambient heat spread rate
+
+materials:
+
+  # ── Biological / Organic ───────────────────────────────────────────────
+
+  flesh:
+    display: "Living Flesh"
+    tags: [organic, biological]
+    density: 1.1
+    conductivity: 0.08
+    ignition_point: 250     # skin chars and ignites around 250 °C
+    damage_above: 50        # sustained heat above 50 °C causes damage
+    damage_below: 0         # below freezing causes frostbite damage
+    damage_per_degree: 0.04
+    burn_into: charred_flesh
+
+  charred_flesh:
+    display: "Charred Flesh"
+    tags: [organic, burned]
+    density: 0.9
+    conductivity: 0.06
+    ignition_point: null
+    damage_above: null      # charred flesh is already dead — no further threshold
+    damage_per_degree: 0.0
+
+  bone:
+    display: "Bone"
+    tags: [organic, biological, hard]
+    density: 1.9
+    conductivity: 0.12
+    ignition_point: 450
+    damage_above: 250
+    damage_per_degree: 0.02
+    hardness: 5
+
+  # ── Wood and Plant Matter ─────────────────────────────────────────────
+
+  wood:
+    display: "Wood"
+    tags: [organic, flammable, wooden, solid]
+    density: 0.6
+    conductivity: 0.12
+    ignition_point: 300
+    damage_above: null      # wood doesn't "take damage" — it burns
+    damage_per_degree: 0.0
+    hardness: 2
+    burn_into: ash
+
+  ash:
+    display: "Ash / Cinders"
+    tags: [organic, burned]
+    density: 0.2
+    conductivity: 0.03
+    ignition_point: null
+    damage_per_degree: 0.0
+
+  # ── Metals ────────────────────────────────────────────────────────────
+
+  iron:
+    display: "Iron / Steel"
+    tags: [metal, solid, magnetic, conductive]
+    density: 7.87
+    conductivity: 0.5       # metals conduct heat very well
+    melting_point: 1538
+    ignition_point: null
+    damage_above: null
+    damage_per_degree: 0.0
+    hardness: 4
+
+  copper:
+    display: "Copper"
+    tags: [metal, solid, conductive, arcane_conductor]
+    density: 8.96
+    conductivity: 0.7       # excellent thermal conductor
+    melting_point: 1085
+    ignition_point: null
+    hardness: 3
+
+  silver:
+    display: "Silver"
+    tags: [metal, solid, conductive, arcane_conductor, anti_undead]
+    density: 10.49
+    conductivity: 0.65
+    melting_point: 962
+    ignition_point: null
+    hardness: 3
+
+  # ── Stone and Mineral ─────────────────────────────────────────────────
+
+  stone:
+    display: "Stone / Rock"
+    tags: [mineral, solid, hard]
+    density: 2.7
+    conductivity: 0.15
+    melting_point: 1400
+    ignition_point: null
+    damage_per_degree: 0.0
+    hardness: 7
+
+  glass:
+    display: "Glass"
+    tags: [mineral, solid, transparent, brittle]
+    density: 2.5
+    conductivity: 0.8
+    melting_point: 1400
+    ignition_point: null
+    damage_per_degree: 0.0
+    hardness: 5
+
+  # ── Cloth, Leather, Paper ─────────────────────────────────────────────
+
+  cloth:
+    display: "Cloth / Fabric"
+    tags: [organic, flammable, soft, cloth]
+    density: 0.3
+    conductivity: 0.04
+    ignition_point: 200     # cloth burns easily
+    damage_per_degree: 0.0
+    hardness: 0
+    burn_into: ash
+
+  leather:
+    display: "Leather"
+    tags: [organic, flammable, leather]
+    density: 0.9
+    conductivity: 0.07
+    ignition_point: 280
+    damage_per_degree: 0.0
+    hardness: 1
+    burn_into: ash
+
+  paper:
+    display: "Parchment / Paper"
+    tags: [organic, flammable, fragile]
+    density: 0.1
+    conductivity: 0.03
+    ignition_point: 233     # Fahrenheit 451 ≈ 233 °C
+    damage_per_degree: 0.0
+    burn_into: ash
+
+  # ── Liquids ───────────────────────────────────────────────────────────
+
+  water:
+    display: "Water"
+    tags: [liquid, solvent, fire_suppressant]
+    density: 1.0
+    conductivity: 0.3
+    melting_point: 0        # freezes at 0 °C → gains "frozen" tag
+    boiling_point: 100
+    ignition_point: null
+    damage_per_degree: 0.0
+    ph: 7.0
+    freeze_into: ice
+
+  ice:
+    display: "Ice"
+    tags: [solid, frozen, cold]
+    density: 0.92
+    conductivity: 0.6       # ice conducts cold well
+    melting_point: 0        # melts above 0 °C → reverts to water
+    ignition_point: null
+    damage_above: null
+    damage_per_degree: 0.0
+    melt_into: water
+
+  oil:
+    display: "Oil / Lamp Oil"
+    tags: [liquid, flammable, organic]
+    density: 0.9
+    conductivity: 0.10
+    ignition_point: 150     # far lower ignition point than wood
+    damage_per_degree: 0.0
+    burn_into: ash
+
+  acid:
+    display: "Acid"
+    tags: [liquid, corrosive, chemical]
+    density: 1.2
+    conductivity: 0.25
+    ignition_point: null
+    damage_above: null      # acid does contact damage via reaction rules
+    damage_per_degree: 0.0
+    ph: 1.0
+
+  poison:
+    display: "Venom / Poison"
+    tags: [liquid, toxic, chemical]
+    density: 1.1
+    conductivity: 0.2
+    ignition_point: null
+    damage_per_degree: 0.0
+    ph: 5.0
+
+  # ── Magical Materials ─────────────────────────────────────────────────
+
+  mana_crystal:
+    display: "Mana Crystal"
+    tags: [solid, arcane, arcane_conductor, mineral]
+    density: 3.5
+    conductivity: 0.0       # doesn't conduct heat
+    ignition_point: null
+    damage_per_degree: 0.0
+    hardness: 8
+
+  dragon_scale:
+    display: "Dragon Scale"
+    tags: [organic, biological, hard, fire_resistant, arcane]
+    density: 3.0
+    conductivity: 0.02      # excellent thermal insulator
+    ignition_point: null    # effectively fire-proof
+    damage_above: 800       # only extreme magical fire harms it
+    damage_per_degree: 0.01
+    hardness: 9

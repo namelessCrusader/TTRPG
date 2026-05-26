@@ -1,0 +1,56 @@
+id: chamber_night1
+title: A night in the Silken Chamber
+beats:
+  - tick: 0
+    phase: 0
+    tension: 0.15
+    focus: "Set a warm, attentive mood — welcome the guest without reciting duties."
+    note: Arrival — candles, music below, the night is open
+    effects:
+      director_focus: "Welcome the guest — warmth, wine, attentive listening."
+      inject_goals:
+        - entity: elara
+          goal: "Make the guest feel seen and at ease tonight"
+          priority: 0.65
+
+  - tick: 12
+    phase: 1
+    tension: 0.35
+    focus: "Tease, listen, offer wine or gossip — build intimacy through specifics."
+    note: Deepening — trust and playfulness
+    effects:
+      director_focus: "Tease, listen, offer wine or gossip — build intimacy through specifics."
+      director_tension: 0.4
+      force_ambient: distant_music
+      inject_goals:
+        - entity: elara
+          goal: "Learn one secret the guest is hiding"
+          priority: 0.75
+
+  - tick: 28
+    phase: 2
+    tension: 0.55
+    focus: "Respond to touch and tone; secrets may surface if trust is high."
+    note: Intimacy — boundaries and desire
+    effects:
+      director_tension: 0.55
+      force_ambient: candle_flicker
+      inject_goals:
+        - entity: elara
+          goal: "Respond to the guest's mood with a concrete intimate beat"
+          priority: 0.8
+
+  - tick: 45
+    phase: 3
+    tension: 0.7
+    focus: "Madame Voss's world intrudes — hush, deflect, or confess as character."
+    note: Intrusion — footsteps, rules, risk
+    effects:
+      director_tension: 0.72
+      director_focus: "Footsteps in the corridor — hush, deflect, or confess."
+      force_ambient: footsteps_corridor
+      edge_nudge:
+        - source: elara
+          target: you
+          edge_kind: intimate
+          weight: 0.45

@@ -1,0 +1,130 @@
+id: mind_doctrine
+name: "The Mind Doctrine: Social Arcana"
+teaches_ops: [SWAY, FRIGHTEN, ENRAGE, CALM, BOND, SEVER]
+
+text: |
+  ══════════════════════════════════════════════════════
+   THE MIND DOCTRINE
+   Social Arcana and the Architecture of Influence
+   — Recovered from the Library of Voices —
+  ══════════════════════════════════════════════════════
+
+  The mind is not separate from the world — it is part of it.
+  Emotional states are measurable properties. Relationships are
+  weighted edges in a graph. Both can be read and, with sufficient
+  will, rewritten.
+
+  Some call this manipulation. The Doctrine calls it precision.
+
+  ─ SWAY ──────────────────────────────────────────────────────────────
+  Suffuses target with a feeling of goodwill toward the caster.
+  Changes target's emotional state to FRIENDLY.
+
+  Effects:
+    - Target is less likely to attack or flee
+    - Target's social interaction threshold lowers (more open to dialogue)
+    - NPCs in FRIENDLY state will share information they normally guard
+    - Wears off after several ticks; does not override permanent enmity
+
+  SWAY does not create a relational edge (see BOND for that).
+  It is a temporary mood alteration, not a lasting bond.
+
+  Mana cost: 25 (flat).
+
+  Example:
+    [cast] SWAY TARGET
+    [cast] FOR EACH NEAR 2 { SWAY }   ← pacify a room before entering
+
+  ─ FRIGHTEN ──────────────────────────────────────────────────────────
+  Fills target with sudden, sourceless dread.
+  Changes target's emotional state to FEARFUL.
+
+  Frightened entities:
+    - Are more likely to flee combat
+    - Will not initiate new attacks that tick
+    - Have their perception reduced by 15 (easier to deceive)
+    - May share information they would otherwise guard
+
+  Mana cost: 15 (flat).
+
+  Example:
+    [cast] FRIGHTEN TARGET
+    ask target where is the key   ← they may tell you now
+
+  ─ ENRAGE ────────────────────────────────────────────────────────────
+  Stokes rage in target. Changes emotional state to ANGRY.
+
+  Enraged entities:
+    - Attack more aggressively (+15 to attack roll)
+    - Become reckless: easier to trick and backstab
+    - Will not flee regardless of health
+    - May attack nearby neutral entities (collateral aggression)
+
+  ENRAGE is sometimes cast on allies to boost their combat output,
+  at the cost of their judgment.
+
+  Mana cost: 12 (flat).
+
+  ─ CALM ──────────────────────────────────────────────────────────────
+  Settles target's emotional state to NEUTRAL.
+  Works regardless of current state: fearful, enraged, hostile.
+
+  Useful for de-escalating confrontations before they turn violent.
+  Also useful after ENRAGE has served its purpose.
+
+  Does not affect relational edges — a CALM hostile still has ENEMY_OF
+  toward you; they'll remember when the spell wears off.
+
+  Mana cost: 10 (flat).
+
+  ─ BOND n ────────────────────────────────────────────────────────────
+  Creates or strengthens an ALLY_OF relational edge from caster to target.
+  Argument n is bond strength on a 1-10 scale (mapped to 0.1 - 1.0 weight).
+
+  Unlike SWAY, this is a persistent relational change stored in the
+  world's graph. It survives tick expiry and affects how the NPC's
+  policy reads their relationships.
+
+  A strong BOND (n ≥ 8) will cause the NPC to:
+    - Share normally-guarded information unprompted
+    - Assist the caster in combat
+    - Refuse to act against the caster's interests
+
+  Mana cost: 10 per point of n (n=5 costs 50 mana).
+
+  Note: this is magic. Real trust is built differently.
+  NPCs with high perception may notice the unnatural quality of a
+  BOND and resent it once the initial flush wears off.
+
+  Example:
+    [cast] BOND 7 TARGET
+
+  ─ SEVER ─────────────────────────────────────────────────────────────
+  Creates an ENEMY_OF edge from caster to target.
+  This is the inverse of BOND — it permanently marks a relationship
+  as hostile at the relational graph level.
+
+  Practical use: cast SEVER on yourself to target NPCs who have
+  been forced to help you via BOND — a clean break that removes
+  the magical debt from their policy.
+
+  Also useful for redirecting aggression: by SEVERing yourself from
+  a passive NPC, you make them track you as an enemy.
+
+  Mana cost: 20 (flat).
+
+  ─ COMBINING MIND OPERATIONS ─────────────────────────────────────────
+  Most powerful social spells chain emotional states with dialogue:
+
+    inscribe interrogate: COST mana 30, FRIGHTEN TARGET, SWAY TARGET
+    [use it, then:] ask target your_question
+
+  Or use control flow to avoid redundant costs:
+
+    IF NOT HAS_TAG friendly { SWAY TARGET }
+
+  ─ ETHICAL NOTES ─────────────────────────────────────────────────────
+  The Doctrine acknowledges no ethics. That is the caster's domain.
+  The operations work equally on allies, enemies, and bystanders.
+
+  ══════════════════════════════════════════════════════

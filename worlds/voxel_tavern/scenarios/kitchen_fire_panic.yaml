@@ -1,0 +1,90 @@
+# Vertical slice: oil spill → ignite → smoke → panic.
+# Tick beats script the physical escalation; conditional beats handle social response.
+id: kitchen_fire_panic
+title: Kitchen fire at the Flagon
+beats:
+  - tick: 0
+    phase: 0
+    tension: 0.25
+    focus: "Normal tavern bustle — warm hearth, ale flowing."
+    note: Baseline — no runaway smoke yet
+
+  - tick: 4
+    phase: 1
+    title: Lamp oil knocked over
+    effects:
+      force_ambient: drink_slosh
+      field_deposits:
+        - object: lamp_oil_flask
+          substance: oil
+          amount: 52.0
+          cause: oil_spill
+      object_modify:
+        - object: lamp_oil_flask
+          add_tags: [spilled, tipped]
+          fluid_volume_ml: 0
+      register_facts:
+        - claim: "Lamp oil spreads across the floor by the bar."
+          tags: [spill, oil, hazard]
+      schedule:
+        - tick_offset: 1
+          text: "A sharp smell of lamp oil cuts through the ale and woodsmoke."
+
+  - id: oil_ignites
+    tick: 5
+    title: Ember reaches the spill
+    when:
+      - type: tile_substance_gte
+        object: lamp_oil_flask
+        substance: oil
+        amount: 20.0
+    effects:
+      force_ambient: hearth_pop_ember
+      tile_modify:
+        - object: lamp_oil_flask
+          add_tags: [on_fire]
+          cause: oil_ignition
+      register_facts:
+        - claim: "Flames race through the spilled lamp oil by the bar."
+          tags: [fire, oil, hazard, panic]
+      schedule:
+        - tick_offset: 1
+          text: "Fire erupts along the bar — patrons shout and pull back."
+
+  - id: smoke_detected
+    tick: 0
+    title: Smoke in the common room
+    when:
+      - type: atmosphere_substance_gte
+        substance: smoke
+        amount: 12.0
+    effects:
+      director_focus: "Smoke is rising — patrons cough, look toward the bar."
+      director_tension: 0.65
+      force_ambient: smoke_thickens
+      inject_goals:
+        - entity: mira
+          goal: "Clear the common room before the roof catches"
+          priority: 0.92
+        - entity: aldric
+          goal: "Help patrons reach the exits safely"
+          priority: 0.75
+
+  - id: smoke_panic
+    tick: 0
+    title: Full panic
+    when:
+      - type: atmosphere_substance_gte
+        substance: smoke
+        amount: 35.0
+    effects:
+      director_tension: 0.9
+      director_focus: "Panic — shouting, stumbling toward doors, smoke everywhere."
+      force_ambient: smoke_thickens
+      inject_goals:
+        - entity: linna
+          goal: "Get out alive — forget the song"
+          priority: 0.88
+        - entity: tomas
+          goal: "Use the chaos to slip toward the back room"
+          priority: 0.7

@@ -1,0 +1,27 @@
+ambient_temp: 18.0
+heat_spread: 0.08
+
+materials:
+
+  flesh:
+    display: "Living Flesh"
+    tags: [organic, biological]
+    conductivity: 0.08
+    ignition_point: 250
+    damage_above: 55
+    damage_below: 5
+    damage_per_degree: 0.06
+
+  cloth:
+    display: "Robe"
+    tags: [organic, flammable, soft, cloth]
+    conductivity: 0.05
+    ignition_point: 210
+    damage_per_degree: 0.06
+
+  stone:
+    display: "Arena Stone"
+    tags: [mineral, solid, hard]
+    conductivity: 0.2
+    ignition_point: null
+    damage_per_degree: 0.0

@@ -1,0 +1,137 @@
+id: codex_of_forms
+name: "Codex of Arcane Forms"
+teaches_ops: []
+
+text: |
+  ══════════════════════════════════════════════════════
+   THE CODEX OF ARCANE FORMS
+   A complete reference to the language of magic.
+  ══════════════════════════════════════════════════════
+
+  Magic is structured will. This codex teaches the FORMS — the grammar
+  that shapes raw intention into reliable effect. Without Form, will is
+  noise. With Form, it is law.
+
+  Each world has its own OPERATIONS (the words of power that produce
+  real effects). Those are documented in specialized grimoires. This
+  codex only teaches you the language itself.
+
+  ─ CASTING ──────────────────────────────────────────────────────────
+  To cast a spell, prefix your command with [cast]:
+
+    [cast] OPERATION argument
+
+  The simplest spell is a single operation with no control structure:
+
+    [cast] HARM 20 TARGET     ← 20 damage to your current target
+    [cast] HEAT 300 NEAR 2    ← heat everything within 2 tiles
+    [cast] MEND 30 SELF       ← heal yourself
+
+  ─ SELECTORS ────────────────────────────────────────────────────────
+  Selectors control WHO the operation affects.
+
+    SELF           The caster alone
+    TARGET         Your currently targeted entity
+    NEAR n         All entities within n tiles (Manhattan distance)
+    LINE n         All entities in a line, n tiles ahead in your
+                   facing direction
+    ALL tag        All entities bearing the specified tag
+    TAGGED tag     Alias for ALL tag
+
+  Selectors appear after the operation and its argument:
+
+    HARM 20 TARGET        ← deal damage to one target
+    HARM 20 NEAR 3        ← deal damage to all within 3 tiles
+    HARM 20 TAGGED enemy  ← deal damage to all tagged 'enemy'
+
+  Without a selector, the operation defaults to TARGET (or SELF if
+  no target is selected).
+
+  ─ CONTROL FORMS ────────────────────────────────────────────────────
+  Control forms let you write multi-step, conditional spell programs.
+  Use { } to delimit blocks.
+
+  FOR EACH selector { ... }
+    Apply the body to each matched entity individually.
+    Example:
+      FOR EACH NEAR 3 { HARM 10, BIND 2 }
+
+  IF HAS_TAG tag { ... }
+    Execute body only if the current target has the given tag.
+    Example:
+      IF HAS_TAG flammable { IGNITE }
+
+  IF PROP property op value { ... }
+    Conditional on a numeric property.
+    Operators: > < >= <= == !=
+    Example:
+      IF PROP health < 30 { MEND 20 SELF }
+
+  ELSE { ... }
+    Follows an IF block. Executes when condition is false.
+
+  NOT condition
+    Inverts a condition:
+      IF NOT HAS_TAG bound { BIND 3 }
+
+  REPEAT n { ... }
+    Execute body n times on the same selection.
+
+  PERSIST n { ... }
+    Execute body once now, then once per tick for n more ticks.
+    Useful for sustained effects (damage over time, slow burn, etc.)
+
+  ─ COSTS ────────────────────────────────────────────────────────────
+  COST resource amount
+    Declares the spell's resource cost. If you lack sufficient mana,
+    the spell fails before any effect occurs.
+    Place COST at the beginning of your program.
+
+    Example:
+      [cast] COST mana 30, FOR EACH NEAR 3 { HARM 10 }
+
+  ─ SEPARATING STATEMENTS ────────────────────────────────────────────
+  Use commas to separate statements on one line:
+
+    [cast] COST mana 20, HARM 25 TARGET, FRIGHTEN TARGET
+
+  Or use multiple [cast] commands — they execute in sequence on the
+  same turn.
+
+  ─ SAVING SPELLS ────────────────────────────────────────────────────
+  inscribe name: program
+    Saves a named spell to your grimoire item.
+    The name cannot contain spaces.
+
+    inscribe fireball: COST mana 25, FOR EACH NEAR 3 { HARM 15, TAG on_fire }
+    inscribe lifedrain: COST mana 20, DRAIN 20 TARGET, MEND 15 SELF
+
+  cast name
+    Casts a saved spell by its name.
+
+    cast fireball
+    cast lifedrain
+
+  spells
+    Lists all operations you currently know, and all spells you have
+    inscribed in your grimoire.
+
+  ─ FULL EXAMPLE ─────────────────────────────────────────────────────
+  A "blizzard" spell — chill a wide area and bind those caught:
+
+    inscribe blizzard: COST mana 60, FOR EACH NEAR 4 { CHILL 200, IF NOT HAS_TAG bound { BIND 3 } }
+
+  Then cast it:
+
+    cast blizzard
+
+  ─ DISCOVERING OPERATIONS ───────────────────────────────────────────
+  You currently know NO operations. Find and read specialized grimoires
+  to learn this world's words of power.
+
+  Using an operation you haven't learned causes backlash — the spell
+  fails, you lose a small amount of mana, and the attempted word is
+  logged. Some worlds reward persistent experimentation with partial
+  hints before full unlock.
+
+  ══════════════════════════════════════════════════════

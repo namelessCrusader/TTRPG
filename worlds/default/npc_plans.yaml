@@ -1,0 +1,29 @@
+# Default NPC long-horizon plans — merged into every world pack unless overridden.
+#
+# Matched before built-in regex builders in npc_planner.py.
+#   drive_pattern  — regex tested against entity.drive
+#   entity_ids     — optional pack-local entity ids (entities.yaml id field)
+#   entity_roles   — optional substring match on role / occupation
+#   builder        — patrol | tend | work | deliver (built-in synthesizer)
+#   steps          — explicit step list (overrides builder when both set)
+
+plans:
+  - id: generic_patrol
+    drive_pattern: "(?i)\\b(patrol|walk the (wall|perimeter|post))\\b"
+    builder: patrol
+    name: "area patrol"
+
+  - id: generic_guard_post
+    drive_pattern: "(?i)\\b(guard|watch|keep an eye on|mind the)\\b"
+    builder: tend
+    name: "guard post"
+
+  - id: generic_labor
+    drive_pattern: "(?i)\\b(work|labor|craft|brew|cook|smith|sweep|clean)\\b"
+    builder: work
+    name: "shift work"
+
+  - id: generic_delivery
+    drive_pattern: "(?i)\\b(deliver|bring|carry|fetch)\\b.{0,40}\\bto\\b"
+    builder: deliver
+    name: "delivery run"

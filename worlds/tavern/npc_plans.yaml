@@ -1,0 +1,62 @@
+# Tavern-specific NPC job stacks — overrides/extends worlds/default/npc_plans.yaml
+
+plans:
+  - id: mira_bar_rounds
+    drive_pattern: "(?i)(keep the ale|bar running|manage the mood|ale flowing)"
+    entity_ids: [mira]
+    name: "tend the bar"
+    steps:
+      - kind: move_to
+        tile: [3, 10, 1]
+        label: "approach the taps"
+      - kind: spend_ticks
+        ticks: 4
+        label: "pour and wipe"
+      - kind: observe
+        tile: [12, 8, 1]
+        label: "scan the common room"
+
+  - id: aldric_door_watch
+    drive_pattern: "(?i)(guard|watch the door|sword|patrol)"
+    entity_ids: [aldric]
+    name: "door watch"
+    steps:
+      - kind: move_to
+        tile: [20, 8, 1]
+        label: "take post at the door"
+      - kind: spend_ticks
+        ticks: 3
+        label: "stand watch"
+      - kind: observe
+        tile: [20, 8, 1]
+        label: "check the threshold"
+
+  - id: linna_gossip_round
+    drive_pattern: "(?i)(gossip|listen|rumor|regulars)"
+    entity_ids: [linna]
+    name: "gossip circuit"
+    steps:
+      - kind: move_to
+        tile: [10, 6, 1]
+        label: "join a table"
+      - kind: spend_ticks
+        ticks: 2
+        label: "listen in"
+      - kind: speak_to
+        entity_id: mira
+        line: "Heard anything interesting tonight?"
+
+  - id: tomas_back_room
+    drive_pattern: "(?i)(plot|deal|back room|coin|guild)"
+    entity_ids: [tomas]
+    name: "back-room business"
+    steps:
+      - kind: move_to
+        tile: [18, 12, 1]
+        label: "slip toward the back"
+      - kind: spend_ticks
+        ticks: 5
+        label: "wait for a mark"
+      - kind: observe
+        tile: [18, 12, 1]
+        label: "watch who comes and goes"

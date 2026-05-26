@@ -1,0 +1,115 @@
+# worlds/default/interaction_rules.yaml
+#
+# Tag-grammar interactions — matched before LM infer (Overhaul A).
+# Tag matching: actor/target/tool must have AT LEAST ONE listed tag.
+#
+# Payload placeholders: $actor, $target, $tool, $actor_x, $actor_y
+
+interactions:
+
+  - id: spill_flammable_liquid
+    name: "Spill flammable liquid"
+    verb_keywords: [spill, pour, tip, empty, slosh]
+    substance_keywords: [oil, ale, wine, liquid]
+    tool_tags: [liquid, receptacle, flammable, drink]
+    target_kind: any
+    verb: spill
+    priority: 10
+    effects:
+      - kind: tile_marked
+        payload: {x: "$actor_x", y: "$actor_y", mark: liquid_spill}
+      - kind: fluid_changed
+        payload: {x: "$actor_x", y: "$actor_y", z: 0, fluid: oil, volume_ml: 250, cause: spill}
+      - kind: entity_stat_changed
+        payload: {entity_id: "$actor", stat: stamina, delta: -2, cause: spill}
+
+  - id: ignite_near_flammable
+    name: "Ignite something"
+    verb_keywords: [ignite, light, burn, torch, kindle, set fire]
+    substance_keywords: [fire, torch, oil, flame]
+    target_tags: [flammable, on_fire]
+    target_kind: object
+    verb: ignite
+    priority: 12
+    effects:
+      - kind: tile_marked
+        payload: {x: "$actor_x", y: "$actor_y", mark: fire}
+      - kind: environment_state_changed
+        payload: {key: lit, value: true, cause: ignite}
+      - kind: noise_event
+        payload: {x: "$actor_x", y: "$actor_y", radius: 10, level: 45, cause: fire}
+
+  - id: extinguish_fire
+    name: "Extinguish fire"
+    verb_keywords: [extinguish, douse, smother, put out]
+    substance_keywords: [fire, water, ale]
+    tool_tags: [fire_suppressant, liquid]
+    target_tags: [on_fire, flammable]
+    target_kind: object
+    verb: extinguish
+    priority: 11
+    effects:
+      - kind: environment_state_changed
+        payload: {key: lit, value: false, cause: extinguish}
+      - kind: tile_marked
+        payload: {x: "$actor_x", y: "$actor_y", mark: soot}
+
+  - id: pour_drink_for_npc
+    name: "Pour a drink"
+    verb_keywords: [pour, fill, serve]
+    substance_keywords: [drink, ale, wine, mug, cup]
+    tool_tags: [receptacle, cup, mug, glass]
+    target_tags: [staff, bartender, regular, veteran]
+    target_kind: entity
+    verb: pour_drink
+    priority: 8
+    effects:
+      - kind: entity_emotional_state_changed
+        payload: {entity_id: "$target", to: friendly}
+      - kind: edge_updated
+        payload: {source: "$target", target: "$actor", edge_kind: interacted, delta: 0.1}
+
+  - id: intimidate_visible
+    name: "Intimidate"
+    verb_keywords: [intimidate, threaten, menace, bully, cow]
+    target_kind: entity
+    verb: intimidate
+    priority: 7
+    contest:
+      actor_attribute: strength
+      target_attribute: composure
+      difficulty: 55
+    effects:
+      - kind: entity_alertness_changed
+        payload: {entity_id: "$target", to: high}
+      - kind: entity_emotional_state_changed
+        payload: {entity_id: "$target", to: fearful}
+      - kind: edge_created
+        payload: {source: "$target", target: "$actor", edge_kind: fears, weight: 0.5}
+
+  - id: eavesdrop_on_npc
+    name: "Eavesdrop"
+    verb_keywords: [eavesdrop, overhear, listen in, spy on]
+    target_tags: [staff, bard, merchant, veteran, regular]
+    target_kind: entity
+    verb: eavesdrop
+    priority: 6
+    effects:
+      - kind: entity_stat_changed
+        payload: {entity_id: "$actor", stat: stamina, delta: -1, cause: eavesdrop}
+      - kind: entity_alertness_changed
+        payload: {entity_id: "$target", to: low}
+
+  - id: use_suppressant_on_fire
+    name: "Douse with liquid"
+    verb_keywords: [throw, splash, douse]
+    tool_tags: [fire_suppressant, liquid]
+    target_tags: [on_fire]
+    target_kind: object
+    verb: douse
+    priority: 9
+    effects:
+      - kind: tile_marked
+        payload: {x: "$actor_x", y: "$actor_y", mark: wet_floor}
+      - kind: environment_state_changed
+        payload: {key: lit, value: false, cause: douse}

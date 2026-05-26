@@ -1,0 +1,160 @@
+# Condition-fired reactive beats for The Tarnished Flagon.
+# Fires once when world state matches — emergent story, not tick theatre.
+#
+# Condition types reuse pressures.yaml DSL (see pressure_eval.py):
+#   world_fact_tag, world_fact_claim_contains, entity_dead, entity_alive,
+#   transition_in_log, tick_gte, scenario_phase_gte, event_occurred, ...
+
+triggers:
+  - id: violence_escalation
+    title: "Violence draws the room's attention"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: violence
+        within_ticks: 12
+    then:
+      director_tension: 0.85
+      director_focus: "Violence has broken out — intervene, flee, or exploit the chaos."
+      force_ambient: shutters_rattle
+      inject_goals:
+        - entity: mira
+          goal: "Stop the violence before the Flagon gets a reputation for brawls"
+          priority: 0.9
+        - entity: aldric
+          goal: "Identify who started the trouble and restore order"
+          priority: 0.85
+      schedule:
+        - tick_offset: 3
+          text: "Patrons whisper about the commotion — versions of the story already disagree."
+
+  - id: intimidation_tension
+    title: "Threats put the room on edge"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: intimidation
+        within_ticks: 10
+    then:
+      director_tension: 0.65
+      director_focus: "Someone is making threats — bystanders watch, allies bristle."
+      inject_goals:
+        - entity: mira
+          goal: "Defuse the situation before it turns into a brawl"
+          priority: 0.8
+        - entity: linna
+          goal: "Memorize who threatened whom — this is worth a verse"
+          priority: 0.7
+
+  - id: bribe_whispers
+    title: "Coin changes hands under the table"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: bribe
+        within_ticks: 15
+    then:
+      inject_goals:
+        - entity: linna
+          goal: "Find out who paid whom and whether anyone saw the exchange"
+          priority: 0.75
+        - entity: tomas
+          goal: "Determine if the bribe threatens his interests in the room"
+          priority: 0.65
+      edge_nudge:
+        - source: linna
+          target: tomas
+          edge_kind: distrusts
+          weight: 0.2
+      schedule:
+        - tick_offset: 4
+          text: "A muttered rumor circulates — someone bought silence tonight."
+
+  - id: environment_damage
+    title: "Property damage rattles the staff"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: environment
+        within_ticks: 12
+    then:
+      inject_goals:
+        - entity: mira
+          goal: "Assess the damage and decide who pays for repairs"
+          priority: 0.8
+      force_ambient: ale_mug_clunk
+
+  - id: mysterious_message
+    title: "A note appears — someone will investigate"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: message
+        within_ticks: 20
+    then:
+      inject_goals:
+        - entity: linna
+          goal: "Find who left the message and decode what it means"
+          priority: 0.7
+        - entity: tomas
+          goal: "Read the message before anyone else acts on it"
+          priority: 0.6
+
+  - id: theft_discovered
+    title: "Someone's been robbed"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: theft
+        within_ticks: 20
+    then:
+      director_tension: 0.75
+      director_focus: "A theft has been noticed — accusations will fly."
+      inject_goals:
+        - entity: aldric
+          goal: "Find the thief before panic spreads"
+          priority: 0.85
+        - entity: mira
+          goal: "Protect patrons and recover whatever was stolen"
+          priority: 0.8
+      schedule:
+        - tick_offset: 2
+          text: "Word spreads that something valuable went missing."
+        - tick_offset: 5
+          text: "Aldric begins questioning patrons in the corner."
+          inject_goals:
+            - entity: aldric
+              goal: "Confront suspicious patrons about the theft"
+              priority: 0.8
+
+  - id: investigation_begins
+    title: "Suspicion takes root"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: investigation
+        within_ticks: 25
+    then:
+      inject_goals:
+        - entity: aldric
+          goal: "Question witnesses and trace what happened"
+          priority: 0.7
+        - entity: linna
+          goal: "Listen for contradictions in people's stories"
+          priority: 0.65
+
+  - id: craft_witnessed
+    title: "Unusual crafting draws notice"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: craft
+        within_ticks: 15
+    then:
+      inject_goals:
+        - entity: tomas
+          goal: "Find out what was made and whether it threatens his trade"
+          priority: 0.55
+      schedule:
+        - tick_offset: 3
+          text: "Someone mutters about strange work being done in the corner."

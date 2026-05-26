@@ -1,0 +1,24 @@
+# Biofluid liquids — extend fluids.yaml semantics for blood/urine/feces.
+# Loaded into FluidCatalog alongside worlds/default/fluids.yaml.
+
+liquids:
+  blood:
+    display: blood
+    drinkable: false
+    thirst_per_100ml: 0.0
+    bladder_per_100ml: 0.0
+    stain: true
+
+  urine:
+    display: urine
+    drinkable: false
+    thirst_per_100ml: 0.0
+    bladder_per_100ml: 0.0
+    stain: true
+
+  feces:
+    display: feces
+    drinkable: false
+    thirst_per_100ml: 0.0
+    bladder_per_100ml: 0.0
+    stain: true

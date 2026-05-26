@@ -1,0 +1,19 @@
+# Scenario beat sheet for NarrativeDirector (loaded via world.yaml extra.scenario)
+id: tavern_night1
+title: Opening night at the Flagon
+beats:
+  - tick: 0
+    phase: 0
+    tension: 0.2
+    focus: "Establish mood — patrons settling, ale flowing, low stakes."
+    note: Establish mood — low tension, patrons settling
+  - tick: 10
+    phase: 1
+    tension: 0.45
+    focus: "Rising curiosity — secrets surface in dialogue."
+    note: Rising curiosity — secrets surface in dialogue
+  - tick: 20
+    phase: 2
+    tension: 0.7
+    focus: "Peak tension — alliances and distrust tested."
+    note: Peak tension — alliances and distrust tested

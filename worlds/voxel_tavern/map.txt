@@ -1,0 +1,25 @@
+# ASCII terrain map. Width=24 height=16.
+# The Tarnished Flagon — a cramped but lively tavern.
+#
+# Layout landmarks (visual labels, all treated as floor):
+#   B  bar counter (rows 12-13, cols 1-9)
+#   T  table       (scattered through main room)
+#   S  stage corner for the bard (cols 18-22, rows 1-4)
+#
+# = window on south wall, + door at row 15 col 12
+########################
+#TTTTT....TTTTT...SSS.#
+#TTTTT....TTTTT...SSS.#
+#.........TTTTT.......#
+#.........TTTTT...TTT.#
+#TTTTT............TTT.#
+#TTTTT............TTT.#
+#.................TTT.#
+#.........TTT.........#
+#.........TTT.........#
+#.....................#
+#.....................#
+#=BBBBBBBBB..........=#
+#=BBBBBBBBB..........=#
+#.....................#
+#################+######

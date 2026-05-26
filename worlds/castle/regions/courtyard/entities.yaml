@@ -1,0 +1,79 @@
+entities:
+  - id: player
+    name: "You"
+    kind: player
+    x: 6
+    y: 7
+    health: 120
+    max_health: 120
+    sight_range: 9
+    carry_capacity: 55.0
+    role: "an outsider who has arrived at Castle Grimvault"
+    personality: "Curious, cautious, capable"
+    drive: "Explore the castle and uncover its secrets"
+    knowledge:
+      - "There is a great hall through the southern gate"
+      - "Rumours say something terrible lurks in the dungeon below the great hall"
+    inventory:
+      - lantern
+      - rations
+
+  - id: gate_guard
+    name: "Gate Guard"
+    kind: npc
+    x: 8
+    y: 9
+    health: 90
+    max_health: 90
+    sight_range: 8
+    occupation: guard
+    faction: crown
+    stats:
+      stamina: 100.0
+      gold: 5.0
+      reputation: 10.0
+    role: "castle gate guard"
+    personality: "Gruff, suspicious of strangers, duty-bound"
+    drive: "Keep unauthorised persons out of the great hall"
+    knowledge:
+      - "The great hall portal is to the south"
+      - "The king is inside the hall and must not be disturbed"
+    goals:
+      - "Prevent strangers from entering the great hall unannounced"
+    secrets:
+      - "He owes a debt to a bandit who used to work in the dungeon"
+    equipped_weapon: guard_spear
+    equipped_armor: guard_gambeson
+    voice_lines:
+      - "State your business before you take another step."
+      - "The hall is closed to wanderers without leave."
+      - "I've heard enough excuses for one watch."
+
+  - id: stable_hand
+    name: "Stable Hand"
+    kind: npc
+    x: 5
+    y: 11
+    health: 60
+    max_health: 60
+    sight_range: 6
+    occupation: stable_hand
+    faction: independent
+    stats:
+      stamina: 100.0
+      gold: 2.0
+      reputation: 0.0
+    role: "castle stable hand"
+    personality: "Friendly, chatty, curious about visitors"
+    drive: "Care for the horses and gossip with anyone who passes through"
+    knowledge:
+      - "The dungeon entrance is inside the great hall, through the iron door"
+      - "A prisoner named Jorin is being held down below"
+    voice_lines:
+      - "Easy there — the horses spook if you shout."
+      - "You hear things in the stables if you listen long enough."
+      - "The king's business isn't mine, but the gossip is free."
+    waypoints:
+      - [4, 11]
+      - [8, 11]
+      - [11, 11]

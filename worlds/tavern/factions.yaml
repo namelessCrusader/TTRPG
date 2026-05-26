@@ -1,0 +1,59 @@
+factions:
+  - id: city_watch
+    name: "City Watch"
+    meta:
+      description: "The local constabulary. Absent from the tavern but a background presence."
+      resources:
+        gold: 200.0
+        food: 80.0
+        weapons: 150.0
+      upkeep:
+        gold: 5.0
+        food: 3.0
+      member_ids: []
+
+  - id: flagon_staff
+    name: "Flagon Staff"
+    meta:
+      description: "Mira and her employees. Loyalty is to the house."
+
+  - id: tarnished_flagon
+    name: "The Tarnished Flagon"
+    meta:
+      description: "The tavern itself — Mira keeps it running against all odds."
+      resources:
+        gold: 30.0
+        food: 60.0
+        ale: 40.0
+      upkeep:
+        gold: 3.0
+        food: 2.0
+        ale: 1.5
+      member_ids:
+        - mira
+
+  - id: duke_conspirators
+    name: "The Duke's Enemies"
+    meta:
+      description: "A shadowy faction seeking to remove the Duke. Tomas works for them unknowingly."
+      resources:
+        gold: 500.0
+        information: 80.0
+      upkeep:
+        gold: 8.0
+        information: 5.0
+      member_ids:
+        - tomas
+
+  - id: bard_network
+    name: "The Bard's Network"
+    meta:
+      description: "Linna's loose web of informants and performers across the realm."
+      resources:
+        gold: 60.0
+        information: 120.0
+      upkeep:
+        gold: 2.0
+        information: 3.0
+      member_ids:
+        - linna

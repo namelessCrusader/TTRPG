@@ -1,0 +1,40 @@
+templates:
+  - verb: pray
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$actor"
+          to: neutral
+
+  - verb: threaten
+    contest:
+      actor_attribute: intimidation
+      target_attribute: composure
+      difficulty: 50
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: fearful
+
+  - verb: search
+    narrative_success: "{actor} searches {target} thoroughly."
+    contest:
+      actor_attribute: perception
+      difficulty: 42
+    on_success:
+      - kind: tile_marked
+        payload:
+          x: 0
+          y: 0
+          mark: "signs of thorough search"
+
+  - verb: swear_oath
+    narrative_success: "{actor} swears a binding oath before {target}."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          delta: 0.12

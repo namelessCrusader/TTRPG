@@ -1,0 +1,30 @@
+name: "Arcane Proving Ground"
+description: |
+  A bare stone arena for sanctioned spell duels. Two mages face each other
+  across open floor — no cover, no audience, only magic and will.
+
+spatial:
+  width: 14
+  height: 10
+  map_file: "map.txt"
+
+meta:
+  location_name: "proving ground arena"
+  noise_level: "quiet"
+  crowded: false
+  lighting: "bright"
+  magic_duel: true
+  hazards: []
+
+clock:
+  day_length_ticks: 48
+
+consequences:
+  require_sticky: true
+  record_traces: true
+  world_memory_window: 6
+
+rng_seed: 424242
+
+extra:
+  scenario: scenarios/duel_opening.yaml

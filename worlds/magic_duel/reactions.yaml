@@ -1,0 +1,30 @@
+reactions:
+
+  - id: fire_burns_mage
+    name: "Fire burns living flesh"
+    conditions:
+      - has_tag: on_fire
+      - has_tag: biological
+    effects:
+      - damage: 3
+      - adjust_prop: {prop: temperature, delta: 5}
+    probability: 1.0
+    narrative: "{name} recoils from the flames."
+
+  - id: extreme_heat_harms
+    name: "Scorching heat damages flesh"
+    conditions:
+      - has_tag: biological
+      - prop_above: {prop: temperature, value: 55}
+    effects:
+      - damage_by_excess: {prop: temperature, threshold: 55, rate: 0.05}
+    probability: 1.0
+
+  - id: extreme_cold_harms
+    name: "Freezing cold damages flesh"
+    conditions:
+      - has_tag: biological
+      - prop_below: {prop: temperature, value: 0}
+    effects:
+      - damage_by_deficit: {prop: temperature, threshold: 0, rate: 0.04}
+    probability: 1.0

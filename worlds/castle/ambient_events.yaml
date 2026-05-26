@@ -1,0 +1,18 @@
+events:
+  - id: wind_howls
+    trigger:
+      every_ticks: 18
+      probability: 0.4
+    narrative: "A gust of wind howls through the courtyard battlements."
+
+  - id: chain_rattles
+    trigger:
+      every_ticks: 25
+      probability: 0.35
+    narrative: "From somewhere deep below the stones, chains rattle faintly."
+
+  - id: herald_announcement
+    trigger:
+      every_ticks: 40
+      probability: 0.5
+    narrative: "The court herald's voice echoes through the great hall: 'His Majesty entertains no uninvited guests!'"

@@ -1,0 +1,67 @@
+# voxel_tavern interaction rules — overrides + additions to worlds/default.
+#
+# The default `extinguish_fire` rule requires the actor to hold a
+# fire_suppressant + liquid tool. That's too strict for the tavern
+# showcase: a bartender swatting flames from the bar should NOT have to
+# carry a waterskin — there is an ale cask right there, and the pour
+# action is implied.
+#
+# These rules add deterministic depth so NPC plans like ``douse fire``
+# resolve without LM intervention.
+
+interactions:
+
+  # ── Bartender / staff / veteran douse: no inventory required ─────────
+  # NOTE: this resolver only substitutes $actor, $target, $tool, $actor_x,
+  # $actor_y in payloads (see interaction_resolver._substitute_effects).
+  # Target-coordinate substitutions live in property_interactions.yaml.
+  - id: tavern_douse_fire_object
+    name: "Tavern hand smothers a burning object"
+    verb_keywords: [douse, extinguish, smother, "put out", quench]
+    actor_tags: [staff, bartender, cook, veteran, regular]
+    target_tags: [on_fire]
+    target_kind: object
+    verb: douse
+    priority: 14
+    max_distance: 2
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: on_fire, cause: tavern_douse}
+      - kind: entity_property_changed
+        payload: {entity_id: "$target", property: temperature, delta: -90}
+      - kind: tile_marked
+        payload: {x: "$actor_x", y: "$actor_y", mark: wet_floor}
+      - kind: noise_event
+        payload: {x: "$actor_x", y: "$actor_y", radius: 6, level: 30, cause: douse_hiss}
+    narrative: "{actor_name} slings ale from the bar across {target_name} — the flames hiss out in a cloud of steam."
+
+  - id: tavern_douse_fire_tile
+    name: "Tavern hand smothers a burning tile"
+    verb_keywords: [douse, extinguish, smother, "put out", quench]
+    actor_tags: [staff, bartender, cook, veteran, regular]
+    target_kind: any
+    verb: douse
+    priority: 13
+    max_distance: 2
+    effects:
+      - kind: tile_marked
+        payload: {x: "$actor_x", y: "$actor_y", mark: wet_floor, cause: tavern_douse}
+      - kind: noise_event
+        payload: {x: "$actor_x", y: "$actor_y", radius: 6, level: 30, cause: douse_hiss}
+    narrative: "{actor_name} flings drink over the burning spot — the fire on the floor smothers under foam and ale."
+
+  # ── Anyone douses if standing adjacent to a pour source (cask/tap) ──
+  - id: tavern_douse_near_cask
+    name: "Anyone douses fire while next to an ale cask"
+    verb_keywords: [douse, extinguish, smother, "put out"]
+    target_tags: [on_fire]
+    target_kind: object
+    verb: douse
+    priority: 12
+    max_distance: 2
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: on_fire, cause: cask_douse}
+      - kind: tile_marked
+        payload: {x: "$actor_x", y: "$actor_y", mark: wet_floor}
+    narrative: "{actor_name} grabs a tankard from the cask and dashes it across the flames."

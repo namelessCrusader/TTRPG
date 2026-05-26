@@ -1,0 +1,136 @@
+objects:
+  - id: tavern_hearth
+    name: "stone hearth"
+    passable: false
+    position: [2, 12]
+    weight: 200.0
+    bulk: 50.0
+    material: stone
+    temperature: 420
+    tags: [fixture, heat_source]
+    meta:
+      material: stone
+
+  - id: hearth_log
+    name: "burning log"
+    passable: true
+    position: [3, 12]
+    weight: 8.0
+    bulk: 4.0
+    material: wood
+    temperature: 280
+    tags: [flammable, heat_source]
+
+  - id: lamp_oil_flask
+    name: "lamp oil flask"
+    passable: true
+    position: [5, 12]
+    weight: 0.6
+    bulk: 0.5
+    material: oil
+    temperature: 22
+    tags: [flammable, liquid, oil]
+
+  - id: tavern_ale_cask
+    name: "ale cask"
+    passable: false
+    position: [6, 11]
+    weight: 80.0
+    bulk: 40.0
+    material: wood
+    pour_source: true
+    fluid_capacity_ml: 50000
+    fluid_volume_ml: 48000
+    fluid_material: ale
+    tags: [pour_source, cask, drink, alcohol, fixture, wooden]
+
+  - id: aldric_mug
+    name: "ale mug"
+    passable: true
+    position: [5, 11]
+    weight: 0.4
+    bulk: 0.5
+    fluid_capacity_ml: 350
+    fluid_volume_ml: 0
+    tags: [receptacle, cup, drink, alcohol]
+
+  - id: linna_lute
+    name: "lute"
+    passable: true
+    position: [20, 3]
+    weight: 2.0
+    bulk: 3.0
+    slot: main_hand
+    tags: [instrument]
+
+  - id: tomas_satchel
+    name: "leather satchel"
+    passable: true
+    # Tomas keeps this satchel on him — positioned at his location
+    position: [11, 9]
+    weight: 0.5
+    bulk: 0.5
+    slot: back
+    is_container: true
+    carry_capacity: 5.0
+    bulk_capacity: 6.0
+    tags: [documents, secret, container]
+
+  # ── Food on the bar / tables ──────────────────────────────────────────
+  - id: stew_bowl
+    name: "bowl of stew"
+    passable: true
+    position: [5, 10]
+    weight: 0.8
+    bulk: 0.6
+    material: ceramic
+    tags: [food, edible, hot]
+    attributes:
+      nutrition: 18
+      bites: 4
+
+  - id: bread_loaf
+    name: "loaf of dark bread"
+    passable: true
+    position: [4, 10]
+    weight: 0.5
+    bulk: 0.4
+    material: bread
+    tags: [food, edible]
+    attributes:
+      nutrition: 12
+      bites: 3
+
+  - id: cheese_wheel
+    name: "wedge of cheese"
+    passable: true
+    position: [6, 10]
+    weight: 0.3
+    bulk: 0.3
+    material: cheese
+    tags: [food, edible]
+    attributes:
+      nutrition: 10
+      bites: 3
+
+  # ── Privy stall (so relieve has a valid target) ───────────────────────
+  - id: tavern_privy
+    name: "back-room privy"
+    passable: true
+    position: [22, 14]
+    weight: 30.0
+    bulk: 20.0
+    material: wood
+    tags: [fixture, privy, private]
+
+  # ── Cleaning rag on the bar ────────────────────────────────────────────
+  - id: bar_rag
+    name: "linen bar rag"
+    passable: true
+    position: [4, 11]
+    weight: 0.1
+    bulk: 0.1
+    material: linen
+    tags: [cleaning, rag]
+    attributes:
+      bites: 1

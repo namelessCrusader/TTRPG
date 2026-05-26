@@ -1,0 +1,46 @@
+id: duel_opening
+title: Sanctioned duel opening
+beats:
+  - tick: 0
+    phase: 0
+    tension: 0.5
+    focus: "Establish dominance with heat or cold — no small talk."
+    note: Opening — probe defenses
+    effects:
+      director_focus: "Probe defenses — cast, feint, or reposition."
+      force_ambient: arena_hum
+      inject_goals:
+        - entity: pyra vale
+          goal: "Establish magical dominance over Cryo Vale"
+          priority: 0.75
+        - entity: cryo vale
+          goal: "Weather the opening assault and read Pyra's pattern"
+          priority: 0.75
+
+  - tick: 8
+    phase: 1
+    tension: 0.7
+    focus: "Press the advantage; combine temperature and ignite/bind."
+    note: Escalation — real spells
+    effects:
+      director_tension: 0.72
+      director_focus: "Press the advantage — real spells, not posturing."
+      force_ambient: mana_flare
+      inject_goals:
+        - entity: pyra vale
+          goal: "Land a decisive temperature or ignite spell"
+          priority: 0.85
+
+  - tick: 18
+    phase: 2
+    tension: 0.85
+    focus: "Finish or falter — mana and material reactions decide it."
+    note: Climax — decisive magic
+    effects:
+      director_tension: 0.85
+      director_focus: "Finish or falter — mana and material reactions decide it."
+      force_ambient: judge_watch
+      inject_goals:
+        - entity: cryo vale
+          goal: "Counter with bind or extinguish before mana runs dry"
+          priority: 0.9

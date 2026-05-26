@@ -1,0 +1,105 @@
+id: vitae_codex
+name: "Vitae Codex: On Living Matter"
+teaches_ops: [HARM, MEND, BIND, DRAIN, REPLENISH]
+
+text: |
+  ══════════════════════════════════════════════════════
+   VITAE CODEX: ON LIVING MATTER
+   Compiled by the Chirurgeons of the Old Academy
+  ══════════════════════════════════════════════════════
+
+  Life is not magic. But life responds to magic. A living body is a
+  system of extraordinary complexity — one whose state can be read,
+  nudged, and in extremis, overridden by a caster who knows how.
+
+  These operations act directly upon the living body and its reserves
+  of will (mana).
+
+  ─ HARM n ────────────────────────────────────────────────────────────
+  Deals n points of direct magical damage to target's health.
+
+  Unlike physical attacks, HARM bypasses armor entirely. However, it
+  does not bypass:
+    - Magical wards (the "warded" tag)
+    - The "stone_skin" condition (reduces HARM by 50%)
+    - Death's Door threshold (cannot reduce health below 1 while the
+      "last_stand" condition is active)
+
+  Mana cost: 1.0 per damage point.
+
+  HARM is blunt. A skilled caster prefers to use HEAT or BIND
+  to create openings, then HARM to finish. Combine freely.
+
+  Examples:
+    [cast] HARM 30 TARGET
+    [cast] FOR EACH NEAR 2 { HARM 15 }
+
+  ─ MEND n ────────────────────────────────────────────────────────────
+  Restores n health points to target.
+
+  Healing is harder than harming — the body resists imposed order as
+  much as it resists destruction. Mana cost is 20% higher than HARM.
+
+  Caps at target's max_health. Does not revive the dead.
+  Does not work on constructs (entities with the "undead" or
+  "construct" tag) — those require different forms.
+
+  Mana cost: 1.2 per health point.
+
+  Examples:
+    [cast] MEND 50 SELF
+    [cast] IF PROP health < 30 { MEND 40 SELF }   ← auto-heal when low
+
+  ─ BIND n ────────────────────────────────────────────────────────────
+  Immobilizes target for n ticks. Bound entities cannot move or attack.
+  They can still speak, cast spells, and perform other actions.
+
+  Strong targets (strength attribute > 70) may break free early:
+  each tick, they roll strength against the bind's remaining duration.
+  A very high-strength target may only be bound for 1-2 ticks regardless
+  of n.
+
+  Mana cost: 2.0 per tick.
+
+  Examples:
+    [cast] BIND 3 TARGET
+    [cast] FOR EACH NEAR 2 { BIND 2 }
+
+  ─ DRAIN n ───────────────────────────────────────────────────────────
+  Transfers n mana from target to caster.
+  If target has less than n, drains all remaining.
+  If target has no mana at all, the spell fires but does nothing.
+
+  Note: DRAIN costs mana. A drain of 10 costs 15 mana — net loss.
+  DRAIN is only mana-efficient when draining 30+ from a target.
+  Even then, it has strategic value: a caster without mana cannot cast.
+
+  Mana cost: 1.5 per point attempted.
+
+  Example:
+    [cast] DRAIN 40 TARGET       ← costs 60 mana, gains up to 40
+
+  ─ REPLENISH n ───────────────────────────────────────────────────────
+  Restores n mana to target (you or an ally).
+  Costs only 5 mana regardless of n — useful to charge an ally who
+  has run dry. Casters rarely use it on themselves mid-battle.
+
+  Mana cost: 5 (flat).
+
+  Example:
+    [cast] REPLENISH 40 TARGET   ← restore an ally's mana
+
+  ─ PRACTICAL NOTES ───────────────────────────────────────────────────
+  Combining BIND + HARM is the classical war-caster pattern:
+
+    inscribe arcane_strike: COST mana 35, BIND 2 TARGET, HARM 25 TARGET
+
+  Combining HARM with a condition check prevents overkill:
+
+    inscribe mercy_strike: COST mana 20, IF PROP health > 5 { HARM 20 TARGET }
+
+  For sustained damage, use PERSIST:
+
+    inscribe afflict: COST mana 10, PERSIST 4 { HARM 8 TARGET }
+
+  ══════════════════════════════════════════════════════

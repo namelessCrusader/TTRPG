@@ -1,0 +1,55 @@
+# Physics-first duel vocabulary — thermal ops drive substance/reaction damage.
+
+operations:
+
+  HEAT:
+    primitive: ADJUST_PROP
+    prop: temperature
+    sign: 1
+    args: [n]
+    mana_formula: "n * 0.8"
+    description: "Raise target temperature by n °C (ignition, burn reactions)."
+
+  CHILL:
+    primitive: ADJUST_PROP
+    prop: temperature
+    sign: -1
+    args: [n]
+    mana_formula: "n * 0.6"
+    description: "Lower target temperature by n °C (hypothermia reactions)."
+
+  IGNITE:
+    primitive: ADD_TAG
+    tag: on_fire
+    requires_tag: flammable
+    args: []
+    mana_formula: "10"
+    description: "Ignite flammable target (often after HEAT)."
+
+  QUENCH:
+    primitive: REMOVE_TAG
+    tag: on_fire
+    args: []
+    mana_formula: "8"
+    description: "Extinguish flames on target."
+
+  MEND:
+    primitive: ADJUST_PROP
+    prop: health
+    sign: 1
+    args: [n]
+    mana_formula: "n * 1.2"
+    description: "Restore health (body repair, not environmental)."
+
+  BIND:
+    primitive: SET_CONDITION
+    condition: bound
+    args: [n]
+    mana_formula: "n * 2.0"
+    description: "Immobilize for n ticks."
+
+  PUSH:
+    primitive: MOVE_AWAY
+    args: [n]
+    mana_formula: "n * 3.0"
+    description: "Push target n tiles away."

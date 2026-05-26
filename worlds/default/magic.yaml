@@ -1,0 +1,210 @@
+# worlds/default/magic.yaml
+#
+# Spell operation vocabulary for the default world.
+#
+# Each operation is the "API" that players write in their spell programs.
+# Players learn operations by reading grimoires (items in the world).
+# The engine only exposes an operation to a player once they know it —
+# unknown operations cause a SpellError backlash.
+#
+# Fields per operation:
+#   primitive    — engine primitive to invoke (see spell_runtime.py)
+#   prop         — property to mutate (ADJUST_PROP / SET_PROP)
+#   sign         — +1 or -1 multiplier for ADJUST_PROP
+#   state        — EmotionalState value for SET_EMOTIONAL
+#   condition    — condition name for SET_CONDITION
+#   tag          — tag string for ADD_TAG / REMOVE_TAG
+#   edge_kind    — EdgeKind value for LINK_EDGE
+#   args         — ordered list of parameter names the player provides
+#   requires_tag — op only fires on targets that have this tag
+#   mana_formula — formula for mana cost; 'n' = first arg, 'm' = second
+#   description  — text shown when player inspects the operation
+
+operations:
+
+  # ─── Thermal ─────────────────────────────────────────────────────────────
+
+  HEAT:
+    primitive: ADJUST_PROP
+    prop: temperature
+    sign: 1
+    args: [n]
+    mana_formula: "n * 0.8"
+    description: >
+      Raises temperature of target by n degrees Celsius.
+      Above ignition point, flammable matter catches fire.
+      Above 300°C, living flesh takes direct damage.
+
+  CHILL:
+    primitive: ADJUST_PROP
+    prop: temperature
+    sign: -1
+    args: [n]
+    mana_formula: "n * 0.6"
+    description: >
+      Lowers temperature of target by n degrees.
+      Below 0°C, liquids freeze. Below -20°C, living flesh is damaged.
+      Frozen entities move at half speed.
+
+  IGNITE:
+    primitive: ADD_TAG
+    tag: on_fire
+    requires_tag: flammable
+    args: []
+    mana_formula: "10"
+    description: >
+      Forces immediate combustion. Only affects flammable targets.
+      Fires spread to adjacent flammable objects each tick.
+
+  QUENCH:
+    primitive: REMOVE_TAG
+    tag: on_fire
+    args: []
+    mana_formula: "8"
+    description: >
+      Extinguishes fire on target. Also cools them slightly (CHILL 50).
+
+  # ─── Life / Body ──────────────────────────────────────────────────────────
+
+  HARM:
+    primitive: ADJUST_PROP
+    prop: health
+    sign: -1
+    args: [n]
+    mana_formula: "n * 1.0"
+    description: >
+      Deals n points of direct magical damage.
+      Bypasses physical armor. Does not bypass magical wards.
+
+  MEND:
+    primitive: ADJUST_PROP
+    prop: health
+    sign: 1
+    args: [n]
+    mana_formula: "n * 1.2"
+    description: >
+      Restores n health to target.
+      Cannot exceed target's maximum health. Cannot revive the dead.
+
+  BIND:
+    primitive: SET_CONDITION
+    condition: bound
+    args: [n]
+    mana_formula: "n * 2.0"
+    description: >
+      Immobilizes target for n ticks. Bound entities cannot move or attack.
+      Strong-willed targets (high strength) may resist longer binds.
+
+  DRAIN:
+    primitive: ADJUST_PROP
+    prop: mana
+    sign: -1
+    args: [n]
+    mana_formula: "n * 1.5"
+    description: >
+      Drains n mana from target. If target has less than n, drains all.
+      Note: it costs mana to drain mana — net gain only for large drains.
+
+  REPLENISH:
+    primitive: ADJUST_PROP
+    prop: mana
+    sign: 1
+    args: [n]
+    mana_formula: "5"
+    description: >
+      Restores n mana to target. Casters rarely use this on themselves —
+      it requires mana to cast. Useful to charge an ally.
+
+  # ─── Mind / Social ────────────────────────────────────────────────────────
+
+  SWAY:
+    primitive: SET_EMOTIONAL
+    state: friendly
+    args: []
+    mana_formula: "25"
+    description: >
+      Suffuses target with goodwill toward the caster.
+      Wears off after a few ticks. Does not override deep enmity.
+
+  FRIGHTEN:
+    primitive: SET_EMOTIONAL
+    state: fearful
+    args: []
+    mana_formula: "15"
+    description: >
+      Fills target with sudden, sourceless dread.
+      Frightened entities are more likely to flee combat.
+
+  ENRAGE:
+    primitive: SET_EMOTIONAL
+    state: angry
+    args: []
+    mana_formula: "12"
+    description: >
+      Stokes rage in target. Enraged entities attack more aggressively
+      but also become more reckless.
+
+  CALM:
+    primitive: SET_EMOTIONAL
+    state: neutral
+    args: []
+    mana_formula: "10"
+    description: >
+      Settles a target's emotional state to neutral.
+      Useful for de-escalating confrontations.
+
+  # ─── Physical / Spatial ───────────────────────────────────────────────────
+
+  PUSH:
+    primitive: MOVE_AWAY
+    args: [n]
+    mana_formula: "n * 3.0"
+    description: >
+      Pushes target n tiles away from the caster.
+      Does not penetrate walls. Target stops at the first impassable tile.
+
+  PULL:
+    primitive: MOVE_TOWARD
+    args: [n]
+    mana_formula: "n * 3.0"
+    description: >
+      Pulls target n tiles toward the caster.
+      If the path is blocked, target moves as far as possible.
+
+  # ─── Generic property manipulation ───────────────────────────────────────
+  # These are advanced operations. Players who understand the simulation's
+  # internal property model can use these to write highly precise spells.
+
+  TAG:
+    primitive: ADD_TAG
+    args: [tag]
+    mana_formula: "5"
+    description: >
+      Adds an arbitrary tag to target. Tags can trigger reactions in the
+      material engine (e.g. TAG flammable makes something burnable).
+
+  UNTAG:
+    primitive: REMOVE_TAG
+    args: [tag]
+    mana_formula: "5"
+    description: >
+      Removes a tag from target.
+
+  BOND:
+    primitive: LINK_EDGE
+    edge_kind: ally_of
+    args: [n]
+    mana_formula: "n * 10"
+    description: >
+      Creates or strengthens a social bond between caster and target.
+      Argument n is bond strength (1-10). Strong bonds make target
+      willing to assist the caster.
+
+  SEVER:
+    primitive: LINK_EDGE
+    edge_kind: enemy_of
+    args: []
+    mana_formula: "20"
+    description: >
+      Marks target as an enemy of the caster in the relational graph.
+      The target's NPC policy will treat the caster as hostile.

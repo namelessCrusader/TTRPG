@@ -1,0 +1,89 @@
+# Quest / goal objectives for The Tarnished Flagon.
+#
+# Conditions reference pack-local entity ids (mira, aldric, linna, tomas).
+# They are resolved to real EntityIds at load time.
+#
+# Goals are AND-combined within conditions; the first goal to complete
+# has its reward side-effects applied immediately.
+#
+# The goal evaluator runs after every tick — no scripting required.
+
+goals:
+  # ── The Letter Revealed ─────────────────────────────────────────────────────
+  # Linna manages to eavesdrop on Tomas and uncovers his secret.
+  - id: linna_uncovers_secret
+    title: "The Letter Revealed"
+    description: >
+      Linna discovers what Tomas is really carrying — the forged deed
+      to the Flagon that could ruin Mira.
+    conditions:
+      - type: event_occurred
+        verb: eavesdrop
+        actor: linna
+      - type: event_occurred
+        verb: eavesdrop
+    reward:
+      narrative: >
+        Linna's breath catches as she overhears Tomas murmur the merchant's
+        name. The sealed letter — it's a forged deed. She now knows the
+        secret that could topple the Tarnished Flagon.
+      lore_unlock: tomas_forged_deed
+      edge_updates:
+        - source: linna
+          target: tomas
+          edge_kind: distrusts
+          weight: 0.9
+
+  # ── An Uneasy Truce ─────────────────────────────────────────────────────────
+  # Aldric and Tomas reach some form of accord after their rivalry.
+  - id: aldric_tomas_truce
+    title: "An Uneasy Truce"
+    description: >
+      Aldric and Tomas stop openly antagonizing each other — at least
+      for tonight.
+    conditions:
+      - type: edge_exists
+        source: aldric
+        target: tomas
+        edge_kind: trusts
+    reward:
+      narrative: >
+        A grudging nod passes between Aldric and Tomas. Neither man looks
+        happy about it, but the knives stay sheathed — for now.
+      edge_updates:
+        - source: tomas
+          target: aldric
+          edge_kind: trusts
+          weight: 0.4
+
+  # ── The Night Deepens ────────────────────────────────────────────────────────
+  # Simple time-gate — fires when tick >= 40
+  - id: late_hour
+    title: "The Night Deepens"
+    description: >
+      The candles burn low; the last stragglers linger past midnight.
+    conditions:
+      - type: tick_reached
+        tick: 40
+    reward:
+      narrative: >
+        Mira wipes down the bar and mutters something about locking the
+        door. The fire has sunk to embers, and the Flagon feels heavier
+        with the weight of what's been said tonight.
+      lore_unlock: midnight_at_the_flagon
+
+  # ── Mira's Tolerance Breaks ─────────────────────────────────────────────────
+  # Mira gets angry — likely after being disrespected too many times.
+  - id: mira_snaps
+    title: "Last Orders"
+    description: >
+      Mira loses her composure and erupts at someone in the tavern.
+    conditions:
+      - type: entity_state
+        entity: mira
+        state: angry
+    reward:
+      narrative: >
+        Mira slams both palms on the bar, sending a row of tankards
+        rattling. "OUT!" Her voice cuts through every conversation in the
+        room. Nobody argues with Mira when she sounds like that.

@@ -1,0 +1,7 @@
+# Optional GPU 3D voxel viewer (--gl). Install after base requirements:
+#   pip install -r requirements.txt -r requirements-voxel-gl.txt
+pygame>=2.5.0
+moderngl>=5.8.0
+pyrr>=0.10.3
+numpy>=1.26.0
+pygltflib>=1.16.0

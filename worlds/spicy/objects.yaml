@@ -1,0 +1,20 @@
+# Objects in The Silken Chamber.
+#
+# The room is furnished but not tactical — no weapons, just atmosphere.
+
+objects:
+  - id: wine_glass
+    name: "glass of wine"
+    passable: true
+    position: [5, 9]
+    weight: 0.2
+    bulk: 0.3
+    tags: [drink, alcohol]
+
+  - id: wine_bottle
+    name: "bottle of wine"
+    passable: true
+    position: [6, 9]
+    weight: 1.2
+    bulk: 0.8
+    tags: [drink, alcohol]

@@ -1,0 +1,159 @@
+# worlds/default/combinations.yaml
+#
+# Item combination / chemistry rules.
+#
+# The player uses:   mix <item A> with <item B>
+#                    combine <item A> and <item B>
+#                    use <item A> on <item B>
+#
+# The engine finds the best matching rule by checking whether the two items
+# have the required tags.  Tag-matching is tag-subset (item must have AT LEAST
+# ONE tag from the list).  Matching is symmetric — the engine tries A→B and
+# B→A automatically.
+#
+# Fields:
+#   id              — unique rule identifier
+#   name            — human-readable label shown in errors / debug
+#   input_a_tags    — item A must have at least one of these tags
+#   input_b_tags    — item B must have at least one of these tags (omit for single-item use)
+#   consume_a       — destroy item A on use (default true)
+#   consume_b       — destroy item B on use (default true)
+#   add_tag_to_a    — add this tag to item A (survives if consume_a=false)
+#   add_tag_to_b    — add this tag to item B (survives if consume_b=false)
+#   attribute_set_a — merge these attributes into item A
+#   attribute_set_b — merge these attributes into item B
+#   create_item     — template for a new item placed at actor's feet (optional)
+#   add_actor_tag   — add this tag to the ACTOR entity (e.g. poisoned from mishandling)
+#   damage_actor    — direct health damage to the actor (for risky combinations)
+#   narrative       — description shown to the player; {a} and {b} = item names
+
+combinations:
+
+  # ──────────────────────────────────────────────────────────────────────
+  # FIRE AND IGNITION
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: torch_ignites_oil
+    name: "Torch ignites oil"
+    input_a_tags: [light_source, on_fire]
+    input_b_tags: [flammable, liquid]
+    consume_a: false      # torch survives
+    consume_b: true       # flask is consumed (oil spreads and burns)
+    add_tag_to_b: null
+    create_item:
+      name: "burning oil pool"
+      tags: [on_fire, flammable, liquid, hazard]
+      passable: true
+      weight: 0.1
+      meta:
+        material: oil
+        temperature: 500.0
+    narrative: "You tip the {b} and touch the torch to it.  A pool of fire blooms across the floor."
+
+  - id: water_extinguishes_fire_on_item
+    name: "Water douses burning item"
+    input_a_tags: [fire_suppressant, liquid]
+    input_b_tags: [on_fire]
+    consume_a: true       # water is used up
+    consume_b: false      # item survives (no longer on fire)
+    add_tag_to_b: null    # on_fire tag removed (handled in compiler)
+    narrative: "You douse the {b} with the {a}.  The fire hisses out."
+
+  # ──────────────────────────────────────────────────────────────────────
+  # POISON AND COATINGS
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: poison_coats_weapon
+    name: "Coat weapon in poison"
+    input_a_tags: [weapon]
+    input_b_tags: [toxic, liquid]
+    consume_a: false      # weapon survives
+    consume_b: true       # poison is used up
+    add_tag_to_a: poisoned
+    attribute_set_a:
+      poison_dose: 1
+    narrative: "You carefully apply the {b} to the edge of the {a}.  The blade glistens darkly."
+
+  - id: acid_on_weapon
+    name: "Coat weapon in acid"
+    input_a_tags: [weapon]
+    input_b_tags: [corrosive, liquid]
+    consume_a: false
+    consume_b: true
+    add_tag_to_a: acid_coated
+    attribute_set_a:
+      acid_dose: 1
+      damage_bonus: 5     # acid-coated blade deals extra damage
+    damage_actor: 2       # careless handling nicks the actor
+    narrative: >
+      You try to coat the {a} with the {b}.
+      A few drops splash onto your hand — ouch!  The blade now drips acid."
+
+  # ──────────────────────────────────────────────────────────────────────
+  # HEALING AND POTIONS
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: healing_plus_mana
+    name: "Mix healing and mana potions"
+    input_a_tags: [potion]
+    input_b_tags: [potion]
+    consume_a: true
+    consume_b: true
+    create_item:
+      name: "elixir of restoration"
+      tags: [consumable, potion, liquid]
+      weight: 0.6
+      attributes:
+        heal: 20
+        mana: 15
+        description: "A swirling mix of red and blue.  Restores both health and mana."
+    narrative: "You mix the two potions together.  They swirl into a single restorative elixir."
+
+  # ──────────────────────────────────────────────────────────────────────
+  # ACID REACTIONS
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: water_dilutes_acid
+    name: "Water dilutes acid"
+    input_a_tags: [fire_suppressant, liquid]
+    input_b_tags: [corrosive, liquid]
+    consume_a: true
+    consume_b: true
+    create_item:
+      name: "diluted acid"
+      tags: [consumable, liquid, mildly_corrosive]
+      weight: 0.5
+      meta:
+        material: water
+      attributes:
+        damage: 4       # much weaker than pure acid
+        description: "Watered-down acid — still slightly corrosive but far safer."
+    narrative: "You carefully add water to the acid, diluting it.  The reaction hisses gently."
+
+  # ──────────────────────────────────────────────────────────────────────
+  # TORCH / LIGHT-SOURCE MANIPULATION
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: water_douses_torch
+    name: "Water douses a torch"
+    input_a_tags: [fire_suppressant, liquid]
+    input_b_tags: [light_source, on_fire]
+    consume_a: true
+    consume_b: false
+    add_tag_to_b: null   # on_fire removed (see _compile_mix in compiler)
+    narrative: "You pour water over the {b}.  It sputters and goes dark."
+
+  # ──────────────────────────────────────────────────────────────────────
+  # GENERAL / FALLBACK
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: oil_makes_weapon_slick
+    name: "Oil makes weapon slippery"
+    input_a_tags: [weapon]
+    input_b_tags: [flammable, liquid]
+    consume_a: false
+    consume_b: true
+    add_tag_to_a: oiled
+    attribute_set_a:
+      slip_chance: 0.15   # 15% chance of dropping weapon on hit
+    narrative: "You oil the {a}.  It's slippery now — could go either way."

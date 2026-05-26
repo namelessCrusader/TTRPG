@@ -1,0 +1,27 @@
+# Quest / goal objectives for the default world.
+
+goals:
+  # Simple starter goal: speak with the guard.
+  - id: greet_the_guard
+    title: "First Contact"
+    description: "Speak to the guard at least once."
+    conditions:
+      - type: event_occurred
+        verb: speak
+        actor: player
+    reward:
+      narrative: >
+        The guard acknowledges you with a curt nod. It's not much,
+        but it's a start.
+
+  # Escalation goal: survive an encounter (tick gate).
+  - id: survived_the_night
+    title: "Survived the Night"
+    description: "Reach tick 20 without dying."
+    conditions:
+      - type: tick_reached
+        tick: 20
+    reward:
+      narrative: >
+        Another night in this place, another collection of bruises and
+        strange memories. You're still here — that counts for something.

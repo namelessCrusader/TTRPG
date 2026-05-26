@@ -1,0 +1,32 @@
+# Liquid materials — satiation, intoxication, bladder pressure per volume.
+# Referenced by object.meta.fluid.material and tile spill env.
+
+liquids:
+  water:
+    display: water
+    thirst_per_100ml: 25.0
+    hunger_per_100ml: 0.0
+    bladder_per_100ml: 18.0
+    intox_per_100ml: 0.0
+
+  ale:
+    display: ale
+    thirst_per_100ml: 20.0
+    hunger_per_100ml: 5.0
+    bladder_per_100ml: 22.0
+    intox_per_100ml: 3.0
+
+  wine:
+    display: wine
+    thirst_per_100ml: 15.0
+    hunger_per_100ml: 2.0
+    bladder_per_100ml: 20.0
+    intox_per_100ml: 5.0
+
+  oil:
+    display: lamp oil
+    thirst_per_100ml: 0.0
+    hunger_per_100ml: 0.0
+    bladder_per_100ml: 0.0
+    intox_per_100ml: 0.0
+    drinkable: false

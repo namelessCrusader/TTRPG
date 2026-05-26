@@ -1,0 +1,30 @@
+# Lore entries for The Silken Chamber.
+#
+# These are loaded into WorldState.meta["lore"] and surfaced to the
+# LM narrator for flavor. They do not affect mechanics.
+
+lore:
+  - id: the_house
+    title: "The Velvet House"
+    body: >
+      The establishment you are in is called the Velvet House — a well-regarded
+      pleasure house in the merchant quarter. It is discreet, expensive, and
+      frequented by nobles and wealthy traders. No violence is tolerated; any
+      disputes are settled by the house's formidable staff before they begin.
+      What happens in the private chambers stays private.
+
+  - id: elara
+    title: "Elara"
+    body: >
+      Elara has worked at the Velvet House for three years. She chose this life
+      and is, by all accounts, extraordinarily good at it. She is warm without
+      being false, perceptive without being intrusive, and has a dry wit that
+      surfaces when she is comfortable. She sets the pace she is comfortable with
+      and expects her companion to follow her lead — though she enjoys a partner
+      who surprises her.
+
+  - id: the_night
+    title: "The Night"
+    body: >
+      You have booked the entire night. There is no urgency, no one who will
+      knock, and nothing required of you until morning. The room is yours.

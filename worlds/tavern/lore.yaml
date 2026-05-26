@@ -1,0 +1,28 @@
+lore:
+  - id: the_flagon
+    title: "The Tarnished Flagon"
+    body: >
+      One of the older drinking establishments in the lower city, the Flagon
+      has a reputation for discretion. Mira has kept it for twelve years and
+      knows that the real product is not the ale but the privacy. The city
+      watch occasionally patrols past but never comes in; an arrangement that
+      suits everyone.
+
+  - id: the_siege
+    title: "The Siege of Korrath"
+    body: >
+      Six years ago, a besieged city in the eastern provinces held out for
+      forty days before falling. Those who survived rarely speak of it.
+      Aldric was among the defenders; whatever happened in the final hours
+      has never been made public. There are rumours — looting, a massacre,
+      a letter that was never delivered — but Aldric doesn't confirm or deny.
+
+  - id: the_document
+    title: "Tomas's Secret"
+    body: >
+      Tomas carries a sealed letter bearing a crest that should not exist
+      anymore — the crest of a house believed extinct after Korrath. He does
+      not know that Linna recognised it the moment he arrived. He does not
+      know that she is deciding whether to warn Aldric, sell the information,
+      or keep it as leverage. He only knows that the night is young and the
+      ale is cheap.

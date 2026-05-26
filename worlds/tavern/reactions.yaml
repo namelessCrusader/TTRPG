@@ -1,0 +1,124 @@
+# Tavern chemistry — fire, hearth warmth, spills, generic material reactions.
+#
+# Reactions are evaluated top-to-bottom each tick per entity/object.
+# Tag-based rules fire for ANY entity/object with those tags, so adding
+# a new material that has "flammable" automatically inherits fire rules.
+
+reactions:
+
+  # ── Fire & heat ────────────────────────────────────────────────────────
+
+  - id: fire_burns_patron
+    name: "Fire burns living flesh"
+    conditions:
+      - has_tag: on_fire
+      - has_tag: biological
+    effects:
+      - damage: 2
+      - adjust_prop: {prop: temperature, delta: 10}
+    probability: 1.0
+    narrative: "{name} recoils from the flames."
+
+  - id: fire_burns_cloth_fast
+    name: "Cloth burns especially fast"
+    conditions:
+      - has_tag: on_fire
+      - has_material_tag: soft
+    effects:
+      - damage: 3
+      - add_condition: {name: burning, ticks: 3}
+    probability: 0.9
+    narrative: "{name}'s clothing catches quickly."
+
+  - id: fire_spreads_flammable
+    name: "Fire jumps to nearby flammables"
+    conditions:
+      - has_tag: on_fire
+    effects:
+      - spread_tag: {requires_tag: flammable, add_tag: on_fire, chance: 0.12}
+    probability: 1.0
+    silent: true
+
+  - id: hearth_warms_room
+    name: "Hearth radiates comfort heat"
+    conditions:
+      - has_tag: on_fire
+      - adjacent_tag: biological
+    effects:
+      - conduct_heat: 0.08
+    probability: 0.85
+    silent: true
+
+  - id: spill_extinguishes_small_fire
+    name: "Ale or water douses small fires nearby"
+    conditions:
+      - has_tag: on_fire
+      - adjacent_tag: fire_suppressant
+    effects:
+      - remove_tag: on_fire
+      - adjust_prop: {prop: temperature, delta: -80}
+    probability: 0.65
+    narrative: "Liquid splashes and the flames hiss out."
+
+  - id: scorch_from_heat
+    name: "Extreme heat without flame still hurts"
+    conditions:
+      - missing_tag: on_fire
+      - prop_above: {prop: temperature, value: 90}
+      - has_tag: biological
+    effects:
+      - damage_by_excess: {prop: temperature, threshold: 90, rate: 0.03}
+    probability: 0.5
+    narrative: "{name} flinches from the searing heat."
+
+  # ── Fragile / glass material reactions ─────────────────────────────────
+
+  - id: fragile_shatters_when_hot
+    name: "Glass or fragile material cracks under heat stress"
+    conditions:
+      - has_material_tag: fragile
+      - prop_above: {prop: temperature, value: 80}
+    effects:
+      - add_tag: shattered
+      - damage: 5
+    probability: 0.4
+    narrative: "{name} cracks and shatters under the heat."
+
+  # ── Cold / freezing ─────────────────────────────────────────────────────
+
+  - id: frozen_biological_slows
+    name: "Extreme cold slows biological entities"
+    conditions:
+      - has_tag: biological
+      - prop_below: {prop: temperature, value: 5}
+    effects:
+      - add_condition: {name: slowed, ticks: 2}
+      - damage_by_deficit: {prop: temperature, threshold: 5, rate: 0.02}
+    probability: 0.6
+    narrative: "{name} moves sluggishly in the biting cold."
+
+  # ── Rope / fibrous materials ─────────────────────────────────────────────
+
+  - id: rope_frays_when_burning
+    name: "Burning rope snaps under tension"
+    conditions:
+      - has_material_tag: fibrous
+      - has_tag: on_fire
+    effects:
+      - add_tag: severed
+      - damage: 1
+    probability: 0.3
+    narrative: "{name} frays and snaps as the fire takes it."
+
+  # ── Alcohol / slightly_alcoholic surfaces ────────────────────────────────
+
+  - id: alcohol_ignites_easily
+    name: "Alcoholic liquid ignites near open flame"
+    conditions:
+      - has_material_tag: slightly_alcoholic
+      - adjacent_tag: on_fire
+      - missing_tag: on_fire
+    effects:
+      - add_tag: on_fire
+    probability: 0.25
+    narrative: "{name} catches with a blue flash where flame meets drink."

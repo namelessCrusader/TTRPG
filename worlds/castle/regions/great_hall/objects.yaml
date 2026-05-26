@@ -1,0 +1,27 @@
+objects:
+  - id: royal_mantle
+    name: "Royal Mantle"
+    weight: 2.0
+    bulk: 3.0
+    slot: chest
+    attributes:
+      protection: 3
+    tags: [royal, clothing]
+
+  - id: throne_goblet
+    name: "Silver Goblet"
+    x: 3
+    y: 2
+    weight: 0.3
+    bulk: 0.5
+    tags: [drinkware, silver]
+    attributes:
+      value: 80
+
+  - id: dungeon_key
+    name: "Iron Dungeon Key"
+    x: 5
+    y: 6
+    weight: 0.2
+    bulk: 0.2
+    tags: [key]

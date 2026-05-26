@@ -1,0 +1,88 @@
+name: "Castle Grimvault"
+extends: default
+physics: true
+description: >
+  A decaying castle perched on a windswept cliff. Three distinct regions
+  are connected by portals: the outer courtyard where strangers arrive,
+  the great hall where the weary king holds court, and the lightless dungeon
+  below — where something ancient has been chained for decades.
+
+# Primary region grid (the outer courtyard)
+spatial:
+  width: 20
+  height: 16
+  map_file: regions/courtyard/map.txt
+
+region_name: "Outer Courtyard"
+region_type: outdoor
+floor_level: 0
+region_description: "A windswept cobblestone courtyard. The gate to the great hall looms to the south."
+
+# Additional regions (loaded in addition to region_main)
+regions:
+  - id: region_great_hall
+    name: "The Great Hall"
+    type: indoor
+    floor_level: 0
+    description: "Torch-lit banners hang from stone walls. The king's throne dominates the far end."
+    map_file: regions/great_hall/map.txt
+    width: 20
+    height: 13
+    entities_file: regions/great_hall/entities.yaml
+    objects_file: regions/great_hall/objects.yaml
+
+  - id: region_dungeon
+    name: "The Dungeon"
+    type: dungeon
+    floor_level: -1
+    description: "Cold stone. Dripping water. Somewhere below, chains rattle."
+    map_file: regions/dungeon/map.txt
+    width: 20
+    height: 13
+    entities_file: regions/dungeon/entities.yaml
+    objects_file: regions/dungeon/objects.yaml
+
+# Portal graph — these tiles become vivid purple in the iso renderer
+portals:
+  # Courtyard → Great Hall (through the southern gate)
+  - id: portal_gate_to_hall
+    label: "Southern Gate"
+    from_region: region_main
+    from_coord: {x: 9, y: 14}
+    to_region: region_great_hall
+    to_coord: {x: 9, y: 1}
+    bidirectional: true
+
+  # Great Hall → Dungeon (through the iron door, requires key)
+  - id: portal_hall_to_dungeon
+    label: "Iron Dungeon Door"
+    from_region: region_great_hall
+    from_coord: {x: 9, y: 11}
+    to_region: region_dungeon
+    to_coord: {x: 9, y: 1}
+    bidirectional: true
+    requires_key: dungeon_key
+
+clock:
+  day_length_ticks: 120
+
+rng_seed: 77321
+
+extra:
+  scenario: scenarios/grimvault_arrival.yaml
+
+consequences:
+  require_sticky: true
+  record_traces: true
+  world_memory_window: 8
+  narrative_only_verbs:
+    - wait
+    - observe
+    - inspect
+    - rest
+
+semantic:
+  enabled: true
+  interval_ticks: 4
+  use_mock: true
+  reaction_memory_ticks: 8

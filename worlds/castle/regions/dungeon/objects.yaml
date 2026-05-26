@@ -1,0 +1,19 @@
+objects:
+  - id: iron_chain
+    name: "Iron Chain"
+    x: 5
+    y: 10
+    weight: 15.0
+    bulk: 8.0
+    passable: true
+    tags: [binding, ancient]
+    attributes:
+      durability: 95
+
+  - id: old_parchment
+    name: "Crumpled Parchment"
+    x: 6
+    y: 6
+    weight: 0.1
+    bulk: 0.1
+    tags: [document, secret]

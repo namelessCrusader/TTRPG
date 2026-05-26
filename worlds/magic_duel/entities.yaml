@@ -1,0 +1,116 @@
+# Two duelists — spells are explicit programs (HEAT/CHILL/IGNITE …), not nicknames.
+# Damage comes from temperature thresholds and reactions, not direct HARM ops.
+
+entities:
+  - id: pyra
+    name: "Pyra Vale"
+    kind: npc
+    position: [3, 5]
+    armed: false
+    alertness: combat
+    emotional_state: hostile
+    social_openness: closed
+    sight_range: 12
+    health: 100
+    max_health: 100
+    material: flesh
+    temperature: 37
+
+    role: "pyromancer duelist"
+    personality: >
+      fierce, theatrical, impatient; believes fire reveals truth
+    drive: "scorch Cryo until flesh and robes fail"
+    goals:
+      - "defeat Cryo through heat and flame"
+    knowledge:
+      - "robes are flammable — raise temperature before IGNITE"
+    attributes:
+      strength: 35
+      perception: 60
+    stats:
+      stamina: 100.0
+      hunger: 100.0
+      fatigue: 100.0
+      social_need: 100.0
+      purpose: 90.0
+    skills:
+      arcane: 55.0
+      combat: 20.0
+    mana: 80
+    max_mana: 80
+    known_spell_ops:
+      - HEAT
+      - IGNITE
+      - QUENCH
+      - MEND
+      - PUSH
+    inscribed_spells:
+      scorch: "HEAT 55 TARGET"
+      sear: "HEAT 28 TARGET"
+      ignite: "IGNITE TARGET"
+      scorch_and_ignite: "HEAT 60 TARGET, IGNITE TARGET"
+      mend: "MEND 18 SELF"
+    voice_lines:
+      - "Ash remembers every oath you've broken."
+      - "Let's see if your blood boils before your pride does."
+    tags:
+      - biological
+      - flammable
+      - mage
+
+  - id: cryo
+    name: "Cryo Vale"
+    kind: npc
+    position: [10, 5]
+    armed: false
+    alertness: combat
+    emotional_state: hostile
+    social_openness: closed
+    sight_range: 12
+    health: 100
+    max_health: 100
+    material: flesh
+    temperature: 37
+
+    role: "cryomancer duelist"
+    personality: >
+      cold, precise, methodical; wins by thermal attrition and control
+    drive: "drop Pyra's body temperature until reactions take their toll"
+    goals:
+      - "defeat Pyra through cold and binding"
+    knowledge:
+      - "extreme cold triggers flesh damage reactions each tick"
+    attributes:
+      strength: 30
+      perception: 65
+    stats:
+      stamina: 100.0
+      hunger: 100.0
+      fatigue: 100.0
+      social_need: 100.0
+      purpose: 90.0
+    skills:
+      arcane: 58.0
+      combat: 18.0
+    mana: 80
+    max_mana: 80
+    known_spell_ops:
+      - CHILL
+      - BIND
+      - QUENCH
+      - MEND
+      - PUSH
+    inscribed_spells:
+      deep_freeze: "CHILL 45 TARGET"
+      frost_touch: "CHILL 22 TARGET"
+      bind: "BIND 4 TARGET"
+      quench: "QUENCH TARGET"
+      push: "PUSH 2 TARGET"
+      mend: "MEND 18 SELF"
+    voice_lines:
+      - "Cold is patience — and I have been patient."
+      - "Your heat is loud. My answer is quiet."
+    tags:
+      - biological
+      - flammable
+      - mage

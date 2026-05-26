@@ -1,0 +1,128 @@
+# worlds/default/adjudication_index.yaml
+#
+# Pack-driven Zone 3 adjudication (Overhaul D).
+# Patterns use fnmatch (* wildcards). action_types from slot extractor.
+#
+# Payload placeholders: $actor, $target, $x, $y
+
+entries:
+
+  - id: barricade_door
+    patterns: ["wedge * door", "barricade *", "block * door", "prop * against * door"]
+    action_types: [barricade]
+    priority: 10
+    ruling: "You wedge something into place — the way is blocked."
+    effects:
+      - kind: structure_created
+        payload: {x: "$x", y: "$y", name: improvised barricade, tags: [barrier], passable: false}
+      - kind: tile_marked
+        payload: {x: "$x", y: "$y", mark: barricaded}
+      - kind: noise_event
+        payload: {x: "$x", y: "$y", radius: 6, level: 55, cause: barricade}
+    fact_tags: [barrier]
+
+  - id: force_door
+    patterns: ["force * door", "break * door open", "pry * open"]
+    action_types: [unlock]
+    priority: 9
+    ruling: "Something gives way with a sharp crack."
+    effects:
+      - kind: structure_modified
+        payload: {x: "$x", y: "$y", set_passable: true, add_tags: [forced]}
+      - kind: noise_event
+        payload: {x: "$x", y: "$y", radius: 8, level: 70, cause: forced_entry}
+    fact_tags: [structure]
+
+  - id: set_fire
+    patterns: ["set * on fire", "ignite *", "light * on fire"]
+    action_types: [ignite]
+    substance_keywords: [fire, oil]
+    priority: 11
+    ruling: "Flames catch and spread heat through the room."
+    effects:
+      - kind: tile_marked
+        payload: {x: "$x", y: "$y", mark: fire}
+      - kind: environment_state_changed
+        payload: {key: lit, value: true, cause: ignite}
+      - kind: noise_event
+        payload: {x: "$x", y: "$y", radius: 10, level: 40, cause: fire}
+    fact_tags: [fire]
+
+  - id: spill_without_tool
+    patterns: ["spill *", "pour * on * floor", "tip * over"]
+    action_types: [spill]
+    priority: 8
+    ruling: "Liquid spreads underfoot."
+    effects:
+      - kind: tile_marked
+        payload: {x: "$x", y: "$y", mark: liquid_spill}
+      - kind: fluid_changed
+        payload: {x: "$x", y: "$y", z: 0, fluid: liquid, volume_ml: 200, cause: spill}
+    fact_tags: [fluid]
+
+  - id: take_cover
+    patterns: ["hide *", "take cover *", "duck behind *"]
+    action_types: [hide]
+    priority: 7
+    ruling: "You melt into cover, harder to spot."
+    synthesized_verb: null
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$actor", tag: hidden, add: true}
+    fact_tags: [stealth]
+
+  - id: create_diversion
+    patterns: ["create a diversion", "distract *", "lure * away"]
+    action_types: [distract]
+    priority: 8
+    ruling: "You create a diversion; eyes turn away."
+    effects:
+      - kind: noise_event
+        payload: {x: "$x", y: "$y", radius: 12, level: 65, cause: distraction}
+      - kind: entity_alertness_changed
+        payload: {entity_id: "$target", to: low}
+    fact_tags: [social]
+
+  - id: set_trap
+    patterns: ["set a trap", "rig * trap", "sabotage *"]
+    action_types: [trap]
+    priority: 7
+    ruling: "You set something nasty in place."
+    effects:
+      - kind: tile_marked
+        payload: {x: "$x", y: "$y", mark: trap_set}
+    fact_tags: [trap]
+
+  - id: throw_object
+    patterns: ["throw * at *", "hurl * at *", "fling * at *"]
+    action_types: [throw]
+    priority: 8
+    ruling: "Something flies through the air."
+    effects:
+      - kind: noise_event
+        payload: {x: "$x", y: "$y", radius: 8, level: 75, cause: thrown_object}
+      - kind: entity_alertness_changed
+        payload: {entity_id: "$target", to: high}
+      - kind: entity_emotional_state_changed
+        payload: {entity_id: "$target", to: suspicious}
+    fact_tags: [violence]
+
+  - id: improvise_weapon
+    patterns: ["improvise * weapon", "fashion * club", "make * molotov"]
+    action_types: [craft]
+    priority: 6
+    ruling: "You cobble together something dangerous."
+    effects:
+      - kind: item_created
+        payload: {name: improvised weapon, tags: [weapon, improvised], owner: "$actor", x: "$x", y: "$y", passable: true}
+    fact_tags: [craft]
+
+  - id: mark_environment
+    patterns: ["carve *", "write * on *", "scratch *", "graffiti *"]
+    action_types: [mark]
+    priority: 6
+    ruling: "The mark remains for others to find."
+    effects:
+      - kind: tile_marked
+        payload: {x: "$x", y: "$y", mark: graffiti}
+    fact_tags: [environment]

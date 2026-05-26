@@ -1,0 +1,11 @@
+name: tavern_social_v1
+description: Social interaction baseline on The Tarnished Flagon (mock-friendly).
+world_pack: worlds/tavern
+ticks: 20
+seeds: 5
+
+metrics:
+  - valid_rate
+  - speak_fraction
+  - unique_verbs
+  - repeat_bigram_rate

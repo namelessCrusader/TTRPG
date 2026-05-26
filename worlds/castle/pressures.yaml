@@ -1,0 +1,36 @@
+pressures:
+  - id: gate_protocol
+    when:
+      - type: goal_incomplete
+        goal_id: goal_speak_to_guard
+    effects:
+      director_focus: "Block casual entry — demand purpose at the gate."
+      candidate_boosts:
+        - entity: gate_guard
+          verb: speak
+          weight_delta: 0.12
+
+  - id: stable_gossip
+    when:
+      - type: event_occurred
+        verb: speak
+        actor: player
+        target: stable_hand
+        lookback_ticks: 15
+    effects:
+      director_focus: "Share a rumour about the dungeon or the king — reward curiosity."
+      candidate_boosts:
+        - entity: stable_hand
+          raw_input: "[npc_auto:secret_trade]"
+          weight_delta: 0.25
+
+  - id: dungeon_dread
+    when:
+      - type: tick_gte
+        tick: 35
+    effects:
+      director_tension: 0.7
+      ambient_probability_mult:
+        chain_rattles: 2.0
+      set_world_meta:
+        castle_dungeon_whispers: true

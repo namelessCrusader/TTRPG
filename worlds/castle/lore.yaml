@@ -1,0 +1,28 @@
+concepts:
+  - id: castle_grimvault
+    name: "Castle Grimvault"
+    description: >
+      A centuries-old fortress built over a natural chasm. The original builders
+      sealed something beneath the foundations. Three generations of kings have
+      kept the secret, each adding another chain.
+
+  - id: the_chained_thing
+    name: "The Chained Thing"
+    description: >
+      An entity of unknown origin, bound in the deepest dungeon cell. It speaks
+      in riddles and claims to be a warning, not a weapon. No one alive remembers
+      who first chained it or why.
+
+  - id: jorin_the_scholar
+    name: "Jorin the Scholar"
+    description: >
+      A court historian imprisoned fifteen years ago. He discovered manuscripts
+      in the royal archive that described the chaining ritual in detail. The king
+      burned the manuscripts and imprisoned Jorin the same night.
+
+  - id: the_ritual_of_binding
+    name: "The Ritual of Binding"
+    description: >
+      An ancient ceremony that can imprison or release an entity. Requires a
+      willing vessel and three truths spoken aloud. The ritual is only partially
+      understood — the original texts were destroyed.

@@ -1,0 +1,105 @@
+# Biological agents — biofluids, stains, pathogens, airborne droplets.
+# Used by src/sim/contamination.py for spills, spread, and illness.
+
+agents:
+
+  # ── Biofluids (ground stains + optional pathogen hosts) ─────────────────
+
+  blood:
+    display: blood
+    category: biofluid
+    fluid_material: blood
+    stain: true
+    decays_per_tick: 1.2
+    spread_neighbor: 0.08
+    pathogen: false
+
+  urine:
+    display: urine
+    category: biofluid
+    fluid_material: urine
+    stain: true
+    decays_per_tick: 2.5
+    spread_neighbor: 0.15
+    pathogen: false
+    carries_pathogen: common_flora
+
+  feces:
+    display: feces
+    category: biofluid
+    fluid_material: feces
+    stain: true
+    decays_per_tick: 1.8
+    spread_neighbor: 0.05
+    pathogen: false
+    carries_pathogen: common_flora
+
+  mud:
+    display: mud
+    category: material
+    stain: true
+    decays_per_tick: 0.4
+    spread_neighbor: 0.02
+    pathogen: false
+
+  rainwater:
+    display: rainwater
+    category: weather
+    fluid_material: water
+    stain: false
+    decays_per_tick: 3.0
+    spread_neighbor: 0.25
+    pathogen: false
+
+  # ── Pathogens ─────────────────────────────────────────────────────────
+
+  common_flora:
+    display: gut bacteria
+    category: pathogen
+    pathogen: true
+    routes: [touch, ingest]
+    infection_per_100: 7.0
+    incubation_ticks: 18
+    illness_condition: gastro_ill
+    illness_damage_per_tick: 1
+    illness_duration_ticks: 40
+
+  bloodborne_germs:
+    display: bloodborne contagion
+    category: pathogen
+    pathogen: true
+    routes: [touch]
+    infection_per_100: 5.0
+    incubation_ticks: 25
+    illness_condition: feverish
+    illness_damage_per_tick: 1
+    illness_duration_ticks: 50
+    host_agents: [blood]
+
+  cough_droplets:
+    display: cough aerosol
+    category: pathogen
+    pathogen: true
+    routes: [inhale]
+    airborne: true
+    airborne_duration_ticks: 14
+    spread_radius: 2
+    infection_per_100: 14.0
+    incubation_ticks: 12
+    illness_condition: coughing_ill
+    illness_damage_per_tick: 0
+    illness_duration_ticks: 35
+
+  influenza:
+    display: influenza
+    category: pathogen
+    pathogen: true
+    routes: [inhale]
+    airborne: true
+    airborne_duration_ticks: 18
+    spread_radius: 3
+    infection_per_100: 18.0
+    incubation_ticks: 20
+    illness_condition: influenza
+    illness_damage_per_tick: 1
+    illness_duration_ticks: 60

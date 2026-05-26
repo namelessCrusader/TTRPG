@@ -1,0 +1,96 @@
+# The Silken Chamber — intimate reactive beats.
+
+triggers:
+  - id: chamber_intimacy
+    title: "The mood deepens"
+    once: true
+    when:
+      - type: transition_in_log
+        kind: contact_initiated
+        within_ticks: 8
+    then:
+      director_tension: 0.35
+      director_focus: "Desire and trust hang in the air — every gesture matters."
+      inject_goals:
+        - entity: elara
+          goal: "Read the guest's desires and respond with warmth"
+          priority: 0.85
+
+  - id: chamber_secrets
+    title: "A confession lingers"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: message
+        within_ticks: 15
+    then:
+      inject_goals:
+        - entity: elara
+          goal: "Understand what was confessed and whether to share it"
+          priority: 0.7
+      schedule:
+        - tick_offset: 2
+          text: "Candlelight catches Elara's expression — she is thinking."
+
+  - id: chamber_deception
+    title: "Someone is not being truthful"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: adjudicated
+        within_ticks: 12
+    then:
+      inject_goals:
+        - entity: elara
+          goal: "Sense whether the guest is hiding something"
+          priority: 0.8
+      director_focus: "Trust is fragile here — lies have consequences."
+
+  - id: chamber_violence
+    title: "Violence shatters the mood"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: violence
+        within_ticks: 15
+    then:
+      director_tension: 0.9
+      director_focus: "Harm has been done — the night may end abruptly."
+      inject_goals:
+        - entity: elara
+          goal: "Assess whether the guest is safe and whether to call for help"
+          priority: 0.95
+      schedule:
+        - tick_offset: 1
+          text: "Elara's composure falters for a moment."
+
+  - id: chamber_intimidation
+    title: "Threats poison the air"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: intimidation
+        within_ticks: 12
+    then:
+      director_tension: 0.7
+      director_focus: "Someone crossed a line — trust must be rebuilt or abandoned."
+      inject_goals:
+        - entity: elara
+          goal: "Decide whether to de-escalate or withdraw from the situation"
+          priority: 0.85
+
+  - id: chamber_environment
+    title: "The room bears new marks"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: environment
+        within_ticks: 18
+    then:
+      inject_goals:
+        - entity: elara
+          goal: "Notice what changed in the chamber and who is responsible"
+          priority: 0.65
+      schedule:
+        - tick_offset: 2
+          text: "Candlelight catches something out of place in the room."

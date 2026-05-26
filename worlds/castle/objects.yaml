@@ -1,0 +1,28 @@
+objects:
+  - id: lantern
+    name: "Lantern"
+    weight: 0.8
+    bulk: 1.0
+    tags: [light_source]
+
+  - id: rations
+    name: "Trail Rations"
+    weight: 0.5
+    bulk: 0.5
+    tags: [food]
+
+  - id: guard_spear
+    name: "Iron Spear"
+    weight: 2.5
+    bulk: 3.0
+    slot: main_hand
+    attributes:
+      damage: 14
+
+  - id: guard_gambeson
+    name: "Padded Gambeson"
+    weight: 4.0
+    bulk: 4.0
+    slot: chest
+    attributes:
+      protection: 6

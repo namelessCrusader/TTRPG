@@ -1,0 +1,90 @@
+id: thermal_arts
+name: "Treatise on Thermal Arts"
+teaches_ops: [HEAT, CHILL, IGNITE, QUENCH]
+
+text: |
+  ══════════════════════════════════════════════════════
+   TREATISE ON THERMAL ARTS
+   By Aldric the Singed, Third Circle Incandescent
+  ══════════════════════════════════════════════════════
+
+  Temperature is not a quality — it is a measure of chaos.
+  To raise it is to feed chaos; to lower it is to impose order.
+  Both carry cost. Both carry consequence.
+
+  ─ HEAT n ────────────────────────────────────────────────────────────
+  Raises the temperature of target by n degrees Celsius.
+
+  Effects by temperature (approximate):
+    > 60°C   Uncomfortably hot. Creatures take no direct damage yet,
+             but flammable objects begin to smoulder.
+    > 100°C  Water boils. Fumes fill adjacent tiles.
+    > 300°C  Living flesh takes direct damage each tick (roughly n/50
+             health per tick while above this threshold).
+    > ignition_point  Flammable objects catch fire spontaneously.
+    > melting_point   Metal objects begin to deform; weapons lose 10%
+             damage; armor loses 10% protection per tick above this.
+
+  Mana cost: 0.8 per degree.
+
+  Examples:
+    [cast] HEAT 100 TARGET        ← warm a single target moderately
+    [cast] HEAT 400 NEAR 2        ← superheating area blast
+    [cast] FOR EACH NEAR 3 { HEAT 200 }   ← same but via FOR EACH
+
+  ─ CHILL n ───────────────────────────────────────────────────────────
+  Lowers the temperature of target by n degrees.
+
+  Effects by temperature (approximate):
+    < 10°C   Discomfort. Creatures begin losing body heat.
+    < 0°C    Liquids freeze (water becomes ice: impassable, slippery).
+    < -20°C  Living flesh begins taking cold damage.
+    < -50°C  Most metals become brittle: weapons have 20% chance to
+             shatter on impact.
+
+  CHILL also applies the "cold" tag while target is below 0°C.
+  Cold targets take double damage from bludgeoning impacts.
+
+  Mana cost: 0.6 per degree.
+
+  Examples:
+    [cast] CHILL 150 TARGET
+    [cast] CHILL 80 NEAR 3        ← freeze a room
+
+  ─ IGNITE ────────────────────────────────────────────────────────────
+  Forces immediate combustion on a flammable target.
+  Only affects targets with the "flammable" tag.
+  Equivalent to raising temperature past ignition_point instantly.
+
+  Fire spreads: each tick, adjacent flammable tiles/entities have a
+  15% chance to catch fire. Use QUENCH or CHILL to contain it.
+
+  Mana cost: 10 (flat).
+
+  Warning: fire does not care whose side you are on.
+
+  Example:
+    [cast] IF HAS_TAG flammable { IGNITE } TARGET
+
+  ─ QUENCH ────────────────────────────────────────────────────────────
+  Extinguishes fire on target (removes the "on_fire" tag).
+  Also applies a mild CHILL 50 effect.
+
+  Mana cost: 8 (flat).
+
+  Example:
+    [cast] QUENCH SELF            ← put yourself out
+
+  ─ COMBINING THERMAL OPERATIONS ──────────────────────────────────────
+  HEAT and CHILL applied to the same target in one spell cancel out.
+  This wastes mana but has no other effect.
+
+  Experienced casters aim these at separate targets, or chain them
+  with conditions:
+    IF PROP temperature < 0 { HEAT 100 }  ← warm frozen targets only
+
+  ─ OBSERVATION ───────────────────────────────────────────────────────
+  You can check a target's current temperature:
+    inspect target_name   ← shows all visible properties including temperature
+
+  ══════════════════════════════════════════════════════

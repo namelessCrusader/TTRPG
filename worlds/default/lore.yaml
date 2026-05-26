@@ -1,0 +1,20 @@
+# Mythos, deities, magical systems, philosophical doctrines.
+#
+# Each entry becomes a node in the relational graph. Use tags to
+# describe what kind of concept it is; the grounding classifier reads
+# those tags via affordances.yaml.
+#
+# This world deliberately has no deities or magic, so prayer and
+# spellcasting will route to Zone 3 (ORPHANED) and the narrator will
+# describe them without simulation consequences. To add a deity, drop
+# in something like:
+#
+#   concepts:
+#     - id: deity_solra
+#       name: "Solra, Goddess of Dawn"
+#       kind: faction
+#       tags: [deity, divine]
+#       meta:
+#         domain: "dawn, renewal, oaths"
+
+concepts: []

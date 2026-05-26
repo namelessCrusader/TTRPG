@@ -1,0 +1,19 @@
+goals:
+  - id: first_blood_magic
+    title: "First Strike"
+    description: "Land a spell on the opponent."
+    conditions:
+      - type: event_occurred
+        verb: cast
+        lookback_ticks: 20
+    reward:
+      narrative: "Arc-light scars the stone — the duel is truly joined."
+
+  - id: duel_victory
+    title: "Victory"
+    description: "Reduce the opponent's health below half."
+    conditions:
+      - type: tick_reached
+        tick: 25
+    reward:
+      narrative: "The proving ground falls silent — for now, one mage stands taller."

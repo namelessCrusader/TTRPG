@@ -1,0 +1,38 @@
+name: "The Silken Chamber"
+extends: default
+physics: true
+description: |
+  A private room in a pleasure house. Candlelight gutters on the walls.
+  Silk sheets drape the bed. Incense curls from a brazier in the corner.
+  Distant music drifts up from the floor below. Here, nothing is forbidden
+  between consenting adults, and the night belongs entirely to you.
+
+spatial:
+  width: 20
+  height: 14
+  map_file: "map.txt"
+
+meta:
+  location_name: "private chamber"
+  noise_level: "quiet"
+  crowded: false
+
+clock:
+  day_length_ticks: 60
+
+consequences:
+  require_sticky: true
+  record_traces: true
+  world_memory_window: 20
+  max_world_facts: 400
+
+rng_seed: 61803
+
+extra:
+  scenario: scenarios/chamber_night1.yaml
+
+semantic:
+  enabled: true
+  interval_ticks: 3
+  use_mock: true
+  reaction_memory_ticks: 6

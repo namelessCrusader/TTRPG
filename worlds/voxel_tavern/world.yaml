@@ -1,0 +1,40 @@
+name: "The Tarnished Flagon (3D)"
+extends: default
+physics: true
+description: |
+  Multi-storey voxel tavern — stone foundation, timber hall, thatch roof,
+  bar along the west wall, raised stage east, hearth at center. Same cast
+  and social drama as the 2D pack, now with real vertical space.
+
+spatial:
+  width: 24
+  height: 16
+  depth: 8
+  voxel: true
+  voxel_preset: tavern_3d
+
+meta:
+  location_name: "tavern common room"
+  noise_level: moderate
+  crowded: true
+  lighting: warm
+  hazards: []
+
+clock:
+  day_length_ticks: 48
+
+consequences:
+  require_sticky: true
+  record_traces: true
+  narrative_only_verbs:
+    - wait
+    - observe
+    - inspect
+    - rest
+
+rng_seed: 27182
+
+extra:
+  scenario: scenarios/kitchen_fire_panic.yaml
+  learn_from_adjudication: true
+  adjudication_cache: true

@@ -1,0 +1,10 @@
+edges:
+  - source: pyra
+    target: cryo
+    kind: enemy_of
+    weight: 1.0
+
+  - source: cryo
+    target: pyra
+    kind: enemy_of
+    weight: 1.0

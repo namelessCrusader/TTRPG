@@ -1,0 +1,32 @@
+# Declarative world emitters — autonomic field deposits (weather, fixtures).
+# Evaluated by fields.field_tick(); no per-scenario Python.
+
+emitters:
+
+  rain_on_mud:
+    when:
+      weather: [rain, storm, drizzle]
+      every_ticks: 2
+    targets:
+      medium: tile.ground
+      tile_tags_any: [mud]
+    deposit:
+      substance: rainwater
+      amount: 12.0
+    also_wet:
+      fluid_material: water
+      volume_ml: 40.0
+
+  rain_on_water_terrain:
+    when:
+      weather: [rain, storm, drizzle]
+      every_ticks: 2
+    targets:
+      medium: tile.ground
+      terrain: water
+    deposit:
+      substance: rainwater
+      amount: 10.0
+    also_wet:
+      fluid_material: water
+      volume_ml: 30.0

@@ -1,0 +1,162 @@
+# Voxel-Tavern NPC job stacks — feeds reactive_only NPCs so they feel like
+# tavern staff and patrons even without an LM in the loop.
+#
+# Map landmarks (24×16 grid, z=1 is the main floor):
+#   bar counter   : cols 1-9, rows 11-12
+#   hearth/log    : (2,12) and (3,12)
+#   stage         : cols 18-22, rows 1-4
+#   door (exit)   : col 12, row 15
+#   privy         : (22, 14)
+#
+# Hazard-response plans (flee/douse) are synthesised automatically by the
+# planner when smoke / fire appear at an NPC's tile — they do NOT need to
+# be listed here.  These templates describe the *baseline* routine.
+
+plans:
+  # ── Mira: bartender — serve circuit + cook stew ─────────────────────────
+  - id: mira_serve_round
+    drive_pattern: "(?i)(keep the ale|bar running|manage the mood|ale flowing|serve|pour)"
+    entity_ids: [mira]
+    name: "tend the bar"
+    builder: serve
+
+  - id: mira_cook_stew
+    drive_pattern: "(?i)(cook|prepare food|stew)"
+    entity_ids: [mira]
+    name: "cook"
+    builder: cook
+
+  - id: mira_collect_gossip
+    drive_pattern: "(?i)(collect gossip|find out what tomas|plotting)"
+    entity_ids: [mira]
+    name: "circle the bar"
+    steps:
+      - kind: move_to
+        tile: [4, 12, 1]
+        label: "behind the taps"
+      - kind: spend_ticks
+        ticks: 3
+        label: "watch the room"
+      - kind: observe
+        tile: [12, 8, 1]
+        label: "scan the common room"
+      - kind: move_to
+        tile: [9, 11, 1]
+        label: "end of the bar"
+      - kind: spend_ticks
+        ticks: 2
+        label: "listen"
+
+  # ── Aldric: retired soldier — door watch + investigate ─────────────────
+  - id: aldric_door_watch
+    drive_pattern: "(?i)(eye on (that )?merchant|watch|drink in peace|guard|keep an eye)"
+    entity_ids: [aldric]
+    name: "door watch"
+    steps:
+      - kind: move_to
+        tile: [12, 14, 1]
+        label: "post near the door"
+      - kind: spend_ticks
+        ticks: 4
+        label: "stand watch"
+      - kind: observe
+        tile: [12, 14, 1]
+        label: "check the threshold"
+      - kind: move_to
+        tile: [8, 11, 1]
+        label: "back to the bar"
+      - kind: spend_ticks
+        ticks: 3
+        label: "drink and listen"
+
+  - id: aldric_investigate
+    drive_pattern: "(?i)(asking too many questions|investigate|look into|find out)"
+    entity_ids: [aldric]
+    name: "investigate"
+    builder: investigate
+
+  # ── Linna: bard — perform on stage, then make rounds ───────────────────
+  - id: linna_perform_round
+    drive_pattern: "(?i)(perform|sing|songs|charm|ballad|crowd)"
+    entity_ids: [linna]
+    name: "perform on stage"
+    steps:
+      - kind: move_to
+        tile: [20, 2, 1]
+        label: "take the stage"
+      - kind: spend_ticks
+        ticks: 4
+        label: "play a song"
+      - kind: observe
+        tile: [12, 8, 1]
+        label: "read the room"
+      - kind: move_to
+        tile: [10, 6, 1]
+        label: "join a table"
+      - kind: speak_to
+        entity_id: aldric
+        line: "A song for an old soldier, perhaps?"
+      - kind: spend_ticks
+        ticks: 2
+        label: "listen for gossip"
+
+  - id: linna_eavesdrop
+    drive_pattern: "(?i)(eavesdrop|gossip|listen|rumor)"
+    entity_ids: [linna]
+    name: "gossip circuit"
+    # Linna must actually emit ``eavesdrop`` verbs for the
+    # ``linna_uncovers_secret`` goal (worlds/voxel_tavern/goals.yaml) to
+    # resolve in reactive_only runs.  The interact steps route through
+    # the eavesdrop verb_templates entry (no LM required).
+    steps:
+      - kind: move_to
+        tile: [9, 11, 1]
+        label: "drift toward the bar"
+      - kind: spend_ticks
+        ticks: 2
+        label: "linger and listen"
+      - kind: interact
+        verb: eavesdrop
+        target: mira
+        label: "eavesdrop on the bartender"
+      - kind: move_to
+        tile: [18, 9, 1]
+        label: "drift past the back tables"
+      - kind: interact
+        verb: eavesdrop
+        target: tomas
+        label: "overhear Tomas"
+      - kind: speak_to
+        entity_id: mira
+        line: "Heard anything choice tonight?"
+
+  # ── Tomas: merchant — back-room negotiations + avoid Aldric ────────────
+  - id: tomas_back_room
+    drive_pattern: "(?i)(back room|meeting|handoff|coin|guild|sell information|trade route)"
+    entity_ids: [tomas]
+    name: "back-room business"
+    steps:
+      - kind: move_to
+        tile: [20, 13, 1]
+        label: "slip toward the back"
+      - kind: spend_ticks
+        ticks: 4
+        label: "wait for a mark"
+      - kind: observe
+        tile: [12, 14, 1]
+        label: "watch who comes and goes"
+
+  - id: tomas_avoid_aldric
+    drive_pattern: "(?i)(avoid aldric|stay alive|stay clear)"
+    entity_ids: [tomas]
+    name: "keep distance from Aldric"
+    steps:
+      - kind: move_to
+        tile: [18, 9, 1]
+        label: "move to the far side"
+      - kind: observe
+        entity_id: aldric
+        label: "watch the veteran"
+      - kind: spend_ticks
+        ticks: 3
+        label: "wait it out"

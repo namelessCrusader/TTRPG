@@ -1,0 +1,480 @@
+# worlds/default/property_interactions.yaml
+#
+# Property-intersection rules — engine resolves these deterministically
+# from entity/object TAGS, with no verb-keyword matching.
+#
+# A rule fires when:
+#   actor (or equipped tool) has at least one tag in actor_or_tool_tags
+#   target has at least one tag in target_tags
+#   target does NOT have any tag in target_immunity_tags
+#   action's intent category is in intent_categories ("any" = all physical)
+#   distance ≤ max_distance
+#
+# Higher priority wins. Ties resolved by order declared here.
+#
+# Payload placeholders:
+#   $actor       actor entity id
+#   $target      target entity/object id
+#   $tool        matched equipped tool object id
+#   $actor_x / $actor_y   actor tile position
+#   $target_x / $target_y target tile position
+#
+# intent_categories values:
+#   any          all non-social/observation/idle intents (default)
+#   physical     attack, smash, throw, push, …
+#   chemical     pour, apply, mix, smear, coat, dip, …
+#   thermal      heat, ignite, burn, melt, freeze, …
+#   containment  fill, empty, open, close, …
+#   movement     move, run, flee, …
+#   social       speak, persuade, threaten, …
+#   observation  examine, inspect, …
+#   idle         wait, rest, …
+
+interactions:
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # FIRE / THERMAL
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: fire_source_ignites_flammable
+    name: "Fire source ignites flammable target"
+    actor_or_tool_tags: [on_fire, lit, torch, flame_source, fire_source, burning]
+    target_tags: [flammable]
+    target_immunity_tags: [fire_resistant, wet, doused]
+    intent_categories: [any]
+    priority: 30
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: on_fire}
+      - kind: tile_marked
+        payload: {x: "$target_x", y: "$target_y", mark: fire}
+      - kind: noise_event
+        payload: {x: "$target_x", y: "$target_y", radius: 8, level: 40, cause: fire_started}
+    narrative: "{target_name} catches fire from {tool_name or actor_name}."
+
+  - id: flammable_liquid_ignites_flammable
+    name: "Spilled flammable liquid contacted by fire spreads flames"
+    actor_or_tool_tags: [on_fire, flame_source, lit]
+    target_tags: [flammable, liquid]
+    target_immunity_tags: [fire_resistant]
+    intent_categories: [any]
+    priority: 28
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: on_fire}
+      - kind: fluid_changed
+        payload: {x: "$target_x", y: "$target_y", z: 0, fluid: fire_fluid, volume_ml: 50, cause: ignition}
+    narrative: "{target_name} ignites."
+
+  - id: fire_suppressant_douses_fire
+    name: "Fire suppressant extinguishes burning entity"
+    actor_or_tool_tags: [fire_suppressant, liquid, water]
+    target_tags: [on_fire, burning]
+    target_immunity_tags: []
+    intent_categories: [any]
+    priority: 32
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: on_fire}
+      - kind: entity_property_changed
+        payload: {entity_id: "$target", property: temperature, delta: -80}
+      - kind: tile_marked
+        payload: {x: "$target_x", y: "$target_y", mark: wet_floor}
+    narrative: "{target_name}'s flames are doused."
+
+  - id: hot_metal_burns_biological
+    name: "Heated metal contact burns living tissue"
+    actor_or_tool_tags: [hot, heated, superheated]
+    target_tags: [biological, flammable]
+    target_immunity_tags: [fire_resistant, heat_resistant]
+    intent_categories: [physical, chemical]
+    priority: 22
+    effects:
+      - kind: entity_health_changed
+        payload: {entity_id: "$target", delta: -4, cause: burn_contact}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: burned}
+      - kind: entity_condition_changed
+        payload: {entity_id: "$target", condition: scorched, ticks: 3}
+    narrative: "{target_name} recoils from the searing heat."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # CHEMICAL — ACID / CORROSIVE
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: corrosive_dissolves_metal
+    name: "Corrosive substance corrodes metal"
+    actor_or_tool_tags: [corrosive, acid]
+    target_tags: [metal, metallic, iron, copper, steel]
+    target_immunity_tags: [acid_resistant]
+    intent_categories: [chemical, physical, any]
+    priority: 25
+    effects:
+      - kind: entity_health_changed
+        payload: {entity_id: "$target", delta: -6, cause: acid_corrosion}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: corroded}
+      - kind: item_durability_changed
+        payload: {object_id: "$target", delta: -15, cause: acid}
+    narrative: "{tool_name or 'Acid'} eats into {target_name}, pitting and corroding the metal."
+
+  - id: corrosive_burns_biological
+    name: "Corrosive substance burns living tissue"
+    actor_or_tool_tags: [corrosive, acid]
+    target_tags: [biological, organic]
+    target_immunity_tags: [acid_resistant]
+    intent_categories: [chemical, physical, any]
+    priority: 25
+    effects:
+      - kind: entity_health_changed
+        payload: {entity_id: "$target", delta: -5, cause: acid_burn}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: burned}
+      - kind: entity_condition_changed
+        payload: {entity_id: "$target", condition: acid_burn, ticks: 4}
+    narrative: "{target_name} screams as the acid blisters their skin."
+
+  - id: corrosive_dissolves_organic
+    name: "Corrosive substance dissolves organic material"
+    actor_or_tool_tags: [corrosive, acid]
+    target_tags: [organic, wooden, cloth, leather, paper]
+    target_immunity_tags: [acid_resistant, stone, mineral, metal]
+    intent_categories: [chemical, any]
+    priority: 18
+    effects:
+      - kind: item_durability_changed
+        payload: {object_id: "$target", delta: -20, cause: acid_dissolution}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: dissolving}
+    narrative: "{target_name} begins to dissolve."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # CHEMICAL — POISON / TOXIC
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: poison_contaminates_weapon
+    name: "Poison applied to weapon coats it"
+    actor_or_tool_tags: [toxic, poison, venom]
+    target_tags: [weapon, blade, piercing]
+    target_immunity_tags: []
+    intent_categories: [chemical, containment]
+    priority: 20
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: poisoned_weapon}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: toxic}
+    narrative: "{target_name} is coated in poison."
+
+  - id: poison_contaminates_food
+    name: "Poison applied to food or drink contaminates it"
+    actor_or_tool_tags: [toxic, poison, venom]
+    target_tags: [food, consumable, drink, liquid]
+    target_immunity_tags: [inert, sealed]
+    intent_categories: [chemical, containment, any]
+    priority: 22
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: poisoned}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: toxic}
+    narrative: "{target_name} is contaminated with poison. It looks normal."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # ELECTRICAL / CONDUCTIVE
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: electric_shock_through_conductor
+    name: "Electrical source shocks through conductive target"
+    actor_or_tool_tags: [electrified, electric, lightning, charged]
+    target_tags: [conductive, metal, wet, biological]
+    target_immunity_tags: [insulated, rubber, grounded]
+    intent_categories: [physical, any]
+    priority: 24
+    effects:
+      - kind: entity_health_changed
+        payload: {entity_id: "$target", delta: -5, cause: electric_shock}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: stunned}
+      - kind: entity_condition_changed
+        payload: {entity_id: "$target", condition: stunned, ticks: 2}
+    narrative: "{target_name} convulses as electricity courses through them."
+
+  - id: wet_entity_conducts_electricity
+    name: "Wet entity becomes a conductor"
+    actor_or_tool_tags: [wet, soaked, water]
+    target_tags: [electrified, electric, charged]
+    target_immunity_tags: [insulated]
+    intent_categories: [physical, chemical, any]
+    priority: 20
+    effects:
+      - kind: entity_health_changed
+        payload: {entity_id: "$actor", delta: -3, cause: electric_shock_backfeed}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$actor", add: stunned}
+    narrative: "{actor_name} is shocked — the water conducts the electricity straight through them."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # SHARP / CUTTING
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: sharp_cuts_rope_cord
+    name: "Sharp object severs rope or cord"
+    actor_or_tool_tags: [sharp, blade, bladed, edged]
+    target_tags: [rope, cord, binding, tied, restrained]
+    target_immunity_tags: [chain, metal, hard]
+    intent_categories: [physical, any]
+    priority: 18
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: tied}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: restrained}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: free}
+      - kind: item_destroyed
+        payload: {object_id: "$target", cause: cut}
+    narrative: "{tool_name or 'The blade'} slices through {target_name}."
+
+  - id: sharp_cuts_cloth_leather
+    name: "Sharp object cuts cloth or leather"
+    actor_or_tool_tags: [sharp, blade, bladed, edged]
+    target_tags: [cloth, leather, soft, fabric]
+    target_immunity_tags: [hard, armored, reinforced]
+    intent_categories: [physical, any]
+    priority: 15
+    effects:
+      - kind: item_durability_changed
+        payload: {object_id: "$target", delta: -25, cause: cut}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: damaged}
+    narrative: "{target_name} is sliced open."
+
+  - id: sharp_picks_lock
+    name: "Fine sharp/pick tool manipulates a lock"
+    actor_or_tool_tags: [lockpick, pick, thin, wire, needle]
+    target_tags: [locked, lock, door]
+    target_immunity_tags: [unpickable, deadbolted]
+    intent_categories: [physical, containment, any]
+    priority: 20
+    contest:
+      actor_attribute: dexterity
+      difficulty: 55
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: locked}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: unlocked}
+    narrative: "With careful manipulation, {target_name} clicks open."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # HEAVY / BLUNT FORCE
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: heavy_shatters_brittle
+    name: "Heavy object shatters brittle material"
+    actor_or_tool_tags: [heavy, blunt, hammer, mace, dense]
+    target_tags: [brittle, glass, fragile, ceramic]
+    target_immunity_tags: [reinforced, indestructible]
+    intent_categories: [physical, any]
+    priority: 22
+    effects:
+      - kind: item_destroyed
+        payload: {object_id: "$target", cause: smashed}
+      - kind: tile_marked
+        payload: {x: "$target_x", y: "$target_y", mark: shattered}
+      - kind: noise_event
+        payload: {x: "$target_x", y: "$target_y", radius: 12, level: 55, cause: shatter}
+    narrative: "{target_name} shatters into fragments with a sharp crack."
+
+  - id: heavy_breaks_lock
+    name: "Heavy blunt force breaks a lock or bolt"
+    actor_or_tool_tags: [heavy, blunt, hammer, dense]
+    target_tags: [locked, lock]
+    target_immunity_tags: [reinforced, indestructible]
+    intent_categories: [physical]
+    priority: 18
+    contest:
+      actor_attribute: strength
+      difficulty: 60
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: locked}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: broken_lock}
+      - kind: noise_event
+        payload: {x: "$target_x", y: "$target_y", radius: 15, level: 70, cause: forced_entry}
+    narrative: "{target_name} is smashed open with brute force."
+
+  - id: blunt_stuns_biological
+    name: "Blunt impact stuns a living creature"
+    actor_or_tool_tags: [blunt, heavy, bludgeoning]
+    target_tags: [biological]
+    target_immunity_tags: [undead, construct, inorganic]
+    intent_categories: [physical]
+    priority: 16
+    contest:
+      actor_attribute: strength
+      difficulty: 50
+    effects:
+      - kind: entity_health_changed
+        payload: {entity_id: "$target", delta: -3, cause: blunt_trauma}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: stunned}
+      - kind: entity_condition_changed
+        payload: {entity_id: "$target", condition: stunned, ticks: 2}
+    narrative: "{target_name} staggers from the blow."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # MAGICAL — SILVER / ANTI-UNDEAD
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: silver_harms_undead
+    name: "Silver inflicts holy damage to undead"
+    actor_or_tool_tags: [silver, anti_undead, holy, blessed]
+    target_tags: [undead, vampiric, spectral]
+    target_immunity_tags: [immune_holy]
+    intent_categories: [physical, any]
+    priority: 28
+    effects:
+      - kind: entity_health_changed
+        payload: {entity_id: "$target", delta: -8, cause: holy_damage}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: searing}
+      - kind: entity_condition_changed
+        payload: {entity_id: "$target", condition: banished, ticks: 1}
+    narrative: "{target_name} recoils, searing where the silver touches."
+
+  - id: arcane_conductor_amplifies_spell
+    name: "Arcane conductor amplifies magical effects"
+    actor_or_tool_tags: [arcane, magical, mana_charged]
+    target_tags: [arcane_conductor, mana_crystal, silver, copper]
+    target_immunity_tags: []
+    intent_categories: [physical, chemical, any]
+    priority: 18
+    effects:
+      - kind: entity_property_changed
+        payload: {entity_id: "$target", property: arcane_charge, delta: 10}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: energized}
+    narrative: "{target_name} hums with arcane resonance."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # BIOLOGICAL — HEALING / MEDICAL
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: bandage_stops_bleeding
+    name: "Bandage applied to bleeding wound"
+    actor_or_tool_tags: [bandage, cloth, medical, healing]
+    target_tags: [bleeding, biological, wounded]
+    target_immunity_tags: []
+    intent_categories: [chemical, physical, any]
+    priority: 20
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: bleeding}
+      - kind: entity_condition_changed
+        payload: {entity_id: "$target", condition: bandaged, ticks: 10}
+      - kind: entity_health_changed
+        payload: {entity_id: "$target", delta: 2, cause: first_aid}
+    narrative: "The wound on {target_name} is bound — bleeding slows."
+
+  - id: medicinal_herb_heals
+    name: "Medicinal herb applied to a wound"
+    actor_or_tool_tags: [medicinal, herb, poultice, healing_herb]
+    target_tags: [biological, wounded, injured]
+    target_immunity_tags: []
+    intent_categories: [chemical, any]
+    priority: 18
+    effects:
+      - kind: entity_health_changed
+        payload: {entity_id: "$target", delta: 5, cause: herbal_treatment}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: poisoned}
+    narrative: "The medicinal herb soothes {target_name}'s wounds."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # STRUCTURAL — BARRICADE / WEDGE
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: wedge_jams_door
+    name: "Wedge or bar jammed under a door"
+    actor_or_tool_tags: [wedge, bar, wooden, stone, heavy]
+    target_tags: [door, gate, hatch]
+    target_immunity_tags: [locked, barred]
+    intent_categories: [physical, containment, any]
+    priority: 16
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: barred}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: jammed}
+    narrative: "{target_name} is wedged shut — it won't open without force."
+
+  - id: oil_lubricates_mechanism
+    name: "Oil lubricates a stuck or rusted mechanism"
+    actor_or_tool_tags: [oil, lubricant, liquid]
+    target_tags: [rusty, stuck, mechanism, hinged, locked]
+    target_immunity_tags: [welded, fused]
+    intent_categories: [chemical, any]
+    priority: 15
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: rusty}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: stuck}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", add: lubricated}
+    narrative: "Oil seeps into the mechanism — {target_name} moves freely now."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # CONTAINMENT — VESSEL + LIQUID
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: vessel_collects_liquid_from_source
+    name: "Empty vessel collects liquid from a source"
+    actor_or_tool_tags: [empty, receptacle, vessel, container]
+    target_tags: [liquid_source, well, barrel, cask, tap, pool]
+    target_immunity_tags: [dry, empty]
+    intent_categories: [containment, chemical, any]
+    priority: 14
+    effects:
+      - kind: fluid_changed
+        payload: {x: "$actor_x", y: "$actor_y", z: 0, fluid: water, volume_ml: 500, cause: collected}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$tool", remove: empty}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$tool", add: full}
+    narrative: "{tool_name or 'The container'} fills with liquid from {target_name}."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # NOISE / DISTRACTION
+  # ──────────────────────────────────────────────────────────────────────────
+
+  - id: loud_object_creates_noise
+    name: "Striking or throwing a resonant object creates a loud noise"
+    actor_or_tool_tags: [metal, ceramic, glass, resonant]
+    target_tags: [hard, stone, metal, floor]
+    target_immunity_tags: []
+    intent_categories: [physical]
+    priority: 8
+    effects:
+      - kind: noise_event
+        payload: {x: "$actor_x", y: "$actor_y", radius: 14, level: 65, cause: impact_noise}
+    narrative: "A loud clang echoes through the area."
+
+  - id: breaking_window_noise
+    name: "Breaking glass creates alarm-level noise"
+    actor_or_tool_tags: [heavy, blunt, hard, thrown]
+    target_tags: [glass, window, brittle]
+    target_immunity_tags: []
+    intent_categories: [physical]
+    priority: 20
+    effects:
+      - kind: item_destroyed
+        payload: {object_id: "$target", cause: broken}
+      - kind: tile_marked
+        payload: {x: "$target_x", y: "$target_y", mark: shattered_glass}
+      - kind: noise_event
+        payload: {x: "$target_x", y: "$target_y", radius: 18, level: 80, cause: breaking_glass}
+    narrative: "{target_name} shatters with a deafening crash."

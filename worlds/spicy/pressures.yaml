@@ -1,0 +1,51 @@
+# Latent pressures — fire when conditions hold; bias NPCs and ambient events.
+
+pressures:
+  - id: early_warmth
+    when:
+      - type: tick_lt
+        tick: 12
+    effects:
+      director_focus: "Be playful and inviting; use voice, not objectives."
+      candidate_boosts:
+        - entity: elara
+          raw_input: "[npc_auto:drive_speak]"
+          weight_delta: 0.08
+
+  - id: madame_anxiety
+    when:
+      - type: any_memory_contains
+        text: "Madame Voss"
+    effects:
+      director_focus: "Lower your voice — Madame's rules matter here."
+      ambient_probability_mult:
+        footsteps_corridor: 2.5
+      candidate_boosts:
+        - entity: elara
+          raw_input: "[npc_auto:secret_trade]"
+          weight_delta: 0.2
+
+  - id: intimacy_rising
+    when:
+      - type: edge_weight_gte
+        source: elara
+        target: player
+        edge_kind: intimate
+        weight: 0.5
+    effects:
+      director_focus: "Match the guest's boldness — reciprocate or deflect in character."
+      director_tension: 0.5
+      set_world_meta:
+        spicy_intimate_phase: true
+
+  - id: after_first_contact
+    when:
+      - type: meta_flag
+        key: spicy_intimate_phase
+      - type: scenario_phase_gte
+        phase: 2
+    effects:
+      candidate_boosts:
+        - entity: elara
+          raw_input: "[npc_auto:direct_reply]"
+          weight_delta: 0.15

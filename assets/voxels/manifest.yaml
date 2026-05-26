@@ -1,0 +1,58 @@
+# Material → render asset mapping for the OpenGL voxel viewer.
+#
+# Per material you can set:
+#   color     — RGB 0–255 fallback when no model is present
+#   model     — path to .gltf / .glb (Blender: File → Export → glTF 2.0)
+#   scale     — uniform scale for imported mesh (default 1.0)
+#   roughness — 0–1 for lighting (default 0.7)
+#   metallic  — 0–1 (default 0.0)
+#
+# Place authored meshes under assets/voxels/models/<name>.gltf
+# Unit cube in Blender should be 1×1×1; world voxels are 1 world-unit each.
+
+version: 1
+
+defaults:
+  scale: 1.0
+  roughness: 0.75
+  metallic: 0.0
+
+materials:
+  stone:
+    color: [90, 88, 82]
+    model: models/stone.gltf
+    roughness: 0.9
+  brick:
+    color: [140, 72, 58]
+    model: models/brick.gltf
+  wood:
+    color: [120, 82, 48]
+    model: models/wood.gltf
+  planks:
+    color: [160, 110, 62]
+    model: models/planks.gltf
+  glass:
+    color: [140, 200, 220]
+    model: models/glass.gltf
+    roughness: 0.1
+    metallic: 0.2
+  water:
+    color: [40, 90, 160]
+    roughness: 0.05
+  bar:
+    color: [90, 55, 30]
+    model: models/bar.gltf
+  table:
+    color: [130, 90, 50]
+    model: models/table.gltf
+  roof:
+    color: [70, 45, 35]
+  thatch:
+    color: [180, 150, 70]
+  ember:
+    color: [255, 140, 40]
+    roughness: 0.3
+  metal:
+    color: [160, 165, 175]
+    metallic: 0.85
+    roughness: 0.35

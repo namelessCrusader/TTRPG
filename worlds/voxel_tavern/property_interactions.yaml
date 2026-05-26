@@ -1,0 +1,69 @@
+# voxel_tavern property_interactions — tag-based rules that fire for
+# NPC SemanticActions (not just player intent).
+#
+# These mirror the deterministic douse rules in
+# ``worlds/voxel_tavern/interaction_rules.yaml`` (which only resolve
+# from the natural-language intent router) so that the NPC planner's
+# `INTERACT verb=douse` step also resolves without an LM adjudication
+# fallback.
+#
+# Resolution order in the compiler:
+#   verb_templates → open_verbs → property_interactions → engine
+#   built-ins → contact reroute → freeform fallback.
+#
+# Higher priority wins. We deliberately set staff douse > default
+# fire_suppressant_douses_fire (priority 32) so a bartender beside a
+# burning flask can extinguish it without holding a waterskin.
+
+interactions:
+
+  # ── Staff/cook/bartender/veteran can douse fires bare-handed when
+  #    standing next to them. The fiction is "they grabbed ale from
+  #    the cask / threw flour / smothered with a towel" — see the
+  #    matching narrative in worlds/voxel_tavern/interaction_rules.yaml.
+  - id: tavern_staff_douses_burning_object
+    name: "Tavern staff smothers a burning object"
+    actor_or_tool_tags: [staff, bartender, cook, server, veteran, regular]
+    target_tags: [on_fire, burning]
+    target_immunity_tags: [magical_fire, oil_fire_uncontrolled]
+    intent_categories: [thermal, any]
+    priority: 35
+    max_distance: 2
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: on_fire, cause: tavern_staff_douse}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: burning}
+      - kind: entity_property_changed
+        payload: {entity_id: "$target", property: temperature, delta: -90}
+      - kind: tile_marked
+        payload: {x: "$actor_x", y: "$actor_y", mark: wet_floor}
+      - kind: tile_marked
+        payload: {x: "$target_x", y: "$target_y", mark: wet_floor}
+      - kind: noise_event
+        payload: {x: "$actor_x", y: "$actor_y", radius: 6, level: 30, cause: douse_hiss}
+    narrative: "{actor_name} slings ale from the bar across {target_name} — the flames hiss out in a cloud of steam."
+
+  # ── Anyone (patron, civilian) standing adjacent to a fire holding any
+  #    liquid in their hands can douse it. Lower priority than the staff
+  #    rule so staff don't waste their tankards when they don't need to.
+  - id: tavern_liquid_douses_burning_object
+    name: "Anyone with a liquid douses a burning object"
+    actor_or_tool_tags: [liquid, water, ale, beer, brew, drink, fluid_material]
+    target_tags: [on_fire, burning]
+    target_immunity_tags: [magical_fire, oil_fire_uncontrolled]
+    intent_categories: [thermal, any]
+    priority: 33
+    max_distance: 2
+    effects:
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: on_fire, cause: liquid_douse}
+      - kind: entity_tag_changed
+        payload: {entity_id: "$target", remove: burning}
+      - kind: entity_property_changed
+        payload: {entity_id: "$target", property: temperature, delta: -70}
+      - kind: tile_marked
+        payload: {x: "$target_x", y: "$target_y", mark: wet_floor}
+      - kind: noise_event
+        payload: {x: "$target_x", y: "$target_y", radius: 5, level: 25, cause: douse_hiss}
+    narrative: "{actor_name} dashes their drink across {target_name}; the flames die in a hiss of steam."

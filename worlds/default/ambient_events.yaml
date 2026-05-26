@@ -1,0 +1,60 @@
+# Ambient events — fired by the WorldClock between actor turns.
+#
+# Each entry is an environmental "thing that happens" with no actor.
+# The engine appends a synthetic Event to the log with action.actor =
+# "system" and action.verb = "ambient", carrying these transitions:
+#
+#   1. AMBIENT_EVENT  (always; payload: id, narrative, time_of_day)
+#   2. anything from `effects`, validated by the same proposal pipeline
+#      used for LM-proposed effects (out-of-range numbers clipped,
+#      references to unknown entities dropped).
+#
+# Triggers (all AND-combined):
+#   every_ticks  — fire only on ticks where (tick % every_ticks == 0)
+#   time_of_day  — fire only while the clock is in this phase
+#                  (dawn | day | dusk | night)
+#   probability  — pass with this probability per evaluation. The roll
+#                  is seeded by (world.rng_seed, event.id, tick) so
+#                  replay is consistent.
+#
+# Authoring guidance:
+#   • Narrative is shown verbatim to the player and stored on the event
+#     log; NPCs perceive it through their projection's `recent_events`.
+#   • Keep narrative one sentence and atmospheric — these events should
+#     give the world a heartbeat, not drive plot.
+#   • `effects` is usually empty. Use it sparingly for things like a
+#     storm raising hazard level or a curfew bell changing a faction's
+#     alertness.
+
+events:
+  - id: torch_flicker
+    trigger:
+      every_ticks: 6
+      probability: 0.7
+    narrative: "A torch on the wall sputters, casting jumping shadows."
+
+  - id: distant_bell
+    trigger:
+      every_ticks: 13
+      probability: 0.5
+    narrative: "Somewhere beyond the walls, a bell tolls a single note."
+
+  - id: dawn_birds
+    trigger:
+      time_of_day: dawn
+      every_ticks: 5
+      probability: 0.6
+    narrative: "Sparrows begin their morning chorus in the eaves."
+
+  - id: dusk_settles
+    trigger:
+      time_of_day: dusk
+      every_ticks: 8
+    narrative: "The light bleeds out of the air; lamps along the corridor are lit."
+
+  - id: night_wind
+    trigger:
+      time_of_day: night
+      every_ticks: 7
+      probability: 0.5
+    narrative: "A cold gust moves through the corridor; somewhere a shutter bangs."

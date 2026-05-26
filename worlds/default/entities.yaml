@@ -1,0 +1,174 @@
+# Entities present at world start.
+#
+# Each entity has a pack-local id (any string). The loader assigns real
+# UUID-based EntityIds; references in relations.yaml use the local id.
+#
+# Fields:
+#   id          — local handle; relations.yaml refers to this
+#   name        — display name
+#   kind        — player | npc | creature | ambient
+#   position    — [x, y]
+#   armed       — bool; affects melee/range weapon logic
+#   alertness   — unaware | low | medium | high | combat
+#   emotional_state — neutral | happy | angry | fearful | suspicious | friendly |
+#                     hostile | grieving | proud | humiliated
+#   health, max_health — ints (default 100/100)
+#   sight_range — int (default 8)
+#   attributes  — dict[str, int]: strength, perception, intimidation, ...
+#   tags        — list of arbitrary string tags
+#   inventory   — list of object local-ids (must be declared in objects.yaml)
+#   social_openness — welcoming | open | guarded | closed
+#                     Disposition toward strangers for physical CONTACT
+#                     actions. Overridden by INTIMATE / WARY_OF / ENEMY_OF
+#                     edges in relations.yaml for specific pairs.
+#   role        — one-phrase identity ("city guard", "tavern keeper").
+#                 Passed to the LM-driven NPC policy as the entity's
+#                 self-description; never interpreted by the engine.
+#   personality — one-sentence disposition shorthand.
+#                 Steers the LM's verb selection ("stoic, professional"
+#                 → curt replies; "flirtatious, playful" → flirty verbs).
+#   drive       — what the NPC pursues when nothing acute is happening.
+#                 The LM is instructed to act on `drive` rather than
+#                 default to `wait`. Leave empty for purely reactive NPCs.
+
+entities:
+  - id: player
+    name: "You"
+    kind: player
+    position: [2, 2]
+    armed: false
+    # Spell system: player starts with 100 mana and only knows the codex
+    # (language reference — no actual operations yet).  Find grimoires to
+    # unlock HEAT, HARM, BIND, etc.
+    mana: 100
+    max_mana: 100
+    known_spell_ops: []
+    occupation: adventurer
+    faction: independent
+    stats:
+      stamina: 100.0
+      gold: 25.0
+      reputation: 0.0
+    attributes:
+      strength: 50
+      intimidation: 60
+      persuasion: 55
+      deception: 45
+      perception: 60
+      stealth: 50
+      speed: 4
+    inventory:
+      - throwing_knife
+      - leather_satchel
+      - codex_of_forms
+      - healing_potion
+      - mana_tonic
+      - oil_flask
+      - acid_vial
+      - lit_torch
+      - water_skin
+      - cloth_strip
+      - wooden_stick
+      - iron_scrap
+    equipped_weapon: throwing_knife
+
+  - id: guard
+    name: "Guard"
+    kind: npc
+    position: [5, 5]
+    armed: true
+    alertness: medium
+    emotional_state: neutral
+    occupation: guard
+    faction: city_watch
+    stats:
+      stamina: 80.0
+      gold: 10.0
+      reputation: 5.0
+    # A city watchman is professional and reserved; physical contact
+    # from strangers is not welcomed. A pack defining a tavern wench
+    # or a close friend NPC would set this to "open" or "welcoming".
+    social_openness: closed
+    role: "city watch sergeant"
+    personality: "stoic, professional, suspicious of strangers, slow to
+      anger but unyielding once provoked; takes their duty seriously
+      and has little patience for nonsense"
+    drive: "watch this stretch of corridor; challenge anyone who approaches
+      with intent; report unusual activity to the captain"
+    attributes:
+      strength: 60
+      intimidation: 40
+      persuasion: 30
+      deception: 30
+      perception: 65
+      stealth: 30
+      speed: 2
+    tags:
+      - guard
+    inventory:
+      - guard_sword
+      - guard_chainmail
+      - vitae_codex
+    equipped_weapon: guard_sword
+    equipped_armor: guard_chainmail
+    knowledge:
+      - "no milk in this tavern tonight — barrels ran dry two days ago"
+      - "captain does a sweep of the corridor at midnight"
+      - "the east gate has been locked since the merchant's murder last week"
+    goals:
+      - "finish the night shift without trouble"
+      - "get home to my sick wife by dawn"
+    voice_lines:
+      - "State your business. I haven't got all night."
+      - "The east gate's locked — don't waste my time with stories."
+      - "You look like trouble, but I'll hear you out once."
+      - "Midnight sweep soon. Keep it short."
+    secrets:
+      - "has been skimming coin from the patrol fund to pay off a gambling debt"
+    waypoints:
+      - [2, 5]
+      - [7, 5]
+      - [7, 8]
+      - [2, 8]
+
+  - id: merchant
+    name: "Traveling Merchant"
+    kind: npc
+    position: [8, 3]
+    armed: false
+    alertness: low
+    emotional_state: friendly
+    occupation: merchant
+    faction: trade_guild
+    stats:
+      stamina: 80.0
+      gold: 200.0
+      reputation: 15.0
+    social_openness: open
+    role: "traveling merchant and trader"
+    personality: "cheerful, opportunistic, loves to haggle; prefers bargaining
+      over fighting; distrustful only of pickpockets and city guards"
+    drive: "sell wares at a profit, restock in the next town, avoid trouble"
+    attributes:
+      strength: 35
+      intimidation: 20
+      persuasion: 75
+      deception: 60
+      perception: 50
+      stealth: 30
+      speed: 3
+    tags:
+      - merchant
+      - trader
+    inventory:
+      - map_fragment
+      - spice_pouch
+      - lockpick_set
+      - trade_candle
+    knowledge:
+      - "the road to the western pass is safe this time of year"
+      - "a scholar in the capital pays well for magical artifacts"
+      - "the trade_guild tax on potions was raised last moon"
+    goals:
+      - "sell all wares before nightfall"
+      - "reach the capital by the end of the week"

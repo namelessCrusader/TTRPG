@@ -1,0 +1,203 @@
+# Pack-declared open verb rules — keyword/handler matching for verbs the
+# kernel does not know. Merged into every world from worlds/default unless
+# the pack defines a rule with the same id.
+#
+# Schema:
+#   id        (str)   — unique rule id (used for merge/dedup)
+#   verbs     (list)  — match when action.verb equals any entry
+#   keywords  (list)  — match when raw_input contains any phrase
+#   requires  (opt)   — entity | object
+#   handler   (opt)   — delegate to built-in compiler:
+#                       bribe, sabotage, repair, forge, blackmail, seduce,
+#                       manipulate, plant, disguise, search, listen,
+#                       pick_lock, intimidate, destroy, hire, gift,
+#                       environmental
+#   contest   (opt)   — same as verb_templates.yaml
+#   on_success / on_failure — TransitionProposal list (when handler omitted)
+
+rules:
+  # ── Built-in handlers (pack can override matching verbs/keywords) ────────
+  - id: default_bribe
+    verbs: [bribe, payoff, grease, tip, buyoff]
+    keywords: ["bribe", "pay off"]
+    requires: entity
+    handler: bribe
+
+  - id: default_sabotage
+    verbs: [sabotage, tamper, rig, boobytrap]
+    keywords: ["sabotage", "tamper"]
+    handler: sabotage
+
+  - id: default_intimidate
+    verbs: [intimidate, threaten, menace, bully, frighten]
+    keywords: ["intimidate", "threaten", "menace"]
+    requires: entity
+    handler: intimidate
+
+  - id: default_destroy
+    verbs: [destroy, smash, demolish, break, shatter, obliterate]
+    keywords: ["destroy", "smash", "demolish"]
+    handler: destroy
+
+  - id: default_hire
+    verbs: [hire, employ, recruit, commission]
+    keywords: ["hire", "employ", "recruit"]
+    requires: entity
+    handler: hire
+
+  - id: default_gift
+    verbs: [gift, donate, bestow]
+    keywords: ["gift", "donate"]
+    requires: entity
+    handler: gift
+
+  - id: default_search
+    verbs: [search, rummage, scour, scan, frisk]
+    keywords: ["search", "rummage", "frisk"]
+    handler: search
+
+  - id: default_plant
+    verbs: [plant, hide, stash, bury, conceal, deposit]
+    keywords: ["stash", "bury", "conceal"]
+    handler: plant
+
+  - id: default_disguise
+    verbs: [disguise, impersonate, masquerade, blend_in]
+    keywords: ["disguise", "impersonate"]
+    handler: disguise
+
+  - id: default_environmental
+    verbs: [vandalize, deface, graffiti, carve, scratch, scribble, paint, stain]
+    keywords: ["graffiti", "carve", "vandal"]
+    handler: environmental
+
+  - id: default_repair
+    verbs: [repair, fix, mend, patch, restore]
+    keywords: ["repair", "fix", "mend"]
+    handler: repair
+
+  - id: default_forge
+    verbs: [forge, counterfeit, fake, knockoff]
+    keywords: ["counterfeit", "forge"]
+    handler: forge
+
+  - id: default_blackmail
+    verbs: [blackmail, extort, threaten_with_secret]
+    keywords: ["blackmail", "extort"]
+    requires: entity
+    handler: blackmail
+
+  - id: default_seduce
+    verbs: [seduce, charm, woo, entice, tempt]
+    requires: entity
+    handler: seduce
+
+  - id: default_manipulate
+    verbs: [manipulate, coerce, gaslight, pressure]
+    requires: entity
+    handler: manipulate
+
+  - id: default_listen
+    verbs: [listen, overhear, hearken]
+    keywords: ["listen", "overhear"]
+    handler: listen
+
+  - id: default_haggle
+    verbs: [haggle]
+    requires: entity
+    contest:
+      actor_attribute: persuasion
+      target_attribute: persuasion
+      difficulty: 45
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          delta: 0.15
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - id: default_eavesdrop
+    verbs: [eavesdrop]
+    requires: entity
+    contest:
+      actor_attribute: stealth
+      target_attribute: perception
+      difficulty: 45
+    on_success:
+      - kind: edge_created
+        payload:
+          source: "$actor"
+          target: "$target"
+          edge_kind: knows_secret_of
+          weight: 0.5
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - id: default_pick_lock
+    verbs: [pick_lock, picklock, jimmy, unlock]
+    keywords: ["pick lock", "jimmy"]
+    handler: pick_lock
+
+  # ── Template-only rules (no Python handler — pure data) ──────────────────
+  - id: flatter
+    verbs: [flatter, butter_up, praise_lavishly]
+    keywords: ["flatter", "lavish praise", "butter up"]
+    requires: entity
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 42
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          delta: 0.12
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - id: pickpocket
+    verbs: [pickpocket, filch, pinch, lift]
+    keywords: ["pickpocket", "filch"]
+    requires: entity
+    contest:
+      actor_attribute: stealth
+      target_attribute: perception
+      difficulty: 55
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: wary_of
+          delta: 0.05
+          meta:
+            cause: subtle_theft
+    on_failure:
+      - kind: entity_alertness_changed
+        payload:
+          entity_id: "$target"
+          to: high
+          cause: caught_pickpocketing
+
+  - id: leave_note
+    verbs: [leave_note, post_notice, pin_message, write_note]
+    keywords: ["leave a note", "post a notice", "pin a message"]
+    handler: environmental

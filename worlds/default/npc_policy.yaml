@@ -1,0 +1,32 @@
+# Tunable parameters for NPC behavior (ReactivePolicy + npc_mind + LMNpcPolicy).
+#
+# cognition.mode:
+#   lm            — infer_npc JSON each tick (default, all model sizes)
+#   reactive_only — no LM (tests / headless deterministic)
+#
+# threat_lookback_ticks — event log window for recent attackers
+# flee_health_fraction  — health ratio below which NPCs prefer flee
+#
+# mind_scoring — context-driven utility weights for ReactivePolicy fallback
+
+threat_lookback_ticks: 5
+flee_health_fraction: 0.25
+
+cognition:
+  mode: lm
+  max_infer_per_npc: 2
+  infer_cooldown_ticks: 8
+
+mind_scoring:
+  min_speak_gap_ticks: 2
+  gesture_memory_ticks: 4
+  intent_reply_speak: 0.45
+  intent_goal_speak: 0.38
+  intent_drive_speak: 0.32
+  gesture_when_reply: 0.40
+  gesture_repeat: 0.55
+  same_verb: 0.30
+  speak_not_ready: 0.70
+  novelty: 0.08
+  tension_match: 0.18
+  acknowledge_gesture: 0.28

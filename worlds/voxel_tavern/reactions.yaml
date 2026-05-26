@@ -1,0 +1,55 @@
+# Tavern chemistry — fire, hearth warmth, spills.
+
+reactions:
+
+  - id: fire_burns_patron
+    name: "Fire burns living flesh"
+    conditions:
+      - has_tag: on_fire
+      - has_tag: biological
+    effects:
+      - damage: 2
+      - adjust_prop: {prop: temperature, delta: 10}
+    probability: 1.0
+    narrative: "{name} recoils from the flames."
+
+  - id: fire_spreads_flammable
+    name: "Fire jumps to nearby flammables"
+    conditions:
+      - has_tag: on_fire
+    effects:
+      - spread_tag: {requires_tag: flammable, add_tag: on_fire, chance: 0.12}
+    probability: 1.0
+    silent: true
+
+  - id: hearth_warms_room
+    name: "Hearth radiates comfort heat"
+    conditions:
+      - has_tag: on_fire
+      - adjacent_tag: biological
+    effects:
+      - conduct_heat: 0.08
+    probability: 0.85
+    silent: true
+
+  - id: spill_extinguishes_small_fire
+    name: "Ale or water douses small fires nearby"
+    conditions:
+      - has_tag: on_fire
+      - adjacent_tag: fire_suppressant
+    effects:
+      - remove_tag: on_fire
+      - adjust_prop: {prop: temperature, delta: -80}
+    probability: 0.65
+    narrative: "Liquid splashes and the flames hiss out."
+
+  - id: scorch_from_heat
+    name: "Extreme heat without flame still hurts"
+    conditions:
+      - missing_tag: on_fire
+      - prop_above: {prop: temperature, value: 90}
+      - has_tag: biological
+    effects:
+      - damage_by_excess: {prop: temperature, threshold: 90, rate: 0.03}
+    probability: 0.5
+    narrative: "{name} flinches from the searing heat."

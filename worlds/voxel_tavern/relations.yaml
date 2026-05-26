@@ -1,0 +1,66 @@
+# Initial relational graph for The Tarnished Flagon.
+#
+# These represent the starting state of relationships before the simulation
+# begins. The LM-driven NPCs will evolve them over time through interaction.
+
+edges:
+  # Mira knows all her regulars
+  - source: mira
+    target: aldric
+    kind: ally_of
+    weight: 0.6
+
+  - source: aldric
+    target: mira
+    kind: ally_of
+    weight: 0.5
+
+  - source: mira
+    target: linna
+    kind: ally_of
+    weight: 0.4
+
+  - source: linna
+    target: mira
+    kind: ally_of
+    weight: 0.55
+
+  # Tomas is a new face; Mira is professionally neutral, not yet trusting
+  - source: mira
+    target: tomas
+    kind: distrusts
+    weight: 0.3
+
+  # Linna and Tomas have had dealings; she suspects more than she lets on
+  - source: linna
+    target: tomas
+    kind: distrusts
+    weight: 0.4
+
+  - source: tomas
+    target: linna
+    kind: distrusts
+    weight: 0.35
+
+  # Aldric actively dislikes Tomas
+  - source: aldric
+    target: tomas
+    kind: enemy_of
+    weight: 0.5
+
+  - source: tomas
+    target: aldric
+    kind: fears
+    weight: 0.6
+
+  # Linna is professionally curious about Aldric; he tolerates her better
+  # than most people
+  - source: linna
+    target: aldric
+    kind: ally_of
+    weight: 0.3
+
+  - source: aldric
+    target: linna
+    kind: ally_of
+    weight: 0.2

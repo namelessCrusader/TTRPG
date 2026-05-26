@@ -1,0 +1,235 @@
+# Unified substance catalog — see FIELD_SYSTEM.md
+# Legacy agents.yaml / biofluids.yaml are still loaded and merged by fields.py.
+
+substances:
+
+  water:
+    category: liquid
+    display: water
+    media: [tile.ground, entity.surface, object.contents]
+    dynamics:
+      decay_per_tick: 3.0
+      spread_neighbor: 0.25
+    effects:
+      wet_floor: true
+
+  blood:
+    category: biofluid
+    display: blood
+    media: [tile.ground, entity.surface]
+    dynamics:
+      decay_per_tick: 1.2
+      spread_neighbor: 0.08
+    effects:
+      wet_floor: true
+      stain: true
+      fluid_material: blood
+
+  urine:
+    category: biofluid
+    display: urine
+    media: [tile.ground]
+    dynamics:
+      decay_per_tick: 2.5
+      spread_neighbor: 0.15
+    effects:
+      wet_floor: true
+      stain: true
+      fluid_material: urine
+      carries: common_flora
+
+  feces:
+    category: biofluid
+    display: feces
+    media: [tile.ground]
+    dynamics:
+      decay_per_tick: 1.8
+      spread_neighbor: 0.05
+    effects:
+      stain: true
+      carries: common_flora
+
+  mud:
+    category: material
+    display: mud
+    media: [tile.ground]
+    dynamics:
+      decay_per_tick: 0.4
+      spread_neighbor: 0.02
+    effects:
+      stain: true
+
+  rainwater:
+    category: weather
+    display: rainwater
+    media: [tile.ground]
+    dynamics:
+      decay_per_tick: 3.0
+      spread_neighbor: 0.25
+    effects:
+      wet_floor: true
+      fluid_material: water
+
+  smoke:
+    category: gas
+    display: smoke
+    media: [tile.air, region.atmosphere]
+    dynamics:
+      decay_per_tick: 4.0
+      airborne_ttl_ticks: 20
+      spread_radius: 2
+
+  common_flora:
+    category: pathogen
+    display: gut bacteria
+    media: [tile.ground, entity.internal]
+    exposure:
+      routes: [touch, ingest]
+      infection_per_100: 7.0
+      incubation_ticks: 18
+      illness:
+        condition: gastro_ill
+        duration_ticks: 40
+        damage_per_tick: 1
+
+  bloodborne_germs:
+    category: pathogen
+    display: bloodborne contagion
+    media: [tile.ground]
+    exposure:
+      routes: [touch]
+      infection_per_100: 5.0
+      incubation_ticks: 25
+      illness:
+        condition: feverish
+        duration_ticks: 50
+        damage_per_tick: 1
+    hosts: [blood]
+
+  # ── Atmospheric / environmental ───────────────────────────────────────
+
+  smoke:
+    category: gas
+    display: smoke
+    media: [tile.air, region.atmosphere]
+    dynamics:
+      decay_per_tick: 4.0
+      airborne_ttl_ticks: 30
+      spread_radius: 2
+    effects:
+      visibility_penalty: 25   # % reduction in effective sight range
+
+  frost:
+    category: material
+    display: frost
+    media: [tile.ground]
+    dynamics:
+      decay_per_tick: 0.8
+      spread_neighbor: 0.05
+    effects:
+      stain: false
+
+  odor:
+    category: gas
+    display: foul odor
+    media: [tile.air, region.atmosphere]
+    dynamics:
+      decay_per_tick: 3.0
+      airborne_ttl_ticks: 25
+      spread_radius: 2
+
+  alcohol_vapor:
+    category: gas
+    display: alcohol fumes
+    media: [tile.air, region.atmosphere]
+    dynamics:
+      decay_per_tick: 5.0
+      airborne_ttl_ticks: 20
+      spread_radius: 1
+
+  ale:
+    category: liquid
+    display: ale
+    media: [tile.ground, object.contents]
+    dynamics:
+      decay_per_tick: 2.0
+      spread_neighbor: 0.12
+    effects:
+      wet_floor: true
+      fluid_material: ale
+
+  oil:
+    category: liquid
+    display: lamp oil
+    media: [tile.ground, object.contents, entity.surface]
+    dynamics:
+      decay_per_tick: 1.5
+      spread_neighbor: 0.08
+    effects:
+      wet_floor: true
+      fluid_material: oil
+
+  vomit:
+    category: biofluid
+    display: vomit
+    media: [tile.ground, tile.air]
+    dynamics:
+      decay_per_tick: 1.5
+      spread_neighbor: 0.06
+    effects:
+      stain: true
+      carries: common_flora
+
+  sweat:
+    category: biofluid
+    display: sweat
+    media: [entity.surface, tile.air]
+    dynamics:
+      decay_per_tick: 4.0
+      airborne_ttl_ticks: 8
+      spread_radius: 1
+
+  spoilage:
+    category: material
+    display: rot
+    media: [object.surface, tile.ground]
+    dynamics:
+      decay_per_tick: 0.3
+      spread_neighbor: 0.02
+    effects:
+      stain: true
+      carries: common_flora
+
+  cough_droplets:
+    category: pathogen
+    display: cough aerosol
+    media: [tile.air]
+    dynamics:
+      decay_per_tick: 3.0
+      airborne_ttl_ticks: 14
+      spread_radius: 2
+    exposure:
+      routes: [inhale]
+      infection_per_100: 14.0
+      incubation_ticks: 12
+      illness:
+        condition: coughing_ill
+        duration_ticks: 35
+        damage_per_tick: 0
+
+  influenza:
+    category: pathogen
+    display: influenza
+    media: [tile.air, entity.internal]
+    dynamics:
+      decay_per_tick: 2.0
+      airborne_ttl_ticks: 18
+      spread_radius: 3
+    exposure:
+      routes: [inhale]
+      infection_per_100: 18.0
+      incubation_ticks: 20
+      illness:
+        condition: influenza
+        duration_ticks: 60
+        damage_per_tick: 1

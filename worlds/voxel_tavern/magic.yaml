@@ -1,0 +1,30 @@
+# Tavern cantrips — bard-scale magic (Linna and similar NPCs).
+# Full operations mirror worlds/default/magic.yaml subset.
+
+operations:
+
+  HEAT:
+    primitive: ADJUST_PROP
+    prop: temperature
+    sign: 1
+    args: [n]
+    mana_formula: "n * 0.8"
+    description: >
+      Warms a target — hearth coals, a mug, or a chill patron.
+
+  CHILL:
+    primitive: ADJUST_PROP
+    prop: temperature
+    sign: -1
+    args: [n]
+    mana_formula: "n * 0.6"
+    description: >
+      Cools a target. Useful to settle a heated argument or douse nerves.
+
+  QUENCH:
+    primitive: REMOVE_TAG
+    tag: on_fire
+    args: []
+    mana_formula: "8"
+    description: >
+      Extinguishes flame on a target — hearth spill, torch, or panicked patron.

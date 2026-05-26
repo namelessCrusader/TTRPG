@@ -1,0 +1,373 @@
+# worlds/default/reactions.yaml
+#
+# Physics and chemistry reaction rules for the default world.
+#
+# Each reaction is evaluated every tick for every living entity.
+# Rules are checked in order; ALL conditions must hold simultaneously (AND logic).
+#
+# Condition types:
+#   has_tag: <tag>                entity has this tag
+#   missing_tag: <tag>            entity does NOT have this tag
+#   has_material_tag: <tag>       entity's material has this tag
+#   prop_above: {prop, value}     entity.meta[prop] > value
+#   prop_below: {prop, value}     entity.meta[prop] < value
+#   adjacent_tag: <tag>           at least one adjacent entity has this tag
+#
+# Effect types:
+#   damage: <N>                   entity takes N damage
+#   heal: <N>                     entity heals N
+#   add_tag: <tag>                add tag to entity
+#   remove_tag: <tag>             remove tag from entity
+#   adjust_prop: {prop, delta}    entity.meta[prop] += delta
+#   cap_prop: {prop, max}         clamp entity.meta[prop] to max
+#   damage_by_excess: {prop, threshold, rate}  damage ∝ (prop - threshold)
+#   damage_by_deficit: {prop, threshold, rate} damage ∝ (threshold - prop)
+#   spread_tag: {requires_tag, add_tag, chance}  spread tag to adjacent entities
+#   conduct_heat: <rate>           share temperature with neighbors
+#   add_condition: {name, ticks}  add timed condition
+#   remove_condition: <name>      remove condition
+#   change_material: <name>       update entity's material
+#
+# narrative: optional string (use {name} for entity name)
+# probability: per-tick chance (1.0 = always when conditions hold; default: 1.0)
+# silent: true → no narrator output regardless of narrative
+
+reactions:
+
+  # ──────────────────────────────────────────────────────────────────────
+  # FIRE REACTIONS
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: fire_burns_biological
+    name: "Fire burns living flesh"
+    conditions:
+      - has_tag: on_fire
+      - has_tag: biological
+    effects:
+      - damage: 3
+      - adjust_prop: {prop: temperature, delta: 15}
+    probability: 1.0
+    narrative: "{name} screams as fire consumes their flesh."
+
+  - id: fire_spreads_to_flammable
+    name: "Fire spreads to adjacent flammable entities"
+    conditions:
+      - has_tag: on_fire
+    effects:
+      - spread_tag: {requires_tag: flammable, add_tag: on_fire, chance: 0.18}
+    probability: 1.0
+    narrative: null    # individual ignitions are announced by threshold checks
+
+  - id: fire_heats_surroundings
+    name: "Fire radiates heat"
+    conditions:
+      - has_tag: on_fire
+    effects:
+      - conduct_heat: 0.15
+      - adjust_prop: {prop: temperature, delta: 20}
+    probability: 1.0
+    silent: true
+
+  - id: fire_extinguished_by_water
+    name: "Water suppresses fire"
+    conditions:
+      - has_tag: on_fire
+      - adjacent_tag: fire_suppressant
+    effects:
+      - remove_tag: on_fire
+      - adjust_prop: {prop: temperature, delta: -120}
+    probability: 0.70
+    narrative: "{name}'s fire is doused."
+
+  - id: fire_damage_to_wood
+    name: "Fire chars wooden objects"
+    conditions:
+      - has_tag: on_fire
+      - has_material_tag: wooden
+    effects:
+      - damage: 2
+      - adjust_prop: {prop: temperature, delta: 10}
+    probability: 1.0
+    narrative: "{name} crackles and chars."
+
+  # ──────────────────────────────────────────────────────────────────────
+  # EXTREME HEAT (without open fire)
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: extreme_heat_damages_flesh
+    name: "Extreme heat scorches living flesh"
+    conditions:
+      - missing_tag: on_fire
+      - has_tag: biological
+      - prop_above: {prop: temperature, value: 60}
+    effects:
+      - damage_by_excess: {prop: temperature, threshold: 60, rate: 0.03}
+    probability: 1.0
+    narrative: "{name} is scalded by extreme heat."
+
+  - id: heat_metal_conducts
+    name: "Hot metal conducts heat to neighbors"
+    conditions:
+      - has_material_tag: metal
+      - prop_above: {prop: temperature, value: 80}
+    effects:
+      - conduct_heat: 0.25
+    probability: 1.0
+    silent: true
+
+  - id: overheat_condition
+    name: "Dangerously hot entity becomes overheated"
+    conditions:
+      - has_tag: biological
+      - prop_above: {prop: temperature, value: 40}
+      - missing_tag: overheated
+    effects:
+      - add_condition: {name: overheated, ticks: 5}
+    probability: 1.0
+    narrative: "{name} is dangerously overheated."
+
+  # ──────────────────────────────────────────────────────────────────────
+  # EXTREME COLD
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: cold_damages_flesh
+    name: "Extreme cold freezes living flesh"
+    conditions:
+      - has_tag: biological
+      - prop_below: {prop: temperature, value: -5}
+    effects:
+      - damage_by_deficit: {prop: temperature, threshold: 0, rate: 0.04}
+    probability: 1.0
+    narrative: "{name} shivers violently as frostbite sets in."
+
+  - id: hypothermia_condition
+    name: "Severely cold entity becomes hypothermic"
+    conditions:
+      - has_tag: biological
+      - prop_below: {prop: temperature, value: -15}
+    effects:
+      - add_condition: {name: hypothermic, ticks: 8}
+      - damage: 2
+    probability: 1.0
+    narrative: "{name}'s lips turn blue."
+
+  - id: ice_chills_adjacent
+    name: "Ice chills adjacent entities"
+    conditions:
+      - has_tag: frozen
+      - has_tag: liquid
+    effects:
+      - conduct_heat: 0.12   # heat flows INTO the ice, cooling neighbors
+    probability: 1.0
+    silent: true
+
+  # ──────────────────────────────────────────────────────────────────────
+  # POISON / TOXIC
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: poison_damages_biological
+    name: "Poison corrodes living tissue"
+    conditions:
+      - has_tag: poisoned
+      - has_tag: biological
+    effects:
+      - damage: 2
+    probability: 1.0
+    narrative: "{name} convulses from the poison."
+
+  - id: acid_contact_damages_biological
+    name: "Acid contact damages flesh"
+    conditions:
+      - has_tag: biological
+      - adjacent_tag: corrosive
+    effects:
+      - damage: 3
+      - add_tag: burned
+    probability: 0.50
+    narrative: "{name}'s skin blisters where the acid touches."
+
+  - id: acid_contact_damages_metal
+    name: "Acid slowly corrodes metal"
+    conditions:
+      - has_material_tag: metal
+      - adjacent_tag: corrosive
+    effects:
+      - damage: 1
+    probability: 0.30
+    narrative: "{name} pits and corrodes."
+
+  # ──────────────────────────────────────────────────────────────────────
+  # BLEED / WOUND
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: bleeding_damages_entity
+    name: "Uncontrolled bleeding saps vitality"
+    conditions:
+      - has_tag: bleeding
+      - has_tag: biological
+    effects:
+      - damage: 1
+    probability: 1.0
+    narrative: null    # already implied by the wound condition
+
+  - id: bleeding_slows_down
+    name: "Bleeding eventually slows without intervention"
+    conditions:
+      - has_tag: bleeding
+    effects:
+      - remove_tag: bleeding
+    probability: 0.10  # 10% chance per tick to naturally slow
+    silent: true
+
+  # ──────────────────────────────────────────────────────────────────────
+  # MAGICAL INTERACTIONS
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: arcane_conductor_amplifies_heat
+    name: "Arcane conductors supercharge thermal effects"
+    conditions:
+      - has_material_tag: arcane_conductor
+      - has_tag: magical
+      - prop_above: {prop: temperature, value: 200}
+    effects:
+      - adjust_prop: {prop: temperature, delta: 30}
+      - conduct_heat: 0.35
+    probability: 0.40
+    narrative: "{name} glows white-hot, crackling with arcane energy."
+
+  - id: anti_undead_silver_harms_undead
+    name: "Silver weapons harm the undead"
+    conditions:
+      - has_material_tag: anti_undead
+      - adjacent_tag: undead
+    effects:
+      - spread_tag: {requires_tag: undead, add_tag: searing, chance: 0.30}
+    probability: 0.40
+    narrative: "The silver sears undead flesh."
+
+  - id: mana_drain_from_cold
+    name: "Extreme cold suppresses mana regeneration"
+    conditions:
+      - has_tag: biological
+      - prop_below: {prop: temperature, value: -20}
+    effects:
+      - adjust_prop: {prop: mana, delta: -2}
+    probability: 1.0
+    narrative: null
+
+  # ──────────────────────────────────────────────────────────────────────
+  # STRUCTURAL / MATERIAL DEGRADATION
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: searing_burns_biological
+    name: "Searing tag deals persistent burn damage"
+    conditions:
+      - has_tag: searing
+      - has_tag: biological
+    effects:
+      - damage: 2
+      - remove_tag: searing   # searing is consumed on use
+    probability: 1.0
+    narrative: "{name} is seared."
+
+  - id: stunned_wears_off
+    name: "Stun effect fades naturally"
+    conditions:
+      - has_tag: stunned
+    effects:
+      - remove_tag: stunned
+    probability: 0.25  # 25% per tick → ~4 tick average duration
+    silent: true
+
+  # ──────────────────────────────────────────────────────────────────────
+  # TEMPERATURE NORMALISATION (slow return to ambient)
+  # This is handled in code (temperature_approaches_ambient) but can also
+  # be partially nudged with reactions here.
+  # ──────────────────────────────────────────────────────────────────────
+
+  - id: metal_cools_quickly_near_ice
+    name: "Metal cools rapidly next to ice"
+    conditions:
+      - has_material_tag: metal
+      - adjacent_tag: frozen
+      - prop_above: {prop: temperature, value: 5}
+    effects:
+      - adjust_prop: {prop: temperature, delta: -12}
+    probability: 1.0
+    silent: true
+
+# ── TILE SUBSTANCE REACTIONS ────────────────────────────────────────────────
+# Evaluated per-tile by field_tick (not per-entity like reactions above).
+# condition types: tile_has_substance, tile_has_tag, region_weather, region_cold
+# effect types:    tile_add_substance, tile_clear_substance, tile_add_tag
+
+tile_reactions:
+
+  - id: fire_produces_smoke
+    name: "Fire fills the air with smoke"
+    conditions:
+      - tile_has_tag: on_fire
+    effects:
+      - tile_add_substance: {medium: tile.air, substance: smoke, amount: 18.0}
+    probability: 1.0
+
+  - id: nearby_fire_atmosphere_smoke
+    name: "Room fire pushes smoke into atmosphere"
+    conditions:
+      - tile_has_tag: on_fire
+    effects:
+      - atmosphere_add_substance: {substance: smoke, amount: 6.0}
+    probability: 1.0
+
+  - id: wet_cold_makes_frost
+    name: "Wet ground freezes when temperature is below zero"
+    conditions:
+      - tile_has_substance: {ground: water}
+      - region_cold: 0
+    effects:
+      - tile_add_substance: {medium: tile.ground, substance: frost, amount: 20.0}
+      - tile_clear_substance: {medium: tile.ground, substance: water}
+      - tile_add_tag: frozen
+    probability: 0.4
+
+  - id: urine_on_straw_smell
+    name: "Urine on straw ferments into a foul odor"
+    conditions:
+      - tile_has_substance: {ground: urine}
+      - tile_has_tag: straw
+    effects:
+      - tile_add_substance: {medium: tile.air, substance: odor, amount: 12.0}
+    probability: 0.6
+
+  - id: overflow_ale_evaporates
+    name: "Spilled ale evaporates into faint alcohol fumes"
+    conditions:
+      - tile_has_substance: {ground: ale}
+    effects:
+      - tile_add_substance: {medium: tile.air, substance: alcohol_vapor, amount: 5.0}
+    probability: 0.3
+
+  - id: blood_diluted_by_rain
+    name: "Rain dilutes blood on the ground"
+    conditions:
+      - tile_has_substance: {ground: blood}
+      - region_weather: [rain, storm, drizzle]
+    effects:
+      - tile_clear_substance: {medium: tile.ground, substance: blood}
+    probability: 0.25
+
+  - id: feces_odor
+    name: "Feces produces a strong odor"
+    conditions:
+      - tile_has_substance: {ground: feces}
+    effects:
+      - tile_add_substance: {medium: tile.air, substance: odor, amount: 10.0}
+    probability: 0.7
+
+  - id: vomit_odor
+    name: "Vomit has a pungent smell"
+    conditions:
+      - tile_has_substance: {ground: vomit}
+    effects:
+      - tile_add_substance: {medium: tile.air, substance: odor, amount: 8.0}
+    probability: 0.8

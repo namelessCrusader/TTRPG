@@ -1,0 +1,43 @@
+entities:
+  - id: prisoner_jorin
+    name: "Jorin"
+    kind: npc
+    x: 13
+    y: 7
+    health: 40
+    max_health: 100
+    sight_range: 5
+    social_openness: "welcoming"
+    role: "long-imprisoned scholar"
+    personality: "Gaunt, haunted, desperately grateful for any human contact"
+    drive: "Find someone willing to carry his message to the outside world"
+    knowledge:
+      - "The king had him imprisoned for uncovering ancient manuscripts"
+      - "The manuscripts describe a ritual that could destroy the kingdom"
+    goals:
+      - "Convince someone to smuggle a letter out of the dungeon"
+    secrets:
+      - "He memorised the full ritual before the manuscripts were burned"
+      - "He believes the creature below him is a god that the king summoned and lost control of"
+
+  - id: dungeon_creature
+    name: "The Chained Thing"
+    kind: creature
+    x: 5
+    y: 10
+    health: 200
+    max_health: 200
+    sight_range: 12
+    hearing_range: 20
+    alertness: medium
+    social_openness: "closed"
+    role: "ancient entity bound by ritual chains"
+    personality: "Patient, calculating, speaks in riddles"
+    drive: "Convince someone to break one link of its chain"
+    knowledge:
+      - "It has been here since before the castle was built"
+      - "The chains weaken by one link for every truth spoken nearby"
+    goals:
+      - "Achieve freedom through manipulation"
+    secrets:
+      - "It is not actually malevolent — it wants to warn the world of an impending collapse"

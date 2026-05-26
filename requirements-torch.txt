@@ -1,0 +1,5 @@
+# Optional: HuggingFace + PyTorch local inference (--torch / --torch-path DIR)
+-r requirements.txt
+torch>=2.2.0
+transformers>=4.40.0
+accelerate>=0.30.0

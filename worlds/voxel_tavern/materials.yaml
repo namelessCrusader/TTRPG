@@ -1,0 +1,64 @@
+# Tavern physics — hearth, drink, cloth, flesh (subset of default world).
+
+ambient_temp: 22.0
+heat_spread: 0.05
+
+materials:
+
+  flesh:
+    display: "Living Flesh"
+    tags: [organic, biological]
+    conductivity: 0.08
+    ignition_point: 250
+    damage_above: 55
+    damage_per_degree: 0.04
+
+  wood:
+    display: "Wood"
+    tags: [organic, flammable, wooden, solid]
+    conductivity: 0.12
+    ignition_point: 300
+    burn_into: ash
+
+  cloth:
+    display: "Cloth"
+    tags: [organic, flammable, soft, cloth]
+    conductivity: 0.05
+    ignition_point: 210
+    damage_per_degree: 0.06
+
+  oil:
+    display: "Lamp Oil"
+    tags: [organic, flammable, liquid, oil]
+    conductivity: 0.04
+    ignition_point: 180
+    damage_per_degree: 0.08
+
+  water:
+    display: "Water"
+    tags: [liquid, fire_suppressant]
+    conductivity: 0.6
+    ignition_point: null
+    melting_point: 0
+    damage_per_degree: 0.0
+
+  ale:
+    display: "Ale"
+    tags: [liquid, drink, fire_suppressant]
+    conductivity: 0.3
+    ignition_point: null
+    damage_per_degree: 0.0
+
+  stone:
+    display: "Stone Hearth"
+    tags: [mineral, solid, hard]
+    conductivity: 0.2
+    ignition_point: null
+    damage_per_degree: 0.0
+
+  iron:
+    display: "Iron"
+    tags: [metal, solid, conductive]
+    conductivity: 0.5
+    melting_point: 1538
+    ignition_point: null

@@ -1,0 +1,15 @@
+factions:
+  - id: faction_crown
+    name: "The Crown"
+    description: "King Aldric's household — guards, herald, and loyal staff"
+    kind: organization
+
+  - id: faction_prisoners
+    name: "The Imprisoned"
+    description: "Jorin and any creature held below the hall"
+    kind: organization
+
+  - id: faction_outsiders
+    name: "Outsiders"
+    description: "Visitors who have not yet earned the crown's trust"
+    kind: organization

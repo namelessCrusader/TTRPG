@@ -1,0 +1,28 @@
+affordances:
+  - keyword: dungeon
+    kinds: [entity]
+    name_keywords: [jorin, creature, chained]
+
+  - keyword: prisoner
+    kinds: [entity]
+    name_keywords: [jorin]
+
+  - keyword: ritual
+    kinds: [faction, organization, location]
+    name_keywords: [ritual, binding, castle]
+
+  - keyword: chain
+    kinds: [entity]
+    name_keywords: [chained, chain, thing]
+
+  - keyword: king
+    kinds: [entity]
+    name_keywords: [king, aldric]
+
+  - keyword: key
+    kinds: [entity]
+    name_keywords: [key, door, dungeon]
+
+  - keyword: gate
+    kinds: [entity, location]
+    name_keywords: [gate, guard, hall]

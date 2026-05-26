@@ -1,0 +1,35 @@
+pressures:
+  - id: opening_mood
+    when:
+      - type: tick_lt
+        tick: 10
+    effects:
+      director_focus: "Settle the room — greetings, ale, low drama."
+      candidate_boosts:
+        - entity: mira
+          raw_input: "[npc_auto:drive_speak]"
+          weight_delta: 0.08
+
+  - id: secrets_rising
+    when:
+      - type: tick_gte
+        tick: 10
+      - type: tick_lt
+        tick: 25
+    effects:
+      director_focus: "Secrets want air — gossip, eavesdrop, accuse if warranted."
+      director_tension: 0.55
+      ambient_probability_mult:
+        door_opens: 1.5
+
+  - id: peak_tension
+    when:
+      - type: tick_gte
+        tick: 20
+    effects:
+      director_tension: 0.75
+      director_focus: "Alliances crack — react to slights and revelations."
+      candidate_boosts:
+        - entity: linna
+          raw_input: "[npc_auto:react_drama]"
+          weight_delta: 0.15

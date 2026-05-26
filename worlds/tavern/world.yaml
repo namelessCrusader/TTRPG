@@ -1,0 +1,60 @@
+name: "The Tarnished Flagon"
+extends: default
+physics: true
+description: |
+  A cramped, amber-lit tavern in the lower city. Sticky tables, cheap ale,
+  and the kind of conversations that only happen after dark. The regulars
+  know each other well enough to argue freely. The bard earns her keep.
+  Secrets change hands here nightly.
+
+spatial:
+  width: 24
+  height: 16
+  map_file: "map.txt"
+
+meta:
+  location_name: "tavern common room"
+  noise_level: "moderate"
+  crowded: true
+  lighting: "warm"
+  hazards: []
+
+clock:
+  day_length_ticks: 48
+
+# Every real action must leave durable state (see WORLD_CONSEQUENCES.md).
+consequences:
+  require_sticky: true
+  record_traces: true
+  world_memory_window: 20
+  max_world_facts: 400
+  narrative_only_verbs:
+    - wait
+    - observe
+    - inspect
+    - rest
+
+semantic:
+  enabled: true
+  interval_ticks: 3
+  use_mock: true
+  reaction_memory_ticks: 6
+  belief_propagation_interval: 1
+
+rng_seed: 27182
+
+extra:
+  scenario: scenarios/tavern_night1.yaml
+  market_goods:
+    ale:
+      base_price: 4
+      supply: 120
+      demand: 80
+    bread:
+      base_price: 2
+      supply: 90
+      demand: 60
+    room:
+      base_price: 15
+      supply: 8
+      demand: 40

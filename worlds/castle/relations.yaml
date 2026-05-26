@@ -1,0 +1,50 @@
+edges:
+  - source: gate_guard
+    target: faction_crown
+    kind: faction_member
+    weight: 0.9
+
+  - source: court_herald
+    target: faction_crown
+    kind: faction_member
+    weight: 0.9
+
+  - source: king
+    target: faction_crown
+    kind: faction_member
+    weight: 1.0
+
+  - source: prisoner_jorin
+    target: faction_prisoners
+    kind: faction_member
+    weight: 0.8
+
+  - source: dungeon_creature
+    target: faction_prisoners
+    kind: faction_member
+    weight: 0.5
+
+  - source: player
+    target: faction_outsiders
+    kind: faction_member
+    weight: 1.0
+
+  - source: gate_guard
+    target: player
+    kind: wary_of
+    weight: 0.6
+
+  - source: king
+    target: faction_outsiders
+    kind: wary_of
+    weight: 0.7
+
+  - source: stable_hand
+    target: player
+    kind: ally_of
+    weight: 0.3
+
+  - source: prisoner_jorin
+    target: faction_outsiders
+    kind: ally_of
+    weight: 0.8

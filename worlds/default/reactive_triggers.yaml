@@ -1,0 +1,57 @@
+# Baseline reactive beats merged into every world pack (override by id in pack YAML).
+#
+# These use world-wide conditions without pack-specific entity ids so they
+# fire in any sandbox. Pack triggers with the same id replace these entries.
+
+triggers:
+  - id: generic_violence_escalation
+    title: "Violence draws attention"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: violence
+        within_ticks: 12
+    then:
+      director_tension: 0.75
+      director_focus: "Violence has occurred — witnesses react, alliances shift."
+      schedule:
+        - tick_offset: 2
+          text: "Word spreads about the commotion — details already disagree."
+
+  - id: generic_environment_damage
+    title: "The environment bears new scars"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: environment
+        within_ticks: 15
+    then:
+      director_tension: 0.45
+      schedule:
+        - tick_offset: 3
+          text: "Someone notices lasting damage where the struggle happened."
+
+  - id: generic_bribe_whispers
+    title: "Coin changes hands — rumours follow"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: bribe
+        within_ticks: 20
+    then:
+      schedule:
+        - tick_offset: 4
+          text: "A muttered rumour: someone bought silence tonight."
+
+  - id: generic_investigation_hook
+    title: "A mystery demands follow-up"
+    once: true
+    when:
+      - type: world_fact_tag
+        tag: investigation
+        within_ticks: 25
+    then:
+      director_focus: "Something was discovered — follow the trail."
+      schedule:
+        - tick_offset: 2
+          text: "Curiosity spreads: who will investigate what was found?"

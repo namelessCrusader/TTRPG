@@ -1,0 +1,18 @@
+events:
+  - id: arena_hum
+    trigger:
+      every_ticks: 6
+      probability: 0.5
+    narrative: "The ward-stones hum — the circle holds."
+
+  - id: mana_flare
+    trigger:
+      every_ticks: 10
+      probability: 0.45
+    narrative: "Residual mana crackles across the flagstones like broken glass."
+
+  - id: judge_watch
+    trigger:
+      every_ticks: 20
+      probability: 0.35
+    narrative: "A distant voice calls: 'No interference — let the duel run.'"

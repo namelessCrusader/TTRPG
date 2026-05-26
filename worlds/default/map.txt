@@ -1,0 +1,36 @@
+# ASCII terrain map. Width and height must match world.yaml.
+# Lines beginning with # in this header are comments and ignored.
+# Inside the grid, the # character is a wall — there are no in-grid
+# comments. The first non-comment line begins row 0.
+#
+# Tile legend:
+#   .  floor
+#   #  wall
+#   +  closed door
+#   /  open door
+#   >  stairs down
+#   <  stairs up
+#   ~  water
+#   =  window
+#   any other character treated as floor (designers may use letters
+#   for visual landmarks without affecting passability).
+####################
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+#..................#
+####################

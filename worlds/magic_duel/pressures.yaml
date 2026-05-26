@@ -1,0 +1,22 @@
+pressures:
+  - id: duel_opening
+    when:
+      - type: tick_lt
+        tick: 8
+    effects:
+      director_focus: "Open with a probing spell — heat or chill."
+      candidate_boosts:
+        - entity: pyra
+          verb: cast
+          weight_delta: 0.15
+        - entity: cryo
+          verb: cast
+          weight_delta: 0.15
+
+  - id: duel_climax
+    when:
+      - type: tick_gte
+        tick: 15
+    effects:
+      director_tension: 0.9
+      director_focus: "Spend mana decisively — combo spells if possible."

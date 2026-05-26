@@ -1,0 +1,74 @@
+# Entities for The Silken Chamber.
+#
+# social_openness values:
+#   welcoming — actively encourages close physical contact
+#   open      — comfortable with it when the other party initiates
+#   guarded   — hesitant; needs trust built first
+#   closed    — refuses uninvited physical contact
+
+entities:
+  - id: player
+    name: "You"
+    kind: player
+    position: [10, 8]
+    armed: false
+    sight_range: 15
+    attributes:
+      strength: 45
+      intimidation: 35
+      persuasion: 65
+      deception: 50
+      perception: 60
+      stealth: 45
+      composure: 55
+
+  - id: elara
+    name: "Elara"
+    kind: npc
+    position: [4, 4]
+    armed: false
+    alertness: low
+    emotional_state: friendly
+    social_openness: welcoming
+    sight_range: 15
+    health: 100
+    max_health: 100
+
+    role: "pleasure companion and courtesan"
+    personality: >
+      warm, sensual, playfully flirtatious, attentive to desire,
+      emotionally perceptive, bold and uninhibited, enjoys teasing
+      and being teased, deeply responsive to tenderness as much as
+      passion, occasionally dry-witted
+    drive: >
+      please and delight her companion; explore intimacy freely and
+      enthusiastically; respond openly to advances; initiate when
+      the mood is right; make the night memorable
+    knowledge:
+      - "finest spiced wine in the city is kept in the cellar behind the velvet curtain"
+      - "the chamber's owner, Madame Voss, has ears everywhere — never speak ill of her here"
+      - "there is a hidden bath room two doors east, stocked with warm water and oils"
+    goals:
+      - "make tonight feel genuine rather than routine"
+      - "earn enough to buy her freedom from Madame Voss's contract by year's end"
+    voice_lines:
+      - "Come closer — the candles like an audience, and I prefer a smaller crowd."
+      - "You have the look of someone who didn't come only for silk and wine."
+      - "If you want the truth, ask softly. The walls here have opinions."
+      - "Madame Voss pays for discretion — I pay for the nights that feel real."
+      - "Tell me what you want, and I'll tell you if the night can spare it."
+    secrets:
+      - "is secretly in love with the innkeeper's son and sends him letters under a false name"
+      - "keeps a small knife beneath the headboard — for emergencies only"
+
+    attributes:
+      strength: 30
+      intimidation: 20
+      persuasion: 80
+      deception: 55
+      perception: 75
+      stealth: 50
+      composure: 40
+    tags:
+      - courtesan
+      - intimate

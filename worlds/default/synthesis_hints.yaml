@@ -1,0 +1,143 @@
+# synthesis_hints.yaml
+#
+# Lightweight crafting validity rules.  The engine uses these to validate
+# whether a proposed crafted object (from the CRAFT kernel verb) is
+# physically plausible given the actor's inventory.
+#
+# Fields:
+#   hint_id              — unique string identifier
+#   required_input_tags  — at least ONE item with ALL listed tags must be in inventory
+#                          (OR semantics across items, AND semantics per item)
+#   output_tags          — what the resulting object can reasonably be tagged as
+#   max_weight           — maximum allowed weight of the output item (kg)
+#   max_bulk             — maximum allowed bulk of the output item
+#   max_attribute        — cap on any single numeric attribute value
+#   stamina_cost         — stamina drained from the actor to perform the synthesis
+
+hints:
+  # ── Medical / survival ────────────────────────────────────────────────
+  - hint_id: cloth_to_bandage
+    required_input_tags: [cloth]
+    output_tags: [bandage, consumable, healing]
+    max_weight: 0.3
+    max_bulk: 0.3
+    max_attribute: 30
+    stamina_cost: 5.0
+
+  - hint_id: plant_cloth_salve
+    required_input_tags: [plant]
+    output_tags: [salve, consumable, healing, potion]
+    max_weight: 0.5
+    max_bulk: 0.5
+    max_attribute: 40
+    stamina_cost: 10.0
+
+  # ── Weapons ────────────────────────────────────────────────────────────
+  - hint_id: wood_to_club
+    required_input_tags: [wooden]
+    output_tags: [weapon, wooden, blunt]
+    max_weight: 3.0
+    max_bulk: 2.0
+    max_attribute: 30
+    stamina_cost: 15.0
+
+  - hint_id: metal_weapon
+    required_input_tags: [metal]
+    output_tags: [weapon, sharp, metal]
+    max_weight: 2.5
+    max_bulk: 1.5
+    max_attribute: 40
+    stamina_cost: 20.0
+
+  - hint_id: wood_shiv
+    required_input_tags: [wooden]
+    output_tags: [weapon, sharp, throwable]
+    max_weight: 0.4
+    max_bulk: 0.3
+    max_attribute: 20
+    stamina_cost: 8.0
+
+  - hint_id: stone_weapon
+    required_input_tags: [stone]
+    output_tags: [weapon, blunt, stone]
+    max_weight: 2.0
+    max_bulk: 1.5
+    max_attribute: 25
+    stamina_cost: 12.0
+
+  # ── Tools ──────────────────────────────────────────────────────────────
+  - hint_id: wood_tool
+    required_input_tags: [wooden]
+    output_tags: [tool, wooden]
+    max_weight: 2.0
+    max_bulk: 2.0
+    max_attribute: 20
+    stamina_cost: 10.0
+
+  - hint_id: metal_tool
+    required_input_tags: [metal]
+    output_tags: [tool, metal]
+    max_weight: 1.5
+    max_bulk: 1.0
+    max_attribute: 25
+    stamina_cost: 15.0
+
+  - hint_id: rope_net_trap
+    required_input_tags: [rope]
+    output_tags: [trap, tool, rope]
+    max_weight: 1.5
+    max_bulk: 1.5
+    max_attribute: 20
+    stamina_cost: 12.0
+
+  # ── Light sources ──────────────────────────────────────────────────────
+  - hint_id: wood_torch
+    required_input_tags: [wooden]
+    output_tags: [light_source, flammable, wooden, torch]
+    max_weight: 0.8
+    max_bulk: 0.7
+    max_attribute: 10
+    stamina_cost: 5.0
+
+  - hint_id: wax_candle
+    required_input_tags: [wax]
+    output_tags: [light_source, wax, flammable, candle]
+    max_weight: 0.2
+    max_bulk: 0.2
+    max_attribute: 5
+    stamina_cost: 5.0
+
+  # ── Armor / clothing ───────────────────────────────────────────────────
+  - hint_id: leather_armor
+    required_input_tags: [leather]
+    output_tags: [armor, leather, clothing]
+    max_weight: 5.0
+    max_bulk: 4.0
+    max_attribute: 30
+    stamina_cost: 25.0
+
+  - hint_id: cloth_clothing
+    required_input_tags: [cloth]
+    output_tags: [clothing, cloth]
+    max_weight: 2.0
+    max_bulk: 2.5
+    max_attribute: 15
+    stamina_cost: 10.0
+
+  # ── Projectiles ────────────────────────────────────────────────────────
+  - hint_id: arrow_bolt
+    required_input_tags: [wooden]
+    output_tags: [projectile, throwable, wooden, arrow]
+    max_weight: 0.1
+    max_bulk: 0.1
+    max_attribute: 20
+    stamina_cost: 5.0
+
+  # ── Containers ─────────────────────────────────────────────────────────
+  - hint_id: leather_bag
+    required_input_tags: [leather]
+    output_tags: [container, leather, bag]
+    max_weight: 1.0
+    max_bulk: 3.0
+    max_attribute: 10
+    stamina_cost: 15.0

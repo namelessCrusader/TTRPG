@@ -1,0 +1,36 @@
+# Affordance rules for The Tarnished Flagon.
+#
+# Matched against entity.tags (see entities.yaml). When matched, the engine
+# adds a menu option keyword as a compilable verb (see capability_menu.py).
+
+affordances:
+  - keyword: perform
+    kinds: [entity]
+    tags: [bard]
+
+  - keyword: pour_drink
+    kinds: [entity]
+    tags: [bartender, staff]
+
+  - keyword: eavesdrop
+    kinds: [entity]
+    tags: [bard, merchant, veteran, regular]
+
+  - keyword: toast
+    kinds: [entity]
+    tags: [staff, veteran, regular, bard]
+
+# Object-target menu lines (hearth, cask, mugs). Matched against object.tags.
+object_affordances:
+  - verb: light
+    object_tags: [flammable]
+    absent_tags: [on_fire]
+
+  - verb: extinguish
+    object_tags: [on_fire]
+
+  - verb: pour_drink
+    object_tags: [receptacle, cup, mug, glass]
+
+  - verb: drink
+    object_tags: [receptacle, cup, mug, glass]

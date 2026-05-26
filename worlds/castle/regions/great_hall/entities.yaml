@@ -1,0 +1,37 @@
+entities:
+  - id: king
+    name: "King Aldric"
+    kind: npc
+    x: 7
+    y: 9
+    health: 100
+    max_health: 100
+    sight_range: 9
+    social_openness: "guarded"
+    role: "ageing king of the realm"
+    personality: "Proud, weary, distrustful of strangers but yearning for counsel"
+    drive: "Rule the kingdom, hide the shame of what is imprisoned below"
+    knowledge:
+      - "Something ancient and dangerous is chained in the dungeon"
+      - "The old prisoner Jorin knows too much and must never be released"
+    goals:
+      - "Keep the dungeon secret from the outside world"
+    secrets:
+      - "He imprisoned Jorin for discovering the truth about the king's past"
+      - "He fears the creature in the dungeon will eventually break free"
+    equipped_armor: royal_mantle
+
+  - id: court_herald
+    name: "Court Herald"
+    kind: npc
+    x: 2
+    y: 2
+    health: 70
+    max_health: 70
+    sight_range: 8
+    role: "castle court herald"
+    personality: "Pompous, proper, eager to impress the king"
+    drive: "Announce visitors and keep court protocol"
+    knowledge:
+      - "All visitors must be announced to the king"
+      - "The dungeon door is the iron door in the east wall"

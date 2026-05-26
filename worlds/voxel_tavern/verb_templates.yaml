@@ -1,0 +1,507 @@
+# Verb templates for The Tarnished Flagon.
+#
+# Tavern-specific action verbs with mechanical effects.
+
+templates:
+  # ── Social / conversation ────────────────────────────────────────────────
+
+  - verb: console
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: tease
+    contest:
+      actor_attribute: persuasion
+      target_attribute: perception
+      difficulty: 40
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: angry
+
+  - verb: flirt
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 35
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: compliment
+    on_success:
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          weight: 0.1
+
+  - verb: gossip
+    narrative_success: "{actor} leans in and shares a choice rumour with {target} — the kind that travels faster than truth."
+    narrative_failure: "{actor} starts a story about the road, but {target} isn't buying it."
+    contest:
+      actor_attribute: persuasion
+      target_attribute: perception
+      difficulty: 40
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: ally_of
+          weight: 0.1
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: haggle
+    contest:
+      actor_attribute: persuasion
+      target_attribute: persuasion
+    on_success:
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          weight: 0.15
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: threaten
+    contest:
+      actor_attribute: intimidation
+      target_attribute: composure
+      difficulty: 50
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: fearful
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: fears
+          weight: 0.3
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: angry
+
+  # ── Tavern-specific actions ────────────────────────────────────────────────
+
+  - verb: pour_drink
+    narrative_success: "{actor} sets a fresh drink before {target} with a practised hand."
+    narrative_object_success: "{actor} draws ale into {object} from the cask."
+    narrative_failure: "{actor} sloshes ale on the counter — {target} doesn't look impressed."
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+
+  - verb: perform
+    contest:
+      actor_attribute: persuasion
+      target_attribute: perception
+      difficulty: 30
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  - verb: toast
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+      - kind: edge_created
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: ally_of
+          weight: 0.1
+
+  - verb: eavesdrop
+    contest:
+      actor_attribute: stealth
+      target_attribute: perception
+      difficulty: 45
+    on_success:
+      - kind: edge_created
+        payload:
+          source: "$actor"
+          target: "$target"
+          edge_kind: knows_secret_of
+          weight: 0.5
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: accuse
+    contest:
+      actor_attribute: intimidation
+      target_attribute: composure
+      difficulty: 55
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: fearful
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: angry
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$actor"
+          to: humiliated
+
+  - verb: wink
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+
+  - verb: shrug
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+
+  - verb: slam_fist
+    contest:
+      actor_attribute: intimidation
+      target_attribute: composure
+      difficulty: 45
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: fearful
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: angry
+
+  # ── Reconciliation / formal politeness ────────────────────────────────
+
+  - verb: apologize
+    narrative_success: "{actor} offers {target} a steady apology — eyes meeting, voice low."
+    narrative_failure: "{actor}'s apology comes out clumsy; {target} isn't convinced."
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 35
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: enemy_of
+          delta: -0.15
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: neutral
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$actor"
+          to: humiliated
+
+  - verb: thank
+    narrative_success: "{actor} thanks {target} with simple sincerity."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: ally_of
+          delta: 0.08
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+
+  - verb: forgive
+    narrative_success: "{actor} releases {target} from the grudge — visible, witnessed."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$actor"
+          target: "$target"
+          edge_kind: enemy_of
+          delta: -0.4
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+
+  - verb: encourage
+    narrative_success: "{actor} murmurs something steadying to {target}."
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          weight: 0.08
+          delta: 0.08
+
+  - verb: bow_to
+    narrative_success: "{actor} inclines their head to {target} — respect plainly given."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          delta: 0.05
+
+  - verb: wave
+    narrative_success: "{actor} raises a hand in greeting to {target}."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: interacted
+          delta: 0.03
+
+  - verb: salute
+    narrative_success: "{actor} snaps a salute toward {target}."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          delta: 0.06
+
+  - verb: nod
+    narrative_success: "{actor} nods once at {target} — acknowledgement, nothing more."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: interacted
+          delta: 0.02
+
+  # ── Mockery / cold contempt ───────────────────────────────────────────
+
+  - verb: mock
+    narrative_success: "{actor} mocks {target} with a sharp grin — the room hears."
+    narrative_failure: "{actor}'s jibe lands wrong; {target} just stares."
+    contest:
+      actor_attribute: persuasion
+      target_attribute: composure
+      difficulty: 40
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: humiliated
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: enemy_of
+          delta: 0.12
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$actor"
+          to: humiliated
+
+  - verb: scoff
+    narrative_success: "{actor} scoffs audibly. {target} flushes."
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: angry
+
+  - verb: glare
+    narrative_success: "{actor} fixes {target} with a flat, cold stare."
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: frown
+    narrative_success: "{actor} frowns deeply at {target}."
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+
+  - verb: smile
+    narrative_success: "{actor} smiles at {target} — open, unguarded."
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: friendly
+
+  # ── Joke / lie / promise / vow ─────────────────────────────────────────
+
+  - verb: joke
+    narrative_success: "{actor} cracks a joke; {target} actually laughs."
+    narrative_failure: "{actor} tries a joke; the silence afterward is louder."
+    contest:
+      actor_attribute: persuasion
+      target_attribute: perception
+      difficulty: 35
+    on_success:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: happy
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: ally_of
+          delta: 0.05
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$actor"
+          to: humiliated
+
+  - verb: lie
+    narrative_success: "{actor} weaves a smooth lie; {target} buys every word."
+    narrative_failure: "{actor}'s story doesn't quite add up — {target} sees it."
+    contest:
+      actor_attribute: persuasion
+      target_attribute: perception
+      difficulty: 50
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: believes_claim
+          delta: 0.3
+    on_failure:
+      - kind: entity_emotional_state_changed
+        payload:
+          entity_id: "$target"
+          to: suspicious
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: distrusts
+          delta: 0.2
+
+  - verb: promise
+    narrative_success: "{actor} promises {target} something binding — it's spoken aloud."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: ally_of
+          delta: 0.1
+      - kind: edge_updated
+        payload:
+          source: "$actor"
+          target: "$target"
+          edge_kind: owes_debt
+          delta: 0.2
+
+  - verb: vow
+    narrative_success: "{actor} vows it on something they hold sacred."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: respects
+          delta: 0.1
+      - kind: edge_updated
+        payload:
+          source: "$actor"
+          target: "$target"
+          edge_kind: ally_of
+          delta: 0.25
+
+  # ── Quick concord verbs ───────────────────────────────────────────────
+
+  - verb: agree
+    narrative_success: "{actor} nods agreement with {target}."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: ally_of
+          delta: 0.04
+
+  - verb: disagree
+    narrative_success: "{actor} disagrees with {target}, plainly."
+    on_success:
+      - kind: edge_updated
+        payload:
+          source: "$target"
+          target: "$actor"
+          edge_kind: distrusts
+          delta: 0.04

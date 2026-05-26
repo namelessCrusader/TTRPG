@@ -1,0 +1,9 @@
+# NPC policy weights for The Silken Chamber.
+#
+# All NPCs use the LM-driven policy by default (no reactive fallback needed
+# since there is no combat intent in this world).
+
+policy:
+  default: lm
+  weights:
+    elara: lm
