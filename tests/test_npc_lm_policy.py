@@ -3,7 +3,14 @@
 from src.sim.compiler import compile_action
 from src.sim.game_loop import make_test_world
 from src.sim.npc_lm_policy import LMNpcPolicy, repair_npc_action
-from src.sim.schemas import ActionType, IntentBlock, RejectionReason, SemanticAction
+from src.sim.npc_policy import ReactivePolicy
+from src.sim.schemas import (
+    ActionType,
+    IntentBlock,
+    MalformedActionError,
+    RejectionReason,
+    SemanticAction,
+)
 from src.sim.speech_utils import validate_spoken_line
 
 
@@ -81,6 +88,9 @@ class _AlwaysRaiseAdapter:
     def infer_npc(self, sheet, projection):
         raise RuntimeError("simulated LM blow-up")
 
+    def infer_npc_mdp(self, sheet, projection, options, option_indices):
+        raise MalformedActionError("simulated LM blow-up")
+
 
 def test_decide_falls_back_to_reactive_when_adapter_not_ready():
     """Short-circuit: ``LMNpcPolicy.decide`` must NOT call ``infer_npc``
@@ -99,17 +109,12 @@ def test_decide_falls_back_to_reactive_when_adapter_not_ready():
 
 
 def test_decide_falls_back_when_infer_always_raises():
-    """Regression for ``logs/autonomous_debug_20260522_055425.log``:
-    when the adapter is ready but every infer call throws (e.g. brotli
-    decoder error), ``decide`` must catch the exception inside
-    ``_decide_via_infer`` and fall back reactively rather than
-    propagating ``MalformedActionError`` to ``_step_one_entity``.
-    """
+    """When every MDP call throws, policy falls back to reactive."""
     world = make_test_world()
     world.config.npc_policy.cognition.mode = "lm"
     npc = next(e for e in world.spatial.entities.values() if e.name != "You")
 
-    policy = LMNpcPolicy(adapter=_AlwaysRaiseAdapter())
+    policy = LMNpcPolicy(adapter=_AlwaysRaiseAdapter(), fallback=ReactivePolicy())
     action = policy.decide(npc, world)
 
     assert action.actor == npc.entity_id
@@ -149,35 +154,27 @@ def test_mdp_forest_and_selection_success():
     assert speech_effect.payload.get("text") == "Step aside, I am acting!"
 
 
-def test_mdp_forest_selection_fallback_to_unconstrained():
-    """Verify that selecting Option 0 falls back to standard unconstrained infer_npc."""
+def test_mdp_invalid_index_uses_random_fallback():
+    """Out-of-range MDP index falls back to a random valid forest option."""
     world = make_test_world()
     world.config.npc_policy.cognition.mode = "lm"
     npc = next(e for e in world.spatial.entities.values() if e.name != "You")
 
-    class _OptionZeroAdapter:
+    class _BadIndexAdapter:
         is_ready = True
         model = "fake/model"
-        
+
         def infer_npc_mdp(self, sheet, projection, options, option_indices):
             return {
                 "selected_option_index": 0,
-                "rationale": "I want to do a custom creative action.",
+                "rationale": "invalid",
                 "custom_speech_line": "",
             }
 
-        def infer_npc(self, sheet, projection):
-            # Propose a custom examine action
-            return SemanticAction(
-                verb="examine",
-                actor=sheet.npc_id,
-                target=sheet.npc_id,
-            )
-
-    policy = LMNpcPolicy(adapter=_OptionZeroAdapter())
+    policy = LMNpcPolicy(adapter=_BadIndexAdapter(), fallback=ReactivePolicy())
     action = policy.decide(npc, world)
-    
+
     assert action is not None
-    assert action.verb == "examine"
-    assert npc.meta.get("last_policy_branch") == "infer_npc_custom"
+    branch = npc.meta.get("last_policy_branch") or ""
+    assert "infer_npc_mdp_option" in branch or branch == "infer_failed_reactive"
 

@@ -49,7 +49,9 @@ from .helpers import (
     _strip_thinking_blocks,
     _build_mdp_selection_schema,
     _build_mdp_selection_prompt,
+    _build_npc_speech_prompt,
     _parse_mdp_selection_response,
+    _parse_npc_speech_response,
 )
 
 logger = logging.getLogger(__name__)
@@ -78,7 +80,7 @@ class TorchLMAdapter(LMAdapter):
         device: Optional[str] = None,
         torch_dtype: Optional[str] = None,
         temperature: float = 0.3,
-        max_new_tokens_infer: int = 512,
+        max_new_tokens_infer: int = 1024,
         max_new_tokens_narrate: int = 400,
         trust_remote_code: bool = True,
         warmup: bool = True,
@@ -105,6 +107,7 @@ class TorchLMAdapter(LMAdapter):
         self._tokenizer = None
         self._model = None
         self._load_lock = threading.Lock()
+        self._gen_lock = threading.RLock()
         self._load_error: Optional[Exception] = None
         self.load_failed: bool = False
 
@@ -300,44 +303,45 @@ class TorchLMAdapter(LMAdapter):
         assert self._tokenizer is not None
         assert self._model is not None
 
-        if hasattr(self._tokenizer, "apply_chat_template"):
-            try:
-                prompt = self._tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True,
-                )
-            except Exception:
+        with self._gen_lock:
+            if hasattr(self._tokenizer, "apply_chat_template"):
+                try:
+                    prompt = self._tokenizer.apply_chat_template(
+                        messages,
+                        tokenize=False,
+                        add_generation_prompt=True,
+                    )
+                except Exception:
+                    prompt = "\n\n".join(
+                        f"{m['role'].upper()}: {m['content']}" for m in messages
+                    )
+            else:
                 prompt = "\n\n".join(
                     f"{m['role'].upper()}: {m['content']}" for m in messages
                 )
-        else:
-            prompt = "\n\n".join(
-                f"{m['role'].upper()}: {m['content']}" for m in messages
-            )
 
-        inputs = self._tokenizer(prompt, return_tensors="pt")
-        device = self._resolve_torch_device()
-        inputs = {k: v.to(device) for k, v in inputs.items()}
+            inputs = self._tokenizer(prompt, return_tensors="pt")
+            device = self._resolve_torch_device()
+            inputs = {k: v.to(device) for k, v in inputs.items()}
 
-        gen_kwargs: dict = {
-            "max_new_tokens": max_new_tokens,
-            "pad_token_id": self._tokenizer.pad_token_id,
-            "eos_token_id": self._tokenizer.eos_token_id,
-        }
-        if temperature > 0:
-            gen_kwargs.update(
-                do_sample=True,
-                temperature=temperature,
-            )
-        else:
-            gen_kwargs["do_sample"] = False
+            gen_kwargs: dict = {
+                "max_new_tokens": max_new_tokens,
+                "pad_token_id": self._tokenizer.pad_token_id,
+                "eos_token_id": self._tokenizer.eos_token_id,
+            }
+            if temperature > 0:
+                gen_kwargs.update(
+                    do_sample=True,
+                    temperature=temperature,
+                )
+            else:
+                gen_kwargs["do_sample"] = False
 
-        with torch.no_grad():
-            output_ids = self._model.generate(**inputs, **gen_kwargs)
+            with torch.no_grad():
+                output_ids = self._model.generate(**inputs, **gen_kwargs)
 
-        new_tokens = output_ids[0, inputs["input_ids"].shape[1] :]
-        return self._tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+            new_tokens = output_ids[0, inputs["input_ids"].shape[1] :]
+            return self._tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
     def _infer_structured(
         self,
@@ -422,8 +426,8 @@ class TorchLMAdapter(LMAdapter):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_new_tokens=256,
-            temperature=self.temperature,
+            max_new_tokens=min(256, self.max_new_tokens_infer),
+            temperature=min(0.85, self.temperature + 0.15),
         )
         latency = (time.monotonic() - t0) * 1000
         self.last_raw_response = raw
@@ -431,6 +435,28 @@ class TorchLMAdapter(LMAdapter):
 
         selection = _parse_mdp_selection_response(raw)
         return selection
+
+    def infer_npc_speech(
+        self,
+        character_sheet: NpcCharacterSheet,
+        projection: SemanticProjection,
+        action_label: str,
+        verb: str,
+    ) -> str:
+        t0 = time.monotonic()
+        system_prompt, user_prompt = _build_npc_speech_prompt(
+            character_sheet, projection, action_label, verb
+        )
+        raw = self._chat(
+            [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            max_new_tokens=min(128, self.max_new_tokens_infer),
+            temperature=self.temperature,
+        )
+        self.last_latency_ms = (time.monotonic() - t0) * 1000
+        return _parse_npc_speech_response(raw)
 
     def enrich_ambient_event(
         self,
@@ -447,7 +473,7 @@ class TorchLMAdapter(LMAdapter):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_new_tokens=256,
+            max_new_tokens=self.max_new_tokens_infer,
             temperature=self.temperature,
         )
         self.last_raw_response = raw
@@ -475,7 +501,7 @@ class TorchLMAdapter(LMAdapter):
                     ),
                 },
             ],
-            max_new_tokens=min(512, self.max_new_tokens),
+            max_new_tokens=min(512, self.max_new_tokens_infer),
             temperature=0.35,
         )
         self.last_latency_ms = (time.monotonic() - t0) * 1000

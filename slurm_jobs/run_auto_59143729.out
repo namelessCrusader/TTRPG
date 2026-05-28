@@ -1,0 +1,92 @@
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59143729
+  Node       : gpu043
+  Arguments  : voxel_tavern 2
+========================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 7884.03it/s]
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:07<55:17,  7.79s/it]Loading weights:   2%|▏         | 7/427 [00:07<05:49,  1.20it/s]Loading weights:   3%|▎         | 12/427 [00:08<02:52,  2.40it/s]Loading weights:   4%|▎         | 16/427 [00:08<02:10,  3.16it/s]Loading weights:   5%|▌         | 22/427 [00:08<01:17,  5.22it/s]Loading weights:   6%|▋         | 27/427 [00:09<00:56,  7.06it/s]Loading weights:   7%|▋         | 30/427 [00:09<00:55,  7.21it/s]Loading weights:   9%|▊         | 37/427 [00:09<00:33, 11.48it/s]Loading weights:   9%|▉         | 40/427 [00:09<00:30, 12.85it/s]Loading weights:  10%|█         | 43/427 [00:10<00:40,  9.38it/s]Loading weights:  11%|█         | 46/427 [00:10<00:39,  9.67it/s]Loading weights:  11%|█         | 48/427 [00:11<00:47,  7.95it/s]Loading weights:  12%|█▏        | 52/427 [00:11<00:37,  9.87it/s]Loading weights:  14%|█▍        | 61/427 [00:11<00:21, 16.75it/s]Loading weights:  15%|█▌        | 65/427 [00:11<00:23, 15.23it/s]Loading weights:  16%|█▌        | 68/427 [00:12<00:28, 12.78it/s]Loading weights:  18%|█▊        | 76/427 [00:12<00:17, 19.84it/s]Loading weights:  19%|█▊        | 80/427 [00:12<00:19, 17.67it/s]Loading weights:  19%|█▉        | 83/427 [00:13<00:24, 13.97it/s]Loading weights:  21%|██        | 90/427 [00:13<00:17, 18.82it/s]Loading weights:  22%|██▏       | 94/427 [00:13<00:18, 17.95it/s]Loading weights:  23%|██▎       | 97/427 [00:13<00:23, 14.15it/s]Loading weights:  23%|██▎       | 99/427 [00:14<00:24, 13.36it/s]Loading weights:  24%|██▎       | 101/427 [00:14<00:30, 10.56it/s]Loading weights:  25%|██▍       | 105/427 [00:14<00:25, 12.82it/s]Loading weights:  27%|██▋       | 115/427 [00:14<00:13, 23.11it/s]Loading weights:  28%|██▊       | 118/427 [00:14<00:13, 23.17it/s]Loading weights:  28%|██▊       | 121/427 [00:15<00:22, 13.41it/s]Loading weights:  30%|███       | 129/427 [00:15<00:15, 19.43it/s]Loading weights:  31%|███       | 133/427 [00:16<00:19, 14.88it/s]Loading weights:  32%|███▏      | 136/427 [00:16<00:20, 14.16it/s]Loading weights:  33%|███▎      | 142/427 [00:16<00:15, 18.74it/s]Loading weights:  34%|███▍      | 146/427 [00:16<00:13, 21.24it/s]Loading weights:  35%|███▍      | 149/427 [00:17<00:21, 13.01it/s]Loading weights:  36%|███▌      | 152/427 [00:17<00:19, 13.83it/s]Loading weights:  36%|███▋      | 155/427 [00:17<00:22, 11.97it/s]Loading weights:  37%|███▋      | 160/427 [00:17<00:17, 15.05it/s]Loading weights:  39%|███▉      | 168/427 [00:17<00:11, 22.87it/s]Loading weights:  40%|████      | 172/427 [00:18<00:12, 19.68it/s]Loading weights:  41%|████      | 175/427 [00:18<00:18, 13.84it/s]Loading weights:  42%|████▏     | 180/427 [00:18<00:14, 16.48it/s]Loading weights:  44%|████▎     | 186/427 [00:19<00:12, 18.69it/s]Loading weights:  44%|████▍     | 189/427 [00:19<00:16, 14.38it/s]Loading weights:  45%|████▌     | 193/427 [00:19<00:14, 16.64it/s]Loading weights:  46%|████▋     | 198/427 [00:19<00:10, 20.90it/s]Loading weights:  47%|████▋     | 201/427 [00:20<00:14, 15.50it/s]Loading weights:  48%|████▊     | 204/427 [00:20<00:14, 15.66it/s]Loading weights:  48%|████▊     | 207/427 [00:20<00:20, 10.93it/s]Loading weights:  50%|████▉     | 213/427 [00:21<00:14, 15.12it/s]Loading weights:  52%|█████▏    | 221/427 [00:21<00:09, 22.67it/s]Loading weights:  53%|█████▎    | 225/427 [00:21<00:10, 19.52it/s]Loading weights:  53%|█████▎    | 228/427 [00:21<00:12, 15.55it/s]Loading weights:  55%|█████▍    | 233/427 [00:21<00:09, 19.72it/s]Loading weights:  56%|█████▌    | 238/427 [00:22<00:07, 23.79it/s]Loading weights:  57%|█████▋    | 242/427 [00:22<00:12, 14.59it/s]Loading weights:  58%|█████▊    | 249/427 [00:22<00:09, 17.94it/s]Loading weights:  59%|█████▉    | 253/427 [00:23<00:09, 18.48it/s]Loading weights:  60%|█████▉    | 256/427 [00:23<00:11, 14.56it/s]Loading weights:  60%|██████    | 258/427 [00:23<00:12, 13.77it/s]Loading weights:  61%|██████    | 260/427 [00:24<00:16, 10.35it/s]Loading weights:  62%|██████▏   | 264/427 [00:24<00:13, 12.52it/s]Loading weights:  64%|██████▍   | 274/427 [00:24<00:07, 21.47it/s]Loading weights:  65%|██████▌   | 278/427 [00:24<00:07, 19.55it/s]Loading weights:  66%|██████▌   | 281/427 [00:25<00:09, 14.84it/s]Loading weights:  67%|██████▋   | 288/427 [00:25<00:06, 20.62it/s]Loading weights:  68%|██████▊   | 291/427 [00:25<00:06, 21.11it/s]Loading weights:  69%|██████▉   | 294/427 [00:25<00:10, 12.66it/s]Loading weights:  71%|███████   | 302/427 [00:26<00:06, 18.78it/s]Loading weights:  71%|███████▏  | 305/427 [00:26<00:06, 19.24it/s]Loading weights:  72%|███████▏  | 308/427 [00:26<00:09, 12.05it/s]Loading weights:  73%|███████▎  | 311/427 [00:27<00:08, 12.97it/s]Loading weights:  73%|███████▎  | 313/427 [00:27<00:10, 10.46it/s]Loading weights:  75%|███████▍  | 319/427 [00:27<00:07, 15.05it/s]Loading weights:  77%|███████▋  | 327/427 [00:27<00:04, 21.08it/s]Loading weights:  78%|███████▊  | 331/427 [00:28<00:05, 19.04it/s]Loading weights:  78%|███████▊  | 334/427 [00:28<00:06, 15.17it/s]Loading weights:  79%|███████▉  | 337/427 [00:28<00:05, 16.76it/s]Loading weights:  80%|████████  | 343/427 [00:28<00:04, 19.69it/s]Loading weights:  81%|████████  | 346/427 [00:28<00:04, 17.75it/s]Loading weights:  81%|████████▏ | 348/427 [00:29<00:04, 16.08it/s]Loading weights:  83%|████████▎ | 355/427 [00:29<00:03, 23.67it/s]Loading weights:  84%|████████▍ | 358/427 [00:29<00:02, 23.85it/s]Loading weights:  85%|████████▍ | 361/427 [00:29<00:04, 13.82it/s]Loading weights:  85%|████████▌ | 364/427 [00:30<00:04, 14.73it/s]Loading weights:  86%|████████▌ | 366/427 [00:30<00:05, 10.95it/s]Loading weights:  87%|████████▋ | 372/427 [00:30<00:03, 15.72it/s]Loading weights:  88%|████████▊ | 377/427 [00:30<00:02, 19.94it/s]Loading weights:  89%|████████▉ | 382/427 [00:31<00:02, 19.02it/s]Loading weights:  90%|█████████ | 385/427 [00:31<00:02, 18.50it/s]Loading weights:  91%|█████████ | 388/427 [00:31<00:02, 18.02it/s]Loading weights:  92%|█████████▏| 394/427 [00:31<00:01, 24.60it/s]Loading weights:  93%|█████████▎| 397/427 [00:31<00:01, 24.69it/s]Loading weights:  94%|█████████▎| 400/427 [00:32<00:01, 14.14it/s]Loading weights:  96%|█████████▌| 408/427 [00:32<00:00, 22.85it/s]Loading weights:  96%|█████████▋| 412/427 [00:32<00:00, 19.65it/s]Loading weights:  97%|█████████▋| 415/427 [00:32<00:00, 15.27it/s]Loading weights:  98%|█████████▊| 418/427 [00:33<00:00, 12.88it/s]Loading weights:  98%|█████████▊| 420/427 [00:33<00:00, 12.68it/s]Loading weights: 100%|█████████▉| 425/427 [00:33<00:00, 16.06it/s]Loading weights: 100%|██████████| 427/427 [00:33<00:00, 12.71it/s]
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 6 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:Qwen/Qwen3.5-9B
+  Ticks  : 2
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 #############L##########       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ############T###########       ~  Water
+ 10 ####M$#S################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ##@#####################       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+  [scenario] beat entered: tick>=0 phase=0 — Opening night at the Flagon
+  [WORLD] tick=0  The low murmur of the crowd swells briefly, then settles back.
+  [WORLD] tick=0  The fireplace pops and throws a brief gust of warmth across the nearest table.
+  [WORLD] tick=0  The front door swings open; cold air rushes in for a moment before it closes again.
+  [WORLD] tick=0  Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [WORLD] tick=0  The hearth pops; a glowing ember leaps onto the boards and dims to grey.
+  [WORLD] tick=0  Steam rises off the stew pot in slow curls.
+  [NPC:You] tick=0 action=disguise
+    You disguises to the air.
+  [NPC:Mira] tick=0 action=disguise
+    Mira disguises to the air.
+  [NPC:Tomas] tick=0 action=wait
+    Tomas pauses to catch their breath.
+  [NPC:Linna] tick=0 action=cast
+    Linna: hearth_glow — no visible effect.
+  [NPC:Ser Aldric] tick=0 action=drink
+    Ser Aldric drinks deeply, throat working.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  [NPC:You] tick=1 action=disguise
+    You disguises to the air.
+  [NPC:Mira] tick=1 action=disguise
+    Mira disguises to the air.
+  [NPC:Tomas] tick=1 action=observe
+    Tomas takes in the scene.
+  Linna — 5 away; mood neutral.
+    • remembered: [npc_auto:pack_spell]
+    • remembered: [npc_auto:pack_spell]
+    • remembered: [npc_auto:pack_spell]
+  [NPC:Linna] tick=1 action=cast
+    Linna: hearth_glow — no visible effect.
+  [NPC:Ser Aldric] tick=1 action=disguise
+    Ser Aldric disguises to the air.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+
+────────────────────────────────────────────────────────────
+  Simulation ended at tick 2
+  Events logged : 35
+  Scenario phase: 0
+  Active pressures: opening_mood
+  Policy branches: infer_npc_mdp_option_1=8, budget_reactive=2
+────────────────────────────────────────────────────────────
+

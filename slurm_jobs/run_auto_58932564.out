@@ -1,0 +1,79 @@
+Loading conda version miniforge3-24.7.1
+Channels:
+ - conda-forge
+Platform: linux-64
+Collecting package metadata (repodata.json): ...working... done
+Solving environment: ...working... done
+
+
+==> WARNING: A newer version of conda exists. <==
+    current version: 24.7.1
+    latest version: 26.5.0
+
+Please update conda by running
+
+    $ conda update -n base -c conda-forge conda
+
+
+
+## Package Plan ##
+
+  environment location: /work/pi_andrewlan_umass_edu/nkparikh_umass_edu/environments/ttrpg
+
+  added / updated specs:
+    - conda-forge::ollama
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    _openmp_mutex-4.5          |           20_gnu          28 KB  conda-forge
+    libgcc-15.2.0              |      he0feb66_19        1017 KB  conda-forge
+    libgomp-15.2.0             |      he0feb66_19         590 KB  conda-forge
+    libstdcxx-15.2.0           |      h934c35e_19         5.6 MB  conda-forge
+    ollama-0.24.0              |   cpu_hacd46da_0        14.8 MB  conda-forge
+    ------------------------------------------------------------
+                                           Total:        22.0 MB
+
+The following NEW packages will be INSTALLED:
+
+  _openmp_mutex      conda-forge/linux-64::_openmp_mutex-4.5-20_gnu 
+  libgcc             conda-forge/linux-64::libgcc-15.2.0-he0feb66_19 
+  libgomp            conda-forge/linux-64::libgomp-15.2.0-he0feb66_19 
+  libstdcxx          conda-forge/linux-64::libstdcxx-15.2.0-h934c35e_19 
+  ollama             conda-forge/linux-64::ollama-0.24.0-cpu_hacd46da_0 
+
+
+Proceed ([y]/n)? 
+
+Downloading and Extracting Packages: ...working... done
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... done
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 58932564
+  Node       : gypsum-gpu001
+  Arguments  : 
+========================================
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/Mark_1/TTRPG/src/sim/autonomous.py", line 754, in <module>
+    main()
+  File "/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/Mark_1/TTRPG/src/sim/autonomous.py", line 722, in main
+    run_simulation(
+  File "/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/Mark_1/TTRPG/src/sim/autonomous.py", line 218, in run_simulation
+    from .game_loop import GameLoop
+  File "/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/Mark_1/TTRPG/src/sim/game_loop.py", line 30, in <module>
+    from .compiler import apply_transitions, build_belief_transitions, compile_action
+  File "/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/Mark_1/TTRPG/src/sim/compiler/__init__.py", line 9, in <module>
+    from .apply import apply_transitions
+  File "/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/Mark_1/TTRPG/src/sim/compiler/apply.py", line 12, in <module>
+    from ..relational import (
+  File "/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/Mark_1/TTRPG/src/sim/relational.py", line 21, in <module>
+    from .schemas import (
+  File "/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/Mark_1/TTRPG/src/sim/schemas.py", line 15, in <module>
+    from pydantic import BaseModel, Field, model_validator
+ModuleNotFoundError: No module named 'pydantic'

@@ -1,0 +1,60 @@
+Removing conda version miniforge3-24.7.1
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59069960
+  Node       : gpu056
+  Arguments  : voxel_tavern 2 --debug
+========================================
+  [LOG] Writing full output to logs/autonomous_debug_20260527_162123.log
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|##########| 4/4 [00:00<00:00, 11538.66it/s]
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:00<03:59,  1.78it/s]Loading weights:   0%|          | 2/427 [00:01<04:13,  1.67it/s]Loading weights:   3%|3         | 13/427 [00:01<00:27, 14.92it/s]Loading weights:   5%|5         | 23/427 [00:01<00:15, 26.27it/s]Loading weights:   7%|6         | 29/427 [00:01<00:13, 29.13it/s]Loading weights:  10%|9         | 41/427 [00:01<00:10, 36.49it/s]Loading weights:  11%|#1        | 48/427 [00:01<00:09, 38.81it/s]Loading weights:  15%|#4        | 62/427 [00:02<00:06, 55.44it/s]Loading weights:  16%|#6        | 70/427 [00:02<00:06, 52.11it/s]Loading weights:  19%|#8        | 80/427 [00:02<00:05, 58.49it/s]Loading weights:  20%|##        | 87/427 [00:02<00:06, 55.49it/s]Loading weights:  22%|##2       | 95/427 [00:02<00:06, 50.36it/s]Loading weights:  24%|##3       | 101/427 [00:02<00:06, 47.68it/s]Loading weights:  27%|##6       | 115/427 [00:03<00:04, 64.16it/s]Loading weights:  29%|##8       | 123/427 [00:03<00:05, 57.11it/s]Loading weights:  31%|###       | 132/427 [00:03<00:04, 61.59it/s]Loading weights:  33%|###2      | 139/427 [00:03<00:04, 62.64it/s]Loading weights:  34%|###4      | 147/427 [00:03<00:04, 63.11it/s]Loading weights:  36%|###6      | 154/427 [00:03<00:05, 46.61it/s]Loading weights:  39%|###9      | 168/427 [00:03<00:04, 63.20it/s]Loading weights:  41%|####1     | 176/427 [00:04<00:04, 57.26it/s]Loading weights:  44%|####3     | 186/427 [00:04<00:03, 62.72it/s]Loading weights:  45%|####5     | 193/427 [00:04<00:03, 63.34it/s]Loading weights:  47%|####6     | 200/427 [00:04<00:03, 61.21it/s]Loading weights:  48%|####8     | 207/427 [00:04<00:04, 45.48it/s]Loading weights:  51%|#####1    | 219/427 [00:04<00:03, 60.21it/s]Loading weights:  53%|#####3    | 227/427 [00:05<00:03, 53.26it/s]Loading weights:  56%|#####5    | 239/427 [00:05<00:02, 63.27it/s]Loading weights:  58%|#####7    | 247/427 [00:05<00:02, 65.27it/s]Loading weights:  60%|#####9    | 255/427 [00:05<00:03, 52.59it/s]Loading weights:  61%|######1   | 262/427 [00:05<00:03, 50.64it/s]Loading weights:  64%|######4   | 274/427 [00:05<00:02, 62.31it/s]Loading weights:  66%|######5   | 281/427 [00:05<00:02, 54.59it/s]Loading weights:  68%|######8   | 292/427 [00:06<00:02, 62.68it/s]Loading weights:  70%|#######   | 299/427 [00:06<00:02, 63.43it/s]Loading weights:  72%|#######1  | 306/427 [00:06<00:01, 60.95it/s]Loading weights:  73%|#######3  | 313/427 [00:06<00:02, 45.27it/s]Loading weights:  77%|#######6  | 327/427 [00:06<00:01, 61.40it/s]Loading weights:  78%|#######8  | 335/427 [00:06<00:01, 55.97it/s]Loading weights:  81%|########  | 345/427 [00:06<00:01, 61.79it/s]Loading weights:  82%|########2 | 352/427 [00:07<00:01, 62.14it/s]Loading weights:  84%|########4 | 359/427 [00:07<00:01, 61.63it/s]Loading weights:  86%|########5 | 366/427 [00:07<00:01, 45.47it/s]Loading weights:  89%|########8 | 380/427 [00:07<00:00, 61.88it/s]Loading weights:  91%|######### | 388/427 [00:07<00:00, 56.31it/s]Loading weights:  93%|#########3| 398/427 [00:07<00:00, 61.75it/s]Loading weights:  95%|#########4| 405/427 [00:08<00:00, 62.24it/s]Loading weights:  96%|#########6| 412/427 [00:08<00:00, 60.30it/s]Loading weights:  98%|#########8| 419/427 [00:08<00:00, 45.37it/s]Loading weights: 100%|##########| 427/427 [00:08<00:00, 50.48it/s]
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 6 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:Qwen/Qwen3.5-9B
+  Ticks  : 2
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+  Debug  : ON (state diffs each tick)
+  Log    : logs/autonomous_debug_20260527_162123.log
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 #############L##########       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ############T###########       ~  Water
+ 10 ####M$#S################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ##@#####################       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+NPC Linna infer failed (LM response was not valid JSON: Expecting value: line 1 column 2 (char 1)
+Raw: [npc_auto:pack_spell]` marks.
+        *   Reach Tomas (ent_26dbcb9f): Eavesdrop/coax about coat.
+        *   Reach Aldric (ent_f23c4a74): Talk about Korrath Siege.
+        *   Reach Mira (ent_0438d884): Charm for drinks/info.
+    *   **Director Objective:** Move the secret economy forward: test whether Tomas can be trusted, extract leverage, or reveal a guarded half-truth.
+    *   **Constraint:** Output ONLY JSON (SemanticAction). No markdown, no commentary.
+    *   **Priority:** Relational aims) — falling back to reactive policy
+NPC Tomas infer failed (LM response was not valid JSON: Extra data: line 1 column 3 (char 2)
+Raw: []`), but the prompt explicitly states targets are "in sight" (Mira, Linna, Aldric). The projection seems to have a bug or abstraction where entities aren't listed by ID but are described as "in sight" in the system instructions. I must treat them as present based on the "Who you are trying to reach this scene" section.
+    *   **DM Objective:** "Move the secret economy forward: test whether Linna can be trusted, extract leverage, or reveal a guarded half-truth."
+    *   **Priority:** Relational) — falling back to reactive policy
+[2026-05-27T16:42:35.308] error: *** JOB 59069960 ON gpu056 CANCELLED AT 2026-05-27T16:42:35 DUE to SIGNAL Terminated ***

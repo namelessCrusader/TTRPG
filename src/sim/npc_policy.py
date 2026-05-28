@@ -453,7 +453,11 @@ class ReactivePolicy:
                 label,
                 1.0,
             )
-            return candidates
+            # Only return early (forcing flee) if the entity is NOT staff or a douser.
+            # This allows staff/bartenders to douse fire or take other actions instead of fleeing.
+            is_douser = any(t in entity.tags for t in ["staff", "bartender", "cook", "server", "veteran", "regular"])
+            if not is_douser:
+                return candidates
         if haz.should_move_away and not haz.should_flee:
             if any("smoke" in r for r in haz.reasons):
                 _add(

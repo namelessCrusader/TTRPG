@@ -1223,7 +1223,12 @@ class GameLoop:
             except Exception as exc:
                 return _reactive_fallback(entity, exc)
 
-        if len(entities) <= 1:
+        from .lm_adapter.torch_adapter import TorchLMAdapter
+        is_torch = isinstance(self.adapter, TorchLMAdapter)
+        if not is_torch and hasattr(self.adapter, "npc_adapter") and isinstance(self.adapter.npc_adapter, TorchLMAdapter):
+            is_torch = True
+
+        if len(entities) <= 1 or is_torch:
             decisions: dict[EntityId, SemanticAction] = {}
             for eid, entity in entities:
                 decisions[eid] = _decide_one(eid, entity)

@@ -1,0 +1,680 @@
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59156971
+  Node       : gpu043
+  Arguments  : 
+========================================
+  [LOG] Writing full output to logs/autonomous_debug_20260527_230347.log
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|##########| 4/4 [00:00<00:00, 7543.71it/s]
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:00<03:58,  1.79it/s]Loading weights:   0%|          | 2/427 [00:01<07:17,  1.03s/it]Loading weights:   3%|3         | 13/427 [00:02<00:47,  8.63it/s]Loading weights:   6%|6         | 27/427 [00:02<00:19, 20.52it/s]Loading weights:   9%|8         | 37/427 [00:02<00:13, 27.97it/s]Loading weights:  10%|#         | 44/427 [00:02<00:12, 30.50it/s]Loading weights:  12%|#1        | 50/427 [00:02<00:11, 32.13it/s]Loading weights:  14%|#3        | 59/427 [00:02<00:08, 41.44it/s]Loading weights:  16%|#5        | 67/427 [00:02<00:07, 45.15it/s]Loading weights:  18%|#7        | 76/427 [00:03<00:06, 52.91it/s]Loading weights:  19%|#9        | 83/427 [00:03<00:07, 48.70it/s]Loading weights:  22%|##2       | 94/427 [00:03<00:05, 57.78it/s]Loading weights:  24%|##3       | 101/427 [00:03<00:07, 44.94it/s]Loading weights:  27%|##6       | 115/427 [00:03<00:04, 62.77it/s]Loading weights:  29%|##8       | 123/427 [00:03<00:05, 55.51it/s]Loading weights:  31%|###1      | 133/427 [00:04<00:04, 61.56it/s]Loading weights:  33%|###3      | 141/427 [00:04<00:04, 64.25it/s]Loading weights:  35%|###4      | 149/427 [00:04<00:05, 52.49it/s]Loading weights:  37%|###6      | 156/427 [00:04<00:05, 50.61it/s]Loading weights:  39%|###9      | 167/427 [00:04<00:04, 62.22it/s]Loading weights:  41%|####      | 175/427 [00:04<00:04, 53.68it/s]Loading weights:  44%|####3     | 186/427 [00:04<00:03, 61.89it/s]Loading weights:  45%|####5     | 193/427 [00:05<00:03, 62.38it/s]Loading weights:  47%|####6     | 200/427 [00:05<00:03, 60.35it/s]Loading weights:  48%|####8     | 207/427 [00:05<00:04, 44.75it/s]Loading weights:  52%|#####1    | 221/427 [00:05<00:03, 60.41it/s]Loading weights:  54%|#####3    | 229/427 [00:05<00:03, 54.90it/s]Loading weights:  56%|#####5    | 239/427 [00:05<00:03, 60.18it/s]Loading weights:  58%|#####7    | 246/427 [00:06<00:02, 60.48it/s]Loading weights:  59%|#####9    | 253/427 [00:06<00:02, 58.42it/s]Loading weights:  61%|######    | 260/427 [00:06<00:03, 44.35it/s]Loading weights:  64%|######4   | 274/427 [00:06<00:02, 60.28it/s]Loading weights:  66%|######5   | 281/427 [00:06<00:02, 53.04it/s]Loading weights:  68%|######8   | 292/427 [00:06<00:02, 61.34it/s]Loading weights:  70%|#######   | 299/427 [00:06<00:02, 61.62it/s]Loading weights:  72%|#######1  | 306/427 [00:07<00:02, 60.26it/s]Loading weights:  73%|#######3  | 313/427 [00:07<00:02, 45.46it/s]Loading weights:  76%|#######6  | 326/427 [00:07<00:01, 61.75it/s]Loading weights:  78%|#######8  | 334/427 [00:07<00:01, 53.95it/s]Loading weights:  81%|########  | 344/427 [00:07<00:01, 59.60it/s]Loading weights:  82%|########2 | 351/427 [00:07<00:01, 60.54it/s]Loading weights:  84%|########4 | 359/427 [00:08<00:01, 62.20it/s]Loading weights:  86%|########5 | 366/427 [00:08<00:01, 46.58it/s]Loading weights:  89%|########8 | 379/427 [00:08<00:00, 61.10it/s]Loading weights:  91%|######### | 387/427 [00:08<00:00, 55.30it/s]Loading weights:  93%|#########3| 398/427 [00:08<00:00, 64.79it/s]Loading weights:  95%|#########5| 406/427 [00:08<00:00, 66.83it/s]Loading weights:  97%|#########6| 414/427 [00:09<00:00, 52.73it/s]Loading weights:  99%|#########8| 421/427 [00:09<00:00, 50.40it/s]Loading weights: 100%|##########| 427/427 [00:09<00:00, 46.23it/s]
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 9 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:Qwen/Qwen3.5-9B
+  Ticks  : 10
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+  Debug  : ON (state diffs each tick)
+  Log    : logs/autonomous_debug_20260527_230347.log
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 #############L##########       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ############T###########       ~  Water
+ 10 ####M$#S################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ##@#####################       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [scenario] beat entered: tick>=0 phase=0 — Opening night at the Flagon
+  [WORLD] tick=0  The low murmur of the crowd swells briefly, then settles back.
+  [WORLD] tick=0  The fireplace pops and throws a brief gust of warmth across the nearest table.
+  [WORLD] tick=0  The front door swings open; cold air rushes in for a moment before it closes again.
+  [WORLD] tick=0  Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [WORLD] tick=0  The hearth pops; a glowing ember leaps onto the boards and dims to grey.
+  [WORLD] tick=0  Steam rises off the stew pot in slow curls.
+  [NPC:Tomas] tick=0 action=investigate
+    Tomas investigates to the air.
+  [NPC:You] tick=0 action=disguise
+    You disguises to the air.
+  [NPC:Mira] tick=0 action=learn
+    Mira learns to the air.
+  [NPC:Linna] tick=0 action=learn
+    Linna learns to the air.
+  [NPC:Ser Aldric] tick=0 action=drink
+    Ser Aldric drinks deeply, throat working.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 0 → 1) ──
+    world.meta['active_pressures']:
+        - [
+  {
+    "id": "secrets_rising",
+    "director_focus": "Secrets want air — gossip, eavesdrop, accuse if warranted.",
+    "director_tension": 0.55,
+    "ambient_probability_mult": {
+      "door_opens": 1.5
+    }
+  }
+]
+        + [
+  {
+    "id": "opening_mood",
+    "director_focus": "Settle the room — greetings, ale, low drama."
+  }
+]
+    world.meta['ambient_probability_mult']:
+        - {
+  "door_opens": 1.5
+}
+        + None
+    world.meta['director_scene_focus']:
+        - Secrets want air — gossip, eavesdrop, accuse if warranted.
+        + Settle the room — greetings, ale, low drama.
+    world.meta['scenario_phase']:
+        - 1
+        + 0
+    active pressures: opening_mood
+    edge Linna→Linna:believes_claim: 0.82 → 0.88
+    edge Linna→Mira:believes_claim: 0.61 → 0.69
+    edge Linna→Ser_Aldric:believes_claim: 0.75 → 0.95
+    edge Linna→Tomas:believes_claim: 0.86 → 0.94
+    edge Linna→You:believes_claim: 0.49 → 0.55
+    edge Linna→world:believes_claim: 0.68 → 0.88
+    edge Mira→Linna:believes_claim: 0.61 → 0.69
+    edge Mira→Mira:believes_claim: 0.82 → 0.88
+    edge Mira→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Mira→Tomas:believes_claim: 0.49 → 0.55
+    edge Mira→You:believes_claim: 0.49 → 0.55
+    edge Mira→world:believes_claim: 0.39 → 0.47
+    edge Ser_Aldric→Linna:believes_claim: 0.61 → 0.69
+    edge Ser_Aldric→Mira:believes_claim: 0.82 → 0.88
+    edge Ser_Aldric→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Ser_Aldric→Tomas:believes_claim: 0.49 → 0.55
+    edge Ser_Aldric→You:believes_claim: 0.68 → 0.72
+    edge Ser_Aldric→world:believes_claim: 0.88 → 1.06
+    edge Tomas→Linna:believes_claim: 0.82 → 0.88
+    edge Tomas→Mira:believes_claim: 0.37 → 0.45
+    edge Tomas→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Tomas→You:believes_claim: 0.37 → 0.45
+    edge You→Tomas:believes_claim: 0.39 → 0.41
+    [Mira]
+      mood:
+        - friendly
+        + happy
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Ser Aldric can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+      meta.observation_memory_n:
+        - 4
+        + 12
+      meta.pressure_boosts:
+        - None
+        + [
+  {
+    "raw_input": "[npc_auto:drive_speak]",
+    "verb": null,
+    "weight_delta": 0.08
+  }
+]
+    [Tomas]
+      mood:
+        - friendly
+        + neutral
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Linna can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+      meta.observation_memory_n:
+        - 7
+        + 12
+    [Ser Aldric]
+      mood:
+        - humiliated
+        + suspicious
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Mira can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+      meta.observation_memory_n:
+        - 4
+        + 12
+    [Linna]
+      mood:
+        - friendly
+        + happy
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Tomas can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+      meta.observation_memory_n:
+        - 3
+        + 8
+    [You]
+      mood:
+        - happy
+        + friendly
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Pressure Mira toward a specific secret, debt, or contradiction. Do not make small talk.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+  [pressure] opening_mood
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [NPC:Tomas] tick=1 action=learn
+    Tomas learns to the air.
+  [NPC:You] tick=1 action=listen
+    You tilts their head, listening.
+  [NPC:Mira] tick=1 action=sniff
+    Mira sniffs the air — ale mug — sharp scent of ale; bowl of stew — savoury.
+  [NPC:Linna] tick=1 action=cast
+    Linna: douse_flame — no visible effect.
+  [NPC:Ser Aldric] tick=1 action=disguise
+    Ser Aldric disguises to the air.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 1 → 2) ──
+    [Mira]
+      meta.director_hint:
+        - Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Ser Aldric can be trusted, extract leverage, or reveal a guarded half-truth.
+        + Scene focus: Settle the room — greetings, ale, low drama.
+DM objective this turn: Establish control of the room through Ser Aldric: pour a drink only if a receptacle is valid, greet, warn, or redirect tension.
+    [Tomas]
+      mood:
+        - neutral
+        + happy
+      meta.director_hint:
+        - Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Linna can be trusted, extract leverage, or reveal a guarded half-truth.
+        + Scene focus: Settle the room — greetings, ale, low drama.
+DM objective this turn: Create an opening beat with Linna: greet, haggle, probe, or move closer to a concrete social aim.
+    [Ser Aldric]
+      meta.director_hint:
+        - Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Mira can be trusted, extract leverage, or reveal a guarded half-truth.
+        + Scene focus: Settle the room — greetings, ale, low drama.
+DM objective this turn: Create an opening beat with Mira: greet, haggle, probe, or move closer to a concrete social aim.
+    [Linna]
+      meta.director_hint:
+        - Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Tomas can be trusted, extract leverage, or reveal a guarded half-truth.
+        + Scene focus: Settle the room — greetings, ale, low drama.
+DM objective this turn: Set the room's tone around Tomas: perform, tease, or listen for the first crack in the mood.
+      meta.observation_memory_n:
+        - 8
+        + 9
+    [You]
+      meta.director_hint:
+        - Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Pressure Mira toward a specific secret, debt, or contradiction. Do not make small talk.
+        + Scene focus: Settle the room — greetings, ale, low drama.
+DM objective this turn: Create an opening beat with Mira: greet, haggle, probe, or move closer to a concrete social aim.
+  [pressure] opening_mood
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+Error in _decide_via_infer for Tomas: 'list' object has no attribute 'get'
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [NPC:Tomas] tick=2 action=disguise
+    Tomas disguises to the air.
+  [NPC:You] tick=2 action=sniff
+    You sniffs the air — nothing notable.
+  [NPC:Mira] tick=2 action=listen
+    Mira tilts their head, listening.
+  [NPC:Linna] tick=2 action=disguise
+    Linna disguises to the air.
+  [NPC:Ser Aldric] tick=2 action=drink
+    Ser Aldric drinks deeply, throat working.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 2 → 3) ──
+    (no meta/entity/edge changes)
+  [pressure] opening_mood
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [NPC:Tomas] tick=3 action=learn
+    Tomas learns to the air.
+  [NPC:You] tick=3 action=investigate
+    You investigates to the air.
+  [NPC:Mira] tick=3 action=disguise
+    Mira disguises to the air.
+  [NPC:Linna] tick=3 action=cast
+    Linna: douse_flame — no visible effect.
+  [NPC:Ser Aldric] tick=3 action=learn
+    Ser Aldric learns to the air.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 3 → 4) ──
+    [Ser Aldric]
+      mood:
+        - suspicious
+        + happy
+    [Linna]
+      meta.observation_memory_n:
+        - 9
+        + 10
+  [pressure] opening_mood
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=4  The fireplace pops and throws a brief gust of warmth across the nearest table.
+  [NPC:Tomas] tick=4 action=investigate
+    Tomas investigates to the air.
+  [NPC:You] tick=4 action=learn
+    You learns to the air.
+  [NPC:Mira] tick=4 action=investigate
+    Mira investigates to the air.
+  [NPC:Linna] tick=4 action=investigate
+    Linna investigates to the air.
+  [NPC:Ser Aldric] tick=4 action=drink
+    Ser Aldric drinks deeply, throat working.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 4 → 5) ──
+    [You]
+      mood:
+        - friendly
+        + happy
+  [pressure] opening_mood
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+
+── tick 5 ──────────────────────────────────
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 #############L##########       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ############T###########       ~  Water
+ 10 ####M$#S################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ##@#####################       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [NPC:Tomas] tick=5 action=observe
+    Tomas takes in the scene.
+  Linna — 5 away; mood happy.
+    • remembered: [npc_auto:pack_spell]
+    • remembered: [npc_auto:pack_spell]
+    • remembered: [npc_auto:pack_spell]
+  [NPC:You] tick=5 action=disguise
+    You disguises to the air.
+  [NPC:Mira] tick=5 action=learn
+    Mira learns to the air.
+  [NPC:Linna] tick=5 action=cast
+    Linna: cool_heads — no visible effect.
+  [NPC:Ser Aldric] tick=5 action=relieve
+    Ser Aldric steps aside to relieve themselves.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 5 → 6) ──
+    edge Linna→Linna:believes_claim: 0.88 → 0.84
+    edge Linna→Mira:believes_claim: 0.69 → 0.67
+    edge Linna→Ser_Aldric:believes_claim: 0.95 → 1.05
+    edge Linna→Tomas:believes_claim: 0.94 → 0.92
+    edge Linna→You:believes_claim: 0.55 → 0.51
+    edge Linna→world:believes_claim: 0.88 → 0.97
+    edge Mira→Linna:believes_claim: 0.69 → 0.67
+    edge Mira→Mira:believes_claim: 0.88 → 0.84
+    edge Mira→Ser_Aldric:believes_claim: 1.16 → 1.24
+    edge Mira→Tomas:believes_claim: 0.55 → 0.51
+    edge Mira→You:believes_claim: 0.55 → 0.51
+    edge Mira→world:believes_claim: 0.47 → 0.45
+    edge Ser_Aldric→Linna:believes_claim: 0.69 → 0.67
+    edge Ser_Aldric→Mira:believes_claim: 0.88 → 0.84
+    edge Ser_Aldric→Ser_Aldric:believes_claim: 1.16 → 1.24
+    edge Ser_Aldric→Tomas:believes_claim: 0.55 → 0.51
+    edge Ser_Aldric→You:believes_claim: 0.72 → 0.66
+    edge Ser_Aldric→world:believes_claim: 1.06 → 1.14
+    edge Tomas→Linna:believes_claim: 0.88 → 0.84
+    edge Tomas→Mira:believes_claim: 0.45 → 0.43
+    edge Tomas→Ser_Aldric:believes_claim: 1.16 → 1.24
+    edge Tomas→You:believes_claim: 0.45 → 0.43
+    edge You→Tomas:believes_claim: 0.41 → 0.33
+    [Tomas]
+      meta.observe_streak:
+        - 0
+        + 1
+    [Ser Aldric]
+      mood:
+        - happy
+        + humiliated
+    [Linna]
+      meta.observation_memory_n:
+        - 10
+        + 11
+  [pressure] opening_mood
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=6  The hearth pops; a glowing ember leaps onto the boards and dims to grey.
+  [NPC:Tomas] tick=6 action=investigate
+    Tomas investigates to the air.
+  [NPC:You] tick=6 action=learn
+    You learns to the air.
+  [NPC:Mira] tick=6 action=observe
+    Mira takes in the scene.
+  Ser Aldric — 4 away; mood suspicious.
+    • remembered: ent_ca9daf2c reputation fell (public_relief)
+    • remembered: ent_ca9daf2c reputation fell (public_relief)
+    • remembered: [npc_auto:drink_visible]
+  [NPC:Linna] tick=6 action=learn
+    Linna learns to the air.
+  [NPC:Ser Aldric] tick=6 action=drink
+    Ser Aldric drinks deeply, throat working.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 6 → 7) ──
+    [Mira]
+      mood:
+        - happy
+        + friendly
+      meta.observe_streak:
+        - 0
+        + 1
+    [Tomas]
+      mood:
+        - happy
+        + friendly
+      meta.observe_streak:
+        - 1
+        + 0
+    [Ser Aldric]
+      mood:
+        - humiliated
+        + suspicious
+  [pressure] opening_mood
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=7  A burst of laughter from the back of the room — someone's joke landed well.
+  [NPC:Tomas] tick=7 action=disguise
+    Tomas disguises to the air.
+  [NPC:You] tick=7 action=listen
+    You tilts their head, listening.
+  [NPC:Mira] tick=7 action=sniff
+    Mira sniffs the air — ale mug — sharp scent of ale; bowl of stew — savoury.
+  [NPC:Linna] tick=7 action=cast
+    Linna: cool_heads — no visible effect.
+  [NPC:Ser Aldric] tick=7 action=wipe
+    Ser Aldric wipes the wet patch off the boards.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 7 → 8) ──
+    [Mira]
+      meta.observe_streak:
+        - 1
+        + 0
+  [pressure] opening_mood
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=8  The front door swings open; cold air rushes in for a moment before it closes again.
+  [NPC:Tomas] tick=8 action=learn
+    Tomas learns to the air.
+  [NPC:You] tick=8 action=investigate
+    You investigates to the air.
+  [NPC:Mira] tick=8 action=disguise
+    Mira disguises to the air.
+  [NPC:Linna] tick=8 action=disguise
+    Linna disguises to the air.
+  [NPC:Ser Aldric] tick=8 action=drink
+    Ser Aldric drinks deeply, throat working.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 8 → 9) ──
+    edge Ser_Aldric→unknow:believes_claim: — → 0.70
+    [Mira]
+      meta.observation_memory_n:
+        - 12
+        + 11
+    [Tomas]
+      mood:
+        - friendly
+        + happy
+  [pressure] opening_mood
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Ser Aldric infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=9  The low murmur of the crowd swells briefly, then settles back.
+  [WORLD] tick=9  Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [NPC:Tomas] tick=9 action=disguise
+    Tomas disguises to the air.
+  [NPC:You] tick=9 action=sniff
+    You sniffs the air — nothing notable.
+  [NPC:Mira] tick=9 action=investigate
+    Mira investigates to the air.
+  [NPC:Linna] tick=9 action=cast
+    Linna: douse_flame — no visible effect.
+  [NPC:Ser Aldric] tick=9 action=investigate
+    Ser Aldric investigates to the air.
+  [pressure] secrets_rising
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 9 → 10) ──
+    world.meta['active_pressures']:
+        - [
+  {
+    "id": "opening_mood",
+    "director_focus": "Settle the room — greetings, ale, low drama."
+  }
+]
+        + [
+  {
+    "id": "secrets_rising",
+    "director_focus": "Secrets want air — gossip, eavesdrop, accuse if warranted.",
+    "director_tension": 0.55,
+    "ambient_probability_mult": {
+      "door_opens": 1.5
+    }
+  }
+]
+    world.meta['ambient_probability_mult']:
+        - None
+        + {
+  "door_opens": 1.5
+}
+    world.meta['director_scene_focus']:
+        - Settle the room — greetings, ale, low drama.
+        + Secrets want air — gossip, eavesdrop, accuse if warranted.
+    active pressures: secrets_rising
+    edge Linna→unknow:believes_claim: — → 0.53
+    edge Mira→unknow:believes_claim: — → 0.53
+    [Mira]
+      meta.pressure_boosts:
+        - [
+  {
+    "raw_input": "[npc_auto:drive_speak]",
+    "verb": null,
+    "weight_delta": 0.08
+  }
+]
+        + None
+    [Ser Aldric]
+      meta.observation_memory_n:
+        - 12
+        + 11
+    [Linna]
+      meta.observation_memory_n:
+        - 11
+        + 9
+  [pressure] secrets_rising
+  [policy] Tomas: infer_failed_reactive
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: infer_failed_reactive
+
+── tick 10 ──────────────────────────────────
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 #############L##########       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ############T###########       ~  Water
+ 10 ####M$#S################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$##$##################       =  Window
+ 13 ##@#####################       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+
+  [LOG] Saved session log: logs/autonomous_debug_20260527_230347.log
+
+────────────────────────────────────────────────────────────
+  Simulation ended at tick 10
+  Events logged : 109
+  Scenario phase: 0
+  Active pressures: secrets_rising
+  Policy branches: infer_failed_reactive=50
+────────────────────────────────────────────────────────────
+

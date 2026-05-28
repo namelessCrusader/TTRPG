@@ -499,7 +499,7 @@ def load_world_pack(pack_dir: str | Path) -> WorldState:
         infer_cooldown_ticks=int(cog_doc.get("infer_cooldown_ticks", 8)),
         max_lm_calls_per_tick=(
             None
-            if (_raw := cog_doc.get("max_lm_calls_per_tick", 4)) in (None, 0, "0")
+            if (_raw := cog_doc.get("max_lm_calls_per_tick", 6)) in (None, 0, "0")
             else int(_raw)
         ),
     )

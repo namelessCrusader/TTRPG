@@ -1,0 +1,230 @@
+Removing conda version miniforge3-24.7.1
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59074352
+  Node       : gpu056
+  Arguments  : voxel_tavern 2 --debug
+========================================
+  [LOG] Writing full output to logs/autonomous_debug_20260527_172140.log
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|##########| 4/4 [00:00<00:00, 17943.55it/s]
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:01<08:12,  1.16s/it]Loading weights:   3%|3         | 14/427 [00:01<00:28, 14.44it/s]Loading weights:   5%|5         | 23/427 [00:01<00:16, 23.99it/s]Loading weights:   7%|7         | 30/427 [00:01<00:14, 28.17it/s]Loading weights:  10%|9         | 41/427 [00:01<00:09, 39.13it/s]Loading weights:  11%|#1        | 48/427 [00:02<00:11, 33.34it/s]Loading weights:  15%|#4        | 62/427 [00:02<00:07, 48.47it/s]Loading weights:  16%|#6        | 69/427 [00:02<00:08, 44.73it/s]Loading weights:  19%|#8        | 80/427 [00:02<00:06, 51.75it/s]Loading weights:  20%|##        | 87/427 [00:02<00:06, 53.02it/s]Loading weights:  22%|##2       | 94/427 [00:02<00:07, 46.75it/s]Loading weights:  23%|##3       | 100/427 [00:02<00:07, 43.20it/s]Loading weights:  25%|##5       | 107/427 [00:03<00:06, 46.47it/s]Loading weights:  28%|##7       | 119/427 [00:03<00:05, 56.90it/s]Loading weights:  30%|##9       | 126/427 [00:03<00:05, 56.78it/s]Loading weights:  31%|###1      | 133/427 [00:03<00:05, 55.73it/s]Loading weights:  33%|###2      | 139/427 [00:03<00:05, 54.66it/s]Loading weights:  34%|###4      | 147/427 [00:03<00:04, 56.92it/s]Loading weights:  36%|###5      | 153/427 [00:04<00:06, 39.66it/s]Loading weights:  39%|###9      | 167/427 [00:04<00:04, 57.32it/s]Loading weights:  41%|####      | 174/427 [00:04<00:05, 47.76it/s]Loading weights:  44%|####3     | 186/427 [00:04<00:04, 56.55it/s]Loading weights:  45%|####5     | 193/427 [00:04<00:04, 56.96it/s]Loading weights:  47%|####6     | 200/427 [00:04<00:04, 55.01it/s]Loading weights:  48%|####8     | 206/427 [00:05<00:05, 43.37it/s]Loading weights:  50%|####9     | 213/427 [00:05<00:04, 46.45it/s]Loading weights:  53%|#####2    | 225/427 [00:05<00:03, 56.79it/s]Loading weights:  54%|#####4    | 232/427 [00:05<00:03, 56.71it/s]Loading weights:  56%|#####5    | 239/427 [00:05<00:03, 54.33it/s]Loading weights:  57%|#####7    | 245/427 [00:05<00:03, 53.02it/s]Loading weights:  59%|#####9    | 252/427 [00:05<00:03, 53.95it/s]Loading weights:  60%|######    | 258/427 [00:05<00:03, 48.42it/s]Loading weights:  62%|######1   | 263/427 [00:06<00:03, 47.12it/s]Loading weights:  64%|######4   | 274/427 [00:06<00:02, 61.09it/s]Loading weights:  66%|######5   | 281/427 [00:06<00:02, 49.52it/s]Loading weights:  68%|######8   | 292/427 [00:06<00:02, 57.46it/s]Loading weights:  70%|#######   | 299/427 [00:06<00:02, 57.16it/s]Loading weights:  72%|#######1  | 306/427 [00:06<00:02, 54.98it/s]Loading weights:  73%|#######3  | 312/427 [00:07<00:02, 38.99it/s]Loading weights:  77%|#######6  | 327/427 [00:07<00:01, 56.89it/s]Loading weights:  78%|#######8  | 334/427 [00:07<00:01, 50.35it/s]Loading weights:  81%|########  | 345/427 [00:07<00:01, 59.32it/s]Loading weights:  82%|########2 | 352/427 [00:07<00:01, 58.65it/s]Loading weights:  84%|########4 | 359/427 [00:07<00:01, 56.75it/s]Loading weights:  86%|########5 | 366/427 [00:08<00:01, 42.08it/s]Loading weights:  89%|########8 | 380/427 [00:08<00:00, 59.03it/s]Loading weights:  91%|######### | 388/427 [00:08<00:00, 51.48it/s]Loading weights:  93%|#########3| 398/427 [00:08<00:00, 57.01it/s]Loading weights:  95%|#########4| 405/427 [00:08<00:00, 58.51it/s]Loading weights:  96%|#########6| 412/427 [00:08<00:00, 55.66it/s]Loading weights:  98%|#########8| 419/427 [00:09<00:00, 41.63it/s]Loading weights: 100%|##########| 427/427 [00:09<00:00, 46.81it/s]
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 6 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:Qwen/Qwen3.5-9B
+  Ticks  : 2
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+  Debug  : ON (state diffs each tick)
+  Log    : logs/autonomous_debug_20260527_172140.log
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 #############L##########       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ############T###########       ~  Water
+ 10 ####M$#S################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ##@#####################       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+NPC You infer failed (LM response was not valid JSON: Extra data: line 1 column 3 (char 2)
+Raw: []`.
+        *   **CRITICAL:** The DM objective says "Pressure Mira". If Mira isn't visible, I cannot target her directly with a `target` entity ID. I must check if I can target by name or if I need to move towards her first. The schema says `target` can be `str` (entity_id from visible_entities). If she's not visible, I can't target her directly *yet*.
+        *   **Wait:** The `beliefs` section mentions `ent_bafc3a57` (Tomas). The `outbound relationships` mentions `distrusts Ser Aldric`. The `) — falling back to reactive policy
+NPC Mira infer failed (LM response was not valid JSON: Extra data: line 1 column 3 (char 2)
+Raw: []`.
+But the Priority section says: "Tomas (target id "ent_bafc3a57", in sight)" and "Linna (target id "ent_f9150443", in sight)".
+This is a contradiction. The projection says no visible entities, but the prompt instructions say they are in sight.
+Usually, in these simulations, the "visible_entities" in the projection is the ground truth for what the character can physically see right now. If it's empty, I might not be able to target them directly with a speak verb unless I assume they are just ) — falling back to reactive policy
+NPC Tomas infer failed (LM response was not valid JSON: Extra data: line 1 column 3 (char 2)
+Raw: []`).
+        *   Must output valid JSON matching `SemanticAction` schema.
+        *   Must use exact target IDs provided in instructions (even if projection says empty visible_entities).
+        *   Must follow the "DM objective this turn": Move the secret economy forward (test Linna, extract leverage, reveal half-truth).
+        *   Must prioritize relational aims (Mira, Linna, Aldric).
+        *   Must not repeat lines from recent dialogue.
+        *   Must not be idle/wait.
+        *   Must ) — falling back to reactive policy
+NPC Linna infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: ...) — falling back to reactive policy
+  [scenario] beat entered: tick>=0 phase=0 — Opening night at the Flagon
+  [WORLD] tick=0  The low murmur of the crowd swells briefly, then settles back.
+  [WORLD] tick=0  The fireplace pops and throws a brief gust of warmth across the nearest table.
+  [WORLD] tick=0  The front door swings open; cold air rushes in for a moment before it closes again.
+  [WORLD] tick=0  Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [WORLD] tick=0  The hearth pops; a glowing ember leaps onto the boards and dims to grey.
+  [WORLD] tick=0  Steam rises off the stew pot in slow curls.
+  [NPC:You] tick=0 action=teach
+    You teachs to the air.
+  [NPC:Mira] tick=0 action=teach
+    Mira teachs to the air.
+  [NPC:Tomas] tick=0 action=observe
+    Tomas takes in the scene.
+  Linna — 5 away; mood neutral.
+    • remembered: ent_f9150443 believes_claim ent_bafc3a57
+    • remembered: [npc_auto:pack_spell]
+    • remembered: [npc_auto:pack_spell]
+  [NPC:Linna] tick=0 action=cast
+    Linna: cool_heads — no visible effect.
+  [NPC:Ser Aldric] tick=0 action=drink
+    Ser Aldric drinks deeply, throat working.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 0 → 1) ──
+    world.meta['active_pressures']:
+        - [
+  {
+    "id": "secrets_rising",
+    "director_focus": "Secrets want air — gossip, eavesdrop, accuse if warranted.",
+    "director_tension": 0.55,
+    "ambient_probability_mult": {
+      "door_opens": 1.5
+    }
+  }
+]
+        + [
+  {
+    "id": "opening_mood",
+    "director_focus": "Settle the room — greetings, ale, low drama."
+  }
+]
+    world.meta['ambient_probability_mult']:
+        - {
+  "door_opens": 1.5
+}
+        + None
+    world.meta['director_scene_focus']:
+        - Secrets want air — gossip, eavesdrop, accuse if warranted.
+        + Settle the room — greetings, ale, low drama.
+    world.meta['scenario_phase']:
+        - 1
+        + 0
+    active pressures: opening_mood
+    edge Linna→Linna:believes_claim: 0.82 → 0.88
+    edge Linna→Mira:believes_claim: 0.61 → 0.69
+    edge Linna→Ser_Aldric:believes_claim: 0.75 → 0.95
+    edge Linna→Tomas:believes_claim: 0.98 → 1.16
+    edge Linna→You:believes_claim: 0.31 → 0.37
+    edge Linna→unknow:believes_claim: 0.53 → 0.82
+    edge Linna→world:believes_claim: 0.68 → 0.88
+    edge Mira→Linna:believes_claim: 0.61 → 0.69
+    edge Mira→Mira:believes_claim: 0.82 → 0.88
+    edge Mira→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Mira→Tomas:believes_claim: 0.98 → 1.16
+    edge Mira→You:believes_claim: 0.23 → 0.31
+    edge Mira→unknow:believes_claim: 0.39 → 0.62
+    edge Mira→world:believes_claim: 0.39 → 0.47
+    edge Ser_Aldric→Linna:believes_claim: 0.61 → 0.69
+    edge Ser_Aldric→Mira:believes_claim: 0.82 → 0.88
+    edge Ser_Aldric→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Ser_Aldric→Tomas:believes_claim: 0.98 → 1.16
+    edge Ser_Aldric→You:believes_claim: 0.23 → 0.31
+    edge Ser_Aldric→unknow:believes_claim: 0.39 → 0.62
+    edge Ser_Aldric→world:believes_claim: 0.88 → 1.06
+    edge Tomas→Linna:believes_claim: 0.82 → 0.88
+    edge Tomas→Mira:believes_claim: 0.37 → 0.45
+    edge Tomas→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Tomas→Tomas:believes_claim: 0.98 → 1.16
+    edge Tomas→You:believes_claim: 0.23 → 0.45
+    edge Tomas→unknow:believes_claim: 0.70 → 0.98
+    edge Tomas→world:believes_claim: 0.68 → 0.86
+    [Ser Aldric]
+      mood:
+        - humiliated
+        + suspicious
+      meta.last_policy_branch:
+        - mind_scored
+        + budget_reactive
+      meta.observation_memory_n:
+        - 8
+        + 12
+    [Tomas]
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Linna can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+      meta.observe_streak:
+        - 0
+        + 1
+    [Mira]
+      mood:
+        - happy
+        + friendly
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Ser Aldric can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+      meta.observation_memory_n:
+        - 8
+        + 12
+      meta.pressure_boosts:
+        - None
+        + [
+  {
+    "raw_input": "[npc_auto:drive_speak]",
+    "verb": null,
+    "weight_delta": 0.08
+  }
+]
+    [You]
+      mood:
+        - friendly
+        + neutral
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Pressure Mira toward a specific secret, debt, or contradiction. Do not make small talk.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+    [Linna]
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Tomas can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+      meta.observation_memory_n:
+        - 7
+        + 12
+  [pressure] opening_mood
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Tomas: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: budget_reactive
+NPC You infer failed (LM response was not valid JSON: Extra data: line 1 column 3 (char 2)
+Raw: []`. This is tricky. If I can't see her, I can't target her directly with an ID.
+    *   **BUT:** The DM objective explicitly says "Create an opening beat with Mira". This implies Mira is the target. In many simulations, if the objective names an entity, that entity exists in the world even if the current projection snapshot didn't list them (maybe they are off-screen or about to appear). However, the schema requires `target` to be an entity_id from `visible_entities` or null.
+    *   **Alternat) — falling back to reactive policy
+NPC Mira infer failed (LM response was not valid JSON: Extra data: line 1 column 3 (char 2)
+Raw: []`, but the prompt instructions say "Tomas (target id 'ent_bafc3a57', in sight)" and "Linna (target id 'ent_f9150443', in sight)". I must use the IDs provided in the instructions even if the projection JSON says empty (likely a simulation artifact). I need to prioritize the DIRECTOR objective which mentions Ser Aldric (`ent_98dd9be8`), but the priority section says "Relational aims (prioritize someone in sight): Tomas... Linna...". However, the DIRECTOR says "Establish control of the room throu) — falling back to reactive policy
+[2026-05-27T18:08:16.834] error: *** JOB 59074352 ON gpu056 CANCELLED AT 2026-05-27T18:08:16 DUE to SIGNAL Terminated ***

@@ -1,0 +1,10 @@
+Removing conda version miniforge3-24.7.1
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 58945685
+  Node       : gpu043
+  Arguments  : voxel_tavern 3
+========================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 27 files:   0%|          | 0/27 [00:00<?, ?it/s]Fetching 27 files:  15%|█▍        | 4/27 [01:42<09:48, 25.58s/it]Fetching 27 files:  44%|████▍     | 12/27 [01:49<01:50,  7.34s/it][2026-05-27T04:23:21.384] error: *** JOB 58945685 ON gpu043 CANCELLED AT 2026-05-27T04:23:21 DUE to SIGNAL Terminated ***

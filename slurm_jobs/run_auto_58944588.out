@@ -1,0 +1,334 @@
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 58944588
+  Node       : gpu043
+  Arguments  : 
+========================================
+Torch model load failed for qwen3:1.7b. If this is a HuggingFace download/tokenizer error, choose a known-loadable model with TORCH_MODEL or pass a local checkpoint via TORCH_PATH. GGUF-only downloads need Outlines (--outlines), not --torch. Error: Repo id must use alphanumeric chars, '-', '_' or '.'. The name cannot start or end with '-' or '.' and the maximum length is 96: 'qwen3:1.7b'.
+Torch warmup failed for qwen3:1.7b (LM calls will fail until the model loads): Repo id must use alphanumeric chars, '-', '_' or '.'. The name cannot start or end with '-' or '.' and the maximum length is 96: 'qwen3:1.7b'.
+Torch model load failed for gemma3:1b. If this is a HuggingFace download/tokenizer error, choose a known-loadable model with TORCH_MODEL or pass a local checkpoint via TORCH_PATH. GGUF-only downloads need Outlines (--outlines), not --torch. Error: Repo id must use alphanumeric chars, '-', '_' or '.'. The name cannot start or end with '-' or '.' and the maximum length is 96: 'gemma3:1b'.
+Torch warmup failed for gemma3:1b (LM calls will fail until the model loads): Repo id must use alphanumeric chars, '-', '_' or '.'. The name cannot start or end with '-' or '.' and the maximum length is 96: 'gemma3:1b'.
+
+  [WARN] Torch model failed to load — NPC/player LM inference will fall back to reactive policy each tick.
+  Fix options:
+    • BACKEND=ollama ./run_auto.sh …
+    • COGNITION=reactive_only ./run_auto.sh …
+    • TORCH_MODEL=Qwen/Qwen2.5-1.5B-Instruct (known-good default)
+    • TORCH_PATH=/path/to/hf-checkpoint (must contain config.json)
+    • GGUF files need Outlines, not --torch
+
+  [WARN] Continuing with LM attempts + per-tick reactive fallback.
+
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 1 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:mradermacher/Peach-2.0-9B-8k-Roleplay-heretic-i1-GGUF
+  Ticks  : 10
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 ########################       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ########################       ~  Water
+ 10 #####$###M###L##########       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$####S#############       =  Window
+ 13 #######@###T############       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=0  The low murmur of the crowd swells briefly, then settles back.
+  [WORLD] tick=0  The fireplace pops and throws a brief gust of warmth across the nearest table.
+  [WORLD] tick=0  The front door swings open; cold air rushes in for a moment before it closes again.
+  [WORLD] tick=0  Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [WORLD] tick=0  The hearth pops; a glowing ember leaps onto the boards and dims to grey.
+  [WORLD] tick=0  Pipe smoke thickens near the rafters; the room feels closer.
+  [WORLD] tick=0  Steam rises off the stew pot in slow curls.
+  [NPC:You] tick=0 action=flee
+    You flees.
+  [NPC:Mira] tick=0 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=0 action=flee
+    Tomas flees.
+  [NPC:Linna] tick=0 action=flee
+    Linna flees.
+  [NPC:Ser Aldric] tick=0 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+  [NPC:You] tick=1 action=flee
+    You flees.
+  [NPC:Linna] tick=1 action=flee
+    Linna flees.
+  [NPC:Mira] tick=1 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=1 action=flee
+    Tomas flees.
+  [NPC:Ser Aldric] tick=1 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+  [NPC:You] tick=2 action=flee
+    You flees.
+  [NPC:Linna] tick=2 action=flee
+    Linna flees.
+  [NPC:Mira] tick=2 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=2 action=flee
+    Tomas flees.
+  [NPC:Ser Aldric] tick=2 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+  [NPC:You] tick=3 action=flee
+    You flees.
+  [NPC:Linna] tick=3 action=flee
+    Linna flees.
+  [NPC:Mira] tick=3 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=3 action=flee
+    Tomas flees.
+  [NPC:Ser Aldric] tick=3 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+  [scenario] beat entered: tick>=4 phase=1 — Lamp oil knocked over
+  [scenario] ambient forced: drink_slosh
+    [WORLD] Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [scenario] field deposit: oil (52) @ x=5 y=12 z=0
+  [scenario] object modify: lamp_oil_flask
+  [scenario] fact: Lamp oil spreads across the floor by the bar.
+  [scenario] scheduled narration @ tick+1: A sharp smell of lamp oil cuts through the ale and
+  [WORLD] tick=4  The fireplace pops and throws a brief gust of warmth across the nearest table.
+  [NPC:You] tick=4 action=flee
+    You flees.
+  [NPC:Linna] tick=4 action=flee
+    Linna flees.
+  [NPC:Mira] tick=4 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=4 action=flee
+    Tomas flees.
+  [NPC:Ser Aldric] tick=4 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+
+── tick 5 ──────────────────────────────────
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 ########################       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ########################       ~  Water
+ 10 #####$##################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ###########M############       ·  Out of sight
+ 14 ###########@L#########$#    
+ 15 ############T###########    
+
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+  [scenario] beat entered: tick>=0 phase=None — Full panic
+  [scenario] focus: Panic — shouting, stumbling toward doors, smoke everywhere.
+  [scenario] tension → 0.9
+  [scenario] ambient forced: smoke_thickens
+    [WORLD] Pipe smoke thickens near the rafters; the room feels closer.
+  [NPC:You] tick=5 action=flee
+    You flees.
+  [NPC:Linna] tick=5 action=flee
+    Linna flees.
+  [NPC:Mira] tick=5 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=5 action=flee
+    Tomas flees.
+  [NPC:Ser Aldric] tick=5 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=6  The hearth pops; a glowing ember leaps onto the boards and dims to grey.
+  [NPC:You] tick=6 action=flee
+    You flees.
+  [NPC:Linna] tick=6 action=flee
+    Linna flees.
+  [NPC:Mira] tick=6 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=6 action=flee
+    Tomas flees.
+  [NPC:Ser Aldric] tick=6 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=7  A burst of laughter from the back of the room — someone's joke landed well.
+  [NPC:You] tick=7 action=flee
+    You flees.
+  [NPC:Linna] tick=7 action=flee
+    Linna flees.
+  [NPC:Mira] tick=7 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=7 action=flee
+    Tomas flees.
+  [NPC:Ser Aldric] tick=7 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  [scenario] conditional beat: Full panic
+  [scenario] focus: Panic — shouting, stumbling toward doors, smoke everywhere.
+  [scenario] tension → 0.9
+  [scenario] ambient forced: smoke_thickens
+    [WORLD] Pipe smoke thickens near the rafters; the room feels closer.
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=8  The front door swings open; cold air rushes in for a moment before it closes again.
+  [NPC:You] tick=8 action=flee
+    You flees.
+  [NPC:Tomas] tick=8 action=flee
+    Tomas flees.
+  [NPC:Linna] tick=8 action=flee
+    Linna flees.
+  [NPC:Mira] tick=8 action=flee
+    Mira flees.
+  [NPC:Ser Aldric] tick=8 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+NPC You infer failed (infer_npc failed) — falling back to reactive policy
+NPC Mira infer failed (infer_npc failed) — falling back to reactive policy
+NPC Tomas infer failed (infer_npc failed) — falling back to reactive policy
+NPC Linna infer failed (infer_npc failed) — falling back to reactive policy
+  [WORLD] tick=9  The low murmur of the crowd swells briefly, then settles back.
+  [WORLD] tick=9  Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [NPC:You] tick=9 action=flee
+    You flees.
+  [NPC:Linna] tick=9 action=flee
+    Linna flees.
+  [NPC:Tomas] tick=9 action=flee
+    Tomas flees.
+  [NPC:Mira] tick=9 action=flee
+    Mira flees.
+  [NPC:Ser Aldric] tick=9 action=flee
+    Ser Aldric flees.
+  [pressure] secrets_rising
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+
+── tick 10 ──────────────────────────────────
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 ########################       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ########################       ~  Water
+ 10 #####$##################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ###########S############       ·  Out of sight
+ 14 ###########M@#########$#    
+ 15 ###########TL###########    
+
+
+────────────────────────────────────────────────────────────
+  Simulation ended at tick 10
+  Events logged : 108
+  Scenario phase: 1
+  Active pressures: secrets_rising, smoke_panic
+  Policy branches: infer_failed_reactive=40, budget_reactive=10
+────────────────────────────────────────────────────────────
+
+/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/Mark_1/TTRPG/scripts/run_auto.sh: line 120: on3: command not found

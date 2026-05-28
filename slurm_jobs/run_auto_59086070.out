@@ -1,0 +1,263 @@
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59086070
+  Node       : gpu056
+  Arguments  : voxel_tavern 2 --debug
+========================================
+  [LOG] Writing full output to logs/autonomous_debug_20260527_202807.log
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|##########| 4/4 [00:00<00:00, 14550.92it/s]
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:01<08:24,  1.18s/it]Loading weights:   3%|3         | 13/427 [00:01<00:30, 13.52it/s]Loading weights:   5%|5         | 23/427 [00:01<00:17, 23.56it/s]Loading weights:   7%|7         | 30/427 [00:01<00:14, 27.59it/s]Loading weights:  10%|9         | 41/427 [00:01<00:11, 33.56it/s]Loading weights:  11%|#1        | 47/427 [00:01<00:10, 35.03it/s]Loading weights:  14%|#3        | 59/427 [00:02<00:07, 49.80it/s]Loading weights:  16%|#5        | 67/427 [00:02<00:06, 51.82it/s]Loading weights:  18%|#7        | 75/427 [00:02<00:06, 56.28it/s]Loading weights:  19%|#9        | 82/427 [00:02<00:06, 50.79it/s]Loading weights:  22%|##2       | 94/427 [00:02<00:05, 61.49it/s]Loading weights:  24%|##3       | 101/427 [00:02<00:06, 47.40it/s]Loading weights:  26%|##6       | 113/427 [00:03<00:05, 59.59it/s]Loading weights:  28%|##8       | 121/427 [00:03<00:05, 55.17it/s]Loading weights:  31%|###1      | 133/427 [00:03<00:04, 64.77it/s]Loading weights:  33%|###3      | 141/427 [00:03<00:04, 66.02it/s]Loading weights:  35%|###4      | 149/427 [00:03<00:05, 53.79it/s]Loading weights:  37%|###6      | 156/427 [00:03<00:05, 51.23it/s]Loading weights:  40%|###9      | 169/427 [00:03<00:03, 65.38it/s]Loading weights:  41%|####1     | 177/427 [00:04<00:04, 58.58it/s]Loading weights:  43%|####3     | 185/427 [00:04<00:04, 59.90it/s]Loading weights:  45%|####4     | 192/427 [00:04<00:03, 60.87it/s]Loading weights:  47%|####6     | 200/427 [00:04<00:03, 63.50it/s]Loading weights:  48%|####8     | 207/427 [00:04<00:04, 47.28it/s]Loading weights:  52%|#####1    | 222/427 [00:04<00:03, 66.12it/s]Loading weights:  54%|#####3    | 230/427 [00:04<00:03, 61.72it/s]Loading weights:  56%|#####5    | 239/427 [00:05<00:02, 64.38it/s]Loading weights:  58%|#####7    | 247/427 [00:05<00:02, 66.35it/s]Loading weights:  60%|#####9    | 255/427 [00:05<00:03, 52.87it/s]Loading weights:  61%|######1   | 261/427 [00:05<00:03, 50.05it/s]Loading weights:  64%|######3   | 273/427 [00:05<00:02, 62.81it/s]Loading weights:  66%|######5   | 280/427 [00:05<00:02, 54.07it/s]Loading weights:  68%|######8   | 292/427 [00:06<00:02, 64.19it/s]Loading weights:  70%|#######   | 299/427 [00:06<00:02, 63.99it/s]Loading weights:  72%|#######1  | 306/427 [00:06<00:01, 61.66it/s]Loading weights:  73%|#######3  | 313/427 [00:06<00:02, 46.00it/s]Loading weights:  77%|#######6  | 327/427 [00:06<00:01, 62.75it/s]Loading weights:  78%|#######8  | 335/427 [00:06<00:01, 56.87it/s]Loading weights:  81%|########  | 345/427 [00:06<00:01, 62.39it/s]Loading weights:  82%|########2 | 352/427 [00:07<00:01, 63.39it/s]Loading weights:  84%|########4 | 359/427 [00:07<00:01, 61.04it/s]Loading weights:  86%|########5 | 366/427 [00:07<00:01, 45.59it/s]Loading weights:  89%|########8 | 380/427 [00:07<00:00, 62.00it/s]Loading weights:  91%|######### | 388/427 [00:07<00:00, 56.41it/s]Loading weights:  93%|#########3| 398/427 [00:07<00:00, 61.90it/s]Loading weights:  95%|#########4| 405/427 [00:08<00:00, 55.90it/s]Loading weights:  97%|#########6| 413/427 [00:08<00:00, 58.42it/s]Loading weights:  98%|#########8| 420/427 [00:08<00:00, 49.46it/s]Loading weights: 100%|##########| 427/427 [00:08<00:00, 50.80it/s]
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 6 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:Qwen/Qwen3.5-9B
+  Ticks  : 2
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+  Debug  : ON (state diffs each tick)
+  Log    : logs/autonomous_debug_20260527_202807.log
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 #############L##########       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ############T###########       ~  Water
+ 10 ####M$#S################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ##@#####################       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+  [scenario] beat entered: tick>=0 phase=0 — Opening night at the Flagon
+  [WORLD] tick=0  The low murmur of the crowd swells briefly, then settles back.
+  [WORLD] tick=0  The fireplace pops and throws a brief gust of warmth across the nearest table.
+  [WORLD] tick=0  The front door swings open; cold air rushes in for a moment before it closes again.
+  [WORLD] tick=0  Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [WORLD] tick=0  The hearth pops; a glowing ember leaps onto the boards and dims to grey.
+  [WORLD] tick=0  Steam rises off the stew pot in slow curls.
+  [NPC:You] tick=0 action=barter
+    You barters to the air.
+  [NPC:Mira] tick=0 action=barter
+    Mira barters to the air.
+  [NPC:Tomas] tick=0 action=wait
+    Tomas pauses to catch their breath.
+  [NPC:Linna] tick=0 action=cast
+    Linna: hearth_glow — no visible effect.
+  [NPC:Ser Aldric] tick=0 action=drink
+    Ser Aldric drinks deeply, throat working.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 0 → 1) ──
+    world.meta['active_pressures']:
+        - [
+  {
+    "id": "secrets_rising",
+    "director_focus": "Secrets want air — gossip, eavesdrop, accuse if warranted.",
+    "director_tension": 0.55,
+    "ambient_probability_mult": {
+      "door_opens": 1.5
+    }
+  }
+]
+        + [
+  {
+    "id": "opening_mood",
+    "director_focus": "Settle the room — greetings, ale, low drama."
+  }
+]
+    world.meta['ambient_probability_mult']:
+        - {
+  "door_opens": 1.5
+}
+        + None
+    world.meta['director_scene_focus']:
+        - Secrets want air — gossip, eavesdrop, accuse if warranted.
+        + Settle the room — greetings, ale, low drama.
+    world.meta['scenario_phase']:
+        - 1
+        + 0
+    active pressures: opening_mood
+    edge Linna→Linna:believes_claim: 0.82 → 0.88
+    edge Linna→Mira:believes_claim: 0.61 → 0.69
+    edge Linna→Ser_Aldric:believes_claim: 0.75 → 0.95
+    edge Linna→Tomas:believes_claim: 0.98 → 1.16
+    edge Linna→You:believes_claim: 0.49 → 0.55
+    edge Linna→unknow:believes_claim: 0.53 → 0.81
+    edge Linna→world:believes_claim: 0.68 → 0.88
+    edge Mira→Linna:believes_claim: 0.61 → 0.69
+    edge Mira→Mira:believes_claim: 0.82 → 0.88
+    edge Mira→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Mira→Tomas:believes_claim: 0.98 → 1.16
+    edge Mira→You:believes_claim: 0.37 → 0.45
+    edge Mira→unknow:believes_claim: 0.39 → 0.69
+    edge Mira→world:believes_claim: 0.39 → 0.47
+    edge Ser_Aldric→Linna:believes_claim: 0.61 → 0.69
+    edge Ser_Aldric→Mira:believes_claim: 0.82 → 0.88
+    edge Ser_Aldric→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Ser_Aldric→Tomas:believes_claim: 0.98 → 1.16
+    edge Ser_Aldric→You:believes_claim: 0.37 → 0.45
+    edge Ser_Aldric→unknow:believes_claim: 0.39 → 0.69
+    edge Ser_Aldric→world:believes_claim: 0.88 → 1.06
+    edge Tomas→Linna:believes_claim: 0.82 → 0.88
+    edge Tomas→Mira:believes_claim: 0.37 → 0.45
+    edge Tomas→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Tomas→Tomas:believes_claim: 0.98 → 1.16
+    edge Tomas→You:believes_claim: 0.37 → 0.45
+    edge Tomas→unknow:believes_claim: 0.70 → 0.96
+    edge Tomas→world:believes_claim: 0.68 → 0.86
+    edge You→Tomas:believes_claim: 0.39 → 0.41
+    [You]
+      mood:
+        - friendly
+        + neutral
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Pressure Mira toward a specific secret, debt, or contradiction. Do not make small talk.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_npc_mdp_option_1
+    [Mira]
+      mood:
+        - friendly
+        + neutral
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Ser Aldric can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_npc_mdp_option_1
+      meta.observation_memory_n:
+        - 8
+        + 12
+      meta.pressure_boosts:
+        - None
+        + [
+  {
+    "raw_input": "[npc_auto:drive_speak]",
+    "verb": null,
+    "weight_delta": 0.08
+  }
+]
+    [Tomas]
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Linna can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_npc_mdp_option_1
+      meta.observe_streak:
+        - 1
+        + 0
+    [Ser Aldric]
+      mood:
+        - humiliated
+        + suspicious
+      meta.last_policy_branch:
+        - mind_scored
+        + budget_reactive
+      meta.observation_memory_n:
+        - 8
+        + 12
+    [Linna]
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Tomas can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_npc_mdp_option_1
+      meta.observation_memory_n:
+        - 8
+        + 12
+  [pressure] opening_mood
+  [policy] You: infer_npc_mdp_option_1
+  [policy] Mira: infer_npc_mdp_option_1
+  [policy] Tomas: infer_npc_mdp_option_1
+  [policy] Linna: infer_npc_mdp_option_1
+  [policy] Ser Aldric: budget_reactive
+  [NPC:You] tick=1 action=barter
+    You barters to the air.
+  [NPC:Mira] tick=1 action=barter
+    Mira barters to the air.
+  [NPC:Tomas] tick=1 action=observe
+    Tomas takes in the scene.
+  Linna — 5 away; mood neutral.
+    • remembered: ent_dabb9aab believes_claim ent_a3907fcb
+    • remembered: [npc_auto:pack_spell]
+    • remembered: [npc_auto:pack_spell]
+  [NPC:Linna] tick=1 action=cast
+    Linna: hearth_glow — no visible effect.
+  [NPC:Ser Aldric] tick=1 action=disguise
+    Ser Aldric disguises to the air.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 1 → 2) ──
+    [You]
+      meta.director_hint:
+        - Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Pressure Mira toward a specific secret, debt, or contradiction. Do not make small talk.
+        + Scene focus: Settle the room — greetings, ale, low drama.
+DM objective this turn: Create an opening beat with Mira: greet, haggle, probe, or move closer to a concrete social aim.
+    [Mira]
+      meta.director_hint:
+        - Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Ser Aldric can be trusted, extract leverage, or reveal a guarded half-truth.
+        + Scene focus: Settle the room — greetings, ale, low drama.
+DM objective this turn: Establish control of the room through Ser Aldric: pour a drink only if a receptacle is valid, greet, warn, or redirect tension.
+    [Tomas]
+      meta.director_hint:
+        - Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Linna can be trusted, extract leverage, or reveal a guarded half-truth.
+        + Scene focus: Settle the room — greetings, ale, low drama.
+DM objective this turn: Create an opening beat with Linna: greet, haggle, probe, or move closer to a concrete social aim.
+      meta.observe_streak:
+        - 0
+        + 1
+    [Linna]
+      meta.director_hint:
+        - Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Tomas can be trusted, extract leverage, or reveal a guarded half-truth.
+        + Scene focus: Settle the room — greetings, ale, low drama.
+DM objective this turn: Set the room's tone around Tomas: perform, tease, or listen for the first crack in the mood.
+  [pressure] opening_mood
+  [policy] You: infer_npc_mdp_option_1
+  [policy] Mira: infer_npc_mdp_option_1
+  [policy] Tomas: infer_npc_mdp_option_1
+  [policy] Linna: infer_npc_mdp_option_1
+  [policy] Ser Aldric: budget_reactive
+
+  [LOG] Saved session log: logs/autonomous_debug_20260527_202807.log
+
+────────────────────────────────────────────────────────────
+  Simulation ended at tick 2
+  Events logged : 36
+  Scenario phase: 0
+  Active pressures: opening_mood
+  Policy branches: infer_npc_mdp_option_1=8, budget_reactive=2
+────────────────────────────────────────────────────────────
+

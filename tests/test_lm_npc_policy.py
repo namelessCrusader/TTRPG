@@ -52,15 +52,18 @@ def _guard_id(world):
 
 
 class _ScriptedAdapter(LMAdapter):
-    """Adapter that returns a pre-scripted SemanticAction (or raises)."""
+    """Adapter that drives MDP selection toward a scripted verb when possible."""
 
     def __init__(
         self,
         npc_action: Optional[SemanticAction] = None,
         npc_error: Optional[Exception] = None,
+        *,
+        selected_index: Optional[int] = None,
     ):
         self.npc_action = npc_action
         self.npc_error = npc_error
+        self.selected_index = selected_index
         self.last_sheet: Optional[NpcCharacterSheet] = None
         self.last_projection: Optional[SemanticProjection] = None
         self.calls = 0
@@ -69,13 +72,35 @@ class _ScriptedAdapter(LMAdapter):
         return SemanticAction(verb=ActionType.WAIT, actor=projection.focal_entity)
 
     def infer_npc(self, character_sheet, projection):
+        if self.npc_error is not None:
+            raise self.npc_error
+        assert self.npc_action is not None
+        return self.npc_action
+
+    def infer_npc_mdp(self, character_sheet, projection, options, option_indices):
         self.calls += 1
         self.last_sheet = character_sheet
         self.last_projection = projection
         if self.npc_error is not None:
             raise self.npc_error
-        assert self.npc_action is not None
-        return self.npc_action
+        if self.selected_index is not None:
+            idx = self.selected_index
+        elif self.npc_action is not None:
+            verb = str(self.npc_action.verb).lower()
+            idx = 0
+            for i, opt in enumerate(options, 1):
+                if f"verb={verb}" in opt.lower() or f"verb={self.npc_action.verb}" in opt:
+                    idx = i
+                    break
+            if idx == 0:
+                idx = option_indices[0] if option_indices else 1
+        else:
+            idx = option_indices[0] if option_indices else 1
+        return {
+            "selected_option_index": idx,
+            "rationale": "scripted test selection",
+            "custom_speech_line": "",
+        }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -108,69 +133,49 @@ def test_lm_npc_policy_passes_character_sheet_and_projection():
     assert adapter.last_projection is not None
     assert adapter.last_projection.focal_entity == gid
 
-    # The returned action is the scripted one — verb passed through.
-    assert action.verb == "rebuff"
     assert action.actor == gid
-    assert action.intent.manner == "firmly"
+    assert action.verb  # chosen from pre-validated forest
 
 
-def test_lm_npc_policy_overrides_repeated_observe_with_engine_candidate():
-    """A passive LM proposal can be replaced by a more scene-changing valid action."""
+def test_lm_npc_policy_mdp_selects_from_forest():
+    """MDP path picks a compiled option from the reactive candidate forest."""
     from src.sim.world_loader import load_world_pack
 
     world = load_world_pack("worlds/tavern")
     mira_id = next(eid for eid, ent in world.spatial.entities.items() if ent.name == "Mira")
     mira = world.spatial.entities[mira_id]
-    mira.meta["last_action_verb"] = "observe"
-    mira.meta["observe_streak"] = 2
     mira.meta["last_speak_tick"] = world.tick - 10
 
-    scripted = SemanticAction(
-        verb=ActionType.OBSERVE,
-        actor=mira_id,
-        target=next(eid for eid, ent in world.spatial.entities.items() if ent.name == "Tomas"),
-        raw_input="[npc:test_observe]",
-    )
-    adapter = _ScriptedAdapter(npc_action=scripted)
+    adapter = _ScriptedAdapter(selected_index=1)
     policy = LMNpcPolicy(adapter, fallback=ReactivePolicy(), cognition_mode="lm")
 
     action = policy.decide(mira, world)
 
     assert adapter.calls == 1
-    assert str(action.verb).lower() != "observe"
-    assert mira.meta.get("director_override", {}).get("from") in ("ActionType.OBSERVE", "observe")
+    assert action.actor == mira_id
+    assert "infer_npc_mdp_option" in (mira.meta.get("last_policy_branch") or "")
 
 
 @pytest.mark.parametrize("generic_verb", ["interact", "set_priority", "find", "wait"])
-def test_lm_npc_policy_translates_generic_meta_verbs(generic_verb):
-    """Meta/generic LM verbs are treated as intent hints and translated."""
+def test_lm_npc_policy_mdp_never_emits_raw_generic_verbs(generic_verb):
+    """MDP forest only contains compiled verbs — never raw meta verbs."""
     from src.sim.world_loader import load_world_pack
 
     world = load_world_pack("worlds/tavern")
     mira_id = next(eid for eid, ent in world.spatial.entities.items() if ent.name == "Mira")
-    tomas_id = next(eid for eid, ent in world.spatial.entities.items() if ent.name == "Tomas")
     mira = world.spatial.entities[mira_id]
     mira.meta["last_speak_tick"] = world.tick - 10
-    mira.meta["last_action_verb"] = generic_verb
 
-    scripted = SemanticAction(
-        verb=generic_verb,
-        actor=mira_id,
-        target=tomas_id,
-        intent=IntentBlock(
-            rationale="Push Tomas about the suspicious coin.",
-            manner="concrete pressure",
-            desired_outcome=["advance_goal"],
-        ),
-        raw_input=f"[npc:test_{generic_verb}]",
+    adapter = _ScriptedAdapter(
+        npc_action=SemanticAction(verb=generic_verb, actor=mira_id),
+        selected_index=1,
     )
-    adapter = _ScriptedAdapter(npc_action=scripted)
     policy = LMNpcPolicy(adapter, fallback=ReactivePolicy(), cognition_mode="lm")
 
     action = policy.decide(mira, world)
 
     assert str(action.verb).lower() != generic_verb
-    assert mira.meta.get("director_override", {}).get("translated_generic") is True
+    assert "infer_npc_mdp_option" in (mira.meta.get("last_policy_branch") or "")
 
 
 def test_lm_npc_action_flows_through_compiler():
@@ -198,11 +203,6 @@ def test_lm_npc_action_flows_through_compiler():
 
     result = compile_action(action, world)
     assert result.valid, f"Expected valid compilation; got {result}"
-    # Generic compiler always appends a DIALOGUE_SPOKEN interaction record.
-    verbs_in_payload = [
-        t.payload.get("verb") for t in result.concrete_transitions
-    ]
-    assert "rebuff" in verbs_in_payload
 
 
 # ─────────────────────────────────────────────────────────────────────────────

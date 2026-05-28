@@ -1,0 +1,29 @@
+Removing conda version miniforge3-24.7.1
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 58944578
+  Node       : gypsum-gpu001
+  Arguments  : voxel_tavern 3
+========================================
+/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/environments/ttrpg/lib/python3.11/site-packages/torch/cuda/__init__.py:384: UserWarning: Found GPU0 Tesla M40 24GB which is of compute capability (CC) 5.2.
+The following list shows the CCs this version of PyTorch was built for and the hardware CCs it supports:
+- 7.5 which supports hardware CC >=7.5,<8.0
+- 8.0 which supports hardware CC >=8.0,<9.0 except {8.7}
+- 8.6 which supports hardware CC >=8.6,<9.0 except {8.7}
+- 9.0 which supports hardware CC >=9.0,<10.0
+- 10.0 which supports hardware CC >=10.0,<11.0 except {10.1}
+- 12.0 which supports hardware CC >=12.0,<13.0
+Please follow the instructions at https://pytorch.org/get-started/locally/ to install a PyTorch release that supports one of these CUDA versions: 12.6
+  _warn_unsupported_code(d, device_cc, code_ccs)
+/work/pi_andrewlan_umass_edu/nkparikh_umass_edu/environments/ttrpg/lib/python3.11/site-packages/torch/cuda/__init__.py:502: UserWarning: 
+Tesla M40 24GB with CUDA capability sm_52 is not compatible with the current PyTorch installation.
+The current PyTorch install supports CUDA capabilities sm_75 sm_80 sm_86 sm_90 sm_100 sm_120.
+If you want to use the Tesla M40 24GB GPU with PyTorch, please check the instructions at https://pytorch.org/get-started/locally/
+
+  queued_call()
+Torch model load failed for qwen3:1.7b. If this is a HuggingFace download/tokenizer error, choose a known-loadable model with TORCH_MODEL or pass a local checkpoint via TORCH_PATH. GGUF-only downloads need Outlines (--outlines), not --torch. Error: Repo id must use alphanumeric chars, '-', '_' or '.'. The name cannot start or end with '-' or '.' and the maximum length is 96: 'qwen3:1.7b'.
+Torch warmup failed for qwen3:1.7b (LM calls will fail until the model loads): Repo id must use alphanumeric chars, '-', '_' or '.'. The name cannot start or end with '-' or '.' and the maximum length is 96: 'qwen3:1.7b'.
+Torch model load failed for gemma3:1b. If this is a HuggingFace download/tokenizer error, choose a known-loadable model with TORCH_MODEL or pass a local checkpoint via TORCH_PATH. GGUF-only downloads need Outlines (--outlines), not --torch. Error: Repo id must use alphanumeric chars, '-', '_' or '.'. The name cannot start or end with '-' or '.' and the maximum length is 96: 'gemma3:1b'.
+Torch warmup failed for gemma3:1b (LM calls will fail until the model loads): Repo id must use alphanumeric chars, '-', '_' or '.'. The name cannot start or end with '-' or '.' and the maximum length is 96: 'gemma3:1b'.
+[2026-05-27T04:01:54.077] error: *** JOB 58944578 ON gypsum-gpu001 CANCELLED AT 2026-05-27T04:01:54 DUE to SIGNAL Terminated ***

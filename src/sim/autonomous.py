@@ -463,6 +463,9 @@ def run_simulation(
             if delay > 0:
                 time.sleep(delay)
 
+            import sys
+            sys.stdout.flush()
+
             if autosave_every > 0 and world.tick % autosave_every == 0:
                 ck_dir = checkpoint_dir or "saves/autonomous"
                 try:
@@ -512,6 +515,10 @@ def run_simulation(
             f"{k}={v}" for k, v in sorted(policy_branches.items(), key=lambda x: -x[1])
         )
         print(f"  Policy branches: {branch_summary}")
+    from .run_metrics import format_run_metrics
+
+    for line in format_run_metrics(world):
+        print(line)
     if story_mode:
         for line in build_session_recap(world):
             print(line)

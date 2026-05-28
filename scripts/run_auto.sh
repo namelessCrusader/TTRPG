@@ -65,14 +65,17 @@ if [[ -n "$TRACE_DIR" ]]; then
   EXTRA_ARGS+=(--trace-dir "$TRACE_DIR")
 fi
 
-BACKEND="${BACKEND:-ollama}"
-TORCH_MODEL="${TORCH_MODEL:-Qwen/Qwen2.5-1.5B-Instruct}"
+BACKEND="${BACKEND:-torch}"
+TORCH_MODEL="${TORCH_MODEL:-Qwen/Qwen3.5-9B}"
+# TORCH_MODEL="${TORCH_MODEL:-Qwen/Qwen2.5-1.5B-Instruct}"
 # TORCH_MODEL="${TORCH_MODEL:-DavidAU/Gemma-3-1B-it-GLM-4.7-Flash-Heretic-Uncensored-Thinking}"
 # OLLAMA_MODEL="${OLLAMA_MODEL:-dolphin-phi:latest}"
 OLLAMA_MODEL="${OLLAMA_MODEL:-gemma3:1b}"
 # Stronger default for player intent parsing when tiered models are enabled
-PLAYER_MODEL="${PLAYER_MODEL:-qwen3:1.7b}"
-NPC_MODEL="${NPC_MODEL:-$OLLAMA_MODEL}"
+PLAYER_MODEL="${PLAYER_MODEL:-Qwen/Qwen3.5-9B}"
+# PLAYER_MODEL="${PLAYER_MODEL:-qwen3:1.7b}"
+NPC_MODEL="${NPC_MODEL:-$TORCH_MODEL}"
+# NPC_MODEL="${NPC_MODEL:-$OLLAMA_MODEL}"
 # Role-tiered slots — empty = inherit from player/npc model.
 ADJUDICATOR_MODEL="${ADJUDICATOR_MODEL:-}"
 NARRATOR_MODEL="${NARRATOR_MODEL:-}"

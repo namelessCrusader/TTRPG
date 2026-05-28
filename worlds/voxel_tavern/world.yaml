@@ -35,6 +35,6 @@ consequences:
 rng_seed: 27182
 
 extra:
-  scenario: scenarios/kitchen_fire_panic.yaml
+  scenario: scenarios/tavern_night1.yaml
   learn_from_adjudication: true
   adjudication_cache: true

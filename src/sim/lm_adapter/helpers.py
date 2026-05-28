@@ -469,9 +469,19 @@ def _build_system_prompt() -> str:
         the two paths stay aligned.
     """
     return (
-        "You translate the player's natural-language intent into one "
-        "JSON object matching the SemanticAction schema. Output JSON "
-        "only — no prose, no markdown, no commentary.\n\n"
+        "You translate the player's natural-language intent into a clean temporal logic (LTL) specification "
+        "consisting of exactly five lines. Output ONLY these five lines with no prose, no markdown, and no JSON:\n\n"
+        "  1. NEXT(verb == \"<verb_name>\") -- The action verb (e.g. speak, attack, move, take, barter, teach, learn).\n"
+        "  2. NEXT(target == \"<target_entity_id_or_none>\") -- The entity ID of the target, or \"none\".\n"
+        "  3. EVENTUALLY(rationale == \"<in-character reasoning>\") -- Why the character is performing this action.\n"
+        "  4. ALWAYS(manner == \"<how action is performed/spoken dialogue>\") -- The body language, custom speech, or exact words spoken.\n"
+        "  5. STYLE(emotional_tone == \"<tone>\", aggression == <0-100>, visibility == <0-100>) -- Tone, aggression (0=peaceful, 100=assault), and visibility (0=covert, 100=overt).\n\n"
+        "EXAMPLE:\n"
+        "NEXT(verb == \"speak\")\n"
+        "NEXT(target == \"ent_mira\")\n"
+        "EVENTUALLY(rationale == \"I want to ask Mira about the local gossip and rumors.\")\n"
+        "ALWAYS(manner == \"Mira, what's been happening around town lately?\")\n"
+        "STYLE(emotional_tone == \"friendly\", aggression == 30, visibility == 80)\n\n"
         + _OPEN_VERB_GUIDE
     )
 
@@ -786,7 +796,8 @@ def _build_user_prompt(
         f"{entity_hint}"
         f"{mutation_block}"
         f"PLAYER INTENT: {player_intent}\n\n"
-        f"Respond with a SemanticAction JSON only."
+        "Respond with your five LTL lines only (NEXT verb, NEXT target, EVENTUALLY rationale, "
+        "ALWAYS manner, STYLE ...). No JSON."
     )
 
 
@@ -993,17 +1004,19 @@ def _build_consequence_prompt(
         "You are the consequence engine for a simulation. "
         "Given a completed action, propose 0 to 3 world-state changes that "
         "realistically follow from it. Each change must reference an entity "
-        "that exists in the visible_entities list — never invent new ones. "
-        "Be conservative: only propose changes that are clearly motivated by the action. "
-        "Prefer emotional/alertness changes over health changes.\n"
-        "Payload format by kind:\n"
-        "  entity_emotional_state_changed: {\"entity_id\": \"...\", \"to\": \"friendly\"}\n"
-        "  entity_alertness_changed: {\"entity_id\": \"...\", \"to\": \"medium\"}\n"
-        "  entity_condition_changed: {\"entity_id\": \"...\", \"condition\": \"...\", \"ticks\": 3}\n"
-        "  entity_health_changed: {\"entity_id\": \"...\", \"delta\": -5}\n"
-        "  edge_created: {\"source\": \"...\", \"target\": \"...\", "
-        "\"edge_kind\": \"respects\", \"weight\": 0.5}\n"
-        "Output a JSON array only. No prose, no markdown."
+        "that exists in the visible_entities list — never invent new ones.\n"
+        "Be conservative: only propose changes that are clearly motivated by the action.\n"
+        "Prefer emotional/alertness changes over health changes.\n\n"
+        "Specify each proposed consequence on its own line using the CONSEQUENCE(...) format shown below:\n\n"
+        "  1. CONSEQUENCE(kind == \"entity_emotional_state_changed\", entity_id == \"<id>\", to == \"<mood>\") -- mood options: friendly, suspicious, angry, neutral, happy, etc.\n"
+        "  2. CONSEQUENCE(kind == \"entity_alertness_changed\", entity_id == \"<id>\", to == \"<level>\") -- level options: unaware, low, medium, high, combat\n"
+        "  3. CONSEQUENCE(kind == \"entity_condition_changed\", entity_id == \"<id>\", condition == \"<cond>\", ticks == <ticks>) -- condition options: sick, drunk, poisoned, burning, etc.\n"
+        "  4. CONSEQUENCE(kind == \"entity_health_changed\", entity_id == \"<id>\", delta == <negative_or_positive_int>)\n"
+        "  5. CONSEQUENCE(kind == \"edge_created\", source == \"<id_1>\", target == \"<id_2>\", edge_kind == \"<kind>\", weight == <float>) -- edge_kind: ally_of, respects, wary_of, enemy_of, hostile_to\n\n"
+        "Do NOT respond with JSON. Output ONLY the CONSEQUENCE lines (one per line, up to 3):\n\n"
+        "EXAMPLE:\n"
+        "CONSEQUENCE(kind == \"entity_emotional_state_changed\", entity_id == \"ent_mira\", to == \"friendly\")\n"
+        "CONSEQUENCE(kind == \"edge_created\", source == \"ent_mira\", target == \"You\", edge_kind == \"respects\", weight == 0.15)"
     )
     target_str = str(action.target) if action.target else "nobody"
     utterance = (action.intent.rationale or action.verb) if action.intent else action.verb
@@ -1014,7 +1027,7 @@ def _build_consequence_prompt(
         f"  target: {target_str}\n"
         f"  utterance/intent: {utterance}\n\n"
         f"Visible entities:\n{visible_summary}\n\n"
-        "Propose 0-3 world-state consequences as a JSON array:"
+        "Propose 0-3 world-state consequences using the CONSEQUENCE lines:"
     )
     return system, user
 
@@ -1055,8 +1068,88 @@ def _clean_json_string(text: str) -> str:
     """Best-effort cleanup of common LLM JSON syntax errors (trailing commas, unescaped newlines, etc.)."""
     import re as _re
 
+    # Strip surrounding whitespace
+    cleaned = text.strip()
+
+    # 1. Strip any xml thought tags like <thought>...</thought> (case-insensitive)
+    cleaned = _re.sub(r"<thought>[\s\S]*?</thought>", "", cleaned, flags=_re.IGNORECASE).strip()
+    cleaned = _re.sub(r"<thought>[\s\S]*", "", cleaned, flags=_re.IGNORECASE).strip() # In case it is truncated inside thought
+
+    # 2. Look for "thinking process" or "thought" headers and strip them and everything before them
+    # if there is something resembling JSON afterwards.
+    for pattern in [r"thinking\s+process\s*:", r"thought\s+process\s*:", r"thought\s*:"]:
+        match = _re.search(pattern, cleaned, _re.IGNORECASE)
+        if match:
+            post_thinking = cleaned[match.end():].strip()
+            if "{" in post_thinking or "[" in post_thinking:
+                cleaned = post_thinking
+
+    # 3. Look for a json markdown block (```json ... ``` or ``` ...)
+    md_match = _re.search(r"```(?:json)?\s*([\s\S]*?)```", cleaned, _re.IGNORECASE)
+    if md_match:
+        cleaned = md_match.group(1).strip()
+    else:
+        # Check for truncated markdown block that starts with ```json or ``` but never closes
+        md_start = _re.search(r"```(?:json)?\s*([\s\S]*)", cleaned, _re.IGNORECASE)
+        if md_start:
+            cleaned = md_start.group(1).strip()
+
+    # 4. If it still doesn't look like a direct JSON object/array, extract candidate JSON string
+    if not ((cleaned.startswith("{") and cleaned.endswith("}")) or (cleaned.startswith("[") and cleaned.endswith("]"))):
+        first_curly = cleaned.find("{")
+        last_curly = cleaned.rfind("}")
+        first_bracket = cleaned.find("[")
+        last_bracket = cleaned.rfind("]")
+        
+        # Determine whether curly or square bracket comes first and matches better
+        if first_curly != -1 and last_curly != -1 and last_curly > first_curly:
+            if first_bracket != -1 and last_bracket != -1 and last_bracket > first_bracket and first_bracket < first_curly:
+                cleaned = cleaned[first_bracket:last_bracket + 1].strip()
+            else:
+                cleaned = cleaned[first_curly:last_curly + 1].strip()
+        elif first_bracket != -1 and last_bracket != -1 and last_bracket > first_bracket:
+            cleaned = cleaned[first_bracket:last_bracket + 1].strip()
+
+    # 5. Handle potential truncation by automatically appending missing closing braces/brackets
+    if cleaned.startswith("{") or cleaned.startswith("["):
+        stack = []
+        in_string = False
+        escape = False
+        for char in cleaned:
+            if escape:
+                escape = False
+                continue
+            if char == "\\":
+                escape = True
+                continue
+            if char == '"':
+                in_string = not in_string
+                continue
+            if not in_string:
+                if char in ("{", "["):
+                    stack.append(char)
+                elif char == "}":
+                    if stack and stack[-1] == "{":
+                        stack.pop()
+                elif char == "]":
+                    if stack and stack[-1] == "[":
+                        stack.pop()
+        
+        if in_string:
+            cleaned += '"'
+            
+        while stack:
+            cleaned = cleaned.strip()
+            if cleaned.endswith(","):
+                cleaned = cleaned[:-1].strip()
+            top = stack.pop()
+            if top == "{":
+                cleaned += "}"
+            elif top == "[":
+                cleaned += "]"
+
     # Remove trailing commas in arrays/objects (e.g. [1, 2,] or {"a": 1,})
-    cleaned = _re.sub(r",\s*(\]|})", r"\1", text)
+    cleaned = _re.sub(r",\s*(\]|})", r"\1", cleaned)
     return cleaned
 
 
@@ -1168,12 +1261,26 @@ def _build_adjudication_prompt(
         "Rules:\n"
         "- Only reference entity IDs from visible_entities.\n"
         "- Prefer tile_marked / edge_updated / emotional changes over damage.\n"
-        "- For trade/haggle/reputation/faction/craft intents, use transition_proposals "
+        "- For trade/haggle/reputation/faction/craft intents, use CONSEQUENCE lines "
         "with modest stat deltas (gold, reputation) and durable facts.\n"
         "- synthesized_verb: only if a simple snake_case verb would compile "
         "(e.g. shake_hands, bow) — otherwise null.\n"
-        "- Be conservative; 0-2 transition_proposals is ideal.\n"
-        "- ruling_text: 1-2 sentences the player reads as the DM's call."
+        "- Be conservative; 0-2 CONSEQUENCE lines is ideal.\n\n"
+        "Specify your adjudication rulings using the line-by-line declarative format below:\n\n"
+        "  1. RULING(ruling_text == \"<your DM narration of what happens>\")\n"
+        "  2. SYNTHESIZED_VERB(verb == \"<snake_case_verb_or_none>\")\n"
+        "  3. FACT(claim == \"<durable statement>\", scope == \"<world_or_local>\", subject_id == \"<ent_id_or_none>\")\n"
+        "  4. CONSEQUENCE(kind == \"entity_emotional_state_changed\", entity_id == \"<id>\", to == \"<mood>\") -- mood options: friendly, suspicious, angry, neutral, happy, etc.\n"
+        "  5. CONSEQUENCE(kind == \"entity_alertness_changed\", entity_id == \"<id>\", to == \"<level>\") -- level options: unaware, low, medium, high, combat\n"
+        "  6. CONSEQUENCE(kind == \"entity_health_changed\", entity_id == \"<id>\", delta == <int>)\n"
+        "  7. CONSEQUENCE(kind == \"edge_created\", source == \"<id_1>\", target == \"<id_2>\", edge_kind == \"<kind>\", weight == <float>) -- edge_kind: ally_of, respects, wary_of, enemy_of, hostile_to\n"
+        "  8. SCHEDULED(fire_tick_offset == <ticks>, narration == \"<narration>\")\n\n"
+        "Do NOT respond with JSON. Output ONLY these specification lines:\n\n"
+        "EXAMPLE:\n"
+        "RULING(ruling_text == \"Ser Aldric nods respectfully and agrees to hear you out.\")\n"
+        "SYNTHESIZED_VERB(verb == \"nod\")\n"
+        "CONSEQUENCE(kind == \"entity_emotional_state_changed\", entity_id == \"ent_aldric\", to == \"friendly\")\n"
+        "FACT(claim == \"Ser Aldric has agreed to meet the guild master.\", scope == \"world\", subject_id == \"ent_aldric\")"
     )
     user = (
         f"Player intent: {intent!r}\n"
@@ -1194,12 +1301,95 @@ def _parse_adjudication_response(
     visible_ids: list[str],
     current_tick: int,
 ) -> AdjudicationResult:
-    """Parse LM JSON into AdjudicationResult."""
+    """Parse LM non-JSON LTL or JSON into AdjudicationResult."""
     text = _strip_model_thinking(raw).strip()
     if not text:
         return AdjudicationResult()
+
+    adj = AdjudicationResult()
+    
+    # 1. Try LTL/Structured parsing first!
+    import re as _re
+    
+    ruling_match = _re.search(r"RULING\s*\(\s*ruling_text\s*==\s*\"([\s\S]*?)\"\s*\)", text, _re.IGNORECASE)
+    synthesized_verb_match = _re.search(r"SYNTHESIZED_VERB\s*\(\s*verb\s*==\s*\"([^\"]*)\"\s*\)", text, _re.IGNORECASE)
+    
+    if ruling_match:
+        adj.ruling_text = ruling_match.group(1).strip()[:400]
+        if synthesized_verb_match:
+            sv = synthesized_verb_match.group(1).strip()
+            if sv and sv.lower() != "none" and sv.lower() != "null":
+                adj.synthesized_verb = sv.lower().replace(" ", "_")[:40]
+                
+        # Parse FACT(...) lines
+        fact_lines = _re.findall(r"FACT\s*\(([\s\S]*?)\)", text, _re.IGNORECASE)
+        for line in fact_lines:
+            try:
+                fields = {}
+                pairs = _re.findall(r"(\w+)\s*==\s*(?:\"([^\"]*)\"|([-\d\.]+))", line)
+                for k, s_val, n_val in pairs:
+                    if s_val != "":
+                        fields[k] = s_val
+                    else:
+                        fields[k] = n_val
+                
+                claim = fields.get("claim")
+                if claim:
+                    scope_raw = str(fields.get("scope") or "world").lower()
+                    try:
+                        scope = WorldFactScope(scope_raw)
+                    except ValueError:
+                        scope = WorldFactScope.WORLD
+                        
+                    adj.facts.append(
+                        WorldFact(
+                            claim=claim[:200],
+                            scope=scope,
+                            subject_id=fields.get("subject_id") if fields.get("subject_id") != "none" else None,
+                            tags=[]
+                        )
+                    )
+            except Exception as exc:
+                logger.debug("adjudicate fact parse failed for line %r: %s", line, exc)
+                
+        # Parse CONSEQUENCE lines
+        adj.transition_proposals = _parse_proposals(raw, visible_ids)
+        
+        # Parse SCHEDULED(...) lines
+        scheduled_lines = _re.findall(r"SCHEDULED\s*\(([\s\S]*?)\)", text, _re.IGNORECASE)
+        for line in scheduled_lines:
+            try:
+                fields = {}
+                pairs = _re.findall(r"(\w+)\s*==\s*(?:\"([^\"]*)\"|([-\d\.]+))", line)
+                for k, s_val, n_val in pairs:
+                    if s_val != "":
+                        fields[k] = s_val
+                    else:
+                        if "." in n_val:
+                            fields[k] = float(n_val)
+                        else:
+                            fields[k] = int(n_val)
+                            
+                offset = int(fields.get("fire_tick_offset") or 1)
+                offset = max(1, min(20, offset))
+                narration = fields.get("narration", "")
+                
+                adj.scheduled_effects.append(
+                    ScheduledEffect(
+                        fire_tick=current_tick + offset,
+                        kind=ScheduledEffectKind.NARRATION,
+                        transitions=[],
+                        narration=narration[:200] or None,
+                        rationale=None
+                    )
+                )
+            except Exception as exc:
+                logger.debug("adjudicate scheduled parse failed for line %r: %s", line, exc)
+                
+        return adj
+
+    # 2. Fall back to standard JSON parsing if no RULING line is found
     if text.startswith("```"):
-        import re as _re
         text = _re.sub(r"^```(?:json)?\s*", "", text)
         text = _re.sub(r"\s*```$", "", text)
     text = _clean_json_string(text)
@@ -1213,6 +1403,7 @@ def _parse_adjudication_response(
         except json.JSONDecodeError:
             logger.debug("adjudicate: invalid JSON — %r", raw[:300])
             return AdjudicationResult()
+            
     if not isinstance(data, dict):
         return AdjudicationResult()
 
@@ -1275,16 +1466,81 @@ def _parse_adjudication_response(
 
 def _parse_proposals(raw: str, visible_ids: list[str]) -> list[TransitionProposal]:
     """
-    Parse LM JSON output into a list of TransitionProposal objects.
-
+    Parse LM consequence proposals supporting both the non-JSON CONSEQUENCE format and JSON arrays.
     Silently drops malformed items so a bad proposal never crashes the engine.
     """
-    raw = _extract_json_array(raw)
-    if not raw.strip():
+    text = _strip_model_thinking(raw).strip()
+    if not text:
         logger.debug("propose_consequences: empty response from LM")
         return []
+
+    valid_ids = set(visible_ids)
+    proposals: list[TransitionProposal] = []
+    
+    # 1. Try to parse line-by-line CONSEQUENCE(...) structure
+    import re as _re
+    
+    consequence_lines = _re.findall(r"CONSEQUENCE\s*\(([\s\S]*?)\)", text, _re.IGNORECASE)
+    if consequence_lines:
+        for line in consequence_lines:
+            try:
+                # Parse fields inside CONSEQUENCE(field1 == val1, field2 == val2, ...)
+                fields = {}
+                pairs = _re.findall(r"(\w+)\s*==\s*(?:\"([^\"]*)\"|([-\d\.]+))", line)
+                for k, s_val, n_val in pairs:
+                    if s_val != "":
+                        fields[k] = s_val
+                    else:
+                        # Try parsing as float if dot is present, else int
+                        if "." in n_val:
+                            fields[k] = float(n_val)
+                        else:
+                            fields[k] = int(n_val)
+                
+                kind = fields.get("kind")
+                if not kind:
+                    continue
+                
+                # Reconstruct payload based on kind
+                payload = {}
+                if kind == "entity_emotional_state_changed":
+                    payload = {"entity_id": fields.get("entity_id"), "to": fields.get("to")}
+                elif kind == "entity_alertness_changed":
+                    payload = {"entity_id": fields.get("entity_id"), "to": fields.get("to")}
+                elif kind == "entity_condition_changed":
+                    payload = {"entity_id": fields.get("entity_id"), "condition": fields.get("condition"), "ticks": fields.get("ticks", 3)}
+                elif kind == "entity_health_changed":
+                    payload = {"entity_id": fields.get("entity_id"), "delta": fields.get("delta", 0)}
+                elif kind == "edge_created":
+                    payload = {
+                        "source": fields.get("source"),
+                        "target": fields.get("target"),
+                        "edge_kind": fields.get("edge_kind"),
+                        "weight": fields.get("weight", 0.1)
+                    }
+                else:
+                    continue
+                    
+                # Standard validation checks
+                for field in ("entity_id", "source", "target"):
+                    if field in payload and payload[field] not in valid_ids:
+                        break
+                else:
+                    proposals.append(
+                        TransitionProposal(kind=kind, payload=payload)
+                    )
+            except Exception as exc:
+                logger.debug("propose_consequences line parse failed for line %r: %s", line, exc)
+                
+        if proposals:
+            return proposals
+
+    # 2. Fall back to standard JSON parsing if no CONSEQUENCE lines found
+    raw_array = _extract_json_array(raw)
+    if not raw_array.strip():
+        return []
     try:
-        data = json.loads(raw)
+        data = json.loads(raw_array)
     except json.JSONDecodeError:
         logger.debug("propose_consequences: invalid JSON from LM — %r", raw[:300])
         return []
@@ -1292,8 +1548,6 @@ def _parse_proposals(raw: str, visible_ids: list[str]) -> list[TransitionProposa
         logger.warning("propose_consequences: expected JSON array, got %s", type(data).__name__)
         return []
 
-    valid_ids = set(visible_ids)
-    proposals: list[TransitionProposal] = []
     for item in data:
         if not isinstance(item, dict):
             continue
@@ -1334,14 +1588,65 @@ def _parse_lm_response(
     player_intent: str,
     visible_entity_ids: Optional[list[str]] = None,
 ) -> SemanticAction:
-    """Parse LM JSON output into a SemanticAction, raising on failure."""
-    raw = _clean_json_string(raw)
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise MalformedActionError(
-            f"LM response was not valid JSON: {exc}\nRaw: {raw[:500]}"
-        ) from exc
+    """Parse LM LTL or JSON output into a SemanticAction, raising on failure."""
+    text = _strip_model_thinking(raw).strip()
+    
+    # 1. Try LTL/Structured parsing first!
+    import re as _re
+    
+    verb_match = _re.search(r"NEXT\s*\(\s*verb\s*==\s*\"([^\"]+)\"\s*\)", text, _re.IGNORECASE)
+    target_match = _re.search(r"NEXT\s*\(\s*target\s*==\s*\"([^\"]*)\"\s*\)", text, _re.IGNORECASE)
+    rationale_match = _re.search(r"EVENTUALLY\s*\(\s*rationale\s*==\s*\"([\s\S]*?)\"\s*\)", text, _re.IGNORECASE)
+    manner_match = _re.search(r"ALWAYS\s*\(\s*manner\s*==\s*\"([\s\S]*?)\"\s*\)", text, _re.IGNORECASE)
+    
+    style_match = _re.search(
+        r"STYLE\s*\(\s*emotional_tone\s*==\s*\"([^\"]*)\"\s*,\s*aggression\s*==\s*(\d+)\s*,\s*visibility\s*==\s*(\d+)\s*\)", 
+        text, 
+        _re.IGNORECASE
+    )
+    
+    if verb_match:
+        verb = verb_match.group(1).strip()
+        target = target_match.group(1).strip() if target_match else "none"
+        if target.lower() == "none" or not target:
+            target = None
+            
+        rationale = rationale_match.group(1).strip() if rationale_match else ""
+        manner = manner_match.group(1).strip() if manner_match else ""
+        
+        emotional_tone = "neutral"
+        aggression = 50
+        visibility = 50
+        if style_match:
+            emotional_tone = style_match.group(1).strip() or "neutral"
+            aggression = int(style_match.group(2))
+            visibility = int(style_match.group(3))
+            
+        data = {
+            "verb": verb,
+            "target": target,
+            "intent": {
+                "rationale": rationale,
+                "manner": manner
+            },
+            "style": {
+                "emotional_tone": emotional_tone,
+                "aggression": aggression,
+                "visibility": visibility
+            }
+        }
+    else:
+        # 2. Fallback to standard JSON parsing
+        text = _clean_json_string(text)
+        if text.startswith("```"):
+            text = _re.sub(r"^```(?:json)?\s*", "", text)
+            text = _re.sub(r"\s*```$", "", text)
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise MalformedActionError(
+                f"LM response was not valid LTL or JSON: {exc}\nRaw: {raw[:500]}"
+            ) from exc
 
     # Ensure actor is always the focal entity
     data["actor"] = focal_entity
@@ -1404,6 +1709,7 @@ def _build_mdp_selection_prompt(
 ) -> tuple[str, str]:
     """
     Build (system, user) prompts for decision-focused MDP option selection.
+    Using robust LTL (Linear Temporal Logic) temporal logic specification format.
     """
     role = sheet.role or "townsperson"
     persona = sheet.personality or "ordinary"
@@ -1421,10 +1727,18 @@ def _build_mdp_selection_prompt(
         "Your task this turn is to analyze the situation and select the best option "
         "from the provided list of valid, pre-validated actions (the Option Forest).\n"
         "Only choose one of the valid numbered indices.\n"
-        "If you want to say something in-character while performing the action, write it in `custom_speech_line`.\n"
-        "Option 0 is always a Creative Custom Action wildcard. Only select 0 if NONE of the "
-        "pre-validated options represent your current drive or if you have a brilliant creative idea.\n"
-        "Output ONLY a valid JSON object matching the schema."
+        "Specify your decision using clean Linear Temporal Logic (LTL) temporal operators exactly as shown below:\n\n"
+        "  1. NEXT(selected_option_index == <integer_index>) -- The exact index of the option you choose (must be from 1 to N).\n"
+        "  2. EVENTUALLY(rationale == \"<your in-character reasoning>\") -- Why you chose this and what you hope to achieve.\n"
+        "  3. ALWAYS(custom_speech_line == \"<spoken dialogue>\") -- What you say aloud this turn.\n"
+        "     If your chosen action is social (speak, greet, barter, haggle, gossip, tease, etc.) "
+        "or involves another person, you MUST write a short in-character line (not empty).\n"
+        "     For purely physical actions (move, drink, cast, wait), use \"\".\n\n"
+        "Do NOT respond with JSON. Output ONLY the LTL specifications in this exact format:\n\n"
+        "EXAMPLE:\n"
+        "NEXT(selected_option_index == 2)\n"
+        "EVENTUALLY(rationale == \"I need to talk to Ser Aldric to clear up our suspicion.\")\n"
+        "ALWAYS(custom_speech_line == \"Ser Aldric, a word if you please.\")"
     )
 
     proj_yaml = projection.model_dump_json(indent=2)
@@ -1443,17 +1757,77 @@ def _build_mdp_selection_prompt(
         f"{room_dialogue_block}"
         f"AVAILABLE OPTIONS (THE OPTION FOREST):\n"
         f"{options_block}\n\n"
-        "Select your option by index and respond with JSON matching the schema."
+        "Select your option by index and respond ONLY with your three LTL logic specification lines (NEXT, EVENTUALLY, ALWAYS)."
     )
 
     return system, user
 
 
 def _parse_mdp_selection_response(raw: str) -> dict:
-    """Parse dynamic option selection JSON response."""
+    """Parse dynamic option selection response supporting both JSON and LTL specification formats."""
     text = _strip_model_thinking(raw).strip()
+    
+    # 1. Try to find LTL specifications first, as they are extremely clean and robust
+    import re as _re
+    
+    # NEXT(selected_option_index == 3)
+    next_match = _re.search(
+        r"NEXT\s*\(\s*(?:selected_option_index|action_index)\s*==\s*(\d+)\s*\)",
+        text,
+        _re.IGNORECASE,
+    )
+    if not next_match:
+        # Fallback regex for simpler forms like selected_option_index: 3 or Index: 3
+        next_match = _re.search(
+            r"(?:selected_option_index|INDEX|Index|index|option|OPTION|NEXT|Next)\s*[:=]\s*(\d+)",
+            text,
+        )
+        
+    # EVENTUALLY(rationale == "...")
+    eventually_match = _re.search(
+        r"EVENTUALLY\s*\(\s*rationale\s*==\s*\"([\s\S]*?)\"\s*\)",
+        text,
+        _re.IGNORECASE,
+    )
+    if not eventually_match:
+        # Fallback regex
+        eventually_match = _re.search(
+            r"(?:rationale|RATIONALE|Rationale|Eventually|EVENTUALLY)\s*[:=]\s*\"?([\s\S]*?)\"?(?=\n|$)",
+            text,
+        )
+        
+    # ALWAYS(custom_speech_line == "...")
+    always_match = _re.search(
+        r"ALWAYS\s*\(\s*custom_speech_line\s*==\s*\"([\s\S]*?)\"\s*\)",
+        text,
+        _re.IGNORECASE,
+    )
+    if not always_match:
+        # Fallback regex
+        always_match = _re.search(
+            r"(?:custom_speech_line|SPEECH|Speech|speech|ALWAYS|Always)\s*[:=]\s*\"?([\s\S]*?)\"?(?=\n|$)",
+            text,
+        )
+
+    if next_match:
+        selected_option_index = int(next_match.group(1))
+        rationale = eventually_match.group(1).strip() if eventually_match else ""
+        custom_speech_line = always_match.group(1).strip() if always_match else ""
+        
+        # Clean up any potential outer quotes if the fallback matched quotes
+        if rationale.startswith('"') and rationale.endswith('"'):
+            rationale = rationale[1:-1].strip()
+        if custom_speech_line.startswith('"') and custom_speech_line.endswith('"'):
+            custom_speech_line = custom_speech_line[1:-1].strip()
+            
+        return {
+            "selected_option_index": selected_option_index,
+            "rationale": rationale,
+            "custom_speech_line": custom_speech_line,
+        }
+
+    # 2. Fall back to standard JSON parsing if LTL patterns are not matched
     if text.startswith("```"):
-        import re as _re
         text = _re.sub(r"^```(?:json)?\s*", "", text)
         text = _re.sub(r"\s*```$", "", text)
     text = _clean_json_string(text)
@@ -1461,8 +1835,50 @@ def _parse_mdp_selection_response(raw: str) -> dict:
         return json.loads(text)
     except json.JSONDecodeError as exc:
         raise MalformedActionError(
-            f"MDP selection response was not valid JSON: {exc}\nRaw: {raw[:500]}"
+            f"MDP selection response was not valid LTL or JSON: {exc}\nRaw: {raw[:500]}"
         ) from exc
+
+
+def _build_npc_speech_prompt(
+    sheet: "NpcCharacterSheet",
+    projection: "SemanticProjection",
+    action_label: str,
+    verb: str,
+) -> tuple[str, str]:
+    """Open-ended speech generation for a pre-selected physical/social action."""
+    role = sheet.role or "townsperson"
+    system = (
+        "[NARRATIVE SIMULATION — DIALOGUE ONLY]\n"
+        f"You are {sheet.name}, {role}.\n"
+        "You have already chosen your physical action for this turn.\n"
+        "Output exactly one line in LTL format — no JSON, no other text:\n\n"
+        "  ALWAYS(spoken_line == \"<what you say aloud in character>\")\n\n"
+        "Write one complete spoken sentence appropriate to the action and scene."
+    )
+    user = (
+        f"Chosen action: {action_label} (verb={verb})\n"
+        f"Mood: {sheet.emotional_state.value}. Drive: {sheet.drive or 'survive'}.\n\n"
+        "Respond with your ALWAYS(spoken_line == \"...\") line only."
+    )
+    return system, user
+
+
+def _parse_npc_speech_response(raw: str) -> str:
+    """Extract spoken line from LTL or plain quoted text."""
+    text = _strip_model_thinking(raw).strip()
+    import re as _re
+
+    match = _re.search(
+        r"ALWAYS\s*\(\s*(?:spoken_line|custom_speech_line)\s*==\s*\"([\s\S]*?)\"\s*\)",
+        text,
+        _re.IGNORECASE,
+    )
+    if match:
+        return match.group(1).strip()[:300]
+    if text.startswith('"') and text.endswith('"'):
+        return text[1:-1].strip()[:300]
+    line = text.split("\n")[0].strip()
+    return line[:300] if line else ""
 
 
 def _build_ambient_enrichment_schema(visible_ids: list[str], potential_coords: list[dict]) -> dict:

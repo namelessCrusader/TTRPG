@@ -48,15 +48,11 @@ _KERNEL_VERBS: frozenset[str] = frozenset({
     "nudge", "elbow", "bow",
 })
 
-# Pack verbs that need a visible entity target.
-_ENTITY_TARGET_VERBS: frozenset[str] = frozenset({
-    "console", "tease", "flirt", "compliment", "gossip", "haggle",
-    "threaten", "pour_drink", "perform", "eavesdrop", "accuse", "wink",
-    "shrug", "slam_fist", "toast", "greet", "warn", "challenge",
-    "apologize", "thank", "forgive", "bow_to", "wave", "salute",
-    "encourage", "mock", "scoff", "joke", "promise", "vow", "lie",
-    "agree", "disagree", "smile", "frown", "glare", "nod",
-})
+from .verb_targeting import (
+    entity_target_verbs_for_world,
+    self_only_verbs_for_world,
+    template_requires_entity_target,
+)
 
 # Embodied verbs that target other entities (need adjacency)
 _CONTACT_VERBS: frozenset[str] = frozenset({
@@ -336,32 +332,53 @@ def pack_capability_candidates(
         )
         return (-int(has_contest), -n_effects, name)
 
+    entity_target_verbs = entity_target_verbs_for_world(world)
+    self_only_verbs = self_only_verbs_for_world(world)
+
     for verb, tmpl in sorted(
         (world.config.verb_templates or {}).items(), key=_tmpl_priority,
     ):
         v = verb.lower().strip()
         if v in _KERNEL_VERBS:
             continue
-        if v in _ENTITY_TARGET_VERBS and nearest is not None:
+        needs_target = (
+            v in entity_target_verbs
+            or template_requires_entity_target(tmpl)
+        )
+        is_self_only = v in self_only_verbs and not needs_target
+
+        if needs_target:
+            if nearest is None:
+                continue
             dist = entity.position.manhattan(nearest.position)
-            if dist <= 10:
-                w = 0.62
-                if tmpl.contest is not None:
-                    w += 0.06
-                label = f"{v.replace('_', ' ')} with {nearest.name}"
-                _push(
-                    v,
-                    str(nearest.entity_id),
-                    label,
-                    w,
-                    raw=f"[npc_auto:verb_template:{v}]",
-                )
-        elif v not in _ENTITY_TARGET_VERBS:
-            # Non-targeting social-style verbs (barter, perform-solo, etc.)
-            # only make sense if peers are present. A truly alone NPC has
-            # no one to barter with.
-            if has_company or visible_objects:
-                _push(v, None, v.replace("_", " "), 0.45,
-                      raw=f"[npc_auto:verb_template:{v}]")
+            if dist > 10:
+                continue
+            w = 0.62
+            if tmpl.contest is not None:
+                w += 0.06
+            label = f"{v.replace('_', ' ')} with {nearest.name}"
+            _push(
+                v,
+                str(nearest.entity_id),
+                label,
+                w,
+                raw=f"[npc_auto:verb_template:{v}]",
+            )
+        elif is_self_only:
+            _push(
+                v,
+                None,
+                v.replace("_", " "),
+                0.48,
+                raw=f"[npc_auto:verb_template:{v}]",
+            )
+        elif has_company or visible_objects:
+            _push(
+                v,
+                None,
+                v.replace("_", " "),
+                0.45,
+                raw=f"[npc_auto:verb_template:{v}]",
+            )
 
     return out[:max_add]

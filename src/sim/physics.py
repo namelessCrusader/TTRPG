@@ -776,10 +776,8 @@ def physics_tick(
 
         transitions.extend(_temperature_approaches_ambient(entity, config))
 
-    # Ground objects (hearth, oil lamps, spilled ale)
+    # Ground and carried/stored objects (hearth, oil lamps, weapons, armor, cups, containers)
     for oid, obj in list(grid.objects.items()):
-        if obj.position is None:
-            continue
         transitions.extend(_physics_tick_object(obj, grid, config, tick))
 
     transitions.extend(_propagate_fire_to_tiles(grid, tick))
@@ -828,13 +826,57 @@ def _propagate_fire_to_tiles(grid: SpatialGrid, tick: int) -> list[Transition]:
     return transitions
 
 
+def get_object_ambient_temp(obj: ObjectState, grid: SpatialGrid, config: PhysicsConfig) -> float:
+    """Determine the local ambient temperature for an object, considering environment and owners."""
+    # Check if ground object on a burning tile
+    if obj.position is not None:
+        try:
+            tile = grid.tile_at(obj.position)
+            if any(t.lower() == "on_fire" for t in (tile.tags or [])):
+                return 350.0
+        except Exception:
+            pass
+        return config.ambient_temp
+
+    # Check if carried by an entity or inside a container
+    current_owner = obj.owner
+    current_container = obj.container_id
+    
+    # Traverse container chain if nested (prevent infinite loops with a visited set)
+    visited_containers = set()
+    while current_container is not None and current_container not in visited_containers:
+        visited_containers.add(current_container)
+        cont = grid.objects.get(current_container)
+        if cont is None:
+            break
+        if "on_fire" in cont.tags:
+            return 350.0
+        current_owner = cont.owner
+        current_container = cont.container_id
+
+    if current_owner is not None:
+        ent = grid.entities.get(current_owner)
+        if ent:
+            if "on_fire" in ent.tags:
+                return 350.0
+            if ent.position is not None:
+                try:
+                    tile = grid.tile_at(ent.position)
+                    if any(t.lower() == "on_fire" for t in (tile.tags or [])):
+                        return 350.0
+                except Exception:
+                    pass
+
+    return config.ambient_temp
+
+
 def _physics_tick_object(
     obj: ObjectState,
     grid: SpatialGrid,
     config: PhysicsConfig,
     tick: int,
 ) -> list[Transition]:
-    """Ignition / cooling for ground objects (hearth, lamps, spills)."""
+    """Ignition / cooling and durability/fire damage for ground/carried objects."""
     transitions: list[Transition] = []
     mat = _object_material(obj, config)
     if mat is None:
@@ -843,6 +885,7 @@ def _physics_tick_object(
     oid = str(obj.object_id)
     temp = float(obj.meta.get("temperature", config.ambient_temp))
 
+    # 1. Ignition based on temperature
     if mat.ignition_point is not None:
         flammable = "flammable" in obj.tags or "flammable" in mat.tags
         if flammable and temp >= mat.ignition_point and "on_fire" not in obj.tags:
@@ -860,7 +903,8 @@ def _physics_tick_object(
                 },
             ))
         elif temp < mat.ignition_point * 0.5 and "on_fire" in obj.tags:
-            obj.tags.remove("on_fire")
+            if "on_fire" in obj.tags:
+                obj.tags.remove("on_fire")
             transitions.append(Transition(
                 kind=TransitionKind.ENTITY_CONDITION_CHANGED,
                 payload={
@@ -874,17 +918,63 @@ def _physics_tick_object(
                 },
             ))
 
-    # Radiate heat when burning (feeds entity reactions via adjacent_tag)
+    # 2. Radiate heat if burning
     if "on_fire" in obj.tags:
         obj.meta["temperature"] = max(temp, mat.ignition_point or 300) + 15
         obj.meta["fire_suppressant"] = False
 
-    # Slow drift toward ambient
-    amb = config.ambient_temp
+    # 3. Slow drift toward local ambient temperature (which can be extreme if sitting on fire / in fire)
+    amb = get_object_ambient_temp(obj, grid, config)
     if "on_fire" not in obj.tags and abs(temp - amb) > 0.5:
         delta = (amb - temp) * config.heat_spread
         if abs(delta) >= 0.1:
             obj.meta["temperature"] = temp + delta
+
+    # 4. DURABILITY DAMAGE (REALISM): Items take damage from direct fire or extreme heat!
+    if "on_fire" in obj.tags:
+        # Wood/cloth/paper burn up quickly; metal doesn't
+        if "metal" in mat.tags or "mineral" in mat.tags:
+            dmg = 1
+        elif "soft" in mat.tags or "cloth" in mat.tags or "paper" in mat.tags or "linen" in mat.tags:
+            dmg = 25 # Burns extremely fast (4 ticks)
+        else:
+            dmg = 15 # default burning rate (wooden stool/cask burns in ~7 ticks)
+        transitions.append(Transition(
+            kind=TransitionKind.ITEM_DURABILITY_CHANGED,
+            payload={
+                "object_id": oid,
+                "delta": -dmg,
+                "cause": "physics_fire_damage",
+                "destroy_at_zero": True,
+            }
+        ))
+    else:
+        # Extreme heat damage without direct flame
+        damage_above = mat.damage_above
+        if damage_above is None:
+            # Dynamically estimate damage threshold
+            if "flammable" in obj.tags or "flammable" in mat.tags:
+                damage_above = 80.0
+            elif "organic" in mat.tags:
+                damage_above = 100.0
+            elif "metal" in mat.tags or "mineral" in mat.tags:
+                damage_above = 500.0
+            else:
+                damage_above = 120.0
+
+        if temp > damage_above:
+            excess = temp - damage_above
+            dmg_rate = mat.damage_per_degree or 0.05
+            dmg = max(1, int(excess * dmg_rate))
+            transitions.append(Transition(
+                kind=TransitionKind.ITEM_DURABILITY_CHANGED,
+                payload={
+                    "object_id": oid,
+                    "delta": -dmg,
+                    "cause": "physics_heat_damage",
+                    "destroy_at_zero": True,
+                }
+            ))
 
     return transitions
 

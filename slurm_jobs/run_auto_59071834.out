@@ -1,0 +1,48 @@
+Removing conda version miniforge3-24.7.1
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59071834
+  Node       : gpu056
+  Arguments  : voxel_tavern 2 --debug
+========================================
+  [LOG] Writing full output to logs/autonomous_debug_20260527_164252.log
+
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|##########| 4/4 [00:00<00:00, 11483.38it/s]
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:00<03:52,  1.83it/s]Loading weights:   0%|          | 2/427 [00:01<04:06,  1.72it/s]Loading weights:   3%|3         | 13/427 [00:01<00:26, 15.38it/s]Loading weights:   5%|5         | 23/427 [00:01<00:15, 25.98it/s]Loading weights:   7%|6         | 29/427 [00:01<00:14, 27.94it/s]Loading weights:  10%|9         | 41/427 [00:01<00:10, 37.42it/s]Loading weights:  11%|#1        | 47/427 [00:02<00:11, 33.70it/s]Loading weights:  15%|#4        | 62/427 [00:02<00:06, 52.72it/s]Loading weights:  16%|#6        | 70/427 [00:02<00:07, 48.03it/s]Loading weights:  19%|#8        | 80/427 [00:02<00:06, 53.57it/s]Loading weights:  20%|##        | 87/427 [00:02<00:06, 53.35it/s]Loading weights:  22%|##2       | 94/427 [00:02<00:06, 47.94it/s]Loading weights:  23%|##3       | 100/427 [00:02<00:07, 44.07it/s]Loading weights:  25%|##4       | 106/427 [00:03<00:07, 44.89it/s]Loading weights:  28%|##7       | 119/427 [00:03<00:05, 56.69it/s]Loading weights:  29%|##9       | 125/427 [00:03<00:05, 54.85it/s]Loading weights:  31%|###1      | 133/427 [00:03<00:05, 55.10it/s]Loading weights:  33%|###2      | 139/427 [00:03<00:05, 53.51it/s]Loading weights:  34%|###4      | 147/427 [00:03<00:05, 54.36it/s]Loading weights:  36%|###5      | 153/427 [00:04<00:07, 39.05it/s]Loading weights:  39%|###8      | 166/427 [00:04<00:04, 56.00it/s]Loading weights:  41%|####      | 173/427 [00:04<00:05, 47.76it/s]Loading weights:  44%|####3     | 186/427 [00:04<00:04, 53.08it/s]Loading weights:  46%|####5     | 196/427 [00:04<00:03, 59.45it/s]Loading weights:  48%|####7     | 203/427 [00:04<00:04, 51.06it/s]Loading weights:  49%|####8     | 209/427 [00:05<00:04, 46.43it/s]Loading weights:  52%|#####1    | 221/427 [00:05<00:03, 59.47it/s]Loading weights:  53%|#####3    | 228/427 [00:05<00:04, 49.17it/s]Loading weights:  56%|#####5    | 239/427 [00:05<00:03, 56.51it/s]Loading weights:  58%|#####7    | 246/427 [00:05<00:03, 56.76it/s]Loading weights:  59%|#####9    | 253/427 [00:05<00:03, 54.51it/s]Loading weights:  61%|######    | 259/427 [00:06<00:03, 42.68it/s]Loading weights:  62%|######2   | 266/427 [00:06<00:03, 46.31it/s]Loading weights:  65%|######5   | 278/427 [00:06<00:02, 55.91it/s]Loading weights:  67%|######6   | 284/427 [00:06<00:02, 54.16it/s]Loading weights:  68%|######8   | 292/427 [00:06<00:02, 54.63it/s]Loading weights:  70%|######9   | 298/427 [00:06<00:02, 52.98it/s]Loading weights:  72%|#######1  | 306/427 [00:06<00:02, 54.20it/s]Loading weights:  73%|#######3  | 312/427 [00:07<00:02, 39.45it/s]Loading weights:  77%|#######6  | 327/427 [00:07<00:01, 59.70it/s]Loading weights:  78%|#######8  | 335/427 [00:07<00:01, 51.00it/s]Loading weights:  81%|########  | 345/427 [00:07<00:01, 55.63it/s]Loading weights:  82%|########2 | 352/427 [00:07<00:01, 56.07it/s]Loading weights:  84%|########4 | 359/427 [00:07<00:01, 54.33it/s]Loading weights:  85%|########5 | 365/427 [00:08<00:01, 42.93it/s]Loading weights:  87%|########7 | 372/427 [00:08<00:01, 46.21it/s]Loading weights:  90%|########9 | 384/427 [00:08<00:00, 57.18it/s]Loading weights:  92%|#########1| 391/427 [00:08<00:00, 57.08it/s]Loading weights:  93%|#########3| 398/427 [00:08<00:00, 55.49it/s]Loading weights:  95%|#########4| 404/427 [00:08<00:00, 53.86it/s]Loading weights:  96%|#########6| 412/427 [00:08<00:00, 54.32it/s]Loading weights:  98%|#########7| 418/427 [00:09<00:00, 38.53it/s]Loading weights: 100%|##########| 427/427 [00:09<00:00, 46.26it/s]
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 5 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:Qwen/Qwen3.5-9B
+  Ticks  : 2
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+  Debug  : ON (state diffs each tick)
+  Log    : logs/autonomous_debug_20260527_164252.log
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 #############L##########       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ############T###########       ~  Water
+ 10 ####M$#S################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ##@#####################       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+[2026-05-27T16:56:35.124] error: *** JOB 59071834 ON gpu056 CANCELLED AT 2026-05-27T16:56:35 DUE to SIGNAL Terminated ***

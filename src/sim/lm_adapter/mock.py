@@ -106,14 +106,23 @@ class MockLMAdapter(LMAdapter):
         """
         Deterministic mockup for option forest selection.
         """
-        # Pick the first non-zero option if possible, or fallback to 0
-        idx = option_indices[1] if len(option_indices) > 1 else option_indices[0]
+        mid = len(option_indices) // 2
+        idx = option_indices[mid] if option_indices else 1
         return {
             "selected_option_index": idx,
             "rationale": "mock rationale for selecting option",
-            "custom_speech_line": "mock dialogue related to option",
+            "custom_speech_line": "",
             "creative_custom_action": None,
         }
+
+    def infer_npc_speech(
+        self,
+        character_sheet: NpcCharacterSheet,
+        projection: SemanticProjection,
+        action_label: str,
+        verb: str,
+    ) -> str:
+        return f"Well then — {action_label}."
 
     def enrich_ambient_event(
         self,

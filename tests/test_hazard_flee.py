@@ -63,7 +63,11 @@ def test_controlled_hearth_not_dangerous_fire():
 
 
 def test_oil_fire_triggers_flee():
-    world = load_world_pack(Path(__file__).resolve().parents[1] / "worlds" / "voxel_tavern")
+    import yaml
+    pack_path = Path(__file__).resolve().parents[1] / "worlds" / "voxel_tavern"
+    world = load_world_pack(pack_path)
+    with open(pack_path / "scenarios" / "kitchen_fire_panic.yaml", encoding="utf-8") as sf:
+        world.config.extra["scenario"] = yaml.safe_load(sf) or {}
     linna = next(e for e in world.spatial.entities.values() if e.name == "Linna")
 
     world.tick = 4
@@ -103,7 +107,11 @@ def test_flee_steps_away_from_fire():
 
 
 def test_smoke_panic_flee_in_autonomous_run():
-    world = load_world_pack(Path(__file__).resolve().parents[1] / "worlds" / "voxel_tavern")
+    import yaml
+    pack_path = Path(__file__).resolve().parents[1] / "worlds" / "voxel_tavern"
+    world = load_world_pack(pack_path)
+    with open(pack_path / "scenarios" / "kitchen_fire_panic.yaml", encoding="utf-8") as sf:
+        world.config.extra["scenario"] = yaml.safe_load(sf) or {}
     loop = GameLoop(world, adapter=MockLMAdapter(), npcs_act_each_turn=True)
     flee_count = 0
     for _ in range(14):

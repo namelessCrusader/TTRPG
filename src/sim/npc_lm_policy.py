@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Optional
 from .npc_policy import ReactivePolicy, build_npc_character_sheet
 from .schemas import (
     ActionType,
+    AlertnessLevel,
     EntityState,
     MalformedActionError,
     SemanticAction,
@@ -22,6 +23,8 @@ from .schemas import (
     TransitionProposal,
     TransitionKind,
 )
+from .run_metrics import bump, record_mdp_choice
+from .verb_targeting import action_missing_required_target
 
 if TYPE_CHECKING:
     from .lm_adapter import LMAdapter
@@ -33,6 +36,13 @@ GENERIC_META_VERBS: frozenset[str] = frozenset({
     "wait", "observe", "look", "interact", "continue",
     "find", "find_out", "investigate", "set_priority", "add_goals",
     "add_to_pending_tasks", "settle_room", "mark_tile", "poured",
+})
+
+_SOCIAL_SPEECH_VERBS: frozenset[str] = frozenset({
+    "speak", "say", "tell", "ask", "shout", "whisper", "greet", "barter",
+    "haggle", "gossip", "tease", "flirt", "compliment", "threaten", "warn",
+    "challenge", "apologize", "thank", "console", "accuse", "mock", "joke",
+    "promise", "lie", "agree", "disagree", "teach", "learn", "examine",
 })
 
 
@@ -206,159 +216,232 @@ class LMNpcPolicy:
         return action
 
     def _decide_via_infer(
-        self, entity: EntityState, world: WorldState, *, max_attempts: int = 2
+        self, entity: EntityState, world: WorldState, *, max_attempts: int = 3
     ) -> Optional[SemanticAction]:
         from .compiler import compile_action
-        from .npc_mind import (
-            interestingness_breakdown,
-            interpret_mind,
-            pick_best_action,
-            score_action,
-        )
+        from .npc_mind import interpret_mind
         from .projection import project
 
-        last_reason = ""
         interpret_mind(entity, world)
-        for attempt in range(max_attempts):
-            rejection = entity.meta.get("last_rejection") if attempt else None
-            try:
-                proj = project(
-                    world,
-                    entity.entity_id,
-                    last_action_rejection=rejection,
-                )
-                sheet = build_npc_character_sheet(entity, world)
-
-                # ── MDP Forest of Candidates Selection Path ────────────────────
-                # Generate up to 40 candidates from the fallback reactive policy
-                try:
-                    candidates = self.fallback.generate_candidates(entity, world, max_candidates=40)
-                except Exception as exc:
-                    logger.debug("Failed to generate fallback candidates: %s", exc)
-                    candidates = []
-
-                # Compile and pre-validate options to form the Forest of Valid transitions
-                valid_options: list[tuple[SemanticAction, str, float]] = []
-                for action, label, weight in candidates:
-                    action = self._clamp_actor(entity, action)
-                    res = compile_action(action, world)
-                    if res.valid:
-                        valid_options.append((action, label, weight))
-
-                # Present compiled options to the LLM (and Option 0 as creative wildcard)
-                options_text: list[str] = [
-                    "Index 0: Creative Custom Action wildcard (manually specify your own verb and target if none of the below fit)."
-                ]
-                option_indices: list[int] = [0]
-                for idx, (action, label, weight) in enumerate(valid_options, 1):
-                    target_str = f", target={action.target}" if action.target else ""
-                    options_text.append(
-                        f"Index {idx} [utility_score={weight:.2f}]: {label} (verb={action.verb}{target_str})"
-                    )
-                    option_indices.append(idx)
-
-                # Trigger constrained decision-focused select call
-                try:
-                    if not hasattr(self.adapter, "infer_npc_mdp"):
-                        raise NotImplementedError("Adapter does not support MDP selection")
-                    selection = self.adapter.infer_npc_mdp(sheet, proj, options_text, option_indices)
-                    use_mdp = True
-                except Exception as exc:
-                    logger.debug("infer_npc_mdp selection failed: %s — falling back to unconstrained", exc)
-                    use_mdp = False
-
-                if use_mdp:
-                    selected_idx = int(selection.get("selected_option_index", 0))
-
-                    # If model selected the Creative Custom Action wildcard (or fallback 0)
-                    if selected_idx == 0:
-                        raw = self.adapter.infer_npc(sheet, proj)
-                        action = repair_npc_action(raw, world)
-                        action = self._clamp_actor(entity, action)
-                        result = compile_action(action, world)
-                        if result.valid:
-                            chosen = self._choose_interesting_valid_action(
-                                entity,
-                                world,
-                                action,
-                                lm_weight=0.70,
-                            )
-                            entity.meta["interestingness"] = interestingness_breakdown(
-                                entity, world, chosen, base_weight=0.70
-                            )
-                            entity.meta["last_policy_branch"] = "infer_npc_custom"
-                            entity.meta.pop("last_rejection", None)
-                            return chosen
-                    elif 0 < selected_idx <= len(valid_options):
-                        action, label, weight = valid_options[selected_idx - 1]
-                        
-                        # overlay custom dialogue simultaneously with physical action if supplied
-                        custom_speech = selection.get("custom_speech_line", "").strip()
-                        if custom_speech:
-                            action.proposed_effects = list(action.proposed_effects or [])
-                            action.proposed_effects.append(
-                                TransitionProposal(
-                                    kind=TransitionKind.DIALOGUE_SPOKEN.value,
-                                    payload={
-                                        "actor": str(action.actor),
-                                        "target": str(action.target) if action.target else None,
-                                        "text": custom_speech,
-                                        "loud": True,
-                                    }
-                                )
-                            )
-
-                        entity.meta["last_policy_branch"] = f"infer_npc_mdp_option_{selected_idx}"
-                        entity.meta.pop("last_rejection", None)
-                        return action
-
-                # Fallback to standard infer_npc if index was unrecognized or out of bounds, or mdp was not used
-                raw = self.adapter.infer_npc(sheet, proj)
-                action = repair_npc_action(raw, world)
-                action = self._clamp_actor(entity, action)
-                result = compile_action(action, world)
-                if result.valid:
-                    chosen = self._choose_interesting_valid_action(
-                        entity,
-                        world,
-                        action,
-                        lm_weight=0.70,
-                    )
-                    entity.meta["interestingness"] = interestingness_breakdown(
-                        entity, world, chosen, base_weight=0.70
-                    )
-                    if chosen is not action:
-                        entity.meta["last_policy_branch"] = "infer_npc_directed"
-                    else:
-                        entity.meta["last_policy_branch"] = "infer_npc_fallback"
-                    entity.meta.pop("last_rejection", None)
-                    return chosen
-
-                if result.rejection_reason is not None:
-                    last_reason = (
-                        result.rejection_reason.value
-                        if hasattr(result.rejection_reason, "value")
-                        else str(result.rejection_reason)
-                    )
-                    detail = result.rejection_detail or ""
-                    entity.meta["last_rejection"] = f"{last_reason}: {detail}".rstrip(
-                        ": "
-                    )
-            except MalformedActionError as exc:
-                last_reason = str(exc)
-                entity.meta["last_rejection"] = last_reason
-                logger.debug("infer_npc malformed for %s: %s", entity.entity_id, exc)
-            except Exception as exc:
-                last_reason = str(exc)
-                logger.debug("infer_npc failed for %s: %s", entity.entity_id, exc)
-        if last_reason:
-            logger.debug(
-                "NPC %s infer exhausted (%d tries): %s",
+        
+        try:
+            proj = project(
+                world,
                 entity.entity_id,
-                max_attempts,
-                last_reason,
+                last_action_rejection=None,
             )
-        return None
+            sheet = build_npc_character_sheet(entity, world)
+
+            # Generate up to 40 candidates from the fallback reactive policy
+            try:
+                candidates = self.fallback.generate_candidates(entity, world, max_candidates=40)
+            except Exception as exc:
+                logger.debug("Failed to generate fallback candidates: %s", exc)
+                candidates = []
+
+            # Compile and pre-validate options to form the Forest of Valid transitions
+            valid_options: list[tuple[SemanticAction, str, float]] = []
+            for action, label, weight in candidates:
+                action = self._clamp_actor(entity, action)
+                res = compile_action(action, world)
+                if res.valid:
+                    valid_options.append((action, label, weight))
+
+            if not valid_options:
+                logger.debug("No valid options available for %s", entity.name)
+                return None
+
+            if not callable(getattr(self.adapter, "infer_npc_mdp", None)):
+                return None
+
+            import random
+
+            shuffled_options = list(valid_options)
+            _seed = hash((world.tick, entity.entity_id, len(valid_options)))
+            _rng = random.Random(_seed)
+            _rng.shuffle(shuffled_options)
+
+            options_text: list[str] = []
+            option_indices: list[int] = []
+            for idx, (action, label, _weight) in enumerate(shuffled_options, 1):
+                target_str = f", target={action.target}" if action.target else ""
+                options_text.append(
+                    f"Index {idx}: {label} (verb={action.verb}{target_str})"
+                )
+                option_indices.append(idx)
+
+            entity.meta["last_mdp_menu"] = " | ".join(options_text[:12])
+            logger.debug(
+                "[%s] MDP menu (tick=%s, %d options): %s",
+                entity.name,
+                world.tick,
+                len(options_text),
+                entity.meta["last_mdp_menu"],
+            )
+
+            selection: dict = {}
+            selected_idx = 0
+            rejected_indices: list[int] = []
+            accepted = False
+
+            for attempt in range(max_attempts):
+                try:
+                    modified_options = [
+                        f"{opt} -- [REJECTED - DO NOT CHOOSE]"
+                        if o_idx in rejected_indices
+                        else opt
+                        for o_idx, opt in enumerate(options_text, 1)
+                    ]
+                    rejection_hint = entity.meta.get("last_rejection")
+                    if rejection_hint and attempt > 0:
+                        modified_options.insert(
+                            0,
+                            f"NOTE: Previous choice was rejected: {rejection_hint}",
+                        )
+                    selection = self.adapter.infer_npc_mdp(
+                        sheet, proj, modified_options, option_indices
+                    )
+                except NotImplementedError:
+                    logger.debug("infer_npc_mdp not implemented for %s", entity.name)
+                    return None
+                except MalformedActionError:
+                    return None
+                except Exception as exc:
+                    logger.debug(
+                        "infer_npc_mdp failed (attempt %d) for %s: %s",
+                        attempt + 1,
+                        entity.name,
+                        exc,
+                    )
+                    bump(world, "mdp_parse_failures")
+                    selection = {}
+
+                selected_idx = int(selection.get("selected_option_index", 0))
+
+                if not (0 < selected_idx <= len(shuffled_options)):
+                    bump(world, "mdp_out_of_range")
+                    continue
+                if selected_idx in rejected_indices:
+                    continue
+
+                proposed_action, label, weight = shuffled_options[selected_idx - 1]
+
+                if proposed_action.target == entity.entity_id:
+                    rejected_indices.append(selected_idx)
+                    bump(world, "mdp_reject_self_target")
+                    continue
+
+                if action_missing_required_target(proposed_action, world):
+                    logger.debug(
+                        "Rejected targetless %s for %s (verb requires entity target)",
+                        label,
+                        entity.name,
+                    )
+                    rejected_indices.append(selected_idx)
+                    bump(world, "mdp_reject_missing_target")
+                    continue
+
+                compile_res = compile_action(proposed_action, world)
+                if not compile_res.valid:
+                    reason = compile_res.rejection_reason
+                    detail = compile_res.rejection_detail or ""
+                    entity.meta["last_rejection"] = (
+                        f"{reason}: {detail}" if reason else detail
+                    )
+                    rejected_indices.append(selected_idx)
+                    bump(world, "mdp_reject_compile")
+                    continue
+
+                is_ser_aldric = entity.name.lower() == "ser aldric"
+                hp = entity.stats.get("hp", 100.0) if entity.stats else 100.0
+                if (
+                    is_ser_aldric
+                    and str(proposed_action.verb).lower() == "flee"
+                    and hp >= 25.0
+                ):
+                    rejected_indices.append(selected_idx)
+                    bump(world, "mdp_reject_persona")
+                    continue
+
+                is_mira = entity.name.lower() == "mira"
+                if (
+                    is_mira
+                    and str(proposed_action.verb).lower() == "attack"
+                    and entity.alertness != AlertnessLevel.COMBAT
+                ):
+                    rejected_indices.append(selected_idx)
+                    bump(world, "mdp_reject_persona")
+                    continue
+
+                accepted = True
+                break
+
+            if accepted and 0 < selected_idx <= len(shuffled_options):
+                action, label, weight = shuffled_options[selected_idx - 1]
+            else:
+                fallback_idx = _rng.randint(1, len(shuffled_options))
+                action, label, weight = shuffled_options[fallback_idx - 1]
+                selected_idx = fallback_idx
+                bump(world, "mdp_fallback_random")
+                logger.debug(
+                    "MDP fallback random index %s for %s: %s",
+                    selected_idx,
+                    entity.name,
+                    label,
+                )
+
+            record_mdp_choice(
+                world,
+                entity_name=entity.name,
+                selected_index=selected_idx,
+                menu_size=len(shuffled_options),
+                verb=str(action.verb),
+            )
+            entity.meta["last_mdp_selected_index"] = selected_idx
+
+            custom_speech = (selection.get("custom_speech_line") or "").strip()
+            verb_norm = str(action.verb).lower().split(".")[-1]
+            wants_speech = (
+                verb_norm in _SOCIAL_SPEECH_VERBS
+                or " with " in label.lower()
+            )
+            if not custom_speech and wants_speech and hasattr(
+                self.adapter, "infer_npc_speech"
+            ):
+                try:
+                    custom_speech = self.adapter.infer_npc_speech(
+                        sheet, proj, label, verb_norm
+                    )
+                    if custom_speech:
+                        bump(world, "open_ended_speech_calls")
+                        entity.meta["last_policy_branch"] = (
+                            f"infer_npc_mdp_option_{selected_idx}+speech"
+                        )
+                except Exception as exc:
+                    logger.debug("infer_npc_speech failed for %s: %s", entity.name, exc)
+
+            if custom_speech:
+                action.proposed_effects = list(action.proposed_effects or [])
+                action.proposed_effects.append(
+                    TransitionProposal(
+                        kind=TransitionKind.DIALOGUE_SPOKEN.value,
+                        payload={
+                            "actor": str(action.actor),
+                            "target": str(action.target) if action.target else None,
+                            "text": custom_speech,
+                            "loud": True,
+                        },
+                    )
+                )
+
+            if "speech" not in (entity.meta.get("last_policy_branch") or ""):
+                entity.meta["last_policy_branch"] = f"infer_npc_mdp_option_{selected_idx}"
+            entity.meta.pop("last_rejection", None)
+            return action
+
+        except Exception as exc:
+            logger.warning("Error in _decide_via_infer for %s: %s", entity.name, exc)
+            return None
 
     def _choose_interesting_valid_action(
         self,

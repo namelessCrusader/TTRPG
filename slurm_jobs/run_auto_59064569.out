@@ -1,0 +1,56 @@
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59064569
+  Node       : gpu056
+  Arguments  : voxel_tavern 2
+========================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 5779.27it/s]
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:00<03:55,  1.81it/s]Loading weights:   0%|          | 2/427 [00:01<04:08,  1.71it/s]Loading weights:   3%|▎         | 13/427 [00:01<00:29, 14.18it/s]Loading weights:   5%|▌         | 23/427 [00:01<00:15, 25.58it/s]Loading weights:   7%|▋         | 29/427 [00:01<00:14, 26.92it/s]Loading weights:   9%|▉         | 40/427 [00:01<00:10, 38.40it/s]Loading weights:  11%|█         | 46/427 [00:01<00:10, 37.41it/s]Loading weights:  12%|█▏        | 51/427 [00:02<00:09, 39.59it/s]Loading weights:  15%|█▍        | 62/427 [00:02<00:07, 51.56it/s]Loading weights:  16%|█▌        | 69/427 [00:02<00:07, 46.00it/s]Loading weights:  19%|█▊        | 80/427 [00:02<00:06, 54.84it/s]Loading weights:  20%|██        | 87/427 [00:02<00:06, 55.25it/s]Loading weights:  22%|██▏       | 94/427 [00:02<00:06, 53.85it/s]Loading weights:  23%|██▎       | 100/427 [00:02<00:07, 43.47it/s]Loading weights:  25%|██▌       | 107/427 [00:03<00:06, 46.76it/s]Loading weights:  28%|██▊       | 119/427 [00:03<00:05, 56.66it/s]Loading weights:  29%|██▉       | 125/427 [00:03<00:05, 55.10it/s]Loading weights:  31%|███       | 133/427 [00:03<00:05, 55.38it/s]Loading weights:  33%|███▎      | 139/427 [00:03<00:05, 53.65it/s]Loading weights:  34%|███▍      | 147/427 [00:03<00:04, 56.04it/s]Loading weights:  36%|███▌      | 153/427 [00:04<00:06, 39.38it/s]Loading weights:  39%|███▉      | 168/427 [00:04<00:04, 56.75it/s]Loading weights:  41%|████      | 175/427 [00:04<00:05, 49.52it/s]Loading weights:  44%|████▎     | 186/427 [00:04<00:04, 57.06it/s]Loading weights:  45%|████▌     | 193/427 [00:04<00:04, 56.95it/s]Loading weights:  47%|████▋     | 200/427 [00:04<00:04, 55.06it/s]Loading weights:  48%|████▊     | 206/427 [00:05<00:05, 40.37it/s]Loading weights:  52%|█████▏    | 221/427 [00:05<00:03, 59.71it/s]Loading weights:  54%|█████▎    | 229/427 [00:05<00:03, 51.35it/s]Loading weights:  56%|█████▌    | 239/427 [00:05<00:03, 57.22it/s]Loading weights:  58%|█████▊    | 246/427 [00:05<00:03, 57.12it/s]Loading weights:  59%|█████▉    | 253/427 [00:05<00:03, 54.85it/s]Loading weights:  61%|██████    | 259/427 [00:06<00:03, 45.42it/s]Loading weights:  62%|██████▏   | 266/427 [00:06<00:03, 48.13it/s]Loading weights:  65%|██████▌   | 278/427 [00:06<00:02, 58.07it/s]Loading weights:  67%|██████▋   | 285/427 [00:06<00:02, 58.47it/s]Loading weights:  68%|██████▊   | 292/427 [00:06<00:02, 57.31it/s]Loading weights:  70%|██████▉   | 298/427 [00:06<00:02, 55.14it/s]Loading weights:  72%|███████▏  | 306/427 [00:06<00:02, 55.46it/s]Loading weights:  73%|███████▎  | 312/427 [00:07<00:02, 44.06it/s]Loading weights:  75%|███████▍  | 319/427 [00:07<00:02, 47.36it/s]Loading weights:  78%|███████▊  | 331/427 [00:07<00:01, 57.30it/s]Loading weights:  79%|███████▉  | 337/427 [00:07<00:01, 55.54it/s]Loading weights:  81%|████████  | 345/427 [00:07<00:01, 55.75it/s]Loading weights:  82%|████████▏ | 351/427 [00:07<00:01, 54.00it/s]Loading weights:  84%|████████▍ | 359/427 [00:07<00:01, 54.45it/s]Loading weights:  85%|████████▌ | 365/427 [00:08<00:01, 38.37it/s]Loading weights:  89%|████████▉ | 380/427 [00:08<00:00, 58.33it/s]Loading weights:  91%|█████████ | 388/427 [00:08<00:00, 50.25it/s]Loading weights:  93%|█████████▎| 398/427 [00:08<00:00, 55.12it/s]Loading weights:  95%|█████████▍| 405/427 [00:08<00:00, 55.68it/s]Loading weights:  96%|█████████▋| 412/427 [00:08<00:00, 53.68it/s]Loading weights:  98%|█████████▊| 418/427 [00:09<00:00, 43.63it/s]Loading weights:  99%|█████████▉| 424/427 [00:09<00:00, 44.77it/s]Loading weights: 100%|██████████| 427/427 [00:09<00:00, 46.49it/s]
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 1 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:Qwen/Qwen3.5-9B
+  Ticks  : 2
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 ########################       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ########################       ~  Water
+ 10 #####$###M###L##########       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$####S#############       =  Window
+ 13 #######@###T############       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+NPC You infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: Thinking Process:
+
+1.  **Analyze the Request:**
+    *   **Role:** I am "You", a person with no distinct personality, neutral mood, low alertness, guarded social openness.
+    *   **Context:** A tavern common room. Smoke fills the air. Flames race through spilled lamp oil. People (Tomas, Ser Aldric, Mira) have fled recently (tick 14), but the projection shows them still visible nearby (tick 0). There's a contradiction between "flee" history and current visibility, but I must treat the projection ) — falling back to reactive policy
+NPC Mira infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: Thinking Process:
+
+1.  **Analyze the Request:**
+    *   **Role:** Mira, barkeep of the Tarnished Flagon.
+    *   **Personality:** Sharp-tongued, perceptive, protective of regulars, wry humour, not easily rattled, warm to loyal customers, terse with strangers.
+    *   **Current Situation:** Smoke fills the room, lamp oil spilled, flames racing (from world facts). Recent events show everyone (Mira, Tomas, Aldric, Linna) fled at tick 14, but now it's tick 0 again (simulation reset/loop or new scene) — falling back to reactive policy
+[2026-05-27T15:08:53.152] error: *** JOB 59064569 ON gpu056 CANCELLED AT 2026-05-27T15:08:53 DUE to SIGNAL Terminated ***

@@ -1,0 +1,10 @@
+Removing conda version miniforge3-24.7.1
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59067713
+  Node       : gpu056
+  Arguments  : voxel_tavern 3 --mock
+========================================
+  [HISTORY] Running 15-tick world pre-history…
+[2026-05-27T15:44:53.926] error: *** JOB 59067713 ON gpu056 CANCELLED AT 2026-05-27T15:44:53 DUE to SIGNAL Terminated ***

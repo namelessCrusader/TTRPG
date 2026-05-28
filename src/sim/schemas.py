@@ -1934,7 +1934,7 @@ class NpcCognitionConfig(BaseModel):
     max_infer_per_npc: int = 2
     infer_cooldown_ticks: int = 8
     # Cap total LM infer_npc calls per tick (None / 0 = unlimited).
-    max_lm_calls_per_tick: Optional[int] = 4
+    max_lm_calls_per_tick: Optional[int] = 6
 
 
 class MindScoringConfig(BaseModel):

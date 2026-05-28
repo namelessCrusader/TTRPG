@@ -13,8 +13,13 @@ from src.sim.world_loader import load_world_pack
 
 
 def _load_voxel_tavern():
+    import yaml
     pack = Path(__file__).resolve().parents[1] / "worlds" / "voxel_tavern"
-    return load_world_pack(pack)
+    world = load_world_pack(pack)
+    scenario_path = pack / "scenarios" / "kitchen_fire_panic.yaml"
+    with open(scenario_path, encoding="utf-8") as sf:
+        world.config.extra["scenario"] = yaml.safe_load(sf) or {}
+    return world
 
 
 def _oil_flask_coord(world) -> Coord:

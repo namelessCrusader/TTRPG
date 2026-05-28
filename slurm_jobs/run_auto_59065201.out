@@ -1,0 +1,147 @@
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59065201
+  Node       : gpu056
+  Arguments  : voxel_tavern 2
+========================================
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 11483.38it/s]
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:00<03:54,  1.82it/s]Loading weights:   0%|          | 2/427 [00:01<04:07,  1.72it/s]Loading weights:   3%|▎         | 13/427 [00:01<00:26, 15.35it/s]Loading weights:   4%|▍         | 19/427 [00:01<00:18, 21.58it/s]Loading weights:   6%|▋         | 27/427 [00:01<00:12, 31.61it/s]Loading weights:   8%|▊         | 36/427 [00:01<00:10, 38.84it/s]Loading weights:  10%|▉         | 42/427 [00:01<00:09, 40.78it/s]Loading weights:  11%|█         | 48/427 [00:01<00:10, 36.10it/s]Loading weights:  14%|█▍        | 61/427 [00:02<00:06, 53.51it/s]Loading weights:  16%|█▌        | 68/427 [00:02<00:07, 45.13it/s]Loading weights:  19%|█▊        | 80/427 [00:02<00:06, 55.08it/s]Loading weights:  20%|██        | 87/427 [00:02<00:06, 55.43it/s]Loading weights:  22%|██▏       | 94/427 [00:02<00:05, 56.46it/s]Loading weights:  24%|██▎       | 101/427 [00:02<00:07, 41.53it/s]Loading weights:  27%|██▋       | 115/427 [00:03<00:05, 58.76it/s]Loading weights:  29%|██▉       | 123/427 [00:03<00:06, 50.52it/s]Loading weights:  31%|███       | 133/427 [00:03<00:05, 55.44it/s]Loading weights:  33%|███▎      | 140/427 [00:03<00:05, 52.26it/s]Loading weights:  35%|███▍      | 148/427 [00:03<00:05, 52.01it/s]Loading weights:  36%|███▌      | 154/427 [00:03<00:06, 42.91it/s]Loading weights:  39%|███▉      | 168/427 [00:04<00:04, 60.58it/s]Loading weights:  41%|████      | 176/427 [00:04<00:04, 52.11it/s]Loading weights:  44%|████▎     | 186/427 [00:04<00:04, 56.64it/s]Loading weights:  45%|████▌     | 193/427 [00:04<00:04, 57.92it/s]Loading weights:  47%|████▋     | 200/427 [00:04<00:04, 56.11it/s]Loading weights:  48%|████▊     | 206/427 [00:04<00:05, 43.88it/s]Loading weights:  50%|████▉     | 213/427 [00:05<00:04, 46.66it/s]Loading weights:  53%|█████▎    | 225/427 [00:05<00:03, 56.21it/s]Loading weights:  54%|█████▍    | 231/427 [00:05<00:03, 54.43it/s]Loading weights:  56%|█████▌    | 239/427 [00:05<00:03, 55.21it/s]Loading weights:  57%|█████▋    | 245/427 [00:05<00:03, 53.57it/s]Loading weights:  59%|█████▉    | 253/427 [00:05<00:03, 54.58it/s]Loading weights:  61%|██████    | 259/427 [00:06<00:04, 38.28it/s]Loading weights:  64%|██████▍   | 274/427 [00:06<00:02, 57.57it/s]Loading weights:  66%|██████▌   | 282/427 [00:06<00:02, 49.82it/s]Loading weights:  68%|██████▊   | 292/427 [00:06<00:02, 54.78it/s]Loading weights:  70%|███████   | 299/427 [00:06<00:02, 56.53it/s]Loading weights:  72%|███████▏  | 306/427 [00:06<00:02, 57.61it/s]Loading weights:  73%|███████▎  | 313/427 [00:07<00:02, 42.33it/s]Loading weights:  77%|███████▋  | 327/427 [00:07<00:01, 59.94it/s]Loading weights:  78%|███████▊  | 335/427 [00:07<00:01, 51.17it/s]Loading weights:  81%|████████  | 345/427 [00:07<00:01, 57.10it/s]Loading weights:  82%|████████▏ | 352/427 [00:07<00:01, 54.75it/s]Loading weights:  84%|████████▍ | 359/427 [00:07<00:01, 55.54it/s]Loading weights:  86%|████████▌ | 366/427 [00:08<00:01, 41.43it/s]Loading weights:  89%|████████▉ | 380/427 [00:08<00:00, 58.28it/s]Loading weights:  91%|█████████ | 388/427 [00:08<00:00, 50.28it/s]Loading weights:  93%|█████████▎| 398/427 [00:08<00:00, 56.23it/s]Loading weights:  95%|█████████▍| 405/427 [00:08<00:00, 57.69it/s]Loading weights:  96%|█████████▋| 412/427 [00:08<00:00, 58.12it/s]Loading weights:  98%|█████████▊| 419/427 [00:08<00:00, 44.48it/s]Loading weights: 100%|██████████| 427/427 [00:09<00:00, 47.16it/s]
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 1 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:Qwen/Qwen3.5-9B
+  Ticks  : 2
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 ########################       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ########################       ~  Water
+ 10 #####$###M###L##########       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$####S#############       =  Window
+ 13 #######@###T############       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+NPC Mira infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: Thinking Process:
+
+1.  **Analyze the Request:**
+    *   **Role:** Mira, barkeep of the Tarnished Flagon.
+    *   **Personality:** Sharp-tongued, perceptive, protective of regulars, wry humour, not easily rattled, warm to loyal, terse with strangers.
+    *   **Current Situation:** Smoke in the room, flames racing through spilled lamp oil (from world facts), recent flee events (tick 14), dawn time.
+    *   **Director Objective:** Force a social choice involving Ser Aldric: accuse, defend, bargain,) — falling back to reactive policy
+NPC Linna infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: Thinking Process:
+
+1.  **Analyze the Request:**
+    *   **Role:** Linna, travelling bard/information broker. Bright, flirtatious, calculating, remembers everything, enjoys people but works.
+    *   **Current Situation:** Tick 0. Tavern common room. Smoke fills the air (hazard). Recent events show fleeing (Linna, Mira, You) at tick 14, but now it's tick 0 (likely a loop or reset in the simulation context, or simply the start of a new scene where the smoke is fresh). The projection shows "You" (en) — falling back to reactive policy
+NPC You infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: Thinking Process:
+
+1.  **Analyze the Request:**
+    *   **Role:** "You", a person with no distinct personality, neutral mood, low alertness, guarded social openness.
+    *   **Context:** Tavern common room. Smoke, spilled lamp oil, flames racing. People (Tomas, Ser Aldric, Mira) are present.
+    *   **Recent Events:** Everyone fled at tick 14, but now at tick 0, they are back/visible.
+    *   **Director Objective:** "Force a social choice involving Ser Aldric: accuse, defend, bargain, or demand ) — falling back to reactive policy
+NPC Tomas infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: The user is asking me to respond with a SemanticAction JSON object only, matching the schema described in the prompt. I need to:
+
+1. Stay in character as Tomas - a spice merchant who is calculating, smooth, but secretly terrified of Aldric
+2. The scene has smoke in the room, and the DM objective is to force a social choice involving Ser Aldric
+3. I need to choose one action that advances a relational aim toward a specific person (Mira, Linna, or Ser Aldric)
+4. The action should be concrete and c) — falling back to reactive policy
+  [WORLD] tick=0  The low murmur of the crowd swells briefly, then settles back.
+  [WORLD] tick=0  The fireplace pops and throws a brief gust of warmth across the nearest table.
+  [WORLD] tick=0  The front door swings open; cold air rushes in for a moment before it closes again.
+  [WORLD] tick=0  Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [WORLD] tick=0  The hearth pops; a glowing ember leaps onto the boards and dims to grey.
+  [WORLD] tick=0  Pipe smoke thickens near the rafters; the room feels closer.
+  [WORLD] tick=0  Steam rises off the stew pot in slow curls.
+  [NPC:You] tick=0 action=flee
+    You flees.
+  [NPC:Linna] tick=0 action=flee
+    Linna flees.
+  [NPC:Mira] tick=0 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=0 action=flee
+    Tomas flees.
+  [NPC:Ser Aldric] tick=0 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+NPC Linna infer failed (LM response was not valid JSON: Expecting property name enclosed in double quotes: line 5 column 13 (char 96)
+Raw: [
+          {
+            "entity_id": "ent_44631e45",
+            "name": "Tomas",
+            ...
+          }
+        ]) — falling back to reactive policy
+NPC Mira infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: The user wants me to roleplay as Mira, the barkeep of the Tarnished Flagon.
+I need to generate a single JSON object representing my action for this turn.
+The current situation is chaotic: smoke fills the room, lamp oil is on fire, and Ser Aldric is nearby but feeling unwell.
+There is a DIRECTOR block: "DM objective this turn: Force a social choice involving Ser Aldric: accuse, defend, bargain, or demand a concrete concession."
+I also have relational aims: Tomas and Linna. However, the DIRECTOR o) — falling back to reactive policy
+NPC You infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: Thinking Process:
+
+1.  **Analyze the Request:**
+    *   **Role:** "You", a person with no distinct personality, drive "go about your business", mood neutral, alertness low, social openness guarded.
+    *   **Context:** Tavern common room, dawn. Smoke, fire (lamp oil), people fled then returned/visible.
+    *   **Director Objective:** "Force a social choice involving Ser Aldric: accuse, defend, bargain, or demand a concrete concession."
+    *   **Constraint:** Output ONLY valid JSON matching the ) — falling back to reactive policy
+NPC Tomas infer failed (LM response was not valid JSON: Extra data: line 1 column 3 (char 2)
+Raw: []`), but the prompt explicitly states Mira, Linna, and Aldric are "in sight" in the "Who you are trying to reach this scene" section. The previous turn had a JSON error.
+    *   **Director Objective:** Force a social choice involving Ser Aldric: accuse, defend, bargain, or demand a concrete concession.
+    *   **Priority:** Relational aims (Mira, Linna, Aldric). Must choose one valid SemanticAction JSON.
+    *   **Constraint:** Output ONLY JSON. No markdown, no commentary.
+    *   **Problem:** ) — falling back to reactive policy
+  [NPC:You] tick=1 action=flee
+    You flees.
+  [NPC:Linna] tick=1 action=flee
+    Linna flees.
+  [NPC:Mira] tick=1 action=flee
+    Mira flees.
+  [NPC:Tomas] tick=1 action=flee
+    Tomas flees.
+  [NPC:Ser Aldric] tick=1 action=flee
+    Ser Aldric flees.
+  [pressure] opening_mood
+  [pressure] smoke_panic
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+
+────────────────────────────────────────────────────────────
+  Simulation ended at tick 2
+  Events logged : 36
+  Scenario phase: 0
+  Active pressures: opening_mood, smoke_panic
+  Policy branches: infer_failed_reactive=8, budget_reactive=2
+────────────────────────────────────────────────────────────
+

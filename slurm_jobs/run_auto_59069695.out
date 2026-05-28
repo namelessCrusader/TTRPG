@@ -1,0 +1,257 @@
+Removing conda version miniforge3-24.7.1
+Loading conda version miniforge3-24.7.1
+========================================
+ Starting TTRPG Autonomous Simulation in Slurm
+  Job ID     : 59069695
+  Node       : gpu056
+  Arguments  : voxel_tavern 1 --debug
+========================================
+  [LOG] Writing full output to logs/autonomous_debug_20260527_161546.log
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|##########| 4/4 [00:00<00:00, 10631.95it/s]
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:01<08:18,  1.17s/it]Loading weights:   2%|2         | 9/427 [00:01<00:45,  9.23it/s]Loading weights:   4%|3         | 15/427 [00:01<00:26, 15.68it/s]Loading weights:   6%|6         | 27/427 [00:01<00:12, 31.02it/s]Loading weights:   8%|7         | 34/427 [00:01<00:10, 37.17it/s]Loading weights:  10%|9         | 41/427 [00:01<00:09, 40.30it/s]Loading weights:  11%|#1        | 47/427 [00:02<00:10, 34.74it/s]Loading weights:  12%|#2        | 53/427 [00:02<00:09, 38.44it/s]Loading weights:  15%|#5        | 66/427 [00:02<00:06, 51.97it/s]Loading weights:  17%|#7        | 73/427 [00:02<00:06, 53.15it/s]Loading weights:  19%|#8        | 80/427 [00:02<00:06, 51.83it/s]Loading weights:  20%|##        | 86/427 [00:02<00:06, 51.23it/s]Loading weights:  22%|##1       | 92/427 [00:02<00:06, 48.73it/s]Loading weights:  23%|##2       | 98/427 [00:02<00:06, 48.26it/s]Loading weights:  24%|##4       | 103/427 [00:03<00:07, 42.95it/s]Loading weights:  27%|##6       | 115/427 [00:03<00:05, 56.44it/s]Loading weights:  28%|##8       | 121/427 [00:03<00:06, 46.92it/s]Loading weights:  31%|###       | 132/427 [00:03<00:05, 57.25it/s]Loading weights:  33%|###2      | 139/427 [00:03<00:05, 57.22it/s]Loading weights:  34%|###4      | 147/427 [00:03<00:04, 56.77it/s]Loading weights:  36%|###5      | 153/427 [00:04<00:06, 44.01it/s]Loading weights:  37%|###7      | 158/427 [00:04<00:06, 43.08it/s]Loading weights:  40%|####      | 172/427 [00:04<00:04, 58.54it/s]Loading weights:  42%|####1     | 179/427 [00:04<00:04, 58.10it/s]Loading weights:  44%|####3     | 186/427 [00:04<00:04, 58.12it/s]Loading weights:  45%|####4     | 192/427 [00:04<00:04, 57.81it/s]Loading weights:  47%|####6     | 200/427 [00:04<00:03, 59.39it/s]Loading weights:  48%|####8     | 207/427 [00:05<00:05, 41.89it/s]Loading weights:  52%|#####1    | 221/427 [00:05<00:03, 56.89it/s]Loading weights:  53%|#####3    | 228/427 [00:05<00:04, 49.19it/s]Loading weights:  56%|#####5    | 239/427 [00:05<00:03, 55.94it/s]Loading weights:  58%|#####7    | 246/427 [00:05<00:03, 56.15it/s]Loading weights:  59%|#####9    | 253/427 [00:05<00:03, 54.59it/s]Loading weights:  61%|######    | 259/427 [00:06<00:04, 39.33it/s]Loading weights:  64%|######3   | 273/427 [00:06<00:02, 56.18it/s]Loading weights:  66%|######5   | 280/427 [00:06<00:03, 47.35it/s]Loading weights:  68%|######8   | 292/427 [00:06<00:02, 56.55it/s]Loading weights:  70%|#######   | 299/427 [00:06<00:02, 56.66it/s]Loading weights:  72%|#######1  | 306/427 [00:06<00:02, 56.03it/s]Loading weights:  73%|#######3  | 313/427 [00:07<00:02, 41.70it/s]Loading weights:  77%|#######6  | 327/427 [00:07<00:01, 58.24it/s]Loading weights:  78%|#######8  | 335/427 [00:07<00:01, 50.84it/s]Loading weights:  81%|########  | 345/427 [00:07<00:01, 57.64it/s]Loading weights:  82%|########2 | 352/427 [00:07<00:01, 57.54it/s]Loading weights:  84%|########4 | 359/427 [00:07<00:01, 55.35it/s]Loading weights:  85%|########5 | 365/427 [00:08<00:01, 43.50it/s]Loading weights:  87%|########6 | 371/427 [00:08<00:01, 44.40it/s]Loading weights:  90%|########9 | 383/427 [00:08<00:00, 56.24it/s]Loading weights:  91%|#########1| 390/427 [00:08<00:00, 56.43it/s]Loading weights:  93%|#########3| 398/427 [00:08<00:00, 50.21it/s]Loading weights:  96%|#########5| 408/427 [00:08<00:00, 60.09it/s]Loading weights:  97%|#########7| 415/427 [00:08<00:00, 48.72it/s]Loading weights:  99%|#########8| 421/427 [00:09<00:00, 44.81it/s]Loading weights: 100%|##########| 427/427 [00:09<00:00, 46.28it/s]
+  [HISTORY] Running 15-tick world pre-history…
+  [HISTORY] Pre-history complete. World seeded with 6 events.
+
+════════════════════════════════════════════════════════════
+  AUTONOMOUS SIMULATION
+  World  : The Tarnished Flagon (3D)
+  Model  : torch:Qwen/Qwen3.5-9B
+  Ticks  : 1
+  Cast   : Mira, Ser Aldric, Linna, Tomas, You
+  Debug  : ON (state diffs each tick)
+  Log    : logs/autonomous_debug_20260527_161546.log
+════════════════════════════════════════════════════════════
+
+    0    5    1    5    2       
+    0    5    0    5    0         LEGEND
+  0 ########################       @  You (player)
+  1 ########################       A-Z  NPC  (first letter of name)
+  2 ########################       C  Creature / unknown
+  3 ####################$###       %  Corpse
+  4 ########################       $  Object on ground
+  5 #############L##########       .  Floor
+  6 ########################       #  Wall
+  7 ########################       +  Door (closed)
+  8 ########################       /  Door (open)
+  9 ############T###########       ~  Water
+ 10 ####M$#S################       <  Stairs up
+ 11 ####$$$#################       >  Stairs down
+ 12 ##$$#$##################       =  Window
+ 13 ##@#####################       ·  Out of sight
+ 14 ######################$#    
+ 15 ########################    
+
+NPC Tomas infer failed (LM response was not valid JSON: Extra data: line 1 column 3 (char 2)
+Raw: []` but the instructions say "Choose one valid SemanticAction JSON that advances an aim toward a specific person (set `target` to their id)." I must use the target IDs provided in the "Who you are trying to reach this scene" section.
+    *   **DM Objective:** "Move the secret economy forward: test whether Linna can be trusted, extract leverage, or reveal a guarded half-truth."
+    *   **Priority:** Relational aims (Mira, Linna, Aldric).
+    *   **Constraint:** Output ONLY JSON. No markdown, no c) — falling back to reactive policy
+NPC You infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: Thinking Process:
+
+1.  **Analyze the Request:**
+    *   **Role:** I am "You", a person in a deterministic simulation.
+    *   **Personality:** No distinct personality noted (neutral, go about business).
+    *   **Current State:** Mood neutral, Alertness medium, Social openness guarded, Health 100%.
+    *   **World Context:** Tavern common room, dawn. Recent events include a door opening, ale spilling, ember dying, steam rising.
+    *   **Director Objective:** "Pressure Mira toward a specific sec) — falling back to reactive policy
+NPC Mira infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: Thinking Process:
+
+1.  **Analyze the Request:**
+    *   **Role:** Mira, barkeep of the Tarnished Flagon.
+    *   **Personality:** Sharp-tongued, perceptive, protective of regulars, wry humour, not easily rattled, warm to loyal customers, terse with strangers.
+    *   **Current State:** Friendly mood, medium alertness, open socially.
+    *   **Goals:** Keep bar running, manage mood, collect gossip, cut off trouble, find out what Tomas is plotting.
+    *   **Specific Targets:** Tomas (ent_09e94d48) — falling back to reactive policy
+NPC Linna infer failed (LM response was not valid JSON: Expecting value: line 1 column 1 (char 0)
+Raw: The user wants me to roleplay as Linna, a bard and information broker, in a deterministic simulation.
+I need to output a JSON object representing a SemanticAction.
+The current scene is a tavern common room at dawn.
+I have three targets: Tomas (ent_09e94d48), Ser Aldric (ent_27b10abe), and Mira (ent_2576ba21).
+The DM objective is: "Move the secret economy forward: test whether Tomas can be trusted, extract leverage, or reveal a guarded half-truth."
+My current goals include selling what I learn, i) — falling back to reactive policy
+  [scenario] beat entered: tick>=0 phase=0 — Opening night at the Flagon
+  [WORLD] tick=0  The low murmur of the crowd swells briefly, then settles back.
+  [WORLD] tick=0  The fireplace pops and throws a brief gust of warmth across the nearest table.
+  [WORLD] tick=0  The front door swings open; cold air rushes in for a moment before it closes again.
+  [WORLD] tick=0  Someone's elbow knocks a mug — a thin ribbon of ale spreads across the boards.
+  [WORLD] tick=0  The hearth pops; a glowing ember leaps onto the boards and dims to grey.
+  [WORLD] tick=0  Steam rises off the stew pot in slow curls.
+  [NPC:You] tick=0 action=teach
+    You teachs to the air.
+  [NPC:Mira] tick=0 action=learn
+    Mira learns to the air.
+  [NPC:Tomas] tick=0 action=wait
+    Tomas pauses to catch their breath.
+  [NPC:Linna] tick=0 action=observe
+    Linna takes in the scene.
+  Tomas — 5 away; mood neutral.
+    • remembered: [npc_auto:take_object]
+    • remembered: [npc_auto:idle]
+    • remembered: [npc_auto:idle]
+  [NPC:Ser Aldric] tick=0 action=drink
+    Ser Aldric drinks deeply, throat working.
+  [pressure] opening_mood
+  📜 Quest: The Letter Revealed
+  📜   → Linna discovers what Tomas is really carrying — the forged deed to the Flagon that could ruin Mira.
+
+  📜 Quest: An Uneasy Truce
+  ── debug: after tick (tick 0 → 1) ──
+    world.meta['active_pressures']:
+        - [
+  {
+    "id": "secrets_rising",
+    "director_focus": "Secrets want air — gossip, eavesdrop, accuse if warranted.",
+    "director_tension": 0.55,
+    "ambient_probability_mult": {
+      "door_opens": 1.5
+    }
+  }
+]
+        + [
+  {
+    "id": "opening_mood",
+    "director_focus": "Settle the room — greetings, ale, low drama."
+  }
+]
+    world.meta['ambient_probability_mult']:
+        - {
+  "door_opens": 1.5
+}
+        + None
+    world.meta['director_scene_focus']:
+        - Secrets want air — gossip, eavesdrop, accuse if warranted.
+        + Settle the room — greetings, ale, low drama.
+    world.meta['scenario_phase']:
+        - 1
+        + 0
+    active pressures: opening_mood
+    edge Linna→Linna:believes_claim: 0.82 → 0.88
+    edge Linna→Mira:believes_claim: 0.49 → 0.55
+    edge Linna→Ser_Aldric:believes_claim: 0.75 → 0.95
+    edge Linna→Tomas:believes_claim: 1.00 → 1.20
+    edge Linna→You:believes_claim: 0.49 → 0.55
+    edge Linna→unknow:believes_claim: 0.70 → 0.75
+    edge Linna→world:believes_claim: 0.68 → 0.88
+    edge Mira→Linna:believes_claim: 0.61 → 0.69
+    edge Mira→Mira:believes_claim: 0.82 → 0.88
+    edge Mira→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Mira→Tomas:believes_claim: 1.00 → 1.20
+    edge Mira→You:believes_claim: 0.49 → 0.55
+    edge Mira→unknow:believes_claim: 0.53 → 0.77
+    edge Mira→world:believes_claim: 0.39 → 0.47
+    edge Ser_Aldric→Linna:believes_claim: 0.61 → 0.69
+    edge Ser_Aldric→Mira:believes_claim: 0.82 → 0.88
+    edge Ser_Aldric→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Ser_Aldric→Tomas:believes_claim: 1.00 → 1.20
+    edge Ser_Aldric→You:believes_claim: 0.68 → 0.72
+    edge Ser_Aldric→unknow:believes_claim: 0.53 → 0.77
+    edge Ser_Aldric→world:believes_claim: 0.88 → 1.06
+    edge Tomas→Linna:believes_claim: 0.82 → 0.88
+    edge Tomas→Mira:believes_claim: 0.37 → 0.45
+    edge Tomas→Ser_Aldric:believes_claim: 0.98 → 1.16
+    edge Tomas→Tomas:believes_claim: 1.00 → 1.20
+    edge Tomas→You:believes_claim: 0.37 → 0.45
+    edge Tomas→unknow:believes_claim: 0.70 → 1.00
+    edge Tomas→world:believes_claim: 0.70 → 0.90
+    [Tomas]
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Linna can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+    [Mira]
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Ser Aldric can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+      meta.observation_memory_n:
+        - 8
+        + 12
+      meta.observe_streak:
+        - 1
+        + 0
+      meta.pressure_boosts:
+        - None
+        + [
+  {
+    "raw_input": "[npc_auto:drive_speak]",
+    "verb": null,
+    "weight_delta": 0.08
+  }
+]
+    [Ser Aldric]
+      mood:
+        - humiliated
+        + suspicious
+      meta.last_policy_branch:
+        - mind_scored
+        + budget_reactive
+      meta.observation_memory_n:
+        - 8
+        + 12
+    [Linna]
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Move the secret economy forward: test whether Tomas can be trusted, extract leverage, or reveal a guarded half-truth.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+      meta.observation_memory_n:
+        - 10
+        + 12
+      meta.observe_streak:
+        - 0
+        + 1
+      meta.social_stimulus:
+        - {
+  "kind": "world_fact",
+  "summary": "Noticed mark nearby: [npc_auto:idle]",
+  "addressed": false,
+  "tick": 13
+}
+        + {
+  "kind": "world_fact",
+  "summary": "[npc_auto:idle]",
+  "addressed": null,
+  "tick": 14
+}
+    [You]
+      mood:
+        - friendly
+        + neutral
+      meta.director_hint:
+        - None
+        + Scene focus: Secrets want air — gossip, eavesdrop, accuse if warranted.
+DM objective this turn: Pressure Mira toward a specific secret, debt, or contradiction. Do not make small talk.
+      meta.last_policy_branch:
+        - mind_scored
+        + infer_failed_reactive
+  [pressure] opening_mood
+  [policy] You: infer_failed_reactive
+  [policy] Mira: infer_failed_reactive
+  [policy] Tomas: infer_failed_reactive
+  [policy] Linna: infer_failed_reactive
+  [policy] Ser Aldric: budget_reactive
+
+  [LOG] Saved session log: logs/autonomous_debug_20260527_161546.log
+
+────────────────────────────────────────────────────────────
+  Simulation ended at tick 1
+  Events logged : 29
+  Scenario phase: 0
+  Active pressures: opening_mood
+  Policy branches: infer_failed_reactive=4, budget_reactive=1
+────────────────────────────────────────────────────────────
+
