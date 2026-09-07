@@ -1153,3 +1153,47 @@ def test_two_people_who_touch_stay_two_people():
         n = int(w._person_cells(who)[0].sum())
         assert n < total * 0.75, \
             f"{who['name']} claimed {n} of {total} — that is both bodies"
+
+
+def _burning_room_with_a_body_on_the_floor(rescuer):
+    """A fire, a person already unconscious on the floor, and one who is not."""
+    from src.voxel.scenes import _person
+    w = World(50, 26, 40, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 50, 0, 26, 0, 40, STONE)
+    w.mat[1:49, 1:25, 1:39] = AIR
+    w.smass[1:49, 1:25, 1:39] = 0.0
+    w.exits = [(46, 12)]
+    w.fill(4, 10, 8, 16, 1, 3, WOOD, frac=0.8)
+    w.E[4, 8, 1] = 9.0e5
+    down = _person(w, 16, 12); down["name"] = "Fallen"
+    hero = _person(w, 22, 12); hero["name"] = "Hero"
+    if rescuer:                                   # the character sheet, edited
+        hero["reflexes"] = {k: "drag_them_out" for k in
+                            ("sees_fire", "chokes", "hears_alarm", "sees_runner")}
+    for _ in range(1500):
+        w.step()
+        down["awake"] = False                     # hold them under for the test
+        down["blood_o2"] = min(down["blood_o2"], 0.30)
+        hero["events"].clear(); down["events"].clear()
+        if hero["safe"]:
+            break
+    return hero, down, w
+
+
+def test_someone_can_be_DRAGGED_out_and_it_is_a_choice():
+    """The whole point of hands. Nobody could be helped before: a fainted body
+    was scenery. Now a rescuer takes hold — legal only because the force
+    arithmetic says this body can shift that one — and hauls them to the door
+    with the same _shove that slides a crate. It is a CHOICE, not a rule: the
+    same world with an ordinary character sheet leaves them where they lie."""
+    hero_r, down_r, w_r = _burning_room_with_a_body_on_the_floor(True)
+    hero_d, down_d, w_d = _burning_room_with_a_body_on_the_floor(False)
+    assert hero_d["safe"] and not down_d["safe"], \
+        "an ordinary person saves themselves and leaves the body"
+    assert hero_r["safe"] and down_r["safe"], \
+        "a rescuer brings them out too"
+    assert any(r["pick"] == "drag_them_out" for r in w_r.traces), \
+        "and it went through the menu like any other decision"
+    assert all(r["pick"] != "drag_them_out" for r in w_d.traces), \
+        "while the other never even considered it"

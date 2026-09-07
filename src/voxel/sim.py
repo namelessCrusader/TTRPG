@@ -2493,6 +2493,14 @@ class World:
         if q is None or q["safe"] or not q["alive"]:
             p["dragging"] = None
             return
+        # THEY MAY BE IN THE AIR. An unconscious body is promoted to a free body
+        # while it keels over, and for those ticks it is off the lattice or only
+        # half back on it. Grabbing at it then fails — and letting go on that
+        # failure ended every rescue at precisely the moment the person being
+        # rescued finished falling over, which is when they need carrying most.
+        # Wait for them to come down; a grip is not lost because someone moved.
+        if any((b["mats"] == FLESH).any() for b in self.bodies):
+            return
         comp, sl = self._person_cells(q)
         if comp is None or not comp.any():
             p["dragging"] = None

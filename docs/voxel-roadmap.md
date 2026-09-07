@@ -216,12 +216,22 @@ ten-year-old) because a stick figure at 5 cm fills far less of its outline than 
 person does; stated as a known softness, not fudged. Depth went into y, not x, so
 every doorway in every scene is unchanged.
 
-**NOT working: dragging someone out end to end.** The response (`drag_them_out`),
-the reach and mass check, and the hauling all run — measured, a rescuer picks it
-and shifts the body twice — and then lets go, because an unconscious body is
-promoted to a FREE BODY by `_collapse` and leaves the grid entirely, so there is
-nothing left to hold. Wants free bodies (#3) to be draggable, or collapse to stop
-promoting. This is the next thing to fix, and it is the whole point of hands.
+**Dragging someone out — WORKS (2026-09-07).** A rescuer takes hold (legal only
+because the force arithmetic says this body can shift that one) and hauls them to
+the door with the same `_shove` that slides a crate. It is a CHOICE: the same
+world with an ordinary character sheet leaves the body where it lies, and the
+pick goes through the menu and into the traces like any other. Locked by test.
+
+The blocker was subtle and worth remembering: a fainting body is promoted to a
+FREE body while it keels over, so for a few ticks it is off the lattice or only
+half back on it (measured: 342 cells, then 0, then 42). Grabbing at it then fails
+— and letting go on that failure ended every rescue at exactly the moment the
+person being rescued finished falling over. A grip is not lost because someone
+moved; `_haul` now waits out the fall.
+
+Still soft: hauling a body costs the hauler nothing — same walking speed, no
+extra effort. Dragging 28 kg should slow you down, and the strength number is
+already there to say by how much.
 
 ## Impact damages what it lands on (2026-09-07)
 
