@@ -1,3 +1,0 @@
-# Spell duel: LM picks cast/wait each tick via infer_npc.
-cognition:
-  mode: lm

@@ -1,0 +1,49 @@
+[
+ {
+  "tick": 325,
+  "who": "Aldan",
+  "percept": "sees_fire",
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "stay"
+  ],
+  "pick": "flee_shouting",
+  "by": "table",
+  "outcome": "safe",
+  "situation": {
+   "tick": 325,
+   "who": "Aldan",
+   "percept": "sees_fire",
+   "smoke": 0.0,
+   "blood_o2": 0.899,
+   "burn": 0.0,
+   "exit_m": 2.4,
+   "others_in_earshot": 1
+  }
+ },
+ {
+  "tick": 325,
+  "who": "Berel",
+  "percept": "hears_alarm",
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "flee_answering",
+   "stay"
+  ],
+  "pick": "flee_answering",
+  "by": "table",
+  "outcome": "safe",
+  "situation": {
+   "tick": 325,
+   "who": "Berel",
+   "percept": "hears_alarm",
+   "smoke": 0.0,
+   "blood_o2": 0.98,
+   "burn": 0.0,
+   "exit_m": 1.0,
+   "others_in_earshot": 1
+  }
+ }
+]

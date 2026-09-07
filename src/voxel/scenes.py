@@ -1,0 +1,557 @@
+"""Stress scenarios — each aims at a suspected weak spot in the laws.
+
+  two_rooms     two sealed rooms, one doorway, a wood-crib fire in room A.
+                Does the fire breathe ONLY its own airspace? Does smoke walk
+                through the doorway? (built to expose the old one-lung O2 bug)
+  tree_fell     a tree chopped through at axe height. Exposes missing torque:
+                the severed trunk falls STRAIGHT DOWN and lands standing.
+  lamp_shelf    oil lamps under wooden shelves at 5/10/20 cm. Can a small flame
+                ignite wood it does not touch — and where is the threshold?
+
+Run:  python -m src.voxel.scenes <name> <frames_dir>
+"""
+import os
+import sys
+
+import numpy as np
+
+from .sim import (ACID, AIR, CHAR, FLESH, GLASS, IRON, LEAD, LEAF, MIRON,
+                  MLEAD, MTIN, O2_PER_L, OIL, STONE, TIN, WATER, WOOD, World)
+
+
+def _save(w, frames_dir, t):
+    drops = np.array([[d[0], d[1], d[2], d[7]] for d in w.drops], np.float32) \
+        if w.drops else np.zeros((0, 4), np.float32)
+    np.savez_compressed(
+        os.path.join(frames_dir, f"f{t:04d}.npz"),
+        mat=w.mat, fl=w.fl, fvol=w.fvol.astype(np.float16),
+        fpot=w.fpot.astype(np.float16),
+        T=w.T().astype(np.float16), burn=w.burning(),
+        smoke=w.smoke.astype(np.float16), drops=drops, bodies=w.bodies_array())
+
+
+# ── scenario: two rooms, one doorway ─────────────────────────────────────────
+def two_rooms(frames_dir, ticks=800, every=10):
+    w = World(120, 60, 44, voxel_cm=5)                   # 6 m x 3 m x 2.2 m, SEALED
+    w.open_sky = False
+    w.fill(0, 120, 0, 60, 0, 1, STONE)                   # floor
+    w.fill(0, 120, 0, 60, 43, 44, STONE)                 # ceiling (hidden by renderer)
+    for (x0, x1, y0, y1) in ((0, 1, 0, 60), (119, 120, 0, 60),
+                             (0, 120, 0, 1), (0, 120, 59, 60)):
+        w.fill(x0, x1, y0, y1, 0, 44, STONE)             # outer walls
+    w.fill(59, 61, 0, 60, 0, 44, STONE)                  # dividing wall...
+    w.mat[59:61, 26:39, 1:38] = AIR                      # ...with an open doorway
+    w.smass[59:61, 26:39, 1:38] = 0.0
+    for y0 in (18, 24, 30, 36, 42):                      # a wood crib in room A:
+        w.fill(16, 40, y0, y0 + 2, 1, 3, WOOD, frac=0.6)     # sticks along x
+    for x0 in (18, 24, 30, 36):
+        w.fill(x0, x0 + 2, 16, 44, 3, 5, WOOD, frac=0.6)     # crossed layer along y
+
+    def o2_frac(xs):
+        m = (w.mat[xs, 1:59, 1:43] == AIR)
+        return float(w.o2[xs, 1:59, 1:43][m].mean()) / (O2_PER_L * w.vox_l)
+
+    for t in range(ticks):
+        if t < 60:
+            w.E[22, 24, 2] += 2500.0                     # a torch held to one stick
+        w.step()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 50 == 0:
+            print(f"t{t}: burning {int(w.burning().sum())}, wood {w.total_wood():.0f} g, "
+                  f"O2 roomA {100 * o2_frac(slice(1, 59)):.0f}% "
+                  f"roomB {100 * o2_frac(slice(61, 119)):.0f}%", flush=True)
+
+
+def _grow_tree(w, cx, cy, trunk_top=41, ball_z=46, r=9):
+    """A tree with a SKELETON: trunk, wood branch spokes through the canopy (real
+    leaves hang on twigs — without branches the canopy's underside is beyond
+    leaf-span of the trunk and sheds immediately), and fresh sap-wet leaves."""
+    w.fill(cx - 2, cx + 2, cy - 2, cy + 2, 1, trunk_top, WOOD)
+    X, Y, Z = np.ogrid[:w.shape[0], :w.shape[1], :w.shape[2]]
+    ball = (X - cx) ** 2 + (Y - cy) ** 2 + (Z - ball_z) ** 2 <= r * r
+    ball &= w.mat == AIR
+    w.mat[ball] = LEAF                                   # fresh canopy...
+    w.smass[ball] = 200.0 * 0.4 * w.vox_l
+    w.fl[ball] = WATER                                   # ...holding its own weight
+    w.fvol[ball] = 0.06 * w.cap                          # of sap
+    for (bx, by) in ((1, 0), (-1, 0), (0, 1), (0, -1),
+                     (1, 1), (-1, -1), (1, -1), (-1, 1)):
+        for t in range(1, r):                            # branch spokes
+            px, py = cx + int(round(bx * t * 0.8)), cy + int(round(by * t * 0.8))
+            pz = ball_z - 3 + t // 3
+            if 0 <= px < w.shape[0] and 0 <= py < w.shape[1]:
+                w.fill(px, px + 1, py, py + 1, pz, pz + 1, WOOD, frac=0.4)
+
+
+# ── scenario: felling a tree ─────────────────────────────────────────────────
+def tree_fell(frames_dir, ticks=160, every=3):
+    w = World(40, 40, 70, voxel_cm=5)                    # 2 m x 2 m x 3.5 m, open sky
+    w.fill(0, 40, 0, 40, 0, 1, STONE)                    # ground
+    _grow_tree(w, 20, 20)
+
+    for t in range(ticks):
+        if t in (15, 30, 45, 60):                        # four axe strokes at knee height,
+            k = (t // 15) - 1                            # each biting one slice deeper
+            w.mat[21 - k, 18:22, 6:9] = AIR              # (from the camera side, so the
+            w.smass[21 - k, 18:22, 6:9] = 0.0            # notch is visible in the clip)
+            print(f"t{t}: axe stroke {k + 1}/4", flush=True)
+        w.step()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+    top = int(np.argwhere(w.mat == WOOD)[:, 2].max())
+    print(f"final: tree top at z={top} (was 54) — did it TOPPLE or just sink?", flush=True)
+
+
+# ── scenario: oil lamps under shelves ────────────────────────────────────────
+# (Probed first with a plain candle — 300-2200 J/tick of injected heat 15 cm below:
+#  the shelf never passed 63 °C. A candle CAN'T torch a shelf here, which is fair.
+#  So the flame is modeled as its cause: a lamp — a stone cup of actually-burning
+#  oil. Three lamps, three gaps: the threshold is the story.)
+def lamp_shelf(frames_dir, ticks=520, every=8):
+    w = World(42, 40, 40, voxel_cm=5)                    # open sky
+    w.fill(0, 42, 0, 40, 0, 1, STONE)
+    lamps = []
+    for x0, gap in ((2, 1), (15, 2), (28, 4)):           # flame 5 / 10 / 20 cm below
+        w.fill(x0, x0 + 3, 16, 25, 1, 16, STONE)         # two piers
+        w.fill(x0 + 9, x0 + 12, 16, 25, 1, 16, STONE)
+        w.fill(x0, x0 + 12, 15, 26, 16, 18, WOOD, frac=0.8)   # the shelf segment
+        cx, zc = x0 + 5, 16 - gap - 2
+        w.fill(cx - 1, cx + 3, 18, 22, 1, zc + 2, STONE)      # stand + cup with rim
+        w.mat[cx:cx + 2, 19:21, zc + 1] = AIR
+        w.smass[cx:cx + 2, 19:21, zc + 1] = 0.0
+        for (x, y) in ((cx, 19), (cx, 20), (cx + 1, 19), (cx + 1, 20)):
+            w.pour(x, y, zc + 1, OIL, 60.0)              # 240 ml of lamp oil
+        lamps.append((cx, zc + 1))
+    for t in range(ticks):
+        if t < 40:
+            for cx, zf in lamps:
+                w.E[cx, 19, zf] += 2500.0                # a taper lights all three
+        w.step()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 100 == 0:
+            peaks = [f"{float(w.T()[x0:x0 + 12, 15:26, 16:18].max()):.0f}"
+                     for x0 in (2, 15, 28)]
+            print(f"t{t}: burning {int(w.burning().sum())}, oil {w.total_fluid(OIL):.0f} ml, "
+                  f"shelf peaks °C (5/10/20 cm): {'/'.join(peaks)}", flush=True)
+
+
+# ── scenario: the tree with a HINGE left ─────────────────────────────────────
+def tree_hinge(frames_dir, ticks=120, every=3):
+    """Same tree, but the axe leaves the far side: a 1-voxel hinge. The torque
+    law's waist check finds the notch, and the tree FALLS TOWARD IT — the world
+    is wide enough eastward for the whole trunk to land."""
+    w = World(90, 40, 70, voxel_cm=5)
+    w.fill(0, 90, 0, 40, 0, 1, STONE)
+    _grow_tree(w, 20, 20)
+    for t in range(ticks):
+        if t in (15, 30, 45):                            # three strokes, camera side —
+            k = (t // 15) - 1                            # the x=18 slice is LEFT standing
+            w.mat[21 - k, 18:22, 6:9] = AIR
+            w.smass[21 - k, 18:22, 6:9] = 0.0
+            print(f"t{t}: axe stroke {k + 1}/3 (hinge left)", flush=True)
+        w.step()
+        if w.bodies or t % every == 0 or t == ticks - 1:     # every tick of the ARC
+            _save(w, frames_dir, t)
+    top = int(np.argwhere(w.mat == WOOD)[:, 2].max())
+    hinge = int((w.mat[18, 18:22, 6:9] == WOOD).sum())
+    print(f"final: tree top z={top}, hinge voxels intact {hinge}/12", flush=True)
+
+
+# ── scenario: acid poured over a wood block ──────────────────────────────────
+def acid_bath(frames_dir, ticks=500, every=8):
+    w = World(30, 30, 30, voxel_cm=5)
+    w.fill(0, 30, 0, 30, 0, 1, STONE)
+    w.fill(10, 20, 10, 20, 1, 9, WOOD)                   # a 50 cm wood cube
+    m0 = w.total_wood()
+    for t in range(ticks):
+        if t < 80:
+            for (px, py) in ((13, 14), (15, 14), (14, 13), (14, 15)):
+                w.pour(px, py, 20, ACID, 120.0)          # a CARBOY upended over it
+        w.step()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 100 == 0:
+            print(f"t{t}: wood {w.total_wood():.0f}/{m0:.0f} g, "
+                  f"acid {w.total_fluid(ACID):.0f} ml, fumes {w.smoke.sum():.0f} g", flush=True)
+
+
+# ── scenario: a real torch vs a bare stick ───────────────────────────────────
+def torch_pillar(frames_dir, ticks=600, every=10):
+    """The user's question: why does a torch burn only at its top? Answer to test:
+    because the top is the FUEL (oil-soaked), heat rises away from the handle, and
+    wood's ignition is higher than oil's. Left: stick with an oil-soaked head.
+    Right: bare stick with the taper held to its top wood directly."""
+    w = World(40, 40, 36, voxel_cm=5)
+    w.fill(0, 40, 0, 40, 0, 1, STONE)
+    w.fill(9, 11, 19, 21, 1, 16, WOOD, frac=0.5)         # torch handle
+    w.fl[9:11, 19:21, 14:16] = OIL                       # the head is SOAKED — oil
+    w.fvol[9:11, 19:21, 14:16] = 50.0                    # held in the wood's fibers
+                                                         # (like sap in a leaf), so it
+                                                         # burns in place instead of
+                                                         # dribbling off the top
+    w.fill(29, 31, 19, 21, 1, 16, WOOD, frac=0.5)        # bare stick
+    for t in range(ticks):
+        if t < 30:
+            w.E[9, 19, 15] += 2000.0                     # taper to the soaked head
+            w.E[29, 19, 15] += 2000.0                    # taper to the bare stick's top
+        w.step()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 100 == 0:
+            burn = w.burning()
+            handle = float(w.smass[9:11, 19:21, 1:15].sum())
+            stick = float(w.smass[29:31, 19:21, 1:15].sum())
+            air = w.mat == AIR
+            o2pc = 100 * float(w.o2[air].mean()) / (O2_PER_L * w.vox_l) if w.o2 is not None and air.any() else 100.0
+            print(f"t{t}: oil {w.total_fluid(OIL):.0f} ml, torch handle {handle:.0f} g, "
+                  f"bare stick {stick:.0f} g, burning wood {int((burn & (w.mat == WOOD)).sum())}, "
+                  f"room O2 {o2pc:.0f}%", flush=True)
+
+
+# ── scenario: communicating vessels ──────────────────────────────────────────
+def vessels(frames_dir, ticks=220, every=5):
+    w = World(30, 10, 20, voxel_cm=10)
+    w.fill(0, 30, 0, 10, 0, 1, STONE)
+    w.fill(1, 9, 1, 9, 1, 17, GLASS)                     # tank A, GLASS...
+    w.mat[2:8, 2:8, 1:17] = AIR                          # ...hollowed
+    w.smass[2:8, 2:8, 1:17] = 0.0
+    w.fill(21, 29, 1, 9, 1, 17, GLASS)                   # tank B likewise
+    w.mat[22:28, 2:8, 1:17] = AIR
+    w.smass[22:28, 2:8, 1:17] = 0.0
+    w.fill(8, 22, 3, 7, 1, 4, GLASS)                     # the connecting pipe...
+    w.mat[7:23, 4:6, 1:3] = AIR                          # ...bored through both walls
+    w.smass[7:23, 4:6, 1:3] = 0.0
+    for x in range(2, 8):                                # tank A filled high
+        for y in range(2, 8):
+            for z in range(1, 13):
+                w.pour(x, y, z, WATER, w.cap)
+    def level(xs):
+        zs = np.argwhere(w.fvol[xs, 2:8, :] > 0.3 * w.cap)
+        return int(zs[:, 2].max()) if len(zs) else 0
+    for t in range(ticks):
+        w.step()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 40 == 0:
+            print(f"t{t}: level A z={level(slice(2, 8))}, level B z={level(slice(22, 28))}",
+                  flush=True)
+
+
+# ── scenario: blocks thrown in a pond ────────────────────────────────────────
+def pond(frames_dir, ticks=40, every=2):
+    w = World(24, 14, 16, voxel_cm=10)
+    w.fill(0, 24, 0, 14, 0, 1, STONE)
+    w.fill(1, 23, 1, 13, 1, 5, STONE)                    # basin...
+    w.mat[2:22, 2:12, 1:5] = AIR                         # ...hollow
+    w.smass[2:22, 2:12, 1:5] = 0.0
+    for x in range(2, 22):
+        for y in range(2, 12):
+            for z in range(1, 4):
+                w.pour(x, y, z, WATER, w.cap)            # 30 cm of water
+    w.fill(5, 8, 5, 8, 10, 13, WOOD)                     # wood block, dropped
+    w.fill(15, 18, 5, 8, 10, 13, STONE)                  # stone block, dropped
+    for t in range(ticks):
+        w.step()
+        if t < 16 or t % every == 0 or t == ticks - 1:   # every tick through the
+            _save(w, frames_dir, t)                      # splash — it is FAST
+    for name, xs in (("wood", slice(5, 8)), ("stone", slice(15, 18))):
+        mat = WOOD if name == "wood" else STONE
+        zs = np.argwhere(w.mat[xs, 5:8, :] == mat)
+        print(f"{name} block rests at z={int(zs[:, 2].min())}..{int(zs[:, 2].max())} "
+              f"(water surface z=3)", flush=True)
+
+
+# ── scenario: burning a living tree ──────────────────────────────────────────
+def burning_tree(frames_dir, ticks=900, every=8):
+    """A bonfire at the base of a FRESH tree. The trunk catches; fire climbs;
+    the green canopy refuses to burn until its sap cooks off (leaves turning
+    brown in the render as they dry); then it crowns. If the trunk burns
+    through, the torque law fells the burning tree."""
+    w = World(60, 60, 78, voxel_cm=5)
+    w.fill(0, 60, 0, 60, 0, 1, STONE)
+    _grow_tree(w, 30, 30)
+    for (px, py) in ((27, 30), (33, 30), (30, 27), (30, 33)):
+        w.pour(px, py, 1, OIL, 120.0)                    # kindling oil at the base
+    leaf0 = None
+    for t in range(ticks):
+        if t < 40:
+            w.E[27, 30, 1] += 2500.0                     # the arsonist's torch
+        w.step()
+        if leaf0 is None:
+            leaf0 = float(w.smass[w.mat == LEAF].sum())
+        if w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 100 == 0:
+            lm = w.mat == LEAF
+            sap = float(w.fvol[lm].sum())
+            print(f"t{t}: burning {int(w.burning().sum())}, "
+                  f"leaves {float(w.smass[lm].sum()):.0f}/{leaf0:.0f} g, "
+                  f"sap {sap:.0f} ml, wood {w.total_wood():.0f} g", flush=True)
+
+
+# ── scenario: the alchemist's accident ───────────────────────────────────────
+def _vat(w, x0, y0, zb):
+    """A glass vat, open-topped, holding a liter of vitriol."""
+    w.fill(x0, x0 + 4, y0, y0 + 4, zb, zb + 1, GLASS)        # base
+    w.fill(x0, x0 + 4, y0, y0 + 4, zb + 1, zb + 4, GLASS)    # walls...
+    w.mat[x0 + 1:x0 + 3, y0 + 1:y0 + 3, zb + 1:zb + 4] = AIR
+    w.smass[x0 + 1:x0 + 3, y0 + 1:y0 + 3, zb + 1:zb + 4] = 0.0
+    for xx in range(x0 + 1, x0 + 3):                         # ...cavity, part-filled
+        for yy in range(y0 + 1, y0 + 3):
+            for zz in (zb + 1, zb + 2):
+                w.pour(xx, yy, zz, ACID, w.cap)
+
+
+def drop_test(frames_dir, ticks=80, every=1):
+    """HOW GLASS BREAKS, side by side: a water-filled glass vat and a solid
+    wood block are let go above the same wooden shelf. Both fall by the support
+    law, both cash in m·g·h on landing — the vat's cells exceed glass's
+    toughness and it BURSTS (shards scatter, the water spills and pours off
+    the shelf); the wood block's cells don't come close, and it just thuds."""
+    w = World(44, 24, 32, voxel_cm=5)
+    w.fill(0, 44, 0, 24, 0, 1, STONE)
+    w.fill(6, 38, 8, 16, 10, 11, WOOD, frac=0.8)             # the shelf board
+    for (lx, ly) in ((7, 9), (7, 13), (35, 9), (35, 13)):
+        w.fill(lx, lx + 2, ly, ly + 2, 1, 10, WOOD)          # its legs
+    w.fill(12, 16, 10, 14, 24, 25, GLASS)                    # vat base, high in the air
+    w.fill(12, 16, 10, 14, 25, 28, GLASS)                    # vat walls...
+    w.mat[13:15, 11:13, 25:28] = AIR
+    w.smass[13:15, 11:13, 25:28] = 0.0
+    for xx in range(13, 15):                                 # ...holding water
+        for yy in range(11, 13):
+            for zz in (25, 26):
+                w.pour(xx, yy, zz, WATER, w.cap)
+    w.fill(26, 30, 10, 14, 24, 28, WOOD, frac=0.9)           # the wood block twin
+    for t in range(ticks):
+        w.step()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 20 == 0:
+            g = w.mat == GLASS
+            full = 2500.0 * w.vox_l
+            print(f"t{t}: glass cells {int(g.sum())} (intact "
+                  f"{int((w.smass[g] > 0.9 * full).sum())}), wood cells "
+                  f"{int((w.mat == WOOD).sum())}, loose water "
+                  f"{w.total_fluid(WATER):.0f} ml", flush=True)
+
+
+def forge(frames_dir, ticks=700, every=8):
+    """TRANSFORMATION: an established bed of glowing coals under three bars —
+    tin, lead, iron. Three MELT rows do everything: tin (232°) runs first and
+    drips off its rail, lead (327°) follows sluggishly, iron (1538°) only
+    glows. What runs, pools on the cold stone floor and FREEZES into splats —
+    the same table read backwards."""
+    w = World(48, 30, 26, voxel_cm=5)
+    w.fill(0, 48, 0, 30, 0, 1, STONE)
+    w.fill(6, 42, 6, 24, 1, 2, STONE)                        # hearth slab
+    w.fill(8, 40, 8, 22, 2, 4, CHAR, frac=0.8)               # the coal bed, and a
+    w.fill(9, 41, 11, 19, 4, 7, CHAR, frac=0.8)              # heap over the work —
+    w.fill(11, 15, 13, 17, 4, 6, TIN)                        # the bars sit BURIED
+    w.fill(23, 27, 13, 17, 4, 6, LEAD)                       # in the coals, the way
+    w.fill(35, 39, 13, 17, 4, 6, IRON)                       # a real smelt holds
+    bed = w.mat == CHAR                                      # its heat
+    w.E[bed] = 680.0 * w.heat_capacity()[bed]
+    for t in range(ticks):
+        w.step()
+        if w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 100 == 0:
+            T = w.T()
+            line = []
+            for name, m, fl_id in (("tin", TIN, MTIN), ("lead", LEAD, MLEAD),
+                                   ("iron", IRON, MIRON)):
+                solid = float(w.smass[w.mat == m].sum())
+                molten = float(w.fvol[w.fl == fl_id].sum())
+                bar = w.mat == m
+                tt = float(T[bar].max()) if bar.any() else 0.0
+                line.append(f"{name}: {solid / 1000:.1f} kg solid, "
+                            f"{molten:.0f} ml molten, {tt:.0f} °C")
+            print(f"t{t}: " + " | ".join(line), flush=True)
+
+
+def alchemist(frames_dir, ticks=900, every=8):
+    """Glass vats of vitriol on wooden shelving over a workbench. The shelf edge
+    under one vat cracks; the vat tips; everything after that is the laws'
+    business: spilled acid eats the shelf, weakened wood drops the next vat,
+    pools eat the bench and the uprights. A consequence CASCADE, zero scripting
+    past the first crack."""
+    w = World(50, 44, 40, voxel_cm=5)
+    w.fill(0, 50, 0, 44, 0, 1, STONE)
+    for x0 in (8, 40):                                       # shelving uprights
+        w.fill(x0, x0 + 2, 34, 36, 1, 25, WOOD)
+    w.fill(6, 44, 32, 38, 11, 12, WOOD, frac=0.8)            # lower shelf board
+    w.fill(6, 44, 32, 38, 22, 23, WOOD, frac=0.8)            # upper shelf board
+    _vat(w, 12, 33, 23)                                      # vat A (upper, will tip)
+    _vat(w, 24, 33, 23)                                      # vat B (upper)
+    _vat(w, 32, 33, 12)                                      # vat C (lower)
+    w.fill(10, 34, 16, 37, 8, 9, WOOD, frac=0.8)             # the workbench top runs
+    for (lx, ly) in ((11, 17), (11, 27), (31, 17), (31, 27)):    # back UNDER the shelves
+        w.fill(lx, lx + 2, ly, ly + 2, 1, 8, WOOD)           # bench legs
+    a0 = w.total_fluid(ACID)
+    for t in range(ticks):
+        if t == 40:                                          # the shelf SPLITS along
+            w.mat[11:17, 32:36, 22] = AIR                    # its front edge — vat A
+            w.smass[11:17, 32:36, 22] = 0.0                  # keeps only its back row
+            print("t40: the shelf cracks away under vat A's front", flush=True)
+        w.step()
+        if w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 100 == 0:
+            am = w.fl == ACID
+            active = float((w.fpot[am] * w.fvol[am]).sum())
+            print(f"t{t}: acid {w.total_fluid(ACID):.0f}/{a0:.0f} ml "
+                  f"(still potent: {active:.0f} ml), "
+                  f"wood {w.total_wood():.0f} g, glass standing "
+                  f"{int((w.mat == GLASS).sum())}, fumes {w.smoke.sum():.0f} g", flush=True)
+
+
+# ── the blocky humanoid ──────────────────────────────────────────────────────
+def _person(w, px, py):
+    """A person, finally with a body: two legs, torso, two arms, a head.
+    ~1.5 m of FLESH at 5 cm voxels. A physical object first — it stands by the
+    support law, tips by the torque law, chars by the combustion law."""
+    w.fill(px, px + 1, py, py + 1, 1, 15, FLESH, frac=0.9)       # left leg
+    w.fill(px + 2, px + 3, py, py + 1, 1, 15, FLESH, frac=0.9)   # right leg
+    w.fill(px, px + 3, py - 1, py + 1, 15, 27, FLESH, frac=0.9)  # torso
+    w.fill(px - 1, px, py, py + 1, 18, 27, FLESH, frac=0.85)     # left arm
+    w.fill(px + 3, px + 4, py, py + 1, 18, 27, FLESH, frac=0.85) # right arm
+    w.fill(px, px + 2, py - 1, py + 1, 27, 31, FLESH, frac=0.9)  # head
+    person = w.add_person(px + 1, py)                            # and now: alive
+    person.update({"px": px, "py": py, "head_z": 28})
+    return person
+
+
+def _exposure(w, p):
+    """What the world is DOING to the body: peak skin heat, and the air at head
+    height vs knee height (O2 %% and smoke) — the damage model's raw senses."""
+    flesh = w.mat == FLESH
+    skin = float(w.T()[flesh].max()) if flesh.any() else 0.0
+    def air_at(z):
+        sl = (slice(max(p["px"] - 4, 0), p["px"] + 6),
+              slice(max(p["py"] - 4, 0), p["py"] + 6), slice(z, z + 3))
+        m = w.mat[sl] == AIR
+        if not m.any() or w.o2 is None:
+            return 100.0, 0.0
+        o2 = 100 * float(w.o2[sl][m].mean()) / (O2_PER_L * w.vox_l)
+        return o2, float(w.smoke[sl][m].mean())
+    ho2, hsm = air_at(p["head_z"])
+    ko2, ksm = air_at(4)
+    return (f"skin {skin:.0f} °C | head air: O2 {ho2:.0f}%, smoke {hsm:.2f} g | "
+            f"knee air: O2 {ko2:.0f}%, smoke {ksm:.2f} g | {w.person_status(p)}")
+
+
+def fire_alarm(frames_dir, ticks=700, every=4):
+    """SOCIAL SITUATION, layer one — no minds yet, just reflexes (the WILL
+    data): the same burning house with TWO people and a door. Aldan stands
+    near the bed and SEES the flames catch; he bolts. Berel stands behind an
+    alcove wall and genuinely CANNOT see the fire — sight is a ray now, and
+    masonry blocks it. What Berel eventually sees is Aldan sprinting for the
+    door. Alarm spreads by sight, not by a message channel; both walk out of
+    the same door the smoke is starting to curl through."""
+    w = World(100, 80, 50, voxel_cm=5)
+    w.fill(0, 100, 0, 80, 0, 1, STONE)
+    w.fill(10, 90, 10, 70, 0, 45, STONE)
+    w.mat[11:89, 11:69, 1:44] = AIR
+    w.smass[11:89, 11:69, 1:44] = 0.0
+    w.mat[10:11, 35:45, 1:38] = AIR
+    w.smass[10:11, 35:45, 1:38] = 0.0
+    w.fill(66, 86, 14, 28, 5, 7, WOOD, frac=0.7)             # the bed
+    for (lx, ly) in ((67, 15), (67, 25), (83, 15), (83, 25)):
+        w.fill(lx, lx + 2, ly, ly + 2, 1, 5, WOOD)
+    w.fill(36, 60, 50, 52, 1, 44, STONE)                     # an alcove wall hiding
+    w.exits = [(13, 40)]                                     # the bed; its OPENING
+    a = _person(w, 60, 30)                                   # faces the door, so the
+    a["name"] = "Aldan"                                      # one thing Berel can
+    a["lines"] = {"flee_shouting": "Fire! The bed's caught — get out, get out!"}
+    b = _person(w, 32, 58)                                   # see is a man running
+    b["name"] = "Berel"                                      # for it — but a SHOUT
+    b["lines"] = {"flee_answering": "I hear you! I'm coming!"}   # gets there first
+    for (ox, oy) in ((64, 16), (65, 17), (64, 18)):
+        w.pour(ox, oy, 1, OIL, 100.0)
+    for t in range(ticks):
+        if t < 30:
+            w.E[64, 16, 1] += 2500.0
+        w.step()
+        for p in (a, b):
+            for e in p["events"]:
+                print(e, flush=True)
+            p["events"].clear()
+        if w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 100 == 0:
+            print(f"t{t}: burning {int(w.burning().sum())} | "
+                  f"Aldan at {a['anchor']}{' SAFE' if a['safe'] else ''} | "
+                  f"Berel at {b['anchor']}{' SAFE' if b['safe'] else ''}", flush=True)
+        if a["safe"] and b["safe"] and "out_at" not in a:
+            a["out_at"] = t
+            print(f"t{t}: both outside — the house can have the rest", flush=True)
+        if "out_at" in a and t > a["out_at"] + 80:           # a beat of aftermath
+            break
+    import json
+    with open(os.path.join(frames_dir, "speech.json"), "w") as f:
+        json.dump({"speech": [[int(tk), nm, tx] for tk, nm, tx in w.speech],
+                   "every": every}, f)
+    # the harvest: every decision, the whole menu it was picked from, and how
+    # that body ended. This is the file a model is later trained on.
+    rows = [{k: v for k, v in r.items() if k != "situation"}
+            | {"situation": {k: v for k, v in r["situation"].items()
+                             if k != "reflexes"}}
+            for r in w.trace_outcomes()]
+    with open(os.path.join(frames_dir, "traces.json"), "w") as f:
+        json.dump(rows, f, indent=1)
+    for r in rows:
+        print(f"t{r['tick']}: {r['who']} [{r['percept']}] "
+              f"menu={r['menu']} -> {r['pick']} ({r['by']}) => {r['outcome']}",
+              flush=True)
+
+
+# ── scenario: house fire, someone inside ─────────────────────────────────────
+def house_fire(frames_dir, ticks=900, every=10):
+    """A furnished room: bed, table, wardrobe — and a PERSON standing in it.
+    A spilled lamp lights the bed. The scene is the world acting on a body:
+    smoke banks down from the ceiling, the air at head height goes foul while
+    the knee-level air stays breathable (crawl low), the skin readout climbs."""
+    w = World(100, 80, 50, voxel_cm=5)
+    w.fill(0, 100, 0, 80, 0, 1, STONE)
+    w.fill(10, 90, 10, 70, 0, 45, STONE)                     # the house block...
+    w.mat[11:89, 11:69, 1:44] = AIR                          # ...hollowed to a room
+    w.smass[11:89, 11:69, 1:44] = 0.0
+    w.mat[10:11, 35:45, 1:38] = AIR                          # a doorway to outside
+    w.smass[10:11, 35:45, 1:38] = 0.0
+    w.fill(66, 86, 14, 28, 5, 7, WOOD, frac=0.7)             # bed platform
+    for (lx, ly) in ((67, 15), (67, 25), (83, 15), (83, 25)):
+        w.fill(lx, lx + 2, ly, ly + 2, 1, 5, WOOD)
+    w.fill(30, 44, 50, 62, 10, 11, WOOD, frac=0.8)           # table
+    for (lx, ly) in ((31, 51), (31, 59), (41, 51), (41, 59)):
+        w.fill(lx, lx + 2, ly, ly + 2, 1, 10, WOOD)
+    w.fill(84, 88, 55, 67, 1, 30, WOOD, frac=0.5)            # wardrobe
+    p = _person(w, 46, 34)                                   # someone mid-room
+    for (ox, oy) in ((64, 16), (65, 17), (64, 18)):
+        w.pour(ox, oy, 1, OIL, 100.0)                        # the dropped lamp
+    for t in range(ticks):
+        if t < 30:
+            w.E[64, 16, 1] += 2500.0                         # its burning wick
+        w.step()
+        for e in p["events"]:                                # physiology narrates itself
+            print(e, flush=True)
+        p["events"].clear()
+        if w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 50 == 0:
+            print(f"t{t}: burning {int(w.burning().sum())}, {_exposure(w, p)}", flush=True)
+
+
+SCENARIOS = {"two_rooms": two_rooms, "tree_fell": tree_fell, "lamp_shelf": lamp_shelf,
+             "drop_test": drop_test, "forge": forge, "fire_alarm": fire_alarm,
+             "alchemist": alchemist, "house_fire": house_fire,
+             "burning_tree": burning_tree,
+             "tree_hinge": tree_hinge, "acid_bath": acid_bath, "torch_pillar": torch_pillar,
+             "vessels": vessels, "pond": pond}
+
+if __name__ == "__main__":
+    name, frames_dir = sys.argv[1], sys.argv[2]
+    os.makedirs(frames_dir, exist_ok=True)
+    SCENARIOS[name](frames_dir)
+    print("frames written to", frames_dir, flush=True)

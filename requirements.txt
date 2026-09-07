@@ -1,7 +1,6 @@
-pydantic>=2.7.0
-numpy>=1.26.0
-networkx>=3.3
-pytest>=8.2.0
+# Core engine needs only PyYAML. The local social LM is optional.
 pyyaml>=6.0.1
-openai>=1.30.0
-tiktoken>=0.7.0
+
+# Optional — only for `--brain torch` / `--voice reyna` (local models on GPU):
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124
+#   pip install transformers accelerate

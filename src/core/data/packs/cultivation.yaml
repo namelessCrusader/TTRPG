@@ -1,0 +1,150 @@
+# CULTIVATION — a xianxia magic system (Beware of Chicken / Cradle) as PURE DATA.
+#
+# Nothing below is engine code. `qi` is just a prop; a cultivation STAGE is just a
+# tag; a BREAKTHROUGH is a threshold reaction that spends qi, swaps the stage tag,
+# and tempers the body; heavenly TRIBULATION is a probabilistic reaction. The same
+# interpreter that runs fire chemistry (data/reactions.yaml) runs this. Swap the
+# pack, keep the sim — the world still remembers where everyone is standing.
+#
+# Load with world.packs.append(reactions.load_pack("cultivation")).
+
+# The words this world GIVES MEANING to. Free text mentioning a concept resolves
+# against this pack's verbs; in a world without the pack, the same sentence earns
+# an in-fiction refusal ("you strain, visibly, at nothing").
+concepts: [qi, cultivate, cultivation, cultivating, meridian, meridians,
+           breakthrough, tribulation, realm, realms, dantian]
+
+# Free-text macros over the concepts: a verb fires when a concept-word AND an
+# action-word both appear. `do` is the same effect schema the reactions use.
+verbs:
+  # "I put Qi in the ground" — THE Beware-of-Chicken move. Continuous, conserved,
+  # clamped by what you actually hold; the land drinks it in without complaint.
+  - id: channel_qi_into_ground
+    concept: qi
+    match: [put, pour, push, press, channel, feed, give, send, sink]
+    do:   [ {transfer_prop: {prop: qi, amount: 8.0, to: cell}} ]
+    cost: 2
+    narrative: ["you kneel and press your palms to the soil — qi flows out of you, and the land drinks it in without complaint",
+                "you set your palms flat against the earth and let qi run out of you — the land drinks it in without complaint",
+                "you open yourself to the ground, and qi pours from your hands — the land drinks it in without complaint",
+                "you press down, and warmth leaves you in a slow tide, and the land drinks it in without complaint"]
+    fail: ["you press your palms to the earth, but you are empty; no qi answers",
+           "you kneel and reach for the qi to give, but you are empty — there is none left to send",
+           "your hands find the soil, but you are empty and hollowed out; nothing flows"]
+
+  - id: draw_qi_from_ground
+    concept: qi
+    match: [draw, pull, absorb, drink, take, gather]
+    do:   [ {transfer_prop: {prop: qi, amount: 4.0, to: actor}} ]
+    cost: 2
+    narrative: ["you breathe with the land, drawing its gathered qi up through your meridians",
+                "you settle your breath to the rhythm of the ground and pull its qi up through open meridians",
+                "you draw on the earth the way a root draws water — slow, patient, and it comes"]
+    fail: ["you reach into the earth for qi, but this ground is thin and empty",
+           "you breathe in, waiting for the land to answer, but this soil has nothing to give",
+           "you try to draw on the ground beneath you, but it is spent — no qi rises to meet you"]
+
+  - id: begin_cultivating
+    concept: [cultivate, cultivating, cultivation, meditate, qi]
+    match: [cultivate, meditate, sit, begin]
+    do:   [ {add_tag: cultivating} ]
+    cost: 1
+    narrative: ["you settle cross-legged and turn your breath inward — your cultivation begins",
+                "you sit, spine straight, and let the world outside go quiet as your breath turns inward",
+                "you fold your legs beneath you and begin — breath in, breath out, the slow work of cultivation"]
+    again: ["you breathe, and the world's thin qi seeps into you, slow as sap",
+            "you sink deeper; the noise of the world thins to nothing",
+            "you hold the rhythm — in, hold, out — and the qi keeps trickling in"]
+
+reactions:
+
+  # ── QI GATHERING ──────────────────────────────────────────────────────
+  # A cultivator draws qi from the world. Standing on a SPIRIT VEIN (a cell
+  # tagged `spirit`) draws it faster — the system is COUPLED TO SPACE, which is
+  # exactly what a pure-narration LM game forgets. Location matters.
+  - id: gather_qi_ambient
+    when: [ {is_entity: true}, {has_tag: cultivating}, {has_tag: alive} ]
+    do:   [ {adjust_prop: {prop: qi, delta: 0.4}} ]
+    silent: true
+
+  - id: gather_qi_spirit_vein
+    when: [ {is_entity: true}, {has_tag: cultivating}, {has_tag: alive}, {cell_has_tag: spirit} ]
+    do:   [ {adjust_prop: {prop: qi, delta: 1.6}} ]
+    silent: true
+
+  # ── THE LAND ANSWERS — what poured-in qi DOES (the Fa Ram loop) ────────
+  # Enough qi and the soil wakes: it becomes a spirit vein (which then feeds
+  # cultivation faster — the land gives back). Far too much at once and it
+  # detonates: "too much Qi could cause things to explode."
+  - id: land_awakens
+    when: [ {is_cell: true}, {missing_tag: spirit}, {prop_above: {prop: qi, value: 15.999}} ]
+    do:   [ {add_tag: spirit} ]
+    narrative: ["the soil at {pos} stirs — darker, richer, humming with quiet life.",
+                "the earth at {pos} deepens in color and warmth, as though something had finally woken beneath it.",
+                "at {pos} the ground goes rich and dark, and a low hum of life settles into it."]
+
+  - id: land_overloaded
+    when: [ {is_cell: true}, {prop_above: {prop: qi, value: 47.999}} ]
+    do:   [ {adjust_prop: {prop: qi, delta: -40.0}}, {add_heat: 160} ]
+    narrative: ["too much! The overfed earth at {pos} detonates in a geyser of wild qi!",
+                "the ground at {pos} cannot hold it — qi erupts skyward in a wild, roaring geyser!",
+                "the earth at {pos} finally gives way, and raw qi bursts out in a column of light and force!"]
+
+  # Beasts that live on awakened land drink its qi — and one day, the rooster
+  # looks at you with knowing eyes. Nobody scripts the chicken; it emerges from
+  # location coupling: you fed the land, the land fed what lives on it.
+  - id: beast_drinks_from_awakened_land
+    when: [ {is_entity: true}, {has_tag: animal}, {has_tag: alive}, {cell_has_tag: spirit} ]
+    do:   [ {adjust_prop: {prop: qi, delta: 0.8}} ]
+    silent: true
+
+  - id: beast_awakens
+    when: [ {is_entity: true}, {has_tag: animal}, {has_tag: alive}, {missing_tag: awakened},
+            {prop_above: {prop: qi, value: 6.0}} ]
+    do:   [ {add_tag: awakened}, {add_tag: cultivating} ]
+    narrative: ["{name} goes very still — then looks at you with sudden, knowing intelligence.",
+                "{name} freezes mid-motion, and when its eyes find yours, something looks back that wasn't there before.",
+                "{name} stills, head tilting — and for a moment the eyes are entirely too aware."]
+
+  # ── BREAKTHROUGHS — spend qi, advance a realm, temper the body ─────────
+  # Mortal → Qi Condensation. Meridians open; the flesh strengthens.
+  - id: breakthrough_condensation
+    when: [ {is_entity: true}, {has_tag: mortal}, {prop_above: {prop: qi, value: 9.999}} ]
+    do:   [ {remove_tag: mortal}, {add_tag: qi_condensation},
+            {adjust_prop: {prop: qi, delta: -10.0}},
+            {adjust_prop: {prop: hp, delta: 20.0}},
+            {adjust_prop: {prop: power, delta: 1.0}} ]
+    narrative: ["{name}'s meridians open — qi floods the body. Qi Condensation!",
+                "something gives way in {name} — meridians open wide, and qi rushes in to fill them. Qi Condensation!",
+                "{name}'s breath catches as long-closed pathways open at once. Qi Condensation!"]
+
+  # Qi Condensation → Foundation Establishment. Laying a foundation is a heavenly
+  # provocation: it summons TRIBULATION (the sky answers ambition with lightning).
+  - id: breakthrough_foundation
+    when: [ {is_entity: true}, {has_tag: qi_condensation}, {prop_above: {prop: qi, value: 29.999}} ]
+    do:   [ {remove_tag: qi_condensation}, {add_tag: foundation}, {add_tag: tribulation},
+            {adjust_prop: {prop: qi, delta: -30.0}},
+            {adjust_prop: {prop: hp, delta: 50.0}},
+            {adjust_prop: {prop: power, delta: 2.0}} ]
+    narrative: ["{name} lays a Foundation — and the sky darkens, gathering to strike.",
+                "{name} lays a Foundation, and overhead the clouds gather low and dark, waiting.",
+                "as {name} lays a Foundation, the sky above answers — darkening, drawing itself in to strike."]
+
+  # ── HEAVENLY TRIBULATION — the risk that makes ascension mean something ─
+  # Lightning scourges the newly-ascended each tick until it either kills them or
+  # passes. Probabilistic (world.rng, seeded → replayable): danger, not scripting.
+  - id: tribulation_strikes
+    when: [ {is_entity: true}, {has_tag: tribulation}, {has_tag: alive} ]
+    probability: 0.55
+    do:   [ {damage: 14} ]
+    narrative: ["heaven's lightning scourges {name}!",
+                "lightning splits the sky and scourges {name} to the bone!",
+                "the heavens strike, and {name} takes the full weight of it!"]
+
+  - id: tribulation_endured
+    when: [ {is_entity: true}, {has_tag: tribulation}, {has_tag: alive} ]
+    probability: 0.4
+    do:   [ {remove_tag: tribulation}, {adjust_prop: {prop: power, delta: 1.0}} ]
+    narrative: ["the storm breaks — {name} endures, tempered by the heavens.",
+                "the clouds thin and part — {name} still stands, tempered by what the sky sent down.",
+                "the lightning falls silent — {name} has weathered it, stronger for the trial."]

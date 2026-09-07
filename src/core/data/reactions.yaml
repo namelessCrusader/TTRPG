@@ -1,0 +1,190 @@
+# Core chemistry — ported from worlds/default/reactions.yaml into the unified
+# cell substrate. Rules are DATA; src/core/reactions.py interprets them over
+# every locus (cell or entity) each tick. Add worlds' full 254 rules here later.
+
+reactions:
+
+  # ── IGNITION ──────────────────────────────────────────────────────────
+  - id: fluid_ignites
+    when: [ {is_cell: true}, {missing_tag: on_fire}, {has_flammable_fluid: true},
+            {prop_above: {prop: temperature, value: 60}},
+            {cell_has_fluid: {mat: water, present: false}} ]   # wet fuel won't catch — water smothers it
+    do:   [ {add_tag: on_fire} ]
+    narrative: ["the pooled fuel at {pos} catches light!",
+                "a lick of flame runs across the pooled fuel at {pos} and it goes up with a whump!",
+                "the fuel pooled at {pos} ignites in a sudden orange flare!"]
+
+  - id: solid_ignites
+    when: [ {missing_tag: on_fire}, {has_material_tag: wooden}, {prop_above: {prop: temperature, value: 250}} ]
+    do:   [ {add_tag: on_fire} ]
+    narrative: ["the timber at {pos} bursts into flame!",
+                "the wood at {pos} catches all at once, flame crawling up the grain!",
+                "with a crackle, the timber at {pos} bursts alight!"]
+
+  - id: entity_ignites_on_fire_cell   # living OR dead flesh is flammable and can catch
+    when: [ {is_entity: true}, {missing_tag: on_fire}, {has_tag: flammable}, {cell_on_fire: true},
+            {cell_has_fluid: {mat: water, present: false}} ]    # ...unless they're standing in water
+    do:   [ {add_tag: on_fire} ]
+    narrative: ["{name} catches fire!",
+                "flame licks up {name}, and then {name} is burning!",
+                "{name} catches — fire climbing fast, hungry and bright!"]
+
+  # ── FIRE BEHAVIOUR ────────────────────────────────────────────────────
+  - id: fire_radiates
+    when: [ {has_tag: on_fire} ]
+    do:   [ {radiate: {self: 45, neighbors: 22}} ]
+    silent: true
+
+  - id: fire_consumes_fuel
+    when: [ {is_cell: true}, {has_tag: on_fire}, {has_flammable_fluid: true} ]
+    do:   [ {consume_flammable_fluid: {ml: 120}} ]
+    silent: true
+
+  - id: fire_chars_wood
+    when: [ {is_cell: true}, {has_tag: on_fire}, {has_material_tag: wooden} ]
+    do:   [ {damage: 2} ]
+    narrative: "the timber at {pos} crackles and chars."
+
+  - id: wood_burns_away
+    when: [ {is_cell: true}, {has_material_tag: wooden}, {prop_below: {prop: hp, value: 0.01}} ]
+    do:   [ {change_material: air}, {remove_tag: on_fire}, {add_tag: burned} ]
+    narrative: "the timber at {pos} burns away to ash."
+
+  # a timber FLOOR chars from the flames BENEATH it — and gravity takes the rest
+  - id: timber_floor_burns_through
+    when: [ {is_cell: true}, {floor_is: wood}, {below_hotter_than: 260} ]
+    do:   [ {destroy_floor: {}} ]
+    narrative: "the timber floor at {pos} chars through and gives way!"
+
+  - id: fire_burns_out
+    when: [ {has_tag: on_fire}, {has_fuel: false} ]
+    do:   [ {remove_tag: on_fire} ]
+    narrative: "the fire at {pos} gutters out."
+
+  # Living flesh on fire suffers (screams, takes injury). Death removes agency and
+  # suffering — NOT physics: a corpse keeps burning, silently, and is consumed.
+  - id: living_flesh_burns
+    when: [ {is_entity: true}, {has_tag: alive}, {has_tag: on_fire}, {has_material_tag: biological} ]
+    do:   [ {damage: 3} ]
+    narrative: ["{name} screams as fire consumes flesh.",
+                "{name} screams, flesh blistering as the fire eats inward.",
+                "{name} thrashes and screams as the flames tear into flesh."]
+
+  - id: corpse_burns
+    when: [ {is_entity: true}, {has_tag: dead}, {has_tag: on_fire}, {has_material_tag: biological} ]
+    do:   [ {damage: 1} ]
+    narrative: "the flames consume {name}'s remains."
+
+  - id: corpse_consumed
+    when: [ {is_entity: true}, {has_tag: dead}, {has_material_tag: biological}, {prop_below: {prop: hp, value: -6}} ]
+    do:   [ {change_material: ash}, {remove_tag: on_fire}, {add_tag: charred} ]
+    narrative: ["{name} is reduced to charred remains.",
+                "the fire finishes its work — {name} is nothing but charred remains now.",
+                "{name} burns down to blackened, charred remains."]
+
+  # ── CONTAINERS — fluids spill only when their vessel breaks ──────────
+  - id: container_catches_fire
+    when: [ {is_entity: true}, {has_tag: container}, {missing_tag: on_fire}, {missing_tag: broken},
+            {has_material_tag: wooden}, {prop_above: {prop: temperature, value: 110}} ]
+    do:   [ {add_tag: on_fire} ]
+    narrative: "{name} starts to burn!"
+
+  - id: burning_container_weakens
+    when: [ {is_entity: true}, {has_tag: container}, {has_tag: on_fire}, {missing_tag: broken} ]
+    do:   [ {damage: 1} ]
+    silent: true
+
+  - id: container_breaks
+    when: [ {is_entity: true}, {has_tag: container}, {missing_tag: broken}, {prop_below: {prop: hp, value: 0.01}} ]
+    do:   [ {spill_contents: {}}, {add_tag: broken}, {remove_tag: on_fire} ]
+    narrative: ["{name} bursts — its contents gush across the floor!",
+                "{name} splits apart with a crack, spilling its contents across the floor!",
+                "{name} gives way all at once — everything inside floods out across the floor!"]
+
+  # ── CONTAMINATION — contact leaves visible marks; marks are evidence ──
+  - id: oil_soaks_you
+    when: [ {is_entity: true}, {has_material_tag: biological}, {missing_tag: soaked_oil},
+            {fluid_above: {mat: oil, ml: 100}} ]
+    do:   [ {add_tag: soaked_oil} ]
+    narrative: "{name} is drenched in oil."
+
+  - id: water_washes_you
+    when: [ {is_entity: true}, {has_tag: soaked_oil}, {fluid_above: {mat: water, ml: 100}} ]
+    do:   [ {remove_tag: soaked_oil} ]
+    narrative: "{name} sluices the oil away."
+
+  # oil-soaked flesh is kindling — mind where you stand
+  - id: soaked_ignites_easily
+    when: [ {is_entity: true}, {has_tag: soaked_oil}, {missing_tag: on_fire},
+            {prop_above: {prop: temperature, value: 80}} ]
+    do:   [ {add_tag: on_fire} ]
+    narrative: ["the oil soaking {name} catches — they go up like a torch!",
+                "the oil-soaked cloth on {name} catches all at once — a torch given legs!",
+                "{name}, drenched in oil, goes up in a roaring column of flame!"]
+
+  # ── SUPPRESSION ───────────────────────────────────────────────────────
+  # water doesn't just clear the flame — it COOLS the cell below the ignition
+  # point and flashes to steam (consuming itself), so the fuel can't relight next
+  # tick. Without the cooling the fire oscillates: tag removed, heat/oil remain,
+  # fluid_ignites re-fires. The relax_heat pulls temperature most of the way to
+  # ambient; consume_fluid is the steam lost carrying that heat away.
+  - id: water_extinguishes
+    when: [ {has_tag: on_fire}, {has_fluid: water} ]
+    do:   [ {remove_tag: on_fire}, {relax_heat: 0.85}, {consume_fluid: {mat: water, ml: 120}} ]
+    narrative: ["water douses the fire at {pos} with a hiss of steam.",
+                "water crashes over the fire at {pos}, and it dies in a burst of steam and hissing smoke.",
+                "the flame at {pos} gutters out under the water, steam boiling off with a sharp hiss."]
+
+  - id: water_extinguishes_adjacent
+    when: [ {has_tag: on_fire}, {adjacent_fluid: water} ]
+    do:   [ {remove_tag: on_fire}, {relax_heat: 0.6} ]
+    narrative: "the fire at {pos} is smothered by nearby water."
+
+  - id: burning_entity_doused_in_water   # a person alight who stands in water is put out
+    when: [ {is_entity: true}, {has_tag: on_fire}, {cell_has_fluid: {mat: water, present: true}} ]
+    do:   [ {remove_tag: on_fire} ]
+    narrative: "the water puts out the flames on {name}."
+
+  # ── EXTREME HEAT (no open flame) ──────────────────────────────────────
+  - id: extreme_heat_scorches_flesh   # scald is an injury — only the living suffer it
+    when: [ {is_entity: true}, {has_tag: alive}, {missing_tag: on_fire}, {has_material_tag: biological}, {prop_above: {prop: temperature, value: 60}} ]
+    do:   [ {damage_by_excess: {prop: temperature, threshold: 60, rate: 0.05}} ]
+    narrative: "{name} is scalded by the searing heat."
+
+  # ── FLUID DYNAMICS ────────────────────────────────────────────────────
+  - id: liquids_flow
+    when: [ {is_cell: true} ]
+    do:   [ {flow_liquids: {rate: 0.25, keep: 150}} ]
+    silent: true
+
+  - id: water_dilutes_acid
+    when: [ {is_cell: true}, {has_fluid: acid}, {has_fluid: water} ]
+    do:   [ {consume_fluid: {mat: acid, ml: 80}}, {consume_fluid: {mat: water, ml: 50}}, {add_heat: 8} ]
+    narrative: "acid and water hiss and spit at {pos}"
+
+  # ── ACID / STRUCTURE ──────────────────────────────────────────────────
+  - id: acid_corrodes
+    # corrodible comes from the MATERIAL template (wood, metal) — item 2b: no hand-tagging;
+    # a dropped sword or a wooden door corrodes the same as a cask, by construction.
+    when: [ {has_material_tag: corrodible}, {has_fluid: acid} ]
+    do:   [ {damage: 2} ]
+    narrative: "acid eats into {name}."
+
+  - id: structure_collapses
+    when: [ {is_cell: true}, {has_tag: support}, {prop_below: {prop: hp, value: 0.01}} ]
+    do:   [ {change_material: air}, {add_tag: collapsed} ]
+    narrative: ["{name} gives way and collapses!",
+                "{name} groans, buckles, and comes down in a rush of dust and debris!",
+                "with a crack {name} gives way, collapsing under its own weight!"]
+
+  # ── DEATH ─────────────────────────────────────────────────────────────
+  - id: death   # death removes life, not fire — a burning body keeps burning
+    when: [ {is_entity: true}, {has_tag: alive}, {prop_below: {prop: hp, value: 0.01}} ]
+    do:   [ {remove_tag: alive}, {add_tag: dead}, {drop_inventory: {}} ]
+    narrative: ["{name} dies.",
+                "{name} goes still, and does not rise again.",
+                "the light goes out of {name}, and they are gone."]
+
+  # ── AMBIENT ───────────────────────────────────────────────────────────
+  # (relaxation/conduction now live in the _conduction physics pass — one DF
+  #  formula, Δtemp ÷ specific heat, instead of per-case rules)

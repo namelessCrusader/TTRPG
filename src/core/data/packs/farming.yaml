@@ -1,0 +1,119 @@
+# FARMING — the mundane half of Beware of Chicken, as data. Playtest verdict
+# (Jin, 34 turns): "the pack is called cultivation but has zero support for
+# agriculture — the primary identity marker of this character." This pack is the
+# answer, and it's ~50 lines of yaml: till → sow → water (base verb!) → grow →
+# ripen → harvest, over the SAME cells. It composes with cultivation for free:
+# awakened (spirit) soil grows crops faster — which is literally the book.
+
+concepts: [plant, sow, seed, seeds, rice, crop, crops, till, hoe,
+           harvest, reap, farm, farming, field, grow,
+           chicken, chickens, hen, hens, flock, rooster]
+
+verbs:
+  - id: till
+    concept: [till, hoe, field, farm, farming]
+    match: [till, hoe, work, turn, break]
+    at: cell
+    when: [ {missing_tag: tilled} ]
+    do:   [ {add_tag: tilled} ]
+    cost: 2
+    narrative: ["you work the ground into dark, waiting rows",
+                "you turn the earth over, breaking it into loose, dark rows",
+                "you break the sod with steady strokes, until the ground lies open and ready"]
+    fail: ["this ground is already broken and waiting",
+           "this ground is already turned — no need to work it twice",
+           "the soil here is already loose and open, rows and all"]
+
+  - id: sow
+    concept: [plant, sow, seed, seeds, rice]
+    match: [plant, sow, scatter, put, set]
+    at: cell
+    when: [ {has_tag: tilled}, {missing_tag: sown} ]
+    do:   [ {add_tag: sown} ]
+    cost: 1
+    narrative: ["you press the seeds into the tilled earth, row by careful row",
+                "you walk the rows, and press the seeds into soft earth with a practiced thumb",
+                "you press the seeds into their beds one by one, tucking each into turned soil"]
+    fail: ["this ground won't take seed — it needs tilling first, or it's already carrying a crop",
+           "you crumble a clod, considering: either the earth wants the hoe first, or seed is already in it",
+           "no place for seed here — untilled ground or an already-sown row, either way the answer is no"]
+
+  - id: harvest
+    concept: [harvest, reap, crop, crops, rice]
+    match: [harvest, reap, gather, cut, bring]
+    at: cell
+    when: [ {has_tag: ripe} ]
+    do:   [ {remove_tag: ripe}, {remove_tag: sown}, {remove_tag: tilled},
+            {adjust_prop: {prop: crop, delta: -1.0}},
+            {adjust_entity: {id: player, prop: sheaves, delta: 1.0}} ]   # the yield is REAL — check your stats
+    cost: 2
+    narrative: ["you cut and bundle the harvest — heavy, golden sheaves of it",
+                "you cut low and steady, gathering the stalks into heavy golden sheaves",
+                "you work the rows with the sickle, binding the cut rice into thick golden sheaves"]
+    fail: ["nothing here is ripe for harvest yet",
+           "there is nothing here ready to cut — the field wants more time",
+           "the sickle stays on your shoulder; nothing here is ready for it"]
+
+  - id: feed_the_flock
+    concept: [chicken, chickens, hen, hens, flock, rooster]
+    match: [feed, scatter, toss, throw]
+    at: entity
+    tag: animal
+    when: [ {has_tag: alive} ]
+    do:   [ {adjust_prop: {prop: fed, delta: 1.0}} ]
+    cost: 1
+    narrative: ["you scatter grain, and the flock bustles in to peck about your feet",
+                "you toss a handful of feed; wings flap, and the pecking order sorts itself out loudly",
+                "you feed the birds by hand, and the bold ones eat straight from your palm"]
+    missing: ["no beaks within reach — the flock is off scratching somewhere else",
+              "you have feed to give, but no bird close enough to take it"]
+
+
+# STANCE LINES — the A/B ceiling fix. A farm NPC voiced "warm" as "...friendly
+# face in this den!" (guildhall bank). Here the same stances speak in a rural
+# register, so Meiling sounds like a neighbour. Seeded-varied per NPC + stance.
+stances:
+  warm: ["Well met, neighbour! The fields treating you kindly?",
+         "Good to see a friendly face out here — come, sit a while.",
+         "Ah, it's you! Come to talk crops, or just to talk?"]
+  relent: ["Oh — go on, then. Tell me what's weighing on you.",
+           "Alright, alright. Out with it — what's the trouble?",
+           "Hm. You've the look of someone with something to say. Speak."]
+  wary: ["(wiping her hands) And what is it you're after?",
+         "Mm. State your business, and mind my herbs.",
+         "(squinting) What brings you out this far?"]
+  comply: ["Aye, aye — no need to fuss. What do you need?",
+           "Fine, fine. Tell me what you're wanting.",
+           "Alright! What is it you'd have of me?"]
+  dismiss: ["I've beds to weed and no time for idle talk. Off with you.",
+            "Not now — the light's going and the work isn't.",
+            "Come back when you've something worth the saying."]
+  refuse: ["No. And that's the end of it.",
+           "You'll not get that from me. Try elsewhere.",
+           "I think not. Good day to you."]
+  cower: ["(stepping back) P-please, I want no quarrel!",
+          "Peace! I'm only an old herbalist — leave me be!"]
+  defy: ["You'll not bully me on my own land. Try it.",
+         "Raise your voice all you like. I've buried worse than you."]
+
+reactions:
+  # crops drink WATER — the base fluid, poured with the base verb. No new plumbing.
+  - id: crop_grows_watered
+    when: [ {is_cell: true}, {has_tag: sown}, {missing_tag: ripe}, {has_fluid: water} ]
+    do:   [ {adjust_prop: {prop: crop, delta: 0.2}}, {consume_fluid: {mat: water, ml: 15}} ]
+    silent: true
+
+  # ...and awakened soil feeds them qi (composition with the cultivation pack:
+  # spirit ground grows without watering, and faster — the Fa Ram's secret)
+  - id: crop_grows_spirit
+    when: [ {is_cell: true}, {has_tag: sown}, {missing_tag: ripe}, {has_tag: spirit} ]
+    do:   [ {adjust_prop: {prop: crop, delta: 0.3}} ]
+    silent: true
+
+  - id: crop_ripens
+    when: [ {is_cell: true}, {has_tag: sown}, {missing_tag: ripe},
+            {prop_above: {prop: crop, value: 0.999}} ]
+    do:   [ {add_tag: ripe} ]
+    narrative: ["a stand of rice sways tall and golden, ready for harvest.",
+                "somewhere close, rice has gone gold and heavy-headed, bowing toward the harvest.",
+                "a plot of stalks has ripened to gold, standing thick and ready to cut."]

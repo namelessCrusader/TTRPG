@@ -1,0 +1,128 @@
+# DUNGEON CRAWLER CARL — the alien game-show System, as data. The mechanical
+# skeleton is borrowed shamelessly from cultivation (xp is qi-shaped: a prop
+# with threshold reactions; a level is a realm) — what makes it DCC is the
+# VOICE: every narrative line is the System, and the System is not on your side.
+#
+# Loot boxes are sealed containers whose contents drop on opening (the same
+# drop_inventory op the death rule uses). The floor countdown is a Clock the
+# scene creates (seed.dungeon) and a pack rule ticks — once per turn, keyed to
+# the unique player locus. Achievements are one-shot reactions (marker tag)
+# that pay XP, in the book's exact format: mock first, reward second.
+
+concepts: [loot, stats, xp, respawn, crawler, mana, achievement, achievements,
+           box, boxes, dungeon, stairs, descend]
+
+verbs:
+  - id: open_loot_box
+    concept: [loot, box, boxes]
+    match: [open, crack, pop, unseal]
+    at: entity
+    tag: loot_box
+    when: [ {has_tag: sealed} ]
+    do:   [ {remove_tag: sealed}, {drop_inventory: {}} ]
+    cost: 1
+    narrative: ["the box dissolves into golden motes, spilling its contents at your feet. The System chimes: 'Loot acquired, Crawler. Try not to waste it.'",
+                "the box unravels into a cascade of gold sparks, dumping its guts on the floor. The System, delighted: 'Loot acquired, Crawler. The viewers thank you for your generosity.'",
+                "with a cheerful chime the box splits open and drops everything at your feet. The System: 'Loot acquired. Statistically, you will lose it within the hour.'",
+                "the lid dissolves in a shower of gold motes. The System: 'Loot acquired, Crawler. Do try to survive long enough to use it.'"]
+    fail: ["that box is already open. The System sighs: 'Greed. We love that in a Crawler.'",
+           "the box is already empty and gaping. The System, unimpressed: 'It's open, Crawler. It was open the first time, too.'",
+           "there is nothing left to unseal — you did that already. The System: 'Short-term memory issues? Fascinating. The viewers are taking notes.'"]
+    missing: "the System buzzes: 'No loot box detected within reach, Crawler. Feel free to keep groping the air.'"
+
+  - id: descend_the_stairs
+    concept: [stairs, descend]
+    match: [descend, climb, take, go, down]
+    when: [ {cell_has_tag: stairs}, {missing_tag: escaped} ]
+    do:   [ {descend: {}} ]
+    cost: 1
+    narrative: ["you drop down the stairwell as the floor groans behind you. The System, almost warm: 'Floor One cleared, Crawler. The viewers are... mildly impressed.'",
+                "you descend as the floor above seals itself shut. The System: 'Floor cleared, Crawler. Try not to peak too early — there's a lot more dying left to do.'",
+                "the stairwell swallows you whole, and the level above goes dark behind you. The System, almost fond: 'Floor cleared. The betting pool on your survival just went up half a point.'"]
+    fail: ["the System: 'The staircase is in the corner, Crawler. It is not wherever you happen to be standing.'",
+           "the System, flatly: 'That is a wall, Crawler. Walls are not stairs. This has been a free lesson.'",
+           "the System sighs: 'No stairs here. Try looking instead of hoping — it works better, occasionally.'"]
+
+
+# Monsters share the human stance bank, so a scuttler and a broodmother spoke the
+# same "defy" line. A beast register (keyed by the `hostile` tag) gives them their
+# own snarl. Nested under the tag → _pack_line prefers it for hostile creatures.
+stances:
+  hostile:
+    defy: ["It bares its teeth — a wet, clicking snarl that needs no words.",
+           "It rises up, mandibles wide, and shrieks defiance at you.",
+           "Whatever passes for courage in the thing, it finds — and lunges."]
+    cower: ["It skitters back, legs clattering, cornered and hissing.",
+            "The creature flinches low, a thin keening bleeding out of it."]
+    refuse: ["It gives no ground — only a slow, dripping hiss.",
+             "The thing simply watches you, unblinking, and does not yield."]
+    dismiss: ["It has already lost interest, tearing at something on the floor.",
+              "The creature turns its armoured back, contemptuous."]
+
+reactions:
+  # ── THE COUNTDOWN — ticked once per turn (the player is the unique locus),
+  #    with omens at the half and the brink (book-style: the deadline is LOUD) ──
+  - id: dungeon_countdown
+    when: [ {is_entity: true}, {has_tag: player}, {missing_tag: escaped} ]
+    do:   [ {clock_tick: {clock: collapse}}, {clock_tick: {clock: omen_half}},
+            {clock_tick: {clock: omen_brink}} ]
+    silent: true
+
+  # ── THE KILL LEDGER — harm remembers its author (hit_by:<actor> provenance);
+  #    the show pays for confirmed kills. One payout per corpse. ──
+  - id: xp_for_the_kill
+    when: [ {is_entity: true}, {has_tag: dead}, {has_tag: "hit_by:player"},
+            {missing_tag: kill_counted} ]   # the corpse pays; the player need not be alive
+    do:   [ {add_tag: kill_counted}, {adjust_entity: {id: player, prop: xp, delta: 8.0}} ]
+    narrative: ["Kill confirmed: {name}. The System: 'Was that strictly necessary, Crawler? The ratings say yes. +8 XP.'",
+                "Kill confirmed: {name}. The System: 'The viewers replayed that one twice. +8 XP.'",
+                "Kill confirmed: {name}. The System, approvingly: 'Efficient. Brutal. Marketable. +8 XP.'"]
+
+  # ── FLOOR CLEAR — arriving below pays out and silences floor one's clocks ──
+  - id: floor_two_reached
+    when: [ {is_entity: true}, {has_tag: player}, {has_tag: alive}, {at_level: 0}, {missing_tag: escaped} ]
+    do:   [ {add_tag: escaped}, {adjust_prop: {prop: xp, delta: 10.0}} ]
+    narrative: ["Floor One cleared, Crawler. The System, almost warm: 'The viewers are... mildly impressed. +10 XP. Floor Two is less friendly.'",
+                "Floor One cleared. The System: '+10 XP. Fun fact: nothing on this floor has ever been petted. There is a reason.'"]
+
+  # ── ACHIEVEMENTS — the book's format: mock first, reward second. One-shot. ──
+  - id: ach_literally_on_fire
+    when: [ {is_entity: true}, {has_tag: player}, {has_tag: on_fire}, {missing_tag: ach_fire} ]
+    do:   [ {add_tag: ach_fire}, {adjust_prop: {prop: xp, delta: 5.0}} ]
+    narrative: ["New achievement! Literally On Fire. Most crawlers wait until at least the third floor to self-immolate. Reward: 5 XP.",
+                "New achievement! Literally On Fire. The viewers are placing bets on whether you knew that would happen. Reward: 5 XP.",
+                "New achievement! Literally On Fire. Impressive commitment to the bit. Reward: 5 XP.",
+                "New achievement! Literally On Fire. The System notes this is, technically, still forward progress. Reward: 5 XP."]
+
+  - id: ach_marinated
+    when: [ {is_entity: true}, {has_tag: player}, {has_tag: soaked_oil}, {missing_tag: ach_oil} ]
+    do:   [ {add_tag: ach_oil}, {adjust_prop: {prop: xp, delta: 5.0}} ]
+    narrative: ["New achievement! Marinated. You are now 8% more flammable and 100% more pathetic. Reward: 5 XP.",
+                "New achievement! Marinated. The System has logged you as 'seasoned and ready.' Reward: 5 XP.",
+                "New achievement! Marinated. Nobody made you do this. The viewers appreciate the sacrifice regardless. Reward: 5 XP."]
+
+  - id: ach_not_dead_yet
+    when: [ {is_entity: true}, {has_tag: player}, {has_tag: alive}, {missing_tag: ach_neardeath},
+            {prop_below: {prop: hp, value: 3.0}} ]
+    do:   [ {add_tag: ach_neardeath}, {adjust_prop: {prop: xp, delta: 5.0}} ]
+    narrative: ["New achievement! Not Dead Yet. The audience loves an underdog. They also love watching underdogs die. Reward: 5 XP.",
+                "New achievement! Not Dead Yet. Congratulations on the bare minimum. Reward: 5 XP.",
+                "New achievement! Not Dead Yet. The System would like to remind you that 'yet' is doing a lot of work in that sentence. Reward: 5 XP.",
+                "New achievement! Not Dead Yet. The viewers are on the edge of their seats, mostly hoping for a refund. Reward: 5 XP."]
+
+  # ── LEVELS — realm breakthroughs in a tracksuit. XP in, hp and swagger out. ──
+  - id: level_2
+    when: [ {is_entity: true}, {has_tag: player}, {has_tag: alive}, {missing_tag: level_2},
+            {prop_above: {prop: xp, value: 9.999}} ]
+    do:   [ {add_tag: level_2}, {adjust_prop: {prop: hp, delta: 10.0}} ]
+    narrative: ["Level 2! Don't let it go to your head, Crawler — statistically, you are still almost certainly going to die.",
+                "Level 2! The System congratulates you, statistically insincere as always — you are still almost certainly going to die.",
+                "Level 2! A modest improvement, Crawler; statistically, the odds remain overwhelmingly not in your favor."]
+
+  - id: level_3
+    when: [ {is_entity: true}, {has_tag: player}, {has_tag: alive}, {has_tag: level_2}, {missing_tag: level_3},
+            {prop_above: {prop: xp, value: 24.999}} ]
+    do:   [ {add_tag: level_3}, {adjust_prop: {prop: hp, delta: 15.0}} ]
+    narrative: ["Level 3! The viewers are starting to remember your name. That is not necessarily good news.",
+                "Level 3! You have officially outlived several audience predictions. The System is almost proud.",
+                "Level 3! Someone in the comments is already asking how you'll die. The System finds this reasonable."]

@@ -137,9 +137,21 @@ cython_debug/
 # Project-specific ignores
 /models/
 /logs/
+/slurm_jobs/
+tools/godot/
 *.jsonl
 *.log
 autogen/
 trace/
 *.pkl
 *.pyc
+
+# Voxel sim: per-frame lattice dumps are regenerable from src/voxel/scenes.py
+# (85MB for one scene). The rendered mp4/stills/traces beside them are kept.
+renders/**/*.npz
+
+# Reference PDFs (papers, books) — third-party, large, not ours to redistribute
+*.pdf
+
+# Stray tooling tests that are not this project's
+.claude/tests/
