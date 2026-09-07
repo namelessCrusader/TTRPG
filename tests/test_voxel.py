@@ -873,3 +873,51 @@ def test_burning_opens_a_solid_block_with_nobody_writing_that():
     assert float(w.smass[blk].sum()) < m0, "the fire ate some of the block"
     assert float(w.porosity()[blk].max()) > 0.1, \
         "and the mass it ate is now void the gases can move through"
+
+
+def _walled_pair(window):
+    """Two rooms, a fire in one, a person in the other, and a stone divider
+    that either carries a window or does not. ONE line differs."""
+    w = World(64, 24, 22, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 64, 0, 24, 0, 22, STONE)
+    for x0, x1 in ((1, 30), (34, 63)):
+        w.mat[x0:x1, 1:23, 1:21] = AIR
+        w.smass[x0:x1, 1:23, 1:21] = 0.0
+    w.fill(30, 34, 1, 23, 1, 21, STONE)                  # the divider
+    if window:
+        w.fill(30, 34, 9, 15, 8, 16, GLASS)              # <-- the only difference
+    w.exits = [(60, 12)]
+    w.fill(6, 14, 9, 15, 3, 5, WOOD, frac=0.7)           # a bench
+    for (lx, ly) in ((6, 9), (6, 14), (13, 9), (13, 14)):
+        w.fill(lx, lx + 1, ly, ly + 1, 1, 3, WOOD)       # ...on legs
+    w.fill(40, 41, 11, 12, 1, 15, FLESH, frac=0.9)
+    p = w.add_person(40, 11, "Witness")
+    w.E[8, 10, 3] = 9.0e5
+    seen, peak = None, 0
+    for t in range(260):
+        w.step()
+        lit = int(w.burning().sum())
+        peak = max(peak, lit)
+        if seen is None and lit and w._sees((41.0, 11.0, 15.0), (8.0, 10.0, 4.0)):
+            seen = t
+        p["events"].clear()
+    return w, p, seen, peak
+
+
+def test_a_body_learns_of_the_fire_ONLY_by_perceiving_it():
+    """No information may reach a mind except through its senses. Brick up the
+    window and the same fire burns just as hard, but the witness never learns
+    of it: no sight, no percept, no decision, no word, no step. The sim knows
+    where the fire is; the person is not the sim."""
+    w1, p1, saw1, peak1 = _walled_pair(True)
+    w0, p0, saw0, peak0 = _walled_pair(False)
+    assert peak1 > 5 and peak0 > 5, "both worlds must actually burn"
+    assert abs(peak1 - peak0) <= 3, \
+        "the FIRE must be the same fire — only perception may differ"
+    assert saw1 is not None, "through a window, the fire is visible"
+    assert p1["fleeing"] and w1.traces, "and the witness acts on having seen it"
+    assert saw0 is None, "through masonry, it is not"
+    assert not w0.traces, "NO decision may be taken about a fire never perceived"
+    assert not p0["fleeing"] and not w0.speech, \
+        "and the witness neither runs nor cries out — no leak from the lattice"

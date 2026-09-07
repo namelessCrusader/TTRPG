@@ -157,6 +157,31 @@ continuous field. Demo: `glasshouse` scene + `renders/glasshouse/`.
   path. Kept HARD, not graded: grading the coarse 20 cm cells by volume fraction
   let sealed rooms bleed pressure through masonry (a test caught it).
 
+## Information leaks — what a mind may know (audited 2026-09-07)
+
+**Ablation run, and now a test** (`test_a_body_learns_of_the_fire_ONLY_by_perceiving_it`):
+the glasshouse with its window bricked up. Identical fire — 181 burning voxels
+either way, same 0.008 g of smoke through the door — but with masonry in place of
+glass the witness never sees it, takes NO decision, says nothing, and never moves.
+Sight leaks nothing.
+
+**But geometry is still omniscient, and events are not the only channel:**
+- `ex = min(self.exits, ...)` — a body picks the nearest exit from a GLOBAL list.
+  Nobody has to have seen a door to know exactly where it is. A stranger in an
+  unfamiliar building would not.
+- `_plan_path` runs its BFS over the WHOLE `walk_ok` grid — perfect knowledge of
+  the entire floor plan, including rooms never entered. Bodies route around
+  baffles they cannot see.
+- Consequently the menu is built from omniscient pathing: `_menu` calls
+  `_plan_path`, so "flee" is offered on the strength of a route the body has no
+  business knowing.
+
+The fix is the one `src/core` already has and the voxel minds lack: a BELIEF of
+the world (what this body has actually seen), with pathing and exit choice run
+against the belief rather than the lattice. Core item 1 already binds contact
+options to *fresh belief nodes*; the voxel side is behind it. Until then the
+honest description is: **perception gates EVENTS, not GEOMETRY.**
+
 ## Speed — 4x, measured not guessed (2026-09-07)
 
 Profiled first. 400k-voxel world was **630 ms/tick (1.6 ticks/sec)**.
