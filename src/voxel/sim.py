@@ -344,6 +344,9 @@ class World:
         self.open_sky = True                            # scene is built (air gets fresh O2)
         self.air_region = None                          # compact id of each connected
         self._region_air = None                         # airspace; -1 in solids
+        self._just_shattered = set()                    # cells emptied THIS pass:
+                                                        # fragments must not plug
+                                                        # the hole being made
         self._slack = None                              # support reach, cached
         self._slack_mat = None                          # ...against this layout
         self._region_count = 0
@@ -734,6 +737,7 @@ class World:
         stored drop is cashed in as m·g·h against the material's toughness.
         Brittle stuff (glass, char) shatters; wood just thuds; a fall cushioned
         by a pond arrives with no height to cash."""
+        self._just_shattered = set()
         rest = (self.mat != AIR) & (self.fallh > 0.5)
         if moved is not None:
             rest &= ~moved
@@ -745,9 +749,24 @@ class World:
         thr = _TOUGH_ARR[self.mat[rest]] * 1000.0 * vox_m * vox_m
         flaw = np.array([0.7 + 0.6 * self._flaw01(*c) for c in cells], np.float32)
         thr = thr * flaw                                 # every piece has its own
-        for (x, y, z), broke, ov in zip(cells, e > thr, e / np.maximum(thr, 1e-9)):
+        for (x, y, z), broke, ov, joules in zip(cells, e > thr,
+                                                e / np.maximum(thr, 1e-9), e):
             if broke:                                    # worst flaw — no two break
                 self._shatter(int(x), int(y), int(z), float(ov))   # alike
+            # AND WHAT IT LANDED ON TAKES THE SAME BLOW. Newton's third law: the
+            # impulse is shared, so the floor is tested against its OWN toughness
+            # with the same energy. Before this a falling anvil could only ever
+            # hurt itself — it went through a glass table without marking it,
+            # which is the wrong way round. A struck cell that shatters drops
+            # whatever it was holding, so collapses cascade on their own.
+            zb = int(z) - 1
+            if zb < 0 or self.mat[int(x), int(y), zb] == AIR:
+                continue
+            below = int(self.mat[int(x), int(y), zb])
+            tb = (_TOUGH_ARR[below] * 1000.0 * vox_m * vox_m
+                  * (0.7 + 0.6 * self._flaw01(int(x), int(y), zb)))
+            if joules > tb:
+                self._shatter(int(x), int(y), zb, float(joules / max(tb, 1e-9)))
         self.fallh[rest] = 0.0
 
     def _splash(self, x, y, z, tz=None):
@@ -806,14 +825,24 @@ class World:
         targets = []                                     # (cell, weight): heavy
         if z > 0 and self.mat[x, y, z - 1] == AIR:       # shards drop, light ones
             targets.append(((x, y, z - 1), 1.6))         # fly — never evenly
+        # ...but never INTO a hole that is being made in the same instant. When
+        # a row of cells breaks together under one blow, each was scattering
+        # fragments into its neighbours' just-emptied cells and refilling them,
+        # so a shattered plate stayed a plate and an anvil sat on the wreckage
+        # of the table it had just smashed. Fragments fall out of a break; they
+        # do not queue up to plug it.
+        fresh = self._just_shattered
         for dx, dy in offsets:
             tx, ty = x + dx, y + dy
             d = abs(dx) + abs(dy)
+            if (tx, ty, z) in fresh:
+                continue
             if 0 <= tx < nx and 0 <= ty < ny and self.mat[tx, ty, z] == AIR:
                 targets.append(((tx, ty, z),
                                 (0.4 + 1.2 * self._flaw01(tx, ty, z)) / (0.5 + d)))
         if not targets:
             return
+        self._just_shattered.add((x, y, z))
         self.mat[x, y, z] = AIR
         self.smass[x, y, z] = 0.0
         self.E[x, y, z] = 0.0

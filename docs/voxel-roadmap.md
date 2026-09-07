@@ -182,6 +182,25 @@ against the belief rather than the lattice. Core item 1 already binds contact
 options to *fresh belief nodes*; the voxel side is behind it. Until then the
 honest description is: **perception gates EVENTS, not GEOMETRY.**
 
+## Impact damages what it lands on (2026-09-07)
+
+`_cash_impacts` tested only the FALLING voxel against its own toughness, so an
+anvil could hurt itself but never the glass table it went through. The struck
+cell is now tested against ITS toughness with the same energy — Newton's third
+law, the impulse is shared. Measured: an iron block from z=40 sinks through a
+glass plate and is held by a plank or a slab.
+
+Fixed alongside, and it was the real blocker: cells shattering in the same pass
+were scattering fragments **into each other's just-emptied cells**, refilling
+the hole as fast as it was made, so a shattered plate stayed a plate.
+`_just_shattered` excludes them for the pass — fragments fall out of a break,
+they do not queue up to plug it.
+
+Still short of the truth: the anvil stops one voxel down rather than reaching
+the floor, because the fragments land beneath and become a new bearing layer.
+Rubble should not carry like a slab; mass-scaled span helps but shards keep
+enough. Wants free bodies (#3) to fall properly.
+
 ## Two body bugs the RENDER caught and the tests did not (2026-09-07)
 
 - **A body is not a point.** `_plan_path` routed the body's CENTRE, but a body

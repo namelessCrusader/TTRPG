@@ -1077,3 +1077,28 @@ def test_a_body_that_went_down_from_bad_air_comes_round_in_good_air():
     assert came_round > went_down, "and it must have been out for a while"
     assert p["blood_o2"] > BODY["faint_o2"], \
         "it wakes clear of the line it fell at, not balanced on it"
+
+
+def _anvil_onto(plate, from_z):
+    """An iron block dropped onto a plate spanning two piers."""
+    w = World(16, 16, 60, voxel_cm=5)
+    w.fill(0, 16, 0, 16, 0, 1, STONE)
+    w.fill(4, 12, 4, 12, 6, 7, plate)
+    w.fill(4, 5, 4, 12, 1, 6, STONE)
+    w.fill(11, 12, 4, 12, 1, 6, STONE)
+    w.fill(7, 9, 7, 9, from_z, from_z + 2, IRON)
+    for _ in range(300):
+        w.step()
+    blk = np.argwhere(w.mat == IRON)
+    return int(blk[:, 2].min()) if len(blk) else -1
+
+
+def test_a_falling_body_damages_WHAT_IT_LANDS_ON():
+    """Newton's third law: the impulse is shared, so the struck cell is tested
+    against its own toughness with the same energy. A falling anvil used to be
+    able to hurt only itself — it went through a glass table without marking
+    it. Glass gives; timber and masonry take the same blow and hold."""
+    assert _anvil_onto(GLASS, 40) < _anvil_onto(WOOD, 40), \
+        "the glass plate must give under the anvil where the plank does not"
+    assert _anvil_onto(WOOD, 40) == _anvil_onto(WOOD, 10), \
+        "and a plank holds whatever height it is dropped from"
