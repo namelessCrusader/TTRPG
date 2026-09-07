@@ -814,3 +814,62 @@ def test_the_menu_never_offers_a_door_that_is_not_there():
         "with no route out, fleeing is not on the menu at all"
     assert row["pick"] == "stay", \
         "and the table's answer being unavailable falls back to a legal one"
+
+
+def _two_rooms(barrier, frac=1.0):
+    """Two sealed rooms; a fire in one. `barrier` is what stands between them."""
+    w = World(40, 20, 16, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 40, 0, 20, 0, 16, STONE)
+    for x0, x1 in ((1, 19), (21, 39)):
+        w.mat[x0:x1, 1:19, 1:15] = AIR
+        w.smass[x0:x1, 1:19, 1:15] = 0.0
+    if barrier == "open":
+        w.mat[19:21, 7:13, 1:9] = AIR
+        w.smass[19:21, 7:13, 1:9] = 0.0
+    elif barrier == "door":
+        w.fill(19, 21, 7, 13, 1, 9, WOOD, frac=frac)
+    w.fill(5, 8, 8, 11, 1, 3, WOOD)
+    w.E[5, 8, 1] = 6.0e5
+    w.step()
+    for _ in range(400):
+        w.step()
+    return float(w.smoke[21:39, 1:19, 1:15].sum())
+
+
+def test_a_barrier_leaks_by_how_it_FITS_not_by_what_it_is_made_of():
+    """Ruling 2: porosity is DERIVED from the space left in a voxel, never
+    declared per material. Every door here is the same wood — only the fit
+    differs, and only the fit changes what gets through."""
+    opening = _two_rooms("open")
+    tight = _two_rooms("door", frac=1.0)
+    gap = _two_rooms("door", frac=0.97)
+    badly_hung = _two_rooms("door", frac=0.90)
+    assert opening > 1.0, "an open doorway passes smoke freely"
+    assert tight == 0.0, \
+        "a door that fills its voxels completely leaves nothing to pass through"
+    assert 0.0 < gap < badly_hung < opening, \
+        "the wider the gap, the more gets through — and a gap is never a doorway"
+    assert badly_hung > 5 * gap, \
+        "and the leak scales with the gap, not with the fact that it is wood"
+
+
+def test_burning_opens_a_solid_block_with_nobody_writing_that():
+    """The tell that a derived quantity is the right shape: behaviour nobody
+    wrote. Fire eats mass, mass is what fills the voxel, so a burning block
+    grows porous at its charred face and starts breathing on its own."""
+    w = World(20, 12, 14, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 20, 0, 12, 0, 14, STONE)
+    w.mat[1:19, 1:11, 1:13] = AIR
+    w.smass[1:19, 1:11, 1:13] = 0.0
+    w.fill(6, 12, 4, 8, 1, 5, WOOD)              # packed solid: no void at all
+    blk = (slice(6, 12), slice(4, 8), slice(1, 5))
+    assert float(w.porosity()[blk].max()) == 0.0, "a packed block starts sealed"
+    w.E[6, 4, 1] = 8.0e5
+    m0 = float(w.smass[blk].sum())
+    for _ in range(150):
+        w.step()
+    assert float(w.smass[blk].sum()) < m0, "the fire ate some of the block"
+    assert float(w.porosity()[blk].max()) > 0.1, \
+        "and the mass it ate is now void the gases can move through"

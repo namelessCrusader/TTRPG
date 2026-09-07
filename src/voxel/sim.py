@@ -224,6 +224,7 @@ TOUGH = {AIR: 1e9, WOOD: 8.0, STONE: 3.0, IRON: 150.0, FLESH: 50.0,
 TSHOCK = {GLASS: 120.0}
 _TOUGH_ARR = np.array([TOUGH[m] for m in range(NMAT)], np.float32)
 _TSHOCK_ARR = np.array([TSHOCK.get(m, np.inf) for m in range(NMAT)], np.float32)
+_DENS_ARR = np.array([SOLID[m][0] for m in range(NMAT)], np.float32)
 O2_PER_L = 0.28                  # grams of oxygen in one liter of fresh air
 O2_RATIO = {WOOD: 1.33, FLESH: 1.4, ASH: 0.0, LEAF: 1.25, CHAR: 2.6}  # g O2/g fuel
 # SOOT — the VISIBLE fraction of burned mass. The rest leaves as clear gas
@@ -297,6 +298,29 @@ class World:
 
     def T(self):
         return AMBIENT + self.E / self.heat_capacity()
+
+    def porosity(self):
+        """How freely gas crosses a voxel: THE SPACE THAT IS LEFT IN IT.
+
+        Not a material row. `fill()` has always said it — "frac < 1 is a PARTIAL
+        voxel: a stick is mostly air inside its cube" — and `smass` has always
+        carried it; the gas laws simply threw it away by asking `mat == AIR`, a
+        binary question about a continuous field. Solid mass over what the
+        material would weigh packed solid IS the occupied fraction; what is left
+        is void, and void is what gas moves through.
+
+        So a shut door leaks because the SCENE says it fills 99% of its cells —
+        a true statement about that door's geometry, at the one resolution the
+        lattice cannot draw (a 1 cm undercut in a 5 cm voxel). Wood is not
+        declared leaky; this door is. Nothing here knows what a door is.
+
+        What falls out for free, none of it written: rubble and thatch breathe,
+        a wall half-eaten by acid breathes through the loss, and wood GROWS more
+        permeable as it burns away, feeding the fire that is thinning it."""
+        packed = self.smass / np.maximum(_DENS_ARR[self.mat] * self.vox_l, 1e-9)
+        void = np.clip(1.0 - packed, 0.0, 1.0)
+        drowned = self.fvol > 0.5 * self.cap      # a flooded gap does not breathe
+        return np.where(drowned, np.minimum(void, 0.02), void)
 
     def solid(self):
         return self.mat != AIR
@@ -1392,14 +1416,20 @@ class World:
         if self.open_sky:
             sky = ~blocked[:, :, -1]
             p[:, :, -1][sky] *= 0.3
-        # advection: the wind carries the gases (air-air faces only, upwind)
+        # advection: the wind carries the gases, upwind. A face passes what its
+        # PORES allow — open air freely, a shut door at a hundredth. This is the
+        # half that matters for a closed door: diffusion through a 1%-porous leaf
+        # is nearly nil (measured), but a fire PRESSURISES the room it is in and
+        # pushes its smoke through the gaps. That push is why a shut door is a
+        # delay and not a seal.
         air = self.mat == AIR
+        por = self.porosity()
         for axis in range(3):
             w = np.clip(self._upcell(v[axis]) * 0.25, -0.4, 0.4)
             a = [slice(None)] * 3; b = [slice(None)] * 3
             a[axis], b[axis] = slice(None, -1), slice(1, None)
             a, b = tuple(a), tuple(b)
-            pair_ok = air[a] & air[b]
+            pair_ok = np.minimum(por[a], por[b])
             wface = w[a]
             # the wind carries SMOKE only, still. Second attempt at O2-advection
             # (2026-09-04), measured and rejected for a DIFFERENT reason than the
@@ -1411,8 +1441,8 @@ class World:
             for field in (self.smoke,):
                 if field is None:
                     continue
-                fwd = np.where((wface > 0) & pair_ok, wface * field[a], 0.0)
-                back = np.where((wface < 0) & pair_ok, -wface * field[b], 0.0)
+                fwd = np.where(wface > 0, wface * field[a], 0.0) * pair_ok
+                back = np.where(wface < 0, -wface * field[b], 0.0) * pair_ok
                 field[a] += back - fwd
                 field[b] += fwd - back
         # (the old 1.5x-fresh O2 clip is gone: clipping DESTROYED whatever the
@@ -1425,6 +1455,7 @@ class World:
         leaves at the open sky. The mass that burning removes from wood and oil
         travels here — conservation made visible."""
         air = self.mat == AIR
+        por = self.porosity()
         # smoke is born INSIDE burning solids — it must escape through the surface
         # first (up if it can, sideways if it must), or it stays trapped in the wood
         lo = (slice(None), slice(None), slice(None, -1))
@@ -1442,7 +1473,7 @@ class World:
             a = [slice(None)] * 3; b = [slice(None)] * 3
             a[axis], b[axis] = slice(None, -1), slice(1, None)
             a, b = tuple(a), tuple(b)
-            q = 0.08 * (self.smoke[a] - self.smoke[b]) * (air[a] & air[b])
+            q = 0.08 * (self.smoke[a] - self.smoke[b]) * np.minimum(por[a], por[b])
             self.smoke[a] -= q
             self.smoke[b] += q
         lo = (slice(None), slice(None), slice(None, -1))
@@ -1521,15 +1552,16 @@ class World:
         the fire eats what the room holds, then stops — fuel or no fuel."""
         T = self.T()
         air = self.mat == AIR
+        por = self.porosity()
         for axis in range(3):
             a = [slice(None)] * 3; b = [slice(None)] * 3
             a[axis], b[axis] = slice(None, -1), slice(1, None)
             a, b = tuple(a), tuple(b)
             k = np.clip(0.1 + (T[a] + T[b]) / 1600.0, 0.1, 0.45)
-            k = np.where(air[a] & air[b], k, 0.01)   # through a solid: pore seepage only —
-            q = k * (self.o2[a] - self.o2[b])        # a wall no longer leaks a roomful
-            self.o2[a] -= q
-            self.o2[b] += q
+            k = k * np.minimum(por[a], por[b])       # a barrier passes what its PORES
+            q = k * (self.o2[a] - self.o2[b])        # allow: a shut door breathes a
+            self.o2[a] -= q                          # little, masonry almost nothing,
+            self.o2[b] += q                          # a pane nothing at all
         # (the old 0.1-per-tick pull toward the REGION MEAN is gone: it made every
         # airspace an instantly-stirred lung — head air always equaled knee air,
         # and a fire's deficit teleported to every nose in the room.)

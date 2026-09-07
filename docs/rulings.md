@@ -24,6 +24,41 @@ no deeper.
 conduction formula; "metal answers fire faster than stone" falls out. Nobody wrote a case
 for it. Everything else should reach this standard.
 
+## Ruling 2 — a property table is a hiding place for cases (2026-09-07)
+
+Ruling 1 catches `if X meets Y`. It does not catch the same case written as a row in a
+material table, and that is the easier mistake to make, because a table looks like physics.
+
+**The case that produced this ruling.** A shut door was a perfect gas seal. The fix shipped
+as `PORO = {WOOD: 0.01, STONE: 0.0002, ...}` — "wood passes a hundredth of a doorway."
+Wood does not. A *door* does, because a door has a gap under it. "A door has gaps" had been
+written into the WOOD row, where it would have been silently wrong for every wooden crate,
+hull, chest and floorboard in the world. A case wearing a material's clothes.
+
+**Two questions before any new table:**
+
+1. **Is this a property of the MATERIAL, or of this OBJECT in this scene?** Density, toughness
+   and ignition point are the material's. Gaps, fit, wear and how something was built are the
+   object's, and they belong in the scene's geometry — a scene is *allowed* to describe shape.
+2. **Could the sim DERIVE this from something it already tracks?** If yes, deriving beats
+   declaring, always. A derived quantity cannot drift out of agreement with the thing it came
+   from, and it keeps working in situations nobody enumerated.
+
+**How it was actually fixed.** `smass` had carried the answer the whole time — `fill()`'s own
+docstring says "frac < 1 is a PARTIAL voxel: a stick is mostly air inside its cube." Every gas
+law was discarding it by asking `mat == AIR`, a binary question about a continuous field.
+Porosity is now void fraction: solid mass over what that material weighs packed. The table is
+gone. The door leaks because the *scene* says it fills 97% of its cells — true of that door,
+claimed of nothing else.
+
+**The tell that it was right:** things nobody wrote started working. Rubble and thatch breathe.
+A wall half-eaten by acid breathes through the loss. And wood grows more permeable as it burns
+away — measured, a packed block opening from void 0.000 to 0.163 at its charred face — so a
+fire thins the very barrier that is starving it. A table would never have produced that.
+
+**The general shape:** when a lie needs patching, first look for information the sim is already
+throwing away. Binary reads of continuous fields are where it hides.
+
 ## The ten founding cases (2026-08-31)
 
 1. **Bumping a barrel** — tipping-by-walking wants SPEED, which the grid does not carry.
