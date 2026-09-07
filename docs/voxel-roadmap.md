@@ -182,6 +182,39 @@ against the belief rather than the lattice. Core item 1 already binds contact
 options to *fresh belief nodes*; the voxel side is behind it. Until then the
 honest description is: **perception gates EVENTS, not GEOMETRY.**
 
+## Belief and impetus — BUILT (2026-09-07)
+
+Two asks that turned out to be one build: bodies must not hold information they
+never observed, and bodies must do something when nothing is happening. If a body
+only knows what it has seen, then **background activity is what builds that
+knowledge** — you know where the door is because you once walked through it.
+
+- **`p["known"]`** — a per-body map of columns it has actually looked at.
+  `_look_around` casts the facing cone through the same opacity the sight law
+  uses, so a wall casts a shadow of ignorance and a doorway lets knowledge
+  through. Turning the head fills it in; walking fills it in properly.
+- **Pathing and exit choice run on belief.** `_plan_path` masks by `known`;
+  `_goals` offers `exit` only for doors this body has seen. A door never laid
+  eyes on is not a destination — it is not even a menu option.
+  `add_person(knows_world=)` states it per character: the default True is the
+  usual case (someone standing in a place they live HAS observed it), and
+  `False` gives a stranger who must find the way.
+- **Impetus.** With no percept the body still weighs `explore` / `wander` /
+  `stay` through the same menu, picked by the same policy, written to the same
+  trace. Idling is a choice, not a gap between choices. Measured: a stranger
+  goes from 44% to 98% of the floor known, choosing `explore` each time; a
+  resident wanders instead, having nothing left to find.
+- **Three real bugs found doing it.** `arrive_m` was 0.5 m = TEN voxels at 5 cm,
+  so a body "arrived" the moment it chose anywhere nearby and never took a step
+  (and people were called safe nine voxels short of the door). Percepts had to
+  wait out the 30-tick deliberation cooldown, so a 30-tick shout could expire
+  unheard. And gating the senses on "is moving" made a wandering body blind to
+  fire — having somewhere to be is not the same as being in an emergency.
+
+Still omniscient, now the only one left: nothing models *forgetting*, and belief
+records geometry only — a body does not remember that the hall was full of smoke
+a minute ago, only that the hall exists.
+
 ## Speed — 4x, measured not guessed (2026-09-07)
 
 Profiled first. 400k-voxel world was **630 ms/tick (1.6 ticks/sec)**.

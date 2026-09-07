@@ -690,8 +690,9 @@ def test_reflexes_flee_and_alarm_spreads_by_shout_or_sight():
         w.fill(128, 130, 6, 8, 1, 4, WOOD)
         w.fill(120, 121, 7, 8, 1, 15, FLESH, frac=0.9)
         pa = w.add_person(120, 7, "A")
-        w.fill(40, 41, 7, 8, 1, 15, FLESH, frac=0.9)
-        pb = w.add_person(40, 7, "B")
+        w.fill(18, 19, 7, 8, 1, 15, FLESH, frac=0.9)   # far enough that B cannot
+        pb = w.add_person(18, 7, "B")                  # SEE the fire even after
+                                                       # wandering a little
         w.E[128, 6, 1] = 9.0e5
         b_event = None
         for t in range(900):
@@ -758,7 +759,7 @@ def test_every_decision_logs_the_whole_menu_beside_the_pick():
         if p["safe"]:
             break
     assert w.traces, "startling is a DECISION and must leave a trace"
-    row = w.traces[0]
+    row = next(r for r in w.traces if r["percept"] == "sees_fire")
     assert row["pick"] in row["menu"], "a pick must come FROM the menu"
     assert len(row["menu"]) > 1, "a menu of one is not a choice"
     assert row["by"] == "table", "the reflex table is today's policy"
@@ -788,7 +789,8 @@ def test_swapping_the_policy_changes_what_the_body_does():
             break
     assert not p["safe"], "this policy never leaves, so nobody reaches the door"
     assert w.traces and all(r["pick"] == "stay" for r in w.traces)
-    assert "flee" in w.traces[0]["menu"], "fleeing was OFFERED and passed over"
+    fire = next(r for r in w.traces if r["percept"] == "sees_fire")
+    assert "flee" in fire["menu"], "fleeing was OFFERED and passed over"
     assert not w.speech, "and a body that stays put says none of the shout lines"
     w2, p2 = _alarm_room()
     for _ in range(600):
@@ -918,6 +920,71 @@ def test_a_body_learns_of_the_fire_ONLY_by_perceiving_it():
     assert saw1 is not None, "through a window, the fire is visible"
     assert p1["fleeing"] and w1.traces, "and the witness acts on having seen it"
     assert saw0 is None, "through masonry, it is not"
-    assert not w0.traces, "NO decision may be taken about a fire never perceived"
-    assert not p0["fleeing"] and not w0.speech, \
-        "and the witness neither runs nor cries out — no leak from the lattice"
+    assert any(r["percept"] == "sees_fire" for r in w1.traces), \
+        "the witness who could see it decided ABOUT it"
+    assert all(r["percept"] is None for r in w0.traces), \
+        "the walled-off one may potter about, but NO percept may reach it — " \
+        "no decision may ever be taken about a fire never perceived"
+    assert not w0.speech, \
+        "and it never cries out — nothing leaks from the lattice into a mind"
+
+
+def _two_room_house(knows_world):
+    """Two rooms joined by one doorway; a body at the far end from the exit."""
+    w = World(70, 26, 22, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 70, 0, 26, 0, 22, STONE)
+    for x0, x1 in ((1, 32), (36, 69)):
+        w.mat[x0:x1, 1:25, 1:21] = AIR
+        w.smass[x0:x1, 1:25, 1:21] = 0.0
+    w.fill(32, 36, 1, 25, 1, 21, STONE)
+    w.mat[32:36, 11:15, 1:16] = AIR          # the one doorway between them
+    w.smass[32:36, 11:15, 1:16] = 0.0
+    w.fill(50, 52, 1, 20, 1, 21, STONE)      # a baffle: the far door is NOT on
+    w.exits = [(66, 4)]                      # the sightline through the doorway
+    w.fill(8, 9, 12, 13, 1, 15, FLESH, frac=0.9)
+    p = w.add_person(8, 12, "X", knows_world=knows_world)
+    return w, p
+
+
+def test_a_stranger_must_FIND_the_door_a_resident_already_knows_it():
+    """A body may only aim at what it has seen. The resident is given the
+    building and can head for a door across two rooms; the stranger starts
+    blind, is offered no exit at all, and has to go and look — which is what
+    turns wandering from filler into the thing that makes knowing honest."""
+    w_r, resident = _two_room_house(True)
+    w_s, stranger = _two_room_house(False)
+    w_s.step()
+    assert stranger["known"].mean() < 0.6, \
+        "a stranger has seen only what one look affords"
+    assert resident["known"].all(), "the resident is given the place"
+    goals_s = w_s._goals(stranger, np.argwhere(w_s.mat == FLESH))
+    assert "exit" not in goals_s, \
+        "a door never laid eyes on is not a destination — not even an option"
+    for _ in range(600):
+        w_s.step()
+        stranger["events"].clear()
+    assert stranger["known"].mean() > 0.9, \
+        "left alone, it goes and looks, and comes to know the building"
+    assert any(r["pick"] == "explore" for r in w_s.traces), \
+        "and it chose to — exploring is a PICK from the menu, not a script"
+    goals_after = w_s._goals(stranger, np.argwhere(w_s.mat == FLESH))
+    assert "exit" in goals_after, "having found the door, it can now aim at it"
+
+
+def test_a_body_with_nothing_happening_still_does_something():
+    """Impetus: no fire, no shout, nothing to react to — and the body still
+    weighs options, picks one, and moves. Idling is a choice made through the
+    same menu and written to the same trace, not a gap between choices."""
+    w, p = _two_room_house(True)
+    start = p["anchor"]
+    seen = set()
+    for _ in range(400):
+        w.step()
+        seen.add(p["anchor"])
+        p["events"].clear()
+    assert w.traces, "an undisturbed body still DECIDES"
+    assert all(r["percept"] is None for r in w.traces), "and nothing prompted it"
+    assert len(seen) > 8, f"it should get about; it visited only {len(seen)} spots"
+    assert p["anchor"] != start, "it did not simply stand where it was put"
+    assert {r["pick"] for r in w.traces} <= {"wander", "explore", "stay"}

@@ -106,7 +106,11 @@ MISCIBLE = {frozenset({WATER, ACID}): ACID,
 # does about it WITHOUT any thinking. This is the scaffolding a language model
 # later plugs into (it will pick from menus this layer generates); the reflexes
 # themselves never wait on one.
-WILL = {"fire_see_m": 4.0,       # a flame this close is NOTICED (if faced)
+WILL = {"see_m": 12.0,           # how far the eyes take in the LAYOUT of a
+                                 # place (not the same as noticing a flame:
+                                 # you can see a room is a room much further
+                                 # than you can register that it is alight)
+        "fire_see_m": 4.0,       # a flame this close is NOTICED (if faced)
         "run_see_m": 2.5,        # someone bolting past this close is a warning
         "fov_deg": 120.0,        # eyes look WHERE THE FACE POINTS — a cone,
                                  # not a sphere; idle heads scan around
@@ -114,7 +118,12 @@ WILL = {"fire_see_m": 4.0,       # a flame this close is NOTICED (if faced)
         "shout_hear_m": 14.0,    # a shout carries this far through open air
         "wall_cost_m": 4.0,      # each solid voxel in the way eats this much
         "walk_every": 3,         # ticks per walking step
-        "arrive_m": 0.5,         # close enough to an exit to be OUT
+        "arrive_m": 0.12,        # close enough to a goal to have got there.
+                                 # Was 0.5 m — which is TEN voxels at 5 cm, so
+                                 # a body "arrived" the moment it chose
+                                 # anywhere nearby and never took a step, and
+                                 # people were called safe nine voxels short of
+                                 # the door they were running for
         "decide_every": 30}      # ticks before a body that stood pat will
                                  # weigh its options again — nobody
                                  # re-deliberates every fortieth of a second
@@ -135,11 +144,17 @@ LINES = {"flee_shouting": "Fire! Fire! Get out!",
 # `needs_percept` is the same kind of fact about the act itself, not a taste
 # rule: ANSWERING presupposes something to answer, so a body that heard
 # nothing is not offered the words "I hear you".
-RESPONSES = {"flee":           {"needs_exit": True,  "say": None},
-             "flee_shouting":  {"needs_exit": True,  "say": "flee_shouting"},
-             "flee_answering": {"needs_exit": True,  "say": "flee_answering",
+RESPONSES = {"flee":           {"goal": "exit", "say": None},
+             "flee_shouting":  {"goal": "exit", "say": "flee_shouting"},
+             "flee_answering": {"goal": "exit", "say": "flee_answering",
                                 "needs_percept": "hears_alarm"},
-             "stay":           {"needs_exit": False, "say": None}}
+             # what a body does when NOTHING is happening to it. Wandering and
+             # looking are not filler: they are how a mind that only knows what
+             # it has seen comes to know the building it is standing in, which
+             # is what makes running for a door it has found honest later.
+             "explore":        {"goal": "frontier", "say": None, "idle": True},
+             "wander":         {"goal": "roam", "say": None, "idle": True},
+             "stay":           {"goal": None, "say": None}}
 # MENU_CAP — how many options a body may weigh at once. This is NOT a budget
 # for whatever is picking: it is a model of attention. A person in a burning
 # room weighs the fire, the door, the child and maybe a bucket — not the
@@ -165,6 +180,12 @@ class TablePolicy:
     name = "table"
 
     def pick(self, situation, menu):
+        if situation["percept"] is None:      # nothing happening: get on with
+            for key in ("explore", "wander", "stay"):   # something. Looking at
+                for i, opt in enumerate(menu):          # what you have not seen
+                    if opt["key"] == key:               # beats standing still
+                        return i
+            return 0
         want = situation["reflexes"].get(situation["percept"])
         for i, opt in enumerate(menu):
             if opt["key"] == want:
@@ -1699,13 +1720,24 @@ class World:
                 self.o2[edge][air[edge]] = fresh
 
     # ── physiology: living bodies ────────────────────────────────────────────
-    def add_person(self, x, y, name="the person"):
+    def add_person(self, x, y, name="the person", knows_world=True):
         """Register a living body anchored near (x, y). The FLESH voxels are the
         body; this struct is only the slow chemistry riding on them. One person
         per neighborhood for now — the flesh search is anchor-local."""
         p = {"anchor": (int(x), int(y)), "name": name, "blood_o2": 0.97,
              "smoke": 0.0, "burn": 0.0, "awake": True, "alive": True,
-             "fleeing": False, "safe": False, "events": []}
+             "fleeing": False, "safe": False, "events": [],
+             # WHAT THIS BODY HAS SEEN — not what the world contains. This is
+             # the difference between a person and the sim: the sim holds the
+             # register of exits, a person holds the ones they have laid eyes
+             # on, and pathing runs on the latter.
+             #
+             # The default is True because the usual case is someone standing
+             # in a place they live: they HAVE observed it, so knowing where
+             # their own door is privileges nothing. Pass knows_world=False for
+             # a stranger, and they must find the door by looking — which is
+             # what makes wandering and looking around worth doing at all.
+             "known": np.full(self.shape[:2], bool(knows_world))}
         self.persons.append(p)
         return p
 
@@ -1803,6 +1835,48 @@ class World:
                 p["alive"] = False
                 p["events"].append(f"t{self.tick}: {p['name']} stops breathing")
 
+    def _look_around(self, p, eye):
+        """Sweep the eyes and REMEMBER what they fell on.
+
+        A body's map of the world is what it has actually looked at — nothing
+        else. Rays go out through the facing cone and stop where the view
+        stops, so a wall casts a shadow of ignorance behind it and a doorway
+        lets knowledge through. Turning the head fills the map in over time,
+        and walking somewhere fills it in properly.
+
+        This is what makes the exit list honest. Before it, every body picked
+        the nearest door from the world's own register and pathed to it across
+        rooms it had never entered — the sim's knowledge wearing a person's
+        face. Now a stranger has to find the door."""
+        nx, ny, _ = self.shape
+        vox_m = 0.1 * self.scale
+        R = max(int(WILL["see_m"] / max(vox_m, 1e-9)), 4)
+        z = int(np.clip(round(eye[2]), 0, self.shape[2] - 1))
+        nrays = max(48, int(2.0 * np.pi * R / 1.5))
+        ang = np.linspace(0.0, 2.0 * np.pi, nrays, endpoint=False)
+        fx, fy = p.get("facing", (1.0, 0.0))
+        fn = float(np.hypot(fx, fy)) or 1.0
+        inside = (np.cos(ang) * fx + np.sin(ang) * fy) / fn >= \
+            np.cos(np.radians(WILL["fov_deg"] / 2.0))
+        ang = ang[inside]
+        if not len(ang):
+            return
+        steps = np.arange(1, R + 1, dtype=np.float32)
+        xi = np.clip(np.round(eye[0] + np.cos(ang)[:, None] * steps[None]),
+                     0, nx - 1).astype(np.int32)
+        yi = np.clip(np.round(eye[1] + np.sin(ang)[:, None] * steps[None]),
+                     0, ny - 1).astype(np.int32)
+        mat = self.mat[xi, yi, z]
+        packed = np.clip(self.smass[xi, yi, z] / np.maximum(
+            _DENS_ARR[mat] * self.vox_l, 1e-9), 0.0, 0.999)
+        through = (1.0 - packed) + packed * _TRANSMIT_ARR[mat]
+        tau = np.cumsum(-np.log(np.maximum(through, 1e-9)), axis=1)
+        # a cell is seen if the view REACHED it: the depth BEFORE it is clear
+        reach = np.concatenate([np.zeros((len(ang), 1), np.float32),
+                                tau[:, :-1]], axis=1) < SEE_TAU
+        p["known"][xi[reach], yi[reach]] = True
+        p["known"][int(round(eye[0])), int(round(eye[1]))] = True
+
     def _sees(self, a, b):
         """Sight as OPTICAL DEPTH along the ray, not a list of allowed materials.
 
@@ -1897,6 +1971,63 @@ class World:
             p["events"].append(f"t{self.tick}: {p['name']} shouts: \"{text}\"")
             p["_shouted"] = self.tick
 
+    def _walkable(self, cells):
+        """Columns this body could stand in, by how full they are."""
+        zlo, zhi = int(cells[:, 2].min()), int(cells[:, 2].max())
+        col = (slice(None), slice(None), slice(zlo, zhi + 1))
+        packed = self.smass[col] / np.maximum(
+            _DENS_ARR[self.mat[col]] * self.vox_l, 1e-9)
+        return (packed < PUSH_THROUGH).all(axis=2)
+
+    def _goals(self, p, cells):
+        """Where each kind of intent would actually take this body.
+
+        Every one is drawn from the body's OWN map. An exit it has never laid
+        eyes on is not a destination — it is not even an option — so a stranger
+        in a burning house has to find the door the hard way, and a resident
+        (add_person(knows_world=True)) runs straight for it. That difference
+        used to be impossible to express: everyone read the world's register.
+        """
+        # a goal must be somewhere the body could actually STAND. Knowing a
+        # wall is there is not the same as being able to walk to it, and
+        # aiming at one is how a body ends up standing still forever.
+        known = p["known"] & self._walkable(cells)
+        ax_ = float(cells[:, 0].mean()); ay_ = float(cells[:, 1].mean())
+        out = {}
+        seen_exits = [e for e in self.exits
+                      if p["known"][int(e[0]), int(e[1])]]
+        if seen_exits:
+            out["exit"] = min(seen_exits,
+                              key=lambda e: abs(e[0] - ax_) + abs(e[1] - ay_))
+        # the FRONTIER: somewhere known that touches somewhere unknown. Walking
+        # to it is how the map grows, and it is why a blind body does not simply
+        # stand in the dark.
+        unseen = ~p["known"]
+        edge = np.zeros_like(known)
+        edge[1:, :] |= unseen[:-1, :]; edge[:-1, :] |= unseen[1:, :]
+        edge[:, 1:] |= unseen[:, :-1]; edge[:, :-1] |= unseen[:, 1:]
+        frontier = np.argwhere(known & edge)
+        if len(frontier):
+            d = np.abs(frontier[:, 0] - ax_) + np.abs(frontier[:, 1] - ay_)
+            # far enough to be worth walking to: a frontier under one's nose
+            # is reached before a step is taken, and the body dithers there
+            far = d > max(8.0, WILL["arrive_m"] / max(0.1 * self.scale, 1e-9) * 3)
+            pick = frontier[far][np.argmin(d[far])] if far.any() \
+                else frontier[np.argmax(d)]
+            out["frontier"] = (int(pick[0]), int(pick[1]))
+        # ROAM: somewhere it knows, a way off, chosen without any randomness —
+        # the sim stays deterministic, so the choice comes from the tick and
+        # the name rather than from a die.
+        spots = np.argwhere(known)
+        if len(spots) > 1:
+            d = np.abs(spots[:, 0] - ax_) + np.abs(spots[:, 1] - ay_)
+            far = spots[d > max(6.0, np.percentile(d, 70))]
+            if len(far):
+                i = (self.tick // max(WILL["decide_every"], 1)
+                     + len(p["name"])) % len(far)
+                out["roam"] = (int(far[i][0]), int(far[i][1]))
+        return out
+
     def _menu(self, p, cells, ex, percept=None):
         """Every response this body could actually carry out, right now.
 
@@ -1911,20 +2042,28 @@ class World:
         slot with exactly one legal filler is never worth asking about. When
         the door becomes a real choice (one of them is alight), it becomes a
         second, small menu, not a longer first one."""
-        route = self._plan_path(cells, ex) if ex is not None else None
         lines = p.get("lines", LINES)
+        goals = self._goals(p, cells)          # where each KIND of intent leads
         menu = []
         for key, row in RESPONSES.items():
-            if row["needs_exit"] and route is None:
-                continue                      # no way out: do not offer one.
-                                              # An EMPTY route is different —
-                                              # it means already at the door
+            kind = row["goal"]
+            goal = goals.get(kind) if kind else None
+            if kind and goal is None:
+                continue                      # nowhere this intent could go:
+                                              # do not offer it
+            route = None
+            if kind:
+                route = self._plan_path(cells, goal, p.get("known"))
+                if route is None:
+                    continue                  # no route it knows of: not legal
             if row["say"] and not lines.get(row["say"], LINES.get(row["say"])):
                 continue                      # this body has no such words
             if row.get("needs_percept") not in (None, percept):
                 continue                      # nothing to answer
+            if row.get("idle") and percept is not None:
+                continue                      # not while something is happening
             menu.append({"key": key, "say": row["say"],
-                         "route": route if row["needs_exit"] else None})
+                         "route": route, "goal": goal})
         if len(menu) > MENU_CAP:              # attention is the scarce thing;
             want = p.get("reflexes", REFLEXES)  # keep what the body would have
             keep = [o for o in menu if o["key"] in want.values()]
@@ -1933,8 +2072,7 @@ class World:
 
     def _decide(self, p, percept, cells, ax_, ay_, eye, vox_m):
         """Offer the menu, let the policy pick, carry the pick out, log it."""
-        ex = min(self.exits, key=lambda e: abs(e[0] - ax_) + abs(e[1] - ay_))
-        menu = self._menu(p, cells, ex, percept)
+        menu = self._menu(p, cells, None, percept)
         if not menu:
             return
         # who would actually HEAR a shout. Not a legality gate — shouting in
@@ -1948,7 +2086,9 @@ class World:
                "smoke": round(float(p["smoke"]), 3),
                "blood_o2": round(float(p["blood_o2"]), 3),
                "burn": round(float(p["burn"]), 3),
-               "exit_m": round(max(abs(ex[0] - ax_), abs(ex[1] - ay_)) * vox_m, 2),
+               "knows_a_way_out": any(p["known"][int(e[0]), int(e[1])]
+                                      for e in self.exits),
+               "seen_of_the_world": round(float(p["known"].mean()), 3),
                "others_in_earshot": heard}
         i = self.policy.pick(sit, menu)
         i = i if isinstance(i, int) and 0 <= i < len(menu) else 0
@@ -1958,15 +2098,24 @@ class World:
                             "menu": [o["key"] for o in menu], "pick": opt["key"],
                             "by": getattr(self.policy, "name", "?")})
         p["_decided"] = self.tick
+        if percept is not None:
+            p["emergency"] = True        # committed: stop weighing the ordinary
         if opt["route"] is not None:
             p["fleeing"] = True
+            p["goal"] = opt["goal"]
             p["_path"], p["_planned"] = opt["route"], self.tick
-            p["events"].append(f"t{self.tick}: {p['name']} startles "
-                               f"({percept.replace('_', ' ')}) and makes "
-                               f"for the door")
+            if percept:
+                p["events"].append(f"t{self.tick}: {p['name']} startles "
+                                   f"({percept.replace('_', ' ')}) and makes "
+                                   f"for the door")
+            elif opt["key"] == "explore":
+                p["events"].append(f"t{self.tick}: {p['name']} goes to look at "
+                                   f"what they have not seen")
         else:
-            p["events"].append(f"t{self.tick}: {p['name']} notices "
-                               f"({percept.replace('_', ' ')}) and stays put")
+            p["goal"] = None
+            if percept:
+                p["events"].append(f"t{self.tick}: {p['name']} notices "
+                                   f"({percept.replace('_', ' ')}) and stays put")
         if opt["say"]:
             self._say(p, opt["say"])
 
@@ -2031,10 +2180,16 @@ class World:
             p["_eye"] = eye
             if "facing" not in p:
                 p["facing"] = (1.0, 0.0)
-            if not p["fleeing"]:
+            if self.tick % 4 == 0:            # look where the face points, and
+                self._look_around(p, eye)     # REMEMBER it
+            # SENSES RUN WHETHER OR NOT THE BODY IS BUSY. Having somewhere to
+            # be is not the same as being in an emergency: a body strolling
+            # across a room must still notice the room is alight. Gating the
+            # percepts on "is moving" made a wandering person blind.
+            if not p.get("emergency"):
                 # an idle gaze WANDERS — an eighth-turn every scan_every ticks,
                 # so a cone of vision still sweeps the whole room over time
-                if self.tick % WILL["scan_every"] == 0:
+                if self.tick % WILL["scan_every"] == 0 and p.get("goal") is None:
                     fx, fy = p["facing"]
                     c45, s45 = np.cos(np.pi / 4), np.sin(np.pi / 4)
                     p["facing"] = (fx * c45 - fy * s45, fx * s45 + fy * c45)
@@ -2068,15 +2223,34 @@ class World:
                                 and self._sees(eye, qeye)):
                             percept = "sees_runner"
                             break
-                if percept and self.tick - p.get("_decided", -10 ** 9) >= \
-                        WILL["decide_every"]:
+                # a body with NOTHING happening to it still has a life. If no
+                # percept fires it weighs its ordinary options — go and look at
+                # what it has not seen, walk somewhere it has, or stand still —
+                # through the same menu, picked by the same policy, written to
+                # the same trace. Idling is a choice, not a gap between choices.
+                # A PERCEPT DOES NOT WAIT ITS TURN. decide_every paces ordinary
+                # deliberation — nobody re-weighs their afternoon every tick —
+                # but an alarm must land the moment it arrives. Making percepts
+                # queue behind the cooldown meant a shout could expire unheard
+                # while the hearer was still inside its own 30-tick pause.
+                due = self.tick - p.get("_decided", -10 ** 9) >= \
+                    WILL["decide_every"]
+                if percept is not None or (due and p.get("goal") is None):
                     self._decide(p, percept, cells, ax_, ay_, eye, vox_m)
+            goal = p.get("goal")
+            if goal is None:
+                p["fleeing"] = False
                 continue
-            ex = min(self.exits, key=lambda e: abs(e[0] - ax_) + abs(e[1] - ay_))
-            if max(abs(ex[0] - ax_), abs(ex[1] - ay_)) * vox_m <= WILL["arrive_m"]:
-                p["safe"] = True
-                p["events"].append(f"t{self.tick}: {p['name']} reaches the doorway")
+            if max(abs(goal[0] - ax_), abs(goal[1] - ay_)) * vox_m <= WILL["arrive_m"]:
+                if tuple(goal) in {tuple(e) for e in self.exits}:
+                    p["safe"] = True
+                    p["events"].append(f"t{self.tick}: {p['name']} reaches the doorway")
+                else:                                # arrived somewhere ordinary:
+                    p["goal"] = None                 # pick again next time round
+                    p["fleeing"] = False
+                    p["_path"] = None
                 continue
+            ex = goal
             if self.tick % WILL["walk_every"]:
                 continue
             # walking is PLANNED, not greedy: legs that jam forever on the
@@ -2085,7 +2259,7 @@ class World:
             # body's motor competence — knowing the way around the table is
             # not thinking, any more than balance is.
             if (not p.get("_path")) or self.tick - p.get("_planned", -99) > 30:
-                p["_path"] = self._plan_path(cells, ex)
+                p["_path"] = self._plan_path(cells, ex, p.get("known"))
                 p["_planned"] = self.tick
             path = p.get("_path") or []
             while path and max(abs(path[0][0] - ax_), abs(path[0][1] - ay_)) < 1.0:
@@ -2104,9 +2278,9 @@ class World:
             else:
                 p["_path"] = None                    # blocked mid-route: replan
 
-    def _plan_path(self, cells, ex):
-        """Breadth-first route over columns the body can GET THROUGH, from where
-        it is to the exit. Deterministic, 4-connected, replanned when the world
+    def _plan_path(self, cells, ex, known=None):
+        """Breadth-first route over columns the body can GET THROUGH *and knows
+        about*, from where it is to the goal. Deterministic, 4-connected, replanned when the world
         changes underfoot.
 
         A column is passable by how much is actually IN it, not by whether it is
@@ -2120,6 +2294,9 @@ class World:
         packed = self.smass[col] / np.maximum(
             _DENS_ARR[self.mat[col]] * self.vox_l, 1e-9)
         walk_ok = (packed < PUSH_THROUGH).all(axis=2)
+        if known is not None:
+            walk_ok &= known          # you cannot plan a route through rooms
+                                      # you have never seen
         for c in cells:
             walk_ok[int(c[0]), int(c[1])] = True         # own columns count
         start = (int(round(float(cells[:, 0].mean()))),
