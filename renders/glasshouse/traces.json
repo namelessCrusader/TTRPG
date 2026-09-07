@@ -34,7 +34,7 @@
   ],
   "pick": "stay",
   "by": "table",
-  "outcome": "still inside",
+  "outcome": "safe",
   "situation": {
    "tick": 0,
    "who": "Bram",
@@ -82,7 +82,7 @@
   ],
   "pick": "stay",
   "by": "table",
-  "outcome": "still inside",
+  "outcome": "safe",
   "situation": {
    "tick": 30,
    "who": "Bram",
@@ -130,7 +130,7 @@
   ],
   "pick": "stay",
   "by": "table",
-  "outcome": "still inside",
+  "outcome": "safe",
   "situation": {
    "tick": 60,
    "who": "Bram",
@@ -179,7 +179,7 @@
   ],
   "pick": "flee_answering",
   "by": "table",
-  "outcome": "still inside",
+  "outcome": "safe",
   "situation": {
    "tick": 65,
    "who": "Bram",

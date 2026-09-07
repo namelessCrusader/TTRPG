@@ -4,8 +4,9 @@ not a flag missing."""
 import numpy as np
 
 from src.voxel.demo import build, dump_water, torch
-from src.voxel.sim import (ACID, AIR, ASH, CHAR, FLESH, GLASS, IRON, LEAF, MIRON, MTIN, OIL, STONE, TIN, WATER, WEAK_ACID,
-                           WOOD, World)
+from src.voxel.sim import (ACID, AIR, ASH, BODY, CHAR, FLESH, GLASS, IRON, LEAF,
+                           MIRON, MTIN, O2_PER_L, OIL, STONE, TIN, WATER,
+                           WEAK_ACID, WOOD, World)
 
 
 def _lit_stick(ticks):
@@ -1015,3 +1016,64 @@ def test_a_beam_carries_by_the_MASS_it_still_has():
     thin, thinner, gone = _cantilever(0.4), _cantilever(0.3), _cantilever(0.2)
     assert thin < full, "past the knee, a thinner beam cannot hold as far out"
     assert gone < thinner < thin, "and it keeps shortening as the mass goes"
+
+
+def test_a_walker_reaches_a_door_set_in_an_outer_wall():
+    """A body is not a point. The route is walked by its centre, but the body
+    is several voxels across, so a door in an outer wall is a column the
+    centre can never occupy — its shoulder would be in the masonry. The
+    planner used to route there anyway, the legs refused (rightly), and the
+    walker jammed against the wall shuffling sideways for the rest of the run.
+    Plan on columns the whole footprint fits, and arrive by the BODY."""
+    w = World(40, 40, 40, voxel_cm=5)
+    w.fill(0, 40, 0, 40, 0, 40, STONE)
+    w.mat[1:39, 1:39, 1:39] = AIR
+    w.smass[1:39, 1:39, 1:39] = 0.0
+    w.exits = [(38, 10)]                      # hard against the east wall
+    from src.voxel.scenes import _person
+    p = _person(w, 30, 30)
+    w.step()
+    p["emergency"], p["fleeing"], p["goal"] = True, True, (38, 10)
+    p["_path"] = None
+    for _ in range(260):
+        w.step()
+        p["events"].clear()
+        if p["safe"]:
+            break
+    assert p["safe"], f"it must get to the door; it stopped at {p['anchor']}"
+
+
+def test_a_body_that_went_down_from_bad_air_comes_round_in_good_air():
+    """The fainting threshold used to trip one way only, so a body carried out
+    of the smoke stayed unconscious for ever and rescuing anyone was pointless.
+    Air can undo what air did — with hysteresis, since recovery genuinely lags,
+    and never for burns, whose integral only ever climbs."""
+    w = World(30, 14, 22, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 30, 0, 14, 0, 22, STONE)
+    w.mat[1:29, 1:13, 1:21] = AIR
+    w.smass[1:29, 1:13, 1:21] = 0.0
+    w.fill(3, 9, 4, 9, 1, 3, WOOD, frac=0.8)
+    from src.voxel.scenes import _person
+    p = _person(w, 20, 6)
+    p["name"] = "S"
+    w.E[3, 4, 1] = 9.0e5
+    went_down = came_round = None
+    for t in range(600):
+        w.step()
+        if went_down is None and not p["awake"]:
+            went_down = t
+        if went_down is not None and came_round is None and p["awake"]:
+            came_round = t
+        if not p["awake"] and p["alive"]:          # the rescue: clean air
+            w.o2[:] = O2_PER_L * w.vox_l
+            w.smoke[:] = 0.0
+        p["events"].clear()
+        if came_round:
+            break
+    assert went_down is not None, "the smoke must put this body down"
+    assert p["alive"], "and the rescue must reach it before it dies"
+    assert came_round is not None, "clean air must bring it back"
+    assert came_round > went_down, "and it must have been out for a while"
+    assert p["blood_o2"] > BODY["faint_o2"], \
+        "it wakes clear of the line it fell at, not balanced on it"

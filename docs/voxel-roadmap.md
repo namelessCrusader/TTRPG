@@ -182,6 +182,24 @@ against the belief rather than the lattice. Core item 1 already binds contact
 options to *fresh belief nodes*; the voxel side is behind it. Until then the
 honest description is: **perception gates EVENTS, not GEOMETRY.**
 
+## Two body bugs the RENDER caught and the tests did not (2026-09-07)
+
+- **A body is not a point.** `_plan_path` routed the body's CENTRE, but a body
+  is ~5 voxels across, so a door set in an outer wall is a column the centre can
+  never occupy — its shoulder would be in the masonry. The planner routed there,
+  the legs correctly refused, and the walker jammed against the wall shuffling
+  sideways for the rest of the run (measured: stuck 2 voxels short of its door
+  for 500 ticks — this was the long-standing "Bram never gets out"). Fixed by
+  eroding the walkable grid by the body's own footprint before searching, aiming
+  at the nearest column the body actually fits when the goal itself is too tight,
+  and measuring **arrival from the body rather than its centre** — you are at the
+  door when part of you is at the door. Bram now leaves at t226.
+- **Fainting tripped one way.** A body carried out of the smoke stayed
+  unconscious for ever, so rescuing anyone was pointless. Air can undo what air
+  did: `wake_o2` (0.70 against `faint_o2` 0.55) brings a body round with real
+  hysteresis, and never for burns, whose integral only climbs. Not modelled: it
+  wakes where it fell — getting back to its feet is not a thing bodies can do.
+
 ## Belief and impetus — BUILT (2026-09-07)
 
 Two asks that turned out to be one build: bodies must not hold information they

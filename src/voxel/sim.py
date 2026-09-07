@@ -202,6 +202,12 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
                                  # replaces this wholesale later)
         "smoke_out": 0.001,      # the load clears slowly in clean air
         "faint_o2": 0.55, "death_o2": 0.25,
+        "wake_o2": 0.70,         # and consciousness COMES BACK when the blood
+                                 # recovers — well clear of the fainting line,
+                                 # not marginally past it, or a body pulled to
+                                 # clean air would flicker on the threshold.
+                                 # Hysteresis is the real thing here, not a
+                                 # smoothing trick: recovery genuinely lags
         "hurt_T": 55.0,          # skin °C where tissue starts to cook
         "burn_gain": 4e-6,       # damage per degree-over-threshold per tick
         "faint_burn": 0.2, "death_burn": 0.45}
@@ -1839,6 +1845,18 @@ class World:
                 why = ("the burns" if p["burn"] > BODY["faint_burn"]
                        else "the foul air")
                 p["events"].append(f"t{self.tick}: {p['name']} slumps — {why}")
+            elif (not p["awake"] and p["blood_o2"] > BODY["wake_o2"]
+                    and p["burn"] <= BODY["faint_burn"]):
+                # air alone can undo what air did. Burns cannot be undone —
+                # the burn integral only climbs — so someone who went down from
+                # heat stays down, and someone who went down from the air comes
+                # round if the air comes good. The threshold used to trip one
+                # way only, so a body carried into clean air stayed unconscious
+                # for ever, which made rescuing anyone pointless.
+                p["awake"] = True
+                p["emergency"] = False          # comes round with no plan
+                p["goal"], p["_path"] = None, None
+                p["events"].append(f"t{self.tick}: {p['name']} comes round")
             if (not p["awake"] and self.tick % 8 == 0
                     and z_hi - z_lo > int(0.8 / (0.1 * self.scale))):
                 self._collapse(p, flesh, sl)             # still upright: nothing holds
@@ -2252,7 +2270,12 @@ class World:
             if goal is None:
                 p["fleeing"] = False
                 continue
-            if max(abs(goal[0] - ax_), abs(goal[1] - ay_)) * vox_m <= WILL["arrive_m"]:
+            # arrival is measured from the BODY, not from its centre: you are
+            # at the door when part of you is at the door. A doorway in an
+            # outer wall has no room for a centre, so measuring from the middle
+            # meant a body could stand IN the opening and not have arrived.
+            reach = float(np.abs(cells[:, :2] - np.array(goal)).max(axis=1).min())
+            if reach * vox_m <= WILL["arrive_m"]:
                 if tuple(goal) in {tuple(e) for e in self.exits}:
                     p["safe"] = True
                     p["events"].append(f"t{self.tick}: {p['name']} reaches the doorway")
@@ -2308,11 +2331,40 @@ class World:
         if known is not None:
             walk_ok &= known          # you cannot plan a route through rooms
                                       # you have never seen
+        # A BODY IS NOT A POINT. The route is walked by the body's CENTRE, but
+        # the body is several voxels across, so a centre column is only usable
+        # if the whole footprint fits there. Without this the planner happily
+        # routes a centre into a column two voxels off a wall, the legs refuse
+        # (correctly — the shoulder is in the masonry), and the walker jams
+        # against the wall shuffling sideways forever. Measured on the
+        # glasshouse: a body stuck 2 voxels short of its door for 500 ticks.
+        cx = int(round(float(cells[:, 0].mean())))
+        cy = int(round(float(cells[:, 1].mean())))
+        fit = walk_ok.copy()
+        nx, ny = walk_ok.shape
+        for dx, dy in {(int(c[0]) - cx, int(c[1]) - cy) for c in cells}:
+            if dx == 0 and dy == 0:
+                continue
+            sh = np.zeros_like(walk_ok)
+            xs_lo, xs_hi = max(0, -dx), min(nx, nx - dx)
+            ys_lo, ys_hi = max(0, -dy), min(ny, ny - dy)
+            if xs_lo < xs_hi and ys_lo < ys_hi:
+                sh[xs_lo:xs_hi, ys_lo:ys_hi] = \
+                    walk_ok[xs_lo + dx:xs_hi + dx, ys_lo + dy:ys_hi + dy]
+            fit &= sh
+        fit[cx, cy] = True                    # wherever it is now, it fits
+        walk_ok = fit
         for c in cells:
             walk_ok[int(c[0]), int(c[1])] = True         # own columns count
-        start = (int(round(float(cells[:, 0].mean()))),
-                 int(round(float(cells[:, 1].mean()))))
+        start = (cx, cy)
         goal = (int(ex[0]), int(ex[1]))
+        if not walk_ok[goal]:                 # a doorway in an outer wall has
+            cand = np.argwhere(walk_ok)       # no room for a body's centre —
+            if not len(cand):                 # aim at the nearest place that does
+                return None
+            d = np.abs(cand[:, 0] - goal[0]) + np.abs(cand[:, 1] - goal[1])
+            near = cand[int(d.argmin())]
+            goal = (int(near[0]), int(near[1]))
         nx, ny = walk_ok.shape
         from collections import deque
         prev = {start: None}
