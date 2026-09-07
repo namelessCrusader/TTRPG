@@ -988,3 +988,30 @@ def test_a_body_with_nothing_happening_still_does_something():
     assert len(seen) > 8, f"it should get about; it visited only {len(seen)} spots"
     assert p["anchor"] != start, "it did not simply stand where it was put"
     assert {r["pick"] for r in w.traces} <= {"wander", "explore", "stay"}
+
+
+def _cantilever(frac):
+    """A beam jutting out of a stone pillar with nothing under its far end."""
+    w = World(40, 10, 24, voxel_cm=5)
+    w.fill(0, 40, 0, 10, 0, 1, STONE)
+    w.fill(2, 5, 3, 7, 1, 20, STONE)                  # the pillar
+    w.fill(5, 34, 3, 7, 16, 18, WOOD, frac=frac)      # the beam
+    for _ in range(150):
+        w.step()
+    still = np.argwhere((w.mat[5:34, 3:7, 16:18] == WOOD)
+                        & (w.smass[5:34, 3:7, 16:18] > 0))
+    return 0 if not len(still) else int(still[:, 0].max()) + 5
+
+
+def test_a_beam_carries_by_the_MASS_it_still_has():
+    """Strength is a property of the beam that is actually there, not of the
+    word 'wood'. A voxel eaten to a fifth of itself used to carry like sound
+    timber right up to the tick it turned to ash — so a burning tree held its
+    own canopy over the fire consuming it. Reach now fades with what is left,
+    with the knee at half mass so a scene's `frac` fills keep their strength."""
+    full, half = _cantilever(1.0), _cantilever(0.5)
+    assert full == half, \
+        "down to half mass a beam is still a beam — scene fills must not sag"
+    thin, thinner, gone = _cantilever(0.4), _cantilever(0.3), _cantilever(0.2)
+    assert thin < full, "past the knee, a thinner beam cannot hold as far out"
+    assert gone < thinner < thin, "and it keeps shortening as the mass goes"

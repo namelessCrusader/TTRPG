@@ -647,8 +647,19 @@ class World:
 
     def _relax_slack(self, solid):
         """Support reach, spread from the ground until it stops changing."""
-        span = np.round(_SPAN_ARR[self.mat]
-                        / self.scale).astype(np.int16)
+        # STRENGTH FADES WITH THE MASS THAT IS LEFT. Span used to be read
+        # straight off the material, so a trunk voxel eaten to a tenth of
+        # itself carried like sound timber right up to the tick it became ash.
+        # Reach is a property of the beam that is actually there: full span
+        # while at least half the material remains, then falling away with
+        # what is left. A burning tree now comes down onto its own fire,
+        # a fire-thinned lintel drops its load, and scene `frac` fills (a
+        # stick at 0.6) keep their strength — which is why the knee is at a
+        # half and not at one.
+        packed = np.clip(self.smass / np.maximum(
+            _DENS_ARR[self.mat] * self.vox_l, 1e-9), 0.0, 1.0)
+        span = np.round(_SPAN_ARR[self.mat] / self.scale
+                        * np.clip(packed / 0.5, 0.0, 1.0)).astype(np.int16)
         slack = np.full(self.shape, -1, np.int16)
         slack[:, :, 0][solid[:, :, 0]] = span[:, :, 0][solid[:, :, 0]]
         while True:

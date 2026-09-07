@@ -1,5 +1,149 @@
 [
  {
+  "tick": 0,
+  "who": "Wren",
+  "percept": null,
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "stay"
+  ],
+  "pick": "stay",
+  "by": "table",
+  "outcome": "safe",
+  "situation": {
+   "tick": 0,
+   "who": "Wren",
+   "percept": null,
+   "smoke": 0.0,
+   "blood_o2": 0.971,
+   "burn": 0.0,
+   "knows_a_way_out": true,
+   "seen_of_the_world": 1.0,
+   "others_in_earshot": 1
+  }
+ },
+ {
+  "tick": 0,
+  "who": "Bram",
+  "percept": null,
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "stay"
+  ],
+  "pick": "stay",
+  "by": "table",
+  "outcome": "still inside",
+  "situation": {
+   "tick": 0,
+   "who": "Bram",
+   "percept": null,
+   "smoke": 0.0,
+   "blood_o2": 0.971,
+   "burn": 0.0,
+   "knows_a_way_out": true,
+   "seen_of_the_world": 1.0,
+   "others_in_earshot": 1
+  }
+ },
+ {
+  "tick": 30,
+  "who": "Wren",
+  "percept": null,
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "stay"
+  ],
+  "pick": "stay",
+  "by": "table",
+  "outcome": "safe",
+  "situation": {
+   "tick": 30,
+   "who": "Wren",
+   "percept": null,
+   "smoke": 0.0,
+   "blood_o2": 0.984,
+   "burn": 0.0,
+   "knows_a_way_out": true,
+   "seen_of_the_world": 1.0,
+   "others_in_earshot": 1
+  }
+ },
+ {
+  "tick": 30,
+  "who": "Bram",
+  "percept": null,
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "stay"
+  ],
+  "pick": "stay",
+  "by": "table",
+  "outcome": "still inside",
+  "situation": {
+   "tick": 30,
+   "who": "Bram",
+   "percept": null,
+   "smoke": 0.0,
+   "blood_o2": 0.984,
+   "burn": 0.0,
+   "knows_a_way_out": true,
+   "seen_of_the_world": 1.0,
+   "others_in_earshot": 1
+  }
+ },
+ {
+  "tick": 60,
+  "who": "Wren",
+  "percept": null,
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "stay"
+  ],
+  "pick": "stay",
+  "by": "table",
+  "outcome": "safe",
+  "situation": {
+   "tick": 60,
+   "who": "Wren",
+   "percept": null,
+   "smoke": 0.0,
+   "blood_o2": 0.991,
+   "burn": 0.0,
+   "knows_a_way_out": true,
+   "seen_of_the_world": 1.0,
+   "others_in_earshot": 1
+  }
+ },
+ {
+  "tick": 60,
+  "who": "Bram",
+  "percept": null,
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "stay"
+  ],
+  "pick": "stay",
+  "by": "table",
+  "outcome": "still inside",
+  "situation": {
+   "tick": 60,
+   "who": "Bram",
+   "percept": null,
+   "smoke": 0.0,
+   "blood_o2": 0.991,
+   "burn": 0.0,
+   "knows_a_way_out": true,
+   "seen_of_the_world": 1.0,
+   "others_in_earshot": 1
+  }
+ },
+ {
   "tick": 65,
   "who": "Wren",
   "percept": "sees_fire",
@@ -18,7 +162,8 @@
    "smoke": 0.0,
    "blood_o2": 0.992,
    "burn": 0.0,
-   "exit_m": 2.85,
+   "knows_a_way_out": true,
+   "seen_of_the_world": 1.0,
    "others_in_earshot": 1
   }
  },
@@ -42,7 +187,8 @@
    "smoke": 0.0,
    "blood_o2": 0.992,
    "burn": 0.0,
-   "exit_m": 2.15,
+   "knows_a_way_out": true,
+   "seen_of_the_world": 1.0,
    "others_in_earshot": 1
   }
  }

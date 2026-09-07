@@ -34,7 +34,7 @@ glass. Fluids: water, oil, vitriol, weak acid. ~250 tests. Scenes and clips in
 | Sealed-room fire builds no pressure; no explosions, no drafts | same | pressure + momentum (#1) |
 | Wood-on-wood is ONE body to the torque law | object identity by material adjacency only | free bodies / object ids (#3) |
 | ~~A landing body "shatters" — crown scatters into debris~~ | **BUILT**: TOUGH column (kJ/m², Charpy-class) — fallen voxels carry real drop height, landings cash m·g·h per contact cell; free bodies pay their COM drop; ponds cushion (drag bleeds fallh). TSHOCK column: thermal shock cracks flame-licked glass. Fluid in a burst vessel spills | done (2026-09-03) |
-| A 90%-burned trunk voxel carries like solid timber, then flips to ash | strength is by material ID, not remaining MASS — should fade: full span at ≥50% mass, decaying to ash-like below (gate at 50% so scene `frac` fills keep their strength); with it, a burning tree eventually falls onto its own fire | mass-scaled strength |
+| ~~A 90%-burned trunk voxel carries like solid timber, then flips to ash~~ | **FIXED (2026-09-07)**: span is no longer read straight off the material — it scales with the fraction of the voxel that is still there, full reach down to half mass and decaying below. Measured cantilever reach by fill: 1.0/0.8/0.6/0.5 all hold to x=29, then 0.4→24, 0.3→19, 0.2→15. The knee sits at a half so scene `frac` fills keep their strength. A burning tree can now come down onto its own fire | done |
 | Fire climbs a trunk far slower than real bark fires | combustion in bulk wood only; no surface-flame spread / flame height | flame-above-fuel (#4) |
 | A held torch burns the holder's hand only in theory | no flesh heat-damage model | entities layer (with the humanoid) |
 
