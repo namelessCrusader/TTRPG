@@ -152,6 +152,11 @@ RESPONSES = {"flee":           {"goal": "exit", "say": None},
              # looking are not filler: they are how a mind that only knows what
              # it has seen comes to know the building it is standing in, which
              # is what makes running for a door it has found honest later.
+             # HANDS, used. Not a rescue subsystem: "drag" is a goal like any
+             # other, legal only when the force arithmetic says this body can
+             # actually shift that body, and carried out by the same _shove any
+             # other pushed thing would use.
+             "drag_them_out":  {"goal": "downed", "say": None},
              "explore":        {"goal": "frontier", "say": None, "idle": True},
              "wander":         {"goal": "roam", "say": None, "idle": True},
              "stay":           {"goal": None, "say": None}}
@@ -210,7 +215,20 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
                                  # smoothing trick: recovery genuinely lags
         "hurt_T": 55.0,          # skin °C where tissue starts to cook
         "burn_gain": 4e-6,       # damage per degree-over-threshold per tick
-        "faint_burn": 0.2, "death_burn": 0.45}
+        "faint_burn": 0.2, "death_burn": 0.45,
+        # HANDS, as ONE cause. A body can put a bounded force on a thing it can
+        # reach; what happens then is arithmetic, not a list of verbs. Lifting
+        # fights gravity (m·g), shoving fights friction (µ·m·g), so the SAME
+        # strength gives two different limits and nobody has to write them down
+        # separately. ~400 N is what an unremarkable adult manages: about 40 kg
+        # off the floor, and roughly 100 kg shoved along it.
+        "strength_N": 400.0}
+FRICTION = 0.40                  # sliding, solid on solid. One number until a
+                                 # scenario needs ice or grease; a per-pair
+                                 # table is the honest end state, and this is
+                                 # the value that makes the two limits above
+                                 # come out where a person's really do
+GRAVITY = 9.81
 _REACTIVE = {f for (f, _m) in REACTIONS}
 PLUME_REACH_M = 2.4              # meters of entrainment catchment: the air a
                                  # fire's plume can actually pull in — health
@@ -344,6 +362,8 @@ class World:
         self.open_sky = True                            # scene is built (air gets fresh O2)
         self.air_region = None                          # compact id of each connected
         self._region_air = None                         # airspace; -1 in solids
+        self.left_mass = 0.0                            # mass that walked OUT of
+                                                        # the world through a door
         self._just_shattered = set()                    # cells emptied THIS pass:
                                                         # fragments must not plug
                                                         # the hole being made
@@ -1788,22 +1808,81 @@ class World:
         return p
 
     def _person_cells(self, p):
-        """The person's OWN flesh: the connected component nearest their
-        anchor (two people in one room must not share a body)."""
+        """The person's OWN flesh — and OWN means owned, not merely connected.
+
+        Bodies used to be identified by adjacency alone, so the moment two
+        people touched they became one 3-voxel-wide, two-headed person: both
+        resolved to the same 684 cells, both anchors converged, and anything
+        that made them touch (carrying, dragging, a crowd in a doorway) broke
+        them. Now the bodies are claimed once per tick in a fixed order, and a
+        flood stops at flesh another person has already claimed. Two people can
+        stand shoulder to shoulder and stay two people."""
+        if p.get("_claim_tick") != self.tick:
+            self._claim_bodies()
+        return p.get("_claim_mask"), p.get("_claim_sl")
+
+    def _claim_bodies(self):
+        """Resolve every body once a tick, each barred from flesh that BELONGED
+        to somebody else last tick.
+
+        Order alone cannot do this: two people in contact are genuinely one
+        connected lump, so whoever floods first swallows both. Identity has to
+        persist through TIME instead of being re-derived from scratch — a body
+        is what it was a moment ago, moved. Bodies shift at most a voxel a tick,
+        so last tick's cells are a good seed and an exact barrier."""
+        prev = {id(q): q.get("_own", frozenset()) for q in self.persons}
+        for q in self.persons:
+            # someone who walked out, or died and was cleared, has no body to
+            # find. Left in, their anchor-flood reaches for the nearest flesh it
+            # can see and takes SOMEBODY ELSE'S — measured: a person already
+            # outside claimed a colleague's body from 35 voxels away, and the
+            # colleague, barred from their own flesh, stopped dead.
+            if q["safe"] or not q["alive"]:
+                q["_claim_mask"], q["_claim_sl"] = None, None
+                q["_claim_tick"], q["_own"] = self.tick, frozenset()
+                continue
+            barrier = set()
+            for r in self.persons:
+                if r is not q:
+                    barrier |= prev[id(r)]
+            mask, sl = self._flood_person(q, barrier, seed_from=prev[id(q)])
+            q["_claim_mask"], q["_claim_sl"], q["_claim_tick"] = \
+                mask, sl, self.tick
+            if mask is not None and mask.any():
+                got = np.argwhere(mask)
+                got[:, 0] += sl[0].start
+                got[:, 1] += sl[1].start
+                q["_own"] = frozenset(map(tuple, got))
+            else:
+                q["_own"] = frozenset()
+
+    def _flood_person(self, p, taken=(), seed_from=()):
+        """The connected component nearest this anchor, stopping at flesh that
+        belongs to somebody else."""
         x0, y0 = p["anchor"]
         nx, ny, nz = self.shape
         r = max(int(1.8 / (0.1 * self.scale)), 8)
         sl = (slice(max(x0 - r, 0), min(x0 + r, nx)),
               slice(max(y0 - r, 0), min(y0 + r, ny)), slice(None))
         flesh = self.mat[sl] == FLESH
+        if taken:                                    # someone else's already
+            for (tx, ty, tz) in taken:               # — not part of this body
+                lx, ly = tx - sl[0].start, ty - sl[1].start
+                if 0 <= lx < flesh.shape[0] and 0 <= ly < flesh.shape[1]:
+                    flesh[lx, ly, tz] = False
         if not flesh.any():
             return None, sl
-        cand = np.argwhere(flesh)
-        d = np.abs(cand[:, 0] - (x0 - sl[0].start)) + np.abs(cand[:, 1]
-                                                             - (y0 - sl[1].start))
-        seed = tuple(cand[int(d.argmin())])
         comp = np.zeros_like(flesh)
-        comp[seed] = True
+        for (sx, sy, sz) in seed_from:            # what this body WAS, still
+            lx, ly = sx - sl[0].start, sy - sl[1].start   # flesh: grow from that
+            if 0 <= lx < flesh.shape[0] and 0 <= ly < flesh.shape[1] \
+                    and flesh[lx, ly, sz]:
+                comp[lx, ly, sz] = True
+        if not comp.any():                        # first sight of this body
+            cand = np.argwhere(flesh)
+            d = np.abs(cand[:, 0] - (x0 - sl[0].start)) \
+                + np.abs(cand[:, 1] - (y0 - sl[1].start))
+            comp[tuple(cand[int(d.argmin())])] = True
         while True:                                  # flood restricted to flesh
             grown = comp.copy()
             grown[1:] |= comp[:-1]; grown[:-1] |= comp[1:]
@@ -1835,8 +1914,8 @@ class World:
         T = self.T()
         nx, ny, nz = self.shape
         for p in self.persons:
-            if not p["alive"]:
-                continue
+            if not p["alive"] or p["safe"]:              # out of the building is
+                continue                                # out of the simulation
             flesh, sl = self._person_cells(p)            # THIS person's body only
             if flesh is None:
                 flesh = np.zeros((1, 1, 1), bool)
@@ -2073,6 +2152,28 @@ class World:
             pick = frontier[far][np.argmin(d[far])] if far.any() \
                 else frontier[np.argmax(d)]
             out["frontier"] = (int(pick[0]), int(pick[1]))
+        # SOMEONE DOWN AND WITHIN REACH. Offered only if the arithmetic allows
+        # it: their whole mass against this body's strength through friction. A
+        # thing too heavy to shift is not an option, it is a fact.
+        if seen_exits:
+            for q in self.persons:
+                if q is p or q["awake"] or not q["alive"] or q["safe"]:
+                    continue
+                qc, qsl = self._person_cells(q)
+                if qc is None or not qc.any():
+                    continue
+                qcell = np.argwhere(qc)
+                qcell[:, 0] += qsl[0].start
+                qcell[:, 1] += qsl[1].start
+                d = max(abs(float(qcell[:, 0].mean()) - ax_),
+                        abs(float(qcell[:, 1].mean()) - ay_))
+                if d > 6.0:
+                    continue                      # not within arm's reach
+                _lift, drag_N = self._effort(qcell)
+                if drag_N <= BODY["strength_N"]:
+                    out["downed"] = out["exit"]   # take them to the door
+                    p["_drag"] = q["name"]
+                    break
         # ROAM: somewhere it knows, a way off, chosen without any randomness —
         # the sim stays deterministic, so the choice comes from the tick and
         # the name rather than from a die.
@@ -2158,6 +2259,8 @@ class World:
         p["_decided"] = self.tick
         if percept is not None:
             p["emergency"] = True        # committed: stop weighing the ordinary
+        p["dragging"] = p.pop("_drag", None) if opt["key"] == "drag_them_out" \
+            else None
         if opt["route"] is not None:
             p["fleeing"] = True
             p["goal"] = opt["goal"]
@@ -2308,6 +2411,21 @@ class World:
                 if tuple(goal) in {tuple(e) for e in self.exits}:
                     p["safe"] = True
                     p["events"].append(f"t{self.tick}: {p['name']} reaches the doorway")
+                    self._leave(p, cells)
+                    who = p.get("dragging")
+                    if who:                       # whoever came with them is out
+                        for q in self.persons:    # too — that is all rescuing is
+                            if q["name"] == who and q["alive"]:
+                                q["safe"] = True
+                                qc, qsl = self._person_cells(q)
+                                if qc is not None and qc.any():
+                                    qcell = np.argwhere(qc)
+                                    qcell[:, 0] += qsl[0].start
+                                    qcell[:, 1] += qsl[1].start
+                                    self._leave(q, qcell)
+                                p["events"].append(
+                                    f"t{self.tick}: ...hauling {who} clear")
+                        p["dragging"] = None
                 else:                                # arrived somewhere ordinary:
                     p["goal"] = None                 # pick again next time round
                     p["fleeing"] = False
@@ -2337,9 +2455,56 @@ class World:
                     continue
                 if self._walk(cells, *step):
                     p["facing"] = (float(step[0]), float(step[1]))
+                    self._haul(p, *step)
                     break
             else:
                 p["_path"] = None                    # blocked mid-route: replan
+
+    def _leave(self, p, cells):
+        """Out means OUT. A body that reached the door walks through it and off
+        the lattice, the way gas leaves at an open sky — its mass is accounted
+        as having left the world, not destroyed inside it.
+
+        This is not tidiness. Bodies have real depth now, so one person standing
+        in a doorway they had already escaped through was a wall to everyone
+        behind them: measured, a second body stuck three voxels short of the
+        exit for 800 ticks because the first was still stood in it."""
+        idx = tuple(np.asarray(cells).T)
+        self.left_mass += float(self.smass[idx].sum())
+        for arr in (self.mat, self.smass, self.E, self.fl,
+                    self.fvol, self.fpot, self.fallh):
+            arr[idx] = 0
+        p["_own"] = frozenset()
+        p["_claim_mask"], p["_claim_tick"] = None, None
+        self._slack_mat = None
+        self._torque_solid = None
+
+    def _haul(self, p, sx, sy):
+        """Bring along whoever this body took hold of. The dragged body is not
+        a passenger with special rules — it is a thing being shoved, moved by
+        the same _shove that shifts a crate, and it is left behind the moment
+        it will not shift (wedged, or grown too heavy to matter). When both are
+        at the door, both are out; that is the only thing rescuing anyone ever
+        needed to mean."""
+        who = p.get("dragging")
+        if not who:
+            return
+        q = next((r for r in self.persons if r["name"] == who), None)
+        if q is None or q["safe"] or not q["alive"]:
+            p["dragging"] = None
+            return
+        comp, sl = self._person_cells(q)
+        if comp is None or not comp.any():
+            p["dragging"] = None
+            return
+        cells = np.argwhere(comp)
+        cells[:, 0] += sl[0].start
+        cells[:, 1] += sl[1].start
+        if not self._shove(cells, sx, sy):
+            p["dragging"] = None                  # it would not come; let go
+            return
+        q["anchor"] = (int(round(float(cells[:, 0].mean()))) + sx,
+                       int(round(float(cells[:, 1].mean()))) + sy)
 
     def _plan_path(self, cells, ex, known=None):
         """Breadth-first route over columns the body can GET THROUGH *and knows
@@ -2369,6 +2534,12 @@ class World:
         # glasshouse: a body stuck 2 voxels short of its door for 500 ticks.
         cx = int(round(float(cells[:, 0].mean())))
         cy = int(round(float(cells[:, 1].mean())))
+        for c in cells:                       # a body does not block ITSELF, and
+            walk_ok[int(c[0]), int(c[1])] = True   # this has to be true BEFORE
+                                              # the footprint test: its own flesh
+                                              # is denser than PUSH_THROUGH, so
+                                              # eroding first left a body unable
+                                              # to stand where it was standing
         fit = walk_ok.copy()
         nx, ny = walk_ok.shape
         for dx, dy in {(int(c[0]) - cx, int(c[1]) - cy) for c in cells}:
@@ -2383,8 +2554,6 @@ class World:
             fit &= sh
         fit[cx, cy] = True                    # wherever it is now, it fits
         walk_ok = fit
-        for c in cells:
-            walk_ok[int(c[0]), int(c[1])] = True         # own columns count
         start = (cx, cy)
         goal = (int(ex[0]), int(ex[1]))
         if not walk_ok[goal]:                 # a doorway in an outer wall has
@@ -2415,6 +2584,73 @@ class World:
             path.append(cur)
             cur = prev[cur]
         return path[::-1][1:]
+
+    def _object_at(self, x, y, z, cap=4000):
+        """The connected thing that voxel belongs to — same material, flood
+        filled. A 'thing' is not declared anywhere; it is whatever is joined to
+        whatever you grabbed. (Which is also why a table with iron legs is two
+        things: joints do not exist yet.)"""
+        m0 = int(self.mat[x, y, z])
+        if m0 == AIR:
+            return np.zeros((0, 3), np.int32)
+        nx, ny, nz = self.shape
+        seen = {(x, y, z)}
+        stack = [(x, y, z)]
+        out = []
+        while stack and len(out) < cap:
+            cx, cy, cz = stack.pop()
+            out.append((cx, cy, cz))
+            for dx, dy, dz in ((1, 0, 0), (-1, 0, 0), (0, 1, 0),
+                               (0, -1, 0), (0, 0, 1), (0, 0, -1)):
+                t = (cx + dx, cy + dy, cz + dz)
+                if t in seen or not (0 <= t[0] < nx and 0 <= t[1] < ny
+                                     and 0 <= t[2] < nz):
+                    continue
+                if int(self.mat[t]) == m0:
+                    seen.add(t)
+                    stack.append(t)
+        return np.array(out, np.int32)
+
+    def _effort(self, cells):
+        """What it costs this body to move that thing, in newtons: the weight
+        to LIFT it, the friction to SHOVE it along the floor.
+
+        This is the whole of 'hands'. Push, pull, drag, lift and press are not
+        five verbs with five rules — they are one force meeting either gravity
+        or friction, and the arithmetic decides which are possible. A grown
+        person comes out able to shove a loaded chest they could never pick up,
+        and — the case that matters — able to DRAG someone unconscious but not
+        to carry them, which is exactly how it goes."""
+        if not len(cells):
+            return 0.0, 0.0
+        kg = float(self.smass[tuple(cells.T)].sum()) / 1000.0
+        return kg * GRAVITY, kg * GRAVITY * FRICTION
+
+    def _shove(self, cells, dx, dy, dz=0):
+        """Translate a thing by one voxel, carrying everything it holds. Refuses
+        if any arriving cell is occupied by something that is not itself."""
+        if not len(cells):
+            return False
+        nx, ny, nz = self.shape
+        tgt = cells + np.array([dx, dy, dz], np.int32)
+        if (tgt < 0).any() or (tgt[:, 0] >= nx).any() \
+                or (tgt[:, 1] >= ny).any() or (tgt[:, 2] >= nz).any():
+            return False
+        own = {tuple(c) for c in cells}
+        for t in map(tuple, tgt):
+            if t not in own and int(self.mat[t]) != AIR:
+                return False
+        fields = (self.mat, self.smass, self.E, self.fl, self.fvol,
+                  self.fpot, self.fallh)
+        idx, tdx = tuple(cells.T), tuple(tgt.T)
+        held = [arr[idx].copy() for arr in fields]
+        for arr in fields:
+            arr[idx] = 0
+        for arr, h in zip(fields, held):
+            arr[tdx] = h
+        self._torque_solid = None
+        self._slack_mat = None
+        return True
 
     def _walk(self, cells, sx, sy):
         """Translate a body one voxel sideways, SHOVING ASIDE what is light

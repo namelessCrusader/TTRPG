@@ -683,11 +683,11 @@ def test_reflexes_flee_and_alarm_spreads_by_shout_or_sight():
     alone. Behind enough masonry the shout dies — then only the sight of the
     runner passing can raise them."""
     def scene(wall):
-        w = World(140, 16, 20, voxel_cm=5)
-        w.fill(0, 140, 0, 16, 0, 1, STONE)
-        w.exits = [(6, 7)]
+        w = World(140, 26, 20, voxel_cm=5)   # roomy in y: bodies have DEPTH
+        w.fill(0, 140, 0, 26, 0, 1, STONE)   # now, and two of them queueing at
+        w.exits = [(6, 12), (6, 7)]          # one door cannot pass each other
         if wall:                                     # a thick baffle between them
-            w.fill(60, 66, 0, 14, 1, 18, STONE)      # (leaves a south gap to walk)
+            w.fill(60, 66, 0, 22, 1, 18, STONE)      # (leaves a south gap to walk)
         w.fill(128, 130, 6, 8, 1, 4, WOOD)
         w.fill(120, 121, 7, 8, 1, 15, FLESH, frac=0.9)
         pa = w.add_person(120, 7, "A")
@@ -1102,3 +1102,54 @@ def test_a_falling_body_damages_WHAT_IT_LANDS_ON():
         "the glass plate must give under the anvil where the plank does not"
     assert _anvil_onto(WOOD, 40) == _anvil_onto(WOOD, 10), \
         "and a plank holds whatever height it is dropped from"
+
+
+def test_lifting_and_shoving_fall_out_of_ONE_force():
+    """Hands are not five verbs. A body puts a bounded force on a thing; that
+    force meets gravity when you lift and friction when you shove, so the same
+    strength gives two different limits and nobody writes them down separately.
+    An anvil you cannot pick up is an anvil you can still slide."""
+    w = World(20, 20, 20, voxel_cm=5)
+    w.fill(0, 20, 0, 20, 0, 1, STONE)
+    w.fill(5, 9, 5, 9, 1, 5, IRON)                    # the anvil
+    anvil = w._object_at(6, 6, 2)
+    lift, shove = w._effort(anvil)
+    assert lift > BODY["strength_N"], "an anvil is not picked up"
+    assert shove < BODY["strength_N"], "...but it does slide"
+    w2 = World(20, 20, 20, voxel_cm=5)
+    w2.fill(0, 20, 0, 20, 0, 1, STONE)
+    w2.fill(5, 9, 5, 9, 1, 5, WOOD, frac=0.2)         # a wicker basket
+    light = w2._object_at(6, 6, 2)
+    assert w2._effort(light)[0] < BODY["strength_N"], \
+        "and something light goes straight up — same law, different mass"
+    assert w._shove(anvil, 1, 0), "a thing shoved into clear space moves"
+    assert int(w.mat[9, 6, 2]) == IRON and int(w.mat[5, 6, 2]) == AIR, \
+        "...taking its whole self with it"
+
+
+def test_two_people_who_touch_stay_two_people():
+    """Identity used to be adjacency, so the moment two bodies touched they
+    became one two-headed person: both resolved to the same cells and both
+    anchors converged. Anything that brings people into contact — dragging,
+    carrying, a crowd at a door — broke on it."""
+    from src.voxel.scenes import _person
+    w = World(50, 26, 40, voxel_cm=5)
+    w.fill(0, 50, 0, 26, 0, 40, STONE)
+    w.mat[1:49, 1:25, 1:39] = AIR
+    w.smass[1:49, 1:25, 1:39] = 0.0
+    a = _person(w, 16, 12); a["name"] = "A"
+    b = _person(w, 22, 12); b["name"] = "B"
+    w.step()
+    apart = int(w._person_cells(a)[0].sum())
+    assert apart == int(w._person_cells(b)[0].sum()) > 100
+    for _ in range(4):                                # walk B into A
+        cb, sl = w._person_cells(b)
+        c = np.argwhere(cb); c[:, 0] += sl[0].start; c[:, 1] += sl[1].start
+        w._shove(c, -1, 0)
+        b["anchor"] = (b["anchor"][0] - 1, b["anchor"][1])
+        w.tick += 1
+    total = int((w.mat == FLESH).sum())
+    for who in (a, b):
+        n = int(w._person_cells(who)[0].sum())
+        assert n < total * 0.75, \
+            f"{who['name']} claimed {n} of {total} — that is both bodies"

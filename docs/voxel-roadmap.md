@@ -182,6 +182,47 @@ against the belief rather than the lattice. Core item 1 already binds contact
 options to *fresh belief nodes*; the voxel side is behind it. Until then the
 honest description is: **perception gates EVENTS, not GEOMETRY.**
 
+## Hands, as one force — PART BUILT (2026-09-07)
+
+Not five verbs. `_effort(cells)` returns what a thing costs to LIFT (its weight)
+and to SHOVE (friction × weight); `BODY["strength_N"] = 400` (an ordinary adult,
+~40 kg up, ~100 kg along) decides which are possible. `_object_at` is the thing
+you grabbed — whatever is connected to it, same material. `_shove` translates it
+with everything it holds. Push/pull/press/drag stop being separate rules.
+Measured: an iron anvil (62 kg) cannot be lifted and can be slid; a wicker
+basket goes straight up.
+
+**Object identity, forced by this and now built.** Bodies were identified by
+adjacency, so two people who touched became one two-headed person — measured,
+both resolving to the same 684 cells with both anchors converging. Identity now
+persists through TIME: each body is claimed once a tick, seeded from the cells
+it owned last tick, barred from flesh another body owned. Two people stand
+shoulder to shoulder and stay two people. (Small known bleed: a ~7% overlap at
+the contact face from the one-tick lag.)
+
+**And out means out.** A body that reached the door now leaves the lattice, its
+mass accounted as having left. Bodies have real depth now, so one person standing
+in a doorway they had already escaped through was a wall to everyone behind them
+(measured: a second body stuck 3 voxels short for 800 ticks). Two related bugs
+found with it: a person who had left still ran an anchor-flood and claimed a
+COLLEAGUE'S body from 35 voxels away, freezing them; and the footprint erosion
+ran before "own columns count", so a body's own flesh made its own column
+unwalkable and it could not stand where it stood.
+
+**The humanoid got a body.** Built one voxel thin it weighed 10 kg — a person you
+could pick up like a cat, which quietly voided every question about lifting and
+carrying. With a real chest and limbs it measures 28.5 kg. Still light (about a
+ten-year-old) because a stick figure at 5 cm fills far less of its outline than a
+person does; stated as a known softness, not fudged. Depth went into y, not x, so
+every doorway in every scene is unchanged.
+
+**NOT working: dragging someone out end to end.** The response (`drag_them_out`),
+the reach and mass check, and the hauling all run — measured, a rescuer picks it
+and shifts the body twice — and then lets go, because an unconscious body is
+promoted to a FREE BODY by `_collapse` and leaves the grid entirely, so there is
+nothing left to hold. Wants free bodies (#3) to be draggable, or collapse to stop
+promoting. This is the next thing to fix, and it is the whole point of hands.
+
 ## Impact damages what it lands on (2026-09-07)
 
 `_cash_impacts` tested only the FALLING voxel against its own toughness, so an

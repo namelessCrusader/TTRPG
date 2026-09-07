@@ -411,13 +411,23 @@ def alchemist(frames_dir, ticks=900, every=8):
 def _person(w, px, py):
     """A person, finally with a body: two legs, torso, two arms, a head.
     ~1.5 m of FLESH at 5 cm voxels. A physical object first — it stands by the
-    support law, tips by the torque law, chars by the combustion law."""
-    w.fill(px, px + 1, py, py + 1, 1, 15, FLESH, frac=0.9)       # left leg
-    w.fill(px + 2, px + 3, py, py + 1, 1, 15, FLESH, frac=0.9)   # right leg
-    w.fill(px, px + 3, py - 1, py + 1, 15, 27, FLESH, frac=0.9)  # torso
-    w.fill(px - 1, px, py, py + 1, 18, 27, FLESH, frac=0.85)     # left arm
-    w.fill(px + 3, px + 4, py, py + 1, 18, 27, FLESH, frac=0.85) # right arm
-    w.fill(px, px + 2, py - 1, py + 1, 27, 31, FLESH, frac=0.9)  # head
+    support law, tips by the torque law, chars by the combustion law.
+
+    It has DEPTH because it has to weigh something. Built one voxel thin it came
+    to 10 kg, and a 10 kg person can be picked up like a cat — which quietly
+    made nonsense of every question about lifting, dragging and carrying. Given
+    a real chest and real limbs it measures 28.5 kg — still light, about a
+    ten-year-old, because a stick figure at 5 cm fills far less of its own
+    outline than a person does. So one CAN still be carried here, and that is a
+    known softness, not a claim: the force law is right, the body is thin.
+    Thickness went into DEPTH (y) and not width (x) on purpose — the walking
+    footprint, and so every doorway in every scene, is unchanged."""
+    w.fill(px, px + 1, py - 1, py + 2, 1, 15, FLESH, frac=0.9)      # left leg
+    w.fill(px + 2, px + 3, py - 1, py + 2, 1, 15, FLESH, frac=0.9)  # right leg
+    w.fill(px, px + 3, py - 2, py + 3, 15, 27, FLESH, frac=0.9)     # torso
+    w.fill(px - 1, px, py - 1, py + 2, 18, 27, FLESH, frac=0.85)    # left arm
+    w.fill(px + 3, px + 4, py - 1, py + 2, 18, 27, FLESH, frac=0.85)  # right arm
+    w.fill(px, px + 2, py - 1, py + 2, 27, 31, FLESH, frac=0.9)     # head
     person = w.add_person(px + 1, py)                            # and now: alive
     person.update({"px": px, "py": py, "head_z": 28})
     return person
