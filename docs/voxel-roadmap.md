@@ -128,6 +128,69 @@ So REACTIONS stays hand-curated; that is the honest state of the art.
 6. **Electricity** — even TPT special-cases all of it; ours would be a data-pack
    layer (conductors, sources, switches). Parked until a scenario demands it.
 
+## Perception reads continuous fields — BUILT (2026-09-07)
+
+The Ruling-2 sweep, applied to the three places that asked a binary question of a
+continuous field. Demo: `glasshouse` scene + `renders/glasshouse/`.
+
+- **Sight is optical depth.** `_sees` accumulated a material whitelist
+  (`AIR | FLESH`); it now accumulates Beer-Lambert optical depth. A partial voxel
+  blocks by COVERAGE, which needs no constant — fraction `f` of the cell is stuff,
+  so `f` of the light hits it. Only `TRANSMIT = {GLASS: 0.96}` is a table, because
+  transparency genuinely is a material property. Fixes: glass was as blind as
+  masonry, a hedge walled off sight completely, and **smoke did not obscure at all**
+  (a listed open issue). The "bodies don't wall off sight" case is gone — the
+  viewer's own body is skipped by geometry, not by exempting flesh.
+- **Hearing is the acoustic mass law.** `_hears` charged a flat 4 m per solid
+  voxel — pine, masonry and a leaf curtain identical. Now: 90 dB shout, spherical
+  spreading, and barrier loss from MASS PER AREA read off `smass`
+  (`20·log10(σf) − 47`, one law applied to the path's total mass, not per slice).
+  5 cm masonry ≈ 135 kg/m² ≈ 50 dB; the same pine ≈ 30 kg/m² ≈ 37 dB. Measured in
+  the scene: Bram hears through the pine door, and stone kills the same shout.
+- **Passage reads fill.** `_plan_path` and `_walk` both demanded pure AIR, so one
+  leaf voxel was as impassable as masonry — and they disagreed after the first
+  fix, the planner routing through a hedge the legs then refused. Both now use
+  `PUSH_THROUGH` (a stand-in until the force law). `_walk` also **displaces what
+  it shoves**: entered cells' contents move to vacated cells, so the hedge closes
+  behind you and no leaf is deleted (locked by a conservation test).
+- **Pressure reads porosity** for its block threshold, so a 97%-filled door is a
+  path. Kept HARD, not graded: grading the coarse 20 cm cells by volume fraction
+  let sealed rooms bleed pressure through masonry (a test caught it).
+
+## Speed — 4x, measured not guessed (2026-09-07)
+
+Profiled first. 400k-voxel world was **630 ms/tick (1.6 ticks/sec)**.
+
+- `np.choose` was **47% of all sim time** — it evaluates and broadcasts every
+  branch before selecting. Nine sites replaced with fancy indexing
+  (`_ARR[self.mat]`) → 295 ms/tick. Purely mechanical, 2.1x.
+- `_law_support`'s slack relaxation was then 45% — a fixpoint iteration over the
+  whole grid, every tick, for a field that is a pure function of the material
+  layout. Cached against `mat`: comparing costs ~0.2 ms, recomputing ~134 ms, and
+  in a standing room it is skipped almost every tick → **158 ms/tick, 6.3/sec**.
+  Correct by construction (compares real state) rather than by invalidation.
+- Test suite fell 164 s → 88 s as a side effect.
+
+Not yet done, in order of expected value: **active regions** (most of a world is
+inert; Powder Toy / Noita dirty-rects — an order of magnitude on big quiet worlds,
+and the thing that reaches the >10 runs/sec design target); **kernel fusion** via
+numba or Taichi (we are memory-bandwidth bound — ~30 laws each making several full
+passes; a CA engine sweeps once and applies many rules per cell, which numpy
+cannot express); `heat_capacity()` still rebuilt 12x/tick. GPU (CuPy) is a real
+option but not the next lever: state is ~1.6 MB, so kernel-launch overhead would
+dominate, and VRAM is budgeted for the language model.
+
+**Activity criterion, agreed** (the "bacteria" question — in reality nothing is
+inert, so the threshold is a modelling decision, the same judgement as Ruling 1's
+stopping rule): a region is inert when processing it would not change a modelled
+quantity by enough for any outcome we care about to notice. Heat is provable (no
+gradient, no flux — exactly zero). **Radiation is the trap**: it is not
+neighbour-local, so a source must wake everything within its REACH — adjacency for
+conduction, line of sight for radiation, earshot for sound. Gas must freeze by
+whole connected AIRSPACE, never by chunk, since gas mixes room-wide. Pressure
+last. And the guard is a differential test — same scene with and without active
+regions, trajectories equal to tolerance — written BEFORE the optimisation.
+
 ## The menu seam — BUILT (2026-09-06)
 
 `_law_will` used to notice and choose in one expression. It is now three parts:

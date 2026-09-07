@@ -507,6 +507,104 @@ def fire_alarm(frames_dir, ticks=700, every=4):
               flush=True)
 
 
+# ── scenario: the glasshouse — perception reads continuous fields ────────────
+def glasshouse(frames_dir, ticks=760, every=4):
+    """Everything the Ruling-2 pass bought, in one room and one run.
+
+    A workshop split by a stone wall that carries two openings: a GLASS WINDOW
+    and a shut WOODEN DOOR hung with a gap (frac 0.97). A fire starts in the
+    west room, where nobody is.
+
+      SIGHT IS OPTICAL DEPTH — Wren sees the fire THROUGH THE WINDOW. Under the
+        old material whitelist glass was as blind as masonry and she would have
+        stood there until the smoke took her.
+      SOUND IS THE MASS LAW — her shout crosses the pine door to Bram at ~37 dB
+        of loss. Under the old flat cost every solid voxel charged the same, so
+        pine and masonry were the same wall.
+      GAPS ARE GEOMETRY — smoke seeps under the shut door because the scene says
+        it fills 97% of its cells, not because wood was declared leaky.
+      FILL DECIDES PASSAGE — a hedge stands across the only route out. She
+        shoves through it. One leaf voxel used to be as impassable as stone.
+      AND SMOKE BLINDS — as the room fills, the window she saw the fire through
+        goes out. That was simply missing.
+    """
+    w = World(130, 70, 44, voxel_cm=5)                    # 6.5 m x 3.5 m x 2.2 m
+    w.fill(0, 130, 0, 70, 0, 44, STONE)
+    w.mat[1:129, 1:69, 1:43] = AIR
+    w.smass[1:129, 1:69, 1:43] = 0.0
+    w.fill(60, 62, 1, 69, 1, 43, STONE)                   # the dividing wall
+    w.fill(60, 62, 20, 34, 16, 30, GLASS)                 # ... with a window
+    w.fill(60, 62, 45, 58, 1, 30, WOOD, frac=0.97)        # ... and a shut door
+    w.fill(100, 104, 1, 69, 1, 32, LEAF, frac=0.30)       # a hedge, wall to wall
+    w.mat[128:129, 32:40, 1:30] = AIR                     # the way out, east
+    w.smass[128:129, 32:40, 1:30] = 0.0
+    w.exits = [(128, 36)]
+    w.fill(20, 40, 22, 32, 5, 7, WOOD, frac=0.7)          # the workbench, west
+    for (lx, ly) in ((21, 23), (21, 30), (37, 23), (37, 30)):
+        w.fill(lx, lx + 2, ly, ly + 2, 1, 5, WOOD)
+    for (ox, oy) in ((24, 25), (25, 26), (24, 27)):
+        w.pour(ox, oy, 5, OIL, 100.0)                     # oil on the bench
+    wren = _person(w, 70, 27)                             # facing the window
+    wren["name"] = "Wren"
+    wren["lines"] = {"flee_shouting": "The bench is alight! Bram — the hedge, go!"}
+    bram = _person(w, 84, 52)                             # the far side, by the door
+    bram["name"] = "Bram"
+    bram["lines"] = {"flee_answering": "Right behind you!"}
+    eye_w = (71.0, 27.0, 30.0)
+    fire_at = (25.0, 26.0, 6.0)
+    seen_through_glass = None
+    blinded_at = None
+    for t in range(ticks):
+        if t < 30:
+            w.E[24, 25, 5] += 2500.0
+        w.step()
+        if seen_through_glass is None and w._sees(eye_w, fire_at) and w.burning().any():
+            seen_through_glass = t
+        if seen_through_glass is not None and blinded_at is None \
+                and not w._sees(eye_w, fire_at):
+            blinded_at = t
+            print(f"t{t}: the smoke has closed the window — Wren can no longer "
+                  f"see the fire she is running from", flush=True)
+        for p in (wren, bram):
+            for e in p["events"]:
+                print(e, flush=True)
+            p["events"].clear()
+        if w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 100 == 0:
+            east = float(w.smoke[62:129, 1:69, 1:43].sum())
+            print(f"t{t}: burning {int(w.burning().sum())} | smoke past the shut "
+                  f"door {east:7.2f} g | Wren {wren['anchor']}"
+                  f"{' SAFE' if wren['safe'] else ''} | Bram {bram['anchor']}"
+                  f"{' SAFE' if bram['safe'] else ''}", flush=True)
+        if wren["safe"] and bram["safe"] and "out_at" not in wren:
+            wren["out_at"] = t
+            print(f"t{t}: both through the hedge and out", flush=True)
+        if "out_at" in wren and t > wren["out_at"] + 60:
+            break
+    print(f"\n-- what each fix did --", flush=True)
+    print(f"sight through GLASS: fire first seen at t{seen_through_glass}"
+          f"  (was impossible: glass counted as masonry)", flush=True)
+    print(f"smoke BLINDED that same line of sight at t{blinded_at}", flush=True)
+    door = w._hears((71.0, 50.0, 20.0), (50.0, 50.0, 20.0))   # through the door
+    wall = w._hears((71.0, 10.0, 20.0), (50.0, 10.0, 20.0))   # through masonry
+    print(f"shout across the pine door: {'heard' if door else 'lost'} | "
+          f"across the stone wall: {'heard' if wall else 'lost'}"
+          f"  (was identical: 4 m per voxel, whatever it was made of)", flush=True)
+    print(f"smoke through a door nobody opened: "
+          f"{float(w.smoke[62:129, 1:69, 1:43].sum()):.2f} g", flush=True)
+    import json
+    with open(os.path.join(frames_dir, "speech.json"), "w") as f:
+        json.dump({"speech": [[int(tk), nm, tx] for tk, nm, tx in w.speech],
+                   "every": every}, f)
+    rows = [{k: v for k, v in r.items() if k != "situation"}
+            | {"situation": {k: v for k, v in r["situation"].items()
+                             if k != "reflexes"}}
+            for r in w.trace_outcomes()]
+    with open(os.path.join(frames_dir, "traces.json"), "w") as f:
+        json.dump(rows, f, indent=1)
+
+
 # ── scenario: house fire, someone inside ─────────────────────────────────────
 def house_fire(frames_dir, ticks=900, every=10):
     """A furnished room: bed, table, wardrobe — and a PERSON standing in it.
@@ -545,6 +643,7 @@ def house_fire(frames_dir, ticks=900, every=10):
 
 SCENARIOS = {"two_rooms": two_rooms, "tree_fell": tree_fell, "lamp_shelf": lamp_shelf,
              "drop_test": drop_test, "forge": forge, "fire_alarm": fire_alarm,
+             "glasshouse": glasshouse,
              "alchemist": alchemist, "house_fire": house_fire,
              "burning_tree": burning_tree,
              "tree_hinge": tree_hinge, "acid_bath": acid_bath, "torch_pillar": torch_pillar,

@@ -155,3 +155,6 @@ renders/**/*.npz
 
 # Stray tooling tests that are not this project's
 .claude/tests/
+
+# Blender ships with the repo layout but is a 1GB third-party binary
+tools/blender/

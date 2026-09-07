@@ -1,0 +1,49 @@
+[
+ {
+  "tick": 65,
+  "who": "Wren",
+  "percept": "sees_fire",
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "stay"
+  ],
+  "pick": "flee_shouting",
+  "by": "table",
+  "outcome": "safe",
+  "situation": {
+   "tick": 65,
+   "who": "Wren",
+   "percept": "sees_fire",
+   "smoke": 0.0,
+   "blood_o2": 0.992,
+   "burn": 0.0,
+   "exit_m": 2.85,
+   "others_in_earshot": 1
+  }
+ },
+ {
+  "tick": 65,
+  "who": "Bram",
+  "percept": "hears_alarm",
+  "menu": [
+   "flee",
+   "flee_shouting",
+   "flee_answering",
+   "stay"
+  ],
+  "pick": "flee_answering",
+  "by": "table",
+  "outcome": "still inside",
+  "situation": {
+   "tick": 65,
+   "who": "Bram",
+   "percept": "hears_alarm",
+   "smoke": 0.0,
+   "blood_o2": 0.992,
+   "burn": 0.0,
+   "exit_m": 2.15,
+   "others_in_earshot": 1
+  }
+ }
+]

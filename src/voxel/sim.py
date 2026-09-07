@@ -222,9 +222,48 @@ TOUGH = {AIR: 1e9, WOOD: 8.0, STONE: 3.0, IRON: 150.0, FLESH: 50.0,
 # Stone DOES spall in real fires (~400 °C) — deliberately left out until the
 # house-fire scene is ready for collapsing walls.
 TSHOCK = {GLASS: 120.0}
+# TRANSMIT — how much light gets through the MATERIAL ITSELF at one voxel thick,
+# packed solid. This is genuinely a material property (glass is clear because of
+# what it is, not how it was built), so unlike porosity a table is its right
+# home. Only one entry is interesting; 5 cm of anything else stops light dead.
+TRANSMIT = {GLASS: 0.96}
+# A PARTLY filled voxel blocks by COVERAGE, which needs no constant at all: if a
+# fraction f of the cell is stuff, then f of the light hits it and (1-f) sails
+# past. So a quarter-full hedge passes about three quarters of the view and a
+# packed wall passes none, from the same one line — no "how opaque is foliage"
+# row to argue about, and it tracks a hedge being cut back or a wall being eaten.
+SEE_TAU = 2.0                    # optical depth a look can still penetrate
+                                 # (~13% of the light arrives)
+# SMOKE_EXT — obscuration per (gram per liter) of smoke, per meter. Beer-Lambert,
+# anchored to reported fire visibility: a smoke-logged room in this sim carries
+# ~0.12 g/L, and this coefficient puts visibility there at ~3 m, which is what
+# the fire-safety literature reports for a smoke-logged compartment. It is tied
+# to the SOOT yield convention (WOOD 0.6 counts ALL visible products, ~40x real
+# soot yield, because no gas-species field exists yet to hold the rest); gas
+# species retires this for the standard 8.7 m^2/g against true soot mass.
+SMOKE_EXT = 5.6
+SHOUT_DB = 90.0                  # a shout, one meter from the mouth
+HEAR_DB = 40.0                   # where a shout stops being intelligible
+PUSH_THROUGH = 0.4               # how full a voxel can be and still be shoved
+                                 # through. A STAND-IN: what really decides this
+                                 # is the body's strength against whatever holds
+                                 # the material, and the force law will replace
+                                 # it. Until then it at least reads the fill
+                                 # instead of demanding pure air
 _TOUGH_ARR = np.array([TOUGH[m] for m in range(NMAT)], np.float32)
 _TSHOCK_ARR = np.array([TSHOCK.get(m, np.inf) for m in range(NMAT)], np.float32)
 _DENS_ARR = np.array([SOLID[m][0] for m in range(NMAT)], np.float32)
+# Lookup arrays for the per-voxel material/fluid property gathers. These used to
+# be np.choose calls, which measured at 47% of ALL sim time on a 400k world:
+# choose builds and broadcasts every branch, while fancy indexing gathers once.
+_CSOLID_ARR = np.array([SOLID[m][1] for m in range(NMAT)], np.float32)
+_KSOLID_ARR = np.array([SOLID[m][2] for m in range(NMAT)], np.float32)
+_SPAN_ARR = np.array([SPAN[m] for m in range(NMAT)], np.float32)
+_FDENS_ARR = np.array(_FDENS, np.float32)
+_FC_ARR = np.array(_FC, np.float32)
+_FK_ARR = np.array(_FK, np.float32)
+_TRANSMIT_ARR = np.array([1.0 if m == AIR else TRANSMIT.get(m, 0.0)
+                          for m in range(NMAT)], np.float32)
 O2_PER_L = 0.28                  # grams of oxygen in one liter of fresh air
 O2_RATIO = {WOOD: 1.33, FLESH: 1.4, ASH: 0.0, LEAF: 1.25, CHAR: 2.6}  # g O2/g fuel
 # SOOT — the VISIBLE fraction of burned mass. The rest leaves as clear gas
@@ -278,6 +317,8 @@ class World:
         self.open_sky = True                            # scene is built (air gets fresh O2)
         self.air_region = None                          # compact id of each connected
         self._region_air = None                         # airspace; -1 in solids
+        self._slack = None                              # support reach, cached
+        self._slack_mat = None                          # ...against this layout
         self._region_count = 0
         self._torque_solid = None                       # solids snapshot for the tip check
         self._torque_sleep = 0                          # cooldown after a wedged landing
@@ -291,9 +332,9 @@ class World:
 
     # ── derived fields ───────────────────────────────────────────────────────
     def heat_capacity(self):
-        c_solid = np.choose(self.mat, [SOLID[m][1] for m in range(NMAT)])
-        fmass = self.fvol * np.choose(self.fl, _FDENS)
-        c_fluid = np.choose(self.fl, _FC)
+        c_solid = _CSOLID_ARR[self.mat]
+        fmass = self.fvol * _FDENS_ARR[self.fl]
+        c_fluid = _FC_ARR[self.fl]
         return self.smass * c_solid + fmass * c_fluid + self.c_airbase
 
     def T(self):
@@ -493,7 +534,7 @@ class World:
         # swap. This is WHY water fails against an oil fire: it slips underneath and
         # the burning oil rides up on top of it (no rule about fires anywhere).
         up, lo = (slice(None), slice(None), slice(1, None)), (slice(None), slice(None), slice(None, -1))
-        dens = np.choose(self.fl, _FDENS)
+        dens = _FDENS_ARR[self.fl]
         m = ((self.mat[up] == AIR) & (self.mat[lo] == AIR)
              & (self.fvol[up] > 1.0) & (self.fvol[lo] > 1.0) & (dens[up] > dens[lo]))
         if m.any():
@@ -566,7 +607,26 @@ class World:
         hang = solid[:, :, 1:] & ~solid[:, :, :-1]           # any solid with air below?
         if not hang.any():
             return self._cash_impacts(None)      # last tick's landings still pay
-        span = np.round(np.choose(self.mat, [SPAN[m] for m in range(NMAT)])
+        # The slack field is a relaxation run to fixpoint over the WHOLE grid, and
+        # it was 45% of all sim time. But it is a pure function of the material
+        # layout: if not one voxel changed material since last tick, last tick's
+        # answer is still exactly right. Comparing the layout costs ~0.2 ms
+        # against ~134 ms to recompute, and it is correct by construction rather
+        # than by remembering to invalidate — in a standing room nothing moves,
+        # so this is skipped almost every tick.
+        if self._slack_mat is not None and np.array_equal(self._slack_mat, self.mat):
+            slack = self._slack
+        else:
+            slack = self._relax_slack(solid)
+            self._slack_mat, self._slack = self.mat.copy(), slack
+        falling = solid & (slack < 0)
+        if not falling.any():
+            return self._cash_impacts(None)
+        return self._settle(solid, falling)
+
+    def _relax_slack(self, solid):
+        """Support reach, spread from the ground until it stops changing."""
+        span = np.round(_SPAN_ARR[self.mat]
                         / self.scale).astype(np.int16)
         slack = np.full(self.shape, -1, np.int16)
         slack[:, :, 0][solid[:, :, 0]] = span[:, :, 0][solid[:, :, 0]]
@@ -587,10 +647,11 @@ class World:
             if (new == slack).all():
                 break
             slack = new
-        falling = solid & (slack < 0)
-        if not falling.any():
-            return self._cash_impacts(None)
-        fdens = np.choose(self.fl, _FDENS).astype(np.float32) * 1000.0   # fluid, g/L
+        return slack
+
+    def _settle(self, solid, falling):
+        """Everything the support law does once it knows what is unsupported."""
+        fdens = _FDENS_ARR[self.fl].astype(np.float32) * 1000.0   # fluid, g/L
         sdens = self.smass / self.vox_l                                  # this solid, g/L
         arrived = np.zeros(self.shape[:2], bool)             # which columns moved this tick
         moved = np.zeros(self.shape, bool)
@@ -624,7 +685,7 @@ class World:
         sdens2 = self.smass / self.vox_l
         landed = (self.mat[:, :, 1:] != AIR) & (self.mat[:, :, :-1] == AIR) \
             & (self.fvol[:, :, :-1] >= 0.5 * self.cap) \
-            & (sdens2[:, :, 1:] <= np.choose(self.fl[:, :, :-1], _FDENS) * 1000.0)
+            & (sdens2[:, :, 1:] <= _FDENS_ARR[self.fl[:, :, :-1]] * 1000.0)
         for x, y, zl in np.argwhere(landed):
             if arrived[x, y] and zl + 1 < self.shape[2]:
                 self._splash(int(x), int(y), int(zl), int(zl) + 1)
@@ -1040,12 +1101,12 @@ class World:
 
     def _law_conduct(self):
         T, C = self.T(), self.heat_capacity()
-        k = np.choose(self.mat, [SOLID[m][2] for m in range(NMAT)]).astype(np.float32)
+        k = _KSOLID_ARR[self.mat].astype(np.float32)
         # hot gas convects: rising, churning air moves heat far faster than still air.
         # Modeled as conductivity growing with temperature (standard trick, not a case).
         hot_air = self.mat == AIR
         k[hot_air] += np.maximum(T[hot_air] - AMBIENT, 0.0) / 60.0
-        fk = np.choose(self.fl, _FK).astype(np.float32)
+        fk = _FK_ARR[self.fl].astype(np.float32)
         wet = (self.fvol > 0.1 * self.cap) & (self.mat == AIR)      # OPEN fluid on a solid:
         solid = self.mat != AIR                          # contact is governed by the FLUID
         for axis in range(3):                            # (a boiling film, not the timber)
@@ -1377,7 +1438,16 @@ class World:
             cshape = tuple((s + self._CS - 1) // self._CS for s in self.shape)
             self.pcell = np.zeros(cshape, np.float32)
             self.vcell = [np.zeros(cshape, np.float32) for _ in range(3)]
-        blocked = self._cells((self.mat != AIR).astype(np.float32)) > 0.6
+        # what the coarse pressure cells can breathe through, read from POROSITY
+        # rather than a headcount of non-air voxels: a shut door that fills 97%
+        # of its cells is a path, and the old binary read rounded its gap away.
+        # The block stays HARD, not graded — these cells are 20 cm wide, so a
+        # cell half-filled by a wall has that wall across its whole face, and
+        # grading it by volume fraction let sealed rooms bleed pressure through
+        # solid masonry (measured: a sealed fire stopped out-pressuring an open
+        # one). Coarse geometry cannot support a soft answer here.
+        cpor = self._cells(self.porosity())
+        blocked = cpor < 0.05
         self.pcell += self._cells(self.p_add, "sum")
         self.p_add[:] = 0.0
         p, v = self.pcell, self.vcell
@@ -1734,9 +1804,20 @@ class World:
                 p["events"].append(f"t{self.tick}: {p['name']} stops breathing")
 
     def _sees(self, a, b):
-        """Straight-line sight between two float points: blocked by any solid
-        along the ray. Eyes are eyes — a wall hides the fire behind it (and
-        hides the runner too; alarm cannot spread through masonry)."""
+        """Sight as OPTICAL DEPTH along the ray, not a list of allowed materials.
+
+        Every voxel on the way dims the view by how much stuff is in it: the
+        material's own opacity scaled by how full the cell actually is, plus the
+        smoke hanging in it. Beer-Lambert; you can see if enough light survives.
+
+        What this buys over the old material whitelist: a GLASS window is a
+        window (it was opaque before), a sparse hedge dims instead of walling
+        off, a doorway half-choked with rubble is half-blind, and — the one that
+        was simply missing — SMOKE BLINDS. You could previously spot a runner
+        clean through a smoke bank. The old "bodies don't wall off sight" case
+        is gone with it: a body between you and the fire really does block it,
+        and your own is skipped by geometry (you don't see your own eyelashes)
+        rather than by exempting the material."""
         a = np.asarray(a, np.float32)
         b = np.asarray(b, np.float32)
         n = int(np.ceil(np.abs(b - a).max())) + 1
@@ -1744,14 +1825,24 @@ class World:
             return True
         ts = np.linspace(0.0, 1.0, n)[1:-1]
         pts = np.round(a[None] + ts[:, None] * (b - a)[None]).astype(np.int64)
+        near = (np.abs(pts - a[None]).max(axis=1) > 1.0)      # skip own eyelashes
+        pts = pts[near]
+        if not len(pts):
+            return True
         nx, ny, nz = self.shape
         pts[:, 0] = np.clip(pts[:, 0], 0, nx - 1)
         pts[:, 1] = np.clip(pts[:, 1], 0, ny - 1)
         pts[:, 2] = np.clip(pts[:, 2], 0, nz - 1)
-        m = self.mat[tuple(pts.T)]
-        return bool(((m == AIR) | (m == FLESH)).all())    # bodies don't wall off
-                                                          # sight (least of all
-                                                          # the viewer's own)
+        idx = tuple(pts.T)
+        vox_m = 0.1 * self.scale
+        packed = np.clip(self.smass[idx] / np.maximum(
+            _DENS_ARR[self.mat[idx]] * self.vox_l, 1e-9), 0.0, 0.999)
+        # what gets past one voxel: the (1-f) that misses the stuff entirely,
+        # plus the f that hits it and comes through anyway if it is glass
+        through = (1.0 - packed) + packed * _TRANSMIT_ARR[self.mat[idx]]
+        tau = float(-np.log(np.maximum(through, 1e-9)).sum())
+        tau += float((SMOKE_EXT * (self.smoke[idx] / self.vox_l) * vox_m).sum())
+        return tau < SEE_TAU
 
     @staticmethod
     def _in_cone(facing, eye, target):
@@ -1765,15 +1856,27 @@ class World:
         return cosang >= np.cos(np.radians(WILL["fov_deg"] / 2.0))
 
     def _hears(self, a, b):
-        """A shout is heard when its carry outlasts the trip: range spends
-        itself on distance through air and much faster through anything
-        solid — a wall muffles, it rarely silences. Ears have no cone."""
+        """Hearing in DECIBELS, by the acoustic MASS LAW.
+
+        A shout leaves the mouth at ~90 dB. Distance spends it by spherical
+        spreading (6 dB per doubling). A barrier spends it by its MASS PER AREA
+        — that is the whole of it, which is why a lead sheet beats a thick
+        curtain and why builders quote kg/m2. It is read off `smass`, so it is
+        derived, not declared: 5 cm of masonry is ~135 kg/m2 and eats ~50 dB,
+        the same thickness of pine is ~30 kg/m2 and eats ~37 dB, and a door
+        hung with a gap eats less again because less mass is in the way.
+
+        This replaces a flat "every solid voxel costs 4 m", which charged stone
+        and pine and a leaf curtain exactly the same. The mass is summed over
+        the whole path and the law applied ONCE — a wall's loss comes from its
+        total mass, not per slice, or six voxels of stone would silence a
+        thunderclap. Ears have no cone."""
         a = np.asarray(a, np.float32)
         b = np.asarray(b, np.float32)
         vox_m = 0.1 * self.scale
-        dist_m = float(np.linalg.norm(b - a)) * vox_m
+        dist_m = max(float(np.linalg.norm(b - a)) * vox_m, 1.0)
+        level = SHOUT_DB - 20.0 * np.log10(dist_m)           # spreading
         n = int(np.ceil(np.abs(b - a).max())) + 1
-        solid_m = 0.0
         if n > 2:
             ts = np.linspace(0.0, 1.0, n)[1:-1]
             pts = np.round(a[None] + ts[:, None] * (b - a)[None]).astype(np.int64)
@@ -1781,10 +1884,11 @@ class World:
             pts[:, 0] = np.clip(pts[:, 0], 0, nx - 1)
             pts[:, 1] = np.clip(pts[:, 1], 0, ny - 1)
             pts[:, 2] = np.clip(pts[:, 2], 0, nz - 1)
-            m = self.mat[tuple(pts.T)]
-            solid_m = float(((m != AIR) & (m != FLESH)).sum()) * vox_m
-        n_solid = solid_m / max(vox_m, 1e-9)
-        return dist_m + n_solid * WILL["wall_cost_m"] <= WILL["shout_hear_m"]
+            kg = float(self.smass[tuple(pts.T)].sum()) / 1000.0
+            sigma = kg / max(vox_m * vox_m, 1e-9)            # kg per square meter
+            if sigma > 0.0:                                  # mass law at 500 Hz
+                level -= max(0.0, 20.0 * np.log10(sigma * 500.0) - 47.0)
+        return bool(level >= HEAR_DB)
 
     def _say(self, p, response):
         text = p.get("lines", LINES).get(response, LINES.get(response))
@@ -2001,11 +2105,21 @@ class World:
                 p["_path"] = None                    # blocked mid-route: replan
 
     def _plan_path(self, cells, ex):
-        """Breadth-first route over columns the body can STAND in (air from
-        its feet to its crown), from where it is to the exit. Deterministic,
-        4-connected, replanned when the world changes underfoot."""
+        """Breadth-first route over columns the body can GET THROUGH, from where
+        it is to the exit. Deterministic, 4-connected, replanned when the world
+        changes underfoot.
+
+        A column is passable by how much is actually IN it, not by whether it is
+        pure air: a body shoves through a hedge or a curtain and does not shove
+        through a wall. Same continuous read as sight and sound — before this, a
+        single leaf voxel was as impassable as masonry. PUSH_THROUGH is a
+        stand-in for a force the body has not got yet; the force law replaces
+        it with strength against what holds the material."""
         zlo, zhi = int(cells[:, 2].min()), int(cells[:, 2].max())
-        walk_ok = (self.mat[:, :, zlo:zhi + 1] == AIR).all(axis=2)
+        col = (slice(None), slice(None), slice(zlo, zhi + 1))
+        packed = self.smass[col] / np.maximum(
+            _DENS_ARR[self.mat[col]] * self.vox_l, 1e-9)
+        walk_ok = (packed < PUSH_THROUGH).all(axis=2)
         for c in cells:
             walk_ok[int(c[0]), int(c[1])] = True         # own columns count
         start = (int(round(float(cells[:, 0].mean()))),
@@ -2034,8 +2148,18 @@ class World:
         return path[::-1][1:]
 
     def _walk(self, cells, sx, sy):
-        """Translate a body one voxel sideways, if every arriving cell is open
-        air (a puddle or a wall stops the step — walk around, next tick)."""
+        """Translate a body one voxel sideways, SHOVING ASIDE what is light
+        enough to shove.
+
+        A step needs its arriving cells to be sparse enough to push through
+        (the same fill read the route planner uses — legs and plans must agree,
+        or the planner routes through a hedge the legs then refuse). Anything
+        packed, and any real puddle, still stops the step.
+
+        What gets shoved has to GO somewhere: the branches the body enters are
+        moved into the cells the body leaves, so the hedge closes behind you and
+        no leaf is quietly deleted. A rigid step vacates exactly as many cells as
+        it enters, so the exchange always balances."""
         tgt = cells.copy()
         tgt[:, 0] += sx
         tgt[:, 1] += sy
@@ -2044,22 +2168,22 @@ class World:
                 or (tgt[:, 1] < 0).any() or (tgt[:, 1] >= ny).any():
             return False
         own = set(map(tuple, cells))
-        for c in tgt:
-            t = (int(c[0]), int(c[1]), int(c[2]))
-            if t not in own and (self.mat[t] != AIR or self.fvol[t] > 1.0):
+        new = set(map(tuple, tgt))
+        entered = [c for c in map(tuple, tgt) if c not in own]
+        for t in entered:
+            packed = self.smass[t] / max(_DENS_ARR[self.mat[t]] * self.vox_l, 1e-9)
+            if packed >= PUSH_THROUGH or self.fvol[t] > 1.0:
                 return False
+        vacated = [c for c in map(tuple, cells) if c not in new]
+        fields = (self.mat, self.smass, self.E, self.fl, self.fvol, self.fpot)
         idx, tdx = tuple(cells.T), tuple(tgt.T)
-        hold = [self.mat[idx].copy(), self.smass[idx].copy(), self.E[idx].copy(),
-                self.fl[idx].copy(), self.fvol[idx].copy(), self.fpot[idx].copy()]
-        self.mat[idx] = AIR
-        self.smass[idx] = 0.0
-        self.E[idx] = 0.0
-        self.fl[idx] = NOFLUID
-        self.fvol[idx] = 0.0
-        self.fpot[idx] = 0.0
-        for arr, h in zip((self.mat, self.smass, self.E,
-                           self.fl, self.fvol, self.fpot), hold):
+        body = [arr[idx].copy() for arr in fields]
+        shoved = [[arr[c] for c in entered] for arr in fields]
+        for arr, h in zip(fields, body):                  # the body arrives
             arr[tdx] = h
+        for arr, keep in zip(fields, shoved):             # the hedge closes behind
+            for c, val in zip(vacated, keep):
+                arr[c] = val
         self._torque_solid = None
         return True
 
