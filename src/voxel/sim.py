@@ -106,6 +106,11 @@ MISCIBLE = {frozenset({WATER, ACID}): ACID,
 # does about it WITHOUT any thinking. This is the scaffolding a language model
 # later plugs into (it will pick from menus this layer generates); the reflexes
 # themselves never wait on one.
+# How the eyes sweep around the way the body is pointed, in radians — a whole
+# turn in eighths. A head turns, and it turns ALL the way: a sweep of a
+# quarter-circle either side leaves a body unable to notice anything behind it
+# ever, and a person who walks east and stops does eventually look west.
+GAZE_SWEEP = tuple(i * np.pi / 4 for i in range(8))
 WILL = {"see_m": 12.0,           # how far the eyes take in the LAYOUT of a
                                  # place (not the same as noticing a flame:
                                  # you can see a room is a room much further
@@ -114,10 +119,15 @@ WILL = {"see_m": 12.0,           # how far the eyes take in the LAYOUT of a
         "run_see_m": 2.5,        # someone bolting past this close is a warning
         "fov_deg": 120.0,        # eyes look WHERE THE FACE POINTS — a cone,
                                  # not a sphere; idle heads scan around
-        "scan_every": 25,        # ticks per eighth-turn of an idle gaze
+        "scan_every": 25,        # ticks per step of the gaze sweep
         "shout_hear_m": 14.0,    # a shout carries this far through open air
         "wall_cost_m": 4.0,      # each solid voxel in the way eats this much
         "walk_every": 3,         # ticks per walking step
+        "step_m": 2.0,           # how far "straight on" and "to the left" mean.
+                                 # A body that knows nowhere by name can still
+                                 # say which WAY it wants to go, and that is a
+                                 # real intention, not a step: the legs still
+                                 # do the walking
         "arrive_m": 0.12,        # close enough to a goal to have got there.
                                  # Was 0.5 m — which is TEN voxels at 5 cm, so
                                  # a body "arrived" the moment it chose
@@ -127,43 +137,65 @@ WILL = {"see_m": 12.0,           # how far the eyes take in the LAYOUT of a
         "decide_every": 30}      # ticks before a body that stood pat will
                                  # weigh its options again — nobody
                                  # re-deliberates every fortieth of a second
-# REFLEXES — percept -> response, as rows. This is the part the user of a
-# character sheet edits (a brave character's "sees_fire" row could say
-# fight_fire once that response exists). A person dict may carry its own
-# "reflexes" override. The table is no longer consulted directly by the law:
-# it is one POLICY among several, reading the same menu everything else reads.
-REFLEXES = {"sees_fire": "flee_shouting",
-            "hears_alarm": "flee_answering",
-            "sees_runner": "flee",
-            "chokes": "flee"}
-LINES = {"flee_shouting": "Fire! Fire! Get out!",
-         "flee_answering": "I hear you! I'm coming!"}
-# RESPONSES — every response the body knows how to CARRY OUT, and what must
-# be TRUE of the world for it to be offered. `needs_exit` means the option is
-# a lie unless a route to a door actually exists (checked, not assumed).
-# `needs_percept` is the same kind of fact about the act itself, not a taste
-# rule: ANSWERING presupposes something to answer, so a body that heard
-# nothing is not offered the words "I hear you".
-RESPONSES = {"flee":           {"goal": "exit", "say": None},
-             "flee_shouting":  {"goal": "exit", "say": "flee_shouting"},
-             "flee_answering": {"goal": "exit", "say": "flee_answering",
-                                "needs_percept": "hears_alarm"},
-             # what a body does when NOTHING is happening to it. Wandering and
-             # looking are not filler: they are how a mind that only knows what
-             # it has seen comes to know the building it is standing in, which
-             # is what makes running for a door it has found honest later.
-             # HANDS, used. Not a rescue subsystem: "drag" is a goal like any
-             # other, legal only when the force arithmetic says this body can
-             # actually shift that body, and carried out by the same _shove any
-             # other pushed thing would use.
-             "drag_them_out":  {"goal": "downed", "say": None},
-             "explore":        {"goal": "frontier", "say": None, "idle": True},
-             "wander":         {"goal": "roam", "say": None, "idle": True},
-             "stay":           {"goal": None, "say": None}}
-# MENU_CAP — how many options a body may weigh at once. This is NOT a budget
-# for whatever is picking: it is a model of attention. A person in a burning
-# room weighs the fire, the door, the child and maybe a bucket — not the
-# forty things a full legality sweep would list. Modelling the limit is more
+# LIMBS — a body does several things at once because it HAS several parts.
+# Legs go somewhere, hands hold something, a mouth speaks. This one fact is
+# what makes "run for the door while shouting" expressible without anybody
+# ever writing down a response called flee_shouting.
+#
+# There used to be such a response, next to flee and flee_answering, and the
+# three of them were one intention (leave) crossed with three uses of a mouth.
+# That is a cross-product wearing a table's clothes — Ruling 2 — and it grows
+# multiplicatively: add "carrying a lamp" and every row splits again. The
+# primitives do not multiply. Two acts may run together when they want
+# different parts of the body, which is not a rule anyone writes per pair; it
+# falls out of a body having parts.
+LIMBS = ("legs", "hands", "mouth")
+# Names for the eight ways a person can point. Labels for humans and for
+# whatever is reading the menu; nothing in the sim reads them back.
+_DIRS = ("east", "north-east", "north", "north-west",
+         "west", "south-west", "south", "south-east")
+# ACTS — everything a body knows how to do, and which part does it. `null` is
+# the act of not using that part, which is always available and never a
+# failure: hands doing nothing keep whatever they were holding.
+ACTS = {"go":     {"limb": "legs",  "null": False},
+        "jump":   {"limb": "legs",  "null": False},
+        "stay":   {"limb": "legs",  "null": True},
+        "hold":   {"limb": "hands", "null": False},
+        "let_go": {"limb": "hands", "null": False},
+        "keep":   {"limb": "hands", "null": True},
+        "swing":  {"limb": "hands", "null": False},
+        "say":    {"limb": "mouth", "null": False},
+        "quiet":  {"limb": "mouth", "null": True}}
+# REFLEXES — percept -> what each part of the body does about it. This is the
+# part a character sheet edits, and it is now a sheet of a better shape: a
+# brave character's "sees_fire" row can send the legs at the fire while the
+# mouth still calls the warning, which the old one-response-per-percept table
+# could not say at all. A person dict may carry its own "reflexes" override.
+# The table is not consulted by the law: it is one POLICY among several,
+# reading the same menus everything else reads.
+REFLEXES = {"sees_fire":   {"legs": "go:exit", "mouth": "say:fire"},
+            "hears_alarm": {"legs": "go:exit", "mouth": "say:coming"},
+            "sees_runner": {"legs": "go:exit"},
+            "chokes":      {"legs": "go:exit"}}
+# LINES — the words a body has. A character sheet REPLACES this wholesale, so
+# a character who only ever calls a warning has no answer to give.
+LINES = {"fire":   "Fire! Fire! Get out!",
+         "coming": "I hear you! I'm coming!"}
+# Which lines are REPLIES, and to what. "I'm coming" presupposes something to
+# come to, so a body that heard nothing is never offered those words. This is
+# a fact about what the sentence DOES rather than about its wording, which is
+# why it is kept apart from the wording: rewriting the line on a character
+# sheet must not be able to lose it.
+ANSWERS = {"coming": "hears_alarm"}
+# What a body does with its legs when nothing is happening to it. Looking at
+# what you have not seen is not filler: it is how a mind that only knows what
+# it has looked at comes to know the building it is standing in, which is what
+# makes running for a door it found honest later.
+IDLE = {"legs": ("go:frontier", "go:roam", "go:step", "stay")}
+# MENU_CAP — how many options a body may weigh at once, PER PART OF THE BODY.
+# This is NOT a budget for whatever is picking: it is a model of attention. A
+# person in a burning room weighs the door, the window and the child — not the
+# forty places a full legality sweep would list. Modelling the limit is more
 # true than pretending it is absent (Ruling 1: model the cause).
 MENU_CAP = 7
 
@@ -172,32 +204,38 @@ class TablePolicy:
     """The reflex table, wearing the policy interface.
 
     A POLICY answers one question: given what the body knows and the list of
-    things it could legally do, which one? That is the whole contract —
+    things one part of it could legally do, which one? That is the whole
+    contract —
 
         pick(situation: dict, menu: list[dict]) -> int   # index into menu
 
-    and it is the only seam a language model needs. This implementation reads
-    REFLEXES, so a world using it behaves exactly as it did before menus
-    existed; a Haiku-backed policy, and later a distilled local one, drop into
-    the same slot. Costs nothing and waits on nothing, which is what keeps
-    reactive play at zero model calls per body."""
+    called once per limb, with `situation["limb"]` saying which and
+    `situation["chosen"]` carrying what the other parts have already committed
+    to this tick — so a mouth may answer for legs that are already leaving
+    without anybody enumerating the pair. It is the only seam a language model
+    needs. This implementation reads REFLEXES; a Haiku-backed policy, and
+    later a distilled local one, drop into the same slot. Costs nothing and
+    waits on nothing, which is what keeps reactive play at zero model calls."""
 
     name = "table"
 
     def pick(self, situation, menu):
-        if situation["percept"] is None:      # nothing happening: get on with
-            for key in ("explore", "wander", "stay"):   # something. Looking at
-                for i, opt in enumerate(menu):          # what you have not seen
-                    if opt["key"] == key:               # beats standing still
-                        return i
-            return 0
-        want = situation["reflexes"].get(situation["percept"])
-        for i, opt in enumerate(menu):
-            if opt["key"] == want:
-                return i
+        limb = situation["limb"]
+        want = []
+        if situation["percept"] is not None:
+            row = situation["reflexes"].get(situation["percept"]) or {}
+            if row.get(limb):
+                want = [row[limb]]
+        else:
+            want = list(IDLE.get(limb, ()))
+        for tag in want:
+            for i, opt in enumerate(menu):
+                if opt["tag"] == tag:
+                    return i
         return 0                     # the table named something unavailable
                                      # (no route to a door, say) — take the
-                                     # first legal option instead of lying
+                                     # null act instead of lying, which every
+                                     # menu carries at index 0
 BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this rate
         "smoke_in": 0.02,        # inhaled smoke g -> choking load, per tick.
                                  # Deliberately CO-heavy: real smoke carries
@@ -222,13 +260,58 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         # strength gives two different limits and nobody has to write them down
         # separately. ~400 N is what an unremarkable adult manages: about 40 kg
         # off the floor, and roughly 100 kg shoved along it.
-        "strength_N": 400.0}
+        "strength_N": 400.0,
+        # LEGS ARE NOT ARMS. Reusing the arm number for a jump gets a push
+        # barely above the body's own weight, which is not a jump; a leg press
+        # is several times what the same person can lift. This is the force the
+        # legs put into the GROUND, and how far the body has to push over
+        # (a crouch), which together are all a jump is: work done against
+        # weight, turned into speed, turned into height. Nobody types a height.
+        "legs_N": 1400.0, "crouch_m": 0.25,
+        # A SHOULDER, in newton-metres. This is the only number a swing needs:
+        # the segment's own inertia decides how fast it comes round, so a heavy
+        # arm is slower than a light one and an arm holding something is slower
+        # still, without anybody writing down a duration. ~60 N.m is an
+        # unremarkable adult shoulder.
+        "arm_Nm": 60.0,
+        # AND A MUSCLE CANNOT PULL AT ANY SPEED. Hill's force-velocity
+        # relation: the faster a muscle is already shortening the less force
+        # it makes, so torque fades to nothing at a top speed. Without it an
+        # arm accelerates for as long as the swing lasts, and a LIGHT arm —
+        # ours is light, see scenes._person — reaches speeds no shoulder can.
+        # That is what let a BARE FIST splinter a fence post. It is a cause
+        # rather than a speed limit typed in: the same relation is why an arm
+        # carrying something heavy swings slow.
+        "arm_wmax": 15.0,        # rad/s, a shoulder unloaded
+        "reach_m": 0.30}         # how far an arm goes. A grip is not
+                                 # telekinesis: what is held has to stay within
+                                 # reach or it is not held any more
 FRICTION = 0.40                  # sliding, solid on solid. One number until a
                                  # scenario needs ice or grease; a per-pair
                                  # table is the honest end state, and this is
                                  # the value that makes the two limits above
                                  # come out where a person's really do
 GRAVITY = 9.81
+TICK_S = 0.025           # SECONDS IN A TICK. It was never written down, and two
+                         # parts of the sim quietly assumed different answers —
+                         # the will layer says "nobody re-deliberates every
+                         # fortieth of a second" while the fall law dropped
+                         # everything exactly one voxel a tick, which at 5 cm is
+                         # a flat 2 m/s for a feather and an anvil alike. A
+                         # clock is not a tuning knob; it is the thing that lets
+                         # an acceleration mean anything.
+AIR_DENS = 1.2           # kg/m^3 at room temperature. The air was always there
+                         # as a chemistry (O2, smoke, pressure) and never as a
+                         # MASS that something falling has to shove out of the
+                         # way.
+DRAG_CD = 1.1            # a blunt slab, near enough. Everything a parachute
+                         # does is this number meeting a big area and a small
+                         # mass; there is no canopy special case to write.
+FALL_SUBSTEPS = 4        # most voxels a column may drop in one tick. Matter
+                         # cannot move more than a cell per support sweep — the
+                         # thing it might land on has to be re-asked each time —
+                         # so a fast fall runs the sweep again within the tick.
+                         # Four caps it at 8 m/s, which is a two-storey drop.
 _REACTIVE = {f for (f, _m) in REACTIONS}
 PLUME_REACH_M = 2.4              # meters of entrainment catchment: the air a
                                  # fire's plume can actually pull in — health
@@ -353,6 +436,10 @@ class World:
                                                         # pinned at a temperature —
                                                         # heat without fire, for
                                                         # testing what heat does
+        self.vfall = np.zeros(self.shape[:2], np.float32)  # m/s DOWNWARD, per column
+        self.fdrop = np.zeros(self.shape[:2], np.float32)  # voxels owed but not yet
+                                                        # taken — a thing slower than
+                                                        # one voxel a tick still falls
         self.fallh = np.zeros(self.shape, np.float32)   # voxels of ACCUMULATED free
                                                         # fall — cashed in as impact
                                                         # energy on landing
@@ -653,10 +740,29 @@ class World:
         infinite girder — one table leg carried 89% of the tabletop). SPAN is physical
         length: measured in 10 cm reference voxels, converted by the world's scale.
         Falling voxels carry their heat and clinging fluid, landing on solids or pools."""
+        steps, moved_tot, airborne = None, None, None
+        for _ in range(FALL_SUBSTEPS):
+            r = self._support_once(steps)
+            if r is None:
+                break
+            steps, moved, airborne = r
+            moved_tot = moved if moved_tot is None else (moved_tot | moved)
+            if not steps.any():
+                break
+        return self._cash_impacts(moved_tot, airborne)
+
+    def _support_once(self, steps):
+        """One sweep of the support law. Returns the columns' remaining fall
+        budget, what moved, and what is STILL IN THE AIR — or None when
+        nothing is falling any more.
+
+        A column with several voxels of fall owed this tick comes back through
+        here for each of them: matter may not skip over what it might have
+        landed on, so the support question is asked again between every cell."""
         solid = self.mat != AIR
         hang = solid[:, :, 1:] & ~solid[:, :, :-1]           # any solid with air below?
         if not hang.any():
-            return self._cash_impacts(None)      # last tick's landings still pay
+            return None                          # last tick's landings still pay
         # The slack field is a relaxation run to fixpoint over the WHOLE grid, and
         # it was 45% of all sim time. But it is a pure function of the material
         # layout: if not one voxel changed material since last tick, last tick's
@@ -671,8 +777,41 @@ class World:
             self._slack_mat, self._slack = self.mat.copy(), slack
         falling = solid & (slack < 0)
         if not falling.any():
-            return self._cash_impacts(None)
-        return self._settle(solid, falling)
+            return None
+        if steps is None:                        # once a tick: how fast is each
+            steps = self._fall_speed(falling)    # column actually going?
+        go = falling & (steps > 0)[:, :, None]
+        if not go.any():
+            return np.zeros_like(steps), np.zeros(self.shape, bool), falling
+        moved = self._settle(solid, go)
+        return np.maximum(steps - 1, 0), moved, falling
+
+    def _fall_speed(self, falling):
+        """How fast each falling column is going, in whole voxels this tick.
+
+        THE AIR PUSHES BACK. A falling column shoves air out of its way, and
+        what that costs is drag — half rho C_d A v-squared — against a weight
+        of m g. The two balance at a terminal speed, and because the AREA is
+        one voxel face however deep the column is, the same matter spread thin
+        falls slower than the same matter balled up. That is the whole of a
+        parachute, and there is nothing about parachutes in it: a canopy is a
+        large area with very little mass behind it, which is a SHAPE, and the
+        sim has always known the shape.
+
+        Before this everything unsupported dropped exactly one voxel a tick,
+        so a feather and an anvil fell alike and nothing ever accelerated."""
+        vox_m = 0.1 * self.scale
+        col = falling.any(axis=2)
+        kg = (self.smass * falling).sum(axis=2) / 1000.0
+        area = vox_m * vox_m
+        drag = (0.5 * AIR_DENS * DRAG_CD * area
+                * self.vfall * self.vfall / np.maximum(kg, 1e-9))
+        self.vfall = np.where(
+            col, np.maximum(self.vfall + (GRAVITY - drag) * TICK_S, 0.0), 0.0)
+        self.fdrop = np.where(col, self.fdrop + self.vfall * TICK_S / vox_m, 0.0)
+        steps = np.minimum(np.floor(self.fdrop), FALL_SUBSTEPS).astype(np.int32)
+        self.fdrop -= steps
+        return steps
 
     def _relax_slack(self, solid):
         """Support reach, spread from the ground until it stops changing."""
@@ -750,9 +889,11 @@ class World:
         for x, y, zl in np.argwhere(landed):
             if arrived[x, y] and zl + 1 < self.shape[2]:
                 self._splash(int(x), int(y), int(zl), int(zl) + 1)
-        self._cash_impacts(moved)
+        return moved            # the caller cashes impacts once, after the last
+                                # sweep of the tick — a thing part-way through a
+                                # multi-voxel fall has not landed on anything
 
-    def _cash_impacts(self, moved):
+    def _cash_impacts(self, moved, airborne=None):
         """IMPACT: a voxel that fell and now CANNOT move has landed — its
         stored drop is cashed in as m·g·h against the material's toughness.
         Brittle stuff (glass, char) shatters; wood just thuds; a fall cushioned
@@ -761,6 +902,15 @@ class World:
         rest = (self.mat != AIR) & (self.fallh > 0.5)
         if moved is not None:
             rest &= ~moved
+        # STILL FALLING IS NOT LANDED. "Did not move this tick" used to be a
+        # safe reading of "has come to rest", because everything unsupported
+        # moved a voxel every single tick. Now that a thing can be going slower
+        # than a voxel a tick, a light body in open air stops for a tick
+        # between steps — and cashing its drop then shattered it in MID-AIR:
+        # measured, a glass block bursting at z=8 on the way down to a pond it
+        # never reached. What matters is whether the floor is under it.
+        if airborne is not None:
+            rest &= ~airborne
         if not rest.any():
             return
         vox_m = 0.1 * self.scale
@@ -907,7 +1057,7 @@ class World:
             if self.mat[x, y, z] != AIR:
                 self._shatter(x, y, z)
 
-    def _topple(self, cells, axis, s, pivot, zb):
+    def _topple(self, cells, axis, s, pivot, zb, owner=None):
         """PROMOTE a tipping cluster to a free rigid body (the sandbox lineage's
         promote/demote protocol): its voxels leave the grid and the body leans
         about the pivot line with real pendulum acceleration — slow at first,
@@ -938,7 +1088,14 @@ class World:
             "axis": axis, "s": s, "pivot": float(pivot), "zb": float(zb),
             "theta": 0.0, "omega": 0.0,
             "phi0": max(float(np.arctan2(max(dxc, 0.1), max(dzc, 0.5))), 0.02),
-            "L": max(float(np.hypot(dxc, dzc)), 2.0)}
+            "L": max(float(np.hypot(dxc, dzc)), 2.0),
+            # WHOSE BODY THIS IS, if it is anybody's. The sim is the thing that
+            # picked this flesh up and it is the thing that puts it down, so it
+            # KNOWS where the person went: making identity re-derive that from
+            # adjacency afterwards is throwing away an answer we already hold,
+            # and re-deriving it is what handed a fainting person their
+            # rescuer's body.
+            "owner": owner}
         # WEDGED check: if the body cannot even BEGIN to lean (its first sliver
         # of rotation already collides), it is stuck against something — put it
         # back and leave it until the world changes around it. Without this, a
@@ -959,6 +1116,139 @@ class World:
         self.bodies.append(body)
         self._torque_solid = None
 
+    def _launch(self, cells, vel, owner=None):
+        """PROMOTE a cluster to a body in free FLIGHT — the same promote/demote
+        protocol as a topple, but travelling rather than turning.
+
+        This is what having a velocity buys. A topple could only ever swing
+        about a pivot it was already touching, so nothing in the sim could
+        leave the ground: not a jump, not a thrown stone, not a swung axe. A
+        flying body carries m/s, is pulled on by gravity, is pushed back on by
+        the air it has to shove aside, and pays what it has left as energy
+        when it arrives."""
+        cells = np.asarray(cells, np.int64)
+        idx = tuple(cells.T)
+        body = {"cells": cells.astype(np.float32),
+                "mats": self.mat[idx].copy(), "masses": self.smass[idx].copy(),
+                "Es": self.E[idx].copy(), "fls": self.fl[idx].copy(),
+                "fvols": self.fvol[idx].copy(), "fpots": self.fpot[idx].copy(),
+                "fly": True, "vel": np.asarray(vel, np.float64).copy(),
+                "off": np.zeros(3), "owner": owner,
+                "axis": 0, "s": 1, "pivot": 0.0, "zb": 0.0,
+                "theta": 0.0, "omega": 0.0, "phi0": 0.02, "L": 2.0}
+        for arr, zero in ((self.mat, AIR), (self.smass, 0.0), (self.E, 0.0),
+                          (self.fl, NOFLUID), (self.fvol, 0.0),
+                          (self.fpot, 0.0), (self.fallh, 0.0)):
+            arr[idx] = zero
+        self.bodies.append(body)
+        self._torque_solid = None
+        self._slack_mat = None
+        return body
+
+    def _limb_cells(self, p, name, own=None):
+        """Where one named part of this body actually is, right now.
+
+        Segments are kept as offsets from the body's own corner, so they ride
+        along when it walks, is shoved, or is carried out. A limb that has been
+        swung and come to rest somewhere new updates its own offsets on landing.
+        Returns None when there is no such limb, or nothing left of it."""
+        segs = p.get("segs")
+        if not segs or name not in segs:
+            return None
+        if own is None:
+            comp, sl = self._person_cells(p)
+            if comp is None or not comp.any():
+                return None
+            own = np.argwhere(comp)
+            own[:, 0] += sl[0].start or 0
+            own[:, 1] += sl[1].start or 0
+        limb = (segs[name] + np.asarray(own).min(axis=0)).astype(np.int64)
+        nx, ny, nz = self.shape
+        ok = ((limb[:, 0] >= 0) & (limb[:, 0] < nx) & (limb[:, 1] >= 0)
+              & (limb[:, 1] < ny) & (limb[:, 2] >= 0) & (limb[:, 2] < nz))
+        limb = limb[ok]
+        if not len(limb):
+            return None
+        limb = limb[self.mat[tuple(limb.T)] == FLESH]
+        return limb if len(limb) else None
+
+    def _swing(self, p, name, toward=None):
+        """Put a LIMB in motion about its joint, driven by a muscle.
+
+        This is the same rotation a toppling tree does — `_body_pose` has always
+        turned a set of cells about an arbitrary pivot — with two things
+        changed: the pivot is INSIDE the body, and the acceleration comes from a
+        muscle instead of from gravity. That is the whole of what a shoulder is.
+
+        It is not animation, and the distinction is sharp in a sim where
+        everything reads the lattice. The arm's voxels leave their cells and
+        arrive in new ones, so while it is coming round the arm really is
+        somewhere else: it blocks what it now occupies, its mass sits where it
+        now sits, and whatever stops it is paid the rotational energy it had.
+        A pose that only changed the picture would need a picture to change,
+        and there isn't one — the renderer reads `mat` like everything else."""
+        segs, joints = p.get("segs"), p.get("joints")
+        if not segs or name not in segs:
+            return None
+        # WHICH WAY. The arm hangs from the shoulder, so turning it about the
+        # sideways axis sweeps it forward; the sign is which forward.
+        dx, dy = toward if toward else p.get("facing", (1.0, 0.0))
+        axis = 0 if abs(dx) >= abs(dy) else 1
+        s = -1 if (dx if axis == 0 else dy) >= 0 else 1
+        comp, sl = self._person_cells(p)
+        if comp is None or not comp.any():
+            return None
+        own = np.argwhere(comp)
+        own[:, 0] += sl[0].start or 0
+        own[:, 1] += sl[1].start or 0
+        limb = self._limb_cells(p, name, own)
+        if limb is None:
+            return None                       # the limb is not there any more
+        jx, jy, jz = (joints[name] + own.min(axis=0)).astype(np.int64)
+        vox_m = 0.1 * self.scale
+        kg = self.smass[tuple(limb.T)] / 1000.0
+        r = (np.abs(limb[:, axis] - float(jx if axis == 0 else jy))
+             + np.abs(limb[:, 2] - float(jz))) * vox_m
+        inertia = float((kg * r * r).sum())
+        if inertia <= 0.0:
+            return None
+        b = self._launch(limb, (0.0, 0.0, 0.0), owner=p["name"])
+        b["fly"] = False                      # it turns, it does not travel
+        b["part"] = True                      # and it is PART of somebody
+        b["axis"], b["s"] = axis, s
+        b["pivot"] = float(jx if axis == 0 else jy)
+        b["zb"] = float(jz)
+        b["theta"], b["omega"] = 0.0, 0.0
+        b["Nm"], b["I"] = BODY["arm_Nm"], inertia
+        b["seg"] = name
+        b["phi0"], b["L"] = 0.02, 2.0
+        return b
+
+    def _fly_pose(self, b, off=None):
+        """Where a flying body's cells are, at its current offset."""
+        off = b["off"] if off is None else off
+        return b["cells"] + off
+
+    def _drag_a(self, b):
+        """Deceleration from the air, in m/s^2, along the way it is going.
+
+        Frontal area is COUNTED, not declared: the cells that face the
+        direction of travel are the ones doing the shoving. A body spread
+        broadside to its own fall presents many of them and slows; the same
+        matter end-on presents few and does not. That is a parachute, and also
+        why a plank falls differently flat than edge-on."""
+        v = float(np.linalg.norm(b["vel"]))
+        if v < 1e-6:
+            return np.zeros(3)
+        vox_m = 0.1 * self.scale
+        ax = int(np.argmax(np.abs(b["vel"])))            # the way it is going
+        face = {tuple(int(c[i]) for i in range(3) if i != ax)
+                for c in b["cells"]}                     # its shadow, that way
+        area = len(face) * vox_m * vox_m
+        kg = max(float(b["masses"].sum()) / 1000.0, 1e-9)
+        mag = 0.5 * AIR_DENS * DRAG_CD * area * v * v / kg
+        return -mag * (b["vel"] / v)
+
     def _body_pose(self, b, theta):
         """Rotated float positions of a body's cells at lean angle theta."""
         c, ax, s = b["cells"], b["axis"], b["s"]
@@ -977,8 +1267,53 @@ class World:
         if not self.bodies:
             return
         nx, ny, nz = self.shape
+        vox_m = 0.1 * self.scale
         still = []
         for b in self.bodies:
+            if b.get("fly"):
+                b["vel"] += (np.array([0.0, 0.0, -GRAVITY])
+                             + self._drag_a(b)) * TICK_S
+                off = b["off"] + b["vel"] * TICK_S / vox_m
+                pose = np.round(self._fly_pose(b, off)).astype(np.int64)
+                inb = ((pose[:, 0] >= 0) & (pose[:, 0] < nx) & (pose[:, 1] >= 0)
+                       & (pose[:, 1] < ny) & (pose[:, 2] >= 0) & (pose[:, 2] < nz))
+                hit = int((~inb).sum()) + \
+                    int((self.mat[tuple(pose[inb].T)] != AIR).sum())
+                # ANY contact is an arrival, for a flier. A topple tolerates a
+                # few grazing cells because it is pivoting through its own
+                # neighbourhood; a body in flight that tolerates them lands
+                # driven INTO whatever it hit, and _land_body then shoves the
+                # buried cells upward as debris — which comes out through the
+                # top. Measured: a person landing from a jump arrived with 15
+                # of their 342 voxels rearranged, and what a person has at the
+                # top of them is their head. Stop at the last clear pose and
+                # let the support law set them down the rest of the way.
+                if hit > 0:
+                    self._land_body(b, None)     # arrived: pay what it carried
+                else:
+                    b["off"] = off
+                    still.append(b)
+                continue
+            if b.get("Nm"):
+                # DRIVEN by a muscle: angular acceleration is torque over the
+                # limb's own inertia, so a loaded arm comes round slower and
+                # nobody types how long a swing takes.
+                w_s = b["omega"] / TICK_S                # rad/tick -> rad/s
+                fade = max(0.0, 1.0 - w_s / max(BODY["arm_wmax"], 1e-9))
+                w_s += (b["Nm"] * fade / b["I"]) * TICK_S
+                b["omega"] = w_s * TICK_S
+                theta_next = min(b["theta"] + b["omega"], np.pi / 2)
+                pose = np.round(self._body_pose(b, theta_next)).astype(np.int64)
+                inb = ((pose[:, 0] >= 0) & (pose[:, 0] < nx) & (pose[:, 1] >= 0)
+                       & (pose[:, 1] < ny) & (pose[:, 2] >= 0) & (pose[:, 2] < nz))
+                blocked = pose[inb][self.mat[tuple(pose[inb].T)] != AIR]
+                if len(blocked) or int((~inb).sum()) or \
+                        theta_next >= np.pi / 2 - 1e-6:
+                    self._land_body(b, b["theta"], struck=blocked)
+                else:
+                    b["theta"] = theta_next
+                    still.append(b)
+                continue
             alpha = (1.0 / b["L"]) * max(float(np.sin(b["theta"] + b["phi0"])), 0.02)
             b["omega"] = min(b["omega"] + alpha, 0.35)   # and never faster than the
             if b["theta"] < 0.01:                        # wedge probe on the FIRST step
@@ -997,31 +1332,78 @@ class World:
                 still.append(b)
         self.bodies = still
 
-    def _land_body(self, b, theta):
+    def _land_body(self, b, theta, struck=None):
         """Demote: rasterize the body back onto the grid at its landing pose.
         Blocked cells pile upward as debris; the support law settles the rest.
         A landing at a barely-leant angle means the body is WEDGED — the torque
         law sleeps briefly so it retries occasionally, not every tick."""
-        if theta < 0.15:
-            self._torque_sleep = max(self._torque_sleep, 20)
-        pose = np.round(self._body_pose(b, theta)).astype(np.int64)
+        if theta is not None and theta < 0.15:   # a flying body has no lean to
+            self._torque_sleep = max(self._torque_sleep, 20)   # be wedged at
+        if b.get("part"):
+            # A LIMB IS HELD AT ITS JOINT. Rasterising it wherever the swing
+            # stopped leaves the far end nowhere near the body, and a lump of
+            # flesh that touches nothing is not an arm any more — measured, a
+            # person went from one piece to three and left 18 voxels of hand on
+            # the floor. Hanging IS the rest state of something pivoted at one
+            # end, so the arm comes back to it once the blow is spent. The
+            # swing is a transient; what it is attached to is not.
+            pose = np.round(b["cells"]).astype(np.int64)
+        else:
+            pose = np.round(self._fly_pose(b) if b.get("fly")
+                            else self._body_pose(b, theta)).astype(np.int64)
         nx, ny, nz = self.shape
+        put = []
         # IMPACT: the body's centre of mass FELL — that energy is paid out over
         # the cells that strike first, each judged by its own material's
         # toughness. A keeling vat of glass bursts on the shelf edge; a keeling
         # tree of wood just booms.
         vox_m = 0.1 * self.scale
         mtot = max(float(b["masses"].sum()), 1e-6)
-        dh = float(((b["masses"] * b["cells"][:, 2]).sum()
-                    - (b["masses"] * pose[:, 2].astype(np.float32)).sum()) / mtot) * vox_m
+        if b.get("Nm"):
+            # A SWING ARRIVES WITH ITS ROTATIONAL ENERGY, and it arrives on
+            # WHAT STOPPED IT — not on whatever happens to be underneath. A
+            # falling thing is judged by the floor it meets; a swung thing is
+            # judged by the thing it hit, which is the only difference between
+            # leaning on an axe and swinging one.
+            w_s = b["omega"] / max(TICK_S, 1e-9)          # rad/tick -> rad/s
+            joules = 0.5 * b["I"] * w_s * w_s
+        elif b.get("fly"):
+            # IT ARRIVES WITH WHAT IT IS CARRYING. A flying body's blow is its
+            # kinetic energy, not the height it happens to have lost — which is
+            # the whole difference between a stone dropped on a plank and the
+            # same stone thrown at it, and the difference between leaning on an
+            # axe and swinging one.
+            v = float(np.linalg.norm(b["vel"]))
+            joules = 0.5 * (mtot / 1000.0) * v * v
+        else:
+            dh = float(((b["masses"] * b["cells"][:, 2]).sum()
+                        - (b["masses"] * pose[:, 2].astype(np.float32)).sum()) / mtot) * vox_m
+            joules = max(dh, 0.0) * 9.81 * (mtot / 1000.0)
+        if struck is not None and len(struck):
+            # spend it on the struck cells, each against its own toughness.
+            # A small contact concentrates the same energy into a larger
+            # stress, which is the only sense in which anything here is sharp.
+            per = joules / len(struck)
+            for (sx, sy, sz) in struck:
+                thr = (_TOUGH_ARR[self.mat[sx, sy, sz]] * 1000.0 * vox_m ** 2
+                       * (0.7 + 0.6 * self._flaw01(int(sx), int(sy), int(sz))))
+                if per > thr:
+                    self._shatter(int(sx), int(sy), int(sz), per / max(thr, 1e-9))
+        if b.get("part"):
+            # the blow has already been spent on what stopped it. An arm does
+            # take the same impulse back — Newton's third — but paying the
+            # whole energy TWICE, once to the post and once to the hand, is not
+            # that law, it is double counting.
+            joules = 0.0
         contact = pose[:, 2] <= pose[:, 2].min() + 1
-        e_per = max(dh, 0.0) * 9.81 * (mtot / 1000.0) / max(int(contact.sum()), 1)
+        e_per = joules / max(int(contact.sum()), 1)
         for i in np.argsort(pose[:, 2]):
             dx = min(max(int(pose[i, 0]), 0), nx - 1)
             dy = min(max(int(pose[i, 1]), 0), ny - 1)
             dz = min(max(int(pose[i, 2]), 0), nz - 1)
             while dz < nz - 1 and self.mat[dx, dy, dz] != AIR:
                 dz += 1                                  # blocked: pile upward as debris
+            put.append((dx, dy, dz))
             self.mat[dx, dy, dz] = b["mats"][i]
             self.smass[dx, dy, dz] = b["masses"][i]
             self.E[dx, dy, dz] += b["Es"][i]
@@ -1035,6 +1417,21 @@ class World:
                 if e_per > thr_i:
                     self._shatter(dx, dy, dz, e_per / thr_i)
         self._torque_solid = None                        # lattice changed: recheck
+        if b.get("part") and b.get("seg") and b.get("owner") is not None:
+            for q in self.persons:            # the limb came to rest somewhere
+                if q["name"] == b["owner"] and q.get("segs") and q.get("_own"):
+                    origin = np.min(np.array(list(q["_own"])), axis=0)
+                    q["segs"][b["seg"]] = np.array(put) - origin
+                    break                     # say WHERE, or the next swing
+                                              # reaches for cells that have gone
+        if b.get("owner") is not None and not b.get("part"):   # hand the person
+            for q in self.persons:                       # their own body, exactly
+                if q["name"] == b["owner"]:              # where it came down
+                    q["_own"] = frozenset(put)
+                    q["_claim_tick"] = None
+                    q["anchor"] = (int(round(float(np.mean([c[0] for c in put])))),
+                                   int(round(float(np.mean([c[1] for c in put])))))
+                    break
 
     def bodies_array(self):
         """Every mid-flight body voxel as (x, y, z, mat) for the renderer."""
@@ -1042,7 +1439,8 @@ class World:
             return np.zeros((0, 4), np.float32)
         parts = []
         for b in self.bodies:
-            pose = self._body_pose(b, b["theta"])
+            pose = self._fly_pose(b) if b.get("fly") \
+                else self._body_pose(b, b["theta"])
             parts.append(np.column_stack([pose, b["mats"].astype(np.float32)]))
         return np.concatenate(parts).astype(np.float32)
 
@@ -1135,6 +1533,21 @@ class World:
             rs = rs[rs != li]
             return np.isin(L, rs) if len(rs) else None
 
+        def whose(cells):
+            """Which PEOPLE this cluster is made of.
+
+            Flesh touching flesh is one cluster to the labeller, so a cluster
+            can be nobody, one person, or two people in contact."""
+            if not self.persons or not len(cells):
+                return []
+            want = set(map(tuple, np.asarray(cells, np.int64).tolist()))
+            out = []
+            for q in self.persons:
+                self._person_cells(q)             # make sure the claim is today's
+                if (q.get("_own") or frozenset()) & want:
+                    out.append(q)
+            return out
+
         def outside(comx, comy, x0, x1, y0, y1):
             ox = comx - x1 if comx > x1 + 0.5 else (comx - x0 if comx < x0 - 0.5 else 0.0)
             oy = comy - y1 if comy > y1 + 0.5 else (comy - y0 if comy < y0 - 0.5 else 0.0)
@@ -1150,13 +1563,32 @@ class World:
                 rm = rider_mask(li)
                 body = (L == li) if rm is None else ((L == li) | rm)
                 cells = np.argwhere(body)
+                mine = whose(cells)
+                if any(q["alive"] and q["awake"] for q in mine):
+                    continue                     # A PERSON ON THEIR FEET HOLDS
+                                                 # THEMSELVES UP. This law asks
+                                                 # where a rigid lump's weight
+                                                 # hangs, which is the right
+                                                 # question for a wall and the
+                                                 # wrong one for someone stood
+                                                 # at a lip: it tipped them over
+                                                 # for leaning. Balance is what
+                                                 # the living do that the dead
+                                                 # do not, and the sim already
+                                                 # has the other half — a body
+                                                 # that goes slack is toppled by
+                                                 # _collapse, one whose footing
+                                                 # is gone falls by _law_footing
                 if 2 <= len(cells) <= 20000:
+                    ow = mine[0]["name"] if mine else None
                     if abs(ox) >= abs(oy):
                         self._topple(cells, 0, 1 if ox > 0 else -1,
-                                     int(fx1[li] if ox > 0 else fx0[li]), int(fz[li]))
+                                     int(fx1[li] if ox > 0 else fx0[li]),
+                                     int(fz[li]), owner=ow)
                     else:
                         self._topple(cells, 1, 1 if oy > 0 else -1,
-                                     int(fy1[li] if oy > 0 else fy0[li]), int(fz[li]))
+                                     int(fy1[li] if oy > 0 else fy0[li]),
+                                     int(fz[li]), owner=ow)
                     tipped += 1
                 continue
             # 2. WAIST check: sharp narrowings carry everything above them
@@ -1176,13 +1608,23 @@ class World:
                 rm = rider_mask(li)
                 body = (L == li) if rm is None else ((L == li) | rm)
                 cells = np.argwhere(body & (zs > lz))
+                mine = whose(cells)
+                if any(q["alive"] and q["awake"] for q in mine):
+                    break                        # nor does a standing body tear
+                                                 # in half at the waist: a person
+                                                 # narrows at the neck, the waist
+                                                 # and both knees, and every one
+                                                 # of those reads as a notch
                 if 2 <= len(cells) <= 20000:
+                    ow = mine[0]["name"] if mine else None
                     if abs(ox) >= abs(oy):
                         self._topple(cells, 0, 1 if ox > 0 else -1,
-                                     int(bx1[li, lz] if ox > 0 else bx0[li, lz]), lz + 1)
+                                     int(bx1[li, lz] if ox > 0 else bx0[li, lz]),
+                                     lz + 1, owner=ow)
                     else:
                         self._topple(cells, 1, 1 if oy > 0 else -1,
-                                     int(by1[li, lz] if oy > 0 else by0[li, lz]), lz + 1)
+                                     int(by1[li, lz] if oy > 0 else by0[li, lz]),
+                                     lz + 1, owner=ow)
                     tipped += 1
                 break                                    # one waist verdict per body
 
@@ -1822,49 +2264,146 @@ class World:
         return p.get("_claim_mask"), p.get("_claim_sl")
 
     def _claim_bodies(self):
-        """Resolve every body once a tick, each barred from flesh that BELONGED
-        to somebody else last tick.
+        """Resolve every body once a tick, all of them AT THE SAME TIME.
 
-        Order alone cannot do this: two people in contact are genuinely one
-        connected lump, so whoever floods first swallows both. Identity has to
-        persist through TIME instead of being re-derived from scratch — a body
-        is what it was a moment ago, moved. Bodies shift at most a voxel a tick,
-        so last tick's cells are a good seed and an exact barrier."""
+        Two people in contact are genuinely one connected lump, so whoever
+        floods first swallows both — order cannot fix that, and neither can
+        barring last tick's cells, because a body that has taken a step is
+        standing somewhere last tick's barrier does not cover. Claiming one
+        after another therefore lets whoever runs first eat into a neighbour's
+        NEW flesh: measured, 684 cells of two people split 497/187, and the
+        one left with half a body could no longer walk.
+
+        So identity persists through TIME and is settled FAIRLY. Each body is
+        seeded with the cells it owned a moment ago, and every seed grows one
+        voxel a round together. Contested flesh goes to whichever body was
+        nearer to it last tick, with ties broken by a fixed order so the sim
+        stays deterministic. No one claims before anyone else, so no one can
+        claim out of anyone else.
+
+        A seed can still go missing: a body that keels over is promoted to a
+        free body and its flesh LEAVES the lattice for a few ticks. Falling
+        back to "nearest flesh to the anchor" then hands it the body of whoever
+        is standing over it — measured: a fainting person resolved to 42 cells
+        of their would-be rescuer, and the rescuer spent a hundred ticks
+        dragging a piece of themselves across the room while the real body lay
+        where it fell. A body with nothing to grow from waits, and may adopt
+        only flesh the grow left over."""
         prev = {id(q): q.get("_own", frozenset()) for q in self.persons}
+        # AND NEITHER HAS SOMEONE IN MID-AIR. A body promoted whole to a free
+        # body has no flesh on the lattice AT ALL for those ticks, so the seed
+        # it falls back on is whatever unclaimed flesh is nearest — which is a
+        # bystander. Measured: while one man fell off a ledge the man who
+        # pushed him lost 21 voxels to him, then read as standing on a footprint
+        # that was no longer under his own weight, and toppled for it. A LIMB in
+        # flight is different: a body mid-swing is still standing there.
+        aloft = {b["owner"] for b in self.bodies
+                 if b.get("owner") and not b.get("part")}
+        live = []
         for q in self.persons:
             # someone who walked out, or died and was cleared, has no body to
             # find. Left in, their anchor-flood reaches for the nearest flesh it
             # can see and takes SOMEBODY ELSE'S — measured: a person already
             # outside claimed a colleague's body from 35 voxels away, and the
             # colleague, barred from their own flesh, stopped dead.
-            if q["safe"] or not q["alive"]:
+            if q["safe"] or not q["alive"] or q["name"] in aloft:
                 q["_claim_mask"], q["_claim_sl"] = None, None
                 q["_claim_tick"], q["_own"] = self.tick, frozenset()
-                continue
-            barrier = set()
-            for r in self.persons:
-                if r is not q:
-                    barrier |= prev[id(r)]
-            mask, sl = self._flood_person(q, barrier, seed_from=prev[id(q)])
-            q["_claim_mask"], q["_claim_sl"], q["_claim_tick"] = \
-                mask, sl, self.tick
-            if mask is not None and mask.any():
-                got = np.argwhere(mask)
-                got[:, 0] += sl[0].start
-                got[:, 1] += sl[1].start
-                q["_own"] = frozenset(map(tuple, got))
             else:
-                q["_own"] = frozenset()
+                live.append(q)
+        if not live:
+            return
+        flesh = self.mat == FLESH
+        FREE = np.int16(np.iinfo(np.int16).max)
+        label = np.where(flesh, FREE, np.int16(-1)).astype(np.int16)
+        for i, q in enumerate(live):
+            for c in prev[id(q)]:
+                if flesh[c]:
+                    label[c] = i                 # what it was, still flesh
+        # A BODY WITH NOTHING TO GROW FROM seeds on the nearest flesh nobody
+        # else already claims. Two people who START in contact are one lump
+        # with no history to divide it, and flooding them one at a time gives
+        # the whole lump to whoever went first and NOTHING to the second, who
+        # then has no body at all — measured, a rescuer who could not act
+        # because they did not exist. Seeding both and letting the grow settle
+        # it splits the lump by who was nearer, which is the same rule that
+        # settles every other contested voxel. It is also why a fainting body
+        # is not re-acquired out of its rescuer: with its own flesh off the
+        # lattice, every cell near it is already claimed, so it seeds nothing.
+        r = max(int(1.8 / max(0.1 * self.scale, 1e-9)), 8)
+        for i, q in enumerate(live):
+            if any(flesh[c] for c in prev[id(q)]):
+                continue
+            cand = np.argwhere(label == FREE)
+            if not len(cand):
+                break
+            x0, y0 = q["anchor"]
+            d = np.abs(cand[:, 0] - x0) + np.abs(cand[:, 1] - y0)
+            near = cand[int(d.argmin())]
+            if d.min() <= 2 * r:
+                label[tuple(near)] = i
+        while True:                              # every seed grows together
+            free = label == FREE
+            if not free.any():
+                break
+            best = np.full(self.shape, FREE, np.int16)
+            lab = np.where(label >= 0, label, FREE)   # air is not a low label:
+            for ax in range(3):                       # -1 leaking into the
+                for d in (1, -1):                     # minimum made every
+                    sh = np.full(self.shape, FREE, np.int16)   # SURFACE cell
+                    src = [slice(None)] * 3; dst = [slice(None)] * 3  # unclaim-
+                    src[ax] = slice(1, None) if d > 0 else slice(None, -1)
+                    dst[ax] = slice(None, -1) if d > 0 else slice(1, None)
+                    sh[tuple(dst)] = lab[tuple(src)]  # able, and bodies wasted
+                    np.minimum(best, sh, out=best)    # away to four voxels
+            take = free & (best < FREE)
+            if not take.any():
+                break                            # the rest touches nobody
+            label[take] = best[take]
+        for i, q in enumerate(live):
+            mine = label == i
+            if mine.any():                       # a whole-lattice mask, but the
+                nx, ny, _nz = self.shape         # slice still starts at 0 so
+                self._own_claim(q, mine,         # every caller's offset maths
+                                (slice(0, nx), slice(0, ny), slice(None)))
+            else:                                # off the lattice: no body to
+                q["_claim_mask"], q["_claim_sl"] = None, None    # be found, and
+                q["_claim_tick"], q["_own"] = self.tick, frozenset()  # none
+                                                 # borrowed from anybody else
 
-    def _flood_person(self, p, taken=(), seed_from=()):
+
+    def _own_claim(self, q, mask, sl):
+        """Record what this body turned out to be, and return its cells."""
+        got = np.argwhere(mask)
+        got[:, 0] += sl[0].start or 0            # a whole-lattice mask has no
+        got[:, 1] += sl[1].start or 0            # offset to add back
+        cells = frozenset(map(tuple, got))
+        q["_claim_mask"], q["_claim_sl"], q["_claim_tick"] = mask, sl, self.tick
+        q["_own"] = cells
+        return cells
+
+    def _flood_person(self, p, taken=(), seed_from=(), adopt=True, only=None):
         """The connected component nearest this anchor, stopping at flesh that
-        belongs to somebody else."""
+        belongs to somebody else.
+
+        `adopt` is permission to take flesh this body has no claim on — right
+        for a body being seen for the first time, wrong for one whose own flesh
+        has gone missing. `only` narrows the search to particular cells, which
+        is how a body that has just landed picks itself back up out of the
+        flesh the simultaneous grow left spare, and cannot reach for anyone."""
         x0, y0 = p["anchor"]
         nx, ny, nz = self.shape
         r = max(int(1.8 / (0.1 * self.scale)), 8)
         sl = (slice(max(x0 - r, 0), min(x0 + r, nx)),
               slice(max(y0 - r, 0), min(y0 + r, ny)), slice(None))
         flesh = self.mat[sl] == FLESH
+        if only is not None:
+            keep = np.zeros_like(flesh)
+            for (tx, ty, tz) in only:
+                lx, ly = tx - sl[0].start, ty - sl[1].start
+                if 0 <= lx < flesh.shape[0] and 0 <= ly < flesh.shape[1]:
+                    keep[lx, ly, tz] = True
+            flesh &= keep
         if taken:                                    # someone else's already
             for (tx, ty, tz) in taken:               # — not part of this body
                 lx, ly = tx - sl[0].start, ty - sl[1].start
@@ -1879,6 +2418,8 @@ class World:
                     and flesh[lx, ly, sz]:
                 comp[lx, ly, sz] = True
         if not comp.any():                        # first sight of this body
+            if not adopt:
+                return None, sl
             cand = np.argwhere(flesh)
             d = np.abs(cand[:, 0] - (x0 - sl[0].start)) \
                 + np.abs(cand[:, 1] - (y0 - sl[1].start))
@@ -1991,7 +2532,7 @@ class World:
         z = int(np.clip(round(eye[2]), 0, self.shape[2] - 1))
         nrays = max(48, int(2.0 * np.pi * R / 1.5))
         ang = np.linspace(0.0, 2.0 * np.pi, nrays, endpoint=False)
-        fx, fy = p.get("facing", (1.0, 0.0))
+        fx, fy = p.get("gaze", p.get("facing", (1.0, 0.0)))
         fn = float(np.hypot(fx, fy)) or 1.0
         inside = (np.cos(ang) * fx + np.sin(ang) * fy) / fn >= \
             np.cos(np.radians(WILL["fov_deg"] / 2.0))
@@ -2109,131 +2650,401 @@ class World:
             p["_shouted"] = self.tick
 
     def _walkable(self, cells):
-        """Columns this body could stand in, by how full they are."""
+        """Columns this body could STAND in: clear enough to occupy, and with
+        something under them to stand on.
+
+        The floor test is not a detail. Without it a column of open air reads
+        as walkable, so the route planner would happily march a body straight
+        out over a chasm and the legs would carry it — walking on nothing,
+        because nothing ever asked what was underneath. It also makes a gap a
+        real obstacle, which is what gives jumping across one a point."""
         zlo, zhi = int(cells[:, 2].min()), int(cells[:, 2].max())
         col = (slice(None), slice(None), slice(zlo, zhi + 1))
         packed = self.smass[col] / np.maximum(
             _DENS_ARR[self.mat[col]] * self.vox_l, 1e-9)
-        return (packed < PUSH_THROUGH).all(axis=2)
+        clear = (packed < PUSH_THROUGH).all(axis=2)
+        if zlo <= 0:
+            return clear
+        return clear & (self.mat[:, :, zlo - 1] != AIR)
 
-    def _goals(self, p, cells):
-        """Where each kind of intent would actually take this body.
+    def _bearing(self, dx, dy):
+        """Which way that is, in words. A label, so a menu row reads like
+        something a person would say to themselves."""
+        if abs(dx) < 1e-9 and abs(dy) < 1e-9:
+            return "here"
+        return _DIRS[int(round(float(np.arctan2(dy, dx)) / (np.pi / 4))) % 8]
 
-        Every one is drawn from the body's OWN map. An exit it has never laid
-        eyes on is not a destination — it is not even an option — so a stranger
-        in a burning house has to find the door the hard way, and a resident
-        (add_person(knows_world=True)) runs straight for it. That difference
-        used to be impossible to express: everyone read the world's register.
-        """
-        # a goal must be somewhere the body could actually STAND. Knowing a
-        # wall is there is not the same as being able to walk to it, and
-        # aiming at one is how a body ends up standing still forever.
-        known = p["known"] & self._walkable(cells)
+    def _reach_along(self, fit, ax_, ay_, dx, dy, reach):
+        """The furthest this body could get going THAT WAY without turning.
+
+        This is what makes "straight on" and "to the left" real destinations
+        rather than steps. A body that has not seen anywhere worth naming can
+        still have an intention about a direction, and the legs still do the
+        walking — the difference between choosing a way to go and being asked
+        to place your feet."""
+        n = float(np.hypot(dx, dy))
+        if n < 1e-9:
+            return None
+        dx, dy = dx / n, dy / n
+        nx, ny = fit.shape
+        last = None
+        for k in range(1, int(reach) + 1):
+            x, y = int(round(ax_ + dx * k)), int(round(ay_ + dy * k))
+            if not (0 <= x < nx and 0 <= y < ny) or not fit[x, y]:
+                break
+            last = (x, y)
+        if last is None or max(abs(last[0] - ax_), abs(last[1] - ay_)) < 2.0:
+            return None                   # nowhere to get to that way
+        return last
+
+    def _places(self, p, cells, fit):
+        """Every spot this body could NAME, drawn from its OWN map.
+
+        A place is where an intention points. They are named, and the naming
+        matters: "explore" told a body to go and look at something the SIM
+        picked, which is a decision taken away from whoever is choosing. Now
+        the unseen edges are listed one per direction, so going to look at the
+        dark doorway north is a different choice from going to look at the
+        unlit end of the hall, and the body makes it.
+
+        An exit it has never laid eyes on is not a destination — it is not even
+        an option — so a stranger in a burning house must find the door the
+        hard way and a resident (add_person(knows_world=True)) runs straight
+        for it. That difference used to be impossible to express: everyone read
+        the world's register."""
         ax_ = float(cells[:, 0].mean()); ay_ = float(cells[:, 1].mean())
-        out = {}
-        seen_exits = [e for e in self.exits
-                      if p["known"][int(e[0]), int(e[1])]]
-        if seen_exits:
-            out["exit"] = min(seen_exits,
-                              key=lambda e: abs(e[0] - ax_) + abs(e[1] - ay_))
-        # the FRONTIER: somewhere known that touches somewhere unknown. Walking
-        # to it is how the map grows, and it is why a blind body does not simply
-        # stand in the dark.
+        vox_m = 0.1 * self.scale
+        out = []
+
+        def add(tag, label, xy):
+            d = max(abs(xy[0] - ax_), abs(xy[1] - ay_))
+            out.append({"tag": tag, "label": label, "xy": (int(xy[0]), int(xy[1])),
+                        "away": d})
+
+        for e in self.exits:                       # doors it has SEEN
+            if p["known"][int(e[0]), int(e[1])]:
+                add("go:exit", "the door " + self._bearing(e[0] - ax_, e[1] - ay_),
+                    (e[0], e[1]))
+        # THE UNSEEN EDGES: somewhere known that touches somewhere unknown.
+        # Walking to one is how the map grows, and it is why a body that has
+        # been dropped into a dark building does not simply stand in the dark.
         unseen = ~p["known"]
-        edge = np.zeros_like(known)
+        edge = np.zeros_like(fit)
         edge[1:, :] |= unseen[:-1, :]; edge[:-1, :] |= unseen[1:, :]
         edge[:, 1:] |= unseen[:, :-1]; edge[:, :-1] |= unseen[:, 1:]
-        frontier = np.argwhere(known & edge)
-        if len(frontier):
-            d = np.abs(frontier[:, 0] - ax_) + np.abs(frontier[:, 1] - ay_)
-            # far enough to be worth walking to: a frontier under one's nose
-            # is reached before a step is taken, and the body dithers there
-            far = d > max(8.0, WILL["arrive_m"] / max(0.1 * self.scale, 1e-9) * 3)
-            pick = frontier[far][np.argmin(d[far])] if far.any() \
-                else frontier[np.argmax(d)]
-            out["frontier"] = (int(pick[0]), int(pick[1]))
-        # SOMEONE DOWN AND WITHIN REACH. Offered only if the arithmetic allows
-        # it: their whole mass against this body's strength through friction. A
-        # thing too heavy to shift is not an option, it is a fact.
-        if seen_exits:
-            for q in self.persons:
-                if q is p or q["awake"] or not q["alive"] or q["safe"]:
-                    continue
-                qc, qsl = self._person_cells(q)
-                if qc is None or not qc.any():
-                    continue
-                qcell = np.argwhere(qc)
-                qcell[:, 0] += qsl[0].start
-                qcell[:, 1] += qsl[1].start
-                d = max(abs(float(qcell[:, 0].mean()) - ax_),
-                        abs(float(qcell[:, 1].mean()) - ay_))
-                if d > 6.0:
-                    continue                      # not within arm's reach
-                _lift, drag_N = self._effort(qcell)
-                if drag_N <= BODY["strength_N"]:
-                    out["downed"] = out["exit"]   # take them to the door
-                    p["_drag"] = q["name"]
-                    break
-        # ROAM: somewhere it knows, a way off, chosen without any randomness —
-        # the sim stays deterministic, so the choice comes from the tick and
-        # the name rather than from a die.
-        spots = np.argwhere(known)
+        front = np.argwhere(fit & edge & p["known"])
+        if len(front):
+            d = np.abs(front[:, 0] - ax_) + np.abs(front[:, 1] - ay_)
+            near = max(8.0, WILL["arrive_m"] / max(vox_m, 1e-9) * 3)
+            keep = front[d > near] if (d > near).any() else front
+            kd = np.abs(keep[:, 0] - ax_) + np.abs(keep[:, 1] - ay_)
+            seen_dirs = {}
+            for i in np.argsort(kd):               # nearest first, one per way
+                c = keep[i]
+                w = self._bearing(c[0] - ax_, c[1] - ay_)
+                if w not in seen_dirs:
+                    seen_dirs[w] = c
+            for w, c in list(seen_dirs.items())[:4]:
+                add("go:frontier", "the unseen ground " + w, c)
+        # STRAIGHT ON, AND TO EITHER SIDE — relative to the face, because that
+        # is how a person says it. Offered only as far as the body could
+        # actually get, so a wall in front removes "straight on" rather than
+        # offering a walk into it.
+        fx, fy = p.get("facing", (1.0, 0.0))
+        for name, (dx, dy) in (("straight on", (fx, fy)),
+                               ("to the left", (-fy, fx)),
+                               ("to the right", (fy, -fx)),
+                               ("back the way it came", (-fx, -fy))):
+            tgt = self._reach_along(fit, ax_, ay_, dx, dy,
+                                    WILL["step_m"] / max(vox_m, 1e-9))
+            if tgt is not None:
+                add("go:step", name, tgt)
+        # SOMEWHERE IT KNOWS, a way off. Deterministic: the sim carries no die,
+        # so which way a mind wanders comes from the tick and the name.
+        spots = np.argwhere(fit & p["known"])
         if len(spots) > 1:
             d = np.abs(spots[:, 0] - ax_) + np.abs(spots[:, 1] - ay_)
             far = spots[d > max(6.0, np.percentile(d, 70))]
             if len(far):
                 i = (self.tick // max(WILL["decide_every"], 1)
                      + len(p["name"])) % len(far)
-                out["roam"] = (int(far[i][0]), int(far[i][1]))
+                add("go:roam", "the floor "
+                    + self._bearing(far[i][0] - ax_, far[i][1] - ay_), far[i])
+        seen = {}                                  # two doors due east are two
+        for o in out:                              # rows, so say which is which
+            seen.setdefault(o["label"], []).append(o)
+        for label, rows in seen.items():
+            if len(rows) > 1:
+                for r in rows:
+                    r["label"] = f"{label} ({r['away'] * vox_m:.0f} m)"
         return out
 
-    def _menu(self, p, cells, ex, percept=None):
-        """Every response this body could actually carry out, right now.
+    def _underfoot(self, cells):
+        """Is there anything under this body's feet to push against?
 
-        Legality is CHECKED, not assumed. A "flee" row is only offered if a
-        breadth-first route to a door really exists, so an option that gets
-        picked can never fail to happen. That is the property worth paying
-        for: whatever is choosing cannot invent a door, because it never sees
-        one that isn't there.
+        The FEET, deliberately: this answers whether the legs have something to
+        drive into, which is what deciding to jump and deciding to brace both
+        need. Whether a body is HELD UP is a different question with a different
+        answer — see _contact — and running them together made a man teetering
+        on a lip both unable to jump and unable to fall."""
+        zlo = int(cells[:, 2].min())
+        if zlo <= 0:
+            return True
+        return any(self.mat[int(c[0]), int(c[1]), zlo - 1] != AIR
+                   for c in cells if int(c[2]) == zlo)
 
-        The options are INTENTIONS, not steps. Which door, and which way
-        around the table, is motor competence the body fills in itself — a
-        slot with exactly one legal filler is never worth asking about. When
-        the door becomes a real choice (one of them is alight), it becomes a
-        second, small menu, not a longer first one."""
-        lines = p.get("lines", LINES)
-        goals = self._goals(p, cells)          # where each KIND of intent leads
+    def _contact(self, cells):
+        """Which cells of this body are actually resting on something else.
+
+        Not the bottom layer — ANY cell with something solid beneath it that is
+        not part of this same body. A man at the very lip has his feet over air
+        and a forearm still over the stone, and that forearm is genuinely
+        touching the world. Standing on your own foot proves nothing."""
+        cells = np.asarray(cells, np.int64)
+        on_floor = cells[:, 2] <= 0                   # the floor of the world
+        z1 = np.maximum(cells[:, 2] - 1, 0)
+        under = self.mat[cells[:, 0], cells[:, 1], z1] != AIR
+        ny, nz = self.shape[1], self.shape[2]
+        key = (cells[:, 0] * ny + cells[:, 1]) * nz + cells[:, 2]
+        return cells[on_floor | (under & ~np.isin(key - 1, key))]
+
+    def _leap_speed(self, cells):
+        """The fastest this body can leave the ground, in m/s. The legs put
+        legs_N into the floor over a crouch; what is left after holding the
+        body's own weight up becomes speed. A heavier body gets less out of the
+        same legs, for free, because it is the same arithmetic."""
+        kg = float(self.smass[tuple(np.asarray(cells).T)].sum()) / 1000.0
+        if kg <= 0.0:
+            return 0.0
+        net = BODY["legs_N"] / kg - GRAVITY
+        if net <= 0.0:
+            return 0.0                        # too heavy to lift itself
+        return float(np.sqrt(2.0 * net * BODY["crouch_m"]))
+
+    def _leap_targets(self, p, cells, fit, vmax):
+        """Where this body could LAND if it jumped, and how far that is.
+
+        A jump straight up is a jump that goes nowhere, and going nowhere was
+        all the legs could do: the whole point of having a velocity is that it
+        has a direction. These are the furthest spots it could stand on in each
+        way it could face, within the range its own legs allow — and crucially
+        they are not filtered by whether it could WALK there, which is what
+        makes leaping a gap different from stepping over one.
+
+        Range at the best angle is v-squared over g. Nothing here picks a
+        height or a distance; the legs and the mass do."""
+        if vmax <= 0.0:
+            return []
+        vox_m = 0.1 * self.scale
+        reach = int((vmax * vmax / GRAVITY) / max(vox_m, 1e-9))
+        if reach < 2:
+            return []
+        ax_ = float(cells[:, 0].mean()); ay_ = float(cells[:, 1].mean())
+        nx, ny = fit.shape
+        fx, fy = p.get("facing", (1.0, 0.0))
+        out = []
+        for name, (dx, dy) in (("straight on", (fx, fy)),
+                               ("to the left", (-fy, fx)),
+                               ("to the right", (fy, -fx)),
+                               ("back the way it came", (-fx, -fy))):
+            n = float(np.hypot(dx, dy))
+            if n < 1e-9:
+                continue
+            ux, uy = dx / n, dy / n
+            best = None
+            for k in range(2, reach + 1):
+                x, y = int(round(ax_ + ux * k)), int(round(ay_ + uy * k))
+                if not (0 <= x < nx and 0 <= y < ny):
+                    break
+                if fit[x, y]:
+                    best = (x, y, float(k))       # the furthest good landing
+            if best is not None:
+                out.append({"label": name, "xy": (best[0], best[1]),
+                            "away": best[2]})
+        return out
+
+    def _leap(self, p, cells, goal=None):
+        """Push off — up, or up and ALONG.
+
+        Aimed at somewhere, the body leaves at the angle that carries furthest
+        and at exactly the speed that distance needs (v-squared = g times the
+        range), so it lands where it meant to instead of hurling itself as hard
+        as it can. A place further than the legs can reach is not offered."""
+        vmax = self._leap_speed(cells)
+        if vmax <= 0.0:
+            return
+        if goal is None:
+            self._launch(cells, (0.0, 0.0, vmax), owner=p["name"])
+            return
+        ax_ = float(cells[:, 0].mean()); ay_ = float(cells[:, 1].mean())
+        dx, dy = goal[0] - ax_, goal[1] - ay_
+        n = float(np.hypot(dx, dy))
+        if n < 1e-9:
+            self._launch(cells, (0.0, 0.0, vmax), owner=p["name"])
+            return
+        d = n * 0.1 * self.scale
+        v = min(float(np.sqrt(GRAVITY * d)), vmax)      # just far enough
+        half = v / float(np.sqrt(2.0))                  # 45 degrees: best range
+        self._launch(cells, (half * dx / n, half * dy / n, half),
+                     owner=p["name"])
+
+    def _in_reach(self, mine, theirs):
+        """Is that thing close enough to get a hand to?
+
+        Measured between the two SURFACES, not the two centres. A body is five
+        voxels across, so a centre-to-centre limit is a different limit for a
+        child and for a cart, and the arm is the same arm."""
+        gap = max(abs(float(theirs[:, 0].mean()) - float(mine[:, 0].mean())),
+                  abs(float(theirs[:, 1].mean()) - float(mine[:, 1].mean())))
+        half = 0.5 * (self._span_xy(mine) + self._span_xy(theirs))
+        return gap - half <= BODY["reach_m"] / max(0.1 * self.scale, 1e-9)
+
+    @staticmethod
+    def _span_xy(cells):
+        """How wide that thing is on the floor, in voxels."""
+        return float(max(np.ptp(cells[:, 0]), np.ptp(cells[:, 1])))
+
+    def _resist(self, q, cells):
+        """What it costs to move a body that would rather not be moved, in
+        newtons.
+
+        Friction is all a limp body gives you. A body that is AWAKE, alive and
+        has something under its feet BRACES — it puts its own strength into the
+        floor against you — and that is one number rather than a rule about
+        rescues and a second rule about fights. Everything interesting falls
+        out of the arithmetic: an unconscious man can be dragged and a standing
+        one cannot, the same standing man CAN be moved by someone stronger, and
+        he stops resisting the instant his feet have nothing to push against.
+        Nobody wrote any of those three down.
+
+        Before this, a grip was legal only on someone already unconscious. That
+        was a case wearing a flag (Ruling 1): it made rescuing the only reason
+        two people ever touched, and it made 'pull him off the ledge'
+        unaskable — not hard, not physically refused, simply absent from the
+        menu."""
+        _lift, drag_N = self._effort(cells)
+        if q["awake"] and q["alive"] and self._underfoot(cells):
+            drag_N += q.get("strength_N", BODY["strength_N"])
+        return drag_N
+
+    def _within_reach(self, p, cells):
+        """People this body could get a hand to: alive, and near.
+
+        REACH decides whether a grip is possible; FORCE decides what the grip
+        can then do, and it is asked again every tick in _haul. The force test
+        used to live here, which quietly said a body knows before touching you
+        whether you can be moved — and worse, it answered ONCE, so a brace
+        that fails the moment a man's heel goes over an edge could never change
+        the answer. Taking hold of someone stronger than you is a perfectly
+        legal thing to do. It just does not move them."""
+        out = []
+        for q in self.persons:
+            if q is p or not q["alive"] or q["safe"]:
+                continue
+            qc, qsl = self._person_cells(q)
+            if qc is None or not qc.any():
+                continue
+            qcell = np.argwhere(qc)
+            qcell[:, 0] += qsl[0].start
+            qcell[:, 1] += qsl[1].start
+            if self._in_reach(cells, qcell):
+                out.append(q)
+        return out
+
+    def _menu(self, p, cells, percept, limb, chosen):
+        """Everything ONE PART of this body could actually do, right now.
+
+        Legality is CHECKED, not assumed. A place is only offered if a
+        breadth-first route to it really exists, so an option that gets picked
+        can never fail to happen. That is the property worth paying for:
+        whatever is choosing cannot invent a door, because it never sees one
+        that isn't there.
+
+        One menu per limb, rather than one menu of every combination. Three
+        parts with eight, three and two things to do is forty-eight
+        combinations and thirteen rows, and the thirteen say everything the
+        forty-eight do. That is not a saving trick — it is the shape a body
+        actually has, and it is why nothing has to be written down twice when
+        a new way to use a mouth arrives.
+
+        Index 0 is always the NULL act: the part does nothing, which is always
+        legal and never a failure. Hands doing nothing keep their grip."""
         menu = []
-        for key, row in RESPONSES.items():
-            kind = row["goal"]
-            goal = goals.get(kind) if kind else None
-            if kind and goal is None:
-                continue                      # nowhere this intent could go:
-                                              # do not offer it
-            route = None
-            if kind:
-                route = self._plan_path(cells, goal, p.get("known"))
-                if route is None:
+        if limb == "legs":
+            menu.append({"key": "stay", "tag": "stay", "verb": "stay"})
+            fit, _start = self._fit_grid(cells, p.get("known"))
+            ground = self._underfoot(cells)
+            places = self._places(p, cells, fit)
+            leaps = self._leap_targets(p, cells, fit, self._leap_speed(cells)) \
+                if ground else []
+            routes = self._routes(cells, [pl["xy"] for pl in places]
+                                  + [lp["xy"] for lp in leaps],
+                                  p.get("known"), fit=fit)
+            if ground:                        # you cannot push off thin air
+                menu.append({"key": "jump", "tag": "jump", "verb": "jump"})
+            for lp in leaps:
+                if routes.get(lp["xy"]):
+                    continue                  # it could just WALK there. A leap
+                                              # is worth weighing where the legs
+                                              # cannot carry it — over a gap, not
+                                              # across an open floor — and four
+                                              # redundant leaps crowded a body's
+                                              # whole attention out of the menu
+                menu.append({"key": f"leap({lp['label']})", "tag": "leap",
+                             "verb": "jump", "goal": lp["xy"],
+                             "away": lp["away"]})
+            for pl in places:
+                route = routes.get(pl["xy"])
+                if not route:
                     continue                  # no route it knows of: not legal
-            if row["say"] and not lines.get(row["say"], LINES.get(row["say"])):
-                continue                      # this body has no such words
-            if row.get("needs_percept") not in (None, percept):
-                continue                      # nothing to answer
-            if row.get("idle") and percept is not None:
-                continue                      # not while something is happening
-            menu.append({"key": key, "say": row["say"],
-                         "route": route, "goal": goal})
-        if len(menu) > MENU_CAP:              # attention is the scarce thing;
-            want = p.get("reflexes", REFLEXES)  # keep what the body would have
-            keep = [o for o in menu if o["key"] in want.values()]
-            menu = (keep + [o for o in menu if o not in keep])[:MENU_CAP]
+                menu.append({"key": f"go({pl['label']})", "tag": pl["tag"],
+                             "verb": "go", "goal": pl["xy"], "route": route,
+                             "away": pl["away"]})
+        elif limb == "hands":
+            held = p.get("dragging")
+            menu.append({"key": "keep hold of " + held if held else "hands free",
+                         "tag": "keep", "verb": "keep"})
+            if held:
+                menu.append({"key": "let go", "tag": "let_go", "verb": "let_go"})
+            if self._limb_cells(p, "right arm", cells) is not None:
+                # swinging at NOTHING is possible, just useless — the same way
+                # shouting in an empty house is possible. What makes it legal
+                # is having an arm, not having a target
+                menu.append({"key": "swing an arm", "tag": "swing",
+                             "verb": "swing"})
+            for q in self._within_reach(p, cells):
+                if q["name"] == held:
+                    continue
+                menu.append({"key": f"take hold of {q['name']}", "tag": "hold",
+                             "verb": "hold", "who": q["name"]})
+        elif limb == "mouth":
+            menu.append({"key": "say nothing", "tag": "quiet", "verb": "quiet"})
+            for name, text in p.get("lines", LINES).items():
+                if not text:
+                    continue                  # this body has no such words
+                if ANSWERS.get(name) not in (None, percept):
+                    continue                  # nothing to answer
+                menu.append({"key": f"say({name})", "tag": f"say:{name}",
+                             "verb": "say", "line": name})
+        if len(menu) > MENU_CAP:              # attention is the scarce thing.
+            want = (p.get("reflexes", REFLEXES).get(percept) or {}).get(limb) \
+                if percept else None
+            head, tail = menu[0], menu[1:]    # the null act never falls off
+            keep = [o for o in tail if o["tag"] == want]
+            rest = sorted((o for o in tail if o not in keep),
+                          key=lambda o: o.get("away", 0.0))
+            menu = ([head] + keep + rest)[:MENU_CAP]
         return menu
 
     def _decide(self, p, percept, cells, ax_, ay_, eye, vox_m):
-        """Offer the menu, let the policy pick, carry the pick out, log it."""
-        menu = self._menu(p, cells, None, percept)
-        if not menu:
-            return
+        """Offer one menu per part of the body, let the policy pick from each,
+        carry the whole program out, log it.
+
+        The result is a PROGRAM — go here AND hold them AND say this — built
+        by composition rather than looked up. Every combination the old table
+        spelled out still happens, and combinations nobody spelled out happen
+        too: holding someone while walking deeper in, calling a warning while
+        wandering, taking hold with no idea where the door is."""
         # who would actually HEAR a shout. Not a legality gate — shouting in
         # an empty house is possible, just useless — but a fact a thinking
         # policy should get to weigh, so it rides along in the situation.
@@ -2245,40 +3056,76 @@ class World:
                "smoke": round(float(p["smoke"]), 3),
                "blood_o2": round(float(p["blood_o2"]), 3),
                "burn": round(float(p["burn"]), 3),
+               "holding": p.get("dragging"),
                "knows_a_way_out": any(p["known"][int(e[0]), int(e[1])]
                                       for e in self.exits),
                "seen_of_the_world": round(float(p["known"].mean()), 3),
                "others_in_earshot": heard}
-        i = self.policy.pick(sit, menu)
-        i = i if isinstance(i, int) and 0 <= i < len(menu) else 0
-        opt = menu[i]
+        menus, picks, chosen = {}, {}, {}
+        for limb in LIMBS:
+            menu = self._menu(p, cells, percept, limb, chosen)
+            if not menu:
+                continue
+            i = self.policy.pick(dict(sit, limb=limb, chosen=dict(chosen)), menu)
+            i = i if isinstance(i, int) and 0 <= i < len(menu) else 0
+            opt = menu[i]
+            menus[limb] = [o["key"] for o in menu]
+            picks[limb] = opt
+            chosen[limb] = opt["tag"]
+        if not picks:
+            return
+        prog = " & ".join(picks[l]["key"] for l in LIMBS
+                          if l in picks and not ACTS[picks[l]["verb"]]["null"])
         self.traces.append({"tick": self.tick, "who": p["name"],
                             "percept": percept, "situation": sit,
-                            "menu": [o["key"] for o in menu], "pick": opt["key"],
+                            "menus": menus,
+                            "pick": {l: o["key"] for l, o in picks.items()},
+                            "tags": dict(chosen), "program": prog or "stay",
                             "by": getattr(self.policy, "name", "?")})
         p["_decided"] = self.tick
         if percept is not None:
             p["emergency"] = True        # committed: stop weighing the ordinary
-        p["dragging"] = p.pop("_drag", None) if opt["key"] == "drag_them_out" \
-            else None
-        if opt["route"] is not None:
-            p["fleeing"] = True
-            p["goal"] = opt["goal"]
-            p["_path"], p["_planned"] = opt["route"], self.tick
+        hands = picks.get("hands")
+        if hands is not None:            # HANDS. Holding is not a rescue
+            if hands["verb"] == "swing":
+                self._swing(p, "right arm", toward=p.get("facing"))
+                p["events"].append(f"t{self.tick}: {p['name']} swings an arm")
+            elif hands["verb"] == "hold":  # no subsystem: a grip is REACH, and
+                p["dragging"] = hands["who"]   # what it can then do is force —
+                p["events"].append(f"t{self.tick}: {p['name']} takes hold "
+                                   f"of {hands['who']}")
+            elif hands["verb"] == "let_go":    # the same _effort a shove uses,
+                p["dragging"] = None           # asked again every tick
+                p["events"].append(f"t{self.tick}: {p['name']} lets go")
+        legs = picks.get("legs")
+        if legs is not None and legs["verb"] == "jump":
+            self._leap(p, cells, legs.get("goal"))
+            p["goal"], p["fleeing"] = None, False
+            p["events"].append(f"t{self.tick}: {p['name']} jumps")
+        elif legs is not None and legs["verb"] == "go":
+            # FLEEING means driven, not merely walking. Every `go` used to set
+            # it, which was harmless while the only reason to walk was an
+            # alarm and wrong the moment idling became a real choice: a person
+            # strolling to the window then read to everyone else as someone
+            # BOLTING PAST, and set off alarms that had no fire behind them.
+            p["fleeing"] = percept is not None
+            p["goal"] = legs["goal"]
+            p["_path"], p["_planned"] = legs["route"], self.tick
             if percept:
                 p["events"].append(f"t{self.tick}: {p['name']} startles "
                                    f"({percept.replace('_', ' ')}) and makes "
-                                   f"for the door")
-            elif opt["key"] == "explore":
-                p["events"].append(f"t{self.tick}: {p['name']} goes to look at "
-                                   f"what they have not seen")
-        else:
+                                   f"for {legs['key'][3:-1]}")
+            else:
+                p["events"].append(f"t{self.tick}: {p['name']} makes for "
+                                   f"{legs['key'][3:-1]}")
+        elif legs is not None:
             p["goal"] = None
             if percept:
                 p["events"].append(f"t{self.tick}: {p['name']} notices "
                                    f"({percept.replace('_', ' ')}) and stays put")
-        if opt["say"]:
-            self._say(p, opt["say"])
+        mouth = picks.get("mouth")
+        if mouth is not None and mouth["verb"] == "say":
+            self._say(p, mouth["line"])
 
     def trace_outcomes(self):
         """Stamp every logged decision with how that body ENDED, and hand the
@@ -2320,7 +3167,13 @@ class World:
         is written to `self.traces` with the full menu beside it, which is
         what makes a harvest possible: you cannot learn from a choice without
         knowing what else was on offer."""
-        if not self.persons or not self.exits:
+        # A ROOM WITH NO DOOR STILL HAS PEOPLE IN IT. This used to return unless
+        # the world registered an exit, which quietly made every mind in the sim
+        # conditional on there being somewhere to escape to: a scene with no door
+        # — two men on a clifftop, say — had bodies that could not decide
+        # anything at all, and not because anything physical stopped them.
+        # Escaping is one thing a body might want, not the reason it has a will.
+        if not self.persons:
             return
         vox_m = 0.1 * self.scale
         burning = self.burning() if any(p["alive"] and p["awake"]
@@ -2341,19 +3194,29 @@ class World:
             p["_eye"] = eye
             if "facing" not in p:
                 p["facing"] = (1.0, 0.0)
-            if self.tick % 4 == 0:            # look where the face points, and
+            # THE HEAD IS NOT THE FEET. A gaze sweeps around whichever way the
+            # body is pointed, so a person crossing a room still looks about as
+            # they go. It used to sweep by turning `facing` itself, and only
+            # while the body had nowhere to be — survivable while standing
+            # still was common, and a blindfold the moment bodies always had
+            # somewhere to go: measured, a witness with a clear window onto a
+            # burning bench walked about in front of it for 260 ticks and never
+            # once perceived the fire, because one vector was doing both jobs
+            # and every step reset it.
+            if self.tick % WILL["scan_every"] == 0 and not p.get("emergency"):
+                p["gaze_i"] = (p.get("gaze_i", 0) + 1) % len(GAZE_SWEEP)
+            off = 0.0 if p.get("emergency") else GAZE_SWEEP[p.get("gaze_i", 0)]
+            fx, fy = p["facing"]
+            cg, sg = np.cos(off), np.sin(off)
+            gaze = (fx * cg - fy * sg, fx * sg + fy * cg)
+            p["gaze"] = gaze                  # what the eyes are pointed at
+            if self.tick % 4 == 0:            # look where the eyes point, and
                 self._look_around(p, eye)     # REMEMBER it
             # SENSES RUN WHETHER OR NOT THE BODY IS BUSY. Having somewhere to
             # be is not the same as being in an emergency: a body strolling
             # across a room must still notice the room is alight. Gating the
             # percepts on "is moving" made a wandering person blind.
             if not p.get("emergency"):
-                # an idle gaze WANDERS — an eighth-turn every scan_every ticks,
-                # so a cone of vision still sweeps the whole room over time
-                if self.tick % WILL["scan_every"] == 0 and p.get("goal") is None:
-                    fx, fy = p["facing"]
-                    c45, s45 = np.cos(np.pi / 4), np.sin(np.pi / 4)
-                    p["facing"] = (fx * c45 - fy * s45, fx * s45 + fy * c45)
                 percept = None
                 if fire_at is not None:
                     d = np.abs(fire_at[:, :2] - np.array([ax_, ay_])).max(axis=1)
@@ -2361,7 +3224,7 @@ class World:
                     for c in close[np.argsort(
                             np.abs(close[:, :2] - np.array([ax_, ay_]))
                             .max(axis=1))][:25]:
-                        if self._in_cone(p["facing"], eye, c) \
+                        if self._in_cone(gaze, eye, c) \
                                 and self._sees(eye, c.astype(np.float32)):
                             percept = "sees_fire"    # an actual LINE to a flame
                             break                    # the face is TURNED toward
@@ -2380,7 +3243,7 @@ class World:
                             percept = "hears_alarm"      # ears have no cone and
                             break                        # a wall only MUFFLES
                         if (dq * vox_m <= WILL["run_see_m"]
-                                and self._in_cone(p["facing"], eye, qeye)
+                                and self._in_cone(gaze, eye, qeye)
                                 and self._sees(eye, qeye)):
                             percept = "sees_runner"
                             break
@@ -2485,7 +3348,15 @@ class World:
         the same _shove that shifts a crate, and it is left behind the moment
         it will not shift (wedged, or grown too heavy to matter). When both are
         at the door, both are out; that is the only thing rescuing anyone ever
-        needed to mean."""
+        needed to mean.
+
+        WHAT IS DRAGGED FOLLOWS. It used to be shoved along the hauler's own
+        step vector, which is a grip only while the two happen to move alike:
+        once the load snagged for a tick, the hauler walked on and the pair
+        drifted apart, still joined — measured, a rescuer at x=29 towing a body
+        at x=36, seven voxels AHEAD of them and pulling it further. A load
+        trails the thing pulling it, so the step is toward the hauler, and an
+        arm that has been stretched past its reach is not holding anything."""
         who = p.get("dragging")
         if not who:
             return
@@ -2508,16 +3379,50 @@ class World:
         cells = np.argwhere(comp)
         cells[:, 0] += sl[0].start
         cells[:, 1] += sl[1].start
-        if not self._shove(cells, sx, sy):
-            p["dragging"] = None                  # it would not come; let go
+        mine, msl = self._person_cells(p)
+        if mine is None or not mine.any():
             return
-        q["anchor"] = (int(round(float(cells[:, 0].mean()))) + sx,
-                       int(round(float(cells[:, 1].mean()))) + sy)
+        hcell = np.argwhere(mine)
+        hcell[:, 0] += msl[0].start
+        hcell[:, 1] += msl[1].start
+        if not self._in_reach(hcell, cells):
+            p["dragging"] = None                  # stretched past an arm: gone
+            p["events"].append(f"t{self.tick}: {p['name']} loses hold of {who} "
+                               f"— an arm is only so long")
+            return
+        # HE MAY BE OVER THE EDGE. With nothing underfoot, what an arm holds is
+        # his WEIGHT and not the friction of a floor — the same _effort, its
+        # other half. Today the grip simply goes, and he falls. Holding a man
+        # dangling would mean the support law knowing that a grip carries load,
+        # which it does not: support is relaxed from the ground up through
+        # material, and a hand is not material. That is a stated softness, not
+        # a case — an arm that can lift 40 kg ought to be able to hold him.
+        if not self._underfoot(cells):
+            p["dragging"] = None
+            p["events"].append(f"t{self.tick}: {who} goes over, and the grip "
+                               f"is not enough to hold a hanging man")
+            return
+        # AND HE MAY NOT WANT TO COME. Asked every tick, because the answer
+        # changes: the same pull that a braced man shrugs off for twenty ticks
+        # succeeds the moment his footing is gone or someone stronger takes over.
+        if self._resist(q, cells) > p.get("strength_N", BODY["strength_N"]):
+            return                                # the grip holds; the pull fails
+        dx = float(hcell[:, 0].mean()) - float(cells[:, 0].mean())
+        dy = float(hcell[:, 1].mean()) - float(cells[:, 1].mean())
+        if max(abs(dx), abs(dy)) <= 0.5 * (self._span_xy(hcell)
+                                           + self._span_xy(cells)):
+            return                                # already at their heels
+        order = ((int(np.sign(dx)), 0), (0, int(np.sign(dy)))) \
+            if abs(dx) >= abs(dy) else ((0, int(np.sign(dy))), (int(np.sign(dx)), 0))
+        for step in order:
+            if step != (0, 0) and self._shove(cells, *step):
+                q["anchor"] = (int(round(float(cells[:, 0].mean()))) + step[0],
+                               int(round(float(cells[:, 1].mean()))) + step[1])
+                return
+        p["dragging"] = None                      # it would not come; let go
 
-    def _plan_path(self, cells, ex, known=None):
-        """Breadth-first route over columns the body can GET THROUGH *and knows
-        about*, from where it is to the goal. Deterministic, 4-connected, replanned when the world
-        changes underfoot.
+    def _fit_grid(self, cells, known=None):
+        """Columns this body could stand in, WHOLE — and knows about.
 
         A column is passable by how much is actually IN it, not by whether it is
         pure air: a body shoves through a hedge or a curtain and does not shove
@@ -2525,11 +3430,11 @@ class World:
         single leaf voxel was as impassable as masonry. PUSH_THROUGH is a
         stand-in for a force the body has not got yet; the force law replaces
         it with strength against what holds the material."""
-        zlo, zhi = int(cells[:, 2].min()), int(cells[:, 2].max())
-        col = (slice(None), slice(None), slice(zlo, zhi + 1))
-        packed = self.smass[col] / np.maximum(
-            _DENS_ARR[self.mat[col]] * self.vox_l, 1e-9)
-        walk_ok = (packed < PUSH_THROUGH).all(axis=2)
+        # ONE rule for where a body may stand, not two. This had its own copy
+        # of the fill test, so teaching _walkable that a column needs a floor
+        # under it taught the PLACES but not the PLANNER — and the planner is
+        # the half that decides where the legs actually go.
+        walk_ok = self._walkable(cells)
         if known is not None:
             walk_ok &= known          # you cannot plan a route through rooms
                                       # you have never seen
@@ -2561,37 +3466,60 @@ class World:
                     walk_ok[xs_lo + dx:xs_hi + dx, ys_lo + dy:ys_hi + dy]
             fit &= sh
         fit[cx, cy] = True                    # wherever it is now, it fits
-        walk_ok = fit
-        start = (cx, cy)
-        goal = (int(ex[0]), int(ex[1]))
-        if not walk_ok[goal]:                 # a doorway in an outer wall has
-            cand = np.argwhere(walk_ok)       # no room for a body's centre —
-            if not len(cand):                 # aim at the nearest place that does
-                return None
-            d = np.abs(cand[:, 0] - goal[0]) + np.abs(cand[:, 1] - goal[1])
-            near = cand[int(d.argmin())]
-            goal = (int(near[0]), int(near[1]))
-        nx, ny = walk_ok.shape
+        return fit, (cx, cy)
+
+    def _routes(self, cells, targets, known=None, fit=None):
+        """Every target's route, from ONE breadth-first sweep.
+
+        A menu prices a dozen places at once, and asking the planner a dozen
+        separate questions re-walks the same room a dozen times. One sweep
+        records where every column was reached FROM, and each route is read
+        back out of it — cheaper than the three separate searches this replaced,
+        for four times the places."""
         from collections import deque
+        if fit is None:
+            fit, start = self._fit_grid(cells, known)
+        else:
+            start = (int(round(float(cells[:, 0].mean()))),
+                     int(round(float(cells[:, 1].mean()))))
+        nx, ny = fit.shape
         prev = {start: None}
         q = deque([start])
         while q:
             cur = q.popleft()
-            if cur == goal:
-                break
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 nxt = (cur[0] + dx, cur[1] + dy)
                 if (0 <= nxt[0] < nx and 0 <= nxt[1] < ny
-                        and nxt not in prev and walk_ok[nxt]):
+                        and nxt not in prev and fit[nxt]):
                     prev[nxt] = cur
                     q.append(nxt)
-        if goal not in prev:
-            return None                                  # no way through
-        path, cur = [], goal
-        while cur is not None:
-            path.append(cur)
-            cur = prev[cur]
-        return path[::-1][1:]
+        cand = None
+        out = {}
+        for t in targets:
+            goal = (int(t[0]), int(t[1]))
+            if not fit[goal]:                 # a doorway in an outer wall has
+                if cand is None:              # no room for a body's centre —
+                    cand = np.argwhere(fit)   # aim at the nearest place that does
+                if not len(cand):
+                    out[(int(t[0]), int(t[1]))] = None
+                    continue
+                d = np.abs(cand[:, 0] - goal[0]) + np.abs(cand[:, 1] - goal[1])
+                near = cand[int(d.argmin())]
+                goal = (int(near[0]), int(near[1]))
+            if goal not in prev:
+                out[(int(t[0]), int(t[1]))] = None                     # no way through
+                continue
+            path, cur = [], goal
+            while cur is not None:
+                path.append(cur)
+                cur = prev[cur]
+            out[(int(t[0]), int(t[1]))] = path[::-1][1:]
+        return out
+
+    def _plan_path(self, cells, ex, known=None):
+        """Breadth-first route from where this body is to one goal.
+        Deterministic, 4-connected, replanned when the world changes underfoot."""
+        return self._routes(cells, [ex], known)[(int(ex[0]), int(ex[1]))]
 
     def _object_at(self, x, y, z, cap=4000):
         """The connected thing that voxel belongs to — same material, flood
@@ -2700,6 +3628,65 @@ class World:
         self._torque_solid = None
         return True
 
+    def _law_footing(self):
+        """A PERSON IS A RIGID THING, so a person goes over as ONE thing.
+
+        Support is relaxed column by column, which is exactly right for a wall
+        and quite wrong for a man. Walked off his own ledge, he came down as
+        five separate showers of flesh — every gram still there, the person
+        gone — and hooked by a forearm on the lip he came apart the other way,
+        the arm staying at z31 while his legs ran down to the floor like sand.
+        A jumper never did either, and the reason is that a leap PROMOTES the
+        body to a free rigid object first. That promotion was the piece missing
+        everywhere else.
+
+        The question is the FEET: a body whose lowest voxels have nothing under
+        them is no longer standing on anything. Deliberately not the torque
+        law's fuller test of weight-over-footprint, which reads a body already
+        lying in a heap as hopelessly overbalanced — most of a slumped body
+        rests on the rest of itself — and launched it into the ground it was
+        already on, over and over.
+
+        Going over an edge is a rotation about that edge, so a body leaves it
+        moving OUTWARD as well as down, and by the time it has turned far
+        enough to clear the lip its weight has fallen through about the
+        overhang: that is where the sideways speed comes from, and it is the
+        only reason the thing still touching is not struck at once. Without it,
+        a man tipped off a lip with a forearm over the stone dropped one voxel,
+        hit the very rock his arm had been on, and was set back down in the
+        same place — three times a second, for ever.
+
+        Nothing here is about ledges. A shove, a haul, a floor that burns out
+        from underneath all arrive at the same test, and all pay the same
+        1/2 m v² on landing."""
+        if not self.persons:
+            return
+        aloft = {b.get("owner") for b in self.bodies}
+        for p in self.persons:
+            if not p["alive"] or p["safe"] or p["name"] in aloft:
+                continue
+            comp, sl = self._person_cells(p)
+            if comp is None or not comp.any():
+                continue
+            cells = np.argwhere(comp)
+            cells[:, 0] += sl[0].start
+            cells[:, 1] += sl[1].start
+            if self._underfoot(cells):
+                continue                      # still stood on something
+            vel = [0.0, 0.0, 0.0]
+            foot = self._contact(cells)       # ...but is anything still touching?
+            if len(foot):
+                kg = self.smass[tuple(cells.T)]
+                tot = max(float(kg.sum()), 1e-9)
+                dx = float((cells[:, 0] * kg).sum()) / tot - float(foot[:, 0].mean())
+                dy = float((cells[:, 1] * kg).sum()) / tot - float(foot[:, 1].mean())
+                axis = 0 if abs(dx) >= abs(dy) else 1
+                o = dx if axis == 0 else dy
+                vel[axis] = float(np.sign(o) * np.sqrt(
+                    2.0 * GRAVITY * abs(o) * 0.1 * self.scale))
+            self._launch(cells, vel, owner=p["name"])
+            p["events"].append(f"t{self.tick}: {p['name']} loses their footing")
+
     def _collapse(self, p, comp, sl):
         """An unconscious body is a slack object: promote it as a free rigid
         body keeling toward the openest side — the same fall as a chopped tree."""
@@ -2727,7 +3714,8 @@ class World:
         axis, s = pick
         base = cells[cells[:, 2] <= z_lo + 1]
         pivot = int(base[:, axis].max() if s > 0 else base[:, axis].min())
-        self._topple(cells.astype(np.float32), axis, s, float(pivot), float(z_lo))
+        self._topple(cells.astype(np.float32), axis, s, float(pivot), float(z_lo),
+                     owner=p["name"])
 
     def step(self):
         if self.o2 is None:                      # first step: fresh air fills every pore
@@ -2736,7 +3724,8 @@ class World:
         self._law_flow()
         self._law_stir()
         self._law_head()
-        self._law_support()
+        self._law_footing()                      # before support: a body with no
+        self._law_support()                      # footing must leave as a BODY
         self._law_torque()
         self._law_conduct()
         self._law_crack()                        # thermal shock reads what conduction wrote

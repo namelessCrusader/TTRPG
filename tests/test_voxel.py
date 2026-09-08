@@ -2,6 +2,7 @@
 with zero case-code anywhere (Ruling 1). If one of these breaks, a law is wrong,
 not a flag missing."""
 import numpy as np
+import pytest
 
 from src.voxel.demo import build, dump_water, torch
 from src.voxel.sim import (ACID, AIR, ASH, BODY, CHAR, FLESH, GLASS, IRON, LEAF,
@@ -99,7 +100,9 @@ def test_unsupported_solids_fall_and_supported_stay():
     w.fill(2, 6, 2, 6, 6, 7, WOOD)              # a slab floating in mid-air
     w.fill(7, 8, 7, 8, 1, 5, WOOD)              # a pillar standing on the floor
     w.fill(6, 9, 6, 9, 5, 6, WOOD)              # a shelf resting ON the pillar
-    for _ in range(8):
+    for _ in range(40):                         # falls ACCELERATE from rest now, so
+        w.step()                                # a drop that used to take one tick a
+    for _ in range(0):                          # voxel takes a few to get going
         w.step()
     assert (w.mat[2:6, 2:6, 1] == WOOD).all(), "the floating slab must land on the floor"
     assert (w.mat[2:6, 2:6, 6] == AIR).all(), "and no longer hang in the air"
@@ -113,7 +116,7 @@ def test_burning_away_the_legs_drops_the_shelf():
     w.fill(2, 6, 2, 6, 4, 5, WOOD)              # tabletop on it
     w.mat[3, 3, 1:4] = AIR                      # the leg burns away (as combustion does)
     w.smass[3, 3, 1:4] = 0.0
-    for _ in range(6):
+    for _ in range(40):                         # see above: falling has a SPEED now
         w.step()
     assert (w.mat[2:6, 2:6, 1] == WOOD).all(), "the orphaned top must fall to the floor"
 
@@ -349,13 +352,17 @@ def test_the_canopy_rides_the_falling_trunk():
     w.mat[5:7, 4:6, 1] = AIR                        # notch: hinge at x=4
     w.smass[5:7, 4:6, 1] = 0.0
     leaf0 = float(w.smass[w.mat == LEAF].sum())
-    for _ in range(200):                            # fall + rubble re-settling
+    for _ in range(400):                            # fall + rubble re-settling
         w.step()
     assert not w.bodies
     leaves = np.argwhere(w.mat == LEAF)
     assert float(w.smass[w.mat == LEAF].sum()) > 0.9 * leaf0, "no leaf mass lost"
     assert float(leaves[:, 0].mean()) > 9, "the canopy came DOWN AND OVER with the trunk"
-    assert int(leaves[:, 2].max()) <= 8, "and lies low — not hovering at tree height"
+    # the canopy was built at z=12..14, so anything below that came DOWN. The
+    # heap it makes is a voxel taller than it used to be now that leaves fall
+    # at a leaf's speed rather than a stone's, and settle on each other on the
+    # way — which is what a heap of leaves does.
+    assert int(leaves[:, 2].max()) <= 10, "and lies low — not hovering at tree height"
 
 
 def test_a_four_legged_table_does_not_tip():
@@ -471,7 +478,7 @@ def test_ash_cannot_carry_what_wood_could():
     assert (w.mat[2, 2, 4] == WOOD), "wood carries a 3-voxel overhang easily"
     top = w.mat[:, :, 4] == WOOD                # now the same shape, but made of ASH
     w.mat[:, :, 4][top] = ASH
-    for _ in range(8):
+    for _ in range(40):                         # see above: falling has a SPEED now
         w.step()
     assert w.mat[2, 2, 4] == AIR and w.mat[2, 2, 1] == ASH, \
         "ash far from the leg must CRUMBLE and fall"
@@ -581,7 +588,8 @@ def test_glass_shatters_on_landing_where_wood_thuds():
         w = World(12, 12, 14)
         w.fill(0, 12, 0, 12, 0, 1, STONE)
         w.fill(5, 6, 5, 6, 9, 12, material)     # a 1x1x3 column, high in the air
-        for _ in range(16):
+        for _ in range(60):                     # falling has a SPEED now, and starts
+                                                # from a standstill (sim._fall_speed)
             w.step()
         return w
     wg = drop(GLASS)
@@ -761,12 +769,15 @@ def test_every_decision_logs_the_whole_menu_beside_the_pick():
             break
     assert w.traces, "startling is a DECISION and must leave a trace"
     row = next(r for r in w.traces if r["percept"] == "sees_fire")
-    assert row["pick"] in row["menu"], "a pick must come FROM the menu"
-    assert len(row["menu"]) > 1, "a menu of one is not a choice"
+    for limb, menu in row["menus"].items():
+        assert row["pick"][limb] in menu, f"a {limb} pick must come FROM its menu"
+    assert len(row["menus"]["legs"]) > 1, "a menu of one is not a choice"
     assert row["by"] == "table", "the reflex table is today's policy"
-    assert "flee" in row["menu"] and "stay" in row["menu"], \
+    assert "stay" in row["menus"]["legs"], \
         "standing pat is always an option, and must be OFFERED as one"
-    assert "flee_answering" not in row["menu"], \
+    assert any(k.startswith("go(the door") for k in row["menus"]["legs"]), \
+        "and so is the door it can see and reach"
+    assert "say(coming)" not in row["menus"]["mouth"], \
         "answering presupposes something to answer — this body heard nothing"
     assert row["situation"]["percept"] == row["percept"]
     outs = {r["outcome"] for r in w.trace_outcomes()}
@@ -781,7 +792,8 @@ def test_swapping_the_policy_changes_what_the_body_does():
         name = "always_stay"
 
         def pick(self, situation, menu):
-            return [o["key"] for o in menu].index("stay")
+            return [o["key"] for o in menu].index("stay") \
+                if situation["limb"] == "legs" else 0
 
     w, p = _alarm_room(policy=Coward())
     for _ in range(600):
@@ -789,9 +801,10 @@ def test_swapping_the_policy_changes_what_the_body_does():
         if p["safe"]:
             break
     assert not p["safe"], "this policy never leaves, so nobody reaches the door"
-    assert w.traces and all(r["pick"] == "stay" for r in w.traces)
+    assert w.traces and all(r["pick"]["legs"] == "stay" for r in w.traces)
     fire = next(r for r in w.traces if r["percept"] == "sees_fire")
-    assert "flee" in fire["menu"], "fleeing was OFFERED and passed over"
+    assert any(k.startswith("go(the door") for k in fire["menus"]["legs"]), \
+        "fleeing was OFFERED and passed over"
     assert not w.speech, "and a body that stays put says none of the shout lines"
     w2, p2 = _alarm_room()
     for _ in range(600):
@@ -813,9 +826,9 @@ def test_the_menu_never_offers_a_door_that_is_not_there():
             break
     assert w.traces, "a walled-in body still NOTICES the fire"
     row = w.traces[0]
-    assert row["menu"] == ["stay"], \
-        "with no route out, fleeing is not on the menu at all"
-    assert row["pick"] == "stay", \
+    assert not any(k.startswith("go(the door") for k in row["menus"]["legs"]), \
+        "with no route out, the door is not on the menu at all"
+    assert row["pick"]["legs"] == "stay", \
         "and the table's answer being unavailable falls back to a legal one"
 
 
@@ -948,6 +961,13 @@ def _two_room_house(knows_world):
     return w, p
 
 
+def _place_tags(w, p):
+    """Which KINDS of place this body could name, right now."""
+    cells = np.argwhere(w.mat == FLESH)
+    fit, _start = w._fit_grid(cells, p.get("known"))
+    return {pl["tag"] for pl in w._places(p, cells, fit)}
+
+
 def test_a_stranger_must_FIND_the_door_a_resident_already_knows_it():
     """A body may only aim at what it has seen. The resident is given the
     building and can head for a door across two rooms; the stranger starts
@@ -959,18 +979,17 @@ def test_a_stranger_must_FIND_the_door_a_resident_already_knows_it():
     assert stranger["known"].mean() < 0.6, \
         "a stranger has seen only what one look affords"
     assert resident["known"].all(), "the resident is given the place"
-    goals_s = w_s._goals(stranger, np.argwhere(w_s.mat == FLESH))
-    assert "exit" not in goals_s, \
+    assert "go:exit" not in _place_tags(w_s, stranger), \
         "a door never laid eyes on is not a destination — not even an option"
     for _ in range(600):
         w_s.step()
         stranger["events"].clear()
     assert stranger["known"].mean() > 0.9, \
         "left alone, it goes and looks, and comes to know the building"
-    assert any(r["pick"] == "explore" for r in w_s.traces), \
-        "and it chose to — exploring is a PICK from the menu, not a script"
-    goals_after = w_s._goals(stranger, np.argwhere(w_s.mat == FLESH))
-    assert "exit" in goals_after, "having found the door, it can now aim at it"
+    assert any(r["tags"].get("legs") == "go:frontier" for r in w_s.traces), \
+        "and it chose to — going to look is a PICK from the menu, not a script"
+    assert "go:exit" in _place_tags(w_s, stranger), \
+        "having found the door, it can now aim at it"
 
 
 def test_a_body_with_nothing_happening_still_does_something():
@@ -988,7 +1007,8 @@ def test_a_body_with_nothing_happening_still_does_something():
     assert all(r["percept"] is None for r in w.traces), "and nothing prompted it"
     assert len(seen) > 8, f"it should get about; it visited only {len(seen)} spots"
     assert p["anchor"] != start, "it did not simply stand where it was put"
-    assert {r["pick"] for r in w.traces} <= {"wander", "explore", "stay"}
+    assert {r["tags"]["legs"] for r in w.traces} <= \
+        {"go:frontier", "go:roam", "go:step", "stay"}
 
 
 def _cantilever(frac):
@@ -1168,9 +1188,13 @@ def _burning_room_with_a_body_on_the_floor(rescuer):
     w.E[4, 8, 1] = 9.0e5
     down = _person(w, 16, 12); down["name"] = "Fallen"
     hero = _person(w, 22, 12); hero["name"] = "Hero"
-    if rescuer:                                   # the character sheet, edited
-        hero["reflexes"] = {k: "drag_them_out" for k in
-                            ("sees_fire", "chokes", "hears_alarm", "sees_runner")}
+    if rescuer:                                   # the character sheet, edited:
+        hero["reflexes"] = {k: {"legs": "go:exit", "hands": "hold"}
+                            for k in ("sees_fire", "chokes",   # legs leave, and
+                                      "hears_alarm", "sees_runner")}  # hands do
+                                                  # not leave empty. One row, two
+                                                  # parts of a body, no compound
+                                                  # response written anywhere
     for _ in range(1500):
         w.step()
         down["awake"] = False                     # hold them under for the test
@@ -1193,7 +1217,469 @@ def test_someone_can_be_DRAGGED_out_and_it_is_a_choice():
         "an ordinary person saves themselves and leaves the body"
     assert hero_r["safe"] and down_r["safe"], \
         "a rescuer brings them out too"
-    assert any(r["pick"] == "drag_them_out" for r in w_r.traces), \
+    assert any(r["tags"].get("hands") == "hold" for r in w_r.traces), \
         "and it went through the menu like any other decision"
-    assert all(r["pick"] != "drag_them_out" for r in w_d.traces), \
+    assert all(r["tags"].get("hands") != "hold" for r in w_d.traces), \
         "while the other never even considered it"
+    grab = next(r for r in w_r.traces if r["tags"].get("hands") == "hold")
+    assert " & " in grab["program"], \
+        "hauling someone out is TWO parts of a body used at once, composed — " \
+        "there is no drag_them_out response anywhere in the sim"
+    # AND A WHOLE BODY CAME OUT. This test once passed while the hauler towed
+    # a THREE-voxel fragment of a 342-voxel person to the door and the flag
+    # said "safe" — a rescue that read correct and moved nobody. Count the
+    # flesh: a person who was carried out is a person who is no longer here.
+    assert not (w_r.mat == FLESH).any(), \
+        "both bodies left the lattice; nothing of either was left behind"
+    assert int((w_d.mat == FLESH).sum()) > 300, \
+        "while in the other world a whole person is still lying on the floor"
+
+
+# ---------------------------------------------------------------------------
+# MOMENTUM. Four things a body should be able to do, none of which it can:
+# jump, fall off a cliff and roll, hang under a canopy, swing an axe. They are
+# one missing quantity, not four missing features — matter here has position
+# and mass and no VELOCITY, so every fall is one voxel a tick whatever the
+# thing weighs or however long it has been falling, and a blow carries the
+# force of a push. These tests are the specification for that quantity. They
+# are marked xfail(strict) so they shout the day they pass.
+# ---------------------------------------------------------------------------
+
+class _Wants:
+    """A policy that picks one named act per limb and the null act otherwise.
+    These tests are about BODIES, not about taste, so taste is pinned."""
+
+    name = "wants"
+
+    def __init__(self, **want):
+        self.want = want
+
+    def pick(self, situation, menu):
+        tag = self.want.get(situation["limb"])
+        for i, opt in enumerate(menu):
+            if opt["tag"] == tag:
+                return i
+        return 0
+
+
+def _lowest_flesh_z(w):
+    """How low the person's matter is, ON the lattice or IN THE AIR. A body in
+    flight has left the grid, so counting only lattice cells says a jumper
+    vanished rather than rose."""
+    zs = []
+    on = np.argwhere(w.mat == FLESH)
+    if len(on):
+        zs.append(int(on[:, 2].min()))
+    flying = w.bodies_array()
+    if len(flying):
+        sel = flying[flying[:, 3] == FLESH]
+        if len(sel):
+            zs.append(int(sel[:, 2].min()))
+    return min(zs) if zs else None
+
+
+def _flesh_shape(w):
+    """The person's SHAPE, free of where they happen to be — counting matter in
+    flight as well as matter on the lattice, since a jumper spends most of a
+    jump off the grid entirely."""
+    parts = [np.argwhere(w.mat == FLESH)]
+    flying = w.bodies_array()
+    if len(flying):
+        sel = flying[flying[:, 3] == FLESH]
+        if len(sel):
+            parts.append(np.round(sel[:, :3]).astype(np.int64))
+    cells = np.concatenate([q for q in parts if len(q)]) if any(
+        len(q) for q in parts) else None
+    if cells is None:
+        return None
+    return set(map(tuple, cells - cells.min(axis=0)))
+
+
+def _flesh_grams(w):
+    """Every gram of person there is, wherever it happens to be."""
+    on = float(w.smass[w.mat == FLESH].sum())
+    return on + sum(float(b["masses"][b["mats"] == FLESH].sum()) for b in w.bodies)
+
+
+def _standing_room(nx=30, ny=20, nz=80):
+    w = World(nx, ny, nz, voxel_cm=5)
+    w.fill(0, nx, 0, ny, 0, 1, STONE)
+    w.exits = [(nx - 2, ny // 2)]
+    return w
+
+
+def test_a_person_can_JUMP_and_it_is_a_CHOICE():
+    """A jump is legs pushing the whole body off the ground, and the height
+    must FALL OUT of the push and the mass — not be a number anybody typed.
+    ~400 N against 28.5 kg gets a person clear of the floor; a heavier person
+    gets less clear, for free, because it is the same arithmetic.
+
+    It is also a CHOICE: offered only when there is ground underfoot to push
+    against, and taken through the same menu as everything else. The body that
+    does not choose it never leaves the floor, in the same room."""
+    from src.voxel.scenes import _person
+    w = _standing_room()
+    _person(w, 10, 10)
+    w.policy = _Wants(legs="jump")
+    whole = _flesh_grams(w)
+    floor = _lowest_flesh_z(w)
+    shape = _flesh_shape(w)
+    high, back, lightest, landed = floor, False, whole, None
+    for _ in range(200):
+        w.step()
+        z = _lowest_flesh_z(w) or floor
+        high = max(high, z)
+        back = back or (high > floor and z == floor)   # up, and down again
+        lightest = min(lightest, _flesh_grams(w))
+        landed = _flesh_shape(w) or landed
+    # ~1 m, and that is a CONSEQUENCE, not a setting: 1400 N of leg against
+    # 28.5 kg, over a 25 cm crouch. The body is known to be light for its size
+    # (see scenes._person), so it jumps high for a person — give it a real
+    # adult's mass and the same legs and the same arithmetic gives ~0.4 m.
+    assert (high - floor) * 0.05 >= 0.10, \
+        f"the body never left the ground (best {high - floor} voxels up)"
+    assert back, "and it comes back DOWN — what goes up is not a policy choice"
+    assert abs(lightest - whole) < 1.0, \
+        f"whole all the way through — a jump is not an injury ({lightest} of {whole} g)"
+    # AND THE SAME SHAPE. Mass alone does not catch this: a landing that drove
+    # the body into the floor shoved the buried cells upward as debris, which
+    # comes out through whatever is at the top of a person, and every gram was
+    # still present while the face was being rearranged.
+    assert landed == shape, \
+        "and lands in the shape it left in — a jump is not a disfigurement"
+
+    w2 = _standing_room()
+    _person(w2, 10, 10)
+    base = _lowest_flesh_z(w2)
+    for _ in range(200):
+        w2.step()
+        assert _lowest_flesh_z(w2) == base, \
+            "a body that did not choose to jump never leaves the floor"
+
+
+@pytest.mark.xfail(strict=True, reason="no momentum: a fall cannot be spread over time")
+def test_ROLLING_on_landing_spreads_the_blow_that_a_rigid_landing_takes_whole():
+    """The same fall, the same body, the same floor — and one of them survives
+    it. A landing is a momentum change: the force is the change divided by the
+    TIME taken to make it, so a body that keeps moving and comes to rest over
+    many ticks is struck far less hard than one that stops dead. That is the
+    whole of rolling, and it is arithmetic rather than a rule about rolls.
+
+    Measured in flesh: a rigid landing from this height breaks the body,
+    the same landing rolled does not."""
+    from src.voxel.scenes import _person
+
+    def drop(roll):
+        w = World(40, 20, 60, voxel_cm=5)
+        w.fill(0, 40, 0, 20, 0, 1, STONE)             # the ground
+        w.fill(0, 14, 0, 20, 1, 26, STONE)            # a ledge to stand off
+        w.exits = [(38, 10)]
+        p = _person(w, 9, 10)                         # standing on the ledge
+        for c in ("torso",):                          # lift the body onto it
+            pass
+        w.policy = _Wants(legs="roll" if roll else "stay")
+        before = _flesh_grams(w)
+        for _ in range(400):
+            w.step()
+            if _lowest_flesh_z(w) is not None and _lowest_flesh_z(w) <= 2:
+                break
+        for _ in range(40):
+            w.step()
+        return before, _flesh_grams(w), p
+
+    b0, hard, p0 = drop(False)
+    b1, soft, p1 = drop(True)
+    assert hard < b0 * 0.98, "a rigid landing from 1.2 m breaks a body"
+    assert soft > hard, "and rolling through it costs less"
+    assert p1["alive"], "the one who rolled lives"
+
+
+def test_a_WIDE_thing_falls_SLOWER_than_a_compact_one_of_the_same_mass():
+    """The parachute, with nothing in it that is about parachutes. Two objects
+    of exactly the same material and exactly the same mass, one spread flat and
+    one balled up, dropped the same distance. Air resists what it must go
+    around, so the flat one loses. Everything a canopy does is this, and the sim
+    already knows the shape — a cross-section is countable.
+
+    Today they land on the same tick, because everything unsupported falls one
+    voxel a tick whatever it is."""
+
+    def fall(x0, x1, y0, y1, deep):
+        w = World(30, 30, 140, voxel_cm=5)
+        w.fill(0, 30, 0, 30, 0, 1, STONE)
+        # a CANOPY is a lot of area with very little behind it, so the stuff is
+        # thin: at 1% fill this is fabric, not planking
+        w.fill(x0, x1, y0, y1, 110, 110 + deep, WOOD, frac=0.01)
+        mass = float(w.smass[w.mat == WOOD].sum())
+        for t in range(3000):
+            w.step()
+            solid = np.argwhere(w.mat == WOOD)
+            if len(solid) and int(solid[:, 2].min()) <= 1:
+                return t, mass
+        return 3000, mass
+
+    t_flat, m_flat = fall(3, 28, 3, 28, 1)          # spread: 25 x 25 x 1
+    t_ball, m_ball = fall(13, 18, 13, 18, 25)       # balled: 5 x 5 x 25
+    assert abs(m_flat - m_ball) < 1.0, \
+        f"the test is only fair if the masses match ({m_flat} vs {m_ball})"
+    assert t_flat > t_ball * 1.3, \
+        f"the spread sheet must lose to the wad ({t_flat} vs {t_ball} ticks)"
+
+
+@pytest.mark.xfail(strict=True, reason="no momentum: a swing carries no more than a push")
+def test_an_axe_SWUNG_bites_where_the_same_axe_PRESSED_does_not():
+    """The same body, the same axe, the same tree. Leaning on it does nothing;
+    swinging it takes a bite. Nothing here is about axes — a swing puts the
+    body's force behind a MOVING mass, and what arrives is kinetic energy
+    delivered over the short distance the edge takes to stop, which is a far
+    greater force than the same body could ever push with. The blade is sharp
+    in the only way the sim can mean it: the contact is a few voxels, so the
+    same energy lands as a much larger stress."""
+    from src.voxel.scenes import _person
+
+    def chop(swing):
+        w = World(40, 20, 40, voxel_cm=5)
+        w.fill(0, 40, 0, 20, 0, 1, STONE)
+        w.fill(24, 27, 9, 12, 1, 30, WOOD)             # the trunk
+        w.exits = [(38, 10)]
+        p = _person(w, 18, 10)
+        w.fill(21, 23, 10, 11, 20, 21, IRON)           # an axe head, in reach
+        w.policy = _Wants(hands="swing" if swing else "press", legs="stay")
+        before = float(w.smass[w.mat == WOOD].sum())
+        for _ in range(300):
+            w.step()
+        return before, float(w.smass[w.mat == WOOD].sum()), p
+
+    b0, pressed, _ = chop(False)
+    b1, hewn, _ = chop(True)
+    assert pressed > b0 * 0.999, "leaning on an axe does not fell anything"
+    assert hewn < b1 * 0.99, "swinging it takes wood out of the trunk"
+
+
+def _drop_sheet(x0, x1, y0, y1, frac, top=100, nz=110):
+    """Drop one flat sheet from `top` and return (ticks to land, grams)."""
+    w = World(30, 30, nz, voxel_cm=5)
+    w.fill(0, 30, 0, 30, 0, 1, STONE)
+    w.fill(x0, x1, y0, y1, top, top + 1, WOOD, frac=frac)
+    grams = float(w.smass[w.mat == WOOD].sum())
+    for t in range(3000):
+        w.step()
+        here = np.argwhere(w.mat == WOOD)
+        if len(here) and int(here[:, 2].min()) <= 1:
+            return t, grams
+    return 3000, grams
+
+
+def test_a_WIDER_sheet_of_the_same_stuff_falls_at_the_SAME_speed():
+    """The invariant that says we modelled the right thing. Terminal speed
+    balances drag against weight, and BOTH grow with area — so a big flat sheet
+    and a small flat sheet of the same material and the same thickness come
+    down together, however different their sizes. Mass per unit area is what
+    matters, not size.
+
+    This is the test that would catch drag being read off a footprint: an
+    implementation that made bigger things slower would fail it, and would look
+    perfectly convincing on the wide-versus-balled test alone."""
+    small, gs = _drop_sheet(11, 19, 11, 19, 0.02)        # 8 x 8
+    big, gb = _drop_sheet(5, 25, 5, 25, 0.02)            # 20 x 20, 6x the mass
+    assert gb > gs * 5, "the wider sheet really is much heavier in total"
+    assert abs(small - big) <= 2, \
+        f"and yet they land together ({small} vs {big} ticks) — same mass per area"
+
+
+def test_a_WIDER_canopy_under_the_SAME_mass_falls_SLOWER():
+    """And the invariant is exactly why a parachute works. Hold the LOAD fixed
+    and spread it over more canopy: mass per unit area drops, and so does the
+    speed it settles at. This is the design rule for every canopy ever sewn,
+    and the sim was told none of it."""
+    tight, gt = _drop_sheet(11, 19, 11, 19, 0.05)        # 8 x 8, thick
+    wide, gw = _drop_sheet(5, 25, 5, 25, 0.008)          # 20 x 20, thin
+    assert abs(gt - gw) < gt * 0.05, \
+        f"the same load hangs under both ({gt:.1f} g vs {gw:.1f} g)"
+    assert wide > tight * 1.5, \
+        f"the wider canopy must come down slower ({wide} vs {tight} ticks)"
+
+
+def _chasm(policy_tag):
+    """Two ledges with a drop between them, and a person on the near one."""
+    from src.voxel.scenes import _person
+    w = World(70, 20, 80, voxel_cm=5)
+    w.fill(0, 70, 0, 20, 0, 1, STONE)               # the bottom, far below
+    w.fill(2, 24, 0, 20, 1, 12, STONE)              # the near ledge
+    w.fill(34, 68, 0, 20, 1, 12, STONE)             # the far one, 50 cm away
+    w.exits = [(66, 10)]
+    p = _person(w, 9, 10, z0=12)                    # standing on the near ledge
+    w.policy = _Wants(legs=policy_tag)
+    far, low = 0.0, 99
+    for _ in range(120):
+        w.step()
+        on = np.argwhere(w.mat == FLESH)
+        if len(on):                                 # standing somewhere, not
+            far = max(far, float(on[:, 0].mean()))  # mid-flight
+            if far > 34:
+                low = min(low, int(on[:, 2].min()))
+    return p, far, low
+
+
+def test_a_person_can_LEAP_a_gap_they_cannot_WALK_across():
+    """A jump that goes nowhere is barely a jump. Aimed, the body leaves the
+    ground at the angle that carries furthest and at exactly the speed the
+    distance needs — so it crosses a gap the legs cannot, and lands on the far
+    side rather than hurling itself as hard as it can.
+
+    The walker is the control, and it is not a strawman: the same body, the
+    same ledges, told to walk. It stays on the near side, because a column of
+    open air is not somewhere to stand."""
+    walker, wfar, _wlow = _chasm("go:step")
+    leaper, lfar, llow = _chasm("leap")
+    assert wfar < 24, \
+        f"the walker never crosses — open air is not somewhere to stand ({wfar:.1f})"
+    assert lfar > 34, f"and the leaper lands on the FAR ledge ({lfar:.1f})"
+    assert llow >= 12, f"on TOP of it, not fallen into the gap (z={llow})"
+    assert leaper["alive"], "and it survived the landing"
+
+
+def _lumps(mask):
+    """How many separate connected pieces that matter is in."""
+    lab = np.where(mask, -1, -2)
+    n = 0
+    while (lab == -1).any():
+        lab[tuple(np.argwhere(lab == -1)[0])] = n
+        while True:
+            cur = lab == n
+            g = cur.copy()
+            g[1:] |= cur[:-1]; g[:-1] |= cur[1:]
+            g[:, 1:] |= cur[:, :-1]; g[:, :-1] |= cur[:, 1:]
+            g[:, :, 1:] |= cur[:, :, :-1]; g[:, :, :-1] |= cur[:, :, 1:]
+            g &= (lab == -1) | cur
+            if (g == cur).all():
+                break
+            lab[g & (lab == -1)] = n
+        n += 1
+    return n
+
+
+def test_a_SWUNG_arm_breaks_GLASS_and_bounces_off_a_POST():
+    """The test that settles animation versus physics — and it discriminates on
+    MATERIAL, not just on motion.
+
+    A pose is animation if it only changes the picture. There is no picture
+    here: every law reads the lattice, so while the arm comes round it really is
+    somewhere else, and what stops it is paid the rotational energy it had.
+    Glass gives way at 0.2 kJ/m2 and a wooden post does not at 8.0, so the same
+    fist at the same speed shatters one and marks neither the other nor itself.
+
+    Nothing about the blow is authored. The muscle makes a torque that fades
+    with speed (Hill), the limb's own inertia decides how fast it comes round,
+    and 1/2 I omega-squared meets each target's own toughness. Nobody typed how
+    long a swing takes, how fast it goes, or what it is strong enough to break."""
+    from src.voxel.scenes import _person
+
+    def strike(tag, target):
+        w = World(30, 20, 44, voxel_cm=5)
+        w.fill(0, 30, 0, 20, 0, 1, STONE)
+        w.exits = [(28, 10)]
+        p = _person(w, 9, 10)
+        w.fill(17, 18, 10, 11, 1, 30, target)      # a post, at arm's height
+        full = float(w.smass[w.mat == target].max())
+        w.policy = _Wants(hands=tag, legs="stay")
+        pieces = 1
+        for _ in range(40):
+            w.step()
+            pieces = max(pieces, _lumps(w.mat == FLESH))
+        hit = w.mat == target
+        return (int((hit & (w.smass < 0.9 * full)).sum()),
+                float(w.smass[hit].sum()), w, pieces)
+
+    still, m_still, w0, _ = strike("keep", GLASS)
+    swung, m_swung, w1, pieces = strike("swing", GLASS)
+    wood, m_wood, _w2, _ = strike("swing", WOOD)
+    assert still == 0, "a hand held at rest breaks nothing, not even glass"
+    assert swung > 0, f"a swung one shatters glass ({swung} voxels)"
+    assert wood == 0, \
+        f"and the same swing does NOT break a wooden post ({wood} voxels) — " \
+        f"a bare fist is not an axe, and the difference is the material"
+    assert abs(m_still - m_swung) < 1.0, \
+        f"breaking is not losing: every gram is still there " \
+        f"({m_still:.0f} vs {m_swung:.0f} g)"
+    assert any(r["tags"].get("hands") == "swing" for r in w1.traces), \
+        "and swinging went through the menu like any other act"
+    assert all(r["tags"].get("hands") != "swing" for r in w0.traces), \
+        "while the other never chose it"
+    # AND THE ARM STAYS ON. A limb is held at its joint; rasterising it wherever
+    # the swing stopped left the far end nowhere near the body, and a lump of
+    # flesh touching nothing is not an arm — measured, one person became three
+    # pieces and left 18 voxels of hand on the floor.
+    assert pieces == 1, \
+        f"a person who swings is still ONE person afterwards ({pieces} pieces)"
+
+def _on_a_ledge(pull_N, brace_N, ticks=70):
+    """One man on a ledge 1.5 m up, one below with hold of his ankle, walking
+    away. Everything about the two of them is identical except two numbers."""
+    from src.voxel.scenes import _person, _Wants
+
+    w = World(32, 12, 64, voxel_cm=5)
+    w.fill(0, 32, 0, 12, 0, 1, STONE)                 # the ground
+    w.fill(18, 32, 0, 12, 1, 31, STONE)               # the ledge, face at x=18
+    w.exits = []
+    a = _person(w, 14, 6, z0=1)                       # below
+    a["name"], a["strength_N"], a["facing"] = "the puller", pull_N, (-1.0, 0.0)
+    b = _person(w, 21, 6, z0=31)                      # above, at the lip
+    b["name"], b["strength_N"] = "the mark", brace_N
+    w.policy = _Wants(each={"the puller": {"hands": "take hold of the mark",
+                                           "legs": "straight on"}})
+    grams = _flesh_grams(w)
+    for _ in range(ticks):
+        w.step()
+    comp, sl = w._person_cells(b)
+    cells = np.argwhere(comp)
+    return {"x": float(cells[:, 0].mean()) + sl[0].start,
+            "z": int(cells[:, 2].min()),
+            "grams": grams, "after": _flesh_grams(w), "w": w}
+
+
+def test_a_BRACED_man_cannot_be_PULLED_off_a_LEDGE_and_a_WEAKER_one_can():
+    """Can a man pull another off a ledge? It depends, and what it depends on is
+    arithmetic — which is the whole claim.
+
+    A body that is awake, alive and has something under its feet BRACES: it puts
+    its own strength into the floor against whoever is pulling. That is one line,
+    and three different stories come out of it without any of them being written
+    down — an ordinary man cannot shift an equal, a stronger man can shift the
+    same equal, and an ordinary man can shift someone weaker. The unconscious
+    case every rescue in this suite depends on is the SAME line with the brace at
+    zero, which is why it did not need its own rule either.
+
+    Before this, taking hold was legal only on someone already unconscious. That
+    was a case wearing a flag: it made rescue the only reason two people ever
+    touched, and it made this question unaskable rather than merely hard. The
+    force test also used to be answered ONCE, at the moment of grabbing, which
+    said a body knows before touching you whether you can be moved; it is asked
+    every tick now, because the answer changes when a man's heels leave the floor.
+
+    Nothing carries him over the lip but the support law. He is walked off his
+    own footing, hangs by his span, and goes."""
+    braced = _on_a_ledge(pull_N=400.0, brace_N=400.0)
+    hard = _on_a_ledge(pull_N=700.0, brace_N=400.0)
+    weak = _on_a_ledge(pull_N=400.0, brace_N=120.0)
+
+    assert braced["z"] == 31, \
+        f"an ordinary man cannot drag an equal anywhere: the mark should still " \
+        f"be stood on the ledge, and is at z={braced['z']}"
+    assert abs(braced["x"] - 21.0) < 1.0, \
+        f"...nor even shift him along it (x {braced['x']:.1f}, was 21)"
+    assert hard["z"] <= 2, \
+        f"a STRONGER man drags the same braced man off it (z={hard['z']})"
+    assert weak["z"] <= 2, \
+        f"and an ordinary man drags a WEAKER one off it (z={weak['z']}) — same " \
+        f"line of arithmetic, other side of it"
+    for got in (braced, hard, weak):
+        assert abs(got["after"] - got["grams"]) < 1.0, \
+            f"and nobody loses a gram falling ({got['grams']:.0f} -> " \
+            f"{got['after']:.0f} g)"
+    w = hard["w"]
+    assert _lumps(w.mat == FLESH) == 2, \
+        "two people went over the lip's worth of trouble and are still two whole " \
+        "people, not a scatter of flesh"
+    assert any(r["tags"].get("hands") == "hold" for r in w.traces), \
+        "and taking hold went through the menu like any other act"

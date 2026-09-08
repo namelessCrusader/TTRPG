@@ -408,7 +408,7 @@ def alchemist(frames_dir, ticks=900, every=8):
 
 
 # ── the blocky humanoid ──────────────────────────────────────────────────────
-def _person(w, px, py):
+def _person(w, px, py, z0=1):
     """A person, finally with a body: two legs, torso, two arms, a head.
     ~1.5 m of FLESH at 5 cm voxels. A physical object first — it stands by the
     support law, tips by the torque law, chars by the combustion law.
@@ -422,14 +422,41 @@ def _person(w, px, py):
     known softness, not a claim: the force law is right, the body is thin.
     Thickness went into DEPTH (y) and not width (x) on purpose — the walking
     footprint, and so every doorway in every scene, is unchanged."""
-    w.fill(px, px + 1, py - 1, py + 2, 1, 15, FLESH, frac=0.9)      # left leg
-    w.fill(px + 2, px + 3, py - 1, py + 2, 1, 15, FLESH, frac=0.9)  # right leg
-    w.fill(px, px + 3, py - 2, py + 3, 15, 27, FLESH, frac=0.9)     # torso
-    w.fill(px - 1, px, py - 1, py + 2, 18, 27, FLESH, frac=0.85)    # left arm
-    w.fill(px + 3, px + 4, py - 1, py + 2, 18, 27, FLESH, frac=0.85)  # right arm
-    w.fill(px, px + 2, py - 1, py + 2, 27, 31, FLESH, frac=0.9)     # head
+    z = z0 - 1                                   # stands ON whatever is at z0
+    segs = {}
+
+    def part(name, x0, x1, y0, y1, z1, z2, frac):
+        """Build one piece and REMEMBER WHICH VOXELS IT IS.
+
+        A body made of named pieces is not decoration: it is the difference
+        between a lump that can only be moved whole and one that can move an arm.
+        The sim cannot work this out for itself — every voxel is just FLESH, and
+        nothing in the lattice says where a shoulder is — but the scene that
+        built the body knows exactly, and how a thing was built is the object's
+        own business to declare (Ruling 2, question 1)."""
+        was = w.mat == FLESH
+        w.fill(x0, x1, y0, y1, z1, z2, FLESH, frac=frac)
+        segs[name] = np.argwhere((w.mat == FLESH) & ~was)
+
+    part("left leg", px, px + 1, py - 1, py + 2, z + 1, z + 15, 0.9)
+    part("right leg", px + 2, px + 3, py - 1, py + 2, z + 1, z + 15, 0.9)
+    part("torso", px, px + 3, py - 2, py + 3, z + 15, z + 27, 0.9)
+    part("left arm", px - 1, px, py - 1, py + 2, z + 18, z + 27, 0.85)
+    part("right arm", px + 3, px + 4, py - 1, py + 2, z + 18, z + 27, 0.85)
+    part("head", px, px + 2, py - 1, py + 2, z + 27, z + 31, 0.9)
     person = w.add_person(px + 1, py)                            # and now: alive
-    person.update({"px": px, "py": py, "head_z": 28})
+    # segments and joints are kept as OFFSETS from the body's own corner, so
+    # they survive the body walking, being shoved, or being carried out
+    origin = np.concatenate(list(segs.values())).min(axis=0)
+    person["segs"] = {k: v - origin for k, v in segs.items()}
+    person["joints"] = {}
+    for arm in ("left arm", "right arm"):
+        cells = segs[arm]
+        person["joints"][arm] = np.array(                  # the shoulder: the
+            [int(round(cells[:, 0].mean())),               # top of the limb,
+             int(round(cells[:, 1].mean())),               # where it meets the
+             int(cells[:, 2].max())]) - origin             # torso
+    person.update({"px": px, "py": py, "head_z": z + 28})
     return person
 
 
@@ -474,10 +501,10 @@ def fire_alarm(frames_dir, ticks=700, every=4):
     w.exits = [(13, 40)]                                     # the bed; its OPENING
     a = _person(w, 60, 30)                                   # faces the door, so the
     a["name"] = "Aldan"                                      # one thing Berel can
-    a["lines"] = {"flee_shouting": "Fire! The bed's caught — get out, get out!"}
+    a["lines"] = {"fire": "Fire! The bed's caught — get out, get out!"}
     b = _person(w, 32, 58)                                   # see is a man running
     b["name"] = "Berel"                                      # for it — but a SHOUT
-    b["lines"] = {"flee_answering": "I hear you! I'm coming!"}   # gets there first
+    b["lines"] = {"coming": "I hear you! I'm coming!"}   # gets there first
     for (ox, oy) in ((64, 16), (65, 17), (64, 18)):
         w.pour(ox, oy, 1, OIL, 100.0)
     for t in range(ticks):
@@ -556,10 +583,10 @@ def glasshouse(frames_dir, ticks=760, every=4):
         w.pour(ox, oy, 5, OIL, 100.0)                     # oil on the bench
     wren = _person(w, 70, 27)                             # facing the window
     wren["name"] = "Wren"
-    wren["lines"] = {"flee_shouting": "The bench is alight! Bram — the hedge, go!"}
+    wren["lines"] = {"fire": "The bench is alight! Bram — the hedge, go!"}
     bram = _person(w, 84, 52)                             # the far side, by the door
     bram["name"] = "Bram"
-    bram["lines"] = {"flee_answering": "Right behind you!"}
+    bram["lines"] = {"coming": "Right behind you!"}
     eye_w = (71.0, 27.0, 30.0)
     fire_at = (25.0, 26.0, 6.0)
     seen_through_glass = None
@@ -651,11 +678,247 @@ def house_fire(frames_dir, ticks=900, every=10):
             print(f"t{t}: burning {int(w.burning().sum())}, {_exposure(w, p)}", flush=True)
 
 
+
+# ── scenario: a body leaves the ground ───────────────────────────────────────
+class _Wants:
+    """A policy that picks one named act per limb, the null act otherwise.
+
+    A render is a demonstration, not a drama: pinning the taste keeps the clip
+    about whether the PHYSICS works. The pick still goes through the same menu,
+    is still checked for legality, and is still written to the trace — a body
+    with nothing underfoot is never offered a jump, however much this wants one.
+
+    A want is matched against a row's TAG first and then against its NAME, so a
+    scene can ask for a kind of act ("swing") or for one particular row ("go(the
+    door east)") without the sim growing a second way to be told.
+
+    And it can be given PER PERSON, because the moment a scene has two people in
+    it they stop wanting the same thing: one pulls, one digs their heels in."""
+
+    name = "wants"
+
+    def __init__(self, each=None, **want):
+        self.want, self.each = want, each or {}
+
+    def pick(self, situation, menu):
+        want = self.each.get(situation["who"], self.want)
+        tag = want.get(situation["limb"])
+        if not tag:
+            return 0
+        for i, opt in enumerate(menu):
+            if opt["tag"] == tag:
+                return i
+        for i, opt in enumerate(menu):
+            if tag in opt["key"]:
+                return i
+        return 0
+
+
+def jumper(frames_dir, ticks=260, every=2):
+    """A person jumps, and a crate falls beside them.
+
+    Two things to watch, both impossible a day ago. The body LEAVES THE GROUND —
+    legs put 1400 N into the floor over a crouch, what is left after holding its
+    own weight up becomes speed, and the height follows. And the crate does not
+    descend at a stately one voxel a tick: it starts from rest and picks up
+    speed, because falling finally has one."""
+    w = World(34, 20, 64, voxel_cm=5)
+    w.fill(0, 34, 0, 20, 0, 1, STONE)                    # the floor
+    w.exits = [(32, 10)]
+    p = _person(w, 8, 10)
+    w.policy = _Wants(legs="jump")
+    w.fill(22, 26, 8, 12, 44, 48, WOOD, frac=0.6)        # a crate, high up
+    for t in range(ticks):
+        w.step()
+        for e in p["events"]:
+            print(e, flush=True)
+        p["events"].clear()
+        if w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 40 == 0:
+            flying = "airborne" if w.bodies else "on the floor"
+            print(f"t{t}: {flying}", flush=True)
+
+
+# ── scenario: a gap the legs cannot cross ────────────────────────────────────
+def leap(frames_dir, ticks=90, every=1):
+    """A person jumps a chasm they cannot walk across.
+
+    The jump used to go straight up and land where it started, which is barely
+    a jump — the whole point of having a velocity is that it has a DIRECTION.
+    Aimed, the body leaves at the angle that carries furthest and at exactly
+    the speed the distance needs, so it lands where it meant to rather than
+    hurling itself as hard as it can. And the gap is a real obstacle: a column
+    of open air is not somewhere to stand, so the route planner will not walk
+    anyone over it any more.
+
+    Nothing decides to leap because the gap is there. The option is OFFERED
+    because a landing spot exists that no route reaches; a leap to somewhere it
+    could simply walk to is not on the menu at all."""
+    w = World(70, 20, 80, voxel_cm=5)
+    w.fill(0, 70, 0, 20, 0, 1, STONE)               # the bottom, far below
+    w.fill(2, 24, 0, 20, 1, 12, STONE)              # the near ledge
+    w.fill(34, 68, 0, 20, 1, 12, STONE)             # the far one, 50 cm away
+    w.exits = [(66, 10)]
+    p = _person(w, 9, 10, z0=12)
+    w.policy = _Wants(legs="leap")
+    for t in range(ticks):
+        w.step()
+        for e in p["events"]:
+            print(e, flush=True)
+        p["events"].clear()
+        _save(w, frames_dir, t)
+        if not w.bodies and t % 10 == 0:
+            on = np.argwhere(w.mat == FLESH)
+            if len(on):
+                print(f"t{t}: standing at x={on[:, 0].mean():.0f}", flush=True)
+
+
+# ── scenario: a limb that is really there ────────────────────────────────────
+def swing(frames_dir, ticks=120, every=1):
+    """Two people swing a bare fist. One shatters a pane; one bruises a post.
+
+    The body was one rigid lump until now: it could travel, but nothing on it
+    could move by itself. An arm is the same rotation a toppling tree does —
+    cells turning about a pivot — with the pivot moved INSIDE the body and the
+    acceleration coming from a muscle instead of from gravity.
+
+    It is not animation. There is no picture here to change: every law reads the
+    lattice, so while the arm comes round it really is somewhere else, and what
+    stops it is paid 1/2 I omega-squared against its OWN toughness. Glass gives
+    at 0.2 kJ/m2, a wooden post does not at 8.0 — same fist, same speed, two
+    answers, and nobody wrote either of them down.
+
+    The speed is not typed in either. A muscle's torque fades as it speeds up
+    (Hill), so the swing settles at a shoulder's pace instead of accelerating
+    for as long as the sweep lasts. Before that, a bare fist splintered the
+    post, which is what having no force-velocity relation buys you."""
+    w = World(34, 22, 44, voxel_cm=5)
+    w.fill(0, 34, 0, 22, 0, 1, STONE)
+    w.exits = [(32, 11)]
+    a = _person(w, 9, 6)
+    a["name"] = "at the pane"
+    w.fill(17, 18, 5, 8, 1, 30, GLASS)                   # a pane
+    b = _person(w, 9, 16)
+    b["name"] = "at the post"
+    w.fill(17, 18, 15, 18, 1, 30, WOOD)                  # a post
+    w.policy = _Wants(hands="swing", legs="stay")
+    fullg = float(w.smass[w.mat == GLASS].max())
+    fullw = float(w.smass[w.mat == WOOD].max())
+    for t in range(ticks):
+        w.step()
+        for q in (a, b):
+            for e in q["events"]:
+                print(e, flush=True)
+            q["events"].clear()
+        _save(w, frames_dir, t)
+        if t % 20 == 0:
+            g, o = w.mat == GLASS, w.mat == WOOD
+            print(f"t{t}: pane {int((g & (w.smass < 0.9 * fullg)).sum())} broken "
+                  f"of {int(g.sum())} | post "
+                  f"{int((o & (w.smass < 0.9 * fullw)).sum())} broken "
+                  f"of {int(o.sum())}", flush=True)
+
+
+# ── scenario: pulling a man off a ledge ──────────────────────────────────────
+def ledge(frames_dir, ticks=150, every=1):
+    """Two men stand on the same ledge. Two men on the ground below take hold of
+    an ankle each and walk away. One goes over. One does not budge.
+
+    The only difference is how hard the one pulling can pull: 700 N at the front,
+    400 N at the back, against the same braced man both times. Nothing here is a
+    rule about cliffs, or about fighting. A body that is awake and has something
+    under its feet PUSHES BACK with its own strength, and that single line is the
+    whole of it — it is why an unconscious man can be dragged out of a fire and a
+    standing one cannot be dragged anywhere, why a stronger man manages it, and
+    why the resistance is gone the moment his heels are over air. Before this a
+    grip was legal only on someone already unconscious, which made this scene not
+    hard but UNASKABLE: the row was never on the menu.
+
+    What carries him over the lip is not the pull. Support is relaxed from the
+    ground up through material, so a man walked off his own footing hangs by his
+    span and then goes — he teeters, which nobody wrote either.
+
+    A KNOWN SOFTNESS: reach is measured across the floor and ignores height, so
+    the man below can take an ankle 1.5 m above him. At this height that is about
+    right; at five metres it would be nonsense."""
+    w = World(40, 22, 64, voxel_cm=5)
+    w.fill(0, 40, 0, 22, 0, 1, STONE)                    # the ground
+    w.fill(20, 40, 0, 22, 1, 31, STONE)                  # the ledge, 1.5 m of it
+    w.exits = []
+    pairs = []
+    for py, puller, mark, strength in ((5, "the strong one", "the first", 700.0),
+                                       (16, "the ordinary one", "the second", 400.0)):
+        a = _person(w, 16, py, z0=1)                     # below, on the ground
+        a["name"], a["strength_N"], a["facing"] = puller, strength, (-1.0, 0.0)
+        b = _person(w, 23, py, z0=31)                    # above, at the lip
+        b["name"] = mark
+        pairs.append((a, b))
+        print(f"{puller}: {strength:.0f} N against {mark}, braced", flush=True)
+    w.policy = _Wants(each={
+        a["name"]: {"hands": f"take hold of {b['name']}", "legs": "straight on"}
+        for a, b in pairs})
+    for t in range(ticks):
+        w.step()
+        for a, b in pairs:
+            for q in (a, b):
+                for e in q["events"]:
+                    print(e, flush=True)
+                q["events"].clear()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % 20 == 0:
+            say = []
+            for _a, b in pairs:
+                c, sl = w._person_cells(b)
+                if c is None or not c.any():
+                    continue
+                cells = np.argwhere(c)
+                say.append(f"{b['name']} x{cells[:, 0].mean() + sl[0].start:.0f} "
+                           f"z{cells[:, 2].min()}")
+            print(f"t{t}: " + " | ".join(say), flush=True)
+
+
+# ── scenario: the same mass, two shapes ──────────────────────────────────────
+def parachute(frames_dir, ticks=420, every=3):
+    """A sheet and a wad of EXACTLY the same stuff, dropped together.
+
+    Nothing here is about parachutes. Air resists what it has to go around, so
+    the one spread flat presents many faces to its own fall and the one balled
+    up presents few — and the wad reaches the floor while the sheet is still
+    coming down. Every canopy that ever worked is this. The sim was never told
+    an area: it counts the faces, because it has always known the shape."""
+    w = World(44, 26, 100, voxel_cm=5)
+    w.fill(0, 44, 0, 26, 0, 1, STONE)
+    w.fill(3, 19, 5, 21, 90, 91, WOOD, frac=0.01)        # spread: 16 x 16 x 1
+    w.fill(28, 32, 11, 15, 90, 106, WOOD, frac=0.01)     # balled: 4 x 4 x 16
+    wood = w.mat == WOOD
+    sheet = float(w.smass[:22][wood[:22]].sum())
+    wad = float(w.smass[22:][wood[22:]].sum())
+    print(f"sheet {sheet:.1f} g vs wad {wad:.1f} g — the same matter, two shapes",
+          flush=True)
+    down = {}
+    for t in range(ticks):
+        w.step()
+        for name, xs in (("sheet", slice(0, 22)), ("wad", slice(22, 44))):
+            if name in down:
+                continue
+            here = np.argwhere(w.mat[xs] == WOOD)
+            if len(here) and int(here[:, 2].min()) <= 1:
+                down[name] = t
+                print(f"t{t}: the {name} is down", flush=True)
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+    print(f"landed: {down}", flush=True)
+
+
 SCENARIOS = {"two_rooms": two_rooms, "tree_fell": tree_fell, "lamp_shelf": lamp_shelf,
              "drop_test": drop_test, "forge": forge, "fire_alarm": fire_alarm,
              "glasshouse": glasshouse,
              "alchemist": alchemist, "house_fire": house_fire,
              "burning_tree": burning_tree,
+             "jumper": jumper, "parachute": parachute, "leap": leap,
+             "swing": swing, "ledge": ledge,
              "tree_hinge": tree_hinge, "acid_bath": acid_bath, "torch_pillar": torch_pillar,
              "vessels": vessels, "pond": pond}
 
