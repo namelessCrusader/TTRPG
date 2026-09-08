@@ -1451,34 +1451,66 @@ def test_a_WIDE_thing_falls_SLOWER_than_a_compact_one_of_the_same_mass():
         f"the spread sheet must lose to the wad ({t_flat} vs {t_ball} ticks)"
 
 
-@pytest.mark.xfail(strict=True, reason="no momentum: a swing carries no more than a push")
 def test_an_axe_SWUNG_bites_where_the_same_axe_PRESSED_does_not():
     """The same body, the same axe, the same tree. Leaning on it does nothing;
-    swinging it takes a bite. Nothing here is about axes — a swing puts the
-    body's force behind a MOVING mass, and what arrives is kinetic energy
-    delivered over the short distance the edge takes to stop, which is a far
-    greater force than the same body could ever push with. The blade is sharp
-    in the only way the sim can mean it: the contact is a few voxels, so the
-    same energy lands as a much larger stress."""
+    swinging it takes a bite. A swing puts the body's force behind a MOVING
+    mass, and what arrives is kinetic energy — the axe is taken up through the
+    menu like any other act, carried to the fist (where the grip, not the
+    floor, holds it), and swung WITH the arm, its mass slowing the swing by
+    Hill's relation and its edge being what lands.
+
+    The blade is sharp in the only way a 5 cm lattice can mean it: the OBJECT
+    declares the area its edge concentrates a blow into (`fill(edge=...)`) —
+    a fact about a manufactured thing, the same class as its density
+    (Ruling 2 q1), because an edge is sub-voxel shape the lattice cannot draw.
+    An earlier note here claimed sharpness came from the contact being a few
+    voxels; a 5 cm contact is not sharp by any measure."""
     from src.voxel.scenes import _person
 
-    def chop(swing):
+    class _Chopper:
+        """Take something up first; after that, do `then` with the hands."""
+        name = "chopper"
+
+        def __init__(self, then):
+            self.then = then
+
+        def pick(self, sit, menu):
+            want = None
+            if sit["limb"] == "hands":
+                want = self.then if sit["holding"] else "hold"
+            elif sit["limb"] == "legs":
+                want = "stay"
+            for i, o in enumerate(menu):
+                if o["tag"] == want:
+                    return i
+            return 0
+
+    def chop(then):
         w = World(40, 20, 40, voxel_cm=5)
         w.fill(0, 40, 0, 20, 0, 1, STONE)
         w.fill(24, 27, 9, 12, 1, 30, WOOD)             # the trunk
         w.exits = [(38, 10)]
-        p = _person(w, 18, 10)
-        w.fill(21, 23, 10, 11, 20, 21, IRON)           # an axe head, in reach
-        w.policy = _Wants(hands="swing" if swing else "press", legs="stay")
-        before = float(w.smass[w.mat == WOOD].sum())
+        _person(w, 18, 10)
+        w.fill(22, 24, 10, 11, 1, 2, IRON, edge=2e-4)  # an axe head on the
+        w.policy = _Chopper(then)                      # ground, edge declared
+        full = float(w.smass[w.mat == WOOD].max())
+        grams = float(w.smass[w.mat == WOOD].sum())
         for _ in range(300):
             w.step()
-        return before, float(w.smass[w.mat == WOOD].sum()), p
+        hit = w.mat == WOOD
+        return (int((hit & (w.smass < 0.9 * full)).sum()),
+                grams, float(w.smass[hit].sum()), w)
 
-    b0, pressed, _ = chop(False)
-    b1, hewn, _ = chop(True)
-    assert pressed > b0 * 0.999, "leaning on an axe does not fell anything"
-    assert hewn < b1 * 0.99, "swinging it takes wood out of the trunk"
+    pressed, g0, g1, _w0 = chop("keep")     # holds it, and leans
+    hewn, h0, h1, w1 = chop("swing")
+    assert pressed == 0, "leaning on an axe fells nothing"
+    assert hewn > 0, f"swinging it takes a bite ({hewn} voxels chewed)"
+    assert abs(g0 - g1) < 1.0 and abs(h0 - h1) < 1.0, \
+        "chopping is breaking, not losing"
+    assert any(r["tags"].get("hands") == "hold" for r in w1.traces), \
+        "taking the axe up went through the menu"
+    assert any(r["tags"].get("hands") == "swing" for r in w1.traces), \
+        "and so did every swing"
 
 
 def _drop_sheet(x0, x1, y0, y1, frac, top=100, nz=110):
@@ -1708,3 +1740,111 @@ def test_a_BRACED_man_cannot_be_PULLED_off_a_LEDGE_and_a_WEAKER_one_can():
         "people, not a scatter of flesh"
     assert any(r["tags"].get("hands") == "hold" for r in w.traces), \
         "and taking hold went through the menu like any other act"
+
+
+def test_a_GRIP_CARRIES_LOAD_a_man_can_be_HELD_over_the_drop():
+    """A body pulled over an edge always fell, because support relaxes from
+    the ground up THROUGH material and a hand is not material — nothing on the
+    lattice could hold a hanging man. The grip is now an edge in the support
+    graph: what a footed body holds, within its strength, hangs from it. So
+    "left holding him over the drop" is a state of the world, not a foregone
+    fall — and the same man, unheld, is a wound on the ground.
+
+    The grip does not bear a load wholly above the holder's own crown (you
+    hold things UP), which is why the braced-ledge test above still ends with
+    its man on the ground: his puller stands BELOW him."""
+    from src.voxel.scenes import _person, _Wants
+
+    def over_the_drop(grab):
+        w = World(40, 12, 90, voxel_cm=5)
+        w.fill(0, 40, 0, 12, 0, 1, STONE)             # the ground
+        w.fill(16, 40, 0, 12, 1, 41, STONE)           # a ledge, 2 m up
+        w.exits = []
+        a = _person(w, 20, 6, z0=41)
+        a["name"] = "the holder"
+        b = _person(w, 26, 6, z0=41)
+        b["name"] = "the mark"
+        if grab:
+            w.policy = _Wants(each={"the holder":
+                                    {"hands": "take hold of the mark"}})
+        grams = _flesh_grams(w)
+        for _ in range(40):
+            w.step()
+        w.fill(25, 32, 0, 12, 1, 41, AIR)             # the floor under the
+        for _ in range(120):                          # mark's feet goes
+            w.step()
+        comp, sl = w._person_cells(b)
+        cells = np.argwhere(comp)
+        return {"z": int(cells[:, 2].min()) if len(cells) else -1,
+                "b": b, "grams": grams, "after": _flesh_grams(w)}
+
+    held = over_the_drop(True)
+    dropped = over_the_drop(False)
+    assert held["z"] == 41, \
+        f"held, he HANGS at the lip instead of falling (z={held['z']})"
+    assert held["b"]["hurt"] == 0.0 and held["b"]["awake"], \
+        "hanging from a grip costs him nothing"
+    assert dropped["z"] <= 2, \
+        f"unheld, the same man is on the ground (z={dropped['z']})"
+    assert dropped["b"]["hurt"] > 0.0, "and the fall was not free"
+    for got in (held, dropped):
+        assert abs(got["after"] - got["grams"]) < 1.0, \
+            "either way, every gram of person is accounted for"
+
+
+def test_a_HELD_THING_HANGS_from_the_fist_and_COMES_ALONG():
+    """Grab an OBJECT, not just a person. A grip is a constraint, not a verb
+    list: the held thing is carried to the hand, the grip (not the floor)
+    holds it there — item 20's support edge, pointed at a stick — and it
+    walks with the body as one kinematic unit, because what is held moves
+    with the hand."""
+    from src.voxel.scenes import _person, _Wants as _SceneWants
+
+    w = World(60, 20, 40, voxel_cm=5)
+    w.fill(0, 60, 0, 20, 0, 1, STONE)
+    w.exits = []
+    p = _person(w, 10, 10)
+    p["facing"] = (1.0, 0.0)
+    w.fill(14, 16, 10, 11, 1, 2, WOOD)            # a stick on the ground
+    w.policy = _SceneWants(hands="hold", legs="straight on")
+    grams = float(w.smass[w.mat == WOOD].sum())
+    for _ in range(240):
+        w.step()
+    stick = np.argwhere(w.mat == WOOD)
+    assert p.get("held"), "the grip survives the walk"
+    assert len(stick), "and the stick is somewhere"
+    assert float(stick[:, 0].mean()) > 22.0, \
+        f"the stick came along (x {float(stick[:, 0].mean()):.1f}, was 14.5)"
+    assert int(stick[:, 2].min()) > 10, \
+        f"and it HANGS from the fist, not dragged along the floor " \
+        f"(z={int(stick[:, 2].min())})"
+    assert abs(float(w.smass[w.mat == WOOD].sum()) - grams) < 1.0
+
+
+def test_a_flier_SCRAPES_PAST_a_wall_instead_of_stopping_on_it():
+    """`hit > 0` was an arrival, which is right for the ground and wrong for
+    the rock a falling body is grazing. What a wall takes is the sideways
+    speed; what stops a fall is something underneath. A block thrown at a
+    tall wall slides down its face and lands at the bottom — it does not
+    re-rasterise mid-air where it happened to touch. (The sideways energy is
+    absorbed by the wall unpaid: a stated softness that starts to matter once
+    throwing is built.)"""
+    w = World(40, 12, 40, voxel_cm=5)
+    w.fill(0, 40, 0, 12, 0, 1, STONE)
+    w.fill(20, 23, 0, 12, 1, 32, STONE)           # a tall wall
+    w.fill(10, 12, 5, 7, 26, 28, WOOD)            # a block in mid-air
+    cells = np.argwhere(w.mat == WOOD)
+    grams = float(w.smass[w.mat == WOOD].sum())
+    w._launch(cells, (6.0, 0.0, 0.0))             # thrown at the wall face
+    first = None
+    for _ in range(200):
+        w.step()
+        on = np.argwhere(w.mat == WOOD)
+        if len(on) and first is None:
+            first = int(on[:, 2].min())
+    on = np.argwhere(w.mat == WOOD)
+    assert first is not None and first <= 4, \
+        f"a flier re-rasterises where it LANDS, not where it grazed (z={first})"
+    assert int(on[:, 2].min()) <= 2, "it lies at the wall's base"
+    assert abs(float(w.smass[w.mat == WOOD].sum()) - grams) < 1.0, \
+        "and every gram arrived with it"

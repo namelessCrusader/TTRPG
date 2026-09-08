@@ -272,6 +272,13 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         # separately. ~400 N is what an unremarkable adult manages: about 40 kg
         # off the floor, and roughly 100 kg shoved along it.
         "strength_N": 400.0,
+        # A FIST CAN PULL, NOT CLAMP. Strength says what a grip can hang on to;
+        # this says what it can BALANCE. A load below the hold is a pendulum and
+        # costs the wrist nothing; a load whose weight rides above the hold is
+        # stood on the fist, and the wrist pays weight times lever to keep it
+        # there. ~20 N·m is holding a 4 kg hammer level at half a metre — near
+        # the edge of what an unremarkable wrist manages.
+        "wrist_Nm": 20.0,
         # LEGS ARE NOT ARMS. Reusing the arm number for a jump gets a push
         # barely above the body's own weight, which is not a jump; a leg press
         # is several times what the same person can lift. This is the force the
@@ -361,6 +368,9 @@ TOUGH = {AIR: 1e9, WOOD: 8.0, STONE: 3.0, IRON: 150.0, FLESH: 50.0,
 # Stone DOES spall in real fires (~400 °C) — deliberately left out until the
 # house-fire scene is ready for collapsing walls.
 TSHOCK = {GLASS: 120.0}
+# What a thing is CALLED when a hand reaches for it — menu text, nothing else.
+MATNAME = {WOOD: "wood", STONE: "stone", IRON: "iron", GLASS: "glass",
+           ASH: "ash", CHAR: "char", LEAF: "leaves", TIN: "tin", LEAD: "lead"}
 # TRANSMIT — how much light gets through the MATERIAL ITSELF at one voxel thick,
 # packed solid. This is genuinely a material property (glass is clear because of
 # what it is, not how it was built), so unlike porosity a table is its right
@@ -454,6 +464,16 @@ class World:
         self.fallh = np.zeros(self.shape, np.float32)   # voxels of ACCUMULATED free
                                                         # fall — cashed in as impact
                                                         # energy on landing
+        self.edge = np.zeros(self.shape, np.float32)    # DECLARED contact area, m²:
+                                                        # "this edge concentrates its
+                                                        # blow into X mm²" is a fact
+                                                        # about a manufactured thing
+                                                        # (Ruling 2 q1), same class as
+                                                        # density. 0 = blunt: a strike
+                                                        # spreads over the voxel face.
+                                                        # An edge is SUB-VOXEL shape,
+                                                        # the one thing 5 cm cells
+                                                        # cannot draw
         self.E = np.zeros(self.shape, np.float32)
         self.smoke = np.zeros(self.shape, np.float32)   # grams of combustion gas per voxel
         self.o2 = None                                  # filled on first step, after the
@@ -467,6 +487,7 @@ class World:
                                                         # the hole being made
         self._slack = None                              # support reach, cached
         self._slack_mat = None                          # ...against this layout
+        self._slack_grip = frozenset()                  # ...and these held cells
         self._region_count = 0
         self._torque_solid = None                       # solids snapshot for the tip check
         self._torque_sleep = 0                          # cooldown after a wedged landing
@@ -524,10 +545,13 @@ class World:
         return out
 
     # ── placing things (scene setup) ─────────────────────────────────────────
-    def fill(self, x0, x1, y0, y1, z0, z1, material, frac=1.0):
-        """frac < 1 is a PARTIAL voxel: a stick is mostly air inside its cube."""
+    def fill(self, x0, x1, y0, y1, z0, z1, material, frac=1.0, edge=0.0):
+        """frac < 1 is a PARTIAL voxel: a stick is mostly air inside its cube.
+        edge > 0 declares a working edge: the m² this thing concentrates a blow
+        into (an axe bit ~2e-4). A property of the OBJECT, not the material."""
         self.mat[x0:x1, y0:y1, z0:z1] = material
         self.smass[x0:x1, y0:y1, z0:z1] = SOLID[material][0] * frac * self.vox_l
+        self.edge[x0:x1, y0:y1, z0:z1] = edge
 
     def pour(self, x, y, z, fluid, ml, pot=1.0):
         if fluid not in _REACTIVE:
@@ -781,11 +805,15 @@ class World:
         # against ~134 ms to recompute, and it is correct by construction rather
         # than by remembering to invalidate — in a standing room nothing moves,
         # so this is skipped almost every tick.
-        if self._slack_mat is not None and np.array_equal(self._slack_mat, self.mat):
+        grip = self._grip_cells() if self.persons else frozenset()
+        if self._slack_mat is not None \
+                and np.array_equal(self._slack_mat, self.mat) \
+                and grip == self._slack_grip:
             slack = self._slack
         else:
-            slack = self._relax_slack(solid)
+            slack = self._relax_slack(solid, grip)
             self._slack_mat, self._slack = self.mat.copy(), slack
+            self._slack_grip = grip
         falling = solid & (slack < 0)
         if not falling.any():
             return None
@@ -824,8 +852,15 @@ class World:
         self.fdrop -= steps
         return steps
 
-    def _relax_slack(self, solid):
-        """Support reach, spread from the ground until it stops changing."""
+    def _relax_slack(self, solid, grip=frozenset()):
+        """Support reach, spread from the ground until it stops changing.
+
+        A GRIP IS AN EDGE IN THIS GRAPH. Support relaxes from the ground up
+        through material, and a hand is not material — so nothing on the
+        lattice could ever hold a hanging man, and everything a hand carried
+        had to rest on something. Cells a footed body holds within its
+        strength (`_grip_cells`) seed as supported, exactly like the ground
+        does: the load hangs from the body, and the body stands on its feet."""
         # STRENGTH FADES WITH THE MASS THAT IS LEFT. Span used to be read
         # straight off the material, so a trunk voxel eaten to a tenth of
         # itself carried like sound timber right up to the tick it became ash.
@@ -841,6 +876,10 @@ class World:
                         * np.clip(packed / 0.5, 0.0, 1.0)).astype(np.int16)
         slack = np.full(self.shape, -1, np.int16)
         slack[:, :, 0][solid[:, :, 0]] = span[:, :, 0][solid[:, :, 0]]
+        if grip:
+            gi = tuple(np.asarray(list(grip), np.int64).T)
+            slack[gi] = np.where(solid[gi],
+                                 np.maximum(slack[gi], span[gi]), slack[gi])
         while True:
             cand = np.full(self.shape, -1, np.int16)         # carried from directly below:
             cand[:, :, 1:] = np.where(                       # inherit the carrier's slack
@@ -876,7 +915,8 @@ class World:
             arrived |= m
             if not m.any():
                 continue
-            for arr in (self.mat, self.smass, self.fl, self.fvol, self.E, self.fpot):
+            for arr in (self.mat, self.smass, self.fl, self.fvol, self.E,
+                        self.fpot, self.edge):
                 lo, hi = arr[:, :, z - 1], arr[:, :, z]
                 lo[m], hi[m] = hi[m], lo[m].copy()           # the cell and the air swap
             # the drop height RIDES with the voxel and grows — except through
@@ -1028,7 +1068,8 @@ class World:
         self.smass[x, y, z] = 0.0
         self.E[x, y, z] = 0.0
         self.fallh[x, y, z] = 0.0
-        self.fl[x, y, z] = NOFLUID
+        self.edge[x, y, z] = 0.0             # rubble is blunt: an edge is made,
+        self.fl[x, y, z] = NOFLUID           # and breaking unmakes it
         self.fvol[x, y, z] = 0.0
         self.fpot[x, y, z] = 0.0
         wsum = sum(wt for _t, wt in targets)
@@ -1081,6 +1122,7 @@ class World:
         fls = self.fl[idx].copy()                        # held moisture rides along
         fvols = self.fvol[idx].copy()
         fpots = self.fpot[idx].copy()
+        edges = self.edge[idx].copy()
         self.mat[idx] = AIR                              # lift the body off the grid
         self.smass[idx] = 0.0
         self.E[idx] = 0.0
@@ -1088,6 +1130,7 @@ class World:
         self.fvol[idx] = 0.0
         self.fpot[idx] = 0.0
         self.fallh[idx] = 0.0
+        self.edge[idx] = 0.0
         m = np.maximum(masses, 1e-6)
         d_lat = cells[:, axis] - pivot
         d_z = cells[:, 2] - zb
@@ -1095,7 +1138,7 @@ class World:
         dzc = float((m * d_z).sum() / m.sum())
         body = {
             "cells": cells, "mats": mats, "masses": masses, "Es": Es,
-            "fls": fls, "fvols": fvols, "fpots": fpots,
+            "fls": fls, "fvols": fvols, "fpots": fpots, "edges": edges,
             "axis": axis, "s": s, "pivot": float(pivot), "zb": float(zb),
             "theta": 0.0, "omega": 0.0,
             "phi0": max(float(np.arctan2(max(dxc, 0.1), max(dzc, 0.5))), 0.02),
@@ -1143,13 +1186,15 @@ class World:
                 "mats": self.mat[idx].copy(), "masses": self.smass[idx].copy(),
                 "Es": self.E[idx].copy(), "fls": self.fl[idx].copy(),
                 "fvols": self.fvol[idx].copy(), "fpots": self.fpot[idx].copy(),
+                "edges": self.edge[idx].copy(),
                 "fly": True, "vel": np.asarray(vel, np.float64).copy(),
                 "off": np.zeros(3), "owner": owner,
                 "axis": 0, "s": 1, "pivot": 0.0, "zb": 0.0,
                 "theta": 0.0, "omega": 0.0, "phi0": 0.02, "L": 2.0}
         for arr, zero in ((self.mat, AIR), (self.smass, 0.0), (self.E, 0.0),
                           (self.fl, NOFLUID), (self.fvol, 0.0),
-                          (self.fpot, 0.0), (self.fallh, 0.0)):
+                          (self.fpot, 0.0), (self.fallh, 0.0),
+                          (self.edge, 0.0)):
             arr[idx] = zero
         self.bodies.append(body)
         self._torque_solid = None
@@ -1215,6 +1260,12 @@ class World:
         limb = self._limb_cells(p, name, own)
         if limb is None:
             return None                       # the limb is not there any more
+        # A HELD THING SWINGS WITH THE ARM — that is most of what holding a
+        # tool is for. Its cells join the limb's rigid body, so its mass slows
+        # the swing (Hill does the rest) and its edge is what arrives.
+        obj = self._held_cells(p)
+        if obj is not None and self._in_reach(limb, obj):
+            limb = np.concatenate([limb, obj])
         jx, jy, jz = (joints[name] + own.min(axis=0)).astype(np.int64)
         vox_m = 0.1 * self.scale
         kg = self.smass[tuple(limb.T)] / 1000.0
@@ -1299,8 +1350,33 @@ class World:
                 # of their 342 voxels rearranged, and what a person has at the
                 # top of them is their head. Stop at the last clear pose and
                 # let the support law set them down the rest of the way.
+                #
+                # BUT A WALL IS NOT A FLOOR. What a wall takes is the sideways
+                # speed; what stops a fall is something underneath. So a hit is
+                # retried with the horizontal part removed: if straight down is
+                # clear, the body is SCRAPING PAST — the wall keeps the
+                # sideways speed and the fall goes on — and it arrives only
+                # when that too is blocked. Known softness: the sideways energy
+                # is absorbed by the wall unpaid; the honest version spends it
+                # on the struck face, and matters once throwing does.
                 if hit > 0:
-                    self._land_body(b, None)     # arrived: pay what it carried
+                    landed = True
+                    if abs(b["vel"][2]) > 1e-6 and \
+                            (abs(b["vel"][0]) > 1e-6 or abs(b["vel"][1]) > 1e-6):
+                        vv = np.array([0.0, 0.0, b["vel"][2]])
+                        off_v = b["off"] + vv * TICK_S / vox_m
+                        pv = np.round(self._fly_pose(b, off_v)).astype(np.int64)
+                        inb_v = ((pv[:, 0] >= 0) & (pv[:, 0] < nx)
+                                 & (pv[:, 1] >= 0) & (pv[:, 1] < ny)
+                                 & (pv[:, 2] >= 0) & (pv[:, 2] < nz))
+                        if not int((~inb_v).sum()) and \
+                                not int((self.mat[tuple(pv[inb_v].T)] != AIR).sum()):
+                            b["vel"] = vv
+                            b["off"] = off_v
+                            still.append(b)
+                            landed = False
+                    if landed:
+                        self._land_body(b, None)  # arrived: pay what it carried
                 else:
                     b["off"] = off
                     still.append(b)
@@ -1399,7 +1475,16 @@ class World:
         if struck is not None and len(struck):
             # spend it on the struck cells, each against its own toughness.
             # A small contact concentrates the same energy into a larger
-            # stress, which is the only sense in which anything here is sharp.
+            # stress. THE EDGE IS THE OBJECT'S OWN CLAIM to be smaller still:
+            # an axe bit is sub-millimetre, which no 5 cm lattice can draw, so
+            # a manufactured edge DECLARES the area it concentrates a blow
+            # into — the same class of fact as its density. Which cell of the
+            # swung thing made contact is below the lattice's resolution too,
+            # so the sharpest edge the body carries is the one that strikes;
+            # an axe is swung edge-first, which is a fact about how tools are
+            # held, not a case about axes.
+            ed = b["edges"][b["edges"] > 0] if "edges" in b else []
+            a_hit = min(float(min(ed)) if len(ed) else vox_m ** 2, vox_m ** 2)
             per = joules / len(struck)
             for (sx, sy, sz) in struck:
                 if self.mat[sx, sy, sz] == FLESH:
@@ -1407,11 +1492,12 @@ class World:
                     # so in words while a big enough blow shattered feet into
                     # debris anyway. The whole overage is the person's wound:
                     # a swung fist, a landing body — the STRUCK person pays too
-                    if per > bruise:
+                    b_hit = BODY["bruise_kJm2"] * 1000.0 * a_hit
+                    if per > b_hit:
                         self._wound(self._person_at(
-                            (int(sx), int(sy), int(sz))), per - bruise)
+                            (int(sx), int(sy), int(sz))), per - b_hit)
                     continue
-                thr = (_TOUGH_ARR[self.mat[sx, sy, sz]] * 1000.0 * vox_m ** 2
+                thr = (_TOUGH_ARR[self.mat[sx, sy, sz]] * 1000.0 * a_hit
                        * (0.7 + 0.6 * self._flaw01(int(sx), int(sy), int(sz))))
                 if per > thr:
                     self._shatter(int(sx), int(sy), int(sz), per / max(thr, 1e-9))
@@ -1424,7 +1510,9 @@ class World:
         contact = pose[:, 2] <= pose[:, 2].min() + 1
         e_per = joules / max(int(contact.sum()), 1)
         sore = 0.0                          # energy the faller's own flesh took
-        for i in np.argsort(pose[:, 2]):
+        order = np.argsort(pose[:, 2])      # kept: put[k] belongs to order[k],
+        for i in order:                     # so a landing can be told apart
+                                            # into flesh and carried tool
             dx = min(max(int(pose[i, 0]), 0), nx - 1)
             dy = min(max(int(pose[i, 1]), 0), ny - 1)
             dz = min(max(int(pose[i, 2]), 0), nz - 1)
@@ -1434,6 +1522,7 @@ class World:
             self.mat[dx, dy, dz] = b["mats"][i]
             self.smass[dx, dy, dz] = b["masses"][i]
             self.E[dx, dy, dz] += b["Es"][i]
+            self.edge[dx, dy, dz] = b["edges"][i]
             if b["fvols"][i] > 0:
                 self.fl[dx, dy, dz] = b["fls"][i]
                 self.fvol[dx, dy, dz] = b["fvols"][i]
@@ -1462,10 +1551,17 @@ class World:
                     break
         self._torque_solid = None                        # lattice changed: recheck
         if b.get("part") and b.get("seg") and b.get("owner") is not None:
+            put_arr = np.array(put)
+            mats_put = b["mats"][order]
             for q in self.persons:            # the limb came to rest somewhere
                 if q["name"] == b["owner"] and q.get("segs") and q.get("_own"):
                     origin = np.min(np.array(list(q["_own"])), axis=0)
-                    q["segs"][b["seg"]] = np.array(put) - origin
+                    # only the FLESH is the limb — a swung tool came along for
+                    # the ride and is not part of anyone's arm
+                    q["segs"][b["seg"]] = put_arr[mats_put == FLESH] - origin
+                    if q.get("held") and (mats_put != FLESH).any():
+                        q["held"]["cell"] = tuple(map(
+                            int, put_arr[mats_put != FLESH][0]))
                     break                     # say WHERE, or the next swing
                                               # reaches for cells that have gone
         if b.get("owner") is not None and not b.get("part"):   # hand the person
@@ -3015,6 +3111,213 @@ class World:
                 out.append(q)
         return out
 
+    def _objects_within_reach(self, p, cells):
+        """Loose THINGS a hand could close on: solid, not flesh, near, and
+        light enough that this body could at least drag them. The last is a
+        model of attention rather than a law — every wall in the world is
+        within reach of somebody and on nobody's menu. A thing is what
+        _object_at says it is: whatever is joined to what you grabbed."""
+        vox_m = 0.1 * self.scale
+        R = max(int(round(BODY["reach_m"] / max(vox_m, 1e-9))), 1)
+        nx, ny, nz = self.shape
+        cells = np.asarray(cells)
+        x0 = max(int(cells[:, 0].min()) - R, 0)
+        x1 = min(int(cells[:, 0].max()) + R + 1, nx)
+        y0 = max(int(cells[:, 1].min()) - R, 0)
+        y1 = min(int(cells[:, 1].max()) + R + 1, ny)
+        z0 = max(int(cells[:, 2].min()) - R, 0)
+        z1 = min(int(cells[:, 2].max()) + R + 1, nz)
+        box = self.mat[x0:x1, y0:y1, z0:z1]
+        cand = np.argwhere((box != AIR) & (box != FLESH))
+        if not len(cand):
+            return []
+        cand += np.array([x0, y0, z0])
+        d = np.abs(cand[:, None, :] - cells[None, :, :]).max(axis=2).min(axis=1)
+        cand = cand[d <= R]
+        out, seen = [], set()
+        strength = p.get("strength_N", BODY["strength_N"])
+        for c in map(tuple, cand):
+            if c in seen:
+                continue
+            obj = self._object_at(*c)
+            seen.update(map(tuple, obj))
+            if len(obj) >= 4000:
+                continue                  # hit the flood cap: that is the world
+            _lift, drag_N = self._effort(obj)
+            if drag_N > strength:
+                continue                  # could not even shift it: not a thing
+                                          # worth a slot of attention
+            m0 = int(self.mat[c])
+            out.append({"cell": tuple(map(int, obj[0])), "mat": m0,
+                        "label": MATNAME.get(m0, "thing")})
+            if len(out) >= 2:
+                break
+        return out
+
+    def _held_cells(self, p):
+        """Where the held THING is now — re-flooded from the gripped cell,
+        because objects have no registry: identity is adjacency, checked
+        against the material the hand closed on. Gone (burned, shattered,
+        knocked away) means gone."""
+        held = p.get("held")
+        if not held:
+            return None
+        x, y, z = held["cell"]
+        nx, ny, nz = self.shape
+        if not (0 <= x < nx and 0 <= y < ny and 0 <= z < nz) \
+                or int(self.mat[x, y, z]) != held["mat"]:
+            # IT MAY BE IN THE AIR — mid-swing, the thing is off the lattice
+            # with the arm that swings it. A grip is not lost because it
+            # moved (the same lesson _haul learned from fainting bodies).
+            for b in self.bodies:
+                if b.get("owner") == p["name"] and (b["mats"] != FLESH).any():
+                    return None
+            p["held"] = None
+            return None
+        obj = self._object_at(x, y, z)
+        return obj.astype(np.int64) if len(obj) else None
+
+    def _grip_holds(self, p, cluster):
+        """Whether this body's grip can CARRY that load where it is: strength
+        against weight, the holder's own feet against the floor — and a hand
+        holds things UP, so a load starting at or above the holder's own crown
+        is not hanging from anything. (Reach already ignores height, a stated
+        softness: an ankle 1.5 m overhead can be GRIPPED, but not borne.)
+
+        A FIST CAN PULL, NOT CLAMP. What hangs BELOW the hold is a pendulum
+        and asks the wrist for nothing; a load whose weight rides ABOVE the
+        hold is balanced on the fist, and the wrist pays weight times lever
+        to keep it upright. An axe at the fist costs a few newton-metres and
+        is held; a man gripped by the ankle is hundreds, and rotates out of
+        the hand — the grip on the ankle survives, the CARRY does not."""
+        if not p["alive"] or not p["awake"] or p["safe"]:
+            return False
+        mine, msl = self._person_cells(p)
+        if mine is None or not mine.any():
+            return False
+        own = np.argwhere(mine)
+        own[:, 0] += msl[0].start
+        own[:, 1] += msl[1].start
+        if not self._underfoot(own):
+            return False
+        cluster = np.asarray(cluster)
+        if float(cluster[:, 2].min()) >= float(own[:, 2].max()):
+            return False
+        w_N, _ = self._effort(cluster)
+        if w_N > p.get("strength_N", BODY["strength_N"]):
+            return False
+        # THE FIST IS AT THE END OF AN ARM, not wherever two bodies happen to
+        # press together — measured against the nearest touching cell, a man
+        # landed against his holder's chest read as gripped at the chest, and
+        # hung there. The load is held at its cell nearest a fist.
+        fists = []
+        for k in (p.get("segs") or {}):
+            if "arm" not in k:
+                continue
+            limb = self._limb_cells(p, k, own)
+            if limb is not None and len(limb):
+                fists.append([float(limb[:, 0].mean()),
+                              float(limb[:, 1].mean()),
+                              float(limb[:, 2].min())])       # a hand hangs at
+        if not fists:                                         # the arm's foot
+            zs = own[:, 2]
+            fists = [[float(own[:, 0].mean()), float(own[:, 1].mean()),
+                      float(zs.min()) + 0.55 * float(zs.max() - zs.min())]]
+        d2 = ((cluster[None, :, :].astype(np.float64)
+               - np.asarray(fists)[:, None, :]) ** 2).sum(-1)
+        touch_z = float(cluster[int(d2.min(0).argmin()), 2])
+        kg = self.smass[tuple(cluster.T)]
+        com_z = float((cluster[:, 2] * kg).sum() / max(float(kg.sum()), 1e-9))
+        lever_m = max(0.0, com_z - touch_z) * 0.1 * self.scale
+        return w_N * lever_m <= BODY["wrist_Nm"]
+
+    def _grip_cells(self):
+        """Every cell a HAND is holding up, for the support law. A grip is an
+        edge in the support graph: what a footed body holds, within its
+        strength, is supported THROUGH the body — the way anything in a hand
+        is — not through the lattice, which is why a hanging man does not
+        need his flesh to span like a girder."""
+        if not any(p.get("held") or p.get("dragging") for p in self.persons):
+            return frozenset()
+        out = set()
+        for p in self.persons:
+            clusters = []
+            obj = self._held_cells(p)
+            if obj is not None:
+                clusters.append(obj)
+            who = p.get("dragging")
+            if who:
+                q = next((r for r in self.persons if r["name"] == who), None)
+                if q is not None and q["alive"] and not q["safe"]:
+                    comp, sl = self._person_cells(q)
+                    if comp is not None and comp.any():
+                        qc = np.argwhere(comp)
+                        qc[:, 0] += sl[0].start
+                        qc[:, 1] += sl[1].start
+                        clusters.append(qc)
+            for cl in clusters:
+                if self._grip_holds(p, cl):
+                    out.update(map(tuple, np.asarray(cl)))
+        return frozenset(out)
+
+    def _take_up(self, p, own):
+        """Bring a held thing to the HAND, if the arm can lift it. A liftable
+        thing hangs from the fist — where a swing will find it, and where the
+        grip (not the floor) carries it. Too heavy stays where it lies: still
+        held, a grip is a constraint before it is a lift."""
+        obj = self._held_cells(p)
+        if obj is None:
+            return
+        w_N, _ = self._effort(obj)
+        if w_N > p.get("strength_N", BODY["strength_N"]):
+            return
+        limb = self._limb_cells(p, "right arm", own)
+        if limb is None:
+            return
+        hand = limb[np.argmin(limb[:, 2])]
+        top = int(obj[:, 2].max())
+        d = (int(hand[0]) - int(round(float(obj[:, 0].mean()))),
+             int(hand[1]) - int(round(float(obj[:, 1].mean()))),
+             int(hand[2]) - 1 - top)
+        if d != (0, 0, 0) and self._shove(obj, *d):
+            c = p["held"]["cell"]
+            p["held"]["cell"] = (c[0] + d[0], c[1] + d[1], c[2] + d[2])
+
+    def _haul_held(self, p):
+        """Bring the held THING along, exactly as _haul brings a person: it
+        trails toward the hauler, and an arm stretched past its reach is not
+        holding anything. No brace, no resistance — things do not fight."""
+        obj = self._held_cells(p)
+        if obj is None:
+            return
+        mine, msl = self._person_cells(p)
+        if mine is None or not mine.any():
+            return
+        hcell = np.argwhere(mine)
+        hcell[:, 0] += msl[0].start
+        hcell[:, 1] += msl[1].start
+        if not self._in_reach(hcell, obj):
+            p["held"] = None
+            p["events"].append(f"t{self.tick}: {p['name']} loses hold of "
+                               f"the {MATNAME.get(int(self.mat[tuple(obj[0])]), 'thing')} "
+                               f"— an arm is only so long")
+            return
+        _lift, drag_N = self._effort(obj)
+        if min(_lift, drag_N) > p.get("strength_N", BODY["strength_N"]):
+            return                            # the grip holds; the pull fails
+        dx = float(hcell[:, 0].mean()) - float(obj[:, 0].mean())
+        dy = float(hcell[:, 1].mean()) - float(obj[:, 1].mean())
+        if max(abs(dx), abs(dy)) <= 0.5 * (self._span_xy(hcell)
+                                           + self._span_xy(obj)):
+            return                            # already in hand
+        order = ((int(np.sign(dx)), 0), (0, int(np.sign(dy)))) \
+            if abs(dx) >= abs(dy) else ((0, int(np.sign(dy))), (int(np.sign(dx)), 0))
+        for step in order:
+            if step != (0, 0) and self._shove(obj, *step):
+                c = p["held"]["cell"]
+                p["held"]["cell"] = (c[0] + step[0], c[1] + step[1], c[2])
+                return
+
     def _menu(self, p, cells, percept, limb, chosen):
         """Everything ONE PART of this body could actually do, right now.
 
@@ -3036,7 +3339,14 @@ class World:
         menu = []
         if limb == "legs":
             menu.append({"key": "stay", "tag": "stay", "verb": "stay"})
-            fit, _start = self._fit_grid(cells, p.get("known"))
+            # a CARRIED thing is part of the walker, to the planner as much as
+            # to the legs: its column is not an obstacle to its own carrier,
+            # or "straight on" vanishes from the menu the moment the fist
+            # closes on a stick hanging in front of the chest
+            obj = self._held_cells(p) if p.get("held") else None
+            nav = np.concatenate([cells, obj]) if obj is not None \
+                and not self._underfoot(obj) else cells
+            fit, _start = self._fit_grid(nav, p.get("known"))
             ground = self._underfoot(cells)
             places = self._places(p, cells, fit)
             leaps = self._leap_targets(p, cells, fit, self._leap_speed(cells)) \
@@ -3065,7 +3375,8 @@ class World:
                              "verb": "go", "goal": pl["xy"], "route": route,
                              "away": pl["away"]})
         elif limb == "hands":
-            held = p.get("dragging")
+            held = p.get("dragging") or \
+                ("the " + p["held"]["label"] if p.get("held") else None)
             menu.append({"key": "keep hold of " + held if held else "hands free",
                          "tag": "keep", "verb": "keep"})
             if held:
@@ -3073,14 +3384,20 @@ class World:
             if self._limb_cells(p, "right arm", cells) is not None:
                 # swinging at NOTHING is possible, just useless — the same way
                 # shouting in an empty house is possible. What makes it legal
-                # is having an arm, not having a target
-                menu.append({"key": "swing an arm", "tag": "swing",
+                # is having an arm, not having a target. A held thing swings
+                # WITH the arm; that is most of what holding a tool is for
+                menu.append({"key": "swing an arm" if not p.get("held") else
+                             f"swing the {p['held']['label']}", "tag": "swing",
                              "verb": "swing"})
             for q in self._within_reach(p, cells):
                 if q["name"] == held:
                     continue
                 menu.append({"key": f"take hold of {q['name']}", "tag": "hold",
                              "verb": "hold", "who": q["name"]})
+            if not p.get("held"):
+                for ob in self._objects_within_reach(p, cells):
+                    menu.append({"key": f"take hold of the {ob['label']}",
+                                 "tag": "hold", "verb": "hold", "what": ob})
         elif limb == "mouth":
             menu.append({"key": "say nothing", "tag": "quiet", "verb": "quiet"})
             for name, text in p.get("lines", LINES).items():
@@ -3121,7 +3438,8 @@ class World:
                "blood_o2": round(float(p["blood_o2"]), 3),
                "burn": round(float(p["burn"]), 3),
                "hurt": round(float(p["hurt"]), 3),
-               "holding": p.get("dragging"),
+               "holding": p.get("dragging") or
+                          ("the " + p["held"]["label"] if p.get("held") else None),
                "knows_a_way_out": any(p["known"][int(e[0]), int(e[1])]
                                       for e in self.exits),
                "seen_of_the_world": round(float(p["known"].mean()), 3),
@@ -3156,11 +3474,19 @@ class World:
                 self._swing(p, "right arm", toward=p.get("facing"))
                 p["events"].append(f"t{self.tick}: {p['name']} swings an arm")
             elif hands["verb"] == "hold":  # no subsystem: a grip is REACH, and
-                p["dragging"] = hands["who"]   # what it can then do is force —
-                p["events"].append(f"t{self.tick}: {p['name']} takes hold "
-                                   f"of {hands['who']}")
-            elif hands["verb"] == "let_go":    # the same _effort a shove uses,
-                p["dragging"] = None           # asked again every tick
+                if "who" in hands:             # what it can then do is force —
+                    p["dragging"] = hands["who"]   # the same _effort a shove
+                    p["events"].append(f"t{self.tick}: {p['name']} takes hold "
+                                       f"of {hands['who']}")   # uses, asked
+                else:                              # again every tick
+                    ob = hands["what"]
+                    p["held"] = {"cell": ob["cell"], "mat": ob["mat"],
+                                 "label": ob["label"]}
+                    self._take_up(p, cells)    # to the fist, if the arm can
+                    p["events"].append(f"t{self.tick}: {p['name']} takes up "
+                                       f"the {ob['label']}")
+            elif hands["verb"] == "let_go":
+                p["dragging"], p["held"] = None, None
                 p["events"].append(f"t{self.tick}: {p['name']} lets go")
         legs = picks.get("legs")
         if legs is not None and legs["verb"] == "jump":
@@ -3367,8 +3693,18 @@ class World:
             # measured). A breadth-first route over stand-able columns is the
             # body's motor competence — knowing the way around the table is
             # not thinking, any more than balance is.
+            # WHAT IS CARRIED WALKS WITH THE BODY. A thing hanging from the
+            # fist is one kinematic unit with the hand that holds it — walked
+            # as separate matter it is a wall in front of its own carrier, and
+            # the carrier jams on it forever (and the planner jams first, so
+            # the carried cells count as the body's own there too). A held
+            # thing still ON the floor (too heavy to lift) is not carried; it
+            # TRAILS, like a dragged person does.
+            obj = self._held_cells(p) if p.get("held") else None
+            carried = obj is not None and not self._underfoot(obj)
+            walk_cells = np.concatenate([cells, obj]) if carried else cells
             if (not p.get("_path")) or self.tick - p.get("_planned", -99) > 30:
-                p["_path"] = self._plan_path(cells, ex, p.get("known"))
+                p["_path"] = self._plan_path(walk_cells, ex, p.get("known"))
                 p["_planned"] = self.tick
             path = p.get("_path") or []
             while path and max(abs(path[0][0] - ax_), abs(path[0][1] - ay_)) < 1.0:
@@ -3381,9 +3717,15 @@ class World:
                     abs(path[0][1] - ay_) else ((0, sy), (sx, 0)):
                 if step == (0, 0):
                     continue
-                if self._walk(cells, *step):
+                if self._walk(walk_cells, *step):
                     p["facing"] = (float(step[0]), float(step[1]))
+                    if carried:
+                        c = p["held"]["cell"]
+                        p["held"]["cell"] = (c[0] + step[0],
+                                             c[1] + step[1], c[2])
                     self._haul(p, *step)
+                    if not carried:
+                        self._haul_held(p)
                     break
             else:
                 p["_path"] = None                    # blocked mid-route: replan
@@ -3400,7 +3742,7 @@ class World:
         idx = tuple(np.asarray(cells).T)
         self.left_mass += float(self.smass[idx].sum())
         for arr in (self.mat, self.smass, self.E, self.fl,
-                    self.fvol, self.fpot, self.fallh):
+                    self.fvol, self.fpot, self.fallh, self.edge):
             arr[idx] = 0
         p["_own"] = frozenset()
         p["_claim_mask"], p["_claim_tick"] = None, None
@@ -3457,16 +3799,24 @@ class World:
             return
         # HE MAY BE OVER THE EDGE. With nothing underfoot, what an arm holds is
         # his WEIGHT and not the friction of a floor — the same _effort, its
-        # other half. Today the grip simply goes, and he falls. Holding a man
-        # dangling would mean the support law knowing that a grip carries load,
-        # which it does not: support is relaxed from the ground up through
-        # material, and a hand is not material. That is a stated softness, not
-        # a case — an arm that can lift 40 kg ought to be able to hold him.
+        # other half. The support law now knows a grip carries load
+        # (`_grip_cells`), so a man whose weight the arm can take HANGS from
+        # it: no step is made, and "left holding him over the drop" is a state
+        # of the world. Hauling him back up is not built. A load beyond the
+        # arm — or one wholly above the holder's own crown, which no grip
+        # bears — goes, exactly as before.
         if not self._underfoot(cells):
+            if self._grip_holds(p, cells):
+                if not p.get("_held_over"):
+                    p["_held_over"] = True
+                    p["events"].append(f"t{self.tick}: {p['name']} is left "
+                                       f"holding {who} over the drop")
+                return
             p["dragging"] = None
             p["events"].append(f"t{self.tick}: {who} goes over, and the grip "
                                f"is not enough to hold a hanging man")
             return
+        p["_held_over"] = False
         # AND HE MAY NOT WANT TO COME. Asked every tick, because the answer
         # changes: the same pull that a braced man shrugs off for twenty ticks
         # succeeds the moment his footing is gone or someone stronger takes over.
@@ -3642,7 +3992,7 @@ class World:
             if t not in own and int(self.mat[t]) != AIR:
                 return False
         fields = (self.mat, self.smass, self.E, self.fl, self.fvol,
-                  self.fpot, self.fallh)
+                  self.fpot, self.fallh, self.edge)
         idx, tdx = tuple(cells.T), tuple(tgt.T)
         held = [arr[idx].copy() for arr in fields]
         for arr in fields:
@@ -3681,7 +4031,8 @@ class World:
             if packed >= PUSH_THROUGH or self.fvol[t] > 1.0:
                 return False
         vacated = [c for c in map(tuple, cells) if c not in new]
-        fields = (self.mat, self.smass, self.E, self.fl, self.fvol, self.fpot)
+        fields = (self.mat, self.smass, self.E, self.fl, self.fvol,
+                  self.fpot, self.edge)
         idx, tdx = tuple(cells.T), tuple(tgt.T)
         body = [arr[idx].copy() for arr in fields]
         shoved = [[arr[c] for c in entered] for arr in fields]
@@ -3727,6 +4078,7 @@ class World:
         if not self.persons:
             return
         aloft = {b.get("owner") for b in self.bodies}
+        holders = {q["dragging"]: q for q in self.persons if q.get("dragging")}
         for p in self.persons:
             if not p["alive"] or p["safe"] or p["name"] in aloft:
                 continue
@@ -3738,6 +4090,10 @@ class World:
             cells[:, 1] += sl[1].start
             if self._underfoot(cells):
                 continue                      # still stood on something
+            h = holders.get(p["name"])
+            if h is not None and self._grip_holds(h, cells):
+                continue                      # he HANGS from the grip: a hand
+                                              # that can lift him can hold him
             vel = [0.0, 0.0, 0.0]
             foot = self._contact(cells)       # ...but is anything still touching?
             if len(foot):

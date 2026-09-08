@@ -240,28 +240,24 @@ landing at the same time.
 
 **Opened by the ledge work (2026-09-08)**
 
-20. **A GRIP SHOULD CARRY LOAD.** Today a body pulled over an edge always falls,
-    because a hand is not material and support is relaxed from the ground up
-    THROUGH material — so nothing in the lattice can hold a hanging man. An arm
-    that can lift 40 kg ought to be able to hold him, and then "he pulled him off
-    and was left holding him over the drop" becomes a real outcome instead of a
-    foregone one. Needs the grip to be an edge in the support graph. It is also
-    what would let two people roped together drag EACH OTHER off, which is the
-    version of this question with any drama in it.
+20. ~~**A GRIP SHOULD CARRY LOAD.**~~ **BUILT (2026-09-08)** — see "A grip
+    carries load" below. Still open from it: the load does not pull back on
+    the holder, so two people roped together cannot yet drag EACH OTHER off,
+    which is the version of this question with any drama in it.
 
 21. ~~**A fall should hurt.**~~ **BUILT (2026-09-08)** — see "A fall hurts"
     below.
 
-22. **A flier stops dead on any contact.** `hit > 0` is an arrival, which is
-    right for the ground and wrong for the rock a falling body is scraping past.
-    What a wall takes is the sideways speed; what stops a fall is something
-    underneath. Cheap fix: on a hit, retry the same step with the horizontal part
-    removed, and land only if that is blocked too.
+22. ~~**A flier stops dead on any contact.**~~ **BUILT (2026-09-08)**: the
+    cheap fix as designed — a hit is retried with the horizontal part removed,
+    and is an arrival only if straight down is blocked too. A block thrown at
+    a tall wall slides down its face and lands at the bottom, re-rasterising
+    where it LANDS rather than where it grazed (locked by test). Stated
+    softness: the wall absorbs the sideways energy unpaid, which starts to
+    matter once throwing is built.
 
-23. **Grab an OBJECT, not just a person.** `p["dragging"]` names a person. The
-    constraint is the same for a stick; what it needs is for the held thing to be
-    identified the way a person is (a claimed cluster) rather than by name. This
-    is the missing half of the axe test — see "What 5 cm voxels cost us".
+23. ~~**Grab an OBJECT, not just a person.**~~ **BUILT (2026-09-08)** — see
+    "A grip carries load" below. The axe test is green.
 
 ## A filter for 3D research links (2026-09-07)
 
@@ -1164,3 +1160,70 @@ were written in grams of shattered flesh, which flesh deforming can never
 produce, so the spec could never have flipped. It now asserts the thing rolling
 is FOR: the same 3 m fall, rigid, knocks a body out; rolled, it stays conscious
 and pays less.
+
+## A grip carries load — BUILT (2026-09-08)
+
+Items 20 and 23, which turned out to be one build: a hand that can hold a stick
+up is the same hand that can hold a hanging man, and both needed the support
+law to know it.
+
+**The grip is an edge in the support graph.** Support relaxes from the ground
+up through material, and a hand is not material — so nothing on the lattice
+could hold a hanging man, and everything a hand carried had to rest on
+something. `_grip_cells` now seeds what a body holds as supported, exactly like
+the ground: the load hangs from the body, and the body stands on its feet. The
+slack cache keys on the grip set as well as the layout, so it stays correct by
+construction. Four gates, each a cause: the holder must be footed (nothing to
+brace against, nothing held up); the load must be within `strength_N` (an arm
+that lifts 40 kg holds 40 kg); a hand holds things UP — a load starting at
+or above the holder's own crown hangs from nothing; and A FIST CAN PULL, NOT
+CLAMP — what hangs below the hold is a pendulum and costs the wrist nothing,
+but a load whose weight rides above the hold is balanced on the fist, and the
+wrist pays weight times lever to keep it there (`wrist_Nm`, ~20: a 4 kg hammer
+held level at half a metre). The lever is measured from the FIST — the bottom
+of an arm segment, where a hand hangs — to the load's centre of mass, at the
+load cell nearest that fist; measured against the nearest touching cell
+instead, a man who fell against his holder's chest read as gripped at the
+chest and hung there. The axe at the fist costs a few newton-metres and is
+carried; a man gripped by the ankle is hundreds, and rotates out of the hand —
+which is why the braced-ledge test still ends with its man on the ground: his
+puller stands BELOW him, holding an ankle with a whole man above it.
+Measured: a man whose floor is carved away HANGS at the lip, unhurt,
+for as long as his holder stands there (`test_a_GRIP_CARRIES_LOAD_...`); the
+same man unheld is a wound on the ground — and `_haul` now says "left holding
+him over the drop" instead of letting go.
+
+**Objects are held the way people are.** `p["held"]` grips a CLUSTER — re-flooded
+from the gripped cell each use, because objects have no registry: identity is
+adjacency, checked against the material the hand closed on. The menu offers
+nearby loose things ("take hold of the wood") capped at two, filtered to what
+this body could at least shift — a model of attention, since every wall is
+within reach of somebody and on nobody's menu. A liftable thing is carried to
+the fist and hangs there by the grip; too heavy stays where it lies, still
+held, and TRAILS like a dragged person when the holder walks. A carried thing
+is one kinematic unit with the walker — walked as separate matter it is a wall
+in front of its own carrier, and the carrier jams on it: once in `_walk`, and
+once more in the PLANNER, where the stick's column deleted "straight on" from
+its own carrier's menu.
+
+**A held thing swings with the arm.** Its cells join the limb's rigid body, so
+its mass slows the swing (Hill does the rest) and what it carries is what
+lands. The grip survives the swing — mid-arc the thing is off the lattice with
+the arm, and a grip is not lost because it moved (the same lesson `_haul`
+learned from fainting bodies).
+
+**An edge is declared, and the axe test is green.** `fill(edge=...)` puts a
+contact area in m² on a voxel — "this edge concentrates its blow into X mm²",
+a fact about a manufactured thing, the same class as its density (Ruling 2 q1),
+because an edge is sub-voxel shape a 5 cm lattice cannot draw. The struck
+threshold uses the sharpest edge the swung body carries (which face struck is
+below the lattice's resolution too; an axe is swung edge-first, a fact about
+how tools are held). Rubble is blunt: shattering a thing unmakes its edge.
+Measured: the same swing that chews a trunk with a declared 2 cm² axe bit
+(`pressed 0 voxels, swung >0, mass conserved`) leaves it untouched blunt — and
+the take-up and every swing go through the menu like any other act.
+
+**Known limits, stated:** the load does not pull back on the holder (no
+roped-pair drama yet); a hanging man cannot be hauled back up; the wall that
+takes a flier's sideways speed absorbs its energy unpaid; and carrying costs
+the carrier nothing, the same softness hauling has.
