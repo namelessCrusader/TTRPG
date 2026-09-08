@@ -249,11 +249,8 @@ landing at the same time.
     what would let two people roped together drag EACH OTHER off, which is the
     version of this question with any drama in it.
 
-21. **A fall should hurt.** A man dropped 1.5 m onto stone lands whole and
-    entirely unbothered: `_land_body` pays 1/2 m v² against what he STRUCK, and
-    nothing pays it against him. Flesh has a toughness like everything else; the
-    same arithmetic that shatters glass should injure a body. Until then "pulled
-    off a cliff" is a change of address.
+21. ~~**A fall should hurt.**~~ **BUILT (2026-09-08)** — see "A fall hurts"
+    below.
 
 22. **A flier stops dead on any contact.** `hit > 0` is an arrival, which is
     right for the ground and wrong for the rock a falling body is scraping past.
@@ -1131,3 +1128,39 @@ physical was stopping them. Escaping is one thing a body might want, not the
 reason it has a will.
 
 **Not rendered.** Frames generate fine; Blender is not on PATH in this session.
+
+## A fall hurts — BUILT (2026-09-08)
+
+Item 21. `_land_body` paid 1/2 m v² against what a body STRUCK and nothing
+against the body, so a man dropped onto stone landed whole and entirely
+unbothered, and "pulled off a cliff" was a change of address.
+
+**The wound is the energy the tissue absorbed.** Tissue takes damage far below
+the toughness that tears it apart: `TOUGH[FLESH]` is gross failure,
+`BODY["bruise_kJm2"]` is where bruising and breakage begin, per contact area.
+Landing energy beyond it goes into `p["hurt"]` — one integral, the same shape
+as burns, and the two read against ONE pair of faint/death thresholds as
+combined tissue damage (`dmg = burn + hurt`). No new thresholds; wounds never
+come back down, the same one-way street as burns. The struck side pays too:
+flesh under a landing body, or in the way of a swung fist, takes the same
+overage through `_person_at` ownership.
+
+**The bug underneath, and it inverted the scale.** At high energy the landing
+arithmetic SHATTERED flesh — a man dropped 6 m had his feet scatter as debris
+and the rest of him walked away with hurt=0.000, because the shatter branch ate
+exactly the energy the wound should have carried. The harder the landing, the
+less it hurt (measured: 3 m → 0.295, 4.5 m → 0.129, 6 m → 0.000). The TOUGH
+table's own comment says flesh "deforms, not fragments"; the big number was the
+mechanism and it failed at exactly the energies that matter. Flesh now never
+takes the shatter branch — the whole overage is the person's wound.
+
+Measured after, rigid landings onto stone: 0.5 m nothing, 1.5 m bruised
+(hurt 0.08, walks away), 3 m knocked out, 4.5 m dead, 6 m dead — monotone, and
+every gram conserved. Calibration is stated in BODY, scaled to this body's
+known lightness.
+
+The `roll` xfail was rewritten against the wound model — its old assertions
+were written in grams of shattered flesh, which flesh deforming can never
+produce, so the spec could never have flipped. It now asserts the thing rolling
+is FOR: the same 3 m fall, rigid, knocks a body out; rolled, it stays conscious
+and pays less.

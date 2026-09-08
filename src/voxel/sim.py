@@ -254,6 +254,17 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         "hurt_T": 55.0,          # skin °C where tissue starts to cook
         "burn_gain": 4e-6,       # damage per degree-over-threshold per tick
         "faint_burn": 0.2, "death_burn": 0.45,
+        # A BLOW WOUNDS. Tissue takes damage far below the toughness that tears
+        # it apart — TOUGH[FLESH] is gross failure, this is where bruising and
+        # breakage begin, per contact area. Landing energy beyond it goes into
+        # p["hurt"], the same integral shape as burns, read against the same
+        # faint/death thresholds as one combined tissue damage. Wounds never
+        # come back down, the same one-way street as burns.
+        # calibration: set so a body's own jump landings cost nothing, a 1.5 m
+        # drop onto stone bruises, ~3 m knocks out, ~6 m kills — scaled to
+        # THIS body, which is light (28.5 kg, a known softness)
+        "bruise_kJm2": 12.0,     # tissue injury threshold, kJ per m² of contact
+        "hurt_J": 2500.0,        # absorbed joules beyond it that sum to 1.0
         # HANDS, as ONE cause. A body can put a bounded force on a thing it can
         # reach; what happens then is arithmetic, not a list of verbs. Lifting
         # fights gravity (m·g), shoving fights friction (µ·m·g), so the SAME
@@ -1379,12 +1390,27 @@ class World:
             dh = float(((b["masses"] * b["cells"][:, 2]).sum()
                         - (b["masses"] * pose[:, 2].astype(np.float32)).sum()) / mtot) * vox_m
             joules = max(dh, 0.0) * 9.81 * (mtot / 1000.0)
+        # A BLOW WOUNDS what it lands on and what lands. Flesh does not shatter
+        # — TOUGH[FLESH] is a deforms-not-fragments number — but tissue takes
+        # real damage far below that, and the same energy-per-contact-area
+        # arithmetic that bursts glass is what breaks a leg. Anything beyond
+        # the bruise threshold is absorbed by the BODY, not the cell.
+        bruise = BODY["bruise_kJm2"] * 1000.0 * vox_m ** 2
         if struck is not None and len(struck):
             # spend it on the struck cells, each against its own toughness.
             # A small contact concentrates the same energy into a larger
             # stress, which is the only sense in which anything here is sharp.
             per = joules / len(struck)
             for (sx, sy, sz) in struck:
+                if self.mat[sx, sy, sz] == FLESH:
+                    # flesh DEFORMS, it does not fragment — TOUGH[FLESH] said
+                    # so in words while a big enough blow shattered feet into
+                    # debris anyway. The whole overage is the person's wound:
+                    # a swung fist, a landing body — the STRUCK person pays too
+                    if per > bruise:
+                        self._wound(self._person_at(
+                            (int(sx), int(sy), int(sz))), per - bruise)
+                    continue
                 thr = (_TOUGH_ARR[self.mat[sx, sy, sz]] * 1000.0 * vox_m ** 2
                        * (0.7 + 0.6 * self._flaw01(int(sx), int(sy), int(sz))))
                 if per > thr:
@@ -1397,6 +1423,7 @@ class World:
             joules = 0.0
         contact = pose[:, 2] <= pose[:, 2].min() + 1
         e_per = joules / max(int(contact.sum()), 1)
+        sore = 0.0                          # energy the faller's own flesh took
         for i in np.argsort(pose[:, 2]):
             dx = min(max(int(pose[i, 0]), 0), nx - 1)
             dy = min(max(int(pose[i, 1]), 0), ny - 1)
@@ -1412,10 +1439,27 @@ class World:
                 self.fvol[dx, dy, dz] = b["fvols"][i]
                 self.fpot[dx, dy, dz] = b["fpots"][i]
             if contact[i]:
+                if b["mats"][i] == FLESH:
+                    if e_per > bruise:      # flesh deforms, never fragments:
+                        sore += e_per - bruise   # the overage is the wound
+                    continue
                 thr_i = (_TOUGH_ARR[b["mats"][i]] * 1000.0 * vox_m ** 2
                          * (0.7 + 0.6 * self._flaw01(dx, dy, dz)))
                 if e_per > thr_i:
                     self._shatter(dx, dy, dz, e_per / thr_i)
+        if sore > 0.0 and b.get("owner") is not None and not b.get("part"):
+            # A FALL HURTS. _land_body always paid 1/2 m v² against what a body
+            # STRUCK and nothing against the body — a man dropped onto stone
+            # landed whole and entirely unbothered, and "pulled off a cliff"
+            # was a change of address. The energy his own contact cells took
+            # is his, by the same third-law sharing as the struck side.
+            for q in self.persons:
+                if q["name"] == b["owner"]:
+                    self._wound(q, sore)
+                    if sore / BODY["hurt_J"] >= 0.02:
+                        q["events"].append(
+                            f"t{self.tick}: {q['name']} lands hard")
+                    break
         self._torque_solid = None                        # lattice changed: recheck
         if b.get("part") and b.get("seg") and b.get("owner") is not None:
             for q in self.persons:            # the limb came to rest somewhere
@@ -1432,6 +1476,21 @@ class World:
                     q["anchor"] = (int(round(float(np.mean([c[0] for c in put])))),
                                    int(round(float(np.mean([c[1] for c in put])))))
                     break
+
+    def _person_at(self, cell):
+        """Whose flesh is this? Ownership, not adjacency — the claim map."""
+        for q in self.persons:
+            if cell in (q.get("_own") or frozenset()):
+                return q
+        return None
+
+    def _wound(self, p, joules):
+        """Impact energy a body absorbed beyond what tissue takes whole.
+        Accumulates like the burn integral and reads against the same
+        thresholds; wounds do not heal here any more than burns do."""
+        if p is None or not p["alive"]:
+            return
+        p["hurt"] = min(p["hurt"] + joules / BODY["hurt_J"], 1.0)
 
     def bodies_array(self):
         """Every mid-flight body voxel as (x, y, z, mat) for the renderer."""
@@ -2233,7 +2292,7 @@ class World:
         body; this struct is only the slow chemistry riding on them. One person
         per neighborhood for now — the flesh search is anchor-local."""
         p = {"anchor": (int(x), int(y)), "name": name, "blood_o2": 0.97,
-             "smoke": 0.0, "burn": 0.0, "awake": True, "alive": True,
+             "smoke": 0.0, "burn": 0.0, "hurt": 0.0, "awake": True, "alive": True,
              "fleeing": False, "safe": False, "events": [],
              # WHAT THIS BODY HAS SEEN — not what the world contains. This is
              # the difference between a person and the sim: the sim holds the
@@ -2439,7 +2498,8 @@ class World:
         state = ("DEAD" if not p["alive"] else
                  "unconscious" if not p["awake"] else "awake")
         return (f"{p['name']}: blood O2 {100 * p['blood_o2']:.0f}%, smoke load "
-                f"{p['smoke']:.2f}, burns {100 * p['burn']:.0f}% — {state}")
+                f"{p['smoke']:.2f}, burns {100 * p['burn']:.0f}%, wounds "
+                f"{100 * p['hurt']:.0f}% — {state}")
 
     def _law_life(self):
         """PHYSIOLOGY — the body's slow chemistry, every constant from BODY.
@@ -2488,14 +2548,18 @@ class World:
             p["blood_o2"] += BODY["breath"] * (uptake - p["blood_o2"])
             hot = np.clip(T[sl][flesh] - BODY["hurt_T"], 0.0, 400.0)
             p["burn"] = min(p["burn"] + BODY["burn_gain"] * float(hot.mean()), 1.0)
+            dmg = p["burn"] + p["hurt"]     # tissue damage is tissue damage:
+            # cooked or crushed, the body it incapacitates is the same body,
+            # so the two integrals read against ONE pair of thresholds
             if p["awake"] and (p["blood_o2"] < BODY["faint_o2"]
-                               or p["burn"] > BODY["faint_burn"]):
+                               or dmg > BODY["faint_burn"]):
                 p["awake"] = False
-                why = ("the burns" if p["burn"] > BODY["faint_burn"]
-                       else "the foul air")
+                why = ("the foul air" if dmg <= BODY["faint_burn"]
+                       else "the burns" if p["burn"] >= p["hurt"]
+                       else "the wounds")
                 p["events"].append(f"t{self.tick}: {p['name']} slumps — {why}")
             elif (not p["awake"] and p["blood_o2"] > BODY["wake_o2"]
-                    and p["burn"] <= BODY["faint_burn"]):
+                    and dmg <= BODY["faint_burn"]):
                 # air alone can undo what air did. Burns cannot be undone —
                 # the burn integral only climbs — so someone who went down from
                 # heat stays down, and someone who went down from the air comes
@@ -2509,7 +2573,7 @@ class World:
             if (not p["awake"] and self.tick % 8 == 0
                     and z_hi - z_lo > int(0.8 / (0.1 * self.scale))):
                 self._collapse(p, flesh, sl)             # still upright: nothing holds
-            if p["blood_o2"] < BODY["death_o2"] or p["burn"] > BODY["death_burn"]:
+            if p["blood_o2"] < BODY["death_o2"] or dmg > BODY["death_burn"]:
                 p["alive"] = False
                 p["events"].append(f"t{self.tick}: {p['name']} stops breathing")
 
@@ -3056,6 +3120,7 @@ class World:
                "smoke": round(float(p["smoke"]), 3),
                "blood_o2": round(float(p["blood_o2"]), 3),
                "burn": round(float(p["burn"]), 3),
+               "hurt": round(float(p["hurt"]), 3),
                "holding": p.get("dragging"),
                "knows_a_way_out": any(p["known"][int(e[0]), int(e[1])]
                                       for e in self.exits),

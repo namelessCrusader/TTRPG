@@ -1357,41 +1357,66 @@ def test_a_person_can_JUMP_and_it_is_a_CHOICE():
             "a body that did not choose to jump never leaves the floor"
 
 
-@pytest.mark.xfail(strict=True, reason="no momentum: a fall cannot be spread over time")
+def _dropped_onto_stone(h_m, legs="stay", ticks=200):
+    """One person, h_m of air under their feet, a stone floor. What the fall
+    does to them is the whole result."""
+    from src.voxel.scenes import _person
+
+    zn = 1 + int(round(h_m / 0.05))
+    w = World(24, 12, zn + 40, voxel_cm=5)
+    w.fill(0, 24, 0, 12, 0, 1, STONE)
+    w.exits = []
+    p = _person(w, 11, 6, z0=zn)
+    w.policy = _Wants(legs=legs)
+    grams = _flesh_grams(w)
+    for _ in range(ticks):
+        w.step()
+    return p, grams, _flesh_grams(w)
+
+
+def test_a_FALL_HURTS_and_the_height_decides_how_much():
+    """A man dropped 1.5 m onto stone used to land whole and entirely
+    unbothered: _land_body paid 1/2 m v² against what he STRUCK and nothing
+    against him, so "pulled off a cliff" was a change of address. Tissue takes
+    damage well below the toughness that tears it apart; landing energy beyond
+    that threshold is now the body's WOUND — one integral, the same shape as
+    burns, read against the same faint and death thresholds.
+
+    And flesh DEFORMS rather than fragments. Before this, a big enough fall
+    shattered a man's feet into debris and the rest of him walked away
+    unhurt — the shatter branch ate exactly the energy the wound should have
+    carried, so the harder the landing the less it hurt."""
+    low, g0, g1 = _dropped_onto_stone(1.5)
+    mid, m0, m1 = _dropped_onto_stone(3.0)
+    high, h0, h1 = _dropped_onto_stone(6.0)
+    assert low["hurt"] > 0, "1.5 m onto stone is not nothing"
+    assert low["awake"] and low["alive"], "...but a man takes it bruised"
+    assert not mid["awake"], "3 m knocks him out"
+    assert mid["alive"], "...and no more than that"
+    assert not high["alive"], "6 m onto stone, landed rigid, kills"
+    assert low["hurt"] < mid["hurt"] < high["hurt"], \
+        "the height decides, monotonically"
+    for a, b in ((g0, g1), (m0, m1), (h0, h1)):
+        assert abs(a - b) < 1.0, \
+            f"flesh deforms, it does not fragment: every gram stays ({a:.0f} " \
+            f"-> {b:.0f} g)"
+
+
+@pytest.mark.xfail(strict=True, reason="no roll: a landing cannot be spread over time")
 def test_ROLLING_on_landing_spreads_the_blow_that_a_rigid_landing_takes_whole():
-    """The same fall, the same body, the same floor — and one of them survives
-    it. A landing is a momentum change: the force is the change divided by the
+    """The same fall, the same body, the same floor — and one of them gets up.
+    A landing is a momentum change: the force is the change divided by the
     TIME taken to make it, so a body that keeps moving and comes to rest over
     many ticks is struck far less hard than one that stops dead. That is the
     whole of rolling, and it is arithmetic rather than a rule about rolls.
 
-    Measured in flesh: a rigid landing from this height breaks the body,
-    the same landing rolled does not."""
-    from src.voxel.scenes import _person
-
-    def drop(roll):
-        w = World(40, 20, 60, voxel_cm=5)
-        w.fill(0, 40, 0, 20, 0, 1, STONE)             # the ground
-        w.fill(0, 14, 0, 20, 1, 26, STONE)            # a ledge to stand off
-        w.exits = [(38, 10)]
-        p = _person(w, 9, 10)                         # standing on the ledge
-        for c in ("torso",):                          # lift the body onto it
-            pass
-        w.policy = _Wants(legs="roll" if roll else "stay")
-        before = _flesh_grams(w)
-        for _ in range(400):
-            w.step()
-            if _lowest_flesh_z(w) is not None and _lowest_flesh_z(w) <= 2:
-                break
-        for _ in range(40):
-            w.step()
-        return before, _flesh_grams(w), p
-
-    b0, hard, p0 = drop(False)
-    b1, soft, p1 = drop(True)
-    assert hard < b0 * 0.98, "a rigid landing from 1.2 m breaks a body"
-    assert soft > hard, "and rolling through it costs less"
-    assert p1["alive"], "the one who rolled lives"
+    Measured in wounds: a rigid landing from 3 m knocks a body out; the same
+    fall rolled through leaves it conscious and costs it less."""
+    rigid, _, _ = _dropped_onto_stone(3.0)
+    rolled, _, _ = _dropped_onto_stone(3.0, legs="roll")
+    assert not rigid["awake"], "a rigid landing from 3 m knocks a body out"
+    assert rolled["awake"], "the same fall rolled through leaves it conscious"
+    assert rolled["hurt"] < rigid["hurt"], "rolling spreads the blow"
 
 
 def test_a_WIDE_thing_falls_SLOWER_than_a_compact_one_of_the_same_mass():
