@@ -595,6 +595,23 @@ landing at the same time.
     stops being the right shape — two hands doing two different things is two
     menus.
 
+58. **THREE QUARTERS OF THE HARVEST IS "THIS PART DID NOTHING".** Measured
+    on the rescue, 2026-09-12: 4 decisions x 5 limbs = 20 picks logged, of
+    which **15 are null acts** — the mouth saying nothing, the waist standing
+    as it is, the eyes going on looking about. It was three limbs a week ago
+    and is five now, so today made it worse.
+
+    This is not a bug. A body genuinely does nothing with its mouth most of the
+    time, and a menu that hid that would be lying about what was on offer. But
+    a learner trained on these rows sees mostly "do nothing", which is the
+    class-imbalance problem arriving before anyone has written a learner — and
+    it is much easier to decide what to do about it now than after a model has
+    been trained on it.
+
+    The options are all outside the sim, which is the right side of the seam:
+    weight the rows, filter to decisions where SOMETHING changed, or learn per
+    limb rather than per body. Worth choosing deliberately.
+
 57. **A BODY DOES ONE HAND-THING PER DECISION, AND DECISIONS ARE 30 TICKS
     APART.** A fall from a ledge takes about 25. So a man who is not ALREADY
     holding the rail cannot take hold of it and then catch his friend — there
@@ -608,11 +625,16 @@ landing at the same time.
     is a small change with a large effect on every rescue in the sim, and it is
     the sort of thing that should be chosen rather than tuned into.
 
-51. **`_reach_around` CAN COST 44 REPOSES IN ONE TICK.** Two shoulder angles
-    times twenty-two elbow angles, each a full `_repose` with its own sweep,
-    and all of it on the tick a reach is refused. Never measured because it
-    has never been in a hot loop; it will be the moment several bodies are
-    reaching at walls.
+51. ~~**`_reach_around` CAN COST 44 REPOSES IN ONE TICK.**~~ **MEASURED
+    2026-09-12, and item 43 had already closed it.** A body reaching at a wall
+    makes **0** `_repose` calls per tick in the steady state, and its tick is
+    2.02 ms against 2.14 for the same body with nothing in the way — very
+    slightly FASTER, because it has stopped trying.
+
+    The 44 are paid once, on the tick the reach is first refused, and then
+    `_no_reach` remembers and the body does not ask again until it moves or
+    turns. Two things built the same afternoon for different reasons, composing
+    to remove a cost that was filed as a worry about one of them.
 
 52. **THE SUITE IS TEN MINUTES**, 104 tests. Profiled 2026-09-12: the 15
     slowest are 390 s of the 586, and there is no single offender — it is a
@@ -622,13 +644,30 @@ landing at the same time.
 
     **The cheap answer is `pytest-xdist`**, which is not installed. The tests
     share nothing, so `-n 16` on this machine would put the wall time at the
-    length of the SLOWEST SINGLE TEST — 62 s — which is 9:46 down to about a
-    minute for one dev-only dependency and no change to any test. Not
+    length of the SLOWEST SINGLE TEST — 62 s — which is ten minutes down to
+    about one for one dev-only dependency and no change to any test. Not
     installed without asking, because adding a dependency is the sort of thing
     that should be somebody's decision rather than a side effect.
 
-    After that, the floor is `test_reflexes_flee_and_alarm_spreads_by_shout_or
+    **And it needs no dependency to prove**: `pytest` has always taken a list
+    of test ids, so splitting the collected list across N shells and waiting
+    gives the same thing by hand. Measured 2026-09-12, 111 tests:
+
+    | | wall |
+    |---|---|
+    | one process | **11:47** |
+    | 8 shells, split round-robin | **3:38** |
+
+    Which also shows what xdist would add over the hand-rolled version:
+    round-robin splitting does not know what a test COSTS, so the eight chunks
+    came in between 47 s and 218 s and the slowest one is the whole wall time.
+    xdist hands work out as workers free up, so it lands near the 62 s floor.
+
+    The floor after that is `test_reflexes_flee_and_alarm_spreads_by_shout_or
     _sight` at 62 s, and THAT one would be worth trimming.
+
+    A script lives in this session's scratchpad, not in the repo: a suite that
+    is only fast when somebody knows the trick is still a ten-minute suite.
 
 53. ~~**`total_wood()` COUNTS WHAT LEFT THE WORLD AND THE OTHER TOTALS DO
     NOT.**~~ **FIXED (2026-09-12)** — `total_mass` counts cells, bodies in
