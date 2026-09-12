@@ -331,6 +331,7 @@ ACTS = {"go":     {"limb": "legs",  "null": False},
         "let_go": {"limb": "hands", "null": False},
         "keep":   {"limb": "hands", "null": True},
         "swing":  {"limb": "hands", "null": False},
+        "throw":  {"limb": "hands", "null": False},
         "take":   {"limb": "hands", "null": False},
         "reach":  {"limb": "hands", "null": False},
         "pull_in": {"limb": "hands", "null": False},
@@ -520,6 +521,14 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         # is not a preference, it is a rule, and the off hand never wins.
         "off_hand_m": 0.10,
         "off_hand": 0.8,         # what the other hand is worth, in strength
+        # WHEN THE HAND LETS GO. An arm swinging up from rest carries its hand
+        # on a circle, so the hand's velocity is always at right angles to the
+        # arm: hanging straight down it is going FORWARD, straight out in front
+        # it is going UP, and half way between it is going forward and up at
+        # 45 degrees. Which is the angle that throws a thing furthest, and it
+        # falls out of the geometry rather than being aimed — a body throws
+        # well because of where its shoulder is, not because it knows ballistics.
+        "throw_rad": 0.785,      # pi/4 from hanging
         # AND A MUSCLE CANNOT PULL AT ANY SPEED. Hill's force-velocity
         # relation: the faster a muscle is already shortening the less force
         # it makes, so torque fades to nothing at a top speed. Without it an
@@ -2296,6 +2305,54 @@ class World:
         out[:, 2] = zz
         return out
 
+    _PERCELL = ("cells", "mats", "masses", "Es", "fls", "fvols", "fpots",
+                "edges", "segof")
+
+    def _release(self, b, thrown, at):
+        """Let go of part of a swinging body, at the speed it was going.
+
+        A throw is not a new kind of motion. The thing is already travelling —
+        it has been going round on the end of an arm — and letting go only
+        stops it being made to go round. So its speed is the speed it had,
+        `omega` times how far out it was, and its direction is the tangent,
+        which is where the hand was taking it anyway."""
+        ax, sgn = int(b["axis"]), int(b["s"])
+        vox_m = 0.1 * self.scale
+        c = b["cells"][thrown]
+        d_lat = float(c[:, ax].mean()) - b["pivot"]
+        d_z = float(c[:, 2].mean()) - b["zb"]
+        th = float(b["theta"])
+        ct, st = float(np.cos(th)), float(np.sin(th))
+        w_rad = float(b["omega"]) / max(TICK_S, 1e-9)
+        vel = [0.0, 0.0, 0.0]
+        vel[ax] = (-d_lat * st + sgn * d_z * ct) * w_rad * vox_m
+        vel[2] = (-sgn * d_lat * ct - d_z * st) * w_rad * vox_m
+        flier = {"cells": at[thrown].astype(np.float32),
+                 "fly": True, "vel": np.asarray(vel, np.float64),
+                 "off": np.zeros(3), "owner": None,
+                 "axis": 0, "s": 1, "pivot": 0.0, "zb": 0.0,
+                 "theta": 0.0, "omega": 0.0, "phi0": 0.02, "L": 2.0}
+        for k in ("mats", "masses", "Es", "fls", "fvols", "fpots", "edges"):
+            flier[k] = b[k][thrown].copy()
+        for k in self._PERCELL:
+            if k in b and b[k] is not None and len(b[k]) == len(thrown):
+                b[k] = b[k][~thrown]
+        # AND THE ARM IS LIGHTER NOW, so it comes round faster — which is what
+        # anyone who has thrown something has felt.
+        if len(b["cells"]):
+            kg = b["masses"] / 1000.0
+            r = (np.abs(b["cells"][:, ax] - b["pivot"])
+                 + np.abs(b["cells"][:, 2] - b["zb"])) * vox_m
+            b["I"] = max(float((kg * r * r).sum()), 1e-6)
+        b["throw"] = False
+        self.bodies.append(flier)
+        for q in self.persons:                    # the hand is empty now
+            if q["name"] == b.get("owner"):
+                q["held"] = None
+                q["events"].append(f"t{self.tick}: {q['name']} lets fly")
+                break
+        return flier
+
     def _law_bodies(self):
         """Advance every mid-topple body one tick; land the ones that arrive."""
         if not self.bodies:
@@ -2362,6 +2419,17 @@ class World:
                 w_s += (b["Nm"] * fade / b["I"]) * TICK_S
                 b["omega"] = w_s * TICK_S
                 theta_next = min(b["theta"] + b["omega"], np.pi / 2)
+                # LET GO, if that is what this swing was for. Before the block
+                # check, because a thrown thing leaves the hand and what the
+                # ARM then hits is the arm's business.
+                if b.get("throw") and b.get("segof") is not None \
+                        and theta_next >= BODY["throw_rad"] \
+                        and (b["segof"] == -1).any():
+                    b["theta"] = theta_next
+                    self._release(b, b["segof"] == -1,
+                                  np.round(self._body_pose(b, theta_next)))
+                    if not len(b["cells"]):
+                        continue                  # nothing of it left to swing
                 pose = np.round(self._body_pose(b, theta_next)).astype(np.int64)
                 inb = ((pose[:, 0] >= 0) & (pose[:, 0] < nx) & (pose[:, 1] >= 0)
                        & (pose[:, 1] < ny) & (pose[:, 2] >= 0) & (pose[:, 2] < nz))
@@ -4988,6 +5056,12 @@ class World:
                              "verb": "swing",
                              # what is held swings with the hand holding it
                              "arm": (p.get("held") or {}).get("arm") or arm})
+                if p.get("held"):
+                    # THE SAME SWING, LET GO OF. Nothing new happens to the
+                    # arm; the only difference is whether the hand opens.
+                    menu.append({"key": f"throw the {p['held']['label']}",
+                                 "tag": "throw", "verb": "throw",
+                                 "arm": (p.get("held") or {}).get("arm") or arm})
             for q in self._within_reach(p, cells):
                 if q["name"] == held:
                     continue
@@ -5146,10 +5220,16 @@ class World:
             p["emergency"] = True        # committed: stop weighing the ordinary
         hands = picks.get("hands")
         if hands is not None:            # HANDS. Holding is not a rescue
-            if hands["verb"] == "swing":
-                self._swing(p, hands.get("arm") or self._hand(p, cells),
-                            toward=p.get("facing"))
-                p["events"].append(f"t{self.tick}: {p['name']} swings an arm")
+            if hands["verb"] in ("swing", "throw"):
+                b = self._swing(p, hands.get("arm") or self._hand(p, cells),
+                                toward=p.get("facing"))
+                if b is not None and hands["verb"] == "throw":
+                    b["throw"] = True
+                p["events"].append(
+                    f"t{self.tick}: {p['name']} "
+                    + ("throws the " + p["held"]["label"]
+                       if hands["verb"] == "throw" and p.get("held")
+                       else "swings an arm"))
             elif hands["verb"] == "hold":  # no subsystem: a grip is REACH, and
                 if "who" in hands:             # what it can then do is force —
                     p["dragging"] = hands["who"]   # the same _effort a shove

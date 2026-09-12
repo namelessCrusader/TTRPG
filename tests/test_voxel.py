@@ -3390,3 +3390,81 @@ def test_a_body_MOVED_WHILE_UNCONSCIOUS_is_where_it_was_PUT():
     assert worst < 2.0, \
         f"and it was found where it was PUT the whole way, never where it lay " \
         f"down (worst error {worst:.1f} voxels)"
+
+
+def _thrower(x1, z1, act):
+    from src.voxel.scenes import _person, _Wants
+    # sized to the throw: a 1 kg stone goes about 2.5 m, which is 50 voxels.
+    # A 200-wide world and 600 ticks cost 80 seconds of suite time to watch an
+    # empty room (item 52).
+    w = World(90, 14, 50, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 90, 0, 14, 0, 50, STONE)
+    w.mat[1:89, 1:13, 1:46] = AIR
+    w.smass[1:89, 1:13, 1:46] = 0.0
+    w.exits = []
+    p = _person(w, 10, 8)
+    p["name"], p["facing"] = "thrower", (1.0, 0.0)
+    p["strength_N"] = 3000.0
+    w.fill(14, x1, 7, 8, 1, z1, IRON)
+    w.policy = _Wants(each={"thrower": {"hands": "take hold of the iron",
+                                        "legs": "stay", "waist": "stand"}})
+    for _ in range(30):
+        w.step()
+        p["events"].clear()
+    w.policy = _Wants(each={"thrower": {"hands": act, "legs": "stay",
+                                        "waist": "stand"}})
+    v0, x0 = None, None
+    for _ in range(220):
+        w.step()
+        p["events"].clear()
+        fl = [b for b in w.bodies if b.get("fly") and (b["mats"] == IRON).any()]
+        if fl and v0 is None:
+            v0 = np.array(fl[0]["vel"])
+            x0 = float(fl[0]["cells"][:, 0].mean())
+    st = np.argwhere(w.mat == IRON)
+    flew = (float(st[:, 0].mean()) - x0) * 0.05 if len(st) and x0 else 0.0
+    return w, p, v0, flew
+
+
+def test_a_THROW_is_a_SWING_that_lets_go():
+    """Throwing is not a new kind of motion. The thing is already travelling —
+    it has been going round on the end of an arm — and letting go only stops it
+    being made to go round. Its speed is the speed it had, its direction is the
+    tangent, which is where the hand was taking it anyway.
+
+    And the release ANGLE falls out of the geometry rather than being aimed. A
+    hand on a circle moves at right angles to the arm: hanging straight down it
+    is going forward, straight out in front it is going up, and half way
+    between it is going forward and up. A body throws well because of where its
+    shoulder is, not because it knows any ballistics."""
+    w, p, v0, flew = _thrower(15, 3, "throw the iron")
+    assert v0 is not None, "something left the hand"
+    ang = float(np.degrees(np.arctan2(v0[2], v0[0])))
+    assert 30.0 < ang < 65.0, \
+        f"it leaves the hand forward and up, near the angle that throws " \
+        f"furthest ({ang:.0f} degrees)"
+    assert p.get("held") is None, "and the hand is empty afterwards"
+    assert flew > 1.0, f"and it goes somewhere ({flew:.2f} m)"
+
+    # THE SAME SWING, NOT LET GO OF, leaves the stone at the man's feet.
+    w2, p2, v2, flew2 = _thrower(15, 3, "swing the iron")
+    assert v2 is None, "a swing never lets go"
+    assert p2.get("held") is not None, "it is still in his hand"
+
+
+def test_a_LIGHTER_THING_is_THROWN_HARDER():
+    """Nobody wrote down how fast a throw is. It is the arm's torque against
+    what the arm is carrying, so a heavy thing comes round slowly and leaves
+    slowly — which is Hill's relation and a moment of inertia doing the work,
+    the same two things that decide how fast an axe swings."""
+    speeds = []
+    for x1, z1 in ((15, 2), (15, 3), (16, 3), (18, 4)):
+        w, p, v0, flew = _thrower(x1, z1, "throw the iron")
+        kg = float(w.smass[w.mat == IRON].sum()) / 1000.0
+        assert v0 is not None
+        speeds.append((kg, float(np.linalg.norm(v0)), flew))
+    for (k1, v1, f1), (k2, v2, f2) in zip(speeds, speeds[1:]):
+        assert k2 > k1, "the loads really do get heavier"
+        assert v2 < v1, f"and each heavier one leaves slower ({v1:.2f} -> {v2:.2f})"
+        assert f2 < f1, f"and lands nearer ({f1:.2f} m -> {f2:.2f} m)"

@@ -191,13 +191,13 @@ These are what it opened up and what it left behind.
    by how long it takes to make it, so a body that keeps moving and stops over
    many ticks is struck far less hard than one that stops dead. Needs a landing
    that can take more than one tick. Test written: `test_ROLLING_on_landing_...`
-2. **`swing` — hands putting force behind a moving mass.** Impulse = force x
-   time, so a held thing leaves the hand with speed and arrives as `1/2 m v^2`
-   over the short distance an edge takes to stop. `_launch` and the kinetic
-   landing already exist; what is missing is the act, and a contact area small
-   enough that the same energy lands as a much larger stress. Test written:
-   `test_an_axe_SWUNG_bites_...`
-3. **Throwing falls out of (2)** — the same impulse with a different aim. Free.
+2. ~~**`swing` — hands putting force behind a moving mass.**~~ **ALREADY
+   BUILT**, and this entry was stale: the act is on the hands menu, `_swing`
+   drives it, the edge declares its own contact area (`fill(edge=...)`), and
+   `test_an_axe_SWUNG_bites_where_the_same_axe_PRESSED_does_not` has been
+   passing. Sixth entry this session that did not survive being checked.
+3. ~~**Throwing falls out of (2)**~~ **BUILT (2026-09-12)**, and it did fall
+   out of it. See "A throw is a swing that lets go" below.
 4. **Catching.** A percept for a thing in flight, plus reach. Cheap once bodies
    have trajectories, which they now do.
 5. **Walkers cannot change elevation at all** — not a step up, not a stair, not
@@ -555,6 +555,17 @@ landing at the same time.
     NOT.**~~ **FIXED (2026-09-12)** — `total_mass` counts cells, bodies in
     flight, and the tally. Which also fixed a quieter one: a swung axe used to
     cease to exist for as long as it was in the air.
+
+55. **A THROW IS ONE SHOULDER THROUGH A QUARTER TURN.** Measured: a 1 kg
+    stone leaves the hand at 4.92 m/s and flies 2.45 m. That is honest for the
+    arm it has — Hill caps the shoulder at 15 rad/s and the hand is 0.45 m out,
+    so 6.75 m/s is the ceiling and the quarter arc from hanging does not reach
+    it. A person throws a 1 kg stone at 10-15 m/s because the arc starts behind
+    the head and the legs, hips and trunk are all in it before the arm is.
+
+    The waist exists now, which is the first of those. A wind-up (start the
+    swing behind the body) and the trunk unwinding into it would be the rest,
+    and would cost no new law — it is the same rotation about more joints.
 
 54. **NO RENDERS THIS SESSION.** Blender is not on PATH in this environment,
     so nothing built since 2026-09-11 has been LOOKED at — only measured. An
@@ -3128,3 +3139,49 @@ weeks reading like a known quantity. A number in this file that was never
 measured should say so.
 
 Test: `test_a_LONG_FALL_arrives_at_the_speed_gravity_gives_it`.
+
+
+## A throw is a swing that lets go (2026-09-12)
+
+Item 3 said "throwing falls out of (2) — the same impulse with a different aim.
+Free." It was right, and it is the nicest kind of item to close: nothing new
+was modelled.
+
+A thrown thing is ALREADY TRAVELLING. It has been going round on the end of an
+arm, and letting go only stops it being made to go round. So its speed is the
+speed it had — `omega` times how far out it was — and its direction is the
+tangent, which is where the hand was taking it anyway. `_release` splits the
+object's cells out of the swinging body and hands them to the flier machinery
+that already existed for jumps and falls.
+
+**The release angle is geometry, not aim.** A hand on a circle moves at right
+angles to the arm: hanging straight down it is going forward, straight out in
+front it is going up, and half way between it is going forward and up at 45
+degrees — the angle that throws a thing furthest. A body throws well because of
+where its shoulder is, not because it knows any ballistics. Measured release:
+**52 degrees above horizontal.**
+
+And the arm is lighter once the thing has gone, so it comes round faster after
+the release than before it — which is what anyone who has thrown something has
+felt, and which nobody had to write down.
+
+| | speed leaving the hand | how far it flew |
+|---|---|---|
+| 0.97 kg | 4.92 m/s | 2.45 m |
+| 1.95 kg | 4.11 m/s | 2.15 m |
+| 3.90 kg | 3.12 m/s | 1.40 m |
+| 11.70 kg | 2.02 m/s | 0.82 m |
+
+Nobody wrote down how fast a throw is. It is the arm's torque against what the
+arm is carrying — Hill's relation and a moment of inertia, the same two things
+that decide how fast an axe swings.
+
+**And it is WEAK, honestly so.** A person throws a 1 kg stone at 10-15 m/s and
+ours manages 4.92. The ceiling is 6.75 m/s: Hill caps the shoulder at 15 rad/s
+and the hand is 0.45 m out. The quarter arc from hanging does not even reach
+that. A real throw starts behind the head and has the legs, hips and trunk in
+it before the arm is — and the waist exists now, so a wind-up and a trunk
+unwinding into the swing would cost no new law. Item 55.
+
+Tests: `test_a_THROW_is_a_SWING_that_lets_go`,
+`test_a_LIGHTER_THING_is_THROWN_HARDER`.
