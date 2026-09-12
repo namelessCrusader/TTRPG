@@ -1909,6 +1909,88 @@ class World:
         """Do b, then a."""
         return a @ np.vstack([b, [0.0, 0.0, 1.0]])
 
+    def _turn(self, p, quarters):
+        """Turn a body on its own feet, in QUARTER turns.
+
+        A quarter turn is the only rotation a lattice can do EXACTLY. It is a
+        permutation of the cells — (dx, dy) becomes (-dy, dx) and back again —
+        so nothing rounds together and nothing rounds apart, and the two checks
+        `_repose` needs for every other angle are not needed for this one at
+        all. Everything else in this file that turns has to argue with the
+        grid; this does not.
+
+        Which is why a body could not turn until now, and why it matters that
+        it can. The humanoid is built with its shoulders along x and its
+        `facing` rotates freely, so it FACES ALONG ITS OWN SHOULDER LINE half
+        the time — and an arm turns in the plane the body faces, so half the
+        time that plane holds the torso too. That is one cause behind a
+        wind-up that sweeps an arm through its own chest, a thicker arm that
+        collides with its own body when it reaches, and a pose space that
+        depends on which way a body happens to be pointed.
+
+        It can be REFUSED, and that is a feature: a body in a space too tight
+        to turn in does not turn. Corridors are like that."""
+        comp, sl = self._person_cells(p)
+        if comp is None or not comp.any():
+            return False
+        own = np.argwhere(comp)
+        own[:, 0] += sl[0].start or 0
+        own[:, 1] += sl[1].start or 0
+        q = int(quarters) % 4
+        if q == 0:
+            return True
+        cx = int(round(float(own[:, 0].mean())))
+        cy = int(round(float(own[:, 1].mean())))
+
+        def spin(cells):
+            c = np.asarray(cells, np.int64).copy()
+            dx, dy = c[:, 0] - cx, c[:, 1] - cy
+            for _ in range(q):
+                dx, dy = -dy, dx
+            c[:, 0], c[:, 1] = cx + dx, cy + dy
+            return c
+
+        want = spin(own)
+        nx, ny, nz = self.shape
+        if ((want < 0).any() or (want[:, 0] >= nx).any()
+                or (want[:, 1] >= ny).any() or (want[:, 2] >= nz).any()):
+            return False
+        mine = {tuple(c) for c in own}
+        if any(tuple(t) not in mine and int(self.mat[tuple(t)]) != AIR
+               for t in want):
+            return False                      # no room to turn round in
+        fields = (self.mat, self.smass, self.E, self.fl, self.fvol,
+                  self.fpot, self.fallh, self.edge)
+        src, dst = tuple(own.T), tuple(want.T)
+        held = [arr[src].copy() for arr in fields]
+        for arr in fields:
+            arr[src] = 0
+        for arr, h in zip(fields, held):
+            arr[dst] = h
+        # AND EVERY PART OF IT TURNS WITH IT. Segments, joints and rest shapes
+        # are offsets from the body's own corner, and that corner has moved —
+        # so each is rotated about the same centre and re-based, or the body
+        # keeps a map of a shape it no longer has.
+        base = want.min(axis=0)
+        for book in ("segs", "rest", "joints"):
+            d = p.get(book)
+            if not d:
+                continue
+            origin = own.min(axis=0)
+            for k, v in list(d.items()):
+                v = np.asarray(v)
+                flat = v.ndim == 1
+                a = spin((v.reshape(1, 3) if flat else v) + origin) - base
+                d[k] = a[0] if flat else a
+        fx, fy = p.get("facing", (1.0, 0.0))
+        for _ in range(q):
+            fx, fy = -fy, fx
+        p["facing"] = (float(fx), float(fy))
+        p["_claim_tick"] = None               # it is a different shape now
+        self._torque_solid = None
+        self._slack_mat = None
+        return True
+
     def _repose(self, p, name, theta, toward=None):
         """Put one limb where its ANGLES say it is, on the lattice, now.
 

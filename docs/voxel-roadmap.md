@@ -176,7 +176,39 @@ that gets made again.
 It buys the pose ENUMERATION and the mass, and costs the reach ACT. Do not do
 it alone; it is a symptom of D3.
 
-**D3. A BODY CANNOT TURN.** Its geometry is fixed when it is built while
+**D4. WHAT DOES `facing` MEAN, GIVEN HOW THE BODY IS BUILT?** The humanoid
+has its shoulders along x, and scenes almost always set `facing = (1, 0)` —
+PARALLEL to its own shoulder line. That is the root of the three findings, and
+measurement has now narrowed it to one line of build rather than a redesign:
+
+| built facing | 0 turns | 1 | 2 | 3 |
+|---|---|---|---|---|
+| **+x**, along its own shoulder line | refused | refused | refused | refused |
+| **+y**, across its shoulders | **-0.9** | **-0.9** | **-0.9** | **-0.9** |
+
+**Turning PRESERVES the relationship.** It was never an anisotropy — whether a
+body can wind up depends on how it was BUILT, and then holds in every direction
+it can turn to. So the fix is in the build, and `_turn` carries it everywhere.
+
+Three ways, and this one IS a taste question:
+
+- **(a) Default `facing` to (0, 1).** One line, free, measured to work. Costs:
+  every scene that assumes (1, 0), and bodies start facing "north" for no
+  reason a reader can see.
+- **(b) Rebuild `_person` with shoulders along y.** Anatomically honest and
+  keeps `facing = (1, 0)` meaning "east", which is what a reader expects.
+  Costs: the footprint's orientation flips, so doorways tuned to a 6-wide-in-x
+  body need re-checking — the same class of cost that made widening fail 15.
+- **(c) Leave the build; make turning carry the meaning.** Bodies turn before
+  walking. Costs: ticks on every journey, and the timing of every walking test.
+
+My read is (b) — it is the only one where `facing = (1, 0)` means what it says
+AND the arm is in a plane without the torso in it. But (a) is free, and this is
+a choice rather than a measurement.
+
+**D3. A BODY CANNOT TURN.** ~~Open~~ **BUILT (2026-09-12)** as `_turn`: quarter
+turns, exact, refusable when there is no room. What remains of D3 is D4 (which
+way it should be built) and whether walking should turn a body automatically. Its geometry is fixed when it is built while
 `facing` rotates freely, so the humanoid FACES ALONG ITS OWN SHOULDER LINE half
 the time. Real anatomy puts the shoulders left-right and the face forward —
 perpendicular — so an arm is beside the torso on one axis and swings in a plane

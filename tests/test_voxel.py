@@ -3694,3 +3694,61 @@ def test_a_WIND_UP_THROWS_HARDER_where_there_is_room_for_one():
     assert wound > flat * 1.15, \
         f"an arm that starts behind the body leaves markedly faster " \
         f"({wound:.2f} m/s against {flat:.2f})"
+
+
+def _spun(face, turns):
+    """A body built facing one way, then turned on its own feet."""
+    from src.voxel.scenes import _person
+    w = World(46, 46, 46, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 46, 0, 46, 0, 1, STONE)
+    w.exits = []
+    p = _person(w, 22, 22)
+    p["name"], p["facing"] = "t", face
+    for _ in range(turns):
+        assert w._turn(p, 1), "there is room to turn in an empty room"
+    return w, p
+
+
+def test_a_body_TURNS_ON_ITS_OWN_FEET_exactly():
+    """A quarter turn is the only rotation a lattice can do EXACTLY: it is a
+    permutation of the cells, so nothing rounds together and nothing rounds
+    apart. Every other angle in this file has to argue with the grid — this one
+    does not, which is why turning is worth having as its own act rather than
+    as a special case of posing."""
+    w, p = _spun((1.0, 0.0), 0)
+    grams, cells = _flesh_grams(w), int((w.mat == FLESH).sum())
+    for k in range(1, 5):
+        assert w._turn(p, 1)
+        assert abs(_flesh_grams(w) - grams) < 1.0, f"every gram, turn {k}"
+        assert int((w.mat == FLESH).sum()) == cells, f"every voxel, turn {k}"
+        assert _lumps(w.mat == FLESH) == 1, f"still one man, turn {k}"
+        for limb in ("right arm", "left arm", "torso", "head"):
+            assert w._limb_cells(p, limb) is not None, \
+                f"and it still has its {limb} after {k} turns"
+    assert abs(p["facing"][0] - 1.0) < 1e-6 and abs(p["facing"][1]) < 1e-6, \
+        "four quarter turns is where you started"
+
+
+def test_WHICH_WAY_A_BODY_IS_BUILT_travels_with_it():
+    """The humanoid has its shoulders along x. An arm turns in the plane the
+    body FACES — so a body facing along its own shoulder line has its torso in
+    that plane too, and an arm winding back for a throw sweeps through its own
+    chest. Which is one cause behind three separate findings, and it looked
+    like an anisotropy: the same man threw better facing one way than another.
+
+    It is not an anisotropy. Turning rotates the geometry WITH the facing, so
+    the relationship between the two is invariant — whether a body can wind up
+    depends on how it was BUILT, and then holds in every direction it can turn
+    to. Built across its shoulders it can wind up facing anywhere; built along
+    them it can wind up nowhere."""
+    def can_wind(face, turns):
+        w, p = _spun(face, turns)
+        b = w._swing(p, "right arm", toward=p["facing"], back=0.9)
+        return b is not None and b["theta"] < -0.1
+
+    for turns in range(4):
+        assert can_wind((0.0, 1.0), turns), \
+            f"built ACROSS its shoulders, it winds up after {turns} turns"
+        assert not can_wind((1.0, 0.0), turns), \
+            f"built ALONG them, it cannot — after {turns} turns either"
