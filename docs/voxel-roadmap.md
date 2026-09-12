@@ -177,9 +177,10 @@ These are what it opened up and what it left behind.
 5. **Walkers cannot change elevation at all** — not a step up, not a stair, not
    a ladder. TRIED 2026-09-11 and taken back out; it works, and it is blocked
    behind item 13 rather than behind geometry. See "What a step up cost".
-6. **Friction heat: `mu N v` into `E`.** `FRICTION` is still only a force
-   threshold. Since `E` is the field combustion already reads, rubbing could
-   START A FIRE with no new rule. Wants sliding contact between free bodies.
+6. ~~**Friction heat: `mu N v` into `E`.**~~ **BUILT (2026-09-12)**, and it
+   cost almost nothing once hauling had a force to charge for — the sliding
+   contact it wanted turned out to be a man dragging something. See "Friction,
+   and the joules nobody was counting" below.
 7. **`FALL_SUBSTEPS = 4` caps falls at 8 m/s.** Honest below it, clipped above.
    Raising it costs a support sweep per sub-step; the fix is to sweep only the
    columns that are actually moving.
@@ -190,10 +191,25 @@ These are what it opened up and what it left behind.
 
 **Bodies and identity**
 
-9. **Hauling costs the hauler nothing** — no speed penalty for dragging 28 kg.
-   `strength_N` already says by how much it should.
-10. **A felled body travels much further than a topple should** (x=16 to a
-    centre at x=35 for a body ~24 voxels tall).
+9. ~~**Hauling costs the hauler nothing**~~ **FIXED (2026-09-12).** 92 ticks
+   across a room empty-handed, 175 dragging lead. See "What you drag" below.
+10. **A felled body falls like a PLANK, not like a person.** Re-measured
+    2026-09-12 and the original note had it the wrong way round: a 30-voxel
+    body stood at x17 lands centred at x34.4, spanning x18..46. That is not
+    too far — it is exactly right for a rigid body pivoting about its leading
+    TOE, which is what `_topple` does. The distance was never the bug.
+
+    The bug is the model. `_collapse`'s own docstring says "an unconscious body
+    is a SLACK object" and then promotes it as a rigid one — so a man who
+    faints goes over stiff as a felled tree, head landing 28 voxels from his
+    feet. A person crumples: the knees go, the trunk folds, and the head comes
+    down near the feet.
+
+    Newly feasible, and this is why it is worth restating rather than closing:
+    unconsciousness is the ABSENCE OF MUSCLE, and `_law_pose` already gates
+    every pose on the torque a muscle has. A body with no muscle should sag to
+    wherever gravity puts its joints — which is a solver, but a small one, and
+    the joints exist now.
 11. **Bodies wake exactly where they fell**, with no account of having been
     moved while unconscious.
 12. **The humanoid is light** — 28.5 kg for 1.5 m, so it jumps ~1 m and can be
@@ -490,10 +506,10 @@ landing at the same time.
     under test happens. Not a problem yet; it is the kind of thing that is
     fine until it is suddenly the reason nobody runs the tests.
 
-53. **`total_wood()` COUNTS WHAT LEFT THE WORLD AND THE OTHER TOTALS DO NOT.**
-    `self.gone` is general but only one accessor reads it. Either they all
-    should or none should — one that does and several that do not is the kind
-    of inconsistency a conservation check trips over at the worst moment.
+53. ~~**`total_wood()` COUNTS WHAT LEFT THE WORLD AND THE OTHER TOTALS DO
+    NOT.**~~ **FIXED (2026-09-12)** — `total_mass` counts cells, bodies in
+    flight, and the tally. Which also fixed a quieter one: a swung axe used to
+    cease to exist for as long as it was in the air.
 
 54. **NO RENDERS THIS SESSION.** Blender is not on PATH in this environment,
     so nothing built since 2026-09-11 has been LOOKED at — only measured. An
@@ -2931,3 +2947,96 @@ shoved somewhere wrong is worse than one that fails.
 Zero in any scene nobody is throwing things out of.
 
 Test: `test_what_LEAVES_THE_WORLD_is_counted_not_lost`.
+
+
+## What you drag, you pay for (2026-09-12)
+
+Item 9. The force arithmetic said a haul was legal and then charged nothing for
+it, so a man towing an unconscious body walked at exactly the pace of a man
+carrying nothing. Rescuing someone was free; dragging a crate across a room was
+the same act as strolling across it.
+
+A body has only so much to put out, and what the load takes the legs do not
+get. Pace goes with what is left.
+
+| crossing 30 voxels of room | ticks |
+|---|---|
+| empty-handed | **92** |
+| dragging a block of lead | **175** |
+
+**The number is written down nowhere.** It is this load's friction against this
+body's strength — a lighter load or a stronger man gives a different one, and
+the same load on ice would give another again, because `_effort` is the same
+question a shove asks.
+
+**Two costs, because they are two different things.** A thing LIFTED is held
+up, and what it costs is its weight. A thing TRAILED along the floor is not
+held up at all, and what it costs is friction. `_haul_cost` asks which by
+looking at whether the load is touching the world — the same test
+`_pulled_over` and `_overbalanced` use, now doing a third job.
+
+The walk gate stopped being `tick % walk_every` and became a per-body stride
+that accumulates. With nothing hauled it lands on exactly the ticks the modulo
+did, which is the property that made it safe to change: the pace of a man
+carrying nothing is the pace he always had.
+
+And the rescue still works. It takes him longer, which is the point.
+
+Test: `test_WHAT_YOU_DRAG_YOU_PAY_FOR`.
+
+
+## Friction, and the joules nobody was counting (2026-09-12)
+
+Item 6 had been waiting on "sliding contact between free bodies". It turned out
+the sliding contact was a man dragging something, which item 9 had just given a
+force: work is force times distance, so a thing hauled one voxel over the ground
+has turned `drag_N * voxel` of muscle into heat. There is nowhere else for it to
+have gone. Split evenly between the thing and the floor, because a rubbing pair
+is two surfaces and the third law does not care which one you had in mind.
+
+**No new rule was needed.** `E` is the field combustion already reads, so a
+thing dragged far enough over a rough floor gets hot, and a thing hot enough
+catches. Nobody wrote "dragging can start a fire"; it is what `mu N v` and a
+combustion law MEAN together.
+
+The magnitudes are honestly small, and that is the physics rather than a
+shortfall: dragging a 200 kg block of iron three metres puts about 500 J into
+the world, which moves a block that size by a fraction of a degree. Friction
+fires want speed and pressure this scene does not have.
+
+### The bug it found, which was the better result
+
+The first probe said the heat was going missing — 2562 J put in, 535 J present.
+It was not going missing. **The world sheds heat and never said how much.**
+
+    Tk = self.T() + 273.0          # every voxel radiates to the wider,
+    self.E -= RAD * ... (Tk**4 - 293**4) / 3.0    # cooler world
+    self.E *= (1.0 - LEAK)
+
+Both lines are right. A voxel really does radiate into a colder universe and
+that is exactly what stops a flame climbing for ever. But they were the only
+place in the sim where a conserved quantity changed and nothing wrote it down —
+so "energy is conserved" was not a statement anyone could CHECK, in the way
+mass became checkable when what left the world started being counted.
+
+Measured: **1000 J left completely alone in a closed room is 779 J sixty ticks
+later.** Nothing was wrong. Nothing could say so either.
+
+`self.shed` counts it, `total_energy()` adds up what is in the world, what is
+riding on bodies in flight, what went past the edge, and what was radiated
+away — and it comes to what you started with.
+
+**The same shape as item 8, one field over.** Ask of every conserved quantity:
+when it leaves, who writes it down?
+
+### And a cadence that had to be exactly right
+
+Replacing `tick % walk_every` with a per-body stride was safe only if an
+unladen body kept the cadence it always had. Mine started one short of that and
+stepped at ticks 0, 2, 5, 8 instead of 0, 3, 6, 9 — every body in the sim a
+voxel out of step, which surfaced as a crash in a belief test whose pillar was
+now being built on top of the body. Starting the accumulator at `pace - 1` puts
+it back exactly.
+
+Tests: `test_DRAGGING_A_THING_HEATS_IT_and_the_floor`,
+`test_the_WORLD_SAYS_HOW_MUCH_HEAT_IT_SHEDS`.

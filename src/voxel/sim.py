@@ -750,6 +750,10 @@ class World:
         # has edges; a thing thrown past one is outside, and the books only
         # balance if the world can say how much went. See `_left_world`.
         self.gone = {}
+        # AND WHAT IT HAS SHED AS HEAT, in joules — radiated into the colder
+        # universe outside the lattice, plus `LEAK`, less whatever the 0 °C
+        # floor had to put back. See the end of `step`.
+        self.shed = 0.0
         self.pcell = None                               # [x,y,z, vx,vy,vz, ml, fluid]
         self.vcell = None                               # coarse gas pressure + velocity
         self.p_add = np.zeros(self.shape, np.float32)   # pressure injected this tick
@@ -4545,6 +4549,61 @@ class World:
                     out.update(map(tuple, np.asarray(cl)))
         return frozenset(out)
 
+    def _rub(self, p, own):
+        """Dragging a thing over a floor HEATS BOTH OF THEM.
+
+        Work is force times distance and friction is a force, so a thing hauled
+        one voxel over the ground has turned `drag_N * voxel` joules of muscle
+        into heat — there is nowhere else for it to have gone. Split evenly
+        between the thing and what it is dragged over, because a rubbing pair
+        is two surfaces and the third law does not care which one you were
+        thinking about.
+
+        And this needed NO NEW RULE. `E` is the field combustion already reads,
+        so a thing dragged far enough over a rough floor gets hot, and a thing
+        that gets hot enough catches. Nobody wrote "dragging can start a fire";
+        it is what `mu N v` and a combustion law mean together.
+
+        Known softness, and it is the body's: muscle is an unmodelled source of
+        energy here. A man has `blood_o2` and no calorie budget, so the joules
+        he puts into the floor come from nowhere the sim is counting."""
+        vox_m = 0.1 * self.scale
+        nz = self.shape[2]
+        for cl in self._held_clusters(p):
+            cl = np.asarray(cl, np.int64)
+            if not len(cl):
+                continue
+            rub = self._contact(cl, ignore=own)
+            if not len(rub):
+                continue                      # carried, not dragged: no rubbing
+            joules = float(self._effort(cl)[1]) * vox_m
+            if joules <= 0.0:
+                continue
+            half = joules * 0.5 / len(rub)
+            self.E[tuple(rub.T)] += half
+            under = rub.copy()
+            under[:, 2] -= 1
+            under = under[under[:, 2] >= 0]
+            if len(under):
+                self.E[tuple(under.T)] += joules * 0.5 / len(under)
+
+    def _haul_cost(self, p, own):
+        """How much of this body's strength its load is already using.
+
+        Two costs, because they are two different things. A thing LIFTED is
+        held up, and what it costs is its weight. A thing TRAILED along the
+        floor is not held up at all, and what it costs is friction — the same
+        `_effort` a shove asks about, so a heavy thing on a rough floor is dear
+        and the same thing on ice is not."""
+        cost = 0.0
+        for cl in self._held_clusters(p):
+            cl = np.asarray(cl, np.int64)
+            if not len(cl):
+                continue
+            lift_N, drag_N = self._effort(cl)
+            cost += drag_N if len(self._contact(cl, ignore=own)) else lift_N
+        return cost
+
     def _held_clusters(self, p):
         """Everything in this body's hands, thing or person, as cell arrays.
         Whether the grip can CARRY any of it is _grip_holds' question."""
@@ -5313,8 +5372,30 @@ class World:
                     p["_path"] = None
                 continue
             ex = goal
-            if self.tick % WILL["walk_every"]:
+            # WHAT YOU DRAG, YOU PAY FOR. A man hauling an unconscious body
+            # walked at exactly the pace of a man carrying nothing — the force
+            # arithmetic said the haul was legal and then charged him nothing
+            # for it, which made rescuing someone free and dragging a crate the
+            # same act as strolling.
+            #
+            # A body has only so much to put out. What the load takes, the legs
+            # do not get, and pace goes with what is left: hauling nothing is
+            # the pace it always was, and at the very limit of what a man can
+            # shift he barely moves — which is what being at your limit IS. The
+            # floor of 5% is not a fudge for the model, it is a fence against
+            # dividing by nothing.
+            haul = self._haul_cost(p, cells)
+            full = p.get("strength_N", BODY["strength_N"])
+            pace = WILL["walk_every"] * full / max(full - haul, full * 0.05)
+            # STARTS ONE SHORT, so that the very first tick completes a full
+            # stride and the cadence of a body carrying nothing is exactly the
+            # cadence it always had — 0, 3, 6, 9 and not 0, 2, 5, 8. That is
+            # the property that made it safe to replace the modulo at all, and
+            # being one out shifted every unladen body by a voxel.
+            p["_stride"] = p.get("_stride", pace - 1.0) + 1.0
+            if p["_stride"] < pace:
                 continue
+            p["_stride"] -= pace
             # walking is PLANNED, not greedy: legs that jam forever on the
             # first baffle aren't legs (greedy + wall-slide both livelocked,
             # measured). A breadth-first route over stand-able columns is the
@@ -5353,6 +5434,9 @@ class World:
                     self._haul(p, *step)
                     if not carried:
                         self._haul_held(p)
+                    if haul > 0.0:
+                        self._rub(p, cells)    # friction becomes heat, and heat
+                                               # is what combustion reads
                     break
             else:
                 p["_path"] = None                    # blocked mid-route: replan
@@ -5977,10 +6061,25 @@ class World:
                 C = self.heat_capacity()            # set temperature against all
                 for (tx, ty, tz, tT) in self.thermostats:   # losses — heat without fire
                     self.E[tx, ty, tz] = (tT - AMBIENT) * C[tx, ty, tz]
+            # AND WHAT THE WORLD SHEDS, IT SAYS IT SHED. These three lines are
+            # the lattice's boundary with everywhere else, and they are right:
+            # a voxel really does radiate into a colder universe, and that is
+            # what stops a flame climbing for ever. But they were the only
+            # place in the sim where a conserved quantity changed and nothing
+            # wrote it down — so "energy is conserved" was not a statement
+            # anyone could CHECK, the way mass became checkable when what left
+            # the world started being counted.
+            #
+            # Measured while chasing friction heat: 1000 J left completely
+            # alone in a closed room is 779 J sixty ticks later. Nothing was
+            # wrong; nothing could say so either.
+            was = float(self.E.sum())
             Tk = self.T() + 273.0                   # every voxel radiates to the wider,
             self.E -= RAD * self.scale ** 2 * (Tk ** 4 - 293.0 ** 4) / 3.0   # cooler world — trivial when warm,
             self.E *= (1.0 - LEAK)                  # fierce when white-hot (caps flame temps)
             self.E = np.maximum(self.E, -AMBIENT * self.heat_capacity())   # nothing below 0 °C here
+            self.shed += was - float(self.E.sum())  # net: the floor above is a
+                                                    # SOURCE, and nets in here
         self.tick += 1
 
     # ── a world as a value ───────────────────────────────────────────────────
@@ -6017,12 +6116,42 @@ class World:
 
     # ── totals (the conservation the tests watch) ────────────────────────────
     def total_fluid(self, f):
+        """Every millilitre of that fluid there is: in cells, in parcels still
+        in flight, in bodies mid-topple, and past the edge of the world."""
         return float(self.fvol[self.fl == f].sum()) \
-            + sum(d[6] for d in self.drops if d[7] == f)   # parcels in flight count
+            + sum(d[6] for d in self.drops if d[7] == f) \
+            + sum(float(b["fvols"][b["fls"] == f].sum()) for b in self.bodies) \
+            + self.gone.get(("fluid", int(f)), 0.0)
+
+    def total_mass(self, m):
+        """Every gram of that material there is.
+
+        ONE ANSWER, COUNTING EVERYWHERE IT CAN BE. Matter in this sim lives in
+        three places — cells, bodies that have left the grid to topple or fly,
+        and the tally of what went past the edge — and a total that reads only
+        the first is not a total. It quietly said a swung axe had ceased to
+        exist for as long as it was in the air.
+
+        This had gone wrong in the small: `total_wood` counted the tally and
+        nothing else did, which is worse than none of them counting it, because
+        a conservation check that is right for one material and wrong for the
+        rest fails at whichever moment is least convenient."""
+        return (float(self.smass[self.mat == m].sum())
+                + sum(float(b["masses"][b["mats"] == m].sum())
+                      for b in self.bodies)
+                + self.gone.get(int(m), 0.0))
 
     def total_wood(self):
-        return float(self.smass[self.mat == WOOD].sum()) \
-            + sum(m for k, m in self.gone.items() if k == WOOD)
+        return self.total_mass(WOOD)
+
+    def total_energy(self):
+        """Every joule this world has had: what is in it, what is riding on
+        bodies in flight, what went past the edge, and what it has radiated
+        away. The only form in which "energy is conserved" is a question you
+        can put to the sim and get a straight answer to."""
+        return (float(self.E.sum())
+                + sum(float(b["Es"].sum()) for b in self.bodies)
+                + self.gone.get("E", 0.0) + self.shed)
 
     def total_lost(self):
         """Every gram that has gone past the edge of the world. Zero in any

@@ -3152,3 +3152,154 @@ def test_what_LEAVES_THE_WORLD_is_counted_not_lost():
         "and the world's own total says so without being asked twice"
     assert float(w.smass[0, :, :][w.mat[0, :, :] == WOOD].sum()) == 0.0, \
         "and nothing was teleported into the wall to make the sum work"
+
+
+def test_MATTER_IN_THE_AIR_still_exists():
+    """Matter in this sim lives in three places: cells, bodies that have left
+    the grid to topple or fly, and the tally of what went past the edge of the
+    world. A total that reads only the first is not a total — it says a swung
+    axe has ceased to exist for as long as it is in the air.
+
+    This had already gone wrong in the small. `total_wood` counted the tally
+    and none of the others did, which is worse than none of them counting it:
+    a conservation check that is right for one material and wrong for the rest
+    fails at whichever moment is least convenient."""
+    w = World(30, 12, 40, voxel_cm=5)
+    w.fill(0, 30, 0, 12, 0, 1, STONE)
+    w.fill(1, 3, 5, 8, 1, 34, WOOD, frac=0.8)
+    before = w.total_wood()
+    assert before > 0
+    b = w._launch(np.argwhere(w.mat == WOOD), (0.0, 0.0, 0.0))
+    assert float(w.smass[w.mat == WOOD].sum()) == 0.0, \
+        "the lattice really is empty of it while it flies"
+    assert abs(w.total_wood() - before) < 1.0, \
+        "and it still weighs what it weighed, because it still exists"
+    b["fly"] = False                              # topple it over the edge
+    b["axis"], b["s"] = 0, 1
+    b["pivot"], b["zb"] = 2.0, 1.0
+    b["theta"], b["omega"] = 0.0, 0.35
+    b["Nm"], b["I"] = 0.0, 1.0
+    for _ in range(40):
+        w.step()
+        if not w.bodies:
+            break
+    assert w.total_lost() > 0.0, "some of it went over the edge"
+    assert abs(w.total_wood() - before) < 1.0, \
+        "and the one total covers all three places it can be"
+
+
+def test_WHAT_YOU_DRAG_YOU_PAY_FOR():
+    """The force arithmetic said a haul was legal and then charged nothing for
+    it, so a man towing an unconscious body walked at exactly the pace of a man
+    carrying nothing. Rescuing someone was free, and dragging a crate across a
+    room was the same act as strolling across it.
+
+    A body has only so much to put out. What the load takes, the legs do not
+    get. The number is not written down anywhere — it is this load's friction
+    against this body's strength, so a lighter load or a stronger man gives a
+    different one, and the same load on ice would give another."""
+    from src.voxel.scenes import _person, _Wants
+
+    def race(load):
+        w = World(70, 16, 44, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 70, 0, 16, 0, 44, STONE)
+        w.mat[1:69, 1:15, 1:40] = AIR
+        w.smass[1:69, 1:15, 1:40] = 0.0
+        w.exits = [(67, 8)]
+        p = _person(w, 8, 8)
+        p["name"], p["facing"] = "walker", (1.0, 0.0)
+        p["strength_N"] = 1200.0
+        want = {"legs": "go(the door", "waist": "stand"}
+        if load:
+            w.fill(12, 15, 6, 10, 1, 4, LEAD)
+            want["hands"] = "take hold of the lead"
+        w.policy = _Wants(each={"walker": want})
+        x0 = None
+        for t in range(900):
+            w.step()
+            p["events"].clear()
+            own = np.argwhere(w.mat == FLESH)
+            if not len(own):
+                return None
+            if x0 is None:
+                x0 = float(own[:, 0].mean())
+            if float(own[:, 0].mean()) - x0 > 30:
+                return t
+        return None
+
+    free, laden = race(False), race(True)
+    assert free is not None and laden is not None, \
+        f"both of them cross the room ({free}, {laden})"
+    assert laden > 1.4 * free, \
+        f"hauling a load across a room takes markedly longer than walking it " \
+        f"({laden} ticks against {free})"
+
+
+def test_the_WORLD_SAYS_HOW_MUCH_HEAT_IT_SHEDS():
+    """Every voxel radiates into a colder universe, and that is right — it is
+    what stops a flame climbing for ever. But it was the one place in the sim
+    where a conserved quantity changed and nothing wrote it down, so "energy is
+    conserved" was not a statement anyone could CHECK.
+
+    Found by accident, chasing friction heat that seemed to go missing: 1000 J
+    left completely alone in a closed room is 779 J sixty ticks later. Nothing
+    was wrong. Nothing could say so either."""
+    w = World(20, 12, 20, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 20, 0, 12, 0, 20, STONE)
+    w.mat[1:19, 1:11, 1:16] = AIR
+    w.smass[1:19, 1:11, 1:16] = 0.0
+    w.fill(5, 8, 5, 8, 1, 3, IRON)
+    w.E[5, 5, 1] += 1000.0
+    before = w.total_energy()
+    for _ in range(60):
+        w.step()
+    assert float(w.E.sum()) < before - 100.0, \
+        "it really does shed heat — or this test is about nothing"
+    assert w.shed > 0.0, "and it says how much"
+    assert abs(w.total_energy() - before) < 1.0, \
+        f"what is in the world plus what it has shed is what it started with " \
+        f"({w.total_energy():.1f} against {before:.1f})"
+
+
+def test_DRAGGING_A_THING_HEATS_IT_and_the_floor():
+    """Work is force times distance and friction is a force, so a thing hauled
+    over the ground has turned muscle into heat — there is nowhere else for it
+    to have gone. Split between the thing and what it is dragged over, because
+    a rubbing pair is two surfaces.
+
+    And this needed NO NEW RULE: `E` is the field combustion already reads, so
+    a thing dragged far enough over a rough floor gets hot, and a thing hot
+    enough catches. Nobody wrote "dragging can start a fire"."""
+    from src.voxel.scenes import _person, _Wants
+
+    def haul(rubbing):
+        w = World(90, 20, 44, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 90, 0, 20, 0, 44, STONE)
+        w.mat[1:89, 1:19, 1:40] = AIR
+        w.smass[1:89, 1:19, 1:40] = 0.0
+        w.exits = [(87, 10)]
+        p = _person(w, 20, 10)
+        p["name"], p["facing"] = "hauler", (1.0, 0.0)
+        p["strength_N"] = 1500.0
+        w.fill(14, 20, 7, 13, 1, 7, IRON)         # behind him, too heavy to lift
+        w.policy = _Wants(each={"hauler": {"legs": "go(the door",
+                                           "hands": "take hold of the iron",
+                                           "waist": "stand"}})
+        if not rubbing:
+            w._rub = lambda *a, **k: None         # the same haul, no friction heat
+        start = w.total_energy()
+        for _ in range(400):
+            w.step()
+            p["events"].clear()
+            if w._held_cells(p) is None:
+                break
+        return w.total_energy() - start
+
+    with_rub, without = haul(True), haul(False)
+    assert abs(without) < 1.0, "with no rubbing the world gains nothing"
+    assert with_rub > 100.0, \
+        f"dragging iron across a stone floor puts real joules into the world " \
+        f"({with_rub:.0f} J)"
