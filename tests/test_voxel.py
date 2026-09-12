@@ -3752,3 +3752,57 @@ def test_WHICH_WAY_A_BODY_IS_BUILT_travels_with_it():
             f"built ACROSS its shoulders, it winds up after {turns} turns"
         assert not can_wind((1.0, 0.0), turns), \
             f"built ALONG them, it cannot — after {turns} turns either"
+
+
+def test_a_FALLING_PERSON_can_be_CAUGHT():
+    """What you do about a falling friend is not what you do about a thrown
+    stone, so they are two percepts and two rows. The arithmetic underneath is
+    the same one — a body in the air has a position and a velocity, a fist has
+    a place, and `m v / t` says whether an arm can stop it.
+
+    And nothing was added for the holding. A caught body goes back on the
+    lattice where it was caught, and `_grip_cells` has always seeded what a
+    hand holds as supported — so he hangs there because a hand is holding him,
+    and for no other reason."""
+    from src.voxel.scenes import _person, _Wants
+
+    def ledge(hands):
+        w = World(50, 16, 70, voxel_cm=5)
+        w.open_sky = True
+        w.fill(0, 50, 0, 16, 0, 1, STONE)
+        w.fill(0, 26, 0, 16, 1, 40, STONE)        # ledge top z39, drop at x26
+        w.exits = []
+        a = _person(w, 22, 8, z0=40)
+        a["name"], a["facing"] = "the catcher", (1.0, 0.0)
+        a["strength_N"] = 4000.0
+        b = _person(w, 27, 8, z0=40)              # standing over the drop
+        b["name"], b["facing"] = "the faller", (-1.0, 0.0)
+        w.policy = _Wants(each={
+            "the catcher": {"hands": hands, "legs": "stay", "waist": "stand"},
+            "the faller": {"hands": "hands free", "legs": "stay"}})
+        # the fall is 39 voxels, about 25 ticks, and decisions come every 30 —
+        # so 100 covers the catch and the settling with room to spare. 150 was
+        # 60 seconds of suite time watching an empty cliff (item 52).
+        low = []
+        for _ in range(100):
+            w.step()
+            a["events"].clear()
+            b["events"].clear()
+            comp, sl = w._person_cells(b)
+            if comp is not None and comp.any():
+                low.append(int(np.argwhere(comp)[:, 2].min()))
+        return w, a, b, low
+
+    w1, a1, b1, low1 = ledge("hands free")
+    assert low1[-1] < 10, \
+        f"nobody catching him, he goes to the bottom ({low1[-1]})"
+    assert a1.get("dragging") is None
+
+    w2, a2, b2, low2 = ledge("catch")
+    assert a2.get("dragging") == "the faller", "he closed a hand on him"
+    assert low2[-1] > 30, \
+        f"and he is still up at the lip, hanging from that hand ({low2[-1]})"
+    assert any(r["tags"].get("hands") == "catch_who" for r in w2.traces), \
+        "and it went through the menu like any other act"
+    assert any(r.get("percept") == "sees_falling" for r in w2.traces), \
+        "on a percept of its own — a person is not a thrown stone"

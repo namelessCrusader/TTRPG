@@ -338,6 +338,7 @@ ACTS = {"go":     {"limb": "legs",  "null": False},
         "swing":  {"limb": "hands", "null": False},
         "throw":  {"limb": "hands", "null": False},
         "catch":  {"limb": "hands", "null": False},
+        "catch_who": {"limb": "hands", "null": False},
         "take":   {"limb": "hands", "null": False},
         "reach":  {"limb": "hands", "null": False},
         "pull_in": {"limb": "hands", "null": False},
@@ -369,7 +370,9 @@ REFLEXES = {"sees_fire":   {"legs": "go:exit", "mouth": "say:fire"},
             "chokes":      {"legs": "go:exit"},
             # nothing for the legs: a thing coming at you is a matter for the
             # hands, and a character sheet that wants it dodged says so
-            "sees_thrown":  {"hands": "catch"}}
+            "sees_thrown":  {"hands": "catch"},
+            # and a falling PERSON is a different thing to see
+            "sees_falling": {"hands": "catch"}}
 # LINES — the words a body has. A character sheet REPLACES this wholesale, so
 # a character who only ever calls a warning has no answer to give.
 LINES = {"fire":   "Fire! Fire! Get out!",
@@ -4665,6 +4668,51 @@ class World:
                 out.append(b)
         return out
 
+    def _falling_near(self, p, own):
+        """PEOPLE in the air a hand of this body could close on now.
+
+        The twin of `_in_flight_near`, and separate from it on purpose: what
+        you do about a falling friend is not what you do about a thrown stone,
+        so they are two percepts and two rows. The arithmetic underneath is the
+        same — a body in the air has a position and a velocity, a fist has a
+        place, and `m v / t` says whether an arm can stop it."""
+        out = []
+        if not self.bodies:
+            return out
+        reach = BODY["reach_m"] / max(0.1 * self.scale, 1e-9)
+        fists = np.asarray(self._fists(p, own), np.float64)
+        for b in self.bodies:
+            who = b.get("owner")
+            if not b.get("fly") or b.get("part") or who is None \
+                    or who == p["name"]:
+                continue
+            at = self._fly_pose(b)
+            d = np.abs(at[None, :, :] - fists[:, None, :]).max(axis=2)
+            if float(d.min()) <= reach:
+                out.append(b)
+        return out
+
+    def _catch_person(self, p, b, arm):
+        """Close a hand on someone who is falling.
+
+        The same sum as catching a stone — stopping is force times time — and
+        then the same GRIP that has always been able to hold a hanging man.
+        Nothing was added for this: a caught body goes back on the lattice
+        where it was caught, and `_grip_cells` seeds what a hand holds as
+        supported, so he hangs there because a hand is holding him and for no
+        other reason."""
+        m = float(b["masses"].sum()) / 1000.0
+        v = float(np.linalg.norm(b["vel"]))
+        if m * v / max(BODY["catch_s"], 1e-9) > self._hand_strength(p, arm):
+            return False
+        who = b.get("owner")
+        b["vel"] = np.zeros(3)
+        self._land_body(b, None)
+        if b in self.bodies:
+            self.bodies.remove(b)
+        p["dragging"] = who
+        return True
+
     def _catch(self, p, b, arm):
         """Close a hand on something in flight, if the hand can stop it.
 
@@ -5256,6 +5304,10 @@ class World:
                         menu.append({"key": f"catch the {lab}", "tag": "catch",
                                      "verb": "catch", "arm": arm, "body": fb,
                                      "away": 0.0})
+                    for fb in self._falling_near(p, cells):
+                        menu.append({"key": f"catch {fb['owner']}",
+                                     "tag": "catch_who", "verb": "catch_who",
+                                     "arm": arm, "body": fb, "away": 0.0})
             for q in self._within_reach(p, cells):
                 if q["name"] == held:
                     continue
@@ -5465,6 +5517,16 @@ class World:
                 (p.get("reach") or {}).pop(
                     hands.get("arm") or self._hand(p, cells), None)
                 p["events"].append(f"t{self.tick}: {p['name']} lowers the arm")
+            elif hands["verb"] == "catch_who":
+                fb = hands.get("body")
+                if fb is not None and fb in self.bodies:
+                    who = fb.get("owner")
+                    got = self._catch_person(p, fb, hands.get("arm")
+                                             or self._hand(p, cells))
+                    p["events"].append(
+                        f"t{self.tick}: {p['name']} "
+                        + (f"catches {who}" if got
+                           else f"grabs at {who} and cannot hold them"))
             elif hands["verb"] == "catch":
                 fb = hands.get("body")
                 if fb is not None and fb in self.bodies:
@@ -5644,6 +5706,8 @@ class World:
                     # suffocated there over two hundred ticks without once
                     # perceiving the thing he was stood in.
                     percept = "scorched"
+                if percept is None and self._falling_near(p, cells):
+                    percept = "sees_falling"     # somebody is going past you
                 if percept is None and self._in_flight_near(p, cells):
                     # SOMETHING IS COMING. Needs no sight cone and no distance
                     # rule: it is already within a hand's reach, which is the

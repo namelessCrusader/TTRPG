@@ -620,18 +620,10 @@ landing at the same time.
     flight, and the tally. Which also fixed a quieter one: a swung axe used to
     cease to exist for as long as it was in the air.
 
-56. **CATCHING A FALLING PERSON IS A DIFFERENT ACT.** `_in_flight_near`
-    deliberately ignores owned bodies now, because a person falling — or a
-    person hanging from your own fist — is not a thing thrown at you, and
-    reading them as one made a man holding someone over a drop perceive him as
-    a missile every tick, which crowded out every other percept about the
-    situation he was actually in.
-
-    But catching someone who is falling IS real, and the parts are all here:
-    the flier has a trajectory, the fist has a reach, and `m v / t` already
-    says whether an arm can stop it. It wants its own percept and its own row,
-    because what you do about a falling friend is not what you do about a
-    thrown stone.
+56. ~~**CATCHING A FALLING PERSON IS A DIFFERENT ACT.**~~ **BUILT
+    (2026-09-12)**, a few hours after it was filed, because everything it
+    needed had just been built for other reasons. See "Somebody goes over the
+    edge, and somebody catches them" below.
 
 55. **A THROW IS ONE SHOULDER THROUGH A QUARTER TURN.** ~~The wind-up~~
     **BUILT (2026-09-12)**, and it works — 4.11 m/s to 5.28, a 28% gain, where
@@ -3414,3 +3406,38 @@ buys the picture and loses the motion.
 turned "should we widen the arms" — which I could not answer and neither could
 anyone else without running it — into "a body cannot turn its shoulders", which
 is D3 and is the thing actually in the way.
+
+
+## Somebody goes over the edge, and somebody catches them (2026-09-12)
+
+Item 56 was filed this afternoon as the honest half of a bug — `sees_thrown`
+was firing for people, so it was made to ignore them, and catching a falling
+person was written down as the real act that deserved its own row. It is built
+now, and it needed almost nothing, because everything it wanted had been built
+for other reasons in the preceding hours.
+
+**Two percepts, not one.** `sees_thrown` is a thing; `sees_falling` is a
+person. The arithmetic underneath is identical — a body in the air has a
+position and a velocity, a fist has a place, and `m v / t` says whether an arm
+can stop it — but what you do about a falling friend is not what you do about a
+thrown stone, so they are two rows and a character sheet can answer them
+differently.
+
+**And nothing at all was added for the HOLDING.** A caught body goes back on
+the lattice where it was caught, and `_grip_cells` has seeded what a hand holds
+as supported since the day grips became support edges. So he hangs there
+because a hand is holding him, and for no other reason — and if the hand cannot
+carry him, the same law that has always dropped a hanging man drops him.
+
+| a man steps off the lip | his lowest voxel |
+|---|---|
+| nobody catching him | 40 -> **1**, and "lands hard" |
+| a man who chooses to catch | 40 -> **40**, held at the lip |
+
+**Four things met here that were built separately**: a percept seam that
+separates noticing from responding; fliers with real trajectories; a hand whose
+strength decides what it can stop; and a grip that is an edge in the support
+graph. None of them was built for this. That is the whole argument for modelling
+causes rather than cases — nobody wrote a rescue, and a rescue happened.
+
+Test: `test_a_FALLING_PERSON_can_be_CAUGHT`.
