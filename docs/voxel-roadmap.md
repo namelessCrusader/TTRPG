@@ -160,18 +160,37 @@ Two things are blocked on a judgement rather than on work. Written here rather
 than left in a conversation, because a decision nobody wrote down is a decision
 that gets made again.
 
-**D1. Should the humanoid's limbs be THICKER?** (item 41.) Three separate
-measurements now point at the same voxel: an arm has 2 drawable poses with one
-bone and 7 with an elbow, but **30** if it were two voxels thick; a lean stops
-at 19.3 degrees because the ARM tears off the shoulder rather than because the
-man is off balance; and which poses a body has at all depends on which way it
-is FACING, because the arm is 1 voxel across in x and 3 in y.
+**D1. Should the humanoid's limbs be THICKER?** (item 41.) **TRIED
+2026-09-12, and the answer is no — not on its own.** Written up in full under
+"What widening the arms actually did" below. The short of it:
 
-The cost is real and is why it was not done as a drive-by: widening the arm in
-x changes the walking footprint, and `_person` says in so many words that
-thickness went into DEPTH on purpose so that "every doorway in every scene is
-unchanged". Changing it means re-checking every scene. It is probably worth
-more than the next three items on the list combined.
+| | before | 2-voxel arms |
+|---|---|---|
+| hand places (one bone / elbow) | 2 / 7 | **5 / 30** |
+| mass | 38.1 kg | **43.9** (against ~47 for a real one) |
+| walking footprint | 6 voxels | 7 |
+| **the suite** | 107 pass | **15 FAIL** |
+| the wind-up facing +x | refused | **still refused** |
+| how far he leans, free | 10.7 deg | **8.6** — worse |
+
+It buys the pose ENUMERATION and the mass, and costs the reach ACT. Do not do
+it alone; it is a symptom of D3.
+
+**D3. A BODY CANNOT TURN.** Its geometry is fixed when it is built while
+`facing` rotates freely, so the humanoid FACES ALONG ITS OWN SHOULDER LINE half
+the time. Real anatomy puts the shoulders left-right and the face forward —
+perpendicular — so an arm is beside the torso on one axis and swings in a plane
+that does not contain it. Ours has them parallel, which is why:
+
+- a wind-up sweeps the arm through its own chest (and widening makes that
+  worse, not better);
+- a thicker arm collides with its own torso during a reach;
+- the extra arm mass hangs forward of the toes and the man overbalances sooner;
+- and which poses a body has at all depends on its compass bearing.
+
+Turning the shoulders with the heading fixes all four at the root. It is the
+bigger piece of work and it is the RIGHT one — D1 without it is treating a
+symptom, and the 15 red tests say so out loud.
 
 **D2. Is a CROUCH symmetric?** (item 45.) Bending a knee moves everything
 ABOVE it, so the body has to hang from the feet rather than from the hips — and
@@ -3323,3 +3342,43 @@ Three separate capabilities, one voxel of arm. That is no longer a note about
 posture — it is the single change that would move the most.
 
 Test: `test_a_WIND_UP_THROWS_HARDER_where_there_is_room_for_one`.
+
+
+## What widening the arms actually did (2026-09-12)
+
+D1 had been sitting as a question for the user to answer blind, which is the
+wrong shape for a question that can be MEASURED. So it was measured: arms
+widened from one voxel to two in x, full suite, then reverted.
+
+**What it bought** — exactly what was predicted, on the real humanoid rather
+than a synthetic one: hand places 2 to 5 with one bone and 7 to **30** with an
+elbow, and mass 38.1 kg to 43.9 against the ~47 kg a real 1.5 m person weighs,
+which would have closed item 12 as a side effect. The walking footprint grew by
+**one** voxel, not the two I expected.
+
+**What it cost: 15 of 107 tests.** And the interesting thing is that they are
+not all the scene-tuning failures I assumed. Three kinds:
+
+| | |
+|---|---|
+| `396 == 369` | an exact voxel count — trivially updated |
+| "the leaper lands on the FAR ledge" | a wider body cannot clear a gap tuned to a narrower one — scene work |
+| **"an arm put out REACHES: its far end went from x16 to x16"** | **the arm stops reaching AT ALL** |
+
+That last one is not scene tuning. A thicker arm sweeping from hanging to
+horizontal collides with its own torso on the way, because the arm turns in the
+plane the body faces and the torso is in that plane too.
+
+**Which is the real finding, and it is not about thickness.** The humanoid
+faces along its own shoulder line. Widening the arm makes the collision worse
+rather than better, moves its mass forward of the toes so the free lean gets
+WORSE (10.7 degrees to 8.6), and does not free the wind-up at all.
+
+So: the pose enumeration improves because enumeration asks only whether a pose
+can be DRAWN; the acts get worse because an act has to SWEEP there. D1 alone
+buys the picture and loses the motion.
+
+**The experiment was worth more than the decision it was meant to settle.** It
+turned "should we widen the arms" — which I could not answer and neither could
+anyone else without running it — into "a body cannot turn its shoulders", which
+is D3 and is the thing actually in the way.
