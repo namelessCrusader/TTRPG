@@ -1,6 +1,13 @@
 # Core engine needs only PyYAML. The local social LM is optional.
 pyyaml>=6.0.1
 
+# Optional — the voxel engine's compiled laws. Without it the engine runs on
+# plain numpy and behaves IDENTICALLY (locked by
+# tests/test_voxel.py::test_the_FAST_PATH_and_the_PLAIN_ONE_agree); with it,
+# conduction and oxygen mixing run about 8% quicker on a busy world. numpy
+# stays the definition of what every law means.
+#   pip install numba
+
 # Optional — only for `--brain torch` / `--voice reyna` (local models on GPU):
 #   pip install torch --index-url https://download.pytorch.org/whl/cu124
 #   pip install transformers accelerate

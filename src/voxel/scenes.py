@@ -15,7 +15,7 @@ import sys
 
 import numpy as np
 
-from .sim import (ACID, AIR, CHAR, FLESH, GLASS, IRON, LEAD, LEAF, MIRON,
+from .sim import (ACID, AIR, BODY, CHAR, FLESH, GLASS, IRON, LEAD, LEAF, MIRON,
                   MLEAD, MTIN, O2_PER_L, OIL, STONE, TIN, WATER, WOOD, World)
 
 
@@ -408,7 +408,7 @@ def alchemist(frames_dir, ticks=900, every=8):
 
 
 # ── the blocky humanoid ──────────────────────────────────────────────────────
-def _person(w, px, py, z0=1):
+def _person(w, px, py, z0=1, handed="right"):
     """A person, finally with a body: two legs, torso, two arms, a head.
     ~1.5 m of FLESH at 5 cm voxels. A physical object first — it stands by the
     support law, tips by the torque law, chars by the combustion law.
@@ -441,21 +441,65 @@ def _person(w, px, py, z0=1):
     part("left leg", px, px + 1, py - 1, py + 2, z + 1, z + 15, 0.9)
     part("right leg", px + 2, px + 3, py - 1, py + 2, z + 1, z + 15, 0.9)
     part("torso", px, px + 3, py - 2, py + 3, z + 15, z + 27, 0.9)
-    part("left arm", px - 1, px, py - 1, py + 2, z + 18, z + 27, 0.85)
-    part("right arm", px + 3, px + 4, py - 1, py + 2, z + 18, z + 27, 0.85)
+    # AN ARM IS TWO BONES. Same voxels, same outline, same 28.5 kg — split at
+    # the elbow so the arm has somewhere to BEND. One bone can only reach a
+    # place along one path, and a man standing beside the person he is holding
+    # found that path already occupied by the person.
+    for side, ax0 in (("left", px - 1), ("right", px + 3)):
+        part(f"{side} upper arm", ax0, ax0 + 1, py - 1, py + 2, z + 23, z + 27, 0.85)
+        part(f"{side} forearm", ax0, ax0 + 1, py - 1, py + 2, z + 18, z + 23, 0.85)
     part("head", px, px + 2, py - 1, py + 2, z + 27, z + 31, 0.9)
     person = w.add_person(px + 1, py)                            # and now: alive
     # segments and joints are kept as OFFSETS from the body's own corner, so
     # they survive the body walking, being shoved, or being carried out
     origin = np.concatenate(list(segs.values())).min(axis=0)
+    # A BODY BUILT INTO A SPACE TOO SHORT FOR IT HAS NO HEAD. `fill` clamps at
+    # the lattice edge, so a 1.5 m person in a 1.1 m room is genuinely missing
+    # his top half — and a part with no voxels is not a part. Said here rather
+    # than defended everywhere downstream: a scene that wants a whole man gives
+    # him room. (Before arms had elbows this hid, because the one arm segment
+    # still had its lower half inside the room.)
+    segs = {k: v for k, v in segs.items() if len(v)}
     person["segs"] = {k: v - origin for k, v in segs.items()}
+    # A LIMB IS A CHAIN OF BONES, nearest the body first. Everything outside
+    # the scene asks for "right arm" and never has to know how many bones that
+    # is — which is the point of declaring it here (Ruling 2, question 1).
+    person["chain"] = {f"{s} arm": [b for b in (f"{s} upper arm", f"{s} forearm")
+                                    if b in segs]
+                       for s in ("left", "right")}
+    person["chain"] = {k: v for k, v in person["chain"].items() if v}
     person["joints"] = {}
-    for arm in ("left arm", "right arm"):
-        cells = segs[arm]
-        person["joints"][arm] = np.array(                  # the shoulder: the
-            [int(round(cells[:, 0].mean())),               # top of the limb,
-             int(round(cells[:, 1].mean())),               # where it meets the
-             int(cells[:, 2].max())]) - origin             # torso
+    for bone in ("left upper arm", "left forearm",
+                 "right upper arm", "right forearm"):
+        cells = segs.get(bone)
+        if cells is None:
+            continue
+        person["joints"][bone] = np.array(                 # the joint: the TOP
+            [int(round(cells[:, 0].mean())),               # of the bone, where
+             int(round(cells[:, 1].mean())),               # it hangs from what
+             int(cells[:, 2].max())]) - origin             # is above it
+    # AND THE BODY HANGS FROM THE HIPS. What the arms and the head hang FROM is
+    # not something any chain says, because they are not in one another's
+    # chains — so it is said here. The legs are deliberately NOT children of the
+    # torso: leaning bends a man at the waist and leaves his feet where they are
+    # standing, which is the whole point of a lean.
+    if "torso" in segs:
+        person["parent"] = {b: "torso" for b in
+                            ("head", "left upper arm", "right upper arm")
+                            if b in segs}
+        person["chain"]["lean"] = ["torso"]
+        # the hips: the BOTTOM of the torso, because unlike every other bone
+        # the torso hangs from something below it rather than above
+        t = segs["torso"]
+        person["joints"]["torso"] = np.array(
+            [int(round(t[:, 0].mean())), int(round(t[:, 1].mean())),
+             int(t[:, 2].min())]) - origin
+        person["torque_Nm"] = {"lean": BODY["back_Nm"]}
+        person["bend"] = ["torso"]    # a spine BENDS, it does not swing
+        person["wmax"] = {"lean": BODY["waist_wmax"]}
+    # MOST PEOPLE ARE RIGHT-HANDED. A fact about this body, like its mass —
+    # a scene that wants a left-handed one says so.
+    person["handed"] = handed
     person.update({"px": px, "py": py, "head_z": z + 28})
     return person
 

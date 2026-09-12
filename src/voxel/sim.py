@@ -27,7 +27,167 @@ Fluids are sparse (a puddle is ~dozens of voxels), so laws 1 and 4 walk an activ
 list in Python; laws 2 and 3 are dense numpy over the whole lattice. Deterministic:
 no randomness anywhere.
 """
+import copy
+
 import numpy as np
+
+# OPTIONAL ACCELERATOR. numpy cannot express the shape a cellular-automata
+# engine wants — one sweep of the lattice applying many rules per cell — so it
+# makes a full pass per arithmetic step instead, and we are memory-bandwidth
+# bound: conduction alone builds about seventeen whole-lattice temporaries per
+# axis. numba compiles one loop that does all of it per cell.
+#
+# It is OPTIONAL on purpose. The engine's only hard dependency is PyYAML, and
+# the numpy path below stays the definition of what the law MEANS; the compiled
+# one has to agree with it cell for cell, which is what
+# `test_the_FAST_PATH_and_the_PLAIN_ONE_agree` exists to check. Without numba
+# installed, nothing changes except the speed.
+try:
+    from numba import njit
+    HAVE_NUMBA = True
+except Exception:                        # pragma: no cover - depends on install
+    HAVE_NUMBA = False
+
+    def njit(*args, **kwargs):           # a decorator that does nothing
+        def wrap(fn):
+            return fn
+        return wrap if not args or not callable(args[0]) else args[0]
+
+
+@njit(cache=True)
+def _conduct_pairs(E, T, C, k, fk, wet, solid, s, r, di, dj, dl):
+    """One axis of the conduction law, fused: every face between neighbours
+    visited ONCE, with nothing kept but the heat that crosses it.
+
+    The arithmetic is written to match the numpy law step for step, including
+    the order of the multiplications and of the two clip comparisons, because a
+    float32 sum reordered is a float32 sum CHANGED — and the whole value of the
+    plain path is that it stays the definition of what the law means.
+
+    The heat is applied in two sweeps rather than one for the same reason: the
+    numpy law subtracts from every left-hand cell and only then adds to every
+    right-hand one, so a cell sees its own loss before its neighbour's gain."""
+    nx, ny, nz = E.shape
+    q = np.empty((nx - di, ny - dj, nz - dl), np.float32)
+    half = np.float32(0.5)
+    k0 = np.float32(273.0)
+    lo_f = np.float32(-0.2)
+    hi_f = np.float32(0.2)
+    for i in range(nx - di):
+        for j in range(ny - dj):
+            for l in range(nz - dl):
+                i2 = i + di
+                j2 = j + dj
+                l2 = l + dl
+                ka = k[i, j, l]
+                kb = k[i2, j2, l2]
+                kp = ka if ka < kb else kb
+                c = np.float32(0.0)
+                if wet[i, j, l] and solid[i2, j2, l2]:
+                    c += fk[i, j, l]
+                if wet[i2, j2, l2] and solid[i, j, l]:
+                    c += fk[i2, j2, l2]
+                if c > kp:
+                    kp = c
+                ta = T[i, j, l]
+                tb = T[i2, j2, l2]
+                tk = (ta + tb) * half + k0
+                kr = r * tk * tk * tk
+                dt = ta - tb
+                v = (kp * s + kr * s * s) * dt
+                ad = dt if dt >= np.float32(0.0) else -dt
+                ca = C[i, j, l]
+                cb = C[i2, j2, l2]
+                cm = ca if ca < cb else cb
+                lo = lo_f * cb * ad
+                hi = hi_f * cm * ad
+                if v < lo:
+                    v = lo
+                if v > hi:
+                    v = hi
+                q[i, j, l] = v
+    for i in range(nx - di):
+        for j in range(ny - dj):
+            for l in range(nz - dl):
+                E[i, j, l] -= q[i, j, l]
+    for i in range(nx - di):
+        for j in range(ny - dj):
+            for l in range(nz - dl):
+                E[i + di, j + dj, l + dl] += q[i, j, l]
+
+
+@njit(cache=True)
+def _o2_diffuse(o2, T, por, di, dj, dl):
+    """One axis of oxygen mixing, fused. Same shape as conduction and the same
+    discipline: numpy's order of operations, kept step for step, and the loss
+    swept over every cell before the gain is."""
+    nx, ny, nz = o2.shape
+    q = np.empty((nx - di, ny - dj, nz - dl), np.float32)
+    base = np.float32(0.1)
+    div = np.float32(1600.0)
+    top = np.float32(0.45)
+    for i in range(nx - di):
+        for j in range(ny - dj):
+            for l in range(nz - dl):
+                i2 = i + di
+                j2 = j + dj
+                l2 = l + dl
+                k = base + (T[i, j, l] + T[i2, j2, l2]) / div
+                if k < base:
+                    k = base
+                if k > top:
+                    k = top
+                pa = por[i, j, l]
+                pb = por[i2, j2, l2]
+                k = k * (pa if pa < pb else pb)
+                q[i, j, l] = k * (o2[i, j, l] - o2[i2, j2, l2])
+    for i in range(nx - di):
+        for j in range(ny - dj):
+            for l in range(nz - dl):
+                o2[i, j, l] -= q[i, j, l]
+    for i in range(nx - di):
+        for j in range(ny - dj):
+            for l in range(nz - dl):
+                o2[i + di, j + dj, l + dl] += q[i, j, l]
+
+
+@njit(cache=True)
+def _gas_overturn(o2, smoke, T, air):
+    """Warm gas sitting UNDER cool gas trades places with it, carrying whatever
+    it is made of. One parcel, so its oxygen and its soot move together and by
+    exactly the same fraction — which is why both gases share one kernel and one
+    buffer, and why oxygen goes first here as it does in the plain law."""
+    nx, ny, nz = o2.shape
+    f = np.empty((nx, ny, nz - 1), np.float32)
+    rate = np.float32(0.02)
+    cap = np.float32(0.45)
+    zero = np.float32(0.0)
+    for i in range(nx):
+        for j in range(ny):
+            for l in range(nz - 1):
+                if air[i, j, l] and air[i, j, l + 1]:
+                    v = (T[i, j, l] - T[i, j, l + 1]) * rate
+                    if v < zero:
+                        v = zero
+                    if v > cap:
+                        v = cap
+                    f[i, j, l] = v
+                else:
+                    f[i, j, l] = zero
+    for gas in (o2, smoke):
+        q = np.empty((nx, ny, nz - 1), np.float32)
+        for i in range(nx):
+            for j in range(ny):
+                for l in range(nz - 1):
+                    q[i, j, l] = f[i, j, l] * (gas[i, j, l] - gas[i, j, l + 1])
+        for i in range(nx):
+            for j in range(ny):
+                for l in range(nz - 1):
+                    gas[i, j, l] -= q[i, j, l]
+        for i in range(nx):
+            for j in range(ny):
+                for l in range(nz - 1):
+                    gas[i, j, l + 1] += q[i, j, l]
 
 NOFLUID, WATER, OIL, ACID, WEAK_ACID = 0, 1, 2, 3, 4
 MTIN, MLEAD, MIRON = 5, 6, 7     # MOLTEN metals — a metal is one substance in
@@ -120,6 +280,13 @@ WILL = {"see_m": 12.0,           # how far the eyes take in the LAYOUT of a
         "fov_deg": 120.0,        # eyes look WHERE THE FACE POINTS — a cone,
                                  # not a sphere; idle heads scan around
         "scan_every": 25,        # ticks per step of the gaze sweep
+        "forget": 0.985,         # what a memory of danger is worth next look.
+                                 # A body that never forgets treats a fire it
+                                 # saw an hour ago as a fire, and one that
+                                 # forgets at once has no memory at all; this
+                                 # is about a minute to half-weight at the
+                                 # scan rate. Forgetting is a MODEL, not a
+                                 # leak — see item 14
         "shout_hear_m": 14.0,    # a shout carries this far through open air
         "wall_cost_m": 4.0,      # each solid voxel in the way eats this much
         "walk_every": 3,         # ticks per walking step
@@ -149,7 +316,7 @@ WILL = {"see_m": 12.0,           # how far the eyes take in the LAYOUT of a
 # primitives do not multiply. Two acts may run together when they want
 # different parts of the body, which is not a rule anyone writes per pair; it
 # falls out of a body having parts.
-LIMBS = ("legs", "hands", "mouth")
+LIMBS = ("legs", "hands", "mouth", "waist")
 # Names for the eight ways a person can point. Labels for humans and for
 # whatever is reading the menu; nothing in the sim reads them back.
 _DIRS = ("east", "north-east", "north", "north-west",
@@ -164,8 +331,17 @@ ACTS = {"go":     {"limb": "legs",  "null": False},
         "let_go": {"limb": "hands", "null": False},
         "keep":   {"limb": "hands", "null": True},
         "swing":  {"limb": "hands", "null": False},
+        "take":   {"limb": "hands", "null": False},
+        "reach":  {"limb": "hands", "null": False},
+        "pull_in": {"limb": "hands", "null": False},
         "say":    {"limb": "mouth", "null": False},
-        "quiet":  {"limb": "mouth", "null": True}}
+        "quiet":  {"limb": "mouth", "null": True},
+        # A WAIST IS A PART OF THE BODY, so it gets a menu like every other
+        # part. Leaning is not walking and it is not reaching: the feet stay,
+        # the hands do whatever they were doing, and what moves is the trunk.
+        "lean":   {"limb": "waist", "null": False},
+        "upright": {"limb": "waist", "null": False},
+        "hold_pose": {"limb": "waist", "null": True}}
 # REFLEXES — percept -> what each part of the body does about it. This is the
 # part a character sheet edits, and it is now a sheet of a better shape: a
 # brave character's "sees_fire" row can send the legs at the fire while the
@@ -174,6 +350,7 @@ ACTS = {"go":     {"limb": "legs",  "null": False},
 # The table is not consulted by the law: it is one POLICY among several,
 # reading the same menus everything else reads.
 REFLEXES = {"sees_fire":   {"legs": "go:exit", "mouth": "say:fire"},
+            "scorched":    {"legs": "go:exit", "mouth": "say:fire"},
             "hears_alarm": {"legs": "go:exit", "mouth": "say:coming"},
             "sees_runner": {"legs": "go:exit"},
             "chokes":      {"legs": "go:exit"}}
@@ -229,9 +406,22 @@ class TablePolicy:
         else:
             want = list(IDLE.get(limb, ()))
         for tag in want:
-            for i, opt in enumerate(menu):
-                if opt["tag"] == tag:
-                    return i
+            hit = [i for i, opt in enumerate(menu) if opt["tag"] == tag]
+            if not hit:
+                continue
+            # TASTE, of the plainest kind there is. The table says WHAT to do;
+            # among the ways of doing it, prefer the one that does not take you
+            # past a fire you remember seeing, and then the nearest.
+            #
+            # This is the whole of why it matters: without it the pick was the
+            # FIRST matching row, so which way an idle body wandered was decided
+            # by the order `_places` happened to build its list in — a modulo of
+            # the tick. Any change to the set of reachable places was a coin
+            # flip over where a body went, and one of those flips walked a man
+            # into a fire and killed him. A policy that prefers nothing is not
+            # neutral; it is arbitrary, and arbitrary is not a thing a body does.
+            return min(hit, key=lambda i: (menu[i].get("danger", 0.0),
+                                           menu[i].get("away", 0.0)))
         return 0                     # the table named something unavailable
                                      # (no route to a door, say) — take the
                                      # null act instead of lying, which every
@@ -252,6 +442,10 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
                                  # Hysteresis is the real thing here, not a
                                  # smoothing trick: recovery genuinely lags
         "hurt_T": 55.0,          # skin °C where tissue starts to cook
+        "feel_T": 45.0,          # and where it is hot enough to NOTICE. Below
+                                 # cooking on purpose: you feel a fire well
+                                 # before it marks you, which is the whole use
+                                 # of feeling it
         "burn_gain": 4e-6,       # damage per degree-over-threshold per tick
         "faint_burn": 0.2, "death_burn": 0.45,
         # A BLOW WOUNDS. Tissue takes damage far below the toughness that tears
@@ -292,6 +486,40 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         # still, without anybody writing down a duration. ~60 N.m is an
         # unremarkable adult shoulder.
         "arm_Nm": 60.0,
+        # AND A BACK IS NOT AN ARM. The hips carry the torso, the head and both
+        # arms, so the same lever holds far more mass — a trunk extensor makes
+        # a few hundred N.m, and this is the low end of an untrained adult. It
+        # is the number that decides how far out a man may lean before his own
+        # back, rather than his balance, says no.
+        "back_Nm": 200.0,
+        # HOW FAR A TRUNK BENDS AT ALL. Not a balance figure and not a muscle
+        # figure — both of those are computed — but the joint's own stop, the
+        # place where a spine has run out of spine. Asked to lean out, a body
+        # asks for this and gets however much of it the world allows.
+        "lean_max": 0.8,         # rad; ~46 degrees, and the lattice tears at 1.0
+        # AND A TRUNK IS SLOWER THAN A SHOULDER. Much more mass on a much
+        # shorter lever; nobody snaps into a bow. It is not a cosmetic figure:
+        # at a shoulder's pace the first tick of a lean is 0.375 rad, which is
+        # already past the angle a man can stand at, so the body would propose
+        # a pose it could not keep and think better of it, for ever, and never
+        # bend at all.
+        "waist_wmax": 1.5,       # rad/s
+        # A BODY HAS TWO ARMS AND A PREFERENCE. The dominant hand is stronger
+        # and better practised, so it is what a body reaches with — but it is a
+        # PREFERENCE, not a rule, and the other hand wins when the other hand
+        # is plainly the one for the job. `off_hand_m` is how much further a
+        # body will reach across itself rather than switch hands: past that
+        # much difference in distance, being right-handed stops mattering.
+        # That is a reason rather than a die, which matters because the sim
+        # carries no die and because "sometimes the other hand" is not a
+        # coin-toss in real bodies either — it is where the thing is.
+        # About half a shoulder width, and that is the scale it should be on:
+        # the cost of the off hand is that it is weaker, the benefit of the
+        # near hand is not reaching across yourself, and those trade at roughly
+        # the distance between your shoulders. Set wider than the shoulders it
+        # is not a preference, it is a rule, and the off hand never wins.
+        "off_hand_m": 0.10,
+        "off_hand": 0.8,         # what the other hand is worth, in strength
         # AND A MUSCLE CANNOT PULL AT ANY SPEED. Hill's force-velocity
         # relation: the faster a muscle is already shortening the less force
         # it makes, so torque fades to nothing at a top speed. Without it an
@@ -391,6 +619,30 @@ SEE_TAU = 2.0                    # optical depth a look can still penetrate
 # soot yield, because no gas-species field exists yet to hold the rest); gas
 # species retires this for the standard 8.7 m^2/g against true soot mass.
 SMOKE_EXT = 5.6
+# AIR THAT HOLDS A MILLIONTH OF A GRAM OF SOOT IS CLEAN AIR, and is not modelled
+# as moving it. The first modelling decision of the active-region work rather
+# than a provable skip, so it is made in the open and it was MEASURED, not
+# guessed (Ruling 1's stopping rule: a region is inert when processing it would
+# not change anything an outcome we care about could notice).
+#
+# Why it is needed at all: diffusion puts an infinitesimal trace of smoke in
+# EVERY cell within ten ticks, so "smoke != 0" is true almost everywhere almost
+# at once and tells you nothing — measured, 0 cells at tick 10 and 893,596 of
+# 910,080 at tick 20. Where the smoke actually IS stays small for far longer.
+#
+# Measured in a burning town, share of ALL the smoke inside the box:
+#   1e-6 g  -> 99.9%, box is 28% of the world     <- the knee, and what we use
+#   1e-4 g  -> 91.1%, box is  9%
+#   1e-3 g  -> 49.3%, box is  1.5%
+# Nothing is destroyed below the line; it simply stops being carried, so every
+# gram is still there and still counted.
+_SWEEP_RAD = 0.08              # how finely a limb's turn is swept for
+                               # things in the way. One voxel at the end
+                               # of a 9-voxel arm is about 0.11 rad, so
+                               # this cannot step over a wall.
+_SIX = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
+
+SMOKE_STILL = 1e-6
 SHOUT_DB = 90.0                  # a shout, one meter from the mouth
 HEAR_DB = 40.0                   # where a shout stops being intelligible
 PUSH_THROUGH = 0.4               # how full a voxel can be and still be shoved
@@ -494,17 +746,72 @@ class World:
         self.drops = []                                 # ballistic fluid parcels in flight:
         self.bodies = []                                # rigid bodies mid-TOPPLE (free
                                                         # of the grid until they land)
+        # WHAT HAS LEFT THE WORLD ALTOGETHER, in grams by material. A lattice
+        # has edges; a thing thrown past one is outside, and the books only
+        # balance if the world can say how much went. See `_left_world`.
+        self.gone = {}
         self.pcell = None                               # [x,y,z, vx,vy,vz, ml, fluid]
         self.vcell = None                               # coarse gas pressure + velocity
         self.p_add = np.zeros(self.shape, np.float32)   # pressure injected this tick
         self.tick = 0
+        # DO NOT COMPUTE WHERE NOTHING IS HAPPENING. Most of a world is inert
+        # most of the time, and a quiet room measured EXACTLY as expensive as a
+        # burning one (98 ms/tick against 100). Every skip below has to be
+        # provable, not merely plausible: a law is skipped only when the thing
+        # it moves is not present at all, or cannot have changed since it last
+        # ran. Set False to run every law over the whole world every tick —
+        # which is what `test_ACTIVE_REGIONS_change_NOTHING` compares against.
+        self.skip_quiet = True
+        # Measure what the attention cap costs (see _decide). Off: it doubles
+        # the work of deciding, and answers a question rather than doing one.
+        self.recall_check = False
+        # Use the compiled laws where there are any. Turned off, the world runs
+        # on the numpy ones, which are what the laws MEAN — the compiled path
+        # has to agree with them cell for cell, and a test says so.
+        self.fused = HAVE_NUMBA
+        self._cap_key = None                            # derived fields, cached on
+        self._cap = self._por = None                    # what matter is where
+        self._aircells = self._airblur = None           # and where the air is
 
     # ── derived fields ───────────────────────────────────────────────────────
     def heat_capacity(self):
-        c_solid = _CSOLID_ARR[self.mat]
-        fmass = self.fvol * _FDENS_ARR[self.fl]
-        c_fluid = _FC_ARR[self.fl]
-        return self.smass * c_solid + fmass * c_fluid + self.c_airbase
+        """What it costs to warm a voxel by a degree: its solid, its fluid, and
+        the air in the space left over.
+
+        CACHED against the four fields it is made of. It was being rebuilt
+        TWELVE TIMES A TICK — a fifth of all sim time, burning or not — for a
+        quantity that only changes when matter does: something burns away,
+        melts, is poured, or walks. Comparing the four costs about a fifth of
+        one rebuild, and it is right by construction because it compares the
+        real state, rather than by everyone who writes a voxel remembering to
+        invalidate it. Same bargain as the slack field, and the same reason.
+
+        Callers only ever read it — checked — so one array is handed to all."""
+        self._matter_moved()
+        if self._cap is None:
+            c_solid = _CSOLID_ARR[self.mat]
+            fmass = self.fvol * _FDENS_ARR[self.fl]
+            c_fluid = _FC_ARR[self.fl]
+            self._cap = self.smass * c_solid + fmass * c_fluid + self.c_airbase
+        return self._cap
+
+    def _matter_moved(self):
+        """Has any matter changed since the derived fields were last built? If
+        it has, throw them away and remember the new state.
+
+        One comparison serves both heat capacity and porosity, because both are
+        made of the same four fields — so the price of checking is paid once
+        however many derived fields come to depend on it."""
+        k = self._cap_key
+        if (k is not None and np.array_equal(k[0], self.mat)
+                and np.array_equal(k[1], self.smass)
+                and np.array_equal(k[2], self.fl)
+                and np.array_equal(k[3], self.fvol)):
+            return False
+        self._cap = self._por = None
+        self._cap_key = (self.mat.copy(), self.smass.copy(),
+                         self.fl.copy(), self.fvol.copy())
+        return True
 
     def T(self):
         return AMBIENT + self.E / self.heat_capacity()
@@ -527,10 +834,13 @@ class World:
         What falls out for free, none of it written: rubble and thatch breathe,
         a wall half-eaten by acid breathes through the loss, and wood GROWS more
         permeable as it burns away, feeding the fire that is thinning it."""
-        packed = self.smass / np.maximum(_DENS_ARR[self.mat] * self.vox_l, 1e-9)
-        void = np.clip(1.0 - packed, 0.0, 1.0)
-        drowned = self.fvol > 0.5 * self.cap      # a flooded gap does not breathe
-        return np.where(drowned, np.minimum(void, 0.02), void)
+        self._matter_moved()                      # cached beside heat capacity:
+        if self._por is None:                     # same four fields, one check
+            packed = self.smass / np.maximum(_DENS_ARR[self.mat] * self.vox_l, 1e-9)
+            void = np.clip(1.0 - packed, 0.0, 1.0)
+            drowned = self.fvol > 0.5 * self.cap  # a flooded gap does not breathe
+            self._por = np.where(drowned, np.minimum(void, 0.02), void)
+        return self._por
 
     def solid(self):
         return self.mat != AIR
@@ -1201,16 +1511,162 @@ class World:
         self._slack_mat = None
         return body
 
-    def _limb_cells(self, p, name, own=None):
-        """Where one named part of this body actually is, right now.
+    def _limbs(self, p):
+        """The body's named LIMBS — an arm counts ONCE, by the name of the
+        whole arm, not once per bone. Everything outside this file asks for
+        "right arm"; whether that is one bone or three is the body's own
+        business, declared by whoever built it."""
+        chain = p.get("chain") or {}
+        bones = {b for bs in chain.values() for b in bs}
+        out = list(chain)
+        out += [k for k in (p.get("segs") or {}) if k not in bones
+                and k not in chain]
+        return out
 
-        Segments are kept as offsets from the body's own corner, so they ride
-        along when it walks, is shoved, or is carried out. A limb that has been
-        swung and come to rest somewhere new updates its own offsets on landing.
-        Returns None when there is no such limb, or nothing left of it."""
+    def _bones(self, p, name):
+        """The bones of a limb, SHOULDER FIRST. A limb with no chain declared
+        is one bone with its own name, which is why nothing had to change when
+        arms grew elbows."""
+        chain = (p.get("chain") or {}).get(name)
+        return list(chain) if chain else [name]
+
+    def _parents(self, p):
+        """Which bone each bone hangs from.
+
+        A limb's CHAIN already says most of this — the forearm hangs from the
+        upper arm, that is what writing them in that order means — so it is
+        read off there rather than declared a second time, which would be a
+        second place to be wrong. `p["parent"]` says the rest: what the arms
+        and the head hang from, which no chain covers because they are not in
+        one another's chains."""
+        par = dict(p.get("parent") or {})
+        for bs in (p.get("chain") or {}).values():
+            for a, b in zip(bs, bs[1:]):
+                par.setdefault(b, a)
+        return par
+
+    def _kids(self, p):
+        """Bone -> the bones hanging off it."""
+        kids = {}
+        for b, par in self._parents(p).items():
+            kids.setdefault(par, []).append(b)
+        return kids
+
+    def _subtree(self, p, root):
+        """`root` and everything hanging off it, nearest the body first.
+
+        TURNING A JOINT CARRIES EVERYTHING BEYOND IT. That is what a joint is,
+        and it is the whole reason a body needs a tree and not a list: leaning
+        at the hips takes the head and both arms with it, and leaves the legs
+        exactly where they are standing. A body with no parents declared is all
+        roots, so this returns the one bone and nothing changes."""
+        kids = self._kids(p)
+        out, q = [], [root]
+        while q:
+            b = q.pop(0)
+            if b in out:
+                continue
+            out.append(b)
+            q.extend(sorted(kids.get(b, [])))   # sorted: the sim carries no die
+        return out
+
+    def _path_from(self, p, root, bone):
+        """The bones from `root` out to `bone`, inclusive — the joints whose
+        turns compose to say where that bone ends up."""
+        par = self._parents(p)
+        path, b = [], bone
+        while True:
+            path.append(b)
+            if b == root:
+                return path[::-1]
+            b = par.get(b)
+            if b is None or len(path) > 32:
+                return None
+
+    def _pivot_of(self, p, name):
+        """The joint a whole limb turns about: for a chain, the one nearest the
+        body. What a shoulder torque is measured at."""
+        joints = p.get("joints") or {}
+        for b in self._bones(p, name):
+            if b in joints:
+                return np.asarray(joints[b])
+        return None
+
+    @staticmethod
+    def _joint_xform(pivot, zb, theta, sgn, bend=False):
+        """One joint's move, as a 2x3 affine on (sideways, up).
+
+        A HINGE TURNS. Exactly the rotation `_body_pose` has always done,
+        written as a matrix so that joints can be COMPOSED — an elbow is the
+        shoulder's turn applied to the forearm's turn, and matrices are how you
+        say that without special cases.
+
+        A SPINE DOES NOT TURN, IT BENDS, and on a lattice that difference is
+        the difference between possible and impossible. A torso is a solid
+        slab, and a rigid rotation of a solid slab is never injective on a
+        grid: at EVERY angle some pair of its voxels rounds into one cell, so
+        every lean was refused as undrawable and a body could not bend at all.
+
+        A lean is not one bone swinging. A trunk is a stack of vertebrae and
+        bending it is each slice sliding forward over the one below — a SHEAR.
+        Which is exactly right for the thing it models, and has the property
+        the lattice needs for free: every row moves by one constant, so within
+        a row the map is a translation of integers, and rows never meet because
+        their height does not change. Nothing can round into anything. The
+        first-order shortening of a real bend (cos theta) is what it gives up,
+        and that is second order in the angle."""
+        if bend:
+            # the sign is flipped against a hinge's, and for a reason rather
+            # than to taste: `sgn` is set so that a POSITIVE angle carries a
+            # bone's far end forward, and an arm's far end hangs BELOW its
+            # shoulder while a torso's rises ABOVE its hips. Same convention,
+            # opposite geometry.
+            t = -float(np.tan(theta))
+            return np.array([[1.0, sgn * t, -sgn * t * zb],
+                             [0.0, 1.0, 0.0]])
+        c, sn = float(np.cos(theta)), float(np.sin(theta))
+        return np.array([[c, sgn * sn, pivot - c * pivot - sgn * sn * zb],
+                         [-sgn * sn, c, zb + sgn * sn * pivot - c * zb]])
+
+    def _chain_xform(self, pivots, thetas, upto, sgn, bends=None):
+        """Where a bone's REST cells end up: its OWN joint turns first, then
+        every joint above it carries the result along.
+
+        This is forward kinematics and it is three lines, because all of a limb
+        turns in one plane. Written about the REST pivots on purpose — the
+        elbow MOVES when the shoulder turns, and composing in the rest frame is
+        what saves having to track where it moved to."""
+        M = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
+        for j in range(upto, -1, -1):
+            R = self._joint_xform(pivots[j][0], pivots[j][1], thetas[j], sgn,
+                                  bool(bends[j]) if bends else False)
+            M = R @ np.vstack([M, [0.0, 0.0, 1.0]])
+        return M
+
+    @staticmethod
+    def _apply_xform(M, cells, axis):
+        """Move a set of voxels by a 2x3 affine in the (axis, z) plane."""
+        out = np.asarray(cells, np.float64).copy()
+        lat, zz = out[:, axis].copy(), out[:, 2].copy()
+        out[:, axis] = M[0, 0] * lat + M[0, 1] * zz + M[0, 2]
+        out[:, 2] = M[1, 0] * lat + M[1, 1] * zz + M[1, 2]
+        return out
+
+    def _limb_parts(self, p, name, own=None):
+        """One array of live cells PER BONE, shoulder first.
+
+        Anything that has to know which bone a voxel belongs to asks here — a
+        swung arm that comes to rest has to be able to say where its elbow went
+        and not merely where its arm did."""
         segs = p.get("segs")
-        if not segs or name not in segs:
+        bones = [b for b in self._bones(p, name) if b in (segs or {})]
+        if not segs or not bones:
             return None
+        return self._bone_parts(p, bones, own)
+
+    def _bone_parts(self, p, bones, own=None):
+        """The live cells of each NAMED bone, in the order asked for."""
+        segs = p.get("segs") or {}
         if own is None:
             comp, sl = self._person_cells(p)
             if comp is None or not comp.any():
@@ -1218,14 +1674,43 @@ class World:
             own = np.argwhere(comp)
             own[:, 0] += sl[0].start or 0
             own[:, 1] += sl[1].start or 0
-        limb = (segs[name] + np.asarray(own).min(axis=0)).astype(np.int64)
+        base = np.asarray(own).min(axis=0)
         nx, ny, nz = self.shape
-        ok = ((limb[:, 0] >= 0) & (limb[:, 0] < nx) & (limb[:, 1] >= 0)
-              & (limb[:, 1] < ny) & (limb[:, 2] >= 0) & (limb[:, 2] < nz))
-        limb = limb[ok]
-        if not len(limb):
+        out = []
+        for b in bones:
+            if b not in segs:
+                return None
+            c = (np.asarray(segs[b]) + base).astype(np.int64)
+            ok = ((c[:, 0] >= 0) & (c[:, 0] < nx) & (c[:, 1] >= 0)
+                  & (c[:, 1] < ny) & (c[:, 2] >= 0) & (c[:, 2] < nz))
+            c = c[ok]
+            if len(c):
+                c = c[self.mat[tuple(c.T)] == FLESH]
+            out.append(c)
+        return out
+
+    def _bone_angle(self, p, bone):
+        """One bone's OWN joint angle, whichever limb happens to own it. A bone
+        nobody poses — a head — is at rest, and rides on whatever is below it."""
+        for limb, bs in (p.get("chain") or {}).items():
+            if bone in bs:
+                return self._angles((p.get("pose") or {}).get(limb, 0.0),
+                                    len(bs))[bs.index(bone)]
+        return float(np.atleast_1d(
+            (p.get("pose") or {}).get(bone, 0.0))[0])
+
+    def _limb_cells(self, p, name, own=None):
+        """Where one named part of this body actually is, right now.
+
+        Segments are kept as offsets from the body's own corner, so they ride
+        along when it walks, is shoved, or is carried out. A limb that has been
+        swung and come to rest somewhere new updates its own offsets on landing.
+        A limb made of several bones answers with all of them.
+        Returns None when there is no such limb, or nothing left of it."""
+        parts = self._limb_parts(p, name, own)
+        if not parts:
             return None
-        limb = limb[self.mat[tuple(limb.T)] == FLESH]
+        limb = np.concatenate(parts)
         return limb if len(limb) else None
 
     def _swing(self, p, name, toward=None):
@@ -1244,7 +1729,8 @@ class World:
         A pose that only changed the picture would need a picture to change,
         and there isn't one — the renderer reads `mat` like everything else."""
         segs, joints = p.get("segs"), p.get("joints")
-        if not segs or name not in segs:
+        bones = [b for b in self._bones(p, name) if b in (segs or {})]
+        if not segs or not bones:
             return None
         # WHICH WAY. The arm hangs from the shoulder, so turning it about the
         # sideways axis sweeps it forward; the sign is which forward.
@@ -1257,16 +1743,28 @@ class World:
         own = np.argwhere(comp)
         own[:, 0] += sl[0].start or 0
         own[:, 1] += sl[1].start or 0
-        limb = self._limb_cells(p, name, own)
-        if limb is None:
+        parts = self._limb_parts(p, name, own)
+        if not parts or not sum(len(c) for c in parts):
             return None                       # the limb is not there any more
+        limb = np.concatenate(parts)
+        # WHICH BONE EACH VOXEL IS. A whole arm swings as ONE rigid thing —
+        # the elbow is locked by the same muscles that drive the shoulder —
+        # but it has to come to rest as an arm with an elbow in it, or the
+        # next pose reaches for bones that are no longer where they are said
+        # to be. -1 is a carried tool: along for the ride, part of nobody.
+        segof = np.concatenate([np.full(len(c), i, np.int32)
+                                for i, c in enumerate(parts)])
         # A HELD THING SWINGS WITH THE ARM — that is most of what holding a
         # tool is for. Its cells join the limb's rigid body, so its mass slows
         # the swing (Hill does the rest) and its edge is what arrives.
         obj = self._held_cells(p)
         if obj is not None and self._in_reach(limb, obj):
             limb = np.concatenate([limb, obj])
-        jx, jy, jz = (joints[name] + own.min(axis=0)).astype(np.int64)
+            segof = np.concatenate([segof, np.full(len(obj), -1, np.int32)])
+        piv = self._pivot_of(p, name)
+        if piv is None:
+            return None
+        jx, jy, jz = (piv + own.min(axis=0)).astype(np.int64)
         vox_m = 0.1 * self.scale
         kg = self.smass[tuple(limb.T)] / 1000.0
         r = (np.abs(limb[:, axis] - float(jx if axis == 0 else jy))
@@ -1283,8 +1781,463 @@ class World:
         b["theta"], b["omega"] = 0.0, 0.0
         b["Nm"], b["I"] = BODY["arm_Nm"], inertia
         b["seg"] = name
+        b["segof"], b["bones"] = segof, bones
         b["phi0"], b["L"] = 0.02, 2.0
         return b
+
+    def _still_joined(self, p, want, own, mine):
+        """Is the limb, DRAWN AT THIS ANGLE, still one piece of one body?
+
+        The other half of "undrawable", and the half that was missing. A line
+        of voxels turned to anything but a right angle rounds to a STAIRCASE,
+        and a staircase is not joined — its steps touch at corners only. So the
+        check that two voxels must not round into one has a twin: they must not
+        round APART either. Measured before this: an arm bent 1.2 rad came out
+        in two pieces, still all its own mass, no longer all one arm.
+
+        The honest answer is the same one the lattice has always given — the
+        angle is not drawable, the flesh holds its last good pose, and the arm
+        catches up at the next angle that IS. It is not a smoothing hack; at
+        5 cm a one-voxel limb genuinely has only a handful of poses."""
+        rest = {tuple(c) for c in own} - mine    # the body it hangs from
+        S = {tuple(c) for c in want}
+        seen = {c for c in S
+                if any((c[0] + dx, c[1] + dy, c[2] + dz) in rest
+                       for dx, dy, dz in _SIX)}
+        if not seen:
+            return False                      # it is not attached at all
+        stack = list(seen)
+        while stack:
+            c = stack.pop()
+            for dx, dy, dz in _SIX:
+                n = (c[0] + dx, c[1] + dy, c[2] + dz)
+                if n in S and n not in seen:
+                    seen.add(n)
+                    stack.append(n)
+        return len(seen) == len(S)
+
+    @staticmethod
+    def _angles(theta, n):
+        """One angle per bone. A single number turns the joint NEAREST THE BODY
+        and leaves the rest straight — which is exactly what every caller meant
+        back when an arm was one bone, so nothing had to be rewritten when it
+        grew an elbow."""
+        th = [float(theta)] if np.isscalar(theta) else [float(t) for t in theta]
+        return (th + [0.0] * n)[:n]
+
+    @staticmethod
+    def _inv_xform(M):
+        """The way back. The 2x2 part is a rotation, so its inverse is its
+        transpose and there is nothing to solve."""
+        A = M[:, :2].T
+        return np.hstack([A, -A @ M[:, 2:3]])
+
+    @staticmethod
+    def _comp_xform(a, b):
+        """Do b, then a."""
+        return a @ np.vstack([b, [0.0, 0.0, 1.0]])
+
+    def _repose(self, p, name, theta, toward=None):
+        """Put one limb where its ANGLES say it is, on the lattice, now.
+
+        This is the difference between a pose and a picture. The limb is not
+        lifted off the world, turned, and set back down — its voxels are moved
+        from the cells they are in to the cells the angles ask for, so while the
+        arm is out it really IS out: it blocks what it now occupies, its mass
+        sits where it now sits, a hand at the end of it is somewhere new, and
+        anything already in the way STOPS it.
+
+        A LIMB IS A CHAIN OF BONES, each turning about its own joint, and the
+        bones nearer the body carry the ones further out along with them. One
+        angle per joint; a bare number means the joint nearest the body and the
+        rest held straight. An arm with one bone is the same code with a chain
+        of length one, which is why nothing above this had to learn about
+        elbows.
+
+        Answers WHY it could not, because the two reasons are not alike.
+        "blocked" is the world saying no — something solid is there, and an arm
+        that meets a post stops at the post. "undrawable" is the LATTICE saying
+        no: a limb one voxel wide has only a handful of angles it can be drawn
+        at, because at the others two of its voxels round into the same cell and
+        a voxel of flesh would be destroyed by the act of moving. A limb is
+        never allowed to cost the body mass, so those angles are skipped over —
+        the arm holds its last drawable pose while the angle goes on, and
+        catches up when the two agree again. At 5 cm that is not a workaround,
+        it is what a thin thing turning on a coarse grid IS.
+
+        Turned from the limb's REST shape rather than from wherever it happens
+        to be, so angles do not accumulate the rounding of every angle before
+        them — and, for a chain, so that the elbow can be turned about where it
+        RESTS rather than about wherever the shoulder has just carried it."""
+        segs, joints = p.get("segs"), p.get("joints")
+        bones = [b for b in self._bones(p, name) if b in (segs or {})]
+        if not segs or not bones or any(b not in (joints or {}) for b in bones):
+            return "blocked"
+        # EVERYTHING BEYOND THE JOINT COMES TOO. The limb's own bones are the
+        # ones with angles; the moving SET is those plus whatever hangs off
+        # them, which for an arm is nothing and for a torso is a head and two
+        # arms. A body with no parents declared has a moving set of exactly its
+        # own bones, which is why nothing above this changed.
+        moving = [b for b in self._subtree(p, bones[0]) if b in segs]
+        for b in bones:
+            if b not in moving:
+                moving.append(b)
+        paths = {b: self._path_from(p, bones[0], b) or [b] for b in moving}
+        comp, sl = self._person_cells(p)
+        if comp is None or not comp.any():
+            return "blocked"
+        own = np.argwhere(comp)
+        own[:, 0] += sl[0].start or 0
+        own[:, 1] += sl[1].start or 0
+        origin = own.min(axis=0)
+        rest = p.setdefault("rest", {})
+        for b in moving:
+            if b not in rest:
+                rest[b] = np.asarray(segs[b]).copy()
+        cur_parts = self._bone_parts(p, moving, own)
+        if cur_parts is None or any(len(c) != len(rest[b])
+                                    for c, b in zip(cur_parts, moving)):
+            return "blocked"                  # a bone has lost voxels; its rest
+                                              # shape no longer describes it
+        cur = np.concatenate(cur_parts)
+        dx, dy = toward if toward else p.get("facing", (1.0, 0.0))
+        axis = 0 if abs(dx) >= abs(dy) else 1
+        sgn = -1 if (dx if axis == 0 else dy) >= 0 else 1
+        th = self._angles(theta, len(bones))
+        bend = set(p.get("bend") or ())    # which joints bend rather than turn
+        pivot = {}
+        for b in moving:
+            j = (np.asarray(joints.get(b, joints[bones[0]]))
+                 + origin).astype(np.float64)
+            pivot[b] = (float(j[axis]), float(j[2]))
+
+        def place(ang):
+            """Every moving bone, at these angles: its own joint first, then
+            every joint between it and the limb being turned."""
+            held = dict(zip(bones, ang))
+            out = []
+            for b in moving:
+                path = paths[b]
+                out.append(self._apply_xform(
+                    self._chain_xform([pivot[x] for x in path],
+                                      [held.get(x, self._bone_angle(p, x))
+                                       for x in path],
+                                      len(path) - 1, sgn,
+                                      [x in bend for x in path]),
+                    (np.asarray(rest[b]) + origin).astype(np.float64), axis))
+            return out
+
+        parts = place(th)
+        want = np.round(np.concatenate(parts)).astype(np.int64)
+        # WHAT THE HAND HOLDS TURNS WITH THE HAND. Not an extra rule — it rides
+        # rigidly with the bone at the END of the chain, carried from where the
+        # old angles put that bone to where the new ones do. Without it an arm
+        # could not reach out while holding anything, because the thing it held
+        # was standing in the way of its own arm.
+        ride = self._held_cells(p)
+        if ride is not None and self._in_reach(cur, ride):
+            # A HELD THING HANGS FROM THE FIST — it does not ride CLAMPED to
+            # it. So it follows where the hand goes and keeps its own attitude:
+            # gravity has a say in which way up a carried thing is, and the
+            # wrist is a joint whether or not this sim models one yet. Turned
+            # rigidly about the shoulder instead, a 38 kg block hanging below a
+            # man's hand was swung up over his head by the act of putting his
+            # arm out, which is not what carrying is.
+            #
+            # By WHERE THE HAND IS, not by what the angle reads: the two part
+            # company whenever the lattice cannot draw an angle, because the
+            # flesh holds its last good pose while the angle runs on and then
+            # catches up several angles at once. Measured with the delta in
+            # angles: the arm went out eight voxels and the block moved one, so
+            # the lever never formed and the man kept his feet.
+            #
+            # The bone's voxels keep their order from `rest`, so cell 0 of the
+            # far bone is the SAME piece of flesh before and after — which is
+            # what makes this an honest displacement and not a guess.
+            tip = moving.index(bones[-1])     # the limb's OWN far bone, which
+            shift = (np.round(parts[tip][0]).astype(np.int64)   # is not the last
+                     - cur_parts[tip][0])                       # of the subtree
+                                              # once a head and arms come along
+            ride_to = ride + shift
+            cur = np.concatenate([cur, ride])
+            want = np.concatenate([want, ride_to])
+            moved_hold = (tuple(ride_to[0]), tuple(ride[0]))
+        else:
+            moved_hold = None
+        nx, ny, nz = self.shape
+        if ((want < 0).any() or (want[:, 0] >= nx).any()
+                or (want[:, 1] >= ny).any() or (want[:, 2] >= nz).any()):
+            return "blocked"
+        flat = (want[:, 0] * ny + want[:, 1]) * nz + want[:, 2]
+        if len(np.unique(flat)) != len(flat):
+            return "undrawable"               # two voxels into one: mass lost
+        mine = {tuple(c) for c in cur}
+        if not self._still_joined(p, want[:len(want) - (len(ride) if
+                                  moved_hold is not None else 0)], own, mine):
+            return "undrawable"               # ...and two voxels into none
+        blocked = [tuple(t) for t in want
+                   if tuple(t) not in mine and int(self.mat[tuple(t)]) != AIR]
+        if blocked:
+            return "blocked"                  # something is in the way, and the
+                                              # way is the world, not a picture
+        # AND NOTHING WAS IN THE WAY ON THE ROAD THERE. Only the pose at the
+        # END of a tick used to be checked, which is honest while a limb turns
+        # a little at a time — and stops being honest the moment it does not.
+        # The flesh waits at every angle the lattice cannot draw and then
+        # catches up several angles at once, so a rail that happens to sit in
+        # the undrawable part of the sweep was never touched by anything: the
+        # arm was on one side of it, and then it was on the other.
+        #
+        # So the angles in between are swept. They do not have to be DRAWABLE
+        # — two voxels rounding together is an artifact of drawing, not an
+        # event in the world — they only have to be unoccupied. This is the
+        # same rule a walking body already keeps: you may not arrive somewhere
+        # by passing through something.
+        was_th = self._angles((p.get("drawn") or {}).get(name, 0.0), len(bones))
+        gap = max(abs(a - b) for a, b in zip(th, was_th)) if bones else 0.0
+        if gap > _SWEEP_RAD:
+            for f in np.arange(_SWEEP_RAD, gap, _SWEEP_RAD) / gap:
+                mid = [w + (t - w) * float(f) for w, t in zip(was_th, th)]
+                for pt_f in place(mid):
+                    pt = np.round(pt_f).astype(np.int64)
+                    if ((pt < 0).any() or (pt[:, 0] >= nx).any()
+                            or (pt[:, 1] >= ny).any() or (pt[:, 2] >= nz).any()):
+                        return "blocked"
+                    hit = [tuple(t) for t in pt if tuple(t) not in mine
+                           and int(self.mat[tuple(t)]) != AIR]
+                    if hit:
+                        return "blocked"      # it would have had to go through
+        fields = (self.mat, self.smass, self.E, self.fl, self.fvol,
+                  self.fpot, self.fallh)
+        src, dst = tuple(cur.T), tuple(want.T)
+        held = [arr[src].copy() for arr in fields]
+        for arr in fields:
+            arr[src] = 0
+        for arr, h in zip(fields, held):
+            arr[dst] = h
+        # THE BODY'S CORNER CAN MOVE WHEN ONLY PART OF THE BODY DOES. Every
+        # segment is kept as an offset from the min corner of the whole body,
+        # and that corner is read fresh each time — so a lean, which carries a
+        # torso and both arms forward and leaves the legs, can change which
+        # voxel is the corner, and then EVERY offset on the body is out by one
+        # and the arms are no longer where the body says they are. An arm
+        # reaching never showed it: an arm goes forward, and the corner is
+        # behind. Rebase, and nothing has to know.
+        n_flesh = len(want) - (len(ride) if moved_hold is not None else 0)
+        stay = np.array([c for c in own if tuple(c) not in mine], np.int64)
+        allf = np.concatenate([stay.reshape(-1, 3), want[:n_flesh]])
+        base = allf.min(axis=0)
+        if not np.array_equal(base, origin):
+            shift = origin - base
+            for b in segs:
+                segs[b] = np.asarray(segs[b]) + shift
+            for b in rest:
+                rest[b] = np.asarray(rest[b]) + shift
+            for b in (joints or {}):
+                joints[b] = np.asarray(joints[b]) + shift
+        k = 0
+        for b in moving:                       # each bone keeps its own offsets
+            n = len(rest[b])
+            segs[b] = want[k:k + n] - base
+            k += n
+        p.setdefault("drawn", {})[name] = list(th)    # where the flesh IS
+        if max((abs(t) for t in th), default=0.0) > 1e-9:
+            p.pop("_no_reach", None)          # it got somewhere: the question is
+                                              # open again. Coming back to REST
+                                              # is not getting somewhere — the
+                                              # arm unwinding after a refused
+                                              # reach ends in a successful move
+                                              # to angle zero, and that cleared
+                                              # the very memory it had just made
+        if moved_hold is not None and p.get("held"):
+            p["held"]["cell"] = moved_hold[0]      # the grip follows the thing
+        # AND THE BODY IS NOT WHERE IT WAS. Identity is resolved once a tick
+        # and kept; this moved flesh INSIDE that tick, so the kept answer is
+        # now a picture of a body that has since bent. It only ever mattered
+        # once a pose could move the body's own corner — everything read
+        # afterwards was measured from a corner that had gone.
+        p["_claim_tick"] = None
+        self._torque_solid = None
+        self._slack_mat = None
+        return "moved"
+
+    def _hold_torque(self, p, name, theta):
+        """What the muscle must find to hold this limb at that angle: the limb's
+        own weight times how far out its middle hangs from the joint. Zero
+        hanging straight down, most of it held straight out — which is why an
+        arm can be kept at your side all day and not at arm's length."""
+        # EVERYTHING BEYOND THE JOINT hangs off it, not just the bones with
+        # angles: what the hips have to hold up is a torso and a head and two
+        # arms, and what a shoulder holds is an arm and whatever is in the hand.
+        bones = [b for b in self._subtree(p, self._bones(p, name)[0])
+                 if b in (p.get("segs") or {})] if self._bones(p, name) else []
+        parts = self._bone_parts(p, bones) if bones else None
+        limb = np.concatenate([c for c in parts if len(c)]) \
+            if parts and any(len(c) for c in parts) else None
+        piv = self._pivot_of(p, name)
+        if limb is None or piv is None:
+            return 0.0, 0.0
+        comp, sl = self._person_cells(p)
+        own = np.argwhere(comp)
+        own[:, 0] += sl[0].start or 0
+        own[:, 1] += sl[1].start or 0
+        # the joint nearest the body, and the WHOLE limb's weight hanging off
+        # it — a bent elbow is cheaper to hold out precisely because it brings
+        # the mass back in, and that falls out of the lever with no new rule
+        jx, jy, _jz = (piv + own.min(axis=0)).astype(np.int64)
+        kg = self.smass[tuple(limb.T)] / 1000.0
+        m = float(kg.sum())
+        if m <= 0.0:
+            return 0.0, 0.0
+        cx = float((limb[:, 0] * kg).sum()) / m
+        cy = float((limb[:, 1] * kg).sum()) / m
+        lever = max(abs(cx - jx), abs(cy - jy)) * 0.1 * self.scale
+        return m * GRAVITY * lever, m
+
+    def _law_pose(self):
+        """Limbs go where they are asked, at the speed a muscle can manage, and
+        stay there while the muscle can hold them.
+
+        A shoulder is a joint with a motor and a limit, which is a solved thing
+        (box3d, MIT) — what is taken here is the shape of it rather than the
+        code: an angle, a speed cap, and a torque the motor either has or does
+        not. The cap is the same `arm_wmax` Hill's relation already uses for a
+        swing, so an arm reaches out at a shoulder's pace and not instantly.
+
+        And an arm held out is HELD OUT, at a cost. If the weight hanging off
+        the joint asks more of the muscle than it has, the limb sinks back until
+        the lever is short enough — so a limb can be kept at your side for ever
+        and at arm's length only while something is paying for it. That is what
+        makes a reach a physical act and not a pose in a picture."""
+        for p in self.persons:
+            want = p.get("reach")
+            pose = p.get("pose")
+            if not want and not pose:
+                continue
+            if not p["alive"] or p["safe"]:
+                p["reach"] = {}
+                want = None
+            pose = p.setdefault("pose", {})
+            for name in sorted(set(list(pose) + list(want or {}))):
+                n = len(self._bones(p, name))          # sorted: the sim carries
+                at = np.array(self._angles(            # no die, and a set of
+                    pose.get(name, 0.0), n))           # names has no order
+                goal = np.array(self._angles((want or {}).get(name, 0.0), n))
+                if np.abs(goal).max() > 0.0:
+                    need, _m = self._hold_torque(p, name, goal)
+                    can = (p.get("torque_Nm") or {}).get(
+                        name, p.get("arm_Nm", BODY["arm_Nm"]))
+                    if need > can:
+                        goal = np.zeros(n)    # too heavy to hold out there
+                d = goal - at
+                if np.abs(d).max() < 1e-9:
+                    # ARRIVED IN ANGLE, BUT NOT IN FLESH. The command has been
+                    # given in full and the body is not there — so THIS is how
+                    # far this joint goes on this lattice, and the body settles
+                    # to where it actually is rather than holding a number it
+                    # can never be at.
+                    #
+                    # The angle outrunning the flesh is deliberate and right:
+                    # it is how a limb crosses the angles that cannot be drawn
+                    # and catches up at the next one that can. What was missing
+                    # is the end of that story. A lean has a long undrawable
+                    # tail, so a body's angle read 45.8 degrees while it was
+                    # bent 19.3, for ever, and anything that believed the angle
+                    # was wrong about the body.
+                    dr = np.array(self._angles(
+                        (p.get("drawn") or {}).get(name, 0.0), n))
+                    if np.abs(dr - at).max() > 1e-9:
+                        pose[name] = list(dr)
+                        if want is not None and name in want:
+                            want[name] = list(dr)
+                    continue
+                # HOW FAST THAT JOINT GOES. A property of the joint, like the
+                # torque it can hold — a trunk is not a shoulder.
+                step = (p.get("wmax") or {}).get(
+                    name, BODY["arm_wmax"]) * TICK_S
+                nxt = at + np.clip(d, -step, step)
+                how = self._repose(p, name, nxt)
+                if how == "blocked":
+                    bent = self._reach_around(p, name, nxt, at)
+                    if bent is not None:
+                        pose[name] = list(bent)
+                        continue
+                    # the world said no, every way round. An arm that meets a
+                    # post stops AT the post and does not go on wanting to be
+                    # past it — and REMEMBERS, against the spot it was standing
+                    # on and the way it was facing, so it does not ask the same
+                    # question of the same wall every few ticks for ever.
+                    (p.get("reach") or {}).pop(name, None)
+                    p["_no_reach"] = (p["anchor"],
+                                      tuple(p.get("facing", (1.0, 0.0))))
+                    if not np.abs(at).max():
+                        pose.pop(name, None)
+                    continue
+                if how == "moved":
+                    # AND A POSE YOU CANNOT KEEP IS NOT A POSE YOU ADOPT. The
+                    # same gate the muscle already has, with the other reason a
+                    # body stops short: not "my back will not hold that" but
+                    # "that puts me over my own toes". So a body leans as far
+                    # as it can stand and no further, and going over is left to
+                    # the things that really do take you over — a load, a shove,
+                    # a floor that leaves. Balance measured on the FLESH; what
+                    # a body carries is `_pulled_over`'s question, and the two
+                    # are complementary rather than duplicated.
+                    comp, sl = self._person_cells(p)
+                    if comp is not None and comp.any():
+                        c = np.argwhere(comp)
+                        c[:, 0] += sl[0].start or 0
+                        c[:, 1] += sl[1].start or 0
+                        if self._underfoot(c) \
+                                and self._overbalanced(p, c) is not None:
+                            self._repose(p, name, at)      # think better of it
+                            # AND HOLD THERE. The intention was "as far as I
+                            # can", and this is how far — so it resolves to
+                            # HERE rather than being abandoned. Dropped
+                            # instead, the goal fell back to nothing and the
+                            # body straightened up again the moment it reached
+                            # the furthest it could stand, which is a strange
+                            # thing to watch and a stranger thing to mean.
+                            if want is not None and name in want:
+                                want[name] = list(at)
+                            continue
+                pose[name] = list(nxt)        # the angle moves either way; the
+                                              # flesh catches up at the next
+                                              # angle the lattice can draw
+
+    def _reach_around(self, p, name, th, at=None):
+        """An arm that meets something does not simply stop. It BENDS.
+
+        With one degree of freedom there is exactly one path to a place, so a
+        man standing beside the person he is holding could not put his arm out
+        at all — that person was standing in the one path. Real arms go round,
+        and going round is what a second joint IS.
+
+        The CHOICE was "reach out"; which way the bones get there is motor
+        competence, the same kind of thing as knowing the way round a table. So
+        this belongs here and not on any menu. It is a sampled search over the
+        elbow, coarse on purpose: at 5 cm a one-voxel forearm has only a
+        handful of drawable angles anyway, and `_repose` is what says which —
+        the first bend that really fits is the one the arm takes."""
+        bones = self._bones(p, name)
+        if len(bones) < 2:
+            return None                       # one bone has nowhere to bend
+        # LEAST BEND FIRST — a body that can straighten its arm does. And the
+        # shoulder is allowed to stay where it IS as well as go where it was
+        # asked: getting the hand somewhere matters more than the angle the
+        # shoulder happens to be at, which is the difference between a joint
+        # and a dial. Fine steps because drawability on a 5 cm lattice is
+        # SPIKY — a coarse ladder walks straight past the angles that fit.
+        heads = [float(th[0])]
+        if at is not None and abs(float(at[0]) - float(th[0])) > 1e-9:
+            heads.append(float(at[0]))
+        for head in heads:
+            for bend in [s * b for b in np.arange(0.15, 1.8, 0.15)
+                         for s in (1.0, -1.0)]:
+                alt = [head, float(bend)] + [0.0] * (len(bones) - 2)
+                if self._repose(p, name, alt) == "moved":
+                    return alt
+        return None
 
     def _fly_pose(self, b, off=None):
         """Where a flying body's cells are, at its current offset."""
@@ -1419,6 +2372,21 @@ class World:
                 still.append(b)
         self.bodies = still
 
+    def _left_world(self, b, i):
+        """One voxel of a body went past the edge of the lattice, and is gone.
+
+        Recorded rather than dropped, because "mass is conserved" has to stay a
+        statement you can CHECK: everything is on the lattice, or in a body in
+        flight, or on this tally. A world with edges loses things out of them;
+        a world that cannot say how much it lost is just wrong."""
+        g = self.gone
+        m = int(b["mats"][i])
+        g[m] = g.get(m, 0.0) + float(b["masses"][i])
+        g["E"] = g.get("E", 0.0) + float(b["Es"][i])
+        if b["fvols"][i] > 0:
+            g[("fluid", int(b["fls"][i]))] = \
+                g.get(("fluid", int(b["fls"][i])), 0.0) + float(b["fvols"][i])
+
     def _land_body(self, b, theta, struck=None):
         """Demote: rasterize the body back onto the grid at its landing pose.
         Blocked cells pile upward as debris; the support law settles the rest.
@@ -1508,17 +2476,50 @@ class World:
             # that law, it is double counting.
             joules = 0.0
         contact = pose[:, 2] <= pose[:, 2].min() + 1
-        e_per = joules / max(int(contact.sum()), 1)
+        # A ROLL IS NOT ONE LANDING. It is several, each taking a share of the
+        # fall on a different part of you — feet, then hip, then back, then
+        # shoulder — and tissue damage is a THRESHOLD, so a blow divided into
+        # parts that each fall under it does no harm at all while the energy is
+        # unchanged. That is force being momentum divided by the time taken to
+        # lose it, written in the arithmetic this model already has.
+        #
+        # How many parts is read off the body: how many times its own crouch
+        # goes into its own length, which is how far a body rolling over itself
+        # has to travel before it stops. Nothing typed in.
+        shares = 1
+        if b.get("owner") is not None and not b.get("part"):
+            who = next((q for q in self.persons
+                        if q["name"] == b["owner"]), None)
+            if who is not None and who.get("rolling"):
+                tall = (float(pose[:, 2].max() - pose[:, 2].min()) + 1.0) * vox_m
+                shares = max(1, int(round(tall / max(BODY["crouch_m"], 1e-9))))
+                who["rolling"] = False
+                who["events"].append(f"t{self.tick}: {who['name']} rolls with it")
+        e_per = joules / float(shares) / max(int(contact.sum()), 1)
         sore = 0.0                          # energy the faller's own flesh took
-        order = np.argsort(pose[:, 2])      # kept: put[k] belongs to order[k],
-        for i in order:                     # so a landing can be told apart
-                                            # into flesh and carried tool
-            dx = min(max(int(pose[i, 0]), 0), nx - 1)
-            dy = min(max(int(pose[i, 1]), 0), ny - 1)
-            dz = min(max(int(pose[i, 2]), 0), nz - 1)
+        order = np.argsort(pose[:, 2])      # kept: put[k] belongs to kept[k],
+        kept = []                           # so a landing can be told apart
+        for i in order:                     # into flesh and carried tool
+            # THE WORLD HAS EDGES, AND WHAT GOES PAST THEM IS OUTSIDE IT.
+            # These three lines used to CLAMP: a cell thrown past the wall was
+            # set down on the wall instead, several of them into the same
+            # column, and each `smass =` overwrote the last. Mass went missing,
+            # quietly, in the one field every test in the suite leans on.
+            #
+            # Clamping was never right anyway — it teleports matter. A thing
+            # that leaves is gone, and saying so keeps the books: it is on the
+            # lattice, or in a body, or on this tally, and the three add up.
+            dx, dy, dz = int(pose[i, 0]), int(pose[i, 1]), int(pose[i, 2])
+            if not (0 <= dx < nx and 0 <= dy < ny and 0 <= dz < nz):
+                self._left_world(b, i)
+                continue
             while dz < nz - 1 and self.mat[dx, dy, dz] != AIR:
                 dz += 1                                  # blocked: pile upward as debris
+            if self.mat[dx, dy, dz] != AIR:
+                self._left_world(b, i)       # the column is full to the ceiling
+                continue                     # and there is nowhere left to put it
             put.append((dx, dy, dz))
+            kept.append(i)
             self.mat[dx, dy, dz] = b["mats"][i]
             self.smass[dx, dy, dz] = b["masses"][i]
             self.E[dx, dy, dz] += b["Es"][i]
@@ -1530,8 +2531,9 @@ class World:
             if contact[i]:
                 if b["mats"][i] == FLESH:
                     if e_per > bruise:      # flesh deforms, never fragments:
-                        sore += e_per - bruise   # the overage is the wound
-                    continue
+                        sore += (e_per - bruise) * shares   # the overage, once
+                    continue                                # per share of the
+                                                            # blow, is the wound
                 thr_i = (_TOUGH_ARR[b["mats"][i]] * 1000.0 * vox_m ** 2
                          * (0.7 + 0.6 * self._flaw01(dx, dy, dz)))
                 if e_per > thr_i:
@@ -1551,14 +2553,27 @@ class World:
                     break
         self._torque_solid = None                        # lattice changed: recheck
         if b.get("part") and b.get("seg") and b.get("owner") is not None:
-            put_arr = np.array(put)
-            mats_put = b["mats"][order]
+            # EVERY CELL OF IT MAY HAVE LEFT THE WORLD — a limb swung off the
+            # edge comes back as nothing, and `np.array([])` is not a list of
+            # coordinates. Say the shape or the filter below has nothing to
+            # filter.
+            put_arr = np.array(put, np.int64).reshape(-1, 3)
+            mats_put = b["mats"][np.array(kept, np.int64)] \
+                if kept else b["mats"][:0]
             for q in self.persons:            # the limb came to rest somewhere
                 if q["name"] == b["owner"] and q.get("segs") and q.get("_own"):
                     origin = np.min(np.array(list(q["_own"])), axis=0)
                     # only the FLESH is the limb — a swung tool came along for
                     # the ride and is not part of anyone's arm
-                    q["segs"][b["seg"]] = put_arr[mats_put == FLESH] - origin
+                    # EACH BONE BACK TO ITS OWN OFFSETS. Writing the whole
+                    # arm under the arm's name leaves the bones holding the
+                    # cells they were in before the swing — which are empty —
+                    # and the next pose moves nothing and loses the limb.
+                    seg_put = b["segof"][np.array(kept, np.int64)] \
+                        if b.get("segof") is not None and kept \
+                        else np.where(mats_put == FLESH, 0, -1)
+                    for i, bone in enumerate(b.get("bones") or [b["seg"]]):
+                        q["segs"][bone] = put_arr[seg_put == i] - origin
                     if q.get("held") and (mats_put != FLESH).any():
                         q["held"]["cell"] = tuple(map(
                             int, put_arr[mats_put != FLESH][0]))
@@ -1783,17 +2798,69 @@ class World:
                     tipped += 1
                 break                                    # one waist verdict per body
 
-    def _law_conduct(self):
-        T, C = self.T(), self.heat_capacity()
-        k = _KSOLID_ARR[self.mat].astype(np.float32)
+    def _hot_window(self, pad=1):
+        """The slab of the world heat can be in, grown by one voxel of room to
+        move into — or None when nothing anywhere is above ambient.
+
+        Heat travels one voxel per LAW THAT MOVES IT, and no further: every
+        radiative term is between TOUCHING faces (see the pair loop below), and
+        the only other heat path is each voxel's own small loss to the world
+        outside, which cannot warm a neighbour. So a box around everything above
+        ambient, grown by one, contains everything ONE such law can write.
+
+        Not one voxel a TICK, which is what this first claimed and is wrong:
+        conduction and buoyancy both move heat and both run in the same tick, so
+        heat really does get two voxels from home before the tick is out. The
+        measured symptom was a single cell — the sim left 3.4 J at z4 that the
+        windowed run left at zero, on the very first tick, because conduction
+        carried heat up to z3 and buoyancy then carried some of it to z4, one
+        past the edge of a box drawn before either ran.
+
+        So the window is asked for again between the two, rather than padded by
+        two once. That costs one more scan of a field we have already touched,
+        and it stays right when a third law that moves heat is added — which a
+        comment saying "pad by two" would not.
+
+        This is the half that matters for a big world: a town with one room
+        alight answers "yes, something is hot" and would otherwise get no skip
+        at all, because presence alone is a question about the WHOLE world."""
+        return self._window(self.E != 0, pad)
+
+    def _window(self, there, pad):
+        """A box around everything `there` is true of, grown by `pad` — or None
+        if it is nowhere. With skipping off, the whole world."""
+        if not self.skip_quiet:
+            return (slice(None), slice(None), slice(None))
+        out = []
+        for ax in range(3):
+            line = there.any(axis=tuple(a for a in range(3) if a != ax))
+            nz = np.flatnonzero(line)
+            if not len(nz):
+                return None
+            out.append(slice(max(int(nz[0]) - pad, 0),
+                             min(int(nz[-1]) + 1 + pad, self.shape[ax])))
+        return tuple(out)
+
+    def _law_conduct(self, sl=None):
+        sl = sl if sl is not None else (slice(None),) * 3
+        E = self.E[sl]                                   # a view: writing to it
+        mat = self.mat[sl]                               # writes the world
+        C = self.heat_capacity()[sl]
+        T = AMBIENT + E / C
+        k = _KSOLID_ARR[mat].astype(np.float32)
         # hot gas convects: rising, churning air moves heat far faster than still air.
         # Modeled as conductivity growing with temperature (standard trick, not a case).
-        hot_air = self.mat == AIR
+        hot_air = mat == AIR
         k[hot_air] += np.maximum(T[hot_air] - AMBIENT, 0.0) / 60.0
-        fk = _FK_ARR[self.fl].astype(np.float32)
-        wet = (self.fvol > 0.1 * self.cap) & (self.mat == AIR)      # OPEN fluid on a solid:
-        solid = self.mat != AIR                          # contact is governed by the FLUID
-        for axis in range(3):                            # (a boiling film, not the timber)
+        fk = _FK_ARR[self.fl[sl]].astype(np.float32)
+        wet = (self.fvol[sl] > 0.1 * self.cap) & (mat == AIR)       # OPEN fluid on a solid:
+        solid = mat != AIR                               # contact is governed by the FLUID
+        if self.fused and HAVE_NUMBA:                    # (a boiling film, not the timber)
+            sc, rd = np.float32(self.scale), np.float32(RAD)
+            for di, dj, dl in ((1, 0, 0), (0, 1, 0), (0, 0, 1)):
+                _conduct_pairs(E, T, C, k, fk, wet, solid, sc, rd, di, dj, dl)
+            return
+        for axis in range(3):
             a = [slice(None)] * 3; b = [slice(None)] * 3
             a[axis], b[axis] = slice(None, -1), slice(1, None)
             a, b = tuple(a), tuple(b)
@@ -1808,25 +2875,27 @@ class World:
             q = (kpair * self.scale + kr * self.scale * self.scale) * (T[a] - T[b])
             q = np.clip(q, -0.2 * C[b] * np.abs(T[a] - T[b]),
                         0.2 * np.minimum(C[a], C[b]) * np.abs(T[a] - T[b]))
-            self.E[a] -= q
-            self.E[b] += q
+            E[a] -= q
+            E[b] += q
 
-    def _law_rise(self):
+    def _law_rise(self, sl=None):
         """Buoyancy: hot gas rises. A hot air voxel hands much of its excess heat to the
         air above it; at the open top of the world, the plume leaves entirely. THIS is why
         a doused fire can stay out — the reheating cloud escapes upward instead of sitting."""
-        T = self.T()
+        sl = sl if sl is not None else (slice(None),) * 3
+        E, mat = self.E[sl], self.mat[sl]
+        T = AMBIENT + E / self.heat_capacity()[sl]
         lo = (slice(None), slice(None), slice(None, -1))
         up = (slice(None), slice(None), slice(1, None))
-        both_air = (self.mat[lo] == AIR) & (self.mat[up] == AIR)
+        both_air = (mat[lo] == AIR) & (mat[up] == AIR)
         dT = T[lo] - T[up]
         # only the GAS'S share of the cell's heat rises (c_airbase, the air's own
         # capacity) — a pool of liquid is not a plume, its heat stays put. Found the
         # hard way: rising 0.35*C_total blew a lamp's oil heat skyward and no taper
         # could ever light a pool. For pure air the two are identical.
         q = np.where(both_air & (dT > 0), 0.35 * self.c_airbase * dT, 0.0).astype(np.float32)
-        self.E[lo] -= q
-        self.E[up] += q
+        E[lo] -= q
+        E[up] += q
         top = (slice(None), slice(None), -1)
         sky = (self.mat[top] == AIR) & (self.fvol[top] < 0.1 * self.cap)
         self.E[top][sky] *= 0.5                          # open sky: the plume is gone
@@ -1867,7 +2936,20 @@ class World:
         # so a fire beside the doorway keeps breathing the draft while the far
         # corner starves first, and the blaze TAPERS instead of dying as one
         o2c = self._cells(np.where(air, self.o2, 0.0))
-        airc = self._cells(air.astype(np.float32))
+        # WHERE THE AIR IS does not change when the air changes — only when the
+        # WALLS do. This was a full downsample of the lattice plus a wide blur
+        # of it, rebuilt every tick, for a field that depends on nothing but
+        # which voxels are air. Thrown away by `_air_regions`, which already
+        # compares the air mask against last tick's and so already knows: no
+        # extra comparison, and right by construction rather than by anyone
+        # remembering that a burning wall changes where the air is.
+        #
+        # Keyed on the MATTER fields first, which was the obvious thing and the
+        # wrong one — a fire eats wood, `smass` changes every tick, and the
+        # cache was thrown away every tick for a field that had not moved.
+        airc = self._aircells
+        if airc is None:
+            airc = self._aircells = self._cells(air.astype(np.float32))
         # a plume's CATCHMENT: it entrains from meters around, not from its own
         # shoebox — health and the debt below must use the SAME reach, or the
         # fire eats a small pocket, reads the vacuum as suffocation, and
@@ -1877,7 +2959,10 @@ class World:
         # burned near a floor (measured: health 0.21 under a fresh sky)
         reach = max(2, int(round(PLUME_REACH_M / (0.1 * self.scale * self._CS))))
         o2b = self._blur_cells(o2c, reach)               # o2c is already per-SLOT
-        airb = np.maximum(self._blur_cells(airc, reach), 1e-6)
+        airb = self._airblur
+        if airb is None:
+            airb = self._airblur = np.maximum(
+                self._blur_cells(airc, reach), 1e-6)
         hc = np.clip((o2b / airb) / fresh, 0.0, 1.0)     # so o2b/airb = per-AIR-voxel
         health_vox = self._upcell(hc).astype(np.float32)
         # the cell blur cannot see a voxel-thin wall — ceiling each fire's
@@ -2100,7 +3185,11 @@ class World:
         cs = self._CS
         nx, ny, nz = self.shape
         px, py, pz = (-nx) % cs, (-ny) % cs, (-nz) % cs
-        a = np.pad(arr, ((0, px), (0, py), (0, pz)))
+        # A WORLD THAT ALREADY DIVIDES EVENLY NEEDS NO PADDING, and np.pad copies
+        # the whole lattice whether it has anything to add or not. Most worlds
+        # divide evenly — this was a spare full-size copy of a 4 MB array, made
+        # eleven times a tick, for nothing.
+        a = arr if (px or py or pz) == 0 else np.pad(arr, ((0, px), (0, py), (0, pz)))
         a = a.reshape(a.shape[0] // cs, cs, a.shape[1] // cs, cs, a.shape[2] // cs, cs)
         return a.mean(axis=(1, 3, 5)) if how == "mean" else a.sum(axis=(1, 3, 5))
 
@@ -2204,38 +3293,51 @@ class World:
         # every tick. Compressed pockets are fine: burn health caps at 1, so
         # rich air is a reservoir, never a rate boost.)
 
-    def _law_smoke(self):
+    # The most voxels smoke moves along ONE axis in a single pass of the law
+    # below: a lateral escape, a seep, and two turns of the ceiling jet. Counted
+    # off the code, not guessed. Add a phase that shifts smoke sideways and this
+    # must go up — and if you forget, the tick-by-tick guard says so, which is
+    # why it is safe to have a number here at all.
+    _SMOKE_REACH = 4
+
+    def _law_smoke(self, sl=None):
         """Smoke is a gas: it seeps to neighbors, RISES hard through open air, and
         leaves at the open sky. The mass that burning removes from wood and oil
-        travels here — conservation made visible."""
-        air = self.mat == AIR
-        por = self.porosity()
+        travels here — conservation made visible.
+
+        Run over a box around the smoke there IS, because this law makes some
+        thirteen passes over a field that is empty nearly everywhere: a fire in
+        one hut of a town had every pass sweeping the whole town."""
+        sl = sl if sl is not None else (slice(None),) * 3
+        smoke = self.smoke[sl]                    # a view: writing writes the world
+        air = self.mat[sl] == AIR
+        por = self.porosity()[sl]
         # smoke is born INSIDE burning solids — it must escape through the surface
         # first (up if it can, sideways if it must), or it stays trapped in the wood
         lo = (slice(None), slice(None), slice(None, -1))
         up = (slice(None), slice(None), slice(1, None))
-        esc = np.where(~air[lo] & air[up], 0.9 * self.smoke[lo], 0.0).astype(np.float32)
-        self.smoke[lo] -= esc
-        self.smoke[up] += esc
+        esc = np.where(~air[lo] & air[up], 0.9 * smoke[lo], 0.0).astype(np.float32)
+        smoke[lo] -= esc
+        smoke[up] += esc
         for a, b in ((( slice(None, -1), slice(None), slice(None)), (slice(1, None), slice(None), slice(None))),
                      ((slice(None), slice(None, -1), slice(None)), (slice(None), slice(1, None), slice(None)))):
             for s_, d_ in ((a, b), (b, a)):
-                esc = np.where(~air[s_] & air[d_], 0.5 * self.smoke[s_], 0.0).astype(np.float32)
-                self.smoke[s_] -= esc
-                self.smoke[d_] += esc
+                esc = np.where(~air[s_] & air[d_], 0.5 * smoke[s_], 0.0).astype(np.float32)
+                smoke[s_] -= esc
+                smoke[d_] += esc
         for axis in range(3):                                # seep: even out with neighbors
             a = [slice(None)] * 3; b = [slice(None)] * 3
             a[axis], b[axis] = slice(None, -1), slice(1, None)
             a, b = tuple(a), tuple(b)
-            q = 0.08 * (self.smoke[a] - self.smoke[b]) * np.minimum(por[a], por[b])
-            self.smoke[a] -= q
-            self.smoke[b] += q
+            q = 0.08 * (smoke[a] - smoke[b]) * np.minimum(por[a], por[b])
+            smoke[a] -= q
+            smoke[b] += q
         lo = (slice(None), slice(None), slice(None, -1))
         up = (slice(None), slice(None), slice(1, None))
         risable = air[lo] & air[up]                          # rise: buoyant, fast
-        q = np.where(risable, 0.4 * self.smoke[lo], 0.0).astype(np.float32)
-        self.smoke[lo] -= q
-        self.smoke[up] += q
+        q = np.where(risable, 0.4 * smoke[lo], 0.0).astype(np.float32)
+        smoke[lo] -= q
+        smoke[up] += q
         # the CEILING JET: smoke that can rise no further pools against the
         # ceiling and RACES along it — buoyancy makes it an upside-down liquid
         # seeking an upside-down level. Without this the bank crawled at
@@ -2243,19 +3345,21 @@ class World:
         # forever (measured; a real ceiling jet runs meters per second).
         pinned = np.zeros_like(air)
         pinned[:, :, :-1] = air[:, :, :-1] & ~air[:, :, 1:]  # air with solid above
-        pinned[:, :, -1] = air[:, :, -1] & (not self.open_sky)
+        at_roof = sl[2].stop in (None, self.shape[2])     # is the window's top
+        pinned[:, :, -1] = air[:, :, -1] & (not self.open_sky) & at_roof
         for _ in range(2):
             for axis in (0, 1):
                 a = [slice(None)] * 3; b = [slice(None)] * 3
                 a[axis], b[axis] = slice(None, -1), slice(1, None)
                 a, b = tuple(a), tuple(b)
                 m = pinned[a] & pinned[b]
-                q = np.where(m, 0.25 * (self.smoke[a] - self.smoke[b]),
+                q = np.where(m, 0.25 * (smoke[a] - smoke[b]),
                              0.0).astype(np.float32)
-                self.smoke[a] -= q
-                self.smoke[b] += q
-        top = (slice(None), slice(None), -1)
-        self.smoke[top][air[top]] *= 0.5                     # the open sky takes it
+                smoke[a] -= q
+                smoke[b] += q
+        if at_roof:                                          # the open sky takes it
+            top = (slice(None), slice(None), -1)             # — but only the real
+            smoke[top][air[top]] *= 0.5                      # sky, not a box edge
 
     def _air_regions(self):
         """Label the connected airspaces (6-connectivity, pure numpy flood by
@@ -2266,6 +3370,7 @@ class World:
         air = self.mat == AIR
         if self._region_air is not None and bool((air == self._region_air).all()):
             return
+        self._aircells = self._airblur = None    # the walls moved: so did the air
         lab = np.where(air, np.arange(air.size, dtype=np.int32).reshape(self.shape), -1)
         while True:
             new = lab.copy()
@@ -2303,19 +3408,38 @@ class World:
         the burn law); movement evens it out. The mixing rate RISES with temperature —
         a fire violently stirs the air that feeds it (convective entrainment), cold air
         barely moves. An open sky refills the top; in a SEALED space (open_sky=False)
-        the fire eats what the room holds, then stops — fuel or no fuel."""
+        the fire eats what the room holds, then stops — fuel or no fuel.
+
+        MIXING IS WINDOWED, and unlike smoke it needs no judgement to be. Air
+        that is everywhere at the same composition has nothing to even out —
+        every pair cancels — so the box around where the field is NOT fresh
+        contains every exchange there is, and the skip is exact. Measured in a
+        burning town, that box is 21% of the world at tick 20 and 63% at tick
+        69: the deficit really does stay where the fire is, which is exactly
+        what smoke does NOT do (an infinitesimal trace of soot reaches every
+        cell within ten ticks, so `smoke != 0` is useless and smoke needs a
+        stated threshold instead)."""
         T = self.T()
         air = self.mat == AIR
         por = self.porosity()
+        fused = self.fused and HAVE_NUMBA
+        # one hop per axis for diffusion; the overturn below adds one more in z
+        mix = self._window(self.o2 != O2_PER_L * self.vox_l, 1)
         for axis in range(3):
+            sl = mix if mix is not None else (slice(None),) * 3
+            if fused:
+                d = [0, 0, 0]; d[axis] = 1
+                _o2_diffuse(self.o2[sl], T[sl], por[sl], d[0], d[1], d[2])
+                continue
             a = [slice(None)] * 3; b = [slice(None)] * 3
             a[axis], b[axis] = slice(None, -1), slice(1, None)
             a, b = tuple(a), tuple(b)
-            k = np.clip(0.1 + (T[a] + T[b]) / 1600.0, 0.1, 0.45)
-            k = k * np.minimum(por[a], por[b])       # a barrier passes what its PORES
-            q = k * (self.o2[a] - self.o2[b])        # allow: a shut door breathes a
-            self.o2[a] -= q                          # little, masonry almost nothing,
-            self.o2[b] += q                          # a pane nothing at all
+            o2, Tw, pw = self.o2[sl], T[sl], por[sl]
+            k = np.clip(0.1 + (Tw[a] + Tw[b]) / 1600.0, 0.1, 0.45)
+            k = k * np.minimum(pw[a], pw[b])         # a barrier passes what its PORES
+            q = k * (o2[a] - o2[b])                  # allow: a shut door breathes a
+            o2[a] -= q                               # little, masonry almost nothing,
+            o2[b] += q                               # a pane nothing at all
         # (the old 0.1-per-tick pull toward the REGION MEAN is gone: it made every
         # airspace an instantly-stirred lung — head air always equaled knee air,
         # and a fire's deficit teleported to every nose in the room.)
@@ -2328,13 +3452,26 @@ class World:
         # below hot) doesn't move: stratification, once built, PERSISTS.
         lo = (slice(None), slice(None), slice(None, -1))
         hi = (slice(None), slice(None), slice(1, None))
-        dT = T[lo] - T[hi]                               # >0 = unstable: hot below
-        f = np.where(air[lo] & air[hi],
-                     np.clip(dT * 0.02, 0.0, 0.45), 0.0).astype(np.float32)
-        for gas in (self.o2, self.smoke):        # a parcel is ONE gas: its oxygen
-            q = f * (gas[lo] - gas[hi])          # and its soot travel together
-            gas[lo] -= q
-            gas[hi] += q
+        # ASKED AGAIN. The diffusion above has just moved oxygen, so the box it
+        # was drawn around is one voxel out of date in z — the same mistake the
+        # heat window made on its first day, when conduction carried heat up one
+        # cell and buoyancy carried it up another, one past the edge of a box
+        # drawn before either ran. Smoke rides along, so its own spread counts
+        # too.
+        turn = self._window((self.o2 != O2_PER_L * self.vox_l)
+                            | (self.smoke > SMOKE_STILL), 1)
+        tsl = turn if turn is not None else (slice(None),) * 3
+        if fused:
+            _gas_overturn(self.o2[tsl], self.smoke[tsl], T[tsl], air[tsl])
+        else:
+            Tw, aw = T[tsl], air[tsl]
+            dT = Tw[lo] - Tw[hi]                         # >0 = unstable: hot below
+            f = np.where(aw[lo] & aw[hi],
+                         np.clip(dT * 0.02, 0.0, 0.45), 0.0).astype(np.float32)
+            for gas in (self.o2[tsl], self.smoke[tsl]):  # a parcel is ONE gas: its
+                q = f * (gas[lo] - gas[hi])              # oxygen and its soot
+                gas[lo] -= q                             # travel together
+                gas[hi] += q
         # TWO-ZONE stirring — the CFAST room, made literal: every airspace is a
         # HOT SMOKY zone (the plume and the exhaust bank it feeds under the
         # ceiling) and a COOL CLEAR zone (everything else), each stirred fast
@@ -2357,7 +3494,29 @@ class World:
             hotzone = (T > 45.0) | (self.smoke > 0.2)
             reach = max(2, int(round(PLUME_REACH_M / (0.1 * self.scale * self._CS))))
             sizes = np.bincount(self.air_region[air], minlength=self._region_count)
+            # AN AIRSPACE WITH NOTHING IN IT TO STIR IS NOT STIRRED. Bullet's
+            # island rule, which is the right one here for the same reason it is
+            # right there: the thing that may sleep is a whole connected body,
+            # never part of one, and anything that disturbs it wakes all of it.
+            # An airspace IS an island — gas mixes room-wide, so a room is the
+            # smallest thing that can be called still.
+            #
+            # A room every cell of which holds fresh air, no soot and no warmth
+            # has one empty zone and one uniform zone, and relaxing a uniform
+            # thing toward its own mean moves nothing. The cost of asking is two
+            # comparisons and a count; the cost of not asking was a blur of the
+            # WHOLE lattice, three times per zone, for every room in the world.
+            # Measured in a building of twenty sealed rooms with a fire in one:
+            # nineteen were asleep, holding 95% of all the air.
+            live = np.ones(self._region_count, bool)
+            if self.skip_quiet:
+                still = air & ((self.o2 != O2_PER_L * self.vox_l)
+                               | (self.smoke > 0.0) | (T > 45.0))
+                live = np.bincount(self.air_region[still],
+                                   minlength=self._region_count) > 0
             for r in np.nonzero(sizes > 64)[0]:  # a pocket too small to hold a
+                if not live[r]:                  # circulation isn't stirred, and
+                    continue                     # neither is a room at rest
                 in_r = air & (self.air_region == r)          # circulation isn't stirred
                 for zone in (True, False):
                     mz = in_r & (hotzone == zone)            # zone AND region: the blur
@@ -2400,7 +3559,13 @@ class World:
              # their own door is privileges nothing. Pass knows_world=False for
              # a stranger, and they must find the door by looking — which is
              # what makes wandering and looking around worth doing at all.
-             "known": np.full(self.shape[:2], bool(knows_world))}
+             "known": np.full(self.shape[:2], bool(knows_world)),
+             # AND WHAT IT COULD WALK THROUGH when it looked. `known` says
+             # where the eyes have been; this says what they FOUND there, and
+             # it is what the route planner runs on. Built on the first look,
+             # because a body's height decides which columns it fits down and
+             # there is no flesh on the lattice yet at this point.
+             "free": None, "knew": bool(knows_world)}
         self.persons.append(p)
         return p
 
@@ -2642,6 +3807,7 @@ class World:
                              - BODY["smoke_out"], 0.0)
             uptake = min(frac, 1.0) * max(1.0 - p["smoke"], 0.0)
             p["blood_o2"] += BODY["breath"] * (uptake - p["blood_o2"])
+            p["skin"] = float(T[sl][flesh].max())   # what the body can FEEL
             hot = np.clip(T[sl][flesh] - BODY["hurt_T"], 0.0, 400.0)
             p["burn"] = min(p["burn"] + BODY["burn_gain"] * float(hot.mean()), 1.0)
             dmg = p["burn"] + p["hurt"]     # tissue damage is tissue damage:
@@ -2673,7 +3839,7 @@ class World:
                 p["alive"] = False
                 p["events"].append(f"t{self.tick}: {p['name']} stops breathing")
 
-    def _look_around(self, p, eye):
+    def _look_around(self, p, eye, cells):
         """Sweep the eyes and REMEMBER what they fell on.
 
         A body's map of the world is what it has actually looked at — nothing
@@ -2714,6 +3880,59 @@ class World:
                                 tau[:, :-1]], axis=1) < SEE_TAU
         p["known"][xi[reach], yi[reach]] = True
         p["known"][int(round(eye[0])), int(round(eye[1]))] = True
+        # AND WHAT WAS THERE, not merely that there was a there. Belief recorded
+        # geometry only: a body could remember the shape of a room it had walked
+        # through and nothing whatever about the fire in it, so when it came to
+        # choose somewhere to go, every place it knew looked equally good. That
+        # is why an idle body would stroll toward a blaze — not because it was
+        # brave, but because nothing it remembered said otherwise.
+        #
+        # Read by COLUMN rather than at eye height, because light from a fire at
+        # your feet reaches your eyes: what the ray decides is whether you can
+        # SEE that far, which is the occlusion the loop above already did.
+        #
+        # And it FADES. A body that never forgets treats an hour-old fire as a
+        # fire; one that forgets at once has no memory to speak of.
+        danger = p.get("danger")
+        if danger is None:
+            danger = p["danger"] = np.zeros(self.shape[:2], np.float32)
+        danger *= WILL["forget"]
+        alight = self.burning().any(axis=2)
+        np.maximum(danger, alight.astype(np.float32), out=danger)
+        danger[xi[reach], yi[reach]] = np.where(
+            alight[xi[reach], yi[reach]], 1.0, danger[xi[reach], yi[reach]])
+        # AND WHETHER IT COULD GET THERE. This is the same god-channel as the
+        # door register, one layer down and much better hidden: belief gated
+        # WHERE a body had looked, and then the planner read the floor itself,
+        # live, every time. So a corridor blocked by a beam that fell behind a
+        # body's back was routed around instantly, by a body that never turned
+        # its head — and a wall breached out of sight became a way through the
+        # moment it was breached. What a body can plan over is now what it SAW
+        # it could plan over, and nothing else.
+        #
+        # It does not fade. A floor is not a fire: the useful error is a body
+        # that trusts a way it can no longer take and finds out by going, not
+        # one that forgets the shape of a room it was standing in a moment ago.
+        walk_now = self._walkable(cells)
+        free = p.get("free")
+        if free is None:                  # built on the FIRST look, because a
+            free = p["free"] = (          # body's height decides which columns
+                walk_now.copy() if p.get("knew")   # it fits down, and there is
+                else np.zeros(self.shape[:2], bool))  # no flesh yet at signup
+        free[xi[reach], yi[reach]] = walk_now[xi[reach], yi[reach]]
+        # A BODY IS NOT A WALL TO ITSELF — the same rule the planner already
+        # keeps, and it has to be kept HERE too or belief is poisoned by the
+        # looker. Its own flesh is denser than PUSH_THROUGH, so every look
+        # wrote the ground under its own feet down as blocked, it walked on,
+        # and nothing ever looked back to correct it. Measured before this
+        # line: a body crossing an empty 4 m hall laid 109 phantom walls
+        # behind itself and believed every one of them. What it carries goes
+        # with it, for the same reason and by the same mistake.
+        free[cells[:, 0], cells[:, 1]] = True
+        if p.get("held"):
+            obj = self._held_cells(p)
+            if obj is not None and len(obj):
+                free[obj[:, 0], obj[:, 1]] = True
 
     def _sees(self, a, b):
         """Sight as OPTICAL DEPTH along the ray, not a list of allowed materials.
@@ -2817,7 +4036,13 @@ class World:
         as walkable, so the route planner would happily march a body straight
         out over a chasm and the legs would carry it — walking on nothing,
         because nothing ever asked what was underneath. It also makes a gap a
-        real obstacle, which is what gives jumping across one a point."""
+        real obstacle, which is what gives jumping across one a point.
+
+        FLAT, and that is a known limit rather than an oversight: every column
+        is tested at the body's own height and no other, so a kerb is a wall and
+        a stair is a wall. Making it height-aware is item 5, and it was TRIED —
+        see "What a step up cost" in the roadmap for why it came back out and
+        what it has to wait for."""
         zlo, zhi = int(cells[:, 2].min()), int(cells[:, 2].max())
         col = (slice(None), slice(None), slice(zlo, zhi + 1))
         packed = self.smass[col] / np.maximum(
@@ -2953,20 +4178,31 @@ class World:
         return any(self.mat[int(c[0]), int(c[1]), zlo - 1] != AIR
                    for c in cells if int(c[2]) == zlo)
 
-    def _contact(self, cells):
+    def _contact(self, cells, ignore=None):
         """Which cells of this body are actually resting on something else.
 
         Not the bottom layer — ANY cell with something solid beneath it that is
         not part of this same body. A man at the very lip has his feet over air
         and a forearm still over the stone, and that forearm is genuinely
-        touching the world. Standing on your own foot proves nothing."""
+        touching the world. Standing on your own foot proves nothing.
+
+        And neither does standing on what you are CARRYING, which is what
+        `ignore` is for. A man holding a block has his arm directly above it, so
+        the block came back as part of his own footprint — which made his base
+        as wide as his reach and said he could never be overbalanced by anything
+        he could hold. What you carry is not what carries you."""
         cells = np.asarray(cells, np.int64)
         on_floor = cells[:, 2] <= 0                   # the floor of the world
         z1 = np.maximum(cells[:, 2] - 1, 0)
         under = self.mat[cells[:, 0], cells[:, 1], z1] != AIR
         ny, nz = self.shape[1], self.shape[2]
         key = (cells[:, 0] * ny + cells[:, 1]) * nz + cells[:, 2]
-        return cells[on_floor | (under & ~np.isin(key - 1, key))]
+        mine = np.isin(key - 1, key)
+        if ignore is not None and len(ignore):
+            ig = np.asarray(ignore, np.int64)
+            mine = mine | np.isin(key - 1,
+                                  (ig[:, 0] * ny + ig[:, 1]) * nz + ig[:, 2])
+        return cells[on_floor | (under & ~mine)]
 
     def _leap_speed(self, cells):
         """The fastest this body can leave the ground, in m/s. The legs put
@@ -3177,6 +4413,81 @@ class World:
         obj = self._object_at(x, y, z)
         return obj.astype(np.int64) if len(obj) else None
 
+    def _hand(self, p, own, toward=None, free=False):
+        """WHICH HAND does this.
+
+        The dominant one, unless the other is plainly the one for the job: a
+        thing on your left is nearer your left hand, and past enough difference
+        that beats being right-handed. So a body uses its good hand most of the
+        time and its other hand when the world asks for it — never because a
+        random number said so, and the sim carries no die anyway.
+
+        An arm that is not there, or already holding something, is not a
+        candidate: an indisposed hand is not a choice, it is an absence."""
+        arms = [a for a in self._limbs(p) if "arm" in a]
+        if not arms:
+            return None
+        dom = str(p.get("handed", "right")) + " arm"
+        bias = BODY["off_hand_m"] / max(0.1 * self.scale, 1e-9)
+        busy = (p.get("held") or {}).get("arm") if free else None
+        best, score = None, None
+        for a in sorted(arms):                # sorted: deterministic ties
+            if a == busy:
+                continue
+            f = self._fist_of(p, a, own)
+            if f is None:
+                continue                      # nothing left of that arm
+            sc = 0.0 if a == dom else bias
+            if toward is not None:
+                sc += float(np.linalg.norm(np.asarray(toward, np.float64)
+                                           - np.asarray(f, np.float64)))
+            if score is None or sc < score:
+                best, score = a, sc
+        return best
+
+    def _hand_strength(self, p, arm):
+        """What that hand can put out. The other one is weaker, which is most
+        of what having a dominant hand MEANS."""
+        full = p.get("strength_N", BODY["strength_N"])
+        return full if arm == str(p.get("handed", "right")) + " arm" \
+            else full * BODY["off_hand"]
+
+    def _fist_of(self, p, name, own):
+        """The HAND at the end of one arm: the voxel of the last bone furthest
+        from the joint the whole limb hangs from.
+
+        Said that way because it is true in every pose. It used to be "the mean
+        x and y of the arm, at its lowest z", which is exactly right for an arm
+        hanging straight down and exactly wrong for one held out — a horizontal
+        arm's mean is its ELBOW. Measured: a man holding 38 kg at arm's length
+        had the load's weight applied half way up his forearm, which halved the
+        lever and let him keep his feet under a load that should plainly have
+        taken him off them. Arms only hung down when that was written."""
+        parts = self._limb_parts(p, name, own)
+        piv = self._pivot_of(p, name)
+        if not parts or piv is None or not len(parts[-1]):
+            return None
+        far = parts[-1]
+        j = np.asarray(piv) + np.asarray(own).min(axis=0)
+        d = np.abs(far.astype(np.int64) - j.astype(np.int64)).sum(axis=1)
+        return [float(c) for c in far[int(np.argmax(d))]]
+
+    def _fists(self, p, own):
+        """Where this body's hands are. A body with no segments declared falls
+        back to its own middle height."""
+        fists = []
+        for k in self._limbs(p):              # per ARM, not per bone: an elbow
+            if "arm" not in k:                # is not a second hand
+                continue
+            f = self._fist_of(p, k, own)
+            if f is not None:
+                fists.append(f)
+        if not fists:
+            zs = own[:, 2]
+            fists = [[float(own[:, 0].mean()), float(own[:, 1].mean()),
+                      float(zs.min()) + 0.55 * float(zs.max() - zs.min())]]
+        return fists
+
     def _grip_holds(self, p, cluster):
         """Whether this body's grip can CARRY that load where it is: strength
         against weight, the holder's own feet against the floor — and a hand
@@ -3210,19 +4521,7 @@ class World:
         # press together — measured against the nearest touching cell, a man
         # landed against his holder's chest read as gripped at the chest, and
         # hung there. The load is held at its cell nearest a fist.
-        fists = []
-        for k in (p.get("segs") or {}):
-            if "arm" not in k:
-                continue
-            limb = self._limb_cells(p, k, own)
-            if limb is not None and len(limb):
-                fists.append([float(limb[:, 0].mean()),
-                              float(limb[:, 1].mean()),
-                              float(limb[:, 2].min())])       # a hand hangs at
-        if not fists:                                         # the arm's foot
-            zs = own[:, 2]
-            fists = [[float(own[:, 0].mean()), float(own[:, 1].mean()),
-                      float(zs.min()) + 0.55 * float(zs.max() - zs.min())]]
+        fists = self._fists(p, own)
         d2 = ((cluster[None, :, :].astype(np.float64)
                - np.asarray(fists)[:, None, :]) ** 2).sum(-1)
         touch_z = float(cluster[int(d2.min(0).argmin()), 2])
@@ -3241,24 +4540,176 @@ class World:
             return frozenset()
         out = set()
         for p in self.persons:
-            clusters = []
-            obj = self._held_cells(p)
-            if obj is not None:
-                clusters.append(obj)
-            who = p.get("dragging")
-            if who:
-                q = next((r for r in self.persons if r["name"] == who), None)
-                if q is not None and q["alive"] and not q["safe"]:
-                    comp, sl = self._person_cells(q)
-                    if comp is not None and comp.any():
-                        qc = np.argwhere(comp)
-                        qc[:, 0] += sl[0].start
-                        qc[:, 1] += sl[1].start
-                        clusters.append(qc)
-            for cl in clusters:
+            for cl in self._held_clusters(p):
                 if self._grip_holds(p, cl):
                     out.update(map(tuple, np.asarray(cl)))
         return frozenset(out)
+
+    def _held_clusters(self, p):
+        """Everything in this body's hands, thing or person, as cell arrays.
+        Whether the grip can CARRY any of it is _grip_holds' question."""
+        out = []
+        obj = self._held_cells(p)
+        if obj is not None:
+            out.append(obj)
+        who = p.get("dragging")
+        if who:
+            q = next((r for r in self.persons if r["name"] == who), None)
+            if q is not None and q["alive"] and not q["safe"]:
+                comp, sl = self._person_cells(q)
+                if comp is not None and comp.any():
+                    qc = np.argwhere(comp)
+                    qc[:, 0] += sl[0].start
+                    qc[:, 1] += sl[1].start
+                    out.append(qc)
+        return out
+
+    def _overbalanced(self, p, own):
+        """Is this body's OWN weight past its OWN feet — and which way.
+
+        The plainest statement of balance there is, and it had no home in the
+        sim until a body could bend. `_pulled_over` asks the same question
+        about a LOAD and answers it with a lean allowance, because a man
+        carrying something shifts his weight back against it. There is no
+        allowance here: this IS his weight, and it is already out there.
+
+        The foot span is the tolerance and needs no other — a contact patch
+        three voxels long is a 15 cm foot, which is about what an ankle buys
+        you. Measured on the shear: the centre of mass crosses the toes at
+        0.3 rad, which is 17 degrees, which is roughly as far as anyone leans
+        forward without moving their hips back or taking a step."""
+        # ONLY A BODY THAT IS STANDING UP CAN BE TAKEN OFF ITS FEET. Said as
+        # geometry rather than as a flag: a standing body is TALLER than it is
+        # long, and a body lying down is not. That is the whole difference, and
+        # it is the difference between toppling and having already toppled.
+        #
+        # Measured without it: a man lying unconscious across a floor rests on
+        # the nine voxels of him that touch it, with the centre of his mass
+        # fourteen voxels away along his own length — which reads exactly like
+        # a man leaning too far, and the sim threw him across the room. What
+        # should happen to the parts of him that are over nothing is that they
+        # SAG, and that is the support law's question, not this one.
+        tall = float(own[:, 2].max() - own[:, 2].min())
+        if tall <= max(float(own[:, 0].max() - own[:, 0].min()),
+                       float(own[:, 1].max() - own[:, 1].min())):
+            return None
+        foot = self._contact(own)
+        # AND A HAND ON SOMETHING THE WORLD IS HOLDING UP IS A FOOT. This is
+        # the same sum `_pulled_over` does, from the other end: a held thing
+        # NOT resting on anything hangs from you and drags you over, and a held
+        # thing that IS resting on something is holding itself up — so it can
+        # hold you too. A man with a hand on the rail leans out over the lip;
+        # a man with nothing to hold leans as far as his own toes allow and
+        # stops. Same body, same back, different world.
+        #
+        # The base reaches the HAND, which is conservative: really you can pull
+        # on a rail and go well past it, and that wants the arm's tension
+        # rather than a wider footprint (item 47).
+        grips = []
+        if p.get("held") or p.get("dragging"):
+            fists = np.asarray(self._fists(p, own), np.float64)
+            for cl in self._held_clusters(p):
+                cl = np.asarray(cl, np.int64)
+                if not len(cl) or not len(self._contact(cl)):
+                    continue                  # it hangs from HIM, not he from it
+                d2 = ((cl[None, :, :].astype(np.float64)
+                       - fists[:, None, :]) ** 2).sum(-1)
+                grips.append([int(round(c))
+                              for c in fists[int(d2.min(1).argmin())]])
+        if grips:
+            g = np.array(grips, np.int64)
+            foot = np.vstack([foot, g]) if len(foot) else g
+        if not len(foot):
+            return None
+        kg = self.smass[tuple(own.T)]
+        m = float(kg.sum())
+        if m <= 0.0:
+            return None
+        out = [0.0, 0.0]
+        for ax in (0, 1):
+            c = float((own[:, ax] * kg).sum()) / m
+            lo, hi = float(foot[:, ax].min()), float(foot[:, ax].max())
+            if c > hi:
+                out[ax] = c - hi
+            elif c < lo:
+                out[ax] = c - lo
+        return None if out == [0.0, 0.0] else tuple(out)
+
+    def _pulled_over(self, p, own):
+        """Which way what this body is holding drags it off its own feet — or
+        None, if the pair of them still balance.
+
+        Newton's third, asked with arithmetic already here. A hand carries its
+        load's weight THROUGH the body into the floor, so the weight that has
+        to sit over this body's feet is its own PLUS whatever hangs from its
+        fists. A man dangling from your arm hangs beyond your toes, and what
+        takes you over the lip after him is not a sideways tug — a load
+        hanging still pulls straight DOWN — but that the two of you together
+        no longer balance on the ground you are stood on.
+
+        Only what the grip actually HOLDS UP counts, which is why this needs no
+        threshold of its own: a load too heavy to lift, or one lying on the
+        floor, is resting on the world and pulls nobody anywhere. It is also
+        why a stick costs nothing and a man costs everything — the same sum,
+        and the mass decides."""
+        # AND ONLY WHAT IS ACTUALLY HANGING. A grip carries what the world is
+        # not already carrying: a crate still stood on the floor weighs on its
+        # own footprint, not on the hand resting against it. Counted anyway, a
+        # man was tipped over by a block he had merely taken hold of, one tick
+        # after he touched it and while it was still sat on the rock.
+        loads = [np.asarray(cl) for cl in self._held_clusters(p)
+                 if self._grip_holds(p, cl) and not len(self._contact(cl))]
+        if not loads:
+            return None
+        foot = self._contact(own, ignore=np.concatenate(loads))
+        if not len(foot):
+            return None
+        kg = self.smass[tuple(own.T)]
+        m_s = max(float(kg.sum()), 1e-9)
+        sx = float((own[:, 0] * kg).sum()) / m_s
+        sy = float((own[:, 1] * kg).sum()) / m_s
+        # THE WEIGHT COMES IN AT THE FIST, not at the load's own middle. A
+        # thing hanging still pulls straight DOWN along the arm holding it, so
+        # where its own mass happens to sit says nothing about the holder's
+        # balance — that is the WRIST's question, and _grip_holds asks it.
+        # Summed at the load's centre instead, a body trailing on the floor
+        # behind a hauler read as hanging metres out in front of his toes.
+        fists = np.asarray(self._fists(p, own), np.float64)
+        m_l, lx, ly = 0.0, 0.0, 0.0
+        for cl in loads:
+            m_l_here = float(self.smass[tuple(cl.T)].sum())
+            if m_l_here <= 0.0:
+                continue
+            d2 = ((cl[None, :, :].astype(np.float64)
+                   - fists[:, None, :]) ** 2).sum(-1)
+            hand = fists[int(d2.min(1).argmin())]     # the hand it hangs from
+            m_l += m_l_here
+            lx += hand[0] * m_l_here
+            ly += hand[1] * m_l_here
+        if m_l <= 0.0:
+            return None
+        lx, ly = lx / m_l, ly / m_l
+        # AND THE HOLDER CAN LEAN. A person shifts their own weight back
+        # against what they carry, and how far back is bounded by how big they
+        # are — their own half-width, read off the body, not a number typed in.
+        # Without it the sum says nobody may hold anything at arm's length,
+        # which is plainly false; with it, whether a load takes you over is
+        # its weight and how far out it hangs against YOUR weight and YOUR
+        # build, which is the real answer and is different for every pair.
+        lean = 0.5 * self._span_xy(own)
+        out = [0.0, 0.0]
+        for ax, (lo, hi, l_, s_) in enumerate(
+                ((int(foot[:, 0].min()), int(foot[:, 0].max()), lx, sx),
+                 (int(foot[:, 1].min()), int(foot[:, 1].max()), ly, sy))):
+            if l_ > hi:
+                arm, back, sign = l_ - hi, (hi - s_) + lean, 1.0
+            elif l_ < lo:
+                arm, back, sign = lo - l_, (s_ - lo) + lean, -1.0
+            else:
+                continue                      # the load is over the feet
+            if m_l * arm > m_s * max(back, 0.0):
+                out[ax] = sign * arm
+        return None if out == [0.0, 0.0] else tuple(out)
 
     def _take_up(self, p, own):
         """Bring a held thing to the HAND, if the arm can lift it. A liftable
@@ -3268,16 +4719,32 @@ class World:
         obj = self._held_cells(p)
         if obj is None:
             return
+        arm = (p.get("held") or {}).get("arm") \
+            or self._hand(p, own, toward=obj.mean(axis=0))
+        if arm is None:
+            return
         w_N, _ = self._effort(obj)
-        if w_N > p.get("strength_N", BODY["strength_N"]):
+        if w_N > self._hand_strength(p, arm):    # the off hand is weaker, and
+            return                               # that is what dominance MEANS
+        hand = self._fist_of(p, arm, own)
+        if hand is None:
             return
-        limb = self._limb_cells(p, "right arm", own)
-        if limb is None:
-            return
-        hand = limb[np.argmin(limb[:, 2])]
+        hand = np.array([int(round(c)) for c in hand], np.int64)
         top = int(obj[:, 2].max())
-        d = (int(hand[0]) - int(round(float(obj[:, 0].mean()))),
-             int(hand[1]) - int(round(float(obj[:, 1].mean()))),
+        # HANG IT BESIDE THE FIST, NOT THROUGH THE CHEST. Centred ON the hand, a
+        # load any wider than a hand reaches back into the body of whoever is
+        # holding it, and the move is refused for the perfectly good reason that
+        # a man is already standing there — measured, a 38 kg block a 4000 N man
+        # could obviously lift stayed on the floor being dragged instead.
+        # Outward is away from the body's own middle, which is the side the arm
+        # is on.
+        cx, cy = float(own[:, 0].mean()), float(own[:, 1].mean())
+        ax = 0 if abs(hand[0] - cx) >= abs(hand[1] - cy) else 1
+        away = 1 if (hand[ax] - (cx if ax == 0 else cy)) >= 0 else -1
+        beside = [int(hand[0]), int(hand[1])]
+        beside[ax] += away * (int(np.ptp(obj[:, ax])) // 2 + 1)
+        d = (beside[0] - int(round(float(obj[:, 0].mean()))),
+             beside[1] - int(round(float(obj[:, 1].mean()))),
              int(hand[2]) - 1 - top)
         if d != (0, 0, 0) and self._shove(obj, *d):
             c = p["held"]["cell"]
@@ -3337,6 +4804,7 @@ class World:
         Index 0 is always the NULL act: the part does nothing, which is always
         legal and never a failure. Hands doing nothing keep their grip."""
         menu = []
+        danger = p.get("danger")
         if limb == "legs":
             menu.append({"key": "stay", "tag": "stay", "verb": "stay"})
             # a CARRIED thing is part of the walker, to the planner as much as
@@ -3346,14 +4814,14 @@ class World:
             obj = self._held_cells(p) if p.get("held") else None
             nav = np.concatenate([cells, obj]) if obj is not None \
                 and not self._underfoot(obj) else cells
-            fit, _start = self._fit_grid(nav, p.get("known"))
+            fit, _start = self._fit_grid(nav, p)
             ground = self._underfoot(cells)
             places = self._places(p, cells, fit)
             leaps = self._leap_targets(p, cells, fit, self._leap_speed(cells)) \
                 if ground else []
             routes = self._routes(cells, [pl["xy"] for pl in places]
                                   + [lp["xy"] for lp in leaps],
-                                  p.get("known"), fit=fit)
+                                  p, fit=fit)
             if ground:                        # you cannot push off thin air
                 menu.append({"key": "jump", "tag": "jump", "verb": "jump"})
             for lp in leaps:
@@ -3371,9 +4839,19 @@ class World:
                 route = routes.get(pl["xy"])
                 if not route:
                     continue                  # no route it knows of: not legal
+                # HOW BAD THE WAY THERE LOOKS, from what this body remembers
+                # seeing. A place is as dangerous as the worst step on the way
+                # to it — which is the right question, and a cheaper one than
+                # asking about the destination, because the route is already
+                # in hand. The sim states the fact; whether to mind it is the
+                # policy's business, and a body with no taste at all still
+                # gets the same menu.
+                risk = 0.0
+                if danger is not None:
+                    risk = float(max(danger[int(x), int(y)] for x, y in route))
                 menu.append({"key": f"go({pl['label']})", "tag": pl["tag"],
                              "verb": "go", "goal": pl["xy"], "route": route,
-                             "away": pl["away"]})
+                             "away": pl["away"], "danger": round(risk, 3)})
         elif limb == "hands":
             held = p.get("dragging") or \
                 ("the " + p["held"]["label"] if p.get("held") else None)
@@ -3381,23 +4859,89 @@ class World:
                          "tag": "keep", "verb": "keep"})
             if held:
                 menu.append({"key": "let go", "tag": "let_go", "verb": "let_go"})
-            if self._limb_cells(p, "right arm", cells) is not None:
+            # WHICH ARM, named on the row. An arm already out is the one the
+            # body would bring in; otherwise a FREE hand reaches, and which
+            # free hand is `_hand`'s business.
+            out_arm = next((a for a in sorted(self._limbs(p)) if "arm" in a
+                            and np.abs(np.atleast_1d(
+                                (p.get("drawn") or {}).get(a, 0.0))).max() > 1e-9),
+                           None)
+            arm = out_arm or self._hand(p, cells, free=True) \
+                or self._hand(p, cells)
+            if arm is not None:
+                # REACHING IS AN ACT, not a way of drawing the body. An arm put
+                # out is OUT: it occupies what it occupies, its hand is a good
+                # deal further from the feet, and holding it there costs the
+                # shoulder the limb's weight times the lever. So a body gets to
+                # choose it, and gets to stop.
+                # WHERE THE ARM IS, not what the body meant. These part
+                # company whenever a reach is abandoned — the world said no and
+                # the intention was dropped, but the flesh is still out there.
+                # Read off the intention, the menu then offered a man with his
+                # arm stuck half out the chance to "reach out" and never once
+                # the chance to bring it down.
+                out = out_arm is not None
+                if out or not p.get("_no_reach") == (p["anchor"],
+                                                     tuple(p.get("facing", (1.0, 0.0)))):
+                    # AND A REACH IT HAS ALREADY FOUND IT CANNOT MAKE is not on
+                    # the menu. A picked option must be one that can happen; a
+                    # body pinned against a wall re-decided to reach every few
+                    # ticks for ever, and every one of those picks went into the
+                    # trace as a decision that changed nothing. It is forgotten
+                    # the moment the body moves or turns, because then it is a
+                    # different question.
+                    menu.append({"key": "pull the arm back in" if out else "reach out",
+                                 "tag": "pull_in" if out else "reach",
+                                 "verb": "pull_in" if out else "reach",
+                                 "arm": arm})
                 # swinging at NOTHING is possible, just useless — the same way
                 # shouting in an empty house is possible. What makes it legal
                 # is having an arm, not having a target. A held thing swings
                 # WITH the arm; that is most of what holding a tool is for
                 menu.append({"key": "swing an arm" if not p.get("held") else
                              f"swing the {p['held']['label']}", "tag": "swing",
-                             "verb": "swing"})
+                             "verb": "swing",
+                             # what is held swings with the hand holding it
+                             "arm": (p.get("held") or {}).get("arm") or arm})
             for q in self._within_reach(p, cells):
                 if q["name"] == held:
                     continue
                 menu.append({"key": f"take hold of {q['name']}", "tag": "hold",
                              "verb": "hold", "who": q["name"]})
+            # A THING AND A PERSON ARE NOT THE SAME ROW. They were both tagged
+            # "hold", so a character sheet saying `hands: hold` meant "hold
+            # whatever is nearest" — and a rescuer who wandered within reach of
+            # the fire picked up a BURNING STICK instead of the man he had come
+            # for, then stood there holding it until the smoke took him. What
+            # the sheet meant was a person.
             if not p.get("held"):
                 for ob in self._objects_within_reach(p, cells):
                     menu.append({"key": f"take hold of the {ob['label']}",
-                                 "tag": "hold", "verb": "hold", "what": ob})
+                                 "tag": "take", "verb": "hold", "what": ob})
+        elif limb == "waist":
+            if not self._bones(p, "lean") or "lean" not in (p.get("chain") or {}):
+                return []                     # nothing here bends
+            # THE SAME SHAPE AS HANDS. The null act KEEPS what the body is
+            # doing — a trunk takes many ticks to bend and the body must be
+            # able to go on bending — and straightening up is an act of its
+            # own. Made the null act "stand up straight", a body cancelled its
+            # own lean on the very next decision and never bent at all.
+            # DRAWN, not posed. `pose` is the motor command and it runs on
+            # through every angle the lattice cannot draw; `drawn` is where the
+            # flesh actually IS. They part company badly here, because a lean
+            # has a long undrawable tail — measured, a body whose angle read
+            # 45.8 degrees was bent 19.3. Ask the flesh.
+            bent = abs(float(np.atleast_1d(
+                (p.get("drawn") or {}).get("lean", 0.0))[0])) > 1e-9
+            going = bool((p.get("reach") or {}).get("lean"))
+            menu.append({"key": "keep leaning" if going else
+                         ("stay bent" if bent else "stand as it is"),
+                         "tag": "hold_pose", "verb": "hold_pose"})
+            if going or bent:
+                menu.append({"key": "straighten up", "tag": "upright",
+                             "verb": "upright"})
+            if not going:
+                menu.append({"key": "lean out", "tag": "lean", "verb": "lean"})
         elif limb == "mouth":
             menu.append({"key": "say nothing", "tag": "quiet", "verb": "quiet"})
             for name, text in p.get("lines", LINES).items():
@@ -3407,6 +4951,7 @@ class World:
                     continue                  # nothing to answer
                 menu.append({"key": f"say({name})", "tag": f"say:{name}",
                              "verb": "say", "line": name})
+        self._offered = len(menu)             # what a full sweep found, before
         if len(menu) > MENU_CAP:              # attention is the scarce thing.
             want = (p.get("reflexes", REFLEXES).get(percept) or {}).get(limb) \
                 if percept else None
@@ -3414,8 +4959,35 @@ class World:
             keep = [o for o in tail if o["tag"] == want]
             rest = sorted((o for o in tail if o not in keep),
                           key=lambda o: o.get("away", 0.0))
-            menu = ([head] + keep + rest)[:MENU_CAP]
+            # ONE OF EACH KIND FIRST, then the nearest of what is left.
+            #
+            # Sorted by distance alone, the cap would drop every row of a whole
+            # KIND — measured, it cut all four roam spots because each was
+            # further off than a step, and the body then could not choose to
+            # wander at all however much it wanted to. Recall was 81%: one
+            # decision in five, the cap was hiding the answer.
+            #
+            # This is a model of attention rather than a trick for the policy's
+            # benefit. What a body notices is categories before instances — that
+            # there is a door, that there is somewhere unseen, that there is a
+            # place it could go — and then the nearest of each. It keeps nothing
+            # because the policy prefers it: salience is not preference, and a
+            # fire is worth noticing whether you mean to run at it or from it.
+            first, later, got = [], [], {o["tag"] for o in keep}
+            for o in rest:
+                (later if o["tag"] in got else first).append(o)
+                got.add(o["tag"])
+            menu = ([head] + keep + first + later)[:MENU_CAP]
         return menu
+
+    def _full_menu(self, p, cells, percept, limb, chosen):
+        """The menu WITHOUT the cap — what a body would have to choose from if
+        attention were free. Only ever used to measure what the cap costs."""
+        was, globals()["MENU_CAP"] = MENU_CAP, 10 ** 6
+        try:
+            return self._menu(p, cells, percept, limb, chosen)
+        finally:
+            globals()["MENU_CAP"] = was
 
     def _decide(self, p, percept, cells, ax_, ay_, eye, vox_m):
         """Offer one menu per part of the body, let the policy pick from each,
@@ -3443,8 +5015,10 @@ class World:
                "knows_a_way_out": any(p["known"][int(e[0]), int(e[1])]
                                       for e in self.exits),
                "seen_of_the_world": round(float(p["known"].mean()), 3),
+               "ground_it_trusts": round(float(p["free"].mean()), 3)
+                                   if p.get("free") is not None else 0.0,
                "others_in_earshot": heard}
-        menus, picks, chosen = {}, {}, {}
+        menus, picks, chosen, seen, would = {}, {}, {}, {}, {}
         for limb in LIMBS:
             menu = self._menu(p, cells, percept, limb, chosen)
             if not menu:
@@ -3453,6 +5027,19 @@ class World:
             i = i if isinstance(i, int) and 0 <= i < len(menu) else 0
             opt = menu[i]
             menus[limb] = [o["key"] for o in menu]
+            seen[limb] = self._offered        # and how many there were to see
+            if self.recall_check:
+                # WHAT ATTENTION COST, measured rather than hoped. Build the
+                # menu the body would have had with attention free, ask the
+                # same policy, and record what it would have done. Off by
+                # default: it doubles the work of deciding, and it exists to
+                # answer one question — does the cap ever hide the answer?
+                full = self._full_menu(p, cells, percept, limb, chosen)
+                j = self.policy.pick(dict(sit, limb=limb, chosen=dict(chosen)),
+                                     full) if len(full) > len(menu) else i
+                j = j if isinstance(j, int) and 0 <= j < len(full) else 0
+                would[limb] = full[j]["key"] if len(full) > len(menu) \
+                    else opt["key"]
             picks[limb] = opt
             chosen[limb] = opt["tag"]
         if not picks:
@@ -3462,6 +5049,10 @@ class World:
         self.traces.append({"tick": self.tick, "who": p["name"],
                             "percept": percept, "situation": sit,
                             "menus": menus,
+                            "offered": seen,  # what a full sweep found, so the
+                                              # cost of the cap is on the record
+                            "would": would,   # and what it would have picked
+                                              # with attention free, if asked
                             "pick": {l: o["key"] for l, o in picks.items()},
                             "tags": dict(chosen), "program": prog or "stay",
                             "by": getattr(self.policy, "name", "?")})
@@ -3471,7 +5062,8 @@ class World:
         hands = picks.get("hands")
         if hands is not None:            # HANDS. Holding is not a rescue
             if hands["verb"] == "swing":
-                self._swing(p, "right arm", toward=p.get("facing"))
+                self._swing(p, hands.get("arm") or self._hand(p, cells),
+                            toward=p.get("facing"))
                 p["events"].append(f"t{self.tick}: {p['name']} swings an arm")
             elif hands["verb"] == "hold":  # no subsystem: a grip is REACH, and
                 if "who" in hands:             # what it can then do is force —
@@ -3481,10 +5073,21 @@ class World:
                 else:                              # again every tick
                     ob = hands["what"]
                     p["held"] = {"cell": ob["cell"], "mat": ob["mat"],
-                                 "label": ob["label"]}
+                                 "label": ob["label"],
+                                 # WHICH HAND TOOK IT, so the other stays free
+                                 "arm": self._hand(p, cells, toward=ob["cell"],
+                                                   free=True)}
                     self._take_up(p, cells)    # to the fist, if the arm can
                     p["events"].append(f"t{self.tick}: {p['name']} takes up "
                                        f"the {ob['label']}")
+            elif hands["verb"] == "reach":
+                p.setdefault("reach", {})[
+                    hands.get("arm") or self._hand(p, cells)] = float(np.pi / 2)
+                p["events"].append(f"t{self.tick}: {p['name']} reaches out")
+            elif hands["verb"] == "pull_in":
+                (p.get("reach") or {}).pop(
+                    hands.get("arm") or self._hand(p, cells), None)
+                p["events"].append(f"t{self.tick}: {p['name']} lowers the arm")
             elif hands["verb"] == "let_go":
                 p["dragging"], p["held"] = None, None
                 p["events"].append(f"t{self.tick}: {p['name']} lets go")
@@ -3517,6 +5120,19 @@ class World:
         mouth = picks.get("mouth")
         if mouth is not None and mouth["verb"] == "say":
             self._say(p, mouth["line"])
+        waist = picks.get("waist")
+        if waist is not None and waist["verb"] == "lean":
+            # AS FAR AS IT CAN, and the world decides how far. `_law_pose`
+            # walks the angle up at the speed a trunk can manage and stops
+            # where the back or the balance says stop — the body asks to lean
+            # out, it does not ask for an angle it has no way of knowing.
+            p.setdefault("reach", {})["lean"] = BODY["lean_max"]
+            p["events"].append(f"t{self.tick}: {p['name']} leans out")
+        elif waist is not None and waist["verb"] == "upright":
+            (p.get("reach") or {}).pop("lean", None)
+            if abs(float(np.atleast_1d(
+                    (p.get("drawn") or {}).get("lean", 0.0))[0])) > 1e-9:
+                p["events"].append(f"t{self.tick}: {p['name']} straightens up")
 
     def trace_outcomes(self):
         """Stamp every logged decision with how that body ENDED, and hand the
@@ -3575,6 +5191,7 @@ class World:
                 continue
             comp, sl = self._person_cells(p)
             if comp is None:
+                self._decide_falling(p)      # in the air, and not out of choices
                 continue
             cells = np.argwhere(comp)
             cells[:, 0] += sl[0].start
@@ -3602,7 +5219,7 @@ class World:
             gaze = (fx * cg - fy * sg, fx * sg + fy * cg)
             p["gaze"] = gaze                  # what the eyes are pointed at
             if self.tick % 4 == 0:            # look where the eyes point, and
-                self._look_around(p, eye)     # REMEMBER it
+                self._look_around(p, eye, cells)   # REMEMBER it
             # SENSES RUN WHETHER OR NOT THE BODY IS BUSY. Having somewhere to
             # be is not the same as being in an emergency: a body strolling
             # across a room must still notice the room is alight. Gating the
@@ -3619,6 +5236,16 @@ class World:
                                 and self._sees(eye, c.astype(np.float32)):
                             percept = "sees_fire"    # an actual LINE to a flame
                             break                    # the face is TURNED toward
+                if percept is None and p.get("skin", AMBIENT) > BODY["feel_T"]:
+                    # BEING COOKED IS NOTICING, and it does not go through the
+                    # eyes. Sight needs a clear line from the head, in the
+                    # direction the head is turned — so a body STANDING ON a
+                    # fire did not see it, because the fire was under its own
+                    # feet and behind its own legs. Measured the day stepping up
+                    # was built: a man idly wandered onto a burning crib and
+                    # suffocated there over two hundred ticks without once
+                    # perceiving the thing he was stood in.
+                    percept = "scorched"
                 if percept is None and p["smoke"] > 0.05:
                     percept = "chokes"                   # coughing IS noticing
                 if percept is None:
@@ -3704,7 +5331,7 @@ class World:
             carried = obj is not None and not self._underfoot(obj)
             walk_cells = np.concatenate([cells, obj]) if carried else cells
             if (not p.get("_path")) or self.tick - p.get("_planned", -99) > 30:
-                p["_path"] = self._plan_path(walk_cells, ex, p.get("known"))
+                p["_path"] = self._plan_path(walk_cells, ex, p)
                 p["_planned"] = self.tick
             path = p.get("_path") or []
             while path and max(abs(path[0][0] - ax_), abs(path[0][1] - ay_)) < 1.0:
@@ -3729,6 +5356,68 @@ class World:
                     break
             else:
                 p["_path"] = None                    # blocked mid-route: replan
+                # AND LEARN IT. A body that remembers a way as clear will plan
+                # the same way again the moment it replans, and jam against the
+                # thing in it forever. Walking into something is a percept: you
+                # find out the corridor is shut by shutting your shin in it.
+                free = p.get("free")
+                if free is not None:
+                    for st in ((sx, 0), (0, sy)):
+                        if st == (0, 0):
+                            continue
+                        bx = int(round(ax_)) + st[0]
+                        by = int(round(ay_)) + st[1]
+                        if 0 <= bx < free.shape[0] and 0 <= by < free.shape[1]:
+                            free[bx, by] = False
+
+    def _decide_falling(self, p):
+        """A body in the air is not a body with nothing to decide.
+
+        It has no cells on the lattice while it flies, which is why the will
+        layer used to skip it entirely — and that quietly made falling the one
+        thing in the sim nobody could do anything about. It cannot walk, and
+        there is nothing under it to push against, so the menu is SHORT. But
+        the one choice still open is how to meet the ground, and that is the
+        difference between getting up and not.
+
+        The same seam as every other decision: a menu of what is really
+        possible, a policy that picks an index, and the whole menu written to
+        the trace beside the pick."""
+        if not (p["alive"] and p["awake"]) or p["safe"]:
+            return
+        b = next((x for x in self.bodies if x.get("owner") == p["name"]
+                  and not x.get("part")), None)
+        if b is None:
+            return
+        if self.tick - p.get("_fell", -99) < WILL["decide_every"]:
+            return
+        p["_fell"] = self.tick
+        menu = [{"key": "stay as you are", "tag": "stay", "verb": "stay"}]
+        if not p.get("rolling"):
+            menu.append({"key": "roll on landing", "tag": "roll", "verb": "roll"})
+        sit = {"tick": self.tick, "who": p["name"], "percept": "falling",
+               "reflexes": p.get("reflexes", REFLEXES),
+               "smoke": round(float(p["smoke"]), 3),
+               "blood_o2": round(float(p["blood_o2"]), 3),
+               "burn": round(float(p["burn"]), 3),
+               "hurt": round(float(p["hurt"]), 3),
+               "holding": p.get("dragging"),
+               "falling": True,
+               "knows_a_way_out": False, "seen_of_the_world": 0.0,
+               "others_in_earshot": 0}
+        i = self.policy.pick(dict(sit, limb="legs", chosen={}), menu)
+        i = i if isinstance(i, int) and 0 <= i < len(menu) else 0
+        opt = menu[i]
+        self.traces.append({"tick": self.tick, "who": p["name"],
+                            "percept": "falling", "situation": sit,
+                            "menus": {"legs": [o["key"] for o in menu]},
+                            "pick": {"legs": opt["key"]},
+                            "tags": {"legs": opt["tag"]},
+                            "program": opt["key"] if opt["tag"] != "stay" else "stay",
+                            "by": getattr(self.policy, "name", "?")})
+        if opt["verb"] == "roll":
+            p["rolling"] = True
+            p["events"].append(f"t{self.tick}: {p['name']} tucks to roll")
 
     def _leave(self, p, cells):
         """Out means OUT. A body that reached the door walks through it and off
@@ -3836,7 +5525,7 @@ class World:
                 return
         p["dragging"] = None                      # it would not come; let go
 
-    def _fit_grid(self, cells, known=None):
+    def _fit_grid(self, cells, p=None):
         """Columns this body could stand in, WHOLE — and knows about.
 
         A column is passable by how much is actually IN it, not by whether it is
@@ -3849,9 +5538,13 @@ class World:
         # of the fill test, so teaching _walkable that a column needs a floor
         # under it taught the PLACES but not the PLANNER — and the planner is
         # the half that decides where the legs actually go.
-        walk_ok = self._walkable(cells)
-        if known is not None:
-            walk_ok &= known          # you cannot plan a route through rooms
+        # THE FLOOR AS THIS BODY LAST SAW IT, not as it is. A mind with no
+        # belief yet (or no mind at all — a bare route query) reads the world,
+        # which is the honest default for a question nobody is asking.
+        free = p.get("free") if p is not None else None
+        walk_ok = self._walkable(cells) if free is None else free.copy()
+        if p is not None:
+            walk_ok &= p["known"]     # you cannot plan a route through rooms
                                       # you have never seen
         # A BODY IS NOT A POINT. The route is walked by the body's CENTRE, but
         # the body is several voxels across, so a centre column is only usable
@@ -3883,7 +5576,7 @@ class World:
         fit[cx, cy] = True                    # wherever it is now, it fits
         return fit, (cx, cy)
 
-    def _routes(self, cells, targets, known=None, fit=None):
+    def _routes(self, cells, targets, p=None, fit=None):
         """Every target's route, from ONE breadth-first sweep.
 
         A menu prices a dozen places at once, and asking the planner a dozen
@@ -3893,7 +5586,7 @@ class World:
         for four times the places."""
         from collections import deque
         if fit is None:
-            fit, start = self._fit_grid(cells, known)
+            fit, start = self._fit_grid(cells, p)
         else:
             start = (int(round(float(cells[:, 0].mean()))),
                      int(round(float(cells[:, 1].mean()))))
@@ -3931,10 +5624,10 @@ class World:
             out[(int(t[0]), int(t[1]))] = path[::-1][1:]
         return out
 
-    def _plan_path(self, cells, ex, known=None):
+    def _plan_path(self, cells, ex, p=None):
         """Breadth-first route from where this body is to one goal.
         Deterministic, 4-connected, replanned when the world changes underfoot."""
-        return self._routes(cells, [ex], known)[(int(ex[0]), int(ex[1]))]
+        return self._routes(cells, [ex], p)[(int(ex[0]), int(ex[1]))]
 
     def _object_at(self, x, y, z, cap=4000):
         """The connected thing that voxel belongs to — same material, flood
@@ -4074,7 +5767,13 @@ class World:
 
         Nothing here is about ledges. A shove, a haul, a floor that burns out
         from underneath all arrive at the same test, and all pay the same
-        1/2 m v² on landing."""
+        1/2 m v² on landing.
+
+        AND A BODY IS NOT ONLY ITS OWN WEIGHT. What it holds up rides on the
+        same two feet, so a man still firmly stood on rock can be taken over
+        by the one hanging from his arm — see _pulled_over. That is the other
+        half of a grip being an edge in the support graph: the load hangs from
+        the holder, and the holder answers for it."""
         if not self.persons:
             return
         aloft = {b.get("owner") for b in self.bodies}
@@ -4088,25 +5787,65 @@ class World:
             cells = np.argwhere(comp)
             cells[:, 0] += sl[0].start
             cells[:, 1] += sl[1].start
+            over, why = None, "loses their footing"
             if self._underfoot(cells):
-                continue                      # still stood on something
-            h = holders.get(p["name"])
-            if h is not None and self._grip_holds(h, cells):
-                continue                      # he HANGS from the grip: a hand
+                # STOOD ON SOMETHING — but a body is not only its own weight.
+                # What it holds up rides on the same two feet, and a man
+                # dangling from an arm hangs well beyond the toes.
+                over = self._pulled_over(p, cells)
+                why = "is pulled off their feet by what they are holding"
+                if over is None:
+                    # AND A BODY CAN OVERBALANCE ALL BY ITSELF. Balance was
+                    # only ever asked about what a man was CARRYING, so a man
+                    # carrying nothing could not fall over however he stood —
+                    # which nobody noticed while a body was one rigid block,
+                    # because a block that stands up straight has its weight
+                    # over its feet by construction. Give it a waist and the
+                    # hole opens: measured, a man bent 46 degrees with his head
+                    # fourteen voxels past his toes stood there indefinitely.
+                    over = self._overbalanced(p, cells)
+                    if over is None:
+                        continue
+                    why = "overbalances"
+                # AND THE ARM COMES DOWN — all the way, at once. You cannot
+                # keep a thing at arm's length while it is taking you over: the
+                # reach is the first thing to go, which shortens the lever,
+                # which is why a man goes over ONCE instead of being thrown off
+                # his feet again on every tick he spends back on them.
+                #
+                # ALL THE WAY, and not a tick at a time. Holding a limb out is
+                # work a standing body does, and a body going over has stopped
+                # doing it — the arm falls, it does not unwind at a shoulder's
+                # pace. Dropping only the INTENTION left `_law_pose` to walk the
+                # angle home, and since the flesh waits at every angle the
+                # lattice cannot draw, the man landed with the weight still out
+                # and went over a second time, and a third.
+                p["reach"] = {}
+                for limb in list(p.get("pose") or {}):
+                    if self._repose(p, limb, 0.0) == "moved":
+                        (p["pose"]).pop(limb, None)
+                        (p.get("drawn") or {}).pop(limb, None)
+            else:
+                h = holders.get(p["name"])
+                if h is not None and self._grip_holds(h, cells):
+                    continue                  # he HANGS from the grip: a hand
                                               # that can lift him can hold him
+                foot = self._contact(cells)   # ...but is anything still touching?
+                if len(foot):
+                    kg = self.smass[tuple(cells.T)]
+                    tot = max(float(kg.sum()), 1e-9)
+                    over = (float((cells[:, 0] * kg).sum()) / tot
+                            - float(foot[:, 0].mean()),
+                            float((cells[:, 1] * kg).sum()) / tot
+                            - float(foot[:, 1].mean()))
             vel = [0.0, 0.0, 0.0]
-            foot = self._contact(cells)       # ...but is anything still touching?
-            if len(foot):
-                kg = self.smass[tuple(cells.T)]
-                tot = max(float(kg.sum()), 1e-9)
-                dx = float((cells[:, 0] * kg).sum()) / tot - float(foot[:, 0].mean())
-                dy = float((cells[:, 1] * kg).sum()) / tot - float(foot[:, 1].mean())
-                axis = 0 if abs(dx) >= abs(dy) else 1
-                o = dx if axis == 0 else dy
+            if over is not None:
+                ox, oy = over
+                axis, o = (0, ox) if abs(ox) >= abs(oy) else (1, oy)
                 vel[axis] = float(np.sign(o) * np.sqrt(
                     2.0 * GRAVITY * abs(o) * 0.1 * self.scale))
             self._launch(cells, vel, owner=p["name"])
-            p["events"].append(f"t{self.tick}: {p['name']} loses their footing")
+            p["events"].append(f"t{self.tick}: {p['name']} {why}")
 
     def _collapse(self, p, comp, sl):
         """An unconscious body is a slack object: promote it as a free rigid
@@ -4138,39 +5877,143 @@ class World:
         self._topple(cells.astype(np.float32), axis, s, float(pivot), float(z_lo),
                      owner=p["name"])
 
+    def _busy(self, *fields):
+        """Is there anything here at all for a law to move?
+
+        A whole-array reduce costs about a tenth of a millisecond on a 300k
+        world; the laws it stands in front of cost tens. Each question is asked
+        IMMEDIATELY before the law it gates, never hoisted to the top of the
+        tick — a fire that lights this tick makes its smoke this tick, and a
+        stale answer would leave that smoke sitting still for a tick."""
+        if not self.skip_quiet:
+            return True
+        return any(bool(f.any()) for f in fields)
+
+    def _mixing(self):
+        """Has the air anything to even out? Oxygen moves down a gradient, and
+        a flat field has none — every pair cancels. The open sky is the other
+        way in: it refills the top, which matters only if the world is below
+        what fresh air holds."""
+        if not self.skip_quiet:
+            return True
+        lo, hi = float(self.o2.min()), float(self.o2.max())
+        return lo != hi or (self.open_sky and hi < O2_PER_L * self.vox_l)
+
+    def _pushed(self):
+        """Is any gas moving, being made to move, or about to be?
+
+        Pressure and velocity decay toward nothing and stay there, and the
+        gradient of a flat field is zero, so a still world carries nothing. But
+        pressure is not only injected by `p_add`: WARM AIR MAKES ITS OWN WIND,
+        and the law reads `T - AMBIENT` directly, because a plume is buoyancy
+        before it is anything else.
+
+        Found by the tick-by-tick guard, which is the whole reason to have one.
+        Gated on the pressure fields alone, the first wisp of smoke a fire ever
+        made came out wrong by 1.7e-5 on the very tick it appeared — because the
+        world had been skipping its buoyant wind since tick zero, and the gate
+        looked perfectly reasonable until something measured it."""
+        if not self.skip_quiet:
+            return True
+        if bool(self.E.any()) or bool(self.p_add.any()):
+            return True
+        if self.pcell is None:
+            return False
+        return bool(self.pcell.any()) or any(bool(v.any()) for v in self.vcell)
+
     def step(self):
         if self.o2 is None:                      # first step: fresh air fills every pore
             self.o2 = np.full(self.shape, O2_PER_L * self.vox_l, np.float32)
+        # DO NOT COMPUTE WHERE NOTHING IS HAPPENING. Measured before any of
+        # this: a room with nothing lit in it cost 98 ms a tick and a room on
+        # fire cost 100 — the whole world was being swept for heat that was not
+        # there, smoke that did not exist and puddles nobody had poured.
+        #
+        # Every gate below is PROVABLE rather than plausible, which is the only
+        # kind worth having: a law is passed over exactly when the thing it
+        # moves is absent, so running it could not have changed one cell.
+        # `self.E` is energy ABOVE ambient, so all-zero means every voxel sits
+        # at 20 °C — no gradient to conduct, no dT to rise, nothing hot enough
+        # to light, boil or melt, and no face carrying a shock. Set
+        # `skip_quiet = False` to run everything over everything, which is what
+        # `test_ACTIVE_REGIONS_change_NOTHING` compares every scene against.
         self._law_bodies()
-        self._law_flow()
-        self._law_stir()
-        self._law_head()
+        if self._busy(self.fvol) or self.drops:
+            self._law_flow()                     # (drops in flight are fluid too)
+            self._law_stir()
+            self._law_head()
         self._law_footing()                      # before support: a body with no
         self._law_support()                      # footing must leave as a BODY
         self._law_torque()
-        self._law_conduct()
-        self._law_crack()                        # thermal shock reads what conduction wrote
-        self._law_rise()
+        hot = self._hot_window()                 # ...and WHERE the heat is
+        if hot is not None:
+            self._law_conduct(hot)
+            self._law_crack()                    # thermal shock reads what conduction wrote
+            risen = self._hot_window()           # conduction just MOVED heat, so
+            if risen is not None:                # ask again before moving it more
+                self._law_rise(risen)
         self._air_regions()                      # (re)label airspaces if walls/gaps changed
-        self._law_burn()
-        self._law_boil()
-        self._law_melt()
-        self._law_acid()
-        self._law_smoke()
+        if self._busy(self.E):
+            self._law_burn()
+            self._law_boil()
+            self._law_melt()
+        if self._busy(self.fvol):
+            self._law_acid()
+        sooty = self._window(self.smoke > SMOKE_STILL,   # asked AFTER burning,
+                             self._SMOKE_REACH)          # which is where it
+                                                         # comes from
+        if sooty is not None:
+            self._law_smoke(sooty)
         self._air_regions()                      # acid may have bored new airspace
-        self._law_o2()
-        self._law_air()                          # the pneumatic field: pressure, wind
+        if self._busy(self.E) or self._mixing():
+            self._law_o2()
+        if self._pushed():
+            self._law_air()                      # the pneumatic field: pressure, wind
         self._law_life()                         # the slow chemistry of anyone alive
         self._law_will()                         # and their reflexes
-        if self.thermostats:                        # dev heater blocks hold their
-            C = self.heat_capacity()                # set temperature against all
-            for (tx, ty, tz, tT) in self.thermostats:   # losses — heat without fire
-                self.E[tx, ty, tz] = (tT - AMBIENT) * C[tx, ty, tz]
-        Tk = self.T() + 273.0                       # every voxel radiates to the wider,
-        self.E -= RAD * self.scale ** 2 * (Tk ** 4 - 293.0 ** 4) / 3.0   # cooler world — trivial when warm,
-        self.E *= (1.0 - LEAK)                      # fierce when white-hot (caps flame temps)
-        self.E = np.maximum(self.E, -AMBIENT * self.heat_capacity())   # nothing below 0 °C here
+        self._law_pose()                         # and where their limbs ended up
+        if self.thermostats or self._busy(self.E):
+            if self.thermostats:                    # dev heater blocks hold their
+                C = self.heat_capacity()            # set temperature against all
+                for (tx, ty, tz, tT) in self.thermostats:   # losses — heat without fire
+                    self.E[tx, ty, tz] = (tT - AMBIENT) * C[tx, ty, tz]
+            Tk = self.T() + 273.0                   # every voxel radiates to the wider,
+            self.E -= RAD * self.scale ** 2 * (Tk ** 4 - 293.0 ** 4) / 3.0   # cooler world — trivial when warm,
+            self.E *= (1.0 - LEAK)                  # fierce when white-hot (caps flame temps)
+            self.E = np.maximum(self.E, -AMBIENT * self.heat_capacity())   # nothing below 0 °C here
         self.tick += 1
+
+    # ── a world as a value ───────────────────────────────────────────────────
+    _NOT_STATE = ("policy",)          # a mind is not part of the world
+
+    def snapshot(self):
+        """Everything this world IS, as a value you can put back later.
+
+        The state is a handful of arrays and a few plain lists, so a copy is
+        cheap and — the point — EXACT: restore one and the next tick is the
+        tick that would have followed. Three different things want it.
+
+        A guard that compares two runs only at the END can say a divergence
+        happened; one that can start both from the SAME state says which change
+        caused it, with the build of the world removed as a variable. That is
+        what makes it safe to rewrite how the laws are applied at all.
+
+        A table wants to rewind and try the other thing. And a harvest of
+        decisions is only honest if the run behind it can be played again.
+
+        The policy is left out on purpose: it is a mind, not a world, and it may
+        one day be a model whose weights dwarf the lattice."""
+        return copy.deepcopy({k: v for k, v in self.__dict__.items()
+                              if k not in self._NOT_STATE})
+
+    def restore(self, snap):
+        """Put a snapshot back, and keep whatever mind is in place now.
+
+        Copied on the way in as well as the way out, so one snapshot can be
+        restored as many times as you like — which is the whole use of it."""
+        for k in [k for k in self.__dict__ if k not in self._NOT_STATE]:
+            del self.__dict__[k]
+        self.__dict__.update(copy.deepcopy(snap))
 
     # ── totals (the conservation the tests watch) ────────────────────────────
     def total_fluid(self, f):
@@ -4178,4 +6021,12 @@ class World:
             + sum(d[6] for d in self.drops if d[7] == f)   # parcels in flight count
 
     def total_wood(self):
-        return float(self.smass[self.mat == WOOD].sum())
+        return float(self.smass[self.mat == WOOD].sum()) \
+            + sum(m for k, m in self.gone.items() if k == WOOD)
+
+    def total_lost(self):
+        """Every gram that has gone past the edge of the world. Zero in any
+        scene nobody is throwing things out of, and the only honest way to
+        write a conservation check in one that is."""
+        return sum(v for k, v in self.gone.items()
+                   if isinstance(k, int) and k != AIR)

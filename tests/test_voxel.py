@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 
 from src.voxel.demo import build, dump_water, torch
-from src.voxel.sim import (ACID, AIR, ASH, BODY, CHAR, FLESH, GLASS, IRON, LEAF,
-                           MIRON, MTIN, O2_PER_L, OIL, STONE, TIN, WATER,
+from src.voxel.sim import (ACID, AIR, ASH, BODY, CHAR, FLESH, GLASS, IRON, LEAD,
+                           LEAF, MIRON, MTIN, O2_PER_L, OIL, STONE, TIN, WATER,
                            WEAK_ACID, WOOD, World)
 
 
@@ -964,7 +964,7 @@ def _two_room_house(knows_world):
 def _place_tags(w, p):
     """Which KINDS of place this body could name, right now."""
     cells = np.argwhere(w.mat == FLESH)
-    fit, _start = w._fit_grid(cells, p.get("known"))
+    fit, _start = w._fit_grid(cells, p)
     return {pl["tag"] for pl in w._places(p, cells, fit)}
 
 
@@ -1402,7 +1402,6 @@ def test_a_FALL_HURTS_and_the_height_decides_how_much():
             f"-> {b:.0f} g)"
 
 
-@pytest.mark.xfail(strict=True, reason="no roll: a landing cannot be spread over time")
 def test_ROLLING_on_landing_spreads_the_blow_that_a_rigid_landing_takes_whole():
     """The same fall, the same body, the same floor — and one of them gets up.
     A landing is a momentum change: the force is the change divided by the
@@ -1412,11 +1411,32 @@ def test_ROLLING_on_landing_spreads_the_blow_that_a_rigid_landing_takes_whole():
 
     Measured in wounds: a rigid landing from 3 m knocks a body out; the same
     fall rolled through leaves it conscious and costs it less."""
-    rigid, _, _ = _dropped_onto_stone(3.0)
-    rolled, _, _ = _dropped_onto_stone(3.0, legs="roll")
+    rigid, g0, g1 = _dropped_onto_stone(3.0)
+    rolled, h0, h1 = _dropped_onto_stone(3.0, legs="roll")
     assert not rigid["awake"], "a rigid landing from 3 m knocks a body out"
     assert rolled["awake"], "the same fall rolled through leaves it conscious"
     assert rolled["hurt"] < rigid["hurt"], "rolling spreads the blow"
+    for a, b in ((g0, g1), (h0, h1)):
+        assert abs(a - b) < 1.0, \
+            "and either way every gram of them is still there: spreading a " \
+            "blow is not shedding it"
+
+    # IT IS A CHOICE, made from MID-AIR — which used to be the one place in
+    # this sim where nothing could be decided at all, because a flying body has
+    # no cells on the lattice for the will layer to read, so it was skipped.
+    assert any("tucks to roll" in e for e in rolled["events"]), \
+        "the body chose it while falling, rather than it happening to them"
+    assert not any("tucks to roll" in e for e in rigid["events"]), \
+        "and the one that did not choose it did not get it"
+    # AND IT IS NOT A GET-OUT-OF-JAIL CARD. Dividing a blow only helps while
+    # the parts land under the threshold; past that the arithmetic runs out,
+    # which is why the ceiling is measured rather than asserted to be absent.
+    high, _, _ = _dropped_onto_stone(11.0, legs="roll", ticks=320)
+    assert not high["alive"], \
+        f"eleven metres kills you however well you land (hurt {high['hurt']:.2f})"
+    mid, _, _ = _dropped_onto_stone(8.0, legs="roll", ticks=320)
+    assert mid["alive"] and not mid["awake"], \
+        "at eight it knocks you out and you live, where landing rigid kills"
 
 
 def test_a_WIDE_thing_falls_SLOWER_than_a_compact_one_of_the_same_mass():
@@ -1477,7 +1497,7 @@ def test_an_axe_SWUNG_bites_where_the_same_axe_PRESSED_does_not():
         def pick(self, sit, menu):
             want = None
             if sit["limb"] == "hands":
-                want = self.then if sit["holding"] else "hold"
+                want = self.then if sit["holding"] else "take"
             elif sit["limb"] == "legs":
                 want = "stay"
             for i, o in enumerate(menu):
@@ -1507,7 +1527,7 @@ def test_an_axe_SWUNG_bites_where_the_same_axe_PRESSED_does_not():
     assert hewn > 0, f"swinging it takes a bite ({hewn} voxels chewed)"
     assert abs(g0 - g1) < 1.0 and abs(h0 - h1) < 1.0, \
         "chopping is breaking, not losing"
-    assert any(r["tags"].get("hands") == "hold" for r in w1.traces), \
+    assert any(r["tags"].get("hands") == "take" for r in w1.traces), \
         "taking the axe up went through the menu"
     assert any(r["tags"].get("hands") == "swing" for r in w1.traces), \
         "and so did every swing"
@@ -1848,3 +1868,1287 @@ def test_a_flier_SCRAPES_PAST_a_wall_instead_of_stopping_on_it():
     assert int(on[:, 2].min()) <= 2, "it lies at the wall's base"
     assert abs(float(w.smass[w.mat == WOOD].sum()) - grams) < 1.0, \
         "and every gram arrived with it"
+
+
+def test_WHAT_YOU_HOLD_UP_STANDS_ON_YOUR_FEET_TOO():
+    """The other half of a grip being an edge in the support graph: the load
+    hangs from the holder, so the holder answers for it. The weight that has to
+    sit over his feet is his own PLUS whatever hangs from his fists.
+
+    Here the arm never moves — both loads are held the same way, in the same
+    hand, by the same man. Only the MASS differs, and that is enough. (Its twin,
+    `test_the_SAME_WEIGHT_at_ARMS_LENGTH_takes_a_man_off_his_feet`, holds the
+    mass still and moves the arm instead; between them they are the two halves
+    of one moment.)
+
+    How far back he can shift his own weight is read off his build — his own
+    half-width — and not typed in, so a small man is taken over by a load a big
+    one shrugs at. Without that term the sum says nobody may hold anything at
+    arm's length, which is plainly false.
+
+    THE WEIGHT COMES IN AT THE FIST. A thing hanging still pulls straight DOWN
+    along the arm holding it; where its own mass sits is the WRIST's question,
+    which `_grip_holds` asks separately. Summed at the load's own centre, a body
+    trailing on the floor behind a hauler read as hanging out past his toes.
+
+    AND WHAT YOU CARRY IS NOT WHAT CARRIES YOU. A man holding a block has his
+    arm directly above it, so the block came back as part of his own FOOTPRINT —
+    which made his base as wide as his reach and said he could never be
+    overbalanced by anything he was strong enough to hold."""
+    from src.voxel.scenes import _person, _Wants
+
+    def hold_it(voxels):
+        w = World(48, 12, 90, voxel_cm=5)
+        w.fill(0, 48, 0, 12, 0, 1, STONE)             # the ground
+        w.fill(16, 48, 0, 12, 1, 41, STONE)           # a broad shelf, 2 m up
+        w.exits = []
+        a = _person(w, 20, 6, z0=41)
+        a["name"] = "the holder"
+        a["strength_N"] = 4000.0      # a winch of a man on purpose: this is a
+                                      # question about BALANCE, and lifting has
+                                      # its own answer elsewhere
+        w.fill(24, 24 + voxels, 5, 8, 41, 44, LEAD)   # a block of lead beside him
+        w.policy = _Wants(each={"the holder":
+                                {"hands": "take hold of the lead"}})
+        grams = sum(float(w.smass[w.mat == m].sum()) for m in (FLESH, LEAD))
+        kg = float(w.smass[w.mat == LEAD].sum()) / 1000.0
+        tipped = 0
+        for _ in range(45):
+            w.step()
+            tipped += len([e for e in a["events"] if "pulled off" in e])
+            a["events"].clear()
+        comp, _sl = w._person_cells(a)
+        after = sum(float(w.smass[w.mat == m].sum()) for m in (FLESH, LEAD)) \
+            + sum(float(b["masses"].sum()) for b in w.bodies)
+        return {"kg": kg, "tipped": tipped, "grams": grams, "after": after,
+                "up": comp is not None and comp.any()}
+
+    light = hold_it(5)
+    heavy = hold_it(10)
+
+    assert 55.0 < light["kg"] < 75.0 and 115.0 < heavy["kg"] < 140.0, \
+        f"two loads either side of what a 38 kg man can balance " \
+        f"({light['kg']:.0f} kg and {heavy['kg']:.0f} kg)"
+    assert light["tipped"] == 0, \
+        f"he carries the lighter one and keeps his feet ({light['kg']:.0f} kg)"
+    assert heavy["tipped"] >= 1, \
+        f"the heavier one takes him off them ({heavy['kg']:.0f} kg) — same man, " \
+        f"same hand, same ground; the only difference is the mass"
+    for got in (light, heavy):
+        assert abs(got["after"] - got["grams"]) < 1.0, \
+            f"and either way every gram of man and metal is accounted for " \
+            f"({got['grams']:.0f} -> {got['after']:.0f} g)"
+
+
+def _compare_worlds(build, ticks, poke=None):
+    """Two worlds started from ONE state — so how they were built cannot be the
+    difference — stepped side by side, one computing every law over the whole
+    world every tick and one skipping what provably cannot have changed.
+
+    Compared EVERY tick, not just at the end, so a failure names the tick and
+    the field it started on. That is the difference between knowing a
+    divergence happened and being able to find it."""
+    slow, fast = build(), build()
+    fast.restore(slow.snapshot())            # identical starting state
+    slow.skip_quiet, fast.skip_quiet = False, True
+    for t in range(ticks):
+        for w in (slow, fast):
+            if poke is not None:
+                poke(w, t)
+            w.step()
+        a, b = _state_of(slow), _state_of(fast)
+        assert a.keys() == b.keys(), f"t{t}: different things exist"
+        for k in a:
+            diff = float(np.abs(a[k].astype(np.float64)
+                                - b[k].astype(np.float64)).max())
+            scale = max(float(np.abs(a[k]).max()), 1.0)
+            if diff > 1e-4 * scale:
+                return t, k, diff, scale
+    return None
+
+
+def _state_of(w):
+    """Everything a law is allowed to touch, as plain arrays."""
+    st = {"mat": w.mat.astype(np.int32), "smass": w.smass.copy(),
+          "E": w.E.copy(), "fl": w.fl.astype(np.int32), "fvol": w.fvol.copy(),
+          "fpot": w.fpot.copy(), "smoke": w.smoke.copy()}
+    if w.o2 is not None:
+        st["o2"] = w.o2.copy()
+    for i, p in enumerate(w.persons):
+        for k in ("blood_o2", "smoke", "burn", "hurt", "awake", "alive", "safe"):
+            st[f"person{i}.{k}"] = np.array([float(p.get(k, 0.0))])
+    return st
+
+
+def test_ACTIVE_REGIONS_change_NOTHING():
+    """THE GUARD, written before the optimisation it guards.
+
+    Skipping work is only allowed to make the sim FASTER, never different. So
+    every scene here is run twice — once with every law sweeping the whole world
+    every tick, once with the skips on — and the two worlds have to agree, cell
+    for cell, on everything a law is allowed to touch.
+
+    The scenes are chosen for the ways a skip can be wrong rather than for
+    variety. A fire is not local: it heats what it does not touch, so a room
+    that looks quiet three metres away is not. Gas is not local either — it
+    mixes room-wide, so an airspace is the smallest thing that can be called
+    still. And a world that starts quiet and is disturbed LATER is the case
+    where a skip becomes a bug, because something has to notice."""
+    from src.voxel.scenes import _person
+
+    def room():
+        w = World(40, 30, 30, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 40, 0, 30, 0, 1, STONE)
+        w.fill(0, 40, 0, 30, 29, 30, STONE)
+        for (x0, x1, y0, y1) in ((0, 1, 0, 30), (39, 40, 0, 30),
+                                 (0, 40, 0, 1), (0, 40, 29, 30)):
+            w.fill(x0, x1, y0, y1, 0, 30, STONE)
+        w.fill(19, 21, 0, 30, 0, 30, STONE)          # a dividing wall...
+        w.mat[19:21, 12:18, 1:12] = AIR              # ...with a doorway
+        w.smass[19:21, 12:18, 1:12] = 0.0
+        w.fill(5, 12, 12, 18, 1, 3, WOOD, frac=0.6)  # a crib of sticks
+        w.exits = [(38, 15)]
+        return w
+
+    def quiet():
+        return room()
+
+    def lit(w, t):
+        if t < 25:
+            w.E[8, 15, 2] += 2500.0                  # a taper held to the crib
+
+    def late(w, t):
+        if 30 <= t < 55:
+            w.E[8, 15, 2] += 2500.0                  # ...but only after a while
+
+    def under_the_sky():
+        """No roof, so smoke LEAVES at the top of the world — the one place a
+        windowed gas law must know the difference between the edge of its box
+        and the edge of the world."""
+        w = World(30, 24, 34, voxel_cm=5)
+        w.fill(0, 30, 0, 24, 0, 1, STONE)
+        w.fill(6, 14, 9, 15, 1, 3, WOOD, frac=0.6)
+        w.exits = [(28, 12)]
+        return w
+
+    def two_sealed_rooms():
+        """Two rooms with no way between them, and a fire in one. The far room
+        is an airspace that nothing has disturbed — the case an island rule is
+        allowed to sleep through, and must not get wrong."""
+        w = World(44, 22, 26, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 44, 0, 22, 0, 26, STONE)
+        for x0 in (2, 24):
+            w.mat[x0:x0 + 18, 2:20, 1:18] = AIR
+            w.smass[x0:x0 + 18, 2:20, 1:18] = 0.0
+        w.fill(5, 13, 8, 14, 1, 3, WOOD, frac=0.6)        # fuel in the near one
+        w.fill(28, 36, 8, 14, 1, 3, WOOD, frac=0.6)       # and in the far one
+        w.exits = []
+        return w
+
+    def wet():
+        w = room()
+        for x in range(6, 11):
+            w.pour(x, 15, 4, WATER, 300.0)           # a puddle over the sticks
+        return w
+
+    def peopled():
+        w = room()
+        p = _person(w, 30, 15, z0=1)
+        p["name"] = "the witness"
+        return w
+
+    for tag, build, poke, ticks in (("a quiet room", quiet, None, 40),
+                                    ("a fire from the first tick", room, lit, 60),
+                                    ("a room disturbed LATE", room, late, 70),
+                                    ("water over the fuel", wet, lit, 50),
+                                    ("a sealed room next door", two_sealed_rooms,
+                                     lambda w, t: w.E.__setitem__((8, 11, 2),
+                                         w.E[8, 11, 2] + 2500.0) if t < 35 else None,
+                                     70),
+                                    ("a fire under the open sky", under_the_sky,
+                                     lambda w, t: w.E.__setitem__((9, 12, 2),
+                                         w.E[9, 12, 2] + 2500.0) if t < 30 else None,
+                                     70),
+                                    ("someone in the room", peopled, lit, 60)):
+        split = _compare_worlds(build, ticks, poke)
+        assert split is None, \
+            f"{tag}: skipping work changed {split[1]} by {split[2]:.6g} " \
+            f"(scale {split[3]:.6g}) at TICK {split[0]} — a skip may only be " \
+            f"faster, never different"
+
+
+def test_a_WORLD_can_be_PUT_BACK_exactly_as_it_was():
+    """A world is a value. Copy it, play on, put the copy back, and the next
+    tick is the tick that would have followed — not one like it.
+
+    This is a tool rather than a physical claim, and it earns its place three
+    times over. A guard that can start two runs from the SAME state removes how
+    the world was built as a variable, which is what makes it safe to rewrite
+    how the laws are applied at all. A table wants to rewind and take the other
+    branch. And a harvest of decisions is only honest if the run behind it can
+    be played again.
+
+    The mind is deliberately not part of it: a policy may one day be a model
+    whose weights dwarf the lattice, and it is not what the world IS."""
+    from src.voxel.scenes import _person
+
+    def burning_room_with_someone_in_it():
+        w = World(30, 20, 40, voxel_cm=5)
+        w.fill(0, 30, 0, 20, 0, 1, STONE)
+        w.fill(8, 16, 8, 12, 1, 3, WOOD, frac=0.6)
+        w.exits = [(28, 10)]
+        _person(w, 22, 10, z0=1)["name"] = "the witness"
+        return w
+
+    w = burning_room_with_someone_in_it()
+    for _ in range(25):
+        w.E[10, 10, 2] += 2500.0
+        w.step()
+
+    keep = w.snapshot()
+    marked = float(w.E.sum())
+
+    def play(n):
+        for _ in range(n):
+            w.step()
+        return _state_of(w)
+
+    first = play(20)
+    w.restore(keep)
+    assert abs(float(w.E.sum()) - marked) < 1e-6, \
+        "put back means put back: the world is where it was"
+    second = play(20)
+    for k in first:
+        assert np.array_equal(first[k], second[k]), \
+            f"the same twenty ticks from the same state gave a different {k} — " \
+            f"either the copy was shallow or the sim is not deterministic"
+
+    # AND THE COPY IS NOT A VIEW. A snapshot that shares its arrays with the
+    # world is not a snapshot; it is a second name for the present.
+    w.restore(keep)
+    before = keep["E"].copy()
+    for _ in range(10):
+        w.E[10, 10, 2] += 2500.0
+        w.step()
+    assert np.array_equal(keep["E"], before), \
+        "playing on did not disturb the copy"
+    assert not np.array_equal(w.E, before), "...and playing on did something"
+    w.restore(keep)
+    assert np.array_equal(w.E, before), "and it can be put back more than once"
+
+
+def test_the_FAST_PATH_and_the_PLAIN_ONE_agree():
+    """The engine now has two ways to apply some laws — plain numpy, and the
+    same arithmetic compiled — and only one of them is the DEFINITION.
+
+    numpy is the definition. The compiled kernels exist to be quicker and are
+    written to match it step for step: the same order of multiplications, the
+    same two clip comparisons in the same direction, and the loss swept over
+    every cell before the gain is, because a float32 sum reordered is a float32
+    sum changed. So the two must agree EXACTLY, not nearly — a tolerance here
+    would quietly license a second physics.
+
+    Run on a world with everything in it at once: fire, fuel burning away, smoke
+    filling a room, oxygen going, a person breathing it. Compared every tick,
+    because agreeing at the end is not the same as agreeing.
+
+    Skipped when numba is not installed, which is a supported way to run: the
+    engine's only hard dependency is PyYAML, and without the accelerator nothing
+    changes but the speed."""
+    from src.voxel.sim import HAVE_NUMBA
+    from src.voxel.scenes import _person
+    if not HAVE_NUMBA:
+        pytest.skip("numba is optional; the plain path is the whole engine")
+
+    def smoky_room():
+        w = World(34, 26, 32, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 34, 0, 26, 0, 1, STONE)
+        w.fill(0, 34, 0, 26, 31, 32, STONE)
+        for (x0, x1, y0, y1) in ((0, 1, 0, 26), (33, 34, 0, 26),
+                                 (0, 34, 0, 1), (0, 34, 25, 26)):
+            w.fill(x0, x1, y0, y1, 0, 32, STONE)
+        w.fill(5, 13, 10, 16, 1, 3, WOOD, frac=0.6)
+        for x in range(14, 17):
+            w.pour(x, 13, 4, WATER, 200.0)
+        w.exits = [(32, 13)]
+        _person(w, 26, 13, z0=1)["name"] = "the witness"
+        return w
+
+    plain, fast = smoky_room(), smoky_room()
+    fast.restore(plain.snapshot())
+    plain.fused, fast.fused = False, True
+    for t in range(70):
+        for w in (plain, fast):
+            if t < 40:
+                w.E[8, 13, 2] += 2500.0
+            w.step()
+        a, b = _state_of(plain), _state_of(fast)
+        for k in a:
+            assert np.array_equal(a[k], b[k]), (
+                f"the compiled laws and the plain ones parted company on {k} "
+                f"at TICK {t} — by "
+                f"{float(np.abs(a[k].astype(np.float64) - b[k].astype(np.float64)).max()):.6g}. "
+                f"numpy is the definition; the kernel has to match it, not "
+                f"merely resemble it")
+
+
+def test_an_arm_REACHES_OUT_and_STAYS_OUT_and_a_WALL_stops_it():
+    """A body that can hold a pose. Until now a limb could only be flung — the
+    swing promoted it off the lattice, turned it, and put it back at rest — so
+    an arm could never simply BE somewhere. Three things were waiting on this:
+    the arm that stays where a swing left it, a crouch, and a man leaning out
+    to take hold of something beyond his toes.
+
+    It is not animation, and the test is the same one that settles a swing:
+    there is no picture here to change. The arm's voxels leave the cells they
+    are in and arrive in others, so while it is out it really is out — its mass
+    is there, its hand is there, and A WALL STOPS IT. A pose that could pass
+    through stone would be a drawing.
+
+    What it holds turns with it, because that is the same rotation about the
+    same joint and most of what holding a thing is for.
+
+    And the lattice gets a say. A limb one voxel wide can only be DRAWN at a
+    handful of angles — at the rest, two of its voxels round into one cell and
+    moving would destroy a voxel of flesh. So the angle runs on smoothly and the
+    flesh catches up at the next angle that can be drawn, which is what a thin
+    thing turning on a coarse grid is, not a workaround for it."""
+    from src.voxel.scenes import _person, _Wants
+
+    def reacher(wall_at=None):
+        w = World(34, 16, 44, voxel_cm=5)
+        w.fill(0, 34, 0, 16, 0, 1, STONE)
+        if wall_at is not None:
+            w.fill(wall_at, wall_at + 2, 0, 16, 1, 40, STONE)
+        w.exits = []
+        p = _person(w, 12, 8, z0=1)
+        p["name"], p["facing"] = "the reacher", (1.0, 0.0)
+        w.policy = _Wants(each={"the reacher": {"hands": "reach out",
+                                                "legs": "stay"}})
+        return w, p
+
+    w, p = reacher()
+    grams = _flesh_grams(w)
+    rest = w._limb_cells(p, "right arm")
+    rest_span = int(rest[:, 0].max())
+    for _ in range(30):
+        w.step()
+    out = w._limb_cells(p, "right arm")
+    assert out is not None and len(out) == len(rest), \
+        f"the arm still has all of itself ({len(out)} voxels, was {len(rest)})"
+    assert int(out[:, 0].max()) > rest_span + 3, \
+        f"an arm put out REACHES: its far end went from x{rest_span} to " \
+        f"x{int(out[:, 0].max())}"
+    assert abs(_flesh_grams(w) - grams) < 1.0, \
+        "and moving it cost the body nothing — every gram is still there"
+    assert _lumps(w.mat == FLESH) == 1, "the arm is still attached to him"
+    held = int(out[:, 0].max())
+    for _ in range(40):                       # ...and it STAYS there
+        w.step()
+    assert int(w._limb_cells(p, "right arm")[:, 0].max()) == held, \
+        "an arm held out stays out — that is what holding a pose means"
+    assert any(r["tags"].get("hands") == "reach" for r in w.traces), \
+        "and reaching went through the menu like any other act"
+
+    # A WALL STOPS IT. Same person, same reach, one difference: there is stone
+    # where the arm wants to be.
+    w2, p2 = reacher(wall_at=19)
+    stone_before = int((w2.mat == STONE).sum())
+    for _ in range(30):
+        w2.step()
+    arm = w2._limb_cells(p2, "right arm")
+    assert int(arm[:, 0].max()) < 19, \
+        f"the arm stopped at the wall rather than reaching through it " \
+        f"(its far end is x{int(arm[:, 0].max())}, the wall starts at x19)"
+    assert int(arm[:, 0].max()) > int(rest[:, 0].max()) - 1, \
+        "...having got as far as it could before the stone"
+    assert int((w2.mat == STONE).sum()) == stone_before, \
+        "and it did not take a bite out of the wall to get there"
+
+
+def test_the_SAME_WEIGHT_at_ARMS_LENGTH_takes_a_man_off_his_feet():
+    """What a lever is, with a person on one end of it.
+
+    Everything here is identical twice over — the same man, the same block, the
+    same grip, the same ground — except where he holds it. At his side the
+    weight hangs almost over his own toes and he is fine. Put out on the end of
+    an arm it hangs a good deal further, and the moment arithmetic that has
+    always decided whether a leaning thing tips now decides it about HIM.
+
+    Nobody wrote either outcome. It is the load's weight times how far out it
+    hangs, against his weight times how far back he can put it — and how far
+    back is read off his own build, not typed in.
+
+    This is what a body that can hold a pose was FOR. Before it a limb could
+    only be flung, so an arm could never simply be somewhere, and a lever a
+    person makes with their own arm could not exist. The three ingredients had
+    all been here for days and could not be put together.
+
+    And the arm comes down when it happens: you cannot keep a thing at arm's
+    length while it is taking you over. So he goes over once, rather than being
+    thrown off his feet again every tick he spends back on them."""
+    from src.voxel.scenes import _person, _Wants
+
+    def carry(at_arms_length):
+        w = World(52, 12, 90, voxel_cm=5)
+        w.fill(0, 52, 0, 12, 0, 1, STONE)
+        w.fill(16, 52, 0, 12, 1, 41, STONE)           # a broad shelf, 2 m up
+        w.exits = []
+        a = _person(w, 20, 6, z0=41)
+        a["name"], a["facing"] = "the holder", (1.0, 0.0)
+        a["strength_N"] = 4000.0      # a winch of a man on purpose: this is a
+                                      # question about BALANCE, not about lifting
+        w.fill(26, 29, 5, 8, 41, 44, LEAD)            # a block of lead beside him
+        w.policy = _Wants(each={"the holder":
+                                {"hands": "take hold of the lead"}})
+        grams = sum(float(w.smass[w.mat == m].sum()) for m in (FLESH, LEAD))
+        for _ in range(30):                           # he takes it up...
+            w.step()
+        load = w._held_cells(a)
+        assert load is not None and int(load[:, 2].min()) > 45, \
+            "he picked it up rather than leaving it on the floor to drag"
+        kg = float(w.smass[tuple(load.T)].sum()) / 1000.0
+        if at_arms_length:
+            a.setdefault("reach", {})["right arm"] = float(np.pi / 2)
+        tipped = 0
+        for _ in range(70):
+            w.step()
+            tipped += len([e for e in a["events"] if "pulled off" in e])
+            a["events"].clear()
+        after = sum(float(w.smass[w.mat == m].sum()) for m in (FLESH, LEAD)) \
+            + sum(float(b["masses"].sum()) for b in w.bodies)
+        return {"kg": kg, "tipped": tipped, "grams": grams, "after": after}
+
+    side = carry(False)
+    out = carry(True)
+
+    assert 30.0 < side["kg"] < 50.0, \
+        f"a load a man can plainly lift and plainly not ignore ({side['kg']:.0f} kg)"
+    assert side["tipped"] == 0, \
+        "held at his side it hangs over his own feet and he keeps them"
+    assert out["tipped"] == 1, \
+        f"held out on an arm the same weight takes him off them, and does it " \
+        f"ONCE ({out['tipped']} times) — the arm comes down with him"
+    for got in (side, out):
+        assert abs(got["after"] - got["grams"]) < 1.0, \
+            f"and either way every gram of man and metal is accounted for " \
+            f"({got['grams']:.0f} -> {got['after']:.0f} g)"
+
+
+def test_a_body_REMEMBERS_WHERE_THE_FIRE_WAS_and_FORGETS_IT():
+    """Belief used to record GEOMETRY ONLY — that a column had been laid eyes
+    on, never what was in it. So a body could walk through a burning room and
+    remember the shape of it and nothing whatever about the fire, and when it
+    came to choose somewhere to go, every place it knew looked equally good.
+
+    That is why an idle body would stroll toward a blaze. Not bravery: nothing
+    it remembered said otherwise.
+
+    And it FADES, which is a model and not a leak. A body that never forgets
+    treats an hour-old fire as a fire; one that forgets at once has no memory
+    to speak of. What is remembered is what was SEEN — by column, because light
+    from a fire at your feet still reaches your eyes, and whether you could see
+    that far is the occlusion the ray already settled."""
+    from src.voxel.scenes import _person
+
+    w = World(50, 26, 40, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 50, 0, 26, 0, 40, STONE)
+    w.mat[1:49, 1:25, 1:39] = AIR
+    w.smass[1:49, 1:25, 1:39] = 0.0
+    w.exits = [(46, 12)]
+    w.fill(4, 10, 8, 16, 1, 3, WOOD, frac=0.8)
+    w.E[4, 8, 1] = 9.0e5
+    p = _person(w, 22, 12)
+    p["name"] = "the witness"
+    for _ in range(60):
+        w.step()
+
+    seen = p.get("danger")
+    assert seen is not None and float(seen.max()) > 0.5, \
+        "it remembers having seen a fire at all"
+    lit = np.argwhere(seen > 0.5)
+    assert 2 <= int(lit[:, 0].max()) <= 12 and 6 <= int(lit[:, 1].max()) <= 18, \
+        f"and remembers WHERE — the fire is at x4-10 y8-16 and the memory sits " \
+        f"at x{lit[:, 0].min()}-{lit[:, 0].max()} y{lit[:, 1].min()}-{lit[:, 1].max()}"
+    assert float(seen[40, 20]) == 0.0, \
+        "while the far corner, which was never alight, is remembered as fine"
+
+    # AND IT FADES. Put the fire out and let the body look at the world again.
+    w.mat[4:11, 8:17, 1:4] = AIR
+    w.smass[4:11, 8:17, 1:4] = 0.0
+    w.E[:] = 0.0
+    was = float(seen.max())
+    for _ in range(400):
+        w.step()
+    assert float(p["danger"].max()) < 0.5 * was, \
+        f"a fire that is out stops being remembered as one " \
+        f"({was:.2f} -> {float(p['danger'].max()):.2f})"
+
+
+def test_the_TABLE_POLICY_PREFERS_the_way_that_is_not_past_a_fire():
+    """The plainest taste there is, and the seam it lives in.
+
+    The reflex table says WHAT to do — make for a door. Which door, and by
+    which way, it has never had anything to say about, so the pick was the
+    FIRST matching row and the answer came down to the order `_places` happened
+    to build its list in. A policy that prefers nothing is not neutral; it is
+    arbitrary, and arbitrary is not a thing a body does.
+
+    Now every `go` row carries how bad the way there looks — the worst step on
+    the route, out of what this body remembers seeing. The SIM states the fact;
+    minding it is the policy's business, and a policy with no taste gets the
+    same menu."""
+    from src.voxel.sim import REFLEXES, TablePolicy
+    pol = TablePolicy()
+    sit = {"limb": "legs", "percept": "sees_fire", "reflexes": REFLEXES}
+    menu = [{"key": "stay", "tag": "stay", "verb": "stay"},
+            {"key": "go(the door west)", "tag": "go:exit", "verb": "go",
+             "away": 4.0, "danger": 1.0},          # nearer, and past the fire
+            {"key": "go(the door east)", "tag": "go:exit", "verb": "go",
+             "away": 9.0, "danger": 0.0}]          # further, and clear
+    assert pol.pick(sit, menu) == 2, \
+        "it takes the longer way round rather than the way past the fire"
+
+    menu[2]["danger"] = 1.0                        # both ways look as bad
+    assert pol.pick(sit, menu) == 1, \
+        "...and with nothing to choose between them on danger, the nearer one"
+
+    idle = {"limb": "legs", "percept": None, "reflexes": REFLEXES}
+    roam = [{"key": "stay", "tag": "stay", "verb": "stay"},
+            {"key": "go(the floor west)", "tag": "go:roam", "verb": "go",
+             "away": 3.0, "danger": 0.9},
+            {"key": "go(the floor east)", "tag": "go:roam", "verb": "go",
+             "away": 7.0, "danger": 0.0}]
+    assert pol.pick(idle, roam) == 2, \
+        "and an IDLE body does not wander toward a fire it remembers, which is " \
+        "the whole of what was wrong: nothing it knew said otherwise"
+
+
+def test_the_ATTENTION_CAP_never_hides_the_answer():
+    """A capped menu can drop the right option INVISIBLY, and for a long time
+    nobody knew whether it did. This measures it.
+
+    `MENU_CAP` is a model of attention, not a budget for whatever is choosing:
+    a person in a burning room weighs the door, the window and the child — not
+    the forty places a full legality sweep would list. Modelling the limit is
+    more true than pretending it is absent. But a limit that quietly removes the
+    thing a body would have done is not a model of attention, it is a bug with
+    a comment on it.
+
+    RECALL is the measure: build the menu the body would have had with
+    attention free, ask the SAME policy, and see whether it would have done
+    something else. Measured at 81% before this — one decision in five, the cap
+    was hiding the answer — because it kept the nearest rows and that cut every
+    roam spot at once, so a body could not choose to wander however much it
+    wanted to.
+
+    What fixed it is a better model rather than a bigger cap: ONE OF EACH KIND
+    first, then the nearest of what is left. A body notices categories before
+    instances — that there is a door, that there is somewhere it has not seen,
+    that there is a place it could go. And it keeps nothing because the policy
+    would prefer it: salience is not preference, and a fire is worth noticing
+    whether you mean to run at it or away."""
+    from src.voxel.scenes import _person
+    from src.voxel.sim import MENU_CAP
+
+    def crowded_hall():
+        w = World(90, 60, 40, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 90, 0, 60, 0, 40, STONE)
+        w.mat[1:89, 1:59, 1:39] = AIR
+        w.smass[1:89, 1:59, 1:39] = 0.0
+        w.exits = [(88, 12), (88, 30), (88, 48), (1, 12), (1, 48), (45, 58)]
+        w.fill(10, 18, 20, 30, 1, 3, WOOD, frac=0.8)      # and a fire in it
+        w.E[10, 20, 1] = 9.0e5
+        for n, (x, y) in enumerate(((30, 10), (60, 40), (20, 50), (70, 12))):
+            _person(w, x, y)["name"] = f"P{n}"
+        w.recall_check = True
+        return w
+
+    w = crowded_hall()
+    for _ in range(200):
+        w.step()
+
+    offered, capped, kept, checked = 0, 0, 0, 0
+    for r in w.traces:
+        for limb, n in (r.get("offered") or {}).items():
+            offered = max(offered, n)
+            if n > len(r["menus"].get(limb, [])):
+                capped += 1
+        for limb, key in (r.get("would") or {}).items():
+            checked += 1
+            kept += key == r["pick"][limb]
+
+    assert offered > MENU_CAP, \
+        f"the hall really does offer more than a body can weigh at once " \
+        f"({offered} against a cap of {MENU_CAP}) — otherwise this measures nothing"
+    assert capped > 0 and checked > 0, \
+        "and the cap really does bite, so recall is a question about something"
+    assert kept == checked, \
+        f"attention narrows what a body weighs; it must never remove what the " \
+        f"body would have DONE — recall {kept}/{checked} " \
+        f"({100 * kept / max(checked, 1):.0f}%)"
+
+
+def test_a_body_PLANS_OVER_THE_FLOOR_IT_SAW_and_finds_out_by_going():
+    """Belief said WHERE a body had looked; the floor itself was read live.
+
+    So the route planner was still the sim wearing a person's face, one layer
+    below the door register and much better hidden. Wall off a corridor two
+    rooms away, behind a baffle, with nobody within sight of it, and every body
+    in the building re-planned around it on the very next tick — without one of
+    them turning its head.
+
+    Now a body plans over the floor AS IT LAST SAW IT. It keeps walking toward
+    a door it cannot reach, all the way across two rooms, and finds out when it
+    gets there. That is not a body being stupid; that is the only way a body
+    could possibly know."""
+    w, p = _two_room_house(True)                 # a resident: knows the place
+    for _ in range(8):
+        w.step()
+        p["events"].clear()
+
+    def exit_rows():
+        cells = np.argwhere(w.mat == FLESH)
+        fit, _ = w._fit_grid(cells, p)
+        routes = w._routes(cells, [pl["xy"] for pl in w._places(p, cells, fit)],
+                           p, fit=fit)
+        return [pl["label"] for pl in w._places(p, cells, fit)
+                if pl["tag"] == "go:exit" and routes.get(pl["xy"])]
+
+    assert exit_rows(), "the resident starts with a way out it can name"
+    # SEAL THE FAR ROOM, behind the baffle, two rooms off and out of any
+    # sightline. Nothing about this reaches the body's eyes.
+    w.fill(50, 52, 20, 25, 1, 21, STONE)
+    cells = np.argwhere(w.mat == FLESH)
+    assert not w._walkable(cells)[51, 22], "the world really is shut"
+    assert p["free"][50, 22], \
+        "and the body has no way of knowing it — nobody looked"
+    assert exit_rows(), \
+        "so it still aims at the door, because the floor it remembers still " \
+        "runs there; a body that re-planned here would be reading the lattice"
+
+    committed, learned = 0, None
+    for t in range(400):
+        w.step()
+        p["events"].clear()
+        if exit_rows():
+            committed += 1
+        elif learned is None:
+            learned = t
+            break
+    assert learned is not None, \
+        "and it does find out — by walking there and looking at the wall"
+    assert committed > 40, \
+        f"finding out takes crossing two rooms, not a tick ({committed})"
+    assert not p["free"][50, 22], "what it found out, it now believes"
+    assert p["anchor"][0] > 40, \
+        "and it found out THERE: it had to get within sight of the wall"
+
+
+def test_WHAT_YOU_WALK_INTO_you_learn():
+    """A body that remembers a way as clear will plan it again the moment it
+    replans, and grind against the thing in it forever. Walking into something
+    is a percept of its own: the shin is a sense organ. Belief is corrected
+    where the step failed, so the next plan goes round."""
+    w = World(40, 20, 14, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 40, 0, 20, 0, 14, STONE)
+    w.mat[1:39, 1:19, 1:13] = AIR
+    w.smass[1:39, 1:19, 1:13] = 0.0
+    w.exits = [(37, 10)]
+    w.fill(4, 5, 9, 10, 1, 10, FLESH, frac=0.9)
+    p = w.add_person(4, 9, "X", knows_world=True)
+    for _ in range(6):
+        w.step()
+        p["events"].clear()
+    # a pillar goes up right in front of the face, in the dark: belief keeps
+    # saying "clear" until something says otherwise
+    w.fill(7, 9, 7, 12, 1, 13, STONE)
+    p["free"][7:9, 7:12] = True                 # it has not seen this
+    before = int(p["free"][7:9, 7:12].sum())
+    cells = np.argwhere(w.mat == FLESH)
+    p["known"][:] = True
+    p["_path"] = w._plan_path(cells, (37, 10), p)
+    assert p["_path"], "it plans straight through, because that is what it knows"
+    for _ in range(40):
+        w.step()
+        p["events"].clear()
+    after = int(p["free"][7:9, 7:12].sum())
+    assert after < before, \
+        f"it walked into the pillar and now knows it is there ({before} -> {after})"
+
+
+def test_a_body_DOES_NOT_WALL_ITSELF_IN_behind_its_own_back():
+    """The first thing a remembered floor gets wrong is the looker.
+
+    Flesh is denser than anything a body can shove through, so every look wrote
+    the ground under its own feet down as blocked — and then it walked on, and
+    nothing ever looked back to correct it. Measured on an empty hall: 109
+    phantom walls laid along its own path, every one of them believed. The
+    planner already knows a body is not an obstacle to itself; belief has to
+    know it at the moment of looking, or the map is poisoned by the one thing
+    guaranteed to be in front of the eyes."""
+    from src.voxel.scenes import _person
+    w = World(80, 40, 40, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 80, 0, 40, 0, 40, STONE)
+    w.mat[1:79, 1:39, 1:39] = AIR
+    w.smass[1:79, 1:39, 1:39] = 0.0
+    w.exits = [(77, 20)]
+    p = _person(w, 8, 20)
+    start = p["anchor"]
+    for _ in range(160):
+        w.step()
+        p["events"].clear()
+    assert max(abs(p["anchor"][0] - start[0]),
+               abs(p["anchor"][1] - start[1])) > 10, "it went somewhere"
+    cells = np.argwhere(w.mat == FLESH)
+    truth = w._walkable(cells)
+    phantom = int((truth & ~p["free"] & p["known"]).sum())
+    assert phantom == 0, \
+        f"it believes in {phantom} walls that are open floor, and it made " \
+        f"every one of them by standing there"
+
+
+def _reach_set(w, p, snap, elbow, grid=0.1):
+    """Every cell the HAND can be put in, over the whole range of the joints."""
+    out = set()
+    span = np.arange(-1.8, 1.8, grid)
+    for sh in span:
+        for el in (span if elbow else [0.0]):
+            w.restore(snap)
+            q = w.persons[0]
+            if w._repose(q, "right arm", [float(sh), float(el)]) != "moved":
+                continue
+            fore = w._limb_parts(q, "right arm", None)[-1]
+            if fore is None or not len(fore):
+                continue
+            d = np.abs(fore[:, 0] - 13) + np.abs(fore[:, 2] - 25)
+            out.add(tuple(int(v) for v in fore[np.argmax(d)]))
+    return out
+
+
+def _reacher(wall_x=None):
+    from src.voxel.scenes import _person, _Wants
+    w = World(40, 16, 44, voxel_cm=5)
+    w.fill(0, 40, 0, 16, 0, 1, STONE)
+    w.exits = []
+    p = _person(w, 10, 8, z0=1)
+    p["name"], p["facing"] = "the reacher", (1.0, 0.0)
+    if wall_x is not None:
+        w.fill(wall_x, wall_x + 2, 0, 16, 1, 34, STONE)
+    w.policy = _Wants(each={"the reacher": {"hands": "reach out",
+                                            "legs": "stay"}})
+    return w, p
+
+
+def test_an_ELBOW_puts_the_hand_where_ONE_BONE_never_could():
+    """What a second joint BUYS, counted rather than asserted.
+
+    One bone has exactly one path to a place: the hand rides a circle about the
+    shoulder, and on a 5 cm lattice almost every point of that circle rounds to
+    something that is not a joined arm. So a one-boned man has TWO poses —
+    hanging down, and straight out — and nothing in between is a pose at all.
+    An elbow multiplies that severalfold, and the honest way to say so is to
+    count the cells the hand can be put in."""
+    w, p = _reacher()
+    w.step()
+    snap = w.snapshot()
+    one = _reach_set(w, p, snap, elbow=False)
+    two = _reach_set(w, p, snap, elbow=True)
+    assert one <= two, "an elbow held straight is still an arm — it loses nothing"
+    assert len(two) >= 3 * len(one), \
+        f"a second joint should open a REGION, not a point or two " \
+        f"({len(one)} places with one bone, {len(two)} with an elbow)"
+
+
+def test_an_ARM_BENDS_round_what_it_cannot_reach_THROUGH():
+    """Item 36, and the reason it was on the list: with one degree of freedom
+    an arm that meets anything simply stops, because there is only ever one way
+    to where it was going.
+
+    A wall stands just past this man's elbow. His upper arm can get out; his
+    forearm cannot go on into stone. So he puts the arm out and BENDS — hand
+    as far forward as there is room for, every voxel of arm still on him, the
+    arm still in one piece, and the wall untouched.
+
+    Which way the bones get there is motor competence, not a decision: the
+    CHOICE was "reach out", the same way choosing a door is a choice and
+    knowing the way round the table is not."""
+    for wall_x in (18, 19, 20):
+        w, p = _reacher(wall_x)
+        stone = int((w.mat == STONE).sum())
+        rest = w._limb_cells(p, "right arm")
+        n, x_rest = len(rest), int(rest[:, 0].max())
+        for _ in range(60):
+            w.step()
+            p["events"].clear()
+        arm = w._limb_cells(p, "right arm")
+        pose = list(np.atleast_1d((p.get("pose") or {})["right arm"]))
+        assert len(arm) == n, \
+            f"every voxel of the arm is still on him ({len(arm)}, was {n})"
+        assert _lumps(w.mat == FLESH) == 1, \
+            "and it is still all ONE man — a bent arm that comes out in two " \
+            "pieces has the right mass and is not an arm"
+        assert int((w.mat == STONE).sum()) == stone, \
+            "and it did not take a bite out of the wall to get there"
+        assert abs(pose[1]) > 0.1, \
+            f"the arm BENT rather than stopping dead (elbow {pose[1]:.2f} rad)"
+        assert int(arm[:, 0].max()) > x_rest + 2, \
+            f"and the hand got out past where it hung ({x_rest} -> " \
+            f"{int(arm[:, 0].max())})"
+        assert int(arm[:, 0].max()) < wall_x, "without reaching into the stone"
+
+    # AND IT IS THE WORLD SAYING NO, not a liking for bent arms: held straight,
+    # that same shoulder angle is refused.
+    w, p = _reacher(18)
+    w.step()
+    assert w._repose(p, "right arm", [float(np.pi / 2), 0.0]) != "moved", \
+        "a straight arm really cannot be put there — that is what it went round"
+
+
+def test_a_POSE_that_rounds_a_limb_APART_is_not_a_POSE():
+    """The twin of "two voxels must not round into one".
+
+    A line of voxels turned to anything but a right angle rounds to a
+    STAIRCASE, and a staircase touches only at its corners — which in a sim
+    that decides what a THING is by 6-connectivity is not one limb, it is
+    several. Measured before the check went in: an arm bent 1.2 rad came out
+    in two pieces, every gram present, no longer an arm.
+
+    So the lattice gets the same answer it always gave — the angle is not
+    drawable, the flesh holds its last good pose, the angle runs on and the
+    arm catches up when the two agree."""
+    w, p = _reacher()
+    w.step()
+    snap = w.snapshot()
+    tried = broke = 0
+    for sh in np.arange(-1.6, 1.65, 0.1):
+        for el in np.arange(-1.6, 1.65, 0.1):
+            w.restore(snap)
+            q = w.persons[0]
+            if w._repose(q, "right arm", [float(sh), float(el)]) != "moved":
+                continue
+            tried += 1
+            if _lumps(w.mat == FLESH) != 1:
+                broke += 1
+    assert tried > 0, "some poses are drawable, or this test proves nothing"
+    assert broke == 0, \
+        f"{broke} of {tried} accepted poses left the man in pieces"
+
+
+def _waller(top=None):
+    """A reacher with a waist-high wall in front of him — one his arm CLEARS
+    once it is horizontal, and cannot get to without sweeping through."""
+    from src.voxel.scenes import _person, _Wants
+    w = World(40, 16, 44, voxel_cm=5)
+    w.fill(0, 40, 0, 16, 0, 1, STONE)
+    w.exits = []
+    p = _person(w, 10, 8, z0=1)
+    p["name"], p["facing"] = "the reacher", (1.0, 0.0)
+    if top is not None:
+        w.fill(15, 17, 0, 16, 1, top, STONE)      # standing on the floor
+    w.policy = _Wants(each={"the reacher": {"hands": "reach out",
+                                            "legs": "stay"}})
+    return w, p
+
+
+def test_an_ARM_CANNOT_SWEEP_THROUGH_what_it_would_CLEAR_at_the_end():
+    """Only the pose at the END of a tick was ever checked.
+
+    That is honest while a limb turns a little at a time, and stops being
+    honest the moment it does not. The flesh waits at every angle the lattice
+    cannot draw and then catches up several angles at once — so a wall sitting
+    in the undrawable part of the sweep was never touched by anything. The arm
+    was on one side of it, and then it was on the other, and the wall was
+    unmarked because nothing had happened to it.
+
+    A waist-high wall is exactly that shape: the arm CLEARS it once horizontal,
+    so the final pose is legal, and the only way there is through the stone."""
+    import src.voxel.sim as S
+    w, p = _waller()                          # no wall: the reach works
+    for _ in range(60):
+        w.step()
+        p["events"].clear()
+    assert int(w._limb_cells(p, "right arm")[:, 0].max()) > 16, \
+        "with nothing in the way the arm gets well past x16"
+
+    for top in (20, 24, 26):
+        w, p = _waller(top)
+        stone = int((w.mat == STONE).sum())
+        for _ in range(60):
+            w.step()
+            p["events"].clear()
+        arm = w._limb_cells(p, "right arm")
+        assert int(arm[:, 0].max()) < 15, \
+            f"the arm is on ITS side of the wall (reached x" \
+            f"{int(arm[:, 0].max())}, wall at x15)"
+        assert int((w.mat == STONE).sum()) == stone, \
+            "and the wall is whole, because nothing went through it"
+        assert _lumps(w.mat == FLESH) == 1, "and he is still one man"
+
+    # AND IT IS THE SWEEP DOING IT. Turn the sweep off and the same arm walks
+    # straight through the same wall, which is what this was written for.
+    was = S._SWEEP_RAD
+    try:
+        S._SWEEP_RAD = 99.0                   # no gap is ever bigger: never sweeps
+        w, p = _waller(24)
+        for _ in range(60):
+            w.step()
+            p["events"].clear()
+        assert int(w._limb_cells(p, "right arm")[:, 0].max()) > 16, \
+            "without the sweep the arm really did pass through the stone — " \
+            "if this stops being true the test above proves nothing"
+    finally:
+        S._SWEEP_RAD = was
+
+
+def test_a_REFUSED_REACH_is_not_asked_again_until_something_CHANGES():
+    """A picked option must be one that can happen. That is the whole value of
+    the menu seam, and a man pinned against a wall was breaking it: he decided
+    to reach out, the world refused, the intention was dropped, and a few ticks
+    later the same option was on the same menu again — for ever. Every one of
+    those went into the trace as a decision that changed nothing, which is
+    exactly the kind of row a harvest must never learn from.
+
+    So a body remembers that it could not, against the spot it was standing on
+    and the way it was facing — and forgets the moment either changes, because
+    then it is a different question about a different wall."""
+    from collections import Counter
+    counts = {}
+    for forget in (True, False):
+        w, p = _waller(24)
+        for _ in range(400):
+            w.step()
+            p["events"].clear()
+            if forget:
+                p.pop("_no_reach", None)      # no memory: the OLD behaviour
+        picks = [r["tags"].get("hands") for r in w.traces
+                 if r["who"] == "the reacher"]
+        counts[forget] = (sum(1 for k in picks if k == "reach"), len(picks))
+    old, new = counts[True], counts[False]
+    assert old[0] == old[1] and old[1] > 5, \
+        f"without the memory every single decision is the same refused reach " \
+        f"({old[0]} of {old[1]}) — if that stops being true this proves nothing"
+    assert new[0] <= 2, \
+        f"it asks once, finds out, and stops asking ({new[0]} of {new[1]})"
+
+
+def test_an_arm_LEFT_OUT_is_offered_the_way_BACK_IN():
+    """The menu read the INTENTION — "is a reach wanted" — and called that
+    "is the arm out". They part company the moment a reach is abandoned: the
+    world said no, the wanting stopped, and the flesh is still out there. A man
+    with his arm stuck half out was then offered the chance to reach out, and
+    never once the chance to bring it down."""
+    w, p = _reacher()
+    for _ in range(30):
+        w.step()
+        p["events"].clear()
+    arm = w._limb_cells(p, "right arm")
+    assert int(arm[:, 0].max()) > 16, "the arm really is out"
+    p["reach"] = {}                           # the wanting stops; the arm does not
+    cells = np.argwhere(w.mat == FLESH)
+    keys = [o["key"] for o in w._menu(p, cells, None, "hands", {})]
+    assert "pull the arm back in" in keys, \
+        f"an arm that is OUT can be brought in, whatever the body meant: {keys}"
+    assert "reach out" not in keys, "and it is not asked to do what it has done"
+
+
+def _leaner(ledge=False):
+    from src.voxel.scenes import _person, _Wants
+    w = World(44, 16, 50, voxel_cm=5)
+    w.fill(0, 44, 0, 16, 0, 1, STONE)
+    if ledge:
+        w.fill(0, 18, 0, 16, 1, 30, STONE)        # a shelf; the drop is at x18
+    w.exits = []
+    p = _person(w, 12, 8, z0=30 if ledge else 1)
+    p["name"], p["facing"] = "the leaner", (1.0, 0.0)
+    w.policy = _Wants(each={"the leaner": {"waist": "lean out", "legs": "stay"}})
+    return w, p
+
+
+def test_a_SPINE_BENDS_rather_than_SWINGING():
+    """A torso is a solid slab, and a rigid rotation of a solid slab is never
+    injective on a grid: at EVERY angle some pair of its voxels rounds into one
+    cell. So while a lean was a rotation, every lean was refused as undrawable
+    and a body could not bend at all — the elbow's own machinery, working
+    perfectly, saying no to everything.
+
+    A lean is not one bone swinging. A trunk is a stack of vertebrae and
+    bending it is each slice sliding forward over the one below — a SHEAR.
+    Which is what the thing actually is, and which has the property the lattice
+    needs for nothing: every row moves by one constant, so within a row it is a
+    translation of integers, and rows never meet because their height does not
+    change."""
+    w, p = _leaner()
+    w.step()
+    snap = w.snapshot()
+    grams = _flesh_grams(w)
+    ok = 0
+    for th in (0.1, 0.2, 0.3, 0.4, 0.6, 0.8):
+        w.restore(snap)
+        q = w.persons[0]
+        assert w._repose(q, "lean", float(th)) == "moved", \
+            f"a spine can be bent {th} rad — a rotation could not be bent at all"
+        ok += 1
+        assert _lumps(w.mat == FLESH) == 1, f"and he is one man at {th} rad"
+        assert abs(_flesh_grams(w) - grams) < 1.0, f"and all there at {th} rad"
+        head = w._limb_cells(q, "head")
+        legs = w._limb_cells(q, "left leg")
+        assert int(head[:, 0].mean()) > int(legs[:, 0].mean()), \
+            "the head goes out over the toes and the legs stay standing"
+    assert ok == 6
+
+
+def test_a_body_LEANS_AS_FAR_AS_IT_CAN_STAND_and_no_further():
+    """Balance was only ever asked about what a body was CARRYING. Nobody
+    noticed while a body was one rigid block, because a block standing up
+    straight has its weight over its feet by construction — give it a waist and
+    the hole opens, and a man bent 46 degrees with his head fourteen voxels
+    past his toes stood there indefinitely.
+
+    Now a pose you cannot KEEP is not a pose you adopt, which is the gate the
+    muscle already had with the other reason a body stops short. The angle is
+    not written anywhere: it falls out of where this body's mass sits over this
+    body's feet, so a heavier head or a longer foot would give a different one."""
+    w, p = _leaner()
+    for _ in range(150):
+        w.step()
+        p["events"].clear()
+    # DRAWN, not posed: the angle is a motor command and runs on through every
+    # angle the lattice cannot draw. `drawn` is where the flesh IS, and that is
+    # the only number a test about a body's shape may believe.
+    bent = float(np.atleast_1d((p.get("drawn") or {})["lean"])[0])
+    assert 0.05 < bent < 0.3, \
+        f"it leaned, and it stopped well short of folding in half ({bent:.2f} rad)"
+    assert p["alive"] and p["awake"], "and it is still standing"
+    own = np.argwhere(w.mat == FLESH)
+    assert w._overbalanced(p, own) is None, \
+        "it is holding a pose it can actually hold"
+
+    # AND IT REALLY IS BALANCE DOING IT: put him past that angle by hand and
+    # the floor stops being enough.
+    w2, p2 = _leaner()
+    w2.step()
+    w2._repose(p2, "lean", 0.5)
+    went = []
+    for _ in range(40):
+        w2.step()
+        went += [e for e in p2["events"] if "overbalance" in e]
+        p2["events"].clear()
+    assert went, "bent past what he can stand, he goes over"
+
+
+def test_LEANING_is_a_CHOICE_like_any_other():
+    """A waist is a part of the body, so it gets a menu like every other part.
+    The null act KEEPS what the body is doing — a trunk takes many ticks to
+    bend and the body has to be able to go on bending — and straightening up is
+    an act of its own, the same shape as hands keeping or letting go."""
+    w, p = _leaner()
+    cells = np.argwhere(w.mat == FLESH)     # BEFORE it has decided anything
+    keys = [o["key"] for o in w._menu(p, cells, None, "waist", {})]
+    assert "lean out" in keys and "stand as it is" in keys, keys
+    for _ in range(40):
+        w.step()
+        p["events"].clear()
+    assert any(r["tags"].get("waist") == "lean" for r in w.traces), \
+        "leaning went through the menu like any other act"
+    keys = [o["key"] for o in w._menu(p, np.argwhere(w.mat == FLESH), None,
+                                      "waist", {})]
+    assert "straighten up" in keys, \
+        f"and a body that is bent can choose to stop being bent: {keys}"
+
+
+def test_a_HAND_ON_THE_RAIL_lets_a_man_lean_out_over_the_LIP():
+    """What a lean is FOR, and it is the same sum `_pulled_over` does read from
+    the other end.
+
+    A held thing that is not resting on anything hangs from you, and drags you
+    over. A held thing that IS resting on something is holding itself up — so
+    it can hold you too, and your base reaches your hand. Nothing new is
+    declared for it: a grip was already an edge in the support graph, and
+    balance already read the foot contact; they simply had never met.
+
+    Same man, same back, same spine. The world is the only difference."""
+    from src.voxel.scenes import _person, _Wants
+
+    def ledge(rail):
+        w = World(46, 16, 60, voxel_cm=5)
+        w.fill(0, 46, 0, 16, 0, 1, STONE)
+        w.fill(0, 20, 0, 16, 1, 30, STONE)        # the shelf; the drop is at x20
+        w.exits = []
+        p = _person(w, 13, 8, z0=30)
+        p["name"], p["facing"] = "the leaner", (1.0, 0.0)
+        want = {"waist": "lean out", "legs": "stay"}
+        if rail:
+            w.fill(18, 19, 6, 10, 30, 49, IRON)   # a post at the lip
+            want["hands"] = "take hold of the iron"
+        w.policy = _Wants(each={"the leaner": want})
+        for _ in range(200):
+            w.step()
+            p["events"].clear()
+        return w, p, float(np.atleast_1d(
+            (p.get("drawn") or {}).get("lean", 0.0))[0])   # the FLESH, not the wish
+
+    w_free, p_free, free = ledge(False)
+    w_held, p_held, held = ledge(True)
+    assert p_held.get("held"), "he took hold of the post"
+    assert free < 0.3, \
+        f"with nothing to hold he leans as far as his own toes allow ({free:.2f})"
+    assert held > 1.5 * free, \
+        f"with a hand on the post he leans far further out ({held:.2f} vs " \
+        f"{free:.2f} rad)"
+    # AND THE TWO ARE STOPPED BY DIFFERENT THINGS, which is worth knowing: the
+    # free man is stopped by BALANCE and the holding man by the LATTICE — past
+    # about 0.34 rad the shear tears a one-voxel-wide arm off its own shoulder
+    # and `_still_joined` refuses it. So the second figure is a limit of the
+    # voxel size (item 41), not of the man.
+    own = np.argwhere(w_held.mat == FLESH)
+    assert w_held._overbalanced(p_held, own) is None, \
+        "the man holding on is not straining his balance at all — he has run " \
+        "out of lattice, not out of grip"
+    for w, p in ((w_free, p_free), (w_held, p_held)):
+        assert p["alive"] and p["awake"], "and neither of them fell"
+        assert _lumps(w.mat == FLESH) == 1, "and neither came apart"
+    assert int(w_held._limb_cells(p_held, "head")[:, 0].mean()) > \
+        int(w_free._limb_cells(p_free, "head")[:, 0].mean()), \
+        "the one holding on has his head further out over the drop"
+
+
+def test_a_body_USES_ITS_DOMINANT_HAND_and_the_other_when_that_is_the_one():
+    """A body has two arms and a preference.
+
+    The dominant one is stronger and better practised, so it is what a body
+    reaches with — but it is a PREFERENCE, not a rule, and the other hand wins
+    when the other hand is plainly the one for the job. That is a REASON rather
+    than a die: a thing on your left is nearer your left hand, and past half a
+    shoulder width that beats being right-handed. Which matters twice over,
+    because the sim carries no die, and because "sometimes the other hand" is
+    not a coin toss in real bodies either — it is where the thing is."""
+    from src.voxel.scenes import _person
+    for handed, other in (("right", "left"), ("left", "right")):
+        w = World(40, 30, 50, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 40, 0, 30, 0, 1, STONE)
+        p = _person(w, 12, 15, handed=handed)
+        own = np.argwhere(w.mat == FLESH)
+        assert w._hand(p, own) == f"{handed} arm", \
+            "with nothing to reach for, a body uses its good hand"
+        near = w._fist_of(p, f"{other} arm", own)
+        assert w._hand(p, own, toward=near) == f"{other} arm", \
+            "a thing right by the other hand is taken with the other hand"
+        far = w._fist_of(p, f"{handed} arm", own)
+        assert w._hand(p, own, toward=far) == f"{handed} arm"
+        assert w._hand_strength(p, f"{other} arm") < \
+            w._hand_strength(p, f"{handed} arm"), \
+            "and the other hand is weaker, which is what dominance MEANS"
+
+
+def test_ONE_HAND_HOLDS_THE_POST_while_the_OTHER_REACHES():
+    """The one thing a lean was built for, and it needed two working hands.
+
+    Every act used to name `"right arm"` — seven places — so the left arm was
+    flesh, mass, a lever and a fist that nothing could ever be done with, and a
+    man could not hold on and reach at the same time. The arm is chosen now,
+    and a hand that is already full is not a candidate: an indisposed hand is
+    not a choice, it is an absence."""
+    from src.voxel.scenes import _person, _Wants
+
+    def rescue(handed):
+        w = World(46, 16, 60, voxel_cm=5)
+        w.fill(0, 46, 0, 16, 0, 1, STONE)
+        w.fill(0, 20, 0, 16, 1, 30, STONE)        # the lip is at x20
+        w.exits = []
+        p = _person(w, 13, 8, z0=30, handed=handed)
+        p["name"], p["facing"] = "the rescuer", (1.0, 0.0)
+        w.fill(18, 19, 6, 10, 30, 49, IRON)       # a post at the lip
+        w.policy = _Wants(each={"the rescuer": {"hands": "take hold of the iron",
+                                                "waist": "lean out",
+                                                "legs": "stay"}})
+        for _ in range(60):
+            w.step()
+            p["events"].clear()
+        w.policy = _Wants(each={"the rescuer": {"hands": "reach out",
+                                                "waist": "lean out",
+                                                "legs": "stay"}})
+        for _ in range(80):
+            w.step()
+            p["events"].clear()
+        return w, p
+
+    for handed, other in (("right", "left"), ("left", "right")):
+        w, p = rescue(handed)
+        held = p.get("held") or {}
+        assert held.get("label") == "iron", "he has hold of the post"
+        assert held["arm"] == f"{handed} arm", \
+            f"and took it with his good hand ({held['arm']})"
+        posed = [k for k in (p.get("pose") or {}) if "arm" in k]
+        assert posed == [f"{other} arm"], \
+            f"while the OTHER arm is the one doing the reaching ({posed})"
+        assert _lumps(w.mat == FLESH) == 1 and p["alive"] and p["awake"]
+
+
+def test_a_BODY_STOPS_ASKING_for_a_pose_it_can_never_be_IN():
+    """The angle outrunning the flesh is deliberate and right: it is how a limb
+    crosses the angles the lattice cannot draw and catches up at the next one
+    that can. What was missing was the end of that story.
+
+    A lean has a long undrawable tail, so the command ran to its stop and the
+    flesh stayed far behind it — a body whose angle read 45.8 degrees was bent
+    19.3, for ever, and anything that believed the angle was wrong about the
+    body. When the command has been given in full and the body is still not
+    there, THAT is how far this joint goes here, and it settles to where it
+    actually is."""
+    w, p = _leaner()
+    for _ in range(200):
+        w.step()
+        p["events"].clear()
+    pose = float(np.atleast_1d((p.get("pose") or {})["lean"])[0])
+    drawn = float(np.atleast_1d((p.get("drawn") or {})["lean"])[0])
+    assert abs(pose - drawn) < 1e-9, \
+        f"what the body is asking for and what it IS have to agree once it " \
+        f"has stopped moving (asking {pose:.3f}, at {drawn:.3f})"
+    assert drawn > 0.05, "and it did actually bend"
+
+
+def test_what_LEAVES_THE_WORLD_is_counted_not_lost():
+    """A lattice has edges, and a thing thrown past one is outside it.
+
+    Those cells used to be CLAMPED — a voxel swung past the wall was set down
+    ON the wall instead, several of them into the same column, and each write
+    overwrote the last. So mass went missing, quietly, in the one field every
+    test in the suite leans on. Clamping was never right anyway: it teleports
+    matter to the edge and calls that a landing.
+
+    A thing that leaves is gone, and saying so is what keeps "mass is
+    conserved" a statement you can CHECK — it is on the lattice, or in a body
+    in flight, or on the tally, and the three add up."""
+    w = World(30, 12, 40, voxel_cm=5)
+    w.fill(0, 30, 0, 12, 0, 1, STONE)
+    w.fill(1, 3, 5, 8, 1, 34, WOOD, frac=0.8)     # tall, and right at the edge
+    before = float(w.smass[w.mat == WOOD].sum())
+    b = w._launch(np.argwhere(w.mat == WOOD), (0.0, 0.0, 0.0))
+    b["fly"] = False                              # topple it OUT of the world
+    b["axis"], b["s"] = 0, 1
+    b["pivot"], b["zb"] = 2.0, 1.0
+    b["theta"], b["omega"] = 0.0, 0.35
+    b["Nm"], b["I"] = 0.0, 1.0
+    for _ in range(40):
+        w.step()
+        if not w.bodies:
+            break
+    on = float(w.smass[w.mat == WOOD].sum())
+    assert w.total_lost() > 0.0, \
+        "some of it really did go over the edge — or this proves nothing"
+    assert abs(on + w.total_lost() - before) < 1.0, \
+        f"every gram is on the lattice or on the tally " \
+        f"({on:.0f} + {w.total_lost():.0f} vs {before:.0f})"
+    assert abs(w.total_wood() - before) < 1.0, \
+        "and the world's own total says so without being asked twice"
+    assert float(w.smass[0, :, :][w.mat[0, :, :] == WOOD].sum()) == 0.0, \
+        "and nothing was teleported into the wall to make the sum work"
