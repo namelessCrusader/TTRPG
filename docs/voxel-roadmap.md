@@ -198,8 +198,8 @@ These are what it opened up and what it left behind.
    passing. Sixth entry this session that did not survive being checked.
 3. ~~**Throwing falls out of (2)**~~ **BUILT (2026-09-12)**, and it did fall
    out of it. See "A throw is a swing that lets go" below.
-4. **Catching.** A percept for a thing in flight, plus reach. Cheap once bodies
-   have trajectories, which they now do.
+4. ~~**Catching.**~~ **BUILT (2026-09-12)** — and it was cheap, exactly as
+   this said. See "A catch is a grab at something that will not wait" below.
 5. **Walkers cannot change elevation at all** — not a step up, not a stair, not
    a ladder. TRIED 2026-09-11 and taken back out; it works, and it is blocked
    behind item 13 rather than behind geometry. See "What a step up cost".
@@ -3185,3 +3185,39 @@ unwinding into the swing would cost no new law. Item 55.
 
 Tests: `test_a_THROW_is_a_SWING_that_lets_go`,
 `test_a_LIGHTER_THING_is_THROWN_HARDER`.
+
+
+## A catch is a grab at something that will not wait (2026-09-12)
+
+Item 4, and it cost almost nothing — which is what the item predicted, and
+which only became true this afternoon when throwing gave the sim something to
+catch.
+
+**Nothing new was modelled.** A flier already has a position and a velocity; a
+fist already has a place; `reach_m` already says how far a hand goes. So the
+percept is not a sight cone and not a distance rule: the thing is within a
+hand's reach, which is the only range at which noticing it is any use to you.
+
+**The one law is that stopping is force times time.** A thing of mass m at
+speed v needs `m v / t` to be brought to rest in the time a closing hand gives,
+and a hand has only so much. That is why a cricket ball can be caught and a
+brick at the same speed cannot, and it is the same arithmetic as lifting — so a
+catch that is too much for the arm simply does not happen, and the thing goes
+past a hand that could not close on it.
+
+| | needs | |
+|---|---|---|
+| 0.97 kg at 4 m/s, 3000 N arm | 32 N | caught |
+| 26.3 kg at 4 m/s, 3000 N arm | 878 N | caught |
+| 7.8 kg at 4 m/s, **200 N arm** | 260 N | **goes past** |
+
+`catch_s` is 0.12 s — how long a closing hand gives. It is the whole of what
+makes a catch different from a wall, and it is the only number this needed.
+
+**And a man who does not try to catch still NOTICES.** `sees_thrown` fires
+whatever the hands then do, which is the seam working as intended: the percept
+is physics, the response is taste, and a character sheet that would rather duck
+says so in its own row.
+
+Tests: `test_a_THROWN_THING_can_be_CAUGHT_and_only_if_chosen`,
+`test_WHAT_A_HAND_CANNOT_STOP_goes_past_it`.

@@ -3468,3 +3468,90 @@ def test_a_LIGHTER_THING_is_THROWN_HARDER():
         assert k2 > k1, "the loads really do get heavier"
         assert v2 < v1, f"and each heavier one leaves slower ({v1:.2f} -> {v2:.2f})"
         assert f2 < f1, f"and lands nearer ({f1:.2f} m -> {f2:.2f} m)"
+
+
+def _pitch(catcher_wants):
+    """One man throws an iron stone; another stands where it will arrive."""
+    from src.voxel.scenes import _person, _Wants
+    w = World(90, 14, 50, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 90, 0, 14, 0, 50, STONE)
+    w.mat[1:89, 1:13, 1:46] = AIR
+    w.smass[1:89, 1:13, 1:46] = 0.0
+    w.exits = []
+    a = _person(w, 10, 7)
+    a["name"], a["facing"], a["strength_N"] = "thrower", (1.0, 0.0), 3000.0
+    b = _person(w, 40, 7)
+    b["name"], b["facing"], b["strength_N"] = "catcher", (-1.0, 0.0), 3000.0
+    w.fill(14, 15, 6, 8, 1, 3, IRON)
+    hold = {"thrower": {"hands": "take hold of the iron", "legs": "stay",
+                        "waist": "stand"},
+            "catcher": {"hands": catcher_wants, "legs": "stay", "waist": "stand"}}
+    w.policy = _Wants(each=hold)
+    for _ in range(30):
+        w.step()
+        a["events"].clear()
+        b["events"].clear()
+    hold["thrower"]["hands"] = "throw the iron"
+    w.policy = _Wants(each=hold)
+    ev = []
+    for _ in range(200):
+        w.step()
+        ev += [e.split(": ", 1)[1] for e in a["events"] + b["events"]]
+        a["events"].clear()
+        b["events"].clear()
+    return w, b, ev
+
+
+def test_a_THROWN_THING_can_be_CAUGHT_and_only_if_chosen():
+    """Catching needed nothing new once things could be thrown. A flier already
+    has a position and a velocity; a fist already has a place. The percept is
+    not a sight cone or a distance rule — the thing is within a hand's reach,
+    which is the only range at which noticing it is any use to you."""
+    w, b, ev = _pitch("catch")
+    assert (b.get("held") or {}).get("label") == "iron", \
+        f"he caught it ({ev[:3]})"
+    assert any("catches" in e for e in ev), "and it went through the menu"
+
+    w2, b2, ev2 = _pitch("hands free")
+    assert b2.get("held") is None, "a man who does not try to catch, does not"
+    assert any("sees thrown" in e for e in ev2), \
+        f"but he NOTICED — the percept fires whatever he then does ({ev2[:3]})"
+
+
+def test_WHAT_A_HAND_CANNOT_STOP_goes_past_it():
+    """Stopping is force times time. A thing of mass m at speed v needs
+    `m v / t` to be brought to rest in the time a closing hand gives, and a
+    hand has only so much. Which is the whole of why a cricket ball can be
+    caught and a brick at the same speed cannot — and it is the same arithmetic
+    as lifting, so nothing was added for it."""
+    from src.voxel.scenes import _person, _Wants
+
+    def hurl(strength):
+        w = World(90, 14, 50, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 90, 0, 14, 0, 50, STONE)
+        w.mat[1:89, 1:13, 1:46] = AIR
+        w.smass[1:89, 1:13, 1:46] = 0.0
+        w.exits = []
+        p = _person(w, 40, 7)
+        p["name"], p["facing"] = "catcher", (-1.0, 0.0)
+        p["strength_N"] = strength
+        w.policy = _Wants(each={"catcher": {"hands": "catch", "legs": "stay",
+                                            "waist": "stand"}})
+        for _ in range(20):
+            w.step()
+            p["events"].clear()
+        w.fill(20, 22, 6, 8, 22, 24, IRON)
+        cells = np.argwhere(w.mat == IRON)
+        grams = w.total_mass(IRON)
+        w._launch(cells, (4.0, 0.0, 0.0))
+        for _ in range(120):
+            w.step()
+            p["events"].clear()
+        assert abs(w.total_mass(IRON) - grams) < 1.0, "caught or not, it all exists"
+        return (p.get("held") or {}).get("label")
+
+    assert hurl(3000.0) == "iron", "a strong arm closes on it"
+    assert hurl(200.0) is None, \
+        "and a weak one cannot — the same thing at the same speed goes past"

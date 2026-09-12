@@ -332,6 +332,7 @@ ACTS = {"go":     {"limb": "legs",  "null": False},
         "keep":   {"limb": "hands", "null": True},
         "swing":  {"limb": "hands", "null": False},
         "throw":  {"limb": "hands", "null": False},
+        "catch":  {"limb": "hands", "null": False},
         "take":   {"limb": "hands", "null": False},
         "reach":  {"limb": "hands", "null": False},
         "pull_in": {"limb": "hands", "null": False},
@@ -354,7 +355,10 @@ REFLEXES = {"sees_fire":   {"legs": "go:exit", "mouth": "say:fire"},
             "scorched":    {"legs": "go:exit", "mouth": "say:fire"},
             "hears_alarm": {"legs": "go:exit", "mouth": "say:coming"},
             "sees_runner": {"legs": "go:exit"},
-            "chokes":      {"legs": "go:exit"}}
+            "chokes":      {"legs": "go:exit"},
+            # nothing for the legs: a thing coming at you is a matter for the
+            # hands, and a character sheet that wants it dodged says so
+            "sees_thrown":  {"hands": "catch"}}
 # LINES — the words a body has. A character sheet REPLACES this wholesale, so
 # a character who only ever calls a warning has no answer to give.
 LINES = {"fire":   "Fire! Fire! Get out!",
@@ -529,6 +533,11 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         # falls out of the geometry rather than being aimed — a body throws
         # well because of where its shoulder is, not because it knows ballistics.
         "throw_rad": 0.785,      # pi/4 from hanging
+        # CATCHING is stopping something, and stopping is force times time. A
+        # hand gives as it closes — that is what makes a catch different from
+        # a wall — and how long it gives for is the whole of why a cricket ball
+        # can be caught and a brick at the same speed cannot.
+        "catch_s": 0.12,         # seconds a closing hand takes to stop a thing
         # AND A MUSCLE CANNOT PULL AT ANY SPEED. Hill's force-velocity
         # relation: the faster a muscle is already shortening the less force
         # it makes, so torque fades to nothing at a top speed. Without it an
@@ -4511,6 +4520,56 @@ class World:
         obj = self._object_at(x, y, z)
         return obj.astype(np.int64) if len(obj) else None
 
+    def _in_flight_near(self, p, own):
+        """Things in the air that a hand of this body could close on now.
+
+        A catch is a grab at something that will not wait. So the test is the
+        same reach a grab uses, asked of a body that has left the grid — which
+        is why this needed nothing new once things could be thrown: a flier
+        already has a position and a velocity, and a fist already has a place."""
+        out = []
+        if not self.bodies:
+            return out
+        reach = BODY["reach_m"] / max(0.1 * self.scale, 1e-9)
+        fists = np.asarray(self._fists(p, own), np.float64)
+        for b in self.bodies:
+            if not b.get("fly") or b.get("owner") == p["name"] or b.get("part"):
+                continue
+            at = self._fly_pose(b)
+            d = np.abs(at[None, :, :] - fists[:, None, :]).max(axis=2)
+            if float(d.min()) <= reach:
+                out.append(b)
+        return out
+
+    def _catch(self, p, b, arm):
+        """Close a hand on something in flight, if the hand can stop it.
+
+        Stopping is force times time: a thing of mass m at speed v needs
+        `m v / t` to be brought to rest in `t`, and a hand has only so much.
+        That is the whole rule, and it is the same arithmetic as lifting — a
+        catch that is too much for the arm simply does not happen, and the
+        thing goes on its way past a hand that could not close on it."""
+        m = float(b["masses"].sum()) / 1000.0
+        v = float(np.linalg.norm(b["vel"]))
+        if m * v / max(BODY["catch_s"], 1e-9) > self._hand_strength(p, arm):
+            return False
+        at = np.round(self._fly_pose(b)).astype(np.int64)
+        b["vel"] = np.zeros(3)                # caught: it arrives with nothing
+        self._land_body(b, None)
+        if b in self.bodies:
+            self.bodies.remove(b)
+        nx, ny, nz = self.shape
+        for c in at:
+            cx, cy, cz = (min(max(int(c[0]), 0), nx - 1),
+                          min(max(int(c[1]), 0), ny - 1),
+                          min(max(int(c[2]), 0), nz - 1))
+            if int(self.mat[cx, cy, cz]) != AIR:
+                p["held"] = {"cell": (cx, cy, cz), "mat": int(self.mat[cx, cy, cz]),
+                             "label": MATNAME.get(int(self.mat[cx, cy, cz]), "thing"),
+                             "arm": arm}
+                return True
+        return True
+
     def _hand(self, p, own, toward=None, free=False):
         """WHICH HAND does this.
 
@@ -5062,6 +5121,17 @@ class World:
                     menu.append({"key": f"throw the {p['held']['label']}",
                                  "tag": "throw", "verb": "throw",
                                  "arm": (p.get("held") or {}).get("arm") or arm})
+                else:
+                    # AND A HAND THAT IS EMPTY CAN CLOSE ON SOMETHING PASSING.
+                    # Offered only for a thing genuinely within reach right now,
+                    # so a picked catch is a catch that can happen — whether the
+                    # arm can STOP it is the act's own question, and a hand that
+                    # cannot is a hand the thing goes past.
+                    for fb in self._in_flight_near(p, cells):
+                        lab = MATNAME.get(int(fb["mats"][0]), "thing")
+                        menu.append({"key": f"catch the {lab}", "tag": "catch",
+                                     "verb": "catch", "arm": arm, "body": fb,
+                                     "away": 0.0})
             for q in self._within_reach(p, cells):
                 if q["name"] == held:
                     continue
@@ -5253,6 +5323,15 @@ class World:
                 (p.get("reach") or {}).pop(
                     hands.get("arm") or self._hand(p, cells), None)
                 p["events"].append(f"t{self.tick}: {p['name']} lowers the arm")
+            elif hands["verb"] == "catch":
+                fb = hands.get("body")
+                if fb is not None and fb in self.bodies:
+                    got = self._catch(p, fb, hands.get("arm")
+                                      or self._hand(p, cells))
+                    p["events"].append(
+                        f"t{self.tick}: {p['name']} "
+                        + ("catches the " + (p.get("held") or {}).get("label", "thing")
+                           if got else "cannot hold what is coming, and it goes past"))
             elif hands["verb"] == "let_go":
                 p["dragging"], p["held"] = None, None
                 p["events"].append(f"t{self.tick}: {p['name']} lets go")
@@ -5411,6 +5490,11 @@ class World:
                     # suffocated there over two hundred ticks without once
                     # perceiving the thing he was stood in.
                     percept = "scorched"
+                if percept is None and self._in_flight_near(p, cells):
+                    # SOMETHING IS COMING. Needs no sight cone and no distance
+                    # rule: it is already within a hand's reach, which is the
+                    # only range at which noticing is any use to you.
+                    percept = "sees_thrown"
                 if percept is None and p["smoke"] > 0.05:
                     percept = "chokes"                   # coughing IS noticing
                 if percept is None:
