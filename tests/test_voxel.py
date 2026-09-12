@@ -3303,3 +3303,34 @@ def test_DRAGGING_A_THING_HEATS_IT_and_the_floor():
     assert with_rub > 100.0, \
         f"dragging iron across a stone floor puts real joules into the world " \
         f"({with_rub:.0f} J)"
+
+
+def test_a_LONG_FALL_arrives_at_the_speed_gravity_gives_it():
+    """`FALL_SUBSTEPS` caps how many voxels a column may drop in one tick,
+    because the thing it might land on has to be re-asked each time. The note
+    against it said that capped falls at 8 m/s. It did not.
+
+    It capped the DESCENT and left the speed running. A body that cannot fall
+    as fast as gravity is pulling it spends LONGER falling, and gravity goes on
+    adding to it the whole time — so a long drop arrived too FAST. Energy goes
+    as v squared, so a 20 m fall landed with twice the blow it should have,
+    which is the sort of error that makes every cliff in the sim a liar."""
+    for h, tol in ((120, 0.08), (240, 0.08), (400, 0.10)):
+        w = World(10, 10, h + 10, voxel_cm=5)
+        w.open_sky = True
+        w.fill(0, 10, 0, 10, 0, 1, STONE)
+        w.fill(4, 6, 4, 6, h, h + 2, IRON)
+        peak, landed = 0.0, False
+        for _ in range(2000):
+            w.step()
+            peak = max(peak, float(w.vfall.max()))
+            c = np.argwhere(w.mat == IRON)
+            if len(c) and int(c[:, 2].min()) <= 1:
+                landed = True
+                break
+        assert landed, "it reached the floor"
+        drop_m = (h - 1) * 0.05
+        ideal = np.sqrt(2 * 9.81 * drop_m)
+        assert abs(peak - ideal) / ideal < tol, \
+            f"a {drop_m:.0f} m drop arrives at {peak:.1f} m/s where gravity " \
+            f"gives {ideal:.1f}"

@@ -553,11 +553,26 @@ AIR_DENS = 1.2           # kg/m^3 at room temperature. The air was always there
 DRAG_CD = 1.1            # a blunt slab, near enough. Everything a parachute
                          # does is this number meeting a big area and a small
                          # mass; there is no canopy special case to write.
-FALL_SUBSTEPS = 4        # most voxels a column may drop in one tick. Matter
+FALL_SUBSTEPS = 16       # most voxels a column may drop in one tick. Matter
                          # cannot move more than a cell per support sweep — the
                          # thing it might land on has to be re-asked each time —
                          # so a fast fall runs the sweep again within the tick.
-                         # Four caps it at 8 m/s, which is a two-storey drop.
+                         #
+                         # It was FOUR, and the note against it said that capped
+                         # falls at 8 m/s. It did not. It capped the DESCENT and
+                         # left the speed running: a body that cannot fall as
+                         # fast as gravity is pulling it spends LONGER falling,
+                         # and gravity goes on adding to it the whole time. So a
+                         # long drop arrived too FAST, not too slow — measured,
+                         # 27.8 m/s off a 20 m fall where free fall gives 19.8.
+                         # Energy goes as v squared, so that landed with twice
+                         # the blow it should have.
+                         #
+                         # Sixteen is honest to about 40 m and costs nothing:
+                         # the substep loop already stops the moment no column
+                         # has any fall left, so a world with nothing falling
+                         # never runs a second sweep. Measured with a slab
+                         # dropping through a furnished room: 1.01x a tick.
 _REACTIVE = {f for (f, _m) in REACTIONS}
 PLUME_REACH_M = 2.4              # meters of entrainment catchment: the air a
                                  # fire's plume can actually pull in — health

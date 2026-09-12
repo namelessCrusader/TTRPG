@@ -181,9 +181,10 @@ These are what it opened up and what it left behind.
    cost almost nothing once hauling had a force to charge for — the sliding
    contact it wanted turned out to be a man dragging something. See "Friction,
    and the joules nobody was counting" below.
-7. **`FALL_SUBSTEPS = 4` caps falls at 8 m/s.** Honest below it, clipped above.
-   Raising it costs a support sweep per sub-step; the fix is to sweep only the
-   columns that are actually moving.
+7. ~~**`FALL_SUBSTEPS = 4` caps falls at 8 m/s.**~~ **FIXED (2026-09-12), and
+   the note had the sign wrong.** It did not cap the speed, it capped the
+   DESCENT — so long falls arrived too FAST. See "Falls were arriving too hard"
+   below. Raised to 16, which costs 1.01x a tick.
 8. ~~**A flying body that leaves the world loses mass**~~ **FIXED
    (2026-09-12).** And it was reachable more easily than the note thought: not
    by launching anything, but by TOPPLING a tall thing standing at the edge.
@@ -3040,3 +3041,46 @@ it back exactly.
 
 Tests: `test_DRAGGING_A_THING_HEATS_IT_and_the_floor`,
 `test_the_WORLD_SAYS_HOW_MUCH_HEAT_IT_SHEDS`.
+
+
+## Falls were arriving too hard (2026-09-12)
+
+Item 7 said `FALL_SUBSTEPS = 4` capped falls at 8 m/s — honest below, clipped
+above. Measured, it does no such thing.
+
+The cap is on how many voxels a column may DROP in a tick, not on how fast it
+is going. So a body that cannot fall as fast as gravity is pulling it spends
+LONGER falling, and gravity goes on adding to it the whole time. The speed does
+not get clipped; it gets extra.
+
+| drop | arrives at | gravity gives | |
+|---|---|---|---|
+| 6 m | 11.24 m/s | 10.80 | +4% |
+| 12 m | 18.46 m/s | 15.31 | **+21%** |
+| 20 m | 27.81 m/s | 19.78 | **+41%** |
+
+Energy goes as v squared, so **a 20 m fall landed with twice the blow it should
+have**. In a sim where the first question anybody asked was whether a man can
+pull another off a cliff, that is not a rounding error.
+
+**And the fix was free, which is why the note's suggested fix was not needed.**
+It proposed sweeping only the moving columns to make more substeps affordable.
+That work is already done, in a different form: the substep loop stops the
+moment no column has any fall left, so a world with nothing falling never runs
+a second sweep. Measured with a slab dropping through a furnished room,
+4 substeps against 16:
+
+| | 4 | 16 |
+|---|---|---|
+| nothing falling | 0.26 ms/tick | 0.30 |
+| something falling | 139.48 ms/tick | **140.71 (1.01x)** |
+
+Sixteen is honest to about 40 m. Eight would have done for 20; the headroom is
+cheap and cliffs are not all the same height.
+
+**The lesson is about the note, not the code.** "Honest below 8 m/s, clipped
+above" was a guess written down as a measurement, and it sat in the file for
+weeks reading like a known quantity. A number in this file that was never
+measured should say so.
+
+Test: `test_a_LONG_FALL_arrives_at_the_speed_gravity_gives_it`.
