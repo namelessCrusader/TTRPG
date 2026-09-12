@@ -301,6 +301,11 @@ WILL = {"see_m": 12.0,           # how far the eyes take in the LAYOUT of a
                                  # anywhere nearby and never took a step, and
                                  # people were called safe nine voxels short of
                                  # the door they were running for
+        "look_for": 25,          # ticks a body holds a chosen direction before
+                                 # its head goes back to sweeping. About one
+                                 # step of the sweep: long enough to have LOOKED
+                                 # rather than glanced, short enough that a
+                                 # decision to look is not a decision to stare.
         "decide_every": 30}      # ticks before a body that stood pat will
                                  # weigh its options again — nobody
                                  # re-deliberates every fortieth of a second
@@ -316,7 +321,7 @@ WILL = {"see_m": 12.0,           # how far the eyes take in the LAYOUT of a
 # primitives do not multiply. Two acts may run together when they want
 # different parts of the body, which is not a rule anyone writes per pair; it
 # falls out of a body having parts.
-LIMBS = ("legs", "hands", "mouth", "waist")
+LIMBS = ("legs", "hands", "mouth", "waist", "eyes")
 # Names for the eight ways a person can point. Labels for humans and for
 # whatever is reading the menu; nothing in the sim reads them back.
 _DIRS = ("east", "north-east", "north", "north-west",
@@ -341,6 +346,12 @@ ACTS = {"go":     {"limb": "legs",  "null": False},
         # A WAIST IS A PART OF THE BODY, so it gets a menu like every other
         # part. Leaning is not walking and it is not reaching: the feet stay,
         # the hands do whatever they were doing, and what moves is the trunk.
+        # EYES ARE A PART OF THE BODY TOO, and looking is something a mind can
+        # DECIDE to do. The sweep stays as the null act — a body that has
+        # decided nothing is still turning its head — but "look behind you" is
+        # now a choice a body makes and a row a harvest can learn from.
+        "look":   {"limb": "eyes", "null": False},
+        "about":  {"limb": "eyes", "null": True},
         "lean":   {"limb": "waist", "null": False},
         "upright": {"limb": "waist", "null": False},
         "hold_pose": {"limb": "waist", "null": True}}
@@ -4533,7 +4544,14 @@ class World:
         reach = BODY["reach_m"] / max(0.1 * self.scale, 1e-9)
         fists = np.asarray(self._fists(p, own), np.float64)
         for b in self.bodies:
-            if not b.get("fly") or b.get("owner") == p["name"] or b.get("part"):
+            # A THING, NOT A BODY. An owned body is somebody's flesh — a person
+            # falling, or a person hanging from your own fist — and neither of
+            # those is a thing thrown at you. Without this, holding a man over
+            # a drop made you perceive him as a missile every tick, which
+            # crowded out every other percept you might have had about the
+            # situation you were actually in. Catching a falling PERSON is a
+            # real act and a different one (item 56).
+            if not b.get("fly") or b.get("part") or b.get("owner") is not None:
                 continue
             at = self._fly_pose(b)
             d = np.abs(at[None, :, :] - fists[:, None, :]).max(axis=2)
@@ -5147,6 +5165,22 @@ class World:
                 for ob in self._objects_within_reach(p, cells):
                     menu.append({"key": f"take hold of the {ob['label']}",
                                  "tag": "take", "verb": "hold", "what": ob})
+        elif limb == "eyes":
+            # THE SWEEP IS THE NULL ACT. A body that decides nothing goes on
+            # turning its head, which is what it did before eyes were a limb —
+            # so nothing in the sim got worse the day they became one.
+            held = (p.get("look") or (0, 0, -99))
+            looking = self.tick - held[2] < WILL["look_for"]
+            menu.append({"key": "go on looking about", "tag": "about",
+                         "verb": "about"})
+            fx, fy = p.get("facing", (1.0, 0.0))
+            for name, (dx, dy) in (("behind", (-fx, -fy)),
+                                   ("to the left", (-fy, fx)),
+                                   ("to the right", (fy, -fx))):
+                if looking and abs(held[0] - dx) < 1e-6 and abs(held[1] - dy) < 1e-6:
+                    continue                  # already looking that way
+                menu.append({"key": f"look {name}", "tag": f"look:{name}",
+                             "verb": "look", "dir": (float(dx), float(dy))})
         elif limb == "waist":
             if not self._bones(p, "lean") or "lean" not in (p.get("chain") or {}):
                 return []                     # nothing here bends
@@ -5364,6 +5398,11 @@ class World:
         mouth = picks.get("mouth")
         if mouth is not None and mouth["verb"] == "say":
             self._say(p, mouth["line"])
+        eyes = picks.get("eyes")
+        if eyes is not None and eyes["verb"] == "look":
+            p["look"] = (eyes["dir"][0], eyes["dir"][1], self.tick)
+            p["events"].append(
+                f"t{self.tick}: {p['name']} looks {eyes['key'][5:]}")
         waist = picks.get("waist")
         if waist is not None and waist["verb"] == "lean":
             # AS FAR AS IT CAN, and the world decides how far. `_law_pose`
@@ -5461,6 +5500,13 @@ class World:
             fx, fy = p["facing"]
             cg, sg = np.cos(off), np.sin(off)
             gaze = (fx * cg - fy * sg, fx * sg + fy * cg)
+            # UNLESS IT HAS DECIDED TO LOOK SOMEWHERE. A chosen direction wins
+            # over the sweep for as long as the body holds it — which is what
+            # makes looking an ACT rather than a thing that happens to a head.
+            want_look = p.get("look")
+            if want_look is not None and not p.get("emergency") \
+                    and self.tick - want_look[2] < WILL["look_for"]:
+                gaze = (want_look[0], want_look[1])
             p["gaze"] = gaze                  # what the eyes are pointed at
             if self.tick % 4 == 0:            # look where the eyes point, and
                 self._look_around(p, eye, cells)   # REMEMBER it

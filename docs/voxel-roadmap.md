@@ -265,9 +265,11 @@ These are what it opened up and what it left behind.
     IT, rather than reading the live lattice through a mask of where it had
     looked. See "The floor a body remembers" below. Still open: it remembers
     that a door is THERE, not that it was open, locked, or on fire.
-15. **An "eyes" limb.** The gaze sweep is a fixed cycle; looking is not yet
-    something a mind can CHOOSE to do, which it should be once anything has a
-    reason to look somewhere in particular.
+15. ~~**An "eyes" limb.**~~ **BUILT (2026-09-12)** — and the item's own
+    condition had come true: belief has contents worth checking now. A body
+    that chooses to look behind it finds a fire behind it at tick 1 where one
+    waiting for the sweep takes 50. See "Looking is something a mind can do"
+    below.
 
 **World**
 
@@ -546,15 +548,39 @@ landing at the same time.
     has never been in a hot loop; it will be the moment several bodies are
     reaching at walls.
 
-52. **THE SUITE IS EIGHT MINUTES.** 93 tests, and the slowest are the
-    multi-body scenes that have to run hundreds of ticks before the thing
-    under test happens. Not a problem yet; it is the kind of thing that is
-    fine until it is suddenly the reason nobody runs the tests.
+52. **THE SUITE IS TEN MINUTES**, 104 tests. Profiled 2026-09-12: the 15
+    slowest are 390 s of the 586, and there is no single offender — it is a
+    long tail of multi-body scenes that must run hundreds of ticks before the
+    thing under test happens. Trimming them one at a time is slow work and
+    risks weakening them.
+
+    **The cheap answer is `pytest-xdist`**, which is not installed. The tests
+    share nothing, so `-n 16` on this machine would put the wall time at the
+    length of the SLOWEST SINGLE TEST — 62 s — which is 9:46 down to about a
+    minute for one dev-only dependency and no change to any test. Not
+    installed without asking, because adding a dependency is the sort of thing
+    that should be somebody's decision rather than a side effect.
+
+    After that, the floor is `test_reflexes_flee_and_alarm_spreads_by_shout_or
+    _sight` at 62 s, and THAT one would be worth trimming.
 
 53. ~~**`total_wood()` COUNTS WHAT LEFT THE WORLD AND THE OTHER TOTALS DO
     NOT.**~~ **FIXED (2026-09-12)** — `total_mass` counts cells, bodies in
     flight, and the tally. Which also fixed a quieter one: a swung axe used to
     cease to exist for as long as it was in the air.
+
+56. **CATCHING A FALLING PERSON IS A DIFFERENT ACT.** `_in_flight_near`
+    deliberately ignores owned bodies now, because a person falling — or a
+    person hanging from your own fist — is not a thing thrown at you, and
+    reading them as one made a man holding someone over a drop perceive him as
+    a missile every tick, which crowded out every other percept about the
+    situation he was actually in.
+
+    But catching someone who is falling IS real, and the parts are all here:
+    the flier has a trajectory, the fist has a reach, and `m v / t` already
+    says whether an arm can stop it. It wants its own percept and its own row,
+    because what you do about a falling friend is not what you do about a
+    thrown stone.
 
 55. **A THROW IS ONE SHOULDER THROUGH A QUARTER TURN.** Measured: a 1 kg
     stone leaves the hand at 4.92 m/s and flies 2.45 m. That is honest for the
@@ -3221,3 +3247,41 @@ says so in its own row.
 
 Tests: `test_a_THROWN_THING_can_be_CAUGHT_and_only_if_chosen`,
 `test_WHAT_A_HAND_CANNOT_STOP_goes_past_it`.
+
+
+## Looking is something a mind can do (2026-09-12)
+
+Item 15 said an eyes limb should wait "until anything has a reason to look
+somewhere in particular". That condition came true earlier today: belief now
+holds where the fire was, which floor a body trusts, and which reaches it has
+already found impossible — all of it gathered by a head that turned on a timer
+and could not be aimed.
+
+`LIMBS` is five. **The sweep is the NULL act**, which is the property that made
+this safe: a body that decides nothing goes on turning its head exactly as it
+did before eyes were a limb, so nothing in the sim got worse the day they
+became one. What is new is that "look behind you" is a row, picked by the same
+policy and written to the same trace as every other act.
+
+**Measured on a man with his back to a fire:**
+
+| | noticed it at |
+|---|---|
+| sweeping, as before | tick **50** |
+| choosing to look behind | tick **1** |
+
+Both get there. The difference is fifty ticks of a room filling with smoke, and
+it is the difference between a mind that looks and one that waits to be shown.
+
+A chosen direction holds for `look_for` (25 ticks, about one step of the sweep)
+and then the head goes back to sweeping — long enough to have LOOKED rather
+than glanced, short enough that deciding to look is not deciding to stare. An
+emergency overrides it: a body with something urgent in front of it does not
+keep its head turned away.
+
+**And it is a row a harvest can learn from**, which is the real point. Until
+now every trace said what a body did about what it happened to see. They can
+now say what it chose to look at first — which is most of what tells a careful
+person apart from a lucky one.
+
+Test: `test_LOOKING_is_something_a_MIND_CAN_DO`.

@@ -3555,3 +3555,90 @@ def test_WHAT_A_HAND_CANNOT_STOP_goes_past_it():
     assert hurl(3000.0) == "iron", "a strong arm closes on it"
     assert hurl(200.0) is None, \
         "and a weak one cannot — the same thing at the same speed goes past"
+
+
+def test_a_PERSON_IN_THE_AIR_is_not_a_THING_THROWN_AT_YOU():
+    """A falling body is a body in flight, and so is a stone — which made a man
+    holding someone over a drop perceive him as a MISSILE, every tick, for as
+    long as he held on. That crowded out every other percept he might have had
+    about the situation he was actually in, which is the worst thing a wrong
+    percept can do: it is not merely noise, it is the only thing he notices.
+
+    Catching a falling person is real and is a different act (item 56). A thing
+    thrown has no owner; somebody's flesh does."""
+    from src.voxel.scenes import _person, _Wants
+    w = World(60, 16, 80, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 60, 0, 16, 0, 80, STONE)
+    w.mat[1:59, 1:15, 1:76] = AIR
+    w.smass[1:59, 1:15, 1:76] = 0.0
+    w.fill(0, 30, 0, 16, 1, 40, STONE)            # a ledge; the drop is at x30
+    w.exits = []
+    a = _person(w, 25, 8, z0=40)
+    a["name"], a["facing"], a["strength_N"] = "the holder", (1.0, 0.0), 4000.0
+    b = _person(w, 33, 8, z0=40)                  # standing over nothing
+    b["name"], b["facing"] = "the hanging man", (-1.0, 0.0)
+    w.policy = _Wants(each={
+        "the holder": {"hands": "take hold of the hanging man", "legs": "stay",
+                       "waist": "stand"},
+        "the hanging man": {"hands": "hands free", "legs": "stay"}})
+    # 60 ticks: the grab happens in the first few and the bad percept fired
+    # every tick after it. Watching an empty cliff for another 140 cost 60
+    # seconds of suite time and proved nothing further (item 52).
+    for _ in range(60):
+        w.step()
+        a["events"].clear()
+        b["events"].clear()
+    assert any(r["tags"].get("hands") == "hold"
+               for r in w.traces if r["who"] == "the holder"), \
+        "he did take hold of him — otherwise there is nothing to mis-perceive"
+    seen = {r.get("percept") for r in w.traces if r["who"] == "the holder"}
+    assert "sees_thrown" not in seen, \
+        f"a man he is holding is not a thing thrown at him ({sorted(x for x in seen if x)})"
+
+
+def test_LOOKING_is_something_a_MIND_CAN_DO():
+    """The gaze was a fixed cycle: a head turned on a timer, and no mind could
+    ever decide to look anywhere. That was survivable while nothing had a
+    reason to look somewhere in particular, and stopped being survivable the
+    moment belief had contents worth checking.
+
+    Eyes are a part of the body, so they get a menu. The sweep stays as the
+    NULL act — a body that has decided nothing still turns its head, so nothing
+    got worse the day eyes became a limb — and "look behind you" is now a
+    choice a body makes and a row a harvest can learn from."""
+    from src.voxel.scenes import _Wants
+
+    def run(eyes):
+        w = World(50, 20, 22, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 50, 0, 20, 0, 22, STONE)
+        w.mat[1:49, 1:19, 1:21] = AIR
+        w.smass[1:49, 1:19, 1:21] = 0.0
+        w.exits = []
+        p = w.add_person(30, 10, "X", knows_world=True)
+        w.fill(30, 31, 10, 11, 1, 15, FLESH, frac=0.9)
+        p["facing"] = (1.0, 0.0)                  # facing AWAY from the fire
+        w.fill(22, 26, 8, 12, 1, 3, WOOD, frac=0.8)
+        w.E[23, 9, 1] = 9.0e5                     # alight, behind him
+        w.policy = _Wants(each={"X": {"legs": "stay", "eyes": eyes,
+                                      "waist": "stand"}})
+        for t in range(400):
+            w.step()
+            p["events"].clear()
+            if any(r.get("percept") == "sees_fire"
+                   for r in w.traces if r["who"] == "X"):
+                return t, w
+        return None, w
+
+    swept, w1 = run("go on looking about")
+    chose, w2 = run("look behind")
+    assert swept is not None and chose is not None, \
+        f"both of them get there in the end ({swept}, {chose})"
+    assert chose * 4 < swept, \
+        f"a body that CHOOSES to look behind finds the fire behind it far " \
+        f"sooner than one waiting for its head to come round ({chose} vs {swept})"
+    assert any(r["tags"].get("eyes") == "look:behind" for r in w2.traces), \
+        "and it went through the menu like any other act"
+    assert all(r["tags"].get("eyes") == "about" for r in w1.traces), \
+        "while the other only ever went on sweeping"
