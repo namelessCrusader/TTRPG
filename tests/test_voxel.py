@@ -3334,3 +3334,59 @@ def test_a_LONG_FALL_arrives_at_the_speed_gravity_gives_it():
         assert abs(peak - ideal) / ideal < tol, \
             f"a {drop_m:.0f} m drop arrives at {peak:.1f} m/s where gravity " \
             f"gives {ideal:.1f}"
+
+
+def test_a_body_MOVED_WHILE_UNCONSCIOUS_is_where_it_was_PUT():
+    """Where a body IS was written only by the will layer, and the will layer
+    skips anyone unconscious. So a man dragged out of a fire went on being
+    heard and seen from the spot he fainted on, at standing head height, while
+    he lay on the floor eighteen voxels away.
+
+    Being carried is a thing that happens TO you. A body does not have to be
+    awake to be somewhere."""
+    from src.voxel.scenes import _person
+    w = World(50, 26, 40, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 50, 0, 26, 0, 40, STONE)
+    w.mat[1:49, 1:25, 1:39] = AIR
+    w.smass[1:49, 1:25, 1:39] = 0.0
+    w.exits = [(46, 12)]
+    w.fill(4, 10, 8, 16, 1, 3, WOOD, frac=0.8)
+    w.E[4, 8, 1] = 9.0e5
+    down = _person(w, 16, 12)
+    down["name"] = "Fallen"
+    hero = _person(w, 22, 12)
+    hero["name"] = "Hero"
+    hero["reflexes"] = {k: {"legs": "go:exit", "hands": "hold"}
+                        for k in ("sees_fire", "chokes",
+                                  "hears_alarm", "sees_runner")}
+    start, checked, worst = None, 0, 0.0
+    for _ in range(1500):
+        w.step()
+        down["awake"] = False                     # hold them under
+        down["blood_o2"] = min(down["blood_o2"], 0.30)
+        hero["events"].clear()
+        down["events"].clear()
+        if down["safe"] or hero["safe"]:
+            break
+        comp, sl = w._person_cells(down)
+        if comp is None or not comp.any() or "_eye" not in down:
+            continue
+        c = np.argwhere(comp)
+        here = float(c[:, 0].mean()) + (sl[0].start or 0)
+        if start is None:
+            start = here
+        checked += 1
+        worst = max(worst, abs(down["_eye"][0] - here))
+        # within a tick of the body's own top: `_eye` is written once a tick
+        # from that tick's flesh, and a body still settling drops under it
+        assert down["_eye"][2] <= float(c[:, 2].max()) + 2.5, \
+            "and at the height it is actually at, not at standing head height"
+    assert checked > 50, f"there was a rescue to watch ({checked} ticks)"
+    assert here > start + 5, \
+        f"the body really was dragged somewhere ({start:.1f} -> {here:.1f})"
+    assert down["_eye"][2] < 12.0, \
+        f"a body on the floor is not heard from head height ({down['_eye'][2]:.0f})"
+    assert worst < 2.0, \
+        f"and it was found where it was PUT the whole way, never where it lay " \
+        f"down (worst error {worst:.1f} voxels)"

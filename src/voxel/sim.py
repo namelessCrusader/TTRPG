@@ -3806,7 +3806,18 @@ class World:
                 p["alive"] = False
                 p["events"].append(f"t{self.tick}: {p['name']} is gone")
                 continue
-            zs = np.argwhere(flesh)[:, 2]
+            # WHERE THIS BODY IS, kept up to date whether or not it is awake
+            # enough to ask. `_eye` was written only by the will layer, and the
+            # will layer skips anyone unconscious — so a man dragged out of a
+            # fire was still HEARD from where he fainted, and at standing head
+            # height while he lay on the floor. Measured: dragged eighteen
+            # voxels to the door and located by everyone else back in the
+            # burning room. Being carried is a thing that happens TO you.
+            fw = np.argwhere(flesh)
+            p["_eye"] = (float(fw[:, 0].mean()) + (sl[0].start or 0),
+                         float(fw[:, 1].mean()) + (sl[1].start or 0),
+                         float(fw[:, 2].max()))
+            zs = fw[:, 2]
             z_lo, z_hi = int(zs.min()), int(zs.max())
             head = flesh.copy()                          # the mouth breathes the air
             head[:, :, :max(z_hi - 3, z_lo)] = False     # touching the body's TOP —

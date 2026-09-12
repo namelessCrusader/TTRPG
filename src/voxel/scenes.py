@@ -416,10 +416,15 @@ def _person(w, px, py, z0=1, handed="right"):
     It has DEPTH because it has to weigh something. Built one voxel thin it came
     to 10 kg, and a 10 kg person can be picked up like a cat — which quietly
     made nonsense of every question about lifting, dragging and carrying. Given
-    a real chest and real limbs it measures 28.5 kg — still light, about a
-    ten-year-old, because a stick figure at 5 cm fills far less of its own
-    outline than a person does. So one CAN still be carried here, and that is a
-    known softness, not a claim: the force law is right, the body is thin.
+    a real chest and real limbs it measures 38.1 kg against the ~47 kg a real
+    person of this height would be — still light, because a stick figure at 5 cm
+    fills less of its own outline than a person does. So one CAN still be
+    carried here, and that is a known softness, not a claim: the force law is
+    right, the body is thin.
+
+    (This said 28.5 kg for a long time, and 28.5 kg is what it weighed before
+    the chest and limbs were given depth. A number in a docstring goes stale
+    the same way a number in a roadmap does — measured 2026-09-12.)
     Thickness went into DEPTH (y) and not width (x) on purpose — the walking
     footprint, and so every doorway in every scene, is unchanged."""
     z = z0 - 1                                   # stands ON whatever is at z0

@@ -128,6 +128,32 @@ So REACTIONS stays hand-curated; that is the honest state of the art.
 6. **Electricity** — even TPT special-cases all of it; ours would be a data-pack
    layer (conductors, sources, switches). Parked until a scenario demands it.
 
+## A NUMBER IN THIS FILE THAT WAS NEVER MEASURED SHOULD SAY SO (2026-09-12)
+
+Five entries did not survive being measured today, and they had one thing in
+common: each was written down as a fact, with no measurement behind it, and
+each then sat for weeks reading like a known quantity.
+
+| item | what it said | what is true |
+|---|---|---|
+| 7 | `FALL_SUBSTEPS = 4` caps falls at 8 m/s, clipped above | it caps the DESCENT and lets the speed run — a 20 m fall arrived **41% too fast**, at twice the impact energy |
+| 10 | a felled body travels much further than a topple should | the distance is exactly right for a rigid topple about the toe; the bug is that a slack body is modelled rigid |
+| 12 | the humanoid is 28.5 kg | **38.1 kg** — 28.5 was before the chest and limbs were given depth |
+| 39 | a plank held overhead is not accounted for in a doorway | nothing can be held overhead; a carried thing hangs DOWN and stays inside the body's own height |
+| 42 | an arm can pass through a rail | true, but the first probe measured a rail that had already fallen over, and the fix had to be re-verified against one that stands |
+
+None of them were lies. Every one was a reasonable inference written in the
+same voice as the measured lines around it, and that is exactly the problem: a
+reader — including me, weeks later — cannot tell which is which.
+
+**So: state the measurement, or state that there isn't one.** "Measured, X"
+appears on most pages of this file and it is the thing that makes it worth
+reading. An entry without it should say "unmeasured" out loud, and an entry
+that gets measured should be corrected in place rather than quietly fixed.
+
+The same applies to docstrings. Item 12's 28.5 kg was stale in
+`scenes._person` too, where it had been sitting under the words "it measures".
+
 ## DECISIONS WAITING ON A HUMAN (2026-09-12)
 
 Two things are blocked on a judgement rather than on work. Written here rather
@@ -211,11 +237,22 @@ These are what it opened up and what it left behind.
     every pose on the torque a muscle has. A body with no muscle should sag to
     wherever gravity puts its joints — which is a solver, but a small one, and
     the joints exist now.
-11. **Bodies wake exactly where they fell**, with no account of having been
-    moved while unconscious.
-12. **The humanoid is light** — 28.5 kg for 1.5 m, so it jumps ~1 m and can be
-    carried too easily. A stick figure at 5 cm fills less of its outline than a
-    person does; the force law is right and the body is thin.
+11. ~~**Bodies wake exactly where they fell**~~ **FIXED (2026-09-12)**, and
+    the truth was worse than the note: they were not merely waking there, they
+    were BEING THERE the whole time. `_eye` — where other bodies hear and see
+    you from — was written only by the will layer, and the will layer skips
+    anyone unconscious. Measured on the rescue: a man dragged eighteen voxels
+    to the door was located by everyone else back in the burning room, at
+    standing head height, while he lay on the floor. Being carried is a thing
+    that happens TO you; a body does not have to be awake to be somewhere.
+    Test: `test_a_body_MOVED_WHILE_UNCONSCIOUS_is_where_it_was_PUT`.
+12. **The humanoid is light** — **re-measured 2026-09-12: 38.1 kg, not the
+    28.5 kg this said.** A real 1.5 m person is about 47 kg, so it is at 81% of
+    one rather than 60%, and the item is milder than it read. Still light, and
+    still for the same reason: a stick figure at 5 cm fills less of its own
+    outline than a person does, so the force law is right and the body is thin.
+    Related to D1 — thickening the limbs would fix the mass and the pose space
+    with one change.
 
 **Minds**
 
@@ -425,11 +462,18 @@ landing at the same time.
     shape of item 29 — the question is not whether to window the gas laws but
     whether distant air deserves the same fidelity at all.
 
-39. **A body plans a doorway at ITS OWN height, carrying or not.** `free` is
-    built from `_walkable(cells)` over the body's z band, so a long plank held
-    overhead does not make a low doorway impassable — the footprint is
-    accounted for, the clearance is not. Small, and honest to write down.
-    Found reading the item 14 diff, not by a test.
+39. ~~**A body plans a doorway at ITS OWN height, carrying or not.**~~
+    **NOT A BUG — measured 2026-09-12.** Nothing can be held overhead: a
+    carried thing hangs DOWN from the fist, and a 1 m plank taken up by a 1.5 m
+    man occupies z1..19 inside his own z1..30. There is no clearance to account
+    for that the footprint does not already cover.
+
+    It becomes live the moment a body can raise a load above its own head,
+    which an elbow now nearly allows — a bent arm reaches z30 on a body whose
+    crown is z30. Worth re-checking when anything can lift.
+
+    **Filed from reading the diff rather than from a test, and wrong.** That is
+    the third roadmap entry this session that did not survive being measured.
 
 40. **`free` records a PERSON standing somewhere as blocked ground**, and
     clears it on the next look that way. That is right as far as it goes, and
