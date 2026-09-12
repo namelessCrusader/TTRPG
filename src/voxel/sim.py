@@ -549,6 +549,12 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         # a wall — and how long it gives for is the whole of why a cricket ball
         # can be caught and a brick at the same speed cannot.
         "catch_s": 0.12,         # seconds a closing hand takes to stop a thing
+        # HOW FAR BACK A THROW STARTS. Nobody throws from their hip: the arm
+        # goes back first, and the whole of what that buys is ARC — more of it
+        # to accelerate through before the hand opens. It is not a separate
+        # motion and needs no new law, only a swing that begins behind the body
+        # instead of under it.
+        "windup_rad": 0.9,
         # AND A MUSCLE CANNOT PULL AT ANY SPEED. Hill's force-velocity
         # relation: the faster a muscle is already shortening the less force
         # it makes, so torque fades to nothing at a top speed. Without it an
@@ -1761,7 +1767,7 @@ class World:
         limb = np.concatenate(parts)
         return limb if len(limb) else None
 
-    def _swing(self, p, name, toward=None):
+    def _swing(self, p, name, toward=None, back=0.0):
         """Put a LIMB in motion about its joint, driven by a muscle.
 
         This is the same rotation a toppling tree does — `_body_pose` has always
@@ -1830,6 +1836,24 @@ class World:
         b["Nm"], b["I"] = BODY["arm_Nm"], inertia
         b["seg"] = name
         b["segof"], b["bones"] = segof, bones
+        # AND IT MAY START BEHIND THE BODY. `back` is how far, and it is
+        # honoured only if the arm can actually BE there — a man in a doorway
+        # with a wall at his shoulder throws from where he stands, and throws
+        # worse, which is right.
+        if back:
+            nx, ny, nz = self.shape
+            mine = {tuple(c) for c in limb}
+            for tryback in (back, back * 0.5):
+                at = np.round(self._body_pose(dict(b, cells=limb.astype(
+                    np.float64)), -tryback)).astype(np.int64)
+                if ((at < 0).any() or (at[:, 0] >= nx).any()
+                        or (at[:, 1] >= ny).any() or (at[:, 2] >= nz).any()):
+                    continue
+                if any(tuple(t) not in mine and int(self.mat[tuple(t)]) != AIR
+                       for t in at):
+                    continue
+                b["theta"] = -float(tryback)
+                break
         b["phi0"], b["L"] = 0.02, 2.0
         return b
 
@@ -5326,7 +5350,9 @@ class World:
         if hands is not None:            # HANDS. Holding is not a rescue
             if hands["verb"] in ("swing", "throw"):
                 b = self._swing(p, hands.get("arm") or self._hand(p, cells),
-                                toward=p.get("facing"))
+                                toward=p.get("facing"),
+                                back=(BODY["windup_rad"]
+                                      if hands["verb"] == "throw" else 0.0))
                 if b is not None and hands["verb"] == "throw":
                     b["throw"] = True
                 p["events"].append(

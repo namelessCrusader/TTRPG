@@ -3642,3 +3642,55 @@ def test_LOOKING_is_something_a_MIND_CAN_DO():
         "and it went through the menu like any other act"
     assert all(r["tags"].get("eyes") == "about" for r in w1.traces), \
         "while the other only ever went on sweeping"
+
+
+def test_a_WIND_UP_THROWS_HARDER_where_there_is_room_for_one():
+    """Nobody throws from their hip. The arm goes back first, and the whole of
+    what that buys is ARC — more of it to accelerate through before the hand
+    opens. It is not a separate motion and needed no new law, only a swing that
+    begins behind the body instead of under it.
+
+    It is honoured only if the arm can actually BE there. A man with a wall at
+    his shoulder throws from where he stands and throws worse, which is right —
+    and so, for the same reason, does a man whose own chest is in the way."""
+    from src.voxel.scenes import _person, _Wants
+    import src.voxel.sim as S
+
+    def throw(windup):
+        was = S.BODY["windup_rad"]
+        S.BODY["windup_rad"] = windup
+        try:
+            w = World(60, 60, 46, voxel_cm=5)
+            w.open_sky = False
+            w.fill(0, 60, 0, 60, 0, 46, STONE)
+            w.mat[1:59, 1:59, 1:42] = AIR
+            w.smass[1:59, 1:59, 1:42] = 0.0
+            w.exits = []
+            p = _person(w, 20, 20)
+            p["name"], p["facing"] = "thrower", (0.0, 1.0)   # arms to the sides
+            p["strength_N"] = 3000.0
+            w.fill(20, 21, 24, 25, 1, 3, IRON)
+            w.policy = _Wants(each={"thrower": {"hands": "take hold of the iron",
+                                                "legs": "stay", "waist": "stand"}})
+            for _ in range(30):
+                w.step()
+                p["events"].clear()
+            w.policy = _Wants(each={"thrower": {"hands": "throw the iron",
+                                                "legs": "stay", "waist": "stand"}})
+            v0 = None
+            for _ in range(200):
+                w.step()
+                p["events"].clear()
+                fl = [b for b in w.bodies if b.get("fly")
+                      and (b["mats"] == IRON).any()]
+                if fl and v0 is None:
+                    v0 = float(np.linalg.norm(fl[0]["vel"]))
+            return v0
+        finally:
+            S.BODY["windup_rad"] = was
+
+    flat, wound = throw(0.0), throw(0.9)
+    assert flat is not None and wound is not None, "both throws happened"
+    assert wound > flat * 1.15, \
+        f"an arm that starts behind the body leaves markedly faster " \
+        f"({wound:.2f} m/s against {flat:.2f})"

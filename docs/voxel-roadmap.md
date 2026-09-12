@@ -582,16 +582,16 @@ landing at the same time.
     because what you do about a falling friend is not what you do about a
     thrown stone.
 
-55. **A THROW IS ONE SHOULDER THROUGH A QUARTER TURN.** Measured: a 1 kg
-    stone leaves the hand at 4.92 m/s and flies 2.45 m. That is honest for the
-    arm it has — Hill caps the shoulder at 15 rad/s and the hand is 0.45 m out,
-    so 6.75 m/s is the ceiling and the quarter arc from hanging does not reach
-    it. A person throws a 1 kg stone at 10-15 m/s because the arc starts behind
-    the head and the legs, hips and trunk are all in it before the arm is.
+55. **A THROW IS ONE SHOULDER THROUGH A QUARTER TURN.** ~~The wind-up~~
+    **BUILT (2026-09-12)**, and it works — 4.11 m/s to 5.28, a 28% gain, where
+    there is room for one. **But there usually is not, and that is D1 again**:
+    the arm winds back through its own chest. See "A wind-up, and a third
+    reason to widen the arms" below.
 
-    The waist exists now, which is the first of those. A wind-up (start the
-    swing behind the body) and the trunk unwinding into it would be the rest,
-    and would cost no new law — it is the same rotation about more joints.
+    Still open: the TRUNK unwinding into the throw. The waist exists, so this
+    is now the same rotation about one more joint — but it wants the arm's
+    swing to compose with the waist's, which the bone tree can express and
+    `_swing` (which promotes ONE limb to a rigid body) cannot yet.
 
 54. **NO RENDERS THIS SESSION.** Blender is not on PATH in this environment,
     so nothing built since 2026-09-11 has been LOOKED at — only measured. An
@@ -3285,3 +3285,41 @@ now say what it chose to look at first — which is most of what tells a careful
 person apart from a lucky one.
 
 Test: `test_LOOKING_is_something_a_MIND_CAN_DO`.
+
+
+## A wind-up, and a third reason to widen the arms (2026-09-12)
+
+Nobody throws from their hip. The arm goes back first, and the whole of what
+that buys is ARC — more of it to accelerate through before the hand opens. No
+new law: the same swing, beginning behind the body instead of under it.
+
+It is honoured only if the arm can actually BE there. A man with a wall at his
+shoulder throws from where he stands and throws worse, which is right.
+
+**And so, for the same reason, does a man whose own chest is in the way.**
+
+| | wind-up | leaves at |
+|---|---|---|
+| facing +x — arms fore-and-aft | **refused** | 4.11 m/s |
+| facing +y — arms to the sides | -0.9 rad | **5.28 m/s** |
+
+The humanoid's arms sit either side of its torso in X, and an arm turns in the
+plane the body FACES. Facing east, that plane holds the torso and the arm both,
+so winding back sweeps the arm through the chest and `_swing` correctly refuses
+it. Facing north, the arm and torso are separated along an axis the rotation
+does not touch, and the wind-up is free.
+
+So **the same man is a better thrower facing one way than another**, and the
+code is not wrong — the BODY is. This is the third independent finding pointing
+at D1:
+
+1. an arm has 2 drawable poses with one bone and 7 with an elbow, but **30** if
+   it were two voxels thick;
+2. a lean stops at 19.3 degrees because the ARM tears off the shoulder, not
+   because the man is off balance;
+3. and now: whether a body can wind up to throw depends on its compass bearing.
+
+Three separate capabilities, one voxel of arm. That is no longer a note about
+posture — it is the single change that would move the most.
+
+Test: `test_a_WIND_UP_THROWS_HARDER_where_there_is_room_for_one`.
