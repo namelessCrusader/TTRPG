@@ -587,11 +587,26 @@ landing at the same time.
     Asked and at agree once a body has stopped moving. Test:
     `test_a_BODY_STOPS_ASKING_for_a_pose_it_can_never_be_IN`.
 
-50. **ONE THING HELD AT A TIME.** `p["held"]` is a single slot, so a body
-    with two working hands still cannot carry two things, or hold a rail in
-    one hand and a lamp in the other. It wants to be per-arm, and then "hands"
-    as one limb stops being the right shape — two hands doing two different
-    things is two menus. See item 48.
+50. **ONE OBJECT HELD AT A TIME** — narrower than this said. `p["held"]`
+    (a thing) and `p["dragging"]` (a person) are separate slots, so a body can
+    already hold a post in one hand and a falling man in the other, and does:
+    see "One hand on the rail" below. What it cannot do is hold TWO objects, or
+    two people. That wants `held` to be per-arm, and then "hands" as one limb
+    stops being the right shape — two hands doing two different things is two
+    menus.
+
+57. **A BODY DOES ONE HAND-THING PER DECISION, AND DECISIONS ARE 30 TICKS
+    APART.** A fall from a ledge takes about 25. So a man who is not ALREADY
+    holding the rail cannot take hold of it and then catch his friend — there
+    is only one decision in the window, and he must spend it on one or the
+    other. That is arguably right (you cannot do two things at once either) and
+    arguably a modelling artifact of `decide_every` being a flat constant.
+
+    A real body decides faster when something is happening. `WILL["decide_every"]`
+    is 30 whether the world is on fire or not, and the percept seam already
+    knows which it is — `p["emergency"]` is set the moment anything fires. This
+    is a small change with a large effect on every rescue in the sim, and it is
+    the sort of thing that should be chosen rather than tuned into.
 
 51. **`_reach_around` CAN COST 44 REPOSES IN ONE TICK.** Two shoulder angles
     times twenty-two elbow angles, each a full `_repose` with its own sweep,
@@ -3441,3 +3456,33 @@ graph. None of them was built for this. That is the whole argument for modelling
 causes rather than cases — nobody wrote a rescue, and a rescue happened.
 
 Test: `test_a_FALLING_PERSON_can_be_CAUGHT`.
+
+
+## One hand on the rail (2026-09-12)
+
+A FREE hand is not the same as having no hands full. A body has two, and one of
+them being busy is exactly the situation a rescue IS — so a catch offered only
+"when holding nothing" meant a man with a hand on the rail could not catch the
+friend going past him, which is the one moment it was for.
+
+| | holds | catches | faller ends at |
+|---|---|---|---|
+| both hands empty | - | the faller | z40, at the lip |
+| **a post already in one hand** | **iron** | **the faller** | **z40, at the lip** |
+
+Item 50 turned out to be narrower than it was written: `held` (a thing) and
+`dragging` (a person) have always been separate slots, so holding a post and
+holding a man were never in competition. What is still impossible is two
+OBJECTS, or two people.
+
+**And the probe found a timing fact worth more than the fix** (item 57). A body
+does ONE hand-thing per decision and decisions are 30 ticks apart, while a fall
+from a ledge takes about 25. So a man who is not already holding the rail
+cannot take hold of it AND catch his friend: there is one decision in the
+window and he must spend it on one or the other.
+
+That is arguably right — you cannot do two things at once either — and arguably
+an artifact of `decide_every` being flat. A real body decides faster when
+something is happening, and the percept seam already knows when that is.
+
+Test: `test_ONE_HAND_ON_THE_RAIL_and_the_OTHER_CATCHES_HIM`.

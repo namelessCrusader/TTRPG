@@ -5293,21 +5293,28 @@ class World:
                     menu.append({"key": f"throw the {p['held']['label']}",
                                  "tag": "throw", "verb": "throw",
                                  "arm": (p.get("held") or {}).get("arm") or arm})
-                else:
-                    # AND A HAND THAT IS EMPTY CAN CLOSE ON SOMETHING PASSING.
-                    # Offered only for a thing genuinely within reach right now,
-                    # so a picked catch is a catch that can happen — whether the
-                    # arm can STOP it is the act's own question, and a hand that
-                    # cannot is a hand the thing goes past.
+                # AND A HAND THAT IS EMPTY CAN CLOSE ON SOMETHING PASSING.
+                # A FREE hand, which is not the same as having no hands full: a
+                # body has two, and one of them being busy is exactly the
+                # situation a rescue is. Written as "only when holding nothing"
+                # it meant a man with a hand on the rail could not catch the
+                # friend going past him, which is the one moment it was for.
+                #
+                # Offered only for a thing genuinely within reach right now, so
+                # a picked catch is a catch that can happen — whether the arm
+                # can STOP it is the act's own question, and a hand that cannot
+                # is a hand the thing goes past.
+                spare = self._hand(p, cells, free=True)
+                if spare is not None:
                     for fb in self._in_flight_near(p, cells):
                         lab = MATNAME.get(int(fb["mats"][0]), "thing")
                         menu.append({"key": f"catch the {lab}", "tag": "catch",
-                                     "verb": "catch", "arm": arm, "body": fb,
+                                     "verb": "catch", "arm": spare, "body": fb,
                                      "away": 0.0})
                     for fb in self._falling_near(p, cells):
                         menu.append({"key": f"catch {fb['owner']}",
                                      "tag": "catch_who", "verb": "catch_who",
-                                     "arm": arm, "body": fb, "away": 0.0})
+                                     "arm": spare, "body": fb, "away": 0.0})
             for q in self._within_reach(p, cells):
                 if q["name"] == held:
                     continue

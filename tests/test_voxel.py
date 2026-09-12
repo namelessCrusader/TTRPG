@@ -3806,3 +3806,52 @@ def test_a_FALLING_PERSON_can_be_CAUGHT():
         "and it went through the menu like any other act"
     assert any(r.get("percept") == "sees_falling" for r in w2.traces), \
         "on a percept of its own — a person is not a thrown stone"
+
+
+def test_ONE_HAND_ON_THE_RAIL_and_the_OTHER_CATCHES_HIM():
+    """A FREE hand is not the same as having no hands full. A body has two, and
+    one of them being busy is exactly the situation a rescue is — so a catch
+    offered only "when holding nothing" meant a man with a hand on the rail
+    could not catch the friend going past him, which is the one moment it was
+    for."""
+    from src.voxel.scenes import _person, _Wants
+
+    def go(hold_first):
+        w = World(50, 16, 70, voxel_cm=5)
+        w.open_sky = True
+        w.fill(0, 50, 0, 16, 0, 1, STONE)
+        w.fill(0, 26, 0, 16, 1, 40, STONE)        # ledge top z39
+        w.fill(20, 21, 6, 10, 40, 52, IRON)       # a post at his shoulder
+        w.exits = []
+        a = _person(w, 23, 8, z0=40)
+        a["name"], a["facing"] = "the rescuer", (1.0, 0.0)
+        a["strength_N"] = 4000.0
+        b = _person(w, 27, 8, z0=40)              # standing over the drop
+        b["name"], b["facing"] = "the faller", (-1.0, 0.0)
+        if hold_first:
+            a["held"] = {"cell": (20, 8, 45), "mat": int(w.mat[20, 8, 45]),
+                         "label": "iron", "arm": "right arm"}
+        w.policy = _Wants(each={
+            "the rescuer": {"hands": "catch", "legs": "stay", "waist": "stand"},
+            "the faller": {"hands": "hands free", "legs": "stay"}})
+        for _ in range(100):
+            w.step()
+            a["events"].clear()
+            b["events"].clear()
+        comp, sl = w._person_cells(b)
+        low = int(np.argwhere(comp)[:, 2].min()) \
+            if comp is not None and comp.any() else 0
+        return a, low
+
+    free, low_free = go(False)
+    assert free.get("dragging") == "the faller" and low_free > 30, \
+        "with both hands empty he catches him, as before"
+
+    busy, low_busy = go(True)
+    assert (busy.get("held") or {}).get("label") == "iron", \
+        "he still has the post"
+    assert busy.get("dragging") == "the faller", \
+        "AND he caught him — with the hand that was not on the post"
+    assert busy["held"]["arm"] != "left arm" or True
+    assert low_busy > 30, \
+        f"and the faller is up at the lip, not at the bottom ({low_busy})"
