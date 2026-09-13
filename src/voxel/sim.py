@@ -306,9 +306,22 @@ WILL = {"see_m": 12.0,           # how far the eyes take in the LAYOUT of a
                                  # step of the sweep: long enough to have LOOKED
                                  # rather than glanced, short enough that a
                                  # decision to look is not a decision to stare.
-        "decide_every": 30}      # ticks before a body that stood pat will
-                                 # weigh its options again — nobody
-                                 # re-deliberates every fortieth of a second
+        # HOW OFTEN A BODY DECIDES: a human REACTION TIME, not a number picked
+        # to feel right. A simple visual reaction is about a quarter of a
+        # second — see something, choose, begin to move — so that is what this
+        # is, and it is DERIVED from `TICK_S` so a finer or coarser tick does
+        # not quietly make everyone quicker or slower on the draw.
+        #
+        # It was 30 ticks (0.75 s), which is nearly three reaction times, and
+        # that had consequences nobody had connected to it: a fall from a ledge
+        # takes about 25 ticks, so a man who was not already holding the rail
+        # got exactly ONE decision in the whole of his friend's fall and had to
+        # spend it on the rail or on the catch. At a quarter second he gets
+        # two, which is the difference between a rescue being possible and not.
+        "react_s": 0.25,
+        "decide_every": 10}      # filled in from `react_s` below, once TICK_S
+                                 # exists. Ten is what 0.25 s comes to at the
+                                 # tick this sim has always run at.
 # LIMBS — a body does several things at once because it HAS several parts.
 # Legs go somewhere, hands hold something, a mouth speaks. This one fact is
 # what makes "run for the door while shouting" expressible without anybody
@@ -611,6 +624,11 @@ FALL_SUBSTEPS = 16       # most voxels a column may drop in one tick. Matter
                          # has any fall left, so a world with nothing falling
                          # never runs a second sweep. Measured with a slab
                          # dropping through a furnished room: 1.01x a tick.
+# A BODY DECIDES AT A REACTION TIME, and the tick length is what says how
+# many ticks that is. Derived here rather than typed into `WILL`, because
+# `TICK_S` is defined below it and because a finer or coarser tick must not
+# quietly make everybody quicker or slower on the draw.
+WILL["decide_every"] = max(1, int(round(WILL["react_s"] / TICK_S)))
 _REACTIVE = {f for (f, _m) in REACTIONS}
 PLUME_REACH_M = 2.4              # meters of entrainment catchment: the air a
                                  # fire's plume can actually pull in — health
@@ -4581,7 +4599,7 @@ class World:
         within reach of somebody and on nobody's menu. A thing is what
         _object_at says it is: whatever is joined to what you grabbed."""
         vox_m = 0.1 * self.scale
-        R = max(int(round(BODY["reach_m"] / max(vox_m, 1e-9))), 1)
+        R = max(int(round(self._reach_of(p) / max(vox_m, 1e-9))), 1)
         nx, ny, nz = self.shape
         cells = np.asarray(cells)
         x0 = max(int(cells[:, 0].min()) - R, 0)
@@ -4650,7 +4668,7 @@ class World:
         out = []
         if not self.bodies:
             return out
-        reach = BODY["reach_m"] / max(0.1 * self.scale, 1e-9)
+        reach = self._reach_of(p) / max(0.1 * self.scale, 1e-9)
         fists = np.asarray(self._fists(p, own), np.float64)
         for b in self.bodies:
             # A THING, NOT A BODY. An owned body is somebody's flesh — a person
@@ -4679,7 +4697,7 @@ class World:
         out = []
         if not self.bodies:
             return out
-        reach = BODY["reach_m"] / max(0.1 * self.scale, 1e-9)
+        reach = self._reach_of(p) / max(0.1 * self.scale, 1e-9)
         fists = np.asarray(self._fists(p, own), np.float64)
         for b in self.bodies:
             who = b.get("owner")
@@ -4742,6 +4760,58 @@ class World:
                 return True
         return True
 
+    def _body_span(self, p, what):
+        """A LENGTH THIS BODY ACTUALLY HAS, in metres, measured off its own
+        voxels — not a number typed into `BODY` and hoped to match.
+
+        This is the loop worth having: the sim already knows where every voxel
+        of every limb is, so anything shaped like "how far can an arm reach" or
+        "how wide is a pair of shoulders" has a ground truth sitting right
+        there. Reading it instead of declaring it means a child, a giant and a
+        one-armed man each get the right answer without anybody writing three
+        rows, and it means the number cannot drift out of step with the body it
+        describes — which `BODY["reach_m"]` silently had, at 0.30 m against an
+        arm that is 0.45 m long.
+
+        The constants stay as the FALLBACK, for a body with no segments
+        declared. They are what a person is like when nobody has said."""
+        got = (p.get("_span") or {}).get(what)
+        if got is not None:
+            return got
+        vox_m = 0.1 * self.scale
+        out = None
+        arms = [a for a in self._limbs(p) if "arm" in a]
+        if what == "reach" and arms:
+            piv = self._pivot_of(p, arms[0])
+            parts = self._limb_parts(p, arms[0])
+            if piv is not None and parts:
+                cells = np.concatenate([c for c in parts if len(c)]) \
+                    if any(len(c) for c in parts) else None
+                if cells is not None and len(cells):
+                    comp, sl = self._person_cells(p)
+                    if comp is not None and comp.any():
+                        own = np.argwhere(comp)
+                        own[:, 0] += sl[0].start or 0
+                        own[:, 1] += sl[1].start or 0
+                        j = np.asarray(piv) + own.min(axis=0)
+                        out = float(np.abs(cells - j).sum(axis=1).max()) * vox_m
+        elif what == "shoulders" and len(arms) > 1:
+            mids = []
+            for a in arms:
+                parts = self._limb_parts(p, a)
+                if parts and len(parts[0]):
+                    mids.append(parts[0].mean(axis=0))
+            if len(mids) > 1:
+                out = float(np.abs(mids[0] - mids[1]).max()) * vox_m
+        if out is None or out <= 0.0:
+            out = BODY["reach_m"] if what == "reach" else BODY["off_hand_m"] * 2
+        p.setdefault("_span", {})[what] = out
+        return out
+
+    def _reach_of(self, p):
+        """How far THIS body's arm goes."""
+        return self._body_span(p, "reach")
+
     def _hand(self, p, own, toward=None, free=False):
         """WHICH HAND does this.
 
@@ -4757,7 +4827,12 @@ class World:
         if not arms:
             return None
         dom = str(p.get("handed", "right")) + " arm"
-        bias = BODY["off_hand_m"] / max(0.1 * self.scale, 1e-9)
+        # HALF THIS BODY'S OWN SHOULDER WIDTH, read off its own shoulders.
+        # The cost of the off hand is that it is weaker; the benefit of the
+        # near hand is not reaching across yourself; those trade at about the
+        # distance between your shoulders, so a broad man switches hands later
+        # than a narrow one and nobody writes that down twice.
+        bias = 0.5 * self._body_span(p, "shoulders") / max(0.1 * self.scale, 1e-9)
         busy = (p.get("held") or {}).get("arm") if free else None
         best, score = None, None
         for a in sorted(arms):                # sorted: deterministic ties

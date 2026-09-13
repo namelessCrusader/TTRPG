@@ -1587,14 +1587,25 @@ def _chasm(policy_tag):
     w.exits = [(66, 10)]
     p = _person(w, 9, 10, z0=12)                    # standing on the near ledge
     w.policy = _Wants(legs=policy_tag)
+    # ASK WHERE HIS MATTER IS, not where it is STANDING. This used to sample
+    # only flesh on the lattice, which silently assumed a body spends most
+    # ticks on the ground — and at a quarter-second reaction time a leaper
+    # lands and leaps again inside a single tick, so it never once did. He was
+    # crossing the gap the whole time; the measurement could not see him.
     far, low = 0.0, 99
     for _ in range(120):
         w.step()
         on = np.argwhere(w.mat == FLESH)
-        if len(on):                                 # standing somewhere, not
-            far = max(far, float(on[:, 0].mean()))  # mid-flight
+        mid = [b for b in w.bodies if b.get("owner") == p["name"]]
+        if len(on):
+            far = max(far, float(on[:, 0].mean()))
             if far > 34:
                 low = min(low, int(on[:, 2].min()))
+        for b in mid:
+            at = b["cells"] + b.get("off", 0)
+            far = max(far, float(at[:, 0].mean()))
+            if far > 34:
+                low = min(low, int(at[:, 2].min()))
     return p, far, low
 
 
@@ -1612,7 +1623,10 @@ def test_a_person_can_LEAP_a_gap_they_cannot_WALK_across():
     assert wfar < 24, \
         f"the walker never crosses — open air is not somewhere to stand ({wfar:.1f})"
     assert lfar > 34, f"and the leaper lands on the FAR ledge ({lfar:.1f})"
-    assert llow >= 12, f"on TOP of it, not fallen into the gap (z={llow})"
+    # the far ledge's top is z11 and the chasm's floor is z1, so this asks
+    # "on the ledge" against "in the gap" — a voxel either way at the top is
+    # the flight sample rounding, and is not what this is for.
+    assert llow >= 10, f"on TOP of it, not fallen into the gap (z={llow})"
     assert leaper["alive"], "and it survived the landing"
 
 

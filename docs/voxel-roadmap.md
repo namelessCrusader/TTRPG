@@ -612,29 +612,36 @@ landing at the same time.
     weight the rows, filter to decisions where SOMETHING changed, or learn per
     limb rather than per body. Worth choosing deliberately.
 
-57. **A BODY DOES ONE HAND-THING PER DECISION, AND DECISIONS ARE 30 TICKS
-    APART.** A fall from a ledge takes about 25. So a man who is not ALREADY
-    holding the rail cannot take hold of it and then catch his friend — there
-    is only one decision in the window, and he must spend it on one or the
-    other. That is arguably right (you cannot do two things at once either) and
-    arguably a modelling artifact of `decide_every` being a flat constant.
+59. **A BODY CAN LAND AND JUMP AGAIN INSIDE ONE TICK.** Found by item 57:
+    at a quarter-second reaction a leaper lands and re-decides to leap before
+    the tick is out, so its flesh is never on the lattice at a tick boundary at
+    all. The physics is right — it crosses the gap either way — but there is no
+    recovery in a landing, and a body that has just taken a fall should not be
+    as ready to jump as one that has been standing still. It is the same shape
+    as `_fell`, which already keeps a falling body from re-deciding every tick.
 
-    A real body decides faster when something is happening. `WILL["decide_every"]`
-    is 30 whether the world is on fire or not, and the percept seam already
-    knows which it is — `p["emergency"]` is set the moment anything fires. This
-    is a small change with a large effect on every rescue in the sim, and it is
-    the sort of thing that should be chosen rather than tuned into.
+    It also broke a test, and the test was wrong rather than the change: it
+    sampled only flesh ON the lattice, which silently assumed a body spends
+    most ticks standing. ASK WHERE THE MATTER IS, not where it is standing.
 
-51. ~~**`_reach_around` CAN COST 44 REPOSES IN ONE TICK.**~~ **MEASURED
-    2026-09-12, and item 43 had already closed it.** A body reaching at a wall
-    makes **0** `_repose` calls per tick in the steady state, and its tick is
-    2.02 ms against 2.14 for the same body with nothing in the way — very
-    slightly FASTER, because it has stopped trying.
+57. ~~**A BODY DOES ONE HAND-THING PER DECISION, AND DECISIONS ARE 30 TICKS
+    APART.**~~ **FIXED (2026-09-12).** `decide_every` is DERIVED now, from
+    `WILL["react_s"]` — 0.25 s, a simple visual reaction: see, choose, begin to
+    move — over `TICK_S`. That comes to 10 ticks where it used to be a typed
+    30, which was nearly three reaction times.
 
-    The 44 are paid once, on the tick the reach is first refused, and then
-    `_no_reach` remembers and the body does not ask again until it moves or
-    turns. Two things built the same afternoon for different reasons, composing
-    to remove a cost that was filed as a worry about one of them.
+    Derived rather than typed so a finer or coarser tick cannot quietly make
+    everybody quicker or slower on the draw, which is the loop worth having:
+    the sim's own clock sets how often its minds get to think.
+
+    What it was about: a fall from a ledge takes about 25 ticks, so at 30 a man
+    who was not ALREADY holding the rail got exactly ONE decision in the whole
+    of his friend's fall and had to spend it on the rail or on the catch. At a
+    quarter second he gets two. (Measured after: the rescue still does not
+    complete from a standing start — the free hand has to find him within
+    reach at the right moment as well — so this was necessary and not
+    sufficient. Worth saying, because "I changed the number and the scenario
+    still fails" is exactly the sort of thing that goes unsaid.)
 
 52. **THE SUITE IS TEN MINUTES**, 104 tests. Profiled 2026-09-12: the 15
     slowest are 390 s of the 586, and there is no single offender — it is a
