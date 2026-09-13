@@ -44,6 +44,26 @@ Converted so far:
 | `WILL["decide_every"]` = 30 | `react_s / TICK_S` | 10 ticks |
 | `BODY["crouch_m"]` = 0.25 | this body's leg, times `crouch_frac` | 0.25 m |
 | `BODY["legs_N"]` = 1400 | the legs' own cross-section, times `muscle_Pa` | 1395 N |
+| `BODY["arm_Nm"]` = 60 | the arm's section, times `muscle_Pa`, times the insertion lever | 59.6 N·m |
+| `BODY["back_Nm"]` = 200 | the torso's, the same way | 398 N·m |
+
+**A joint's torque is not its limb's length**, and the typed numbers already
+said so without anybody noticing. A muscle pulls on a bone a few centimetres
+from the joint, not at the far end of it — and 60 N·m against a 698 N arm is a
+moment arm of **8.6 cm**, which is a real deltoid. That ratio is `lever_frac`
+now, and deriving the torque from the limb's own length instead would have made
+an arm five times stronger than any arm.
+
+The back comes out at 398 N·m where the guess said 200. A real trunk extensor
+is 200–400, so the derivation lands at the top of the range where the guess sat
+at the bottom. Nothing observable changes: a lean is stopped by the lattice at
+19.3 degrees and uses 18 N·m of whichever figure it is.
+
+**What a joint HOLDS and what its muscle PRODUCES are different questions.**
+`_hold_torque` sums the whole subtree, because a shoulder holds an arm and
+whatever is in the hand. `_torque_of` sums the limb's own bones, because the
+muscle is IN the limb. Summing the subtree for both made a waist borrow the
+arms hanging at its sides: 570 N·m instead of 400.
 
 **And the last two brought the square-cube law with them.** Force goes as area
 and mass goes as volume, so a body twice as tall is four times as strong and
@@ -67,8 +87,7 @@ Still typed, and each one is a loop waiting to be closed:
 | number | what it should be read from |
 |---|---|
 | `BODY["lean_max"]` 0.8 | the angle past which the lattice cannot draw this spine (measured 0.34) |
-| `BODY["arm_Nm"]`, `back_Nm` | a cross-section times `muscle_Pa`, exactly as `legs_N` now is |
-| `BODY["strength_N"]` 400 | the arm's section — the same sentence a third time |
+| `BODY["strength_N"]` 400 | unclear, and that is the finding: it is what a body can SHIFT, which is a whole-body figure — an arm's grip against a back against legs braced on a floor — and reading it off one limb would be picking a limb and calling it the answer |
 
 And one that should NOT be derived, which is worth saying because the ledger is
 as much about that: `WILL["step_m"]` (2.0 m) reads like a stride and is not one.
@@ -104,8 +123,9 @@ it from a leg would be tidy and wrong.
 | `catch_s` | 0.12 s | GUESS | how long a closing hand gives. It is the whole of why a ball can be caught and a brick cannot |
 | `throw_rad` | π/4 | WORLD | the angle a projectile goes furthest from. Geometry, not taste |
 | `windup_rad` | 0.9 | GUESS | how far back a throw starts |
-| `arm_Nm` | 60 N·m | WORLD | an unremarkable adult shoulder |
-| `back_Nm` | 200 N·m | WORLD | low end of an untrained adult trunk extensor |
+| `arm_Nm` | 60 N·m | DERIVED per body | fallback only; section × `muscle_Pa` × insertion, which comes to 59.6 |
+| `back_Nm` | 200 N·m | DERIVED per body | fallback only; the same, which comes to 398 — a real trunk extensor is 200–400 |
+| `lever_frac` | 0.19 | MEASURED, backwards | the moment arm the DECLARED numbers already implied: 8.6 cm on a 45 cm arm, which is a real deltoid |
 | `arm_wmax` | 15 rad/s | WORLD | Hill's force-velocity: torque fades to nothing at top speed |
 | `waist_wmax` | 1.5 rad/s | GUESS | a trunk is slower than a shoulder. At a shoulder's pace the first tick of a lean is already past what a man can stand at |
 | `lean_max` | 0.8 rad | GUESS | the spine's own stop. The LATTICE stops this body at 0.34 — item 49 |

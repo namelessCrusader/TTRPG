@@ -523,6 +523,16 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         # thinner, relative to its height, than a person's are. Calibrated so
         # the humanoid comes out where it always was.
         "legs_N": 1400.0, "muscle_Pa": 93000.0,
+        # A JOINT'S TORQUE IS NOT ITS LIMB'S LENGTH. A muscle pulls on a bone a
+        # few centimetres from the joint, not at the far end of it — so a
+        # shoulder's torque is its section times a stress times that SHORT
+        # insertion, and deriving it from the limb's own length would make an
+        # arm five times stronger than any arm.
+        #
+        # This is what the declared numbers already implied and nobody had
+        # noticed: 60 N.m against a 698 N arm is a moment arm of 8.6 cm, which
+        # is a real deltoid. The fraction below is that, over the arm's length.
+        "lever_frac": 0.19,
         # HOW FAR A BODY SINKS BEFORE IT PUSHES OFF. `crouch_m` is the fallback
         # for a body with no legs declared; a body WITH legs is measured, and
         # this fraction is the only part of it still a guess — how much of a
@@ -2406,8 +2416,10 @@ class World:
                 goal = np.array(self._angles((want or {}).get(name, 0.0), n))
                 if np.abs(goal).max() > 0.0:
                     need, _m = self._hold_torque(p, name, goal)
-                    can = (p.get("torque_Nm") or {}).get(
-                        name, p.get("arm_Nm", BODY["arm_Nm"]))
+                    can = (p.get("torque_Nm") or {}).get(name)
+                    if can is None:
+                        can = self._torque_of(
+                            p, name, p.get("arm_Nm", BODY["arm_Nm"]))
                     if need > can:
                         goal = np.zeros(n)    # too heavy to hold out there
                 d = goal - at
@@ -5041,6 +5053,29 @@ class World:
         tall = max(float(c[:, 2].max() - c[:, 2].min() + 1), 1.0)
         area = (len(c) / tall) * vox_m * vox_m     # mean section, in m^2
         return area * BODY["muscle_Pa"]
+
+    def _torque_of(self, p, limb, fallback):
+        """What THIS body's joint can hold, in newton-metres.
+
+        Section times stress gives the force; times the insertion lever gives
+        the torque. Everything in it is the body's own except the stress and
+        the lever fraction, and both of those are named guesses in the ledger
+        rather than numbers hiding in a law."""
+        vox_m = 0.1 * self.scale
+        # THE LIMB'S OWN BONES, not everything beyond them. What a joint must
+        # HOLD is its whole subtree — that is `_hold_torque`, and it is right —
+        # but what its muscle can PRODUCE is the section of the limb the muscle
+        # is IN. Summed over the subtree, a waist borrowed the arms hanging at
+        # its sides and came out at 570 N.m instead of 400.
+        bones = [b for b in self._bones(p, limb) if b in (p.get("segs") or {})]
+        parts = self._bone_parts(p, bones) if bones else None
+        cells = [c for c in (parts or []) if len(c)]
+        if not cells:
+            return fallback
+        c = np.concatenate(cells)
+        tall = max(float(c[:, 2].max() - c[:, 2].min() + 1), 1.0)
+        area = (len(c) / tall) * vox_m * vox_m
+        return area * BODY["muscle_Pa"] * (tall * vox_m) * BODY["lever_frac"]
 
     def _crouch_of(self, p):
         """How far THIS body can sink before it pushes off.

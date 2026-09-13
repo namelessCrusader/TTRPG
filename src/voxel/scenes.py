@@ -499,7 +499,12 @@ def _person(w, px, py, z0=1, handed="right"):
         person["joints"]["torso"] = np.array(
             [int(round(t[:, 0].mean())), int(round(t[:, 1].mean())),
              int(t[:, 2].min())]) - origin
-        person["torque_Nm"] = {"lean": BODY["back_Nm"]}
+        # NO `torque_Nm` DECLARED. What this waist can hold is read off the
+        # torso it has — section times stress times insertion — which comes to
+        # about 400 N.m where the typed `back_Nm` said 200. A real trunk
+        # extensor is 200 to 400, so the derivation lands at the top of the
+        # range where the guess sat at the bottom, and a scene that wants a
+        # weaker back can still say so by putting the key back.
         person["bend"] = ["torso"]    # a spine BENDS, it does not swing
         person["wmax"] = {"lean": BODY["waist_wmax"]}
     # MOST PEOPLE ARE RIGHT-HANDED. A fact about this body, like its mass —
