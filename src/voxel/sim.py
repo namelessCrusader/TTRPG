@@ -606,6 +606,16 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         # rather than a speed limit typed in: the same relation is why an arm
         # carrying something heavy swings slow.
         "arm_wmax": 15.0,        # rad/s, a shoulder unloaded
+        # A JOINT IS NOT A FRICTIONLESS BEARING. A real arm let go swings two
+        # or three times and stops; a pendulum on a knife edge swings for
+        # minutes. The difference is flesh working against itself, and this is
+        # the fraction of a joint's angular speed that goes to heat each
+        # second. GUESS — nothing in the lattice measures it and no source was
+        # read for it; it is set to the value that gives a dropped arm the two
+        # or three swings a dropped arm has. What it is NOT allowed to do is
+        # lose the energy: what damping takes comes off the swing and goes onto
+        # `shed`, so the books still close.
+        "joint_damp": 2.2,       # 1/s
         "reach_m": 0.30}         # how far an arm goes. A grip is not
                                  # telekinesis: what is held has to stay within
                                  # reach or it is not held any more
@@ -2543,6 +2553,143 @@ class World:
         cy = float((limb[:, 1] * kg).sum()) / m
         lever = max(abs(cx - jx), abs(cy - jy)) * 0.1 * self.scale
         return m * GRAVITY * lever, m
+
+    def _swing_of(self, p, limb, own=None):
+        """What it takes to turn this limb about its own joint, MEASURED.
+
+        Three numbers, all read off the voxels that are actually there: the
+        limb's mass, how far its centre of mass sits from the joint, and its
+        moment of inertia about that joint. Nothing here is typed. A thick arm
+        is harder to start and harder to stop than a thin one because it has
+        more cells further out, and a man holding an anvil has an arm with an
+        anvil's inertia — the same loop `_body_span` and `_legs_of` close, at
+        the joint.
+
+        Returns (I, M, d) in kg m², kg and m, or None if there is no such limb
+        or no joint under it."""
+        joints = p.get("joints") or {}
+        bones = [b for b in self._bones(p, limb) if b in (p.get("segs") or {})]
+        if not bones or bones[0] not in joints:
+            return None
+        if own is None:
+            comp, sl = self._person_cells(p)
+            if comp is None or not comp.any():
+                return None
+            own = np.argwhere(comp)
+            own[:, 0] += sl[0].start or 0
+            own[:, 1] += sl[1].start or 0
+        origin = own.min(axis=0)
+        piv = np.asarray(joints[bones[0]], np.float64) + origin
+        cells = self._limb_cells(p, limb, own)
+        if cells is None or not len(cells):
+            return None
+        kg = self.smass[tuple(np.asarray(cells).T)] / 1000.0
+        if not kg.sum():
+            return None
+        vox_m = 0.1 * self.scale
+        r = (np.asarray(cells, np.float64) - piv) * vox_m
+        M = float(kg.sum())
+        com = (kg[:, None] * r).sum(axis=0) / M
+        I = float((kg * (r * r).sum(axis=1)).sum())
+        return (max(I, 1e-9), M, float(np.linalg.norm(com)))
+
+    def _law_joints(self):
+        """A JOINT WITH NOTHING HOLDING IT IS TURNED BY GRAVITY.
+
+        This is the other half of `_law_pose`, and the half that makes a
+        shoulder a joint rather than a dial. `_law_pose` says where a muscle
+        puts a limb; nothing said what a limb does when no muscle is putting it
+        anywhere. The answer was "stays exactly where it was", so a dead man
+        held his arm out at shoulder height for ever, and being alive was the
+        only thing keeping it up — which is a flag doing a force's job.
+
+        Now the angle has a SPEED of its own. Gravity's moment about the joint
+        is `M g d sin(theta)`, the limb's own inertia is what resists it, and
+        the arm accelerates, swings past the bottom, comes back and settles.
+        Nobody writes how long that takes: it falls out of the cells.
+
+        The angle is the TRUTH and the flesh is a drawing of it. A 5 cm lattice
+        cannot draw every angle — that is measured and it is not going away —
+        so the joint keeps turning through the ones it cannot draw and the
+        voxels catch up at the next one they can. That is what makes a body
+        able to BE somewhere the grid cannot put it, which has been behind most
+        of the trouble.
+
+        A joint is only free if the limb under it is hanging. A leg with its
+        foot on the floor is carrying the body and is not a pendulum, and that
+        is a question about CONTACT, not about which limb it is."""
+        damp = float(BODY["joint_damp"])
+        for p in self.persons:
+            if not p.get("segs") or not p.get("joints"):
+                continue
+            spin = p.setdefault("spin", {})
+            pose = p.setdefault("pose", {})
+            # NOTHING IS MOVING AND NOTHING IS OUT OF PLACE — the overwhelming
+            # case, and it must cost nothing. A body standing with its arms
+            # down has no joint to integrate.
+            if not any(np.abs(np.atleast_1d(v)).max() > 1e-9
+                       for v in list(pose.values()) + list(spin.values())):
+                continue
+            comp, sl = self._person_cells(p)
+            if comp is None or not comp.any():
+                continue
+            own = np.argwhere(comp)
+            own[:, 0] += sl[0].start or 0
+            own[:, 1] += sl[1].start or 0
+            for limb in self._limbs(p):
+                if limb not in (p.get("chain") or {}):
+                    continue
+                n = 2 * len(self._bones(p, limb))
+                at = np.array(self._angles(pose.get(limb, 0.0), n))
+                w = float(spin.get(limb, 0.0))
+                # A MUSCLE HAS IT. Not "he is still asking for it" — wanting
+                # is not a force, and the first version of this law made that
+                # mistake: a refused reach is POPPED as a note about what this
+                # body will ask for next, and reading that pop as a release
+                # dropped a live man's arm the instant he gave up on a wall.
+                #
+                # What holds a limb up is muscle tone, and muscle tone is
+                # something a living waking body spends energy on every tick —
+                # `_law_life` is already paying for it. So this is not a flag
+                # standing in for a force; losing consciousness IS losing tone,
+                # which is why an unconscious man's arm falls and a thinking
+                # man's does not.
+                if p["alive"] and p["awake"]:
+                    spin[limb] = 0.0
+                    continue
+                if abs(at[0]) < 1e-9 and abs(w) < 1e-9:
+                    continue                      # hanging, and staying hanging
+                # STANDING ON IT IS NOT HANGING FROM IT. A limb touching
+                # anything but its own body is carrying load somewhere.
+                cells = self._limb_cells(p, limb, own)
+                if cells is None or not len(cells):
+                    continue
+                if len(self._contact(np.asarray(cells), ignore=own)):
+                    spin[limb] = 0.0
+                    continue
+                got = self._swing_of(p, limb, own)
+                if got is None:
+                    continue
+                I, M, d = got
+                if d < 1e-6:
+                    continue
+                alpha = -(M * 9.81 * d / I) * float(np.sin(at[0]))
+                w += alpha * TICK_S
+                # WHAT THE JOINT TAKES OUT OF THE SWING IS HEAT, not nothing.
+                slow = w * max(0.0, 1.0 - damp * TICK_S)
+                self.shed += 0.5 * I * (w * w - slow * slow)
+                w = slow
+                nxt = at.copy()
+                nxt[0] = float(at[0] + w * TICK_S)
+                if abs(nxt[0]) < 1e-3 and abs(w) < 1e-2:
+                    nxt[0], w = 0.0, 0.0           # come to rest at the bottom
+                spin[limb] = w
+                pose[limb] = list(nxt)
+                # The flesh follows if it CAN. If it cannot, the joint is still
+                # at this angle and the voxels wait for one they can be drawn
+                # at — the angle outrunning the flesh, on purpose.
+                if self._repose(p, limb, list(nxt)) != "moved" and w:
+                    pass
 
     def _law_pose(self):
         """Limbs go where they are asked, at the speed a muscle can manage, and
@@ -7283,6 +7430,7 @@ class World:
         self._law_life()                         # the slow chemistry of anyone alive
         self._law_will()                         # and their reflexes
         self._law_pose()                         # and where their limbs ended up
+        self._law_joints()                       # and what gravity does to the rest
         if self.thermostats or self._busy(self.E):
             if self.thermostats:                    # dev heater blocks hold their
                 C = self.heat_capacity()            # set temperature against all

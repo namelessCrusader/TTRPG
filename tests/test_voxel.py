@@ -4100,3 +4100,73 @@ def test_a_TURN_that_cannot_LOSE_a_VOXEL():
         b = w._turn_cells(pivs, pairs, 0, -1, 1, [False], cells)
         worst = max(worst, float(np.abs(a - b).max()))
     assert worst < 2.0, f"and within a voxel or so of true ({worst:.2f})"
+
+
+def test_a_SHOULDER_IS_A_JOINT_and_an_UNHELD_ARM_SWINGS():
+    """What holds an arm up is muscle, and a joint left alone is a pendulum.
+
+    Before this a limb went where `_law_pose` put it and STAYED there, so a
+    dead man held his arm out at shoulder height for ever and being alive was
+    the only thing keeping it up — a flag doing a force's job. Now the angle
+    has a speed of its own, gravity has a moment about the joint, and the arm
+    accelerates, swings through the bottom and settles.
+
+    How long it takes is not written anywhere. It falls out of the cells: the
+    limb's mass, where its centre of mass sits and its moment of inertia are
+    all counted off the voxels that are actually there, and the swing that
+    follows matches the pendulum those three numbers describe."""
+    from src.voxel.scenes import _person
+    from src.voxel.sim import TICK_S
+    w = World(40, 30, 50, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 40, 0, 30, 0, 1, STONE)
+    _person(w, 12, 15)
+    w.step()
+    p = w.persons[0]
+    p["facing"] = (0.0, 1.0)
+    angle = lambda: float(np.atleast_1d(p["pose"].get("left arm", 0.0))[0])
+
+    # MEASURED OFF THE ARM, not typed: inertia, mass, and the lever gravity has.
+    I, M, d = w._swing_of(p, "left arm")
+    assert 0.5 < M < 6.0 and 0.05 < d < 0.5 and I > 0.0, \
+        f"an arm's own numbers, and they are an arm's ({M:.2f} kg, {d:.2f} m)"
+
+    out = [0.35, 0.0, 0.0, 0.0]
+    assert w._repose(p, "left arm", out) == "moved"
+    p["pose"]["left arm"] = list(out)
+
+    # A WAKING BODY SPENDS ENERGY HOLDING IT. Nothing falls while it does.
+    for _ in range(40):
+        w._law_joints()
+    assert abs(angle() - 0.35) < 1e-6, \
+        f"an arm a man is holding out stays out ({angle():.3f})"
+
+    # AND LOSING CONSCIOUSNESS IS LOSING TONE. Not a special case for death —
+    # there is simply no longer a muscle on the joint.
+    p["awake"] = False
+    mass0, shed0 = w.total_mass(FLESH), w.shed
+    seen = []
+    for _ in range(200):
+        w._law_joints()
+        seen.append(angle())
+
+    assert min(seen) < -0.05, \
+        f"it does not merely sag — it swings PAST the bottom ({min(seen):.3f})"
+    assert abs(seen[-1]) < 0.1, f"and comes to rest hanging ({seen[-1]:.3f})"
+    assert max(abs(a) for a in seen[120:]) < 0.35, "each swing smaller than the last"
+
+    # THE PERIOD IS THE ONE ITS OWN VOXELS ASK FOR.
+    cross = [i for i in range(1, len(seen))
+             if (seen[i - 1] > 0 >= seen[i]) or (seen[i - 1] < 0 <= seen[i])]
+    assert len(cross) >= 4, f"it swings more than once ({len(cross)} crossings)"
+    got = 2.0 * float(np.mean(np.diff(cross[:4]))) * TICK_S
+    want = 2.0 * np.pi * np.sqrt(I / (M * 9.81 * d))
+    assert 0.85 < got / want < 1.20, \
+        f"and the swing takes what a pendulum of that inertia takes " \
+        f"({got:.3f} s against {want:.3f} s)"
+
+    # THE BOOKS STILL CLOSE. Damping is flesh working against itself, so what
+    # it takes out of the swing turns up as heat rather than going nowhere.
+    assert w.shed > shed0, "the swing it loses is shed as heat, not dropped"
+    assert abs(w.total_mass(FLESH) - mass0) < 1e-6, "and no flesh went anywhere"
+    assert _lumps(w.mat == FLESH) == 1, "he is still one man"

@@ -137,6 +137,7 @@ it from a leg would be tidy and wrong.
 | `lever_frac` | 0.19 | MEASURED, backwards | the moment arm the DECLARED numbers already implied: 8.6 cm on a 45 cm arm, which is a real deltoid |
 | `arm_wmax` | 15 rad/s | WORLD | Hill's force-velocity: torque fades to nothing at top speed |
 | `waist_wmax` | 1.5 rad/s | GUESS | a trunk is slower than a shoulder. At a shoulder's pace the first tick of a lean is already past what a man can stand at |
+| `joint_damp` | 2.2 1/s | GUESS | flesh working against itself at a joint. A knife-edge pendulum swings for minutes and an arm swings two or three times; this is the difference. Set to give a dropped arm the swings a dropped arm has — nothing in the lattice measures it. It is NOT allowed to lose the energy: what it takes off the swing goes onto `shed` |
 | `lean_max` | 0.8 rad | DERIVED per body | fallback and ceiling; bisected against what can be drawn, which for this spine is 0.794 — the guess was right |
 | `strength_N` | 400 N | WORLD | what an adult can shift |
 | `legs_N` | 1400 N | DERIVED per body | fallback only; the legs' section times `muscle_Pa` |

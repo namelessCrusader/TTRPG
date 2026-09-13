@@ -3908,3 +3908,67 @@ Nothing was wrong with the body and nothing was wrong with the support law:
 the scene was wrong, and only the scene was wrong. Put the beam on four posts
 and he goes all the way down and all the way back up, 38.138 kg at every one
 of forty-one frames. `renders/crouch/`.
+
+## 68. A shoulder is a joint, not a dial — and the angle is the truth
+
+**Why this is here:** the user's idea — "other kinds of voxels, circular ones,
+which can rotate on their axis" — and their pick of where to put the first one.
+
+**First, a correction to what was promised.** I said a round pivot would end
+the staircase because the limb would stop being rounded cumulatively. That was
+wrong: `_repose` already draws each bone once from its canonical rest shape.
+The staircase comes from a SINGLE rounding of a rotation, which is
+non-injective however few times you do it. A round joint does not remove it.
+
+**What it buys instead is better.** The body's truth stops being "where the
+voxels are" and becomes "what the joints are at". A joint holds a real angle
+and a real angular speed; the voxels are a DRAWING of that. So a limb can BE
+at an angle the lattice cannot draw, and reach, torque and momentum are read
+off the joint rather than off the staircase. That decouples *can this body do
+it* from *can the grid draw it*, which is behind most of the trouble in
+entries 66 and 67.
+
+**A joint with nothing holding it is turned by gravity** (`_law_joints`). The
+moment is `M g d sin(theta)`, the limb's own inertia resists it, and the arm
+accelerates, swings through the bottom, and settles. All three numbers are
+counted off the voxels that are there — no row, no table:
+
+    left arm, measured:  I = 0.1673 kg m2   M = 2.87 kg   d = 0.200 m
+    period those ask for:                   1.083 s
+    period the swing takes:                 1.117 s      (ratio 1.031)
+
+The 3% is damping and finite amplitude, both of which lengthen a real
+pendulum's period. **Nobody typed how long an arm takes to fall.**
+
+**And it closed a flag doing a force's job.** Before this a limb stayed exactly
+where `_law_pose` put it, so a dead man held his arm out at shoulder height for
+ever and `alive` was the only thing holding it up. Now there is simply no
+muscle on the joint and gravity wins.
+
+**The mistake in between is worth keeping.** The first version released a joint
+when its limb left `reach` — and a refused reach is POPPED as a note about what
+this body will ask for NEXT, not as a release. So a live man's arm flopped the
+instant he gave up on a wall, and the control case of item 46's test went from
+40 of 40 to 4 of 40. *Wanting is not a force.* What holds a limb up is muscle
+tone, which a living waking body already spends energy on every tick, so
+`alive and awake` is the condition — losing consciousness IS losing tone, which
+is a cause and not a flag.
+
+**Damping is a GUESS and it is not allowed to be free.** `joint_damp` = 2.2/s
+buys a dropped arm two or three swings, and nothing in the lattice measures it.
+What it takes off the swing goes onto `shed` as heat, so the energy book still
+closes — measured, 3.09 J out of one dropped arm.
+
+**What is still to do, in order:**
+
+- **the driven case** — `_law_pose` is still kinematic (`at + clip(d, ±step)`).
+  It should apply muscle TORQUE and let the angle be an outcome. Everything it
+  needs is already here: `_swing_of` gives the inertia, `_torque_of` gives the
+  muscle, and `_law_bodies` already integrates `alpha = Nm/I` for a swing.
+- **loaded joints** — a leg standing on the floor is not a pendulum, and that
+  is a question about CONTACT, which `_law_joints` already asks. What it does
+  not yet do is pass the load DOWN the chain.
+- **the round voxel proper** — axis, angle, omega as three world fields rather
+  than a record on the person, so a door hinge, an axle and a capstan are the
+  same thing as a shoulder. Deliberately held back until there is a second
+  user, so the shape of those fields is decided by two cases and not one.
