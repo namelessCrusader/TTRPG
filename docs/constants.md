@@ -65,6 +65,8 @@ whatever is in the hand. `_torque_of` sums the limb's own bones, because the
 muscle is IN the limb. Summing the subtree for both made a waist borrow the
 arms hanging at its sides: 570 N·m instead of 400.
 
+| a landing's gather | `sqrt(2 × crouch / g)` | 9 ticks |
+
 **And the last two brought the square-cube law with them.** Force goes as area
 and mass goes as volume, so a body twice as tall is four times as strong and
 eight times as heavy — and jumps LOWER:

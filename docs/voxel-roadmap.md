@@ -629,7 +629,18 @@ landing at the same time.
     weight the rows, filter to decisions where SOMETHING changed, or learn per
     limb rather than per body. Worth choosing deliberately.
 
-59. **A BODY CAN LAND AND JUMP AGAIN INSIDE ONE TICK.** Found by item 57:
+59. ~~**A BODY CAN LAND AND JUMP AGAIN INSIDE ONE TICK.**~~ **FIXED
+    (2026-09-12).** A landing costs time now, and the time is the body's own:
+    a landing is absorbed by sinking through a crouch, and how long that takes
+    under gravity is `sqrt(2h/g)` — 9 ticks for a man, 13 for a giant, and no
+    constant of its own. A leaper told to leap for ever went from **0 of 120
+    ticks with its feet on the lattice to 36**, which is exactly what it was at
+    the old 0.75 s reaction time: the gather restores the rhythm without giving
+    back the reaction.
+
+    **The original:**
+
+61. **A BODY CAN LAND AND JUMP AGAIN INSIDE ONE TICK.** Found by item 57:
     at a quarter-second reaction a leaper lands and re-decides to leap before
     the tick is out, so its flesh is never on the lattice at a tick boundary at
     all. The physics is right — it crosses the gap either way — but there is no

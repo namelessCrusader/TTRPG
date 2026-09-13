@@ -2948,6 +2948,7 @@ class World:
                 if q["name"] == b["owner"]:              # where it came down
                     q["_own"] = frozenset(put)
                     q["_claim_tick"] = None
+                    q["_landed"] = self.tick   # legs have to gather again
                     q["anchor"] = (int(round(float(np.mean([c[0] for c in put])))),
                                    int(round(float(np.mean([c[1] for c in put])))))
                     break
@@ -5077,6 +5078,22 @@ class World:
         area = (len(c) / tall) * vox_m * vox_m
         return area * BODY["muscle_Pa"] * (tall * vox_m) * BODY["lever_frac"]
 
+    def _gather_ticks(self, p):
+        """How long this body's legs take to gather after a landing.
+
+        A LANDING COSTS SOMETHING. Nothing said so, and at a quarter-second
+        reaction that showed: a body landed and pushed off again INSIDE ONE
+        TICK, so its flesh was never on the lattice at a tick boundary and a
+        leaper was permanently airborne.
+
+        The time is the body's own: a landing is absorbed by sinking through a
+        crouch, and how long that takes under gravity is `sqrt(2 h / g)`. A
+        taller body has a deeper crouch and takes longer to gather, which is
+        the same square-cube family as the jump itself and wants no constant of
+        its own."""
+        h = max(self._crouch_of(p), 1e-6)
+        return max(1, int(round(float(np.sqrt(2.0 * h / GRAVITY)) / TICK_S)))
+
     def _crouch_of(self, p):
         """How far THIS body can sink before it pushes off.
 
@@ -5552,11 +5569,15 @@ class World:
             ground = self._underfoot(cells)
             places = self._places(p, cells, fit)
             leaps = self._leap_targets(p, cells, fit, self._leap_speed(cells, p)) \
-                if ground else []
+                if ground and self.tick - p.get("_landed", -999) \
+                >= self._gather_ticks(p) else []
             routes = self._routes(cells, [pl["xy"] for pl in places]
                                   + [lp["xy"] for lp in leaps],
                                   p, fit=fit)
-            if ground:                        # you cannot push off thin air
+            # you cannot push off thin air, and you cannot push off at all
+            # until the legs have gathered from the last landing
+            gathered = self.tick - p.get("_landed", -999) >= self._gather_ticks(p)
+            if ground and gathered:
                 menu.append({"key": "jump", "tag": "jump", "verb": "jump"})
             for lp in leaps:
                 if routes.get(lp["xy"]):

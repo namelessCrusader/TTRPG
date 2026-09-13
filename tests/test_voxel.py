@@ -3912,3 +3912,45 @@ def test_a_GIANT_JUMPS_WORSE_THAN_A_MAN_and_nobody_wrote_that_down():
     assert giant[4] < man[4], \
         f"and it jumps LOWER than the man does ({giant[4]:.2f} m against " \
         f"{man[4]:.2f}), which is the square-cube law and is written nowhere"
+
+
+def test_a_LANDING_COSTS_SOMETHING():
+    """Nothing said a landing cost anything, and at a quarter-second reaction
+    that showed: a body landed and pushed off again INSIDE ONE TICK, so its
+    flesh was never on the lattice at a tick boundary and a leaper told to leap
+    was permanently airborne.
+
+    The time is the body's own. A landing is absorbed by sinking through a
+    crouch, and how long that takes under gravity is `sqrt(2h/g)` — so a taller
+    body has a deeper crouch and takes longer to gather, which is the same
+    square-cube family as the jump itself and wants no constant of its own."""
+    from src.voxel.scenes import _person, _Wants
+    w = World(70, 20, 80, voxel_cm=5)
+    w.fill(0, 70, 0, 20, 0, 1, STONE)
+    w.fill(2, 24, 0, 20, 1, 12, STONE)
+    w.fill(34, 68, 0, 20, 1, 12, STONE)
+    w.exits = [(66, 10)]
+    p = _person(w, 9, 10, z0=12)
+    w.policy = _Wants(legs="leap")
+    ground = 0
+    for _ in range(120):
+        w.step()
+        p["events"].clear()
+        if len(np.argwhere(w.mat == FLESH)):
+            ground += 1
+    assert ground > 20, \
+        f"a body that leaps for ever still spends time ON ITS FEET between " \
+        f"leaps ({ground} of 120 ticks) — with no gather it was 0"
+
+    # AND A BIGGER BODY TAKES LONGER TO GATHER, because it has further to sink.
+    spans = {}
+    for cm in (5, 10):
+        w2 = World(40, 30, 70, voxel_cm=cm)
+        w2.open_sky = False
+        w2.fill(0, 40, 0, 30, 0, 1, STONE)
+        q = _person(w2, 12, 15)
+        spans[cm] = (w2._crouch_of(q), w2._gather_ticks(q))
+    assert spans[10][0] > 1.8 * spans[5][0], "twice the body, twice the crouch"
+    assert spans[10][1] > spans[5][1], \
+        f"and longer to gather from it ({spans[10][1]} ticks against " \
+        f"{spans[5][1]}), which nobody typed in"
