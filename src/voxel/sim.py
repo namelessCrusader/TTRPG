@@ -821,6 +821,9 @@ class World:
         # has edges; a thing thrown past one is outside, and the books only
         # balance if the world can say how much went. See `_left_world`.
         self.gone = {}
+        # Cells known to belong to something too big to pick up. Emptied
+        # whenever matter moves; see `_objects_within_reach`.
+        self._bulk, self._bulk_gen, self._matter_gen = None, -1, 0
         # AND WHAT IT HAS SHED AS HEAT, in joules — radiated into the colder
         # universe outside the lattice, plus `LEAK`, less whatever the 0 °C
         # floor had to put back. See the end of `step`.
@@ -886,6 +889,12 @@ class World:
         self._cap = self._por = None
         self._cap_key = (self.mat.copy(), self.smass.copy(),
                          self.fl.copy(), self.fvol.copy())
+        # AND A GENERATION, because this RESETS as it answers: whoever asks
+        # second in a tick is told nothing moved, which is true of the interval
+        # between the two questions and false of the tick. A cache that wants
+        # "has matter moved since I last looked" has to compare a stamp rather
+        # than ask, or it goes stale exactly when a second caller appears.
+        self._matter_gen = getattr(self, "_matter_gen", 0) + 1
         return True
 
     def T(self):
@@ -4705,18 +4714,12 @@ class World:
         if not len(cand):
             return []
         cand += np.array([x0, y0, z0])
-        # A WIDER BOX TO ANSWER "IS THIS THING COMPLETE" IN. A thing that runs
-        # out of the box is bigger than the box, which is how the world gets
-        # told from a stone — but a stone sitting at the very edge of a body's
-        # reach touches that edge too, and would be mistaken for the world. So
-        # the labelling gets a margin the candidates do not: anything whose
-        # every voxel lies inside the padded box is whole, and anything that
-        # reaches the padded wall genuinely keeps going.
-        px0 = max(x0 - R, 0); px1 = min(x1 + R, nx)
-        py0 = max(y0 - R, 0); py1 = min(y1 + R, ny)
-        pz0 = max(z0 - R, 0); pz1 = min(z1 + R, nz)
-        box = self.mat[px0:px1, py0:py1, pz0:pz1]
-        x0, y0, z0, x1, y1, z1 = px0, py0, pz0, px1, py1, pz1
+        # NO MARGIN. It was padded by another R so that a thing entirely
+        # inside the padded box was provably whole — but that made the box
+        # eight times bigger (115k cells against 27k) to answer a question the
+        # flood fallback below answers anyway, once per component. Anything
+        # touching the wall asks the real question; everything else is settled
+        # by the labelling, which is the common case and the cheap one.
         d = np.abs(cand[:, None, :] - cells[None, :, :]).max(axis=2).min(axis=1)
         cand = cand[d <= R]
         # LABEL THE BOX ONCE, do not flood the world per candidate.
@@ -4754,8 +4757,23 @@ class World:
                     take = same & (n >= 0) & ((m < 0) | (n < m))
                     m = np.where(take, n, m)
             lab = np.where(solid, m, -1)
+            # AND THEN JUMP. Passing a label to a neighbour moves it ONE VOXEL
+            # a round, so a ledge forty cells across needs forty rounds of six
+            # array operations. Every label is the flat index of another cell
+            # in the same box, so a label can be looked up in the table it is
+            # part of — which halves the distance to the root each time, and
+            # turns forty rounds into about six.
+            f = lab.ravel()
+            for _ in range(3):
+                f = np.where(f >= 0, f[np.maximum(f, 0)], -1)
+            lab = f.reshape(lab.shape)
             if np.array_equal(lab, prev):
                 break
+        self._matter_moved()                       # refresh the generation
+        gen = getattr(self, "_matter_gen", 0)
+        if self._bulk is None or self._bulk_gen != gen:
+            self._bulk, self._bulk_gen = set(), gen   # the world may be a
+        bulk = self._bulk                             # different shape now
         out, seen = [], set()
         strength = p.get("strength_N", BODY["strength_N"])
         off = np.array([x0, y0, z0])
@@ -4772,11 +4790,26 @@ class World:
             # flood. It is at most a handful per call now rather than one per
             # candidate cell, because the memo keys on the COMPONENT and not on
             # which cells a capped flood happened to visit.
+            if len(where) >= 4000:
+                continue                  # already the world INSIDE the box —
+                                          # no flood can make it less so
+            if tuple(c) in bulk:
+                continue                  # known world: something this cell is
+                                          # part of was flooded before and ran
+                                          # over the cap
             if (where[:, 0].min() == x0 or where[:, 0].max() == x1 - 1
                     or where[:, 1].min() == y0 or where[:, 1].max() == y1 - 1
                     or where[:, 2].min() == z0 or where[:, 2].max() == z1 - 1):
                 where = self._object_at(*c)
             if len(where) >= 4000:
+                # AND REMEMBER IT. A floor SLICE inside one man's reach is only
+                # a thousand cells, under the cap, so the box cannot tell it
+                # from a crate — and the flood that settles it is the most
+                # expensive thing left in the tick. It is also the same answer
+                # every tick until somebody moves the floor, so it is kept
+                # until somebody does: `_matter_moved` is the sim's own word
+                # for that, and already earns its keep for two other caches.
+                bulk.update(map(tuple, where))
                 continue                  # the flood cap: that is the world,
                                           # not a thing to pick up
             _lift, drag_N = self._effort(where)
