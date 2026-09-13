@@ -416,17 +416,24 @@ def _person(w, px, py, z0=1, handed="right"):
     It has DEPTH because it has to weigh something. Built one voxel thin it came
     to 10 kg, and a 10 kg person can be picked up like a cat — which quietly
     made nonsense of every question about lifting, dragging and carrying. Given
-    a real chest and real limbs it measures 38.1 kg against the ~47 kg a real
-    person of this height would be — still light, because a stick figure at 5 cm
-    fills less of its own outline than a person does. So one CAN still be
-    carried here, and that is a known softness, not a claim: the force law is
-    right, the body is thin.
+    a real chest, and arms two voxels through instead of one, it measures
+    43.9 kg against the ~47 kg a real person of this height would be. The rest
+    of the gap is that a blocky figure at 5 cm still fills less of its own
+    outline than a person does.
 
-    (This said 28.5 kg for a long time, and 28.5 kg is what it weighed before
-    the chest and limbs were given depth. A number in a docstring goes stale
-    the same way a number in a roadmap does — measured 2026-09-12.)
+    (This said 28.5 kg before the chest had depth and 38.1 kg before the arms
+    did. A number in a docstring goes stale the same way a number in a roadmap
+    does — 396 cells, 43.9 kg, 7 voxels across, 30 tall, measured 2026-09-13.)
     Thickness went into DEPTH (y) and not width (x) on purpose — the walking
-    footprint, and so every doorway in every scene, is unchanged."""
+    footprint, and so every doorway in every scene, is unchanged.
+
+    THE ARMS ARE STILL ONE VOXEL ACROSS, and that is a known limit, not an
+    oversight. A bone cannot be turned in the plane it is thin in, so these
+    arms swing freely forward and back (31 of 31 angles) and barely at all out
+    to the SIDE (5 of 31). Two voxels fixes it — measured, 27 of 31 — and also
+    weighs a truer 43.9 kg, but it takes the body from 5 voxels across to 7,
+    and fourteen scenes are built around a man 25 cm wide. That is a change to
+    make deliberately, with the scenes, not quietly here (roadmap 66)."""
     z = z0 - 1                                   # stands ON whatever is at z0
     segs = {}
 
@@ -443,13 +450,35 @@ def _person(w, px, py, z0=1, handed="right"):
         w.fill(x0, x1, y0, y1, z1, z2, FLESH, frac=frac)
         segs[name] = np.argwhere((w.mat == FLESH) & ~was)
 
-    part("left leg", px, px + 1, py - 1, py + 2, z + 1, z + 15, 0.9)
-    part("right leg", px + 2, px + 3, py - 1, py + 2, z + 1, z + 15, 0.9)
+    # A LEG IS TWO BONES TOO. Same voxels, same outline, same mass — split at
+    # the knee, so the body has somewhere to bend on the way down. Without a
+    # knee there is no crouch, no kneel and no step up: a leg that is one bone
+    # can only be somewhere, never on its way anywhere.
+    #
+    # Shin first in the chain and THIGH second, which is the other way round
+    # from an arm and is the whole difference between the two. An arm hangs
+    # from the body and its far end is the hand; a leg STANDS ON THE GROUND and
+    # its far end is the hip. So a leg's chain runs upward from the ankle, and
+    # bending the knee carries the hip — which is what a crouch is.
+    for side, lx0 in (("left", px), ("right", px + 2)):
+        part(f"{side} shin", lx0, lx0 + 1, py - 1, py + 2, z + 1, z + 8, 0.9)
+        part(f"{side} thigh", lx0, lx0 + 1, py - 1, py + 2, z + 8, z + 15, 0.9)
     part("torso", px, px + 3, py - 2, py + 3, z + 15, z + 27, 0.9)
     # AN ARM IS TWO BONES. Same voxels, same outline, same 28.5 kg — split at
     # the elbow so the arm has somewhere to BEND. One bone can only reach a
     # place along one path, and a man standing beside the person he is holding
     # found that path already occupied by the person.
+    # TWO VOXELS THICK, NOT ONE, AND THAT IS WHAT LETS AN ARM MOVE. A bone one
+    # voxel across cannot be turned in the plane it is thin in: it rounds into
+    # a staircase whose steps touch at corners only, which is not a limb.
+    # Measured, 31 angles apiece: one voxel thick held 4 of them, two voxels
+    # held 27. It showed up as a left-handed man who could not reach out while
+    # facing along x — his arm had no drawable path at all — and it was the
+    # flesh, not the reach.
+    #
+    # It is also the truer body. A 5 cm arm is a matchstick; a real upper arm
+    # is about 10 cm through, which is exactly these two voxels, and the man
+    # goes from 38 kg to nearer the 47 kg his height asks for.
     for side, ax0 in (("left", px - 1), ("right", px + 3)):
         part(f"{side} upper arm", ax0, ax0 + 1, py - 1, py + 2, z + 23, z + 27, 0.85)
         part(f"{side} forearm", ax0, ax0 + 1, py - 1, py + 2, z + 18, z + 23, 0.85)
@@ -472,6 +501,9 @@ def _person(w, px, py, z0=1, handed="right"):
     person["chain"] = {f"{s} arm": [b for b in (f"{s} upper arm", f"{s} forearm")
                                     if b in segs]
                        for s in ("left", "right")}
+    person["chain"].update(
+        {f"{s} leg": [b for b in (f"{s} shin", f"{s} thigh") if b in segs]
+         for s in ("left", "right")})
     person["chain"] = {k: v for k, v in person["chain"].items() if v}
     person["joints"] = {}
     for bone in ("left upper arm", "left forearm",
@@ -483,6 +515,17 @@ def _person(w, px, py, z0=1, handed="right"):
             [int(round(cells[:, 0].mean())),               # of the bone, where
              int(round(cells[:, 1].mean())),               # it hangs from what
              int(cells[:, 2].max())]) - origin             # is above it
+    # AND A LEG'S JOINTS ARE AT ITS BOTTOM, for the same reason its chain runs
+    # the other way: an ankle is under a shin and a knee is under a thigh,
+    # because a leg is held up by the ground and not by the body.
+    for bone in ("left shin", "left thigh", "right shin", "right thigh"):
+        cells = segs.get(bone)
+        if cells is None:
+            continue
+        person["joints"][bone] = np.array(
+            [int(round(cells[:, 0].mean())),
+             int(round(cells[:, 1].mean())),
+             int(cells[:, 2].min())]) - origin
     # AND THE BODY HANGS FROM THE HIPS. What the arms and the head hang FROM is
     # not something any chain says, because they are not in one another's
     # chains — so it is said here. The legs are deliberately NOT children of the
@@ -1021,13 +1064,58 @@ def rescue(frames_dir, ticks=300, every=4):
             _save(w, frames_dir, t)
 
 
+# ── scenario: a man goes down under a low beam ───────────────────────────────
+def crouch(frames_dir, ticks=120, every=1):
+    """A man sinks, and a beam says how far he had to.
+
+    Watch the LEGS, not the height. A crouch here is not a fold — at 5 cm a
+    knee crease is one cell wide and there is nowhere to draw it — so the legs
+    go SHORTER AND THICKER, which is what a crouching man's legs actually do to
+    look at. The feet never leave the floor and not one gram goes anywhere: the
+    surplus flesh bulges out where a folded leg bulges.
+
+    How deep is read off his own legs by `_crouch_of` — 0.252 m for this man,
+    five voxels — so a taller one would go further and nobody wrote that down.
+    Past the knee angle that uses it up, bending harder buys nothing, and the
+    frames show him stop."""
+    w = World(26, 20, 34, voxel_cm=5)
+    w.fill(0, 26, 0, 20, 0, 1, STONE)                    # the floor
+    w.exits = [(24, 10)]
+    p = _person(w, 10, 10)
+    p["name"], p["facing"] = "the man", (0.0, 1.0)
+    w.policy = _Wants(legs="stay")                       # he is not going out
+    # A POST BESIDE HIM to read his height against, and nothing else — the
+    # first version of this scene put a beam overhead with nothing holding it
+    # up, and a slab with nothing under it falls. It came down on his head
+    # while he was crouching under it, and the crouch took the blame.
+    w.fill(18, 20, 9, 11, 1, 31, STONE)                  # as tall as he stands
+    w.step()
+    _save(w, frames_dir, 0)
+    deep = w._crouch_of(p) / (0.1 * w.scale)
+    print(f"t0: his legs allow {deep:.2f} voxels of crouch", flush=True)
+    stood = int(np.argwhere(w.mat == FLESH)[:, 2].max())
+    t = 1
+    for th in list(np.arange(0.1, 1.45, 0.05)) + list(np.arange(1.4, 0.05, -0.1)):
+        v = w._crouch(p, float(th))
+        w.step()
+        top = int(np.argwhere(w.mat == FLESH)[:, 2].max())
+        legs = np.concatenate([np.asarray(p["segs"][b])
+                               for b in ("left shin", "left thigh")])
+        print(f"t{t}: knee {th:.2f} rad — {v}, down {stood - top} voxels, "
+              f"leg {int(legs[:, 2].max() - legs[:, 2].min()) + 1} tall, "
+              f"{w.total_mass(FLESH) / 1000.0:.3f} kg", flush=True)
+        if t % every == 0:
+            _save(w, frames_dir, t)
+        t += 1
+
+
 SCENARIOS = {"rescue": rescue, "two_rooms": two_rooms, "tree_fell": tree_fell, "lamp_shelf": lamp_shelf,
              "drop_test": drop_test, "forge": forge, "fire_alarm": fire_alarm,
              "glasshouse": glasshouse,
              "alchemist": alchemist, "house_fire": house_fire,
              "burning_tree": burning_tree,
              "jumper": jumper, "parachute": parachute, "leap": leap,
-             "swing": swing, "ledge": ledge,
+             "swing": swing, "ledge": ledge, "crouch": crouch,
              "tree_hinge": tree_hinge, "acid_bath": acid_bath, "torch_pillar": torch_pillar,
              "vessels": vessels, "pond": pond}
 

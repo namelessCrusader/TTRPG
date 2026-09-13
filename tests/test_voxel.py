@@ -3997,3 +3997,106 @@ def test_a_HOLD_is_RE_EARNED_EVERY_TICK_not_only_when_you_walk():
     assert up.get("dragging") is None, \
         "a man on a ledge cannot hold somebody standing on the ground below " \
         "him — and he has not walked a step, which is when this used to be asked"
+
+
+def test_a_MAN_CROUCHES_and_the_DEPTH_is_his_own_LEGS():
+    """Sinking is a whole-body motion, and how far is a fact about this body.
+
+    The lattice refused the obvious version first and was right to. Bending a
+    knee on its own swings the hip away from a torso that has not moved, so the
+    leg comes off the body — 1 of 289 knee angles drawable, and the one was
+    standing up straight. Made one composite motion it got further and still
+    failed: at 5 cm a knee CREASE is one cell wide, so the fold crowds cells
+    the grid has no room for.
+
+    So a crouch is a compression, which is what is visible at this size: the
+    legs go shorter and thicker, the feet stay planted, and everything above
+    the hips comes down by exactly what the legs lost. The cap is not written
+    anywhere — `_crouch_of` reads it off this body's own legs."""
+    from src.voxel.scenes import _person
+    w = World(40, 30, 50, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 40, 0, 30, 0, 1, STONE)
+    _person(w, 12, 15)
+    w.step()
+    p = w.persons[0]
+    p["facing"] = (0.0, 1.0)
+    snap, m0 = w.snapshot(), w.total_mass(FLESH)
+    top = lambda: int(np.argwhere(w.mat == FLESH)[:, 2].max())
+    stood = top()
+
+    sank = []
+    for th in (0.2, 0.4, 0.6, 0.8, 1.0, 1.2):
+        w.restore(snap)
+        assert w._crouch(w.persons[0], th) == "moved", \
+            f"a body can crouch at {th} rad"
+        sank.append(stood - top())
+        assert abs(w.total_mass(FLESH) - m0) < 1e-6, \
+            "and not one gram of him goes missing on the way down"
+
+    assert sank == sorted(sank), f"deeper knee, lower man ({sank})"
+    assert sank[0] == 0 and sank[-1] > 0, \
+        f"a crouch smaller than a voxel is no crouch; a real one shows ({sank})"
+    # HIS OWN LEGS SAY HOW FAR, and it is the same number in both units.
+    cap = w._crouch_of(w.persons[0]) / (0.1 * w.scale)
+    assert max(sank) == int(round(cap)), \
+        f"he sinks as far as his legs allow and no further " \
+        f"({max(sank)} voxels against {cap:.2f})"
+    assert sank[-1] == sank[-2], "and past that the knee angle buys nothing"
+
+    # SYMMETRIC BY DEFAULT, ASYMMETRIC ON PURPOSE. One number is a crouch; a
+    # pair is a lunge, which is a thing a body can do.
+    tall = lambda b: (lambda c: int(c[:, 2].max() - c[:, 2].min()) + 1)(
+        np.concatenate([np.asarray(w.persons[0]["segs"][x])
+                        for x in (f"{b} shin", f"{b} thigh")]))
+    w.restore(snap)
+    assert w._crouch(w.persons[0], 1.0) == "moved"
+    assert tall("left") == tall("right"), "one number crouches on both legs"
+    w.restore(snap)
+    assert w._crouch(w.persons[0], (1.0, 0.0)) == "moved"
+    assert tall("left") < tall("right"), \
+        "and a pair bends one knee, which is a lunge, not a crouch"
+    assert _lumps(w.mat == FLESH) == 1, "he is still one man throughout"
+
+
+def test_a_TURN_that_cannot_LOSE_a_VOXEL():
+    """Rounding a rotation is not injective, and that is why limbs would not move.
+
+    Two voxels land in one cell and the bone is not a bone any more, so the
+    pose is refused — measured on this body, a torso could be turned through 3
+    of 31 angles. Three shears make the same rotation out of three bijections,
+    so nothing is lost or doubled at ANY angle. What it costs is about a voxel
+    of drift at the far corner of a big turn, which is why it is the fall-back
+    and the rotation is still what a bone tries first."""
+    from src.voxel.scenes import _person
+    w = World(40, 30, 50, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 40, 0, 30, 0, 1, STONE)
+    _person(w, 12, 15)
+    w.step()
+    p = w.persons[0]
+    cells = (np.asarray(p["segs"]["torso"]).astype(np.float64))
+    piv = np.asarray(p["joints"]["torso"], np.float64)
+
+    rint = shear = 0
+    for th in np.arange(0.05, 1.55, 0.05):
+        pairs, pivs = [(float(th), 0.0)], [piv]
+        a = np.rint(w._apply3(w._chain3(pivs, pairs, 0, -1, 1), cells))
+        b = w._turn_cells(pivs, pairs, 0, -1, 1, [False], cells)
+        rint += len({tuple(c) for c in a}) == len(a)
+        shear += len({tuple(c) for c in b}) == len(b)
+        assert len(b) == len(cells), "the shears move every voxel it had"
+    assert shear == 30, \
+        f"the shears lose nothing at any angle ({shear}/30)"
+    assert rint < shear, \
+        f"where rounding a rotation drops voxels and cannot ({rint}/30)"
+
+    # AND IT LANDS WHERE IT MEANT TO. A bijection that put the hand a metre off
+    # would be worse than not moving; the drift is about one voxel.
+    worst = 0.0
+    for th in np.arange(0.05, 1.55, 0.05):
+        pairs, pivs = [(float(th), 0.0)], [piv]
+        a = w._apply3(w._chain3(pivs, pairs, 0, -1, 1), cells)
+        b = w._turn_cells(pivs, pairs, 0, -1, 1, [False], cells)
+        worst = max(worst, float(np.abs(a - b).max()))
+    assert worst < 2.0, f"and within a voxel or so of true ({worst:.2f})"

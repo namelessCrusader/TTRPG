@@ -1776,6 +1776,88 @@ class World:
         return M
 
     @staticmethod
+    def _shear_steps(piv, theta, ax, sgn, bend=False):
+        """One joint's turn written as SHEARS instead of as a rotation.
+
+        A rotation on a lattice has to round, and rounding sends two voxels
+        into one cell and no voxel into the next — a bone loses mass in one
+        place and doubles it in another, which is why a turned limb kept
+        coming back undrawable. Measured on this body's own bones: a torso
+        could be turned through 4 of 31 angles, a thigh through 9.
+
+        A shear does not have that problem. `x += round(k*z)` slides a whole
+        row sideways onto a whole row, so it is a bijection of the lattice
+        for ANY k — nothing is lost and nothing is doubled. Three shears
+        make a rotation (Paeth's raster-rotation algorithm, 1986), so three
+        bijections make a turn that cannot lose a voxel at any angle. The
+        same bones then turn through 31 of 31.
+
+        Returned as a list of steps rather than a matrix because the whole
+        property lives in the rounding BETWEEN them. Multiply them together
+        first and it is an ordinary rotation again, with ordinary holes.
+
+        A step is (dst, src, k, off): dst += round(k * (src - off)). The
+        pivot is a fixed point of every step, so it is a fixed point of the
+        turn."""
+        if bend:
+            return [(ax, 2, -sgn * float(np.tan(theta)), float(piv[2]))]
+        a = sgn * float(theta)
+        k = float(np.tan(a / 2.0))
+        s = -float(np.sin(a))
+        return [(ax, 2, k, float(piv[2])),
+                (2, ax, s, float(piv[ax])),
+                (ax, 2, k, float(piv[2]))]
+
+    @staticmethod
+    def _apply_shears(steps, cells):
+        """Move a set of voxels through a list of shears, rounding between."""
+        c = np.rint(np.asarray(cells, np.float64)).astype(np.int64)
+        for dst, src, k, off in steps:
+            c[:, dst] += np.rint(k * (c[:, src] - off)).astype(np.int64)
+        return c
+
+    def _turn_cells(self, pivots, pairs, upto, sgn, axis, bends, cells):
+        """WHERE A BONE'S VOXELS GO. The one answer both callers use.
+
+        Shears to decide WHICH cells, because that cannot lose one; the exact
+        rotation to decide WHERE, because that cannot drift. Three shears make
+        a turn no voxel falls out of, but each shear rounds, and the roundings
+        pile up — a fist came out about a voxel from where the arm had aimed
+        it, which is nothing on a wall and everything when the thing you are
+        reaching past is one voxel away. It read as a man unable to reach at
+        all, and the flesh was fine; the arm was simply put down beside where
+        it meant to be.
+
+        So the shape comes from the shears and the PLACE comes from the
+        rotation: shift the sheared cells bodily until their centre sits where
+        the rotation put the centre. A whole-cell shift of the whole set is
+        still a bijection, so nothing is lost by fixing it."""
+        want = self._apply_shears(
+            self._chain_shear(pivots, pairs, upto, sgn, axis, bends), cells)
+        aim = self._apply3(
+            self._chain3(pivots, pairs, upto, sgn, axis, bends), cells)
+        off = np.rint(aim.mean(axis=0) - want.mean(axis=0)).astype(np.int64)
+        return want + off
+
+    def _chain_shear(self, pivots, pairs, upto, sgn, axis, bends=None):
+        """Where a bone's REST cells end up, as shears — the bijective twin
+        of _chain3, and the one that actually draws the voxels.
+
+        Same order: a bone's own joint turns first and every joint between it
+        and the limb carries the result along, spread before swing within a
+        joint. _chain3 still answers WHERE a limb reaches, which wants real
+        arithmetic; this answers WHICH CELLS, which wants whole ones."""
+        steps = []
+        for j in range(upto, -1, -1):
+            swing, spread = pairs[j]
+            bend = bool(bends[j]) if bends else False
+            if spread:
+                steps += self._shear_steps(pivots[j], spread, 1 - axis,
+                                           sgn, bend)
+            steps += self._shear_steps(pivots[j], swing, axis, sgn, bend)
+        return steps
+
+    @staticmethod
     def _comp3(a, b):
         """Do b, then a — 3x4 affines."""
         return a @ np.vstack([b, [0.0, 0.0, 0.0, 1.0]])
@@ -2006,7 +2088,13 @@ class World:
         seen = {c for c in S
                 if any((c[0] + dx, c[1] + dy, c[2] + dz) in rest
                        for dx, dy, dz in _SIX)}
-        if not seen:
+        if not rest:
+            # NOTHING STAYED BEHIND. A crouch moves every bone there is, so
+            # there is no still half for the moved half to hang from, and
+            # asking to be attached to it said a sinking body had come apart.
+            # When the whole body goes, joined means joined TO ITSELF.
+            seen = {next(iter(S))} if S else set()
+        elif not seen:
             return False                      # it is not attached at all
         stack = list(seen)
         while stack:
@@ -2203,25 +2291,66 @@ class World:
             pivot[b] = (np.asarray(joints.get(b, joints[bones[0]]))
                         + origin).astype(np.float64)
 
-        def place(ang):
+        def place(ang, shear=False):
             """Every moving bone, at these angles: its own joint first, then
-            every joint between it and the limb being turned."""
+            every joint between it and the limb being turned.
+
+            TWO WAYS TO DRAW THE SAME TURN, and the difference matters. The
+            rotation puts the bone exactly where the angle says, and sometimes
+            rounds two of its voxels into one cell, which is not a bone. The
+            shears cannot do that — they are bijections — but they round three
+            times over and put the bone about a voxel from where it aimed.
+
+            So: the rotation first, because a reach that is one voxel off is a
+            reach that misses. The shears are what a bone falls back on when
+            the rotation has no drawable answer at all, which used to be the
+            end of the matter and is now merely the harder path."""
             held = {b: (float(ang[2 * k]), float(ang[2 * k + 1]))
                     for k, b in enumerate(bones)}
             out = []
             for b in moving:
                 path = paths[b]
-                out.append(self._apply3(
-                    self._chain3([pivot[x] for x in path],
-                                 [held.get(x, self._bone_angle(p, x))
-                                  for x in path],
-                                 len(path) - 1, sgn, axis,
-                                 [x in bend for x in path]),
-                    (np.asarray(rest[b]) + origin).astype(np.float64)))
+                piv = [pivot[x] for x in path]
+                pr = [held.get(x, self._bone_angle(p, x)) for x in path]
+                bd = [x in bend for x in path]
+                cells = (np.asarray(rest[b]) + origin).astype(np.float64)
+                out.append(self._turn_cells(piv, pr, len(path) - 1, sgn, axis,
+                                            bd, cells)
+                           if shear else
+                           self._apply3(self._chain3(piv, pr, len(path) - 1,
+                                                     sgn, axis, bd), cells))
             return out
 
         parts = place(th)
         want = np.round(np.concatenate(parts)).astype(np.int64)
+        # THE ROTATION COULD NOT DRAW IT — try the shears, which always can.
+        # An arm that lost a voxel to rounding used to simply not move; now it
+        # takes the bijective path instead and moves about a voxel wide of
+        # true, which is a far better answer than standing still. Measured: a
+        # bone held 4 of 31 angles under the rotation alone, 27 with this.
+        #
+        # ONLY EVER AN IMPROVEMENT, and that condition is the whole of it. The
+        # shears put the limb somewhere slightly else, and somewhere slightly
+        # else can be inside a wall — so the swap is taken only when the shear
+        # pose is one the body can actually BE in. Without that, a search for
+        # somewhere to put an arm traded "the lattice cannot draw this" for
+        # "the post is in the way", learned nothing, and a man beside a post
+        # stopped being able to reach at all.
+        nx_, ny_, nz_ = self.shape
+        flat = lambda a: (a[:, 0] * ny_ + a[:, 1]) * nz_ + a[:, 2]
+        if len(np.unique(flat(want))) != len(want):
+            alt_parts = place(th, shear=True)
+            alt = np.concatenate(alt_parts)
+            ok = (len(np.unique(flat(alt))) == len(alt)
+                  and (alt >= 0).all()
+                  and (alt[:, 0] < nx_).all() and (alt[:, 1] < ny_).all()
+                  and (alt[:, 2] < nz_).all())
+            if ok:
+                was = {tuple(c) for c in cur}
+                ok = all(tuple(t) in was or int(self.mat[tuple(t)]) == AIR
+                         for t in alt)
+            if ok:
+                parts, want = alt_parts, alt
         # WHAT THE HAND HOLDS TURNS WITH THE HAND. Not an extra rule — it rides
         # rigidly with the bone at the END of the chain, carried from where the
         # old angles put that bone to where the new ones do. Without it an arm
@@ -5143,6 +5272,201 @@ class World:
         its own."""
         h = max(self._crouch_of(p), 1e-6)
         return max(1, int(round(float(np.sqrt(2.0 * h / GRAVITY)) / TICK_S)))
+
+    def _bunch(self, want, mine, cap=4):
+        """Two bones want one cell: the flesh between them has to go somewhere.
+
+        A folded knee presses calf against thigh, and the flesh in the crease
+        does not vanish — it BULGES. On a lattice that shows up as two voxels
+        wanting the same cell, and both of the easy answers are lies. Refuse
+        the pose and the body cannot bend its knee past about seventeen
+        degrees, which is false. Drop the surplus voxel and flesh ceases to
+        exist when a man squats, which is worse, and it breaks the mass books
+        besides.
+
+        So the surplus voxel is put in the nearest free cell instead. The leg
+        thickens at the knee, which is where a real leg thickens, and not one
+        gram goes missing. Measured on this body: a knee at 1.1 rad crowds
+        five cells out of forty-two, and they land in the crease.
+
+        None if there is nowhere within `cap` steps for the surplus to go —
+        flesh pressed into a gap smaller than itself, which IS a refusal."""
+        out = np.array(want, np.int64, copy=True)
+        used, dup = set(), []
+        for i, c in enumerate(map(tuple, out)):
+            if c in used:
+                dup.append(i)
+            else:
+                used.add(c)
+        if not dup:
+            return out
+        nx, ny, nz = self.shape
+        for i in dup:
+            c = tuple(out[i])
+            found, frontier, seen = None, [c], {c}
+            for _ in range(cap):
+                nxt = []
+                for q in frontier:
+                    for d in _SIX:
+                        n = (q[0] + d[0], q[1] + d[1], q[2] + d[2])
+                        if n in seen:
+                            continue
+                        seen.add(n)
+                        if not (0 <= n[0] < nx and 0 <= n[1] < ny
+                                and 0 <= n[2] < nz):
+                            continue
+                        if n in used:
+                            nxt.append(n)      # taken, but flesh reaches past
+                            continue
+                        if n in mine or int(self.mat[n]) == AIR:
+                            found = n
+                            break
+                        nxt.append(n)
+                    if found:
+                        break
+                if found:
+                    break
+                frontier = nxt
+            if found is None:
+                return None
+            used.add(found)
+            out[i] = found
+        return out
+
+    def _crouch(self, p, theta, dry=False):
+        """Sink through a crouch: the legs fold and the whole body comes down.
+
+        A CROUCH IS NOT A LIMB POSE, and the lattice says so before anything
+        else does. Bending a knee on its own swings the hip away from a torso
+        that has not moved, so the leg comes off the body — measured, 1 of 289
+        knee angles was drawable, and the one was standing up straight. You
+        cannot bend a knee without the hips moving.
+
+        Nor can you DRAW the fold at this size. A thigh tipped one way and a
+        shin tipped the other want the same cells at the knee, and at five
+        centimetres a knee crease is one cell wide — measured, the crease
+        crowded five cells of forty-two at a right angle, and the same drift
+        pushed the foot through the floor. The bend is finer than the grid.
+
+        What IS visible at five centimetres is a leg going SHORTER and THICKER,
+        and that is the whole observable of a crouch from outside. So the legs
+        compress: every cell keeps its foot on the ground and comes down in
+        proportion to how far up the leg it sits, the surplus bulges out where
+        a folded leg bulges, and everything above the hips travels down by
+        exactly what the legs lost. The hip and the waist move together by
+        construction, so the body cannot come apart at the waist.
+
+        HOW FAR is not a number typed here — `_crouch_of` reads it off this
+        body's own legs, so a tall man sinks further than a child and nobody
+        writes it down twice. `theta` asks for a knee angle and gets as much of
+        it as the legs have to give.
+
+        SYMMETRIC BY DEFAULT. `theta` may be a pair, one leg each, and then the
+        body follows the HIGHER hip: standing on one bent leg and one straight
+        one is a lunge, and a lunge is a thing a body can do. Two feet on the
+        ground is a loop rather than a tree, and the higher hip is what
+        resolves it — the straighter leg is the one carrying you."""
+        segs = p.get("segs")
+        legs = [k for k in self._limbs(p) if "leg" in k]
+        if not segs or len(legs) < 2:
+            return "blocked"
+        # SYMMETRIC BY DEFAULT — and this is where that lives. One number
+        # spread over one limb means the joint nearest the body and the rest
+        # straight, which is what an arm wants; one number spread over TWO
+        # LEGS that way is a man bending one knee, which is a lunge, not a
+        # crouch. Ask for a crouch with a number and both legs do it; ask with
+        # a pair and they do as they are told.
+        th = ([float(theta)] * len(legs) if np.isscalar(theta)
+              else self._angles(theta, len(legs)))
+        comp, sl = self._person_cells(p)
+        if comp is None or not comp.any():
+            return "blocked"
+        own = np.argwhere(comp)
+        own[:, 0] += sl[0].start or 0
+        own[:, 1] += sl[1].start or 0
+        origin = own.min(axis=0)
+        rest = p.setdefault("rest", {})
+        deep = self._crouch_of(p) / max(0.1 * self.scale, 1e-9)
+        moving, parts, sunk = [], [], []
+        for li, leg in enumerate(sorted(legs)):
+            bones = [b for b in self._bones(p, leg) if b in segs]
+            if not bones:
+                return "blocked"
+            for b in bones:
+                rest.setdefault(b, np.asarray(segs[b]).copy())
+            zs = np.concatenate([np.asarray(rest[b]) for b in bones])[:, 2]
+            z0 = int(zs.min()) + int(origin[2])
+            span = max(int(zs.max() - zs.min()) + 1, 1)
+            # AS MUCH OF THE ANGLE AS THE LEGS HAVE. The geometry asks for
+            # span*(1 - cos theta); the body says how deep it goes at all.
+            d = int(min(round(span * (1.0 - float(np.cos(float(th[li]))))),
+                        round(deep), span - 1))
+            sunk.append(d)
+            for b in bones:
+                c = (np.asarray(rest[b]) + origin).astype(np.int64)
+                c[:, 2] = z0 + np.rint(
+                    (c[:, 2] - z0) * (span - d) / span).astype(np.int64)
+                moving.append(b)
+                parts.append(c)
+        drop = int(min(sunk))      # the body follows the HIGHER hip
+        upper = [b for b in segs if b not in moving]
+        for b in upper:
+            rest.setdefault(b, np.asarray(segs[b]).copy())
+            c = (np.asarray(rest[b]) + origin).astype(np.int64)
+            c[:, 2] -= drop
+            moving.append(b)
+            parts.append(c)
+        cur_parts = self._bone_parts(p, moving, own)
+        if cur_parts is None or any(len(c) != len(rest[b])
+                                    for c, b in zip(cur_parts, moving)):
+            return "blocked"
+        cur = np.concatenate(cur_parts)
+        want = np.round(np.concatenate(parts)).astype(np.int64)
+        nx, ny, nz = self.shape
+        if ((want < 0).any() or (want[:, 0] >= nx).any()
+                or (want[:, 1] >= ny).any() or (want[:, 2] >= nz).any()):
+            return "blocked"
+        mine = {tuple(c) for c in cur}
+        flat = (want[:, 0] * ny + want[:, 1]) * nz + want[:, 2]
+        if len(np.unique(flat)) != len(flat):
+            # THE KNEE CREASE. Not a drawing failure — flesh with nowhere to be
+            want = self._bunch(want, mine)
+            if want is None:
+                return "blocked"
+        if not self._still_joined(p, want, own, mine):
+            return "undrawable"
+        if any(tuple(t) not in mine and int(self.mat[tuple(t)]) != AIR
+               for t in want):
+            return "blocked"
+        if dry:
+            return "moved"
+        fields = (self.mat, self.smass, self.E, self.fl, self.fvol,
+                  self.fpot, self.fallh)
+        src, dst = tuple(cur.T), tuple(want.T)
+        held = [arr[src].copy() for arr in fields]
+        for arr in fields:
+            arr[src] = 0
+        for arr, h in zip(fields, held):
+            arr[dst] = h
+        base = want.min(axis=0)
+        if not np.array_equal(base, origin):
+            shift = origin - base
+            for b in segs:
+                segs[b] = np.asarray(segs[b]) + shift
+            for b in rest:
+                rest[b] = np.asarray(rest[b]) + shift
+            for b in (joints or {}):
+                joints[b] = np.asarray(joints[b]) + shift
+        k = 0
+        for b in moving:
+            n = len(rest[b])
+            segs[b] = want[k:k + n] - base
+            k += n
+        p["crouched"] = list(th)
+        p["_claim_tick"] = None
+        self._torque_solid = None
+        self._slack_mat = None
+        return "moved"
 
     def _bend_max(self, p, limb, ceiling):
         """The furthest this body can bend that joint AND STILL BE DRAWN.

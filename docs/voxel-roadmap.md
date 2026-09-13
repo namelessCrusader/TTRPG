@@ -486,10 +486,35 @@ away and expects it to be there properly when it does. So:
 | a scope on that far ridge | opens a window: that patch runs properly for as long as it is looked at |
 | an earthquake | coarse everywhere, fine where it meets anything that can be broken |
 
-The thing to get right is not the far field; it is the PROMOTION rule — what
-makes a coarse region become fine — because everything the player can be
-surprised by comes through it. A coarse region that cannot say "something here
-is about to matter" is a region that will drop a bullet on the floor.
+**THE PROMOTION RULE** (the user's, 2026-09-13, and it is sharper than what
+was here before): *when something local does a thing that needs information
+from — or makes a change to — somewhere farther away that is running coarse,
+find the SMALLEST area of effect and promote that to fine.*
+
+Three properties worth spelling out, because they are what make it a rule
+rather than a wish:
+
+- **It is driven by the ACT, not by a watcher.** Nothing has to patrol the far
+  field asking whether it has become interesting. A body fires, looks, shouts,
+  or shakes the ground; the act names what it needs, and that names the region.
+  A coarse region nobody is interacting with is never examined and costs
+  nothing, which is the whole point of it being coarse.
+- **Smallest area of effect.** A bullet promotes a corridor, not a county. A
+  scope promotes the cone it can see, not everything at that range. Getting
+  this wrong in the generous direction is how a level-of-detail scheme quietly
+  becomes no level-of-detail scheme.
+- **Information and change are the same question.** Reading distant state and
+  writing it both need the state to be true at the fidelity the reader expects.
+  A scope that looks at a coarse hillside and a bullet that arrives at one are
+  the same failure — the answer was computed at a resolution the asker was not
+  told about.
+
+What it needs from the engine, all of which exists in some form: a region that
+can be re-gridded without losing what it holds (`fill` and `_air_regions`
+already think in regions), a conservation check ACROSS the seam (`total_mass`,
+`total_energy`, `gone`, `shed`), and acts that can state their own reach — which
+the menu seam already forces them to do, because a menu row that cannot say
+what it touches cannot be checked for legality either.
 
 29. **DOES DISTANT AIR GET THE SAME FIDELITY?** A modelling decision in Ruling
     1's stopping-rule family, and the reason a burning town costs what it does:
@@ -3757,3 +3782,129 @@ scene was built expecting a clean catch.
 **The lesson is the one this file keeps learning in different clothes.** Tests
 check what somebody thought to ask. A picture is the whole state at once, and
 it cannot be politely silent about the part nobody asked about.
+
+---
+
+## 66. A limb one voxel thick cannot be turned, and the fix was the ROUNDING
+
+**Why this is here:** the body was asked to move as freely as a real one does
+at 5 cm. Measured first, before anything was built — every bone, both turning
+planes, 31 angles each, alone, with nothing else in the way:
+
+    left shin    swing : .u..uuu.uuuu.uuuujuuuuuuuu.u..   8/31
+    left shin    spread: .jjjjjjjjuujjjuujjjujuujjjjjj.   2/31
+    torso        swing : uuuuuuuuuuuu.uuuuuuuuuuuuu.u.u   3/31
+
+`u` is two voxels rounding into one cell; `j` is the bone rounding into a
+staircase whose steps touch at corners only. **A torso could be turned through
+3 of 31 angles.** This was never a body that could move.
+
+**Two separate causes, and the big one was not the shape.** Making bones
+thicker helped the tearing and made the crowding WORSE — 3x3 scored 9/31 where
+2x2 scored 16/31 — because the fault was `np.rint` on a rotation, which is not
+injective on a lattice at any angle.
+
+**Three shears are.** `x += round(k*z)` slides a whole row onto a whole row, so
+it is a bijection for any k, and three shears make a rotation (Paeth 1986, the
+raster-rotation algorithm — a public technique, reimplemented here, not copied).
+Same bones, same 31 angles:
+
+    bone            rint      shear
+    1x3x7 swing     9/31      31/31
+    3x5x12 swing    4/31      31/31      (the torso)
+    2x3x7 spread   16/31      28/31
+
+Mass conservation stops being a check that can fail and becomes a property of
+the arithmetic. WHERE it lands is the cost: three roundings drift about one
+voxel at the far corner of a 1.5 rad turn (measured: 1.04).
+
+**So the rotation is still preferred and the shears are the fall-back**, taken
+only when the rotation cannot draw the pose AND the shear pose is one the body
+can actually be in. That last condition was learned the hard way: without it
+the fall-back traded "the lattice cannot draw this" for "the post is in the
+way", and a left-handed man beside a post lost the ability to reach out at all
+— his flesh was fine, his arm was simply being put down a voxel from where it
+aimed. **A fall-back that can only turn a refusal into a success cannot
+regress anything.**
+
+**What is NOT done, and the number that says why.** The shears fix the crowding
+but not the tearing: a bone one voxel across still has nothing holding its rows
+together when it turns in the plane it is thin in. So these arms swing freely
+forward and back (31/31) and barely at all out to the SIDE (5/31).
+
+Two voxels across fixes it — measured 27/31 — and is the truer body besides:
+a real upper arm is about 10 cm through, one voxel is a matchstick, and the man
+goes from 38.1 kg to 43.9 kg against the ~47 kg his height asks for. **It was
+built, measured, and backed out**, because it takes the body from 5 voxels
+across to 7 and fourteen scenes are built around a man 25 cm wide:
+
+    two people who touch stay two people      a braced man cannot be pulled
+    an arm reaches out and a wall stops it     a grip carries load
+    an arm bends round what it cannot reach    a hand on the rail
+    ... 14 in all
+
+None of those failures were the body being wrong. They were scenes measured
+against a narrower man. **That is a decision about the scenes, taken with the
+scenes open, not a change to slip in under a limb fix** — so the arms stay thin
+and the sideways reach stays poor until it is made deliberately.
+
+## 67. A crouch is not a limb pose, and at 5 cm it is not a fold either
+
+**Why this is here:** "crouch sure if you can do it lets do it."
+
+**First measurement:** bending a knee on its own is impossible — 1 of 289 knee
+angles drawable, and the one was standing up straight. Rotating a leg about its
+ankle swings the HIP away from a torso that has not moved, so the leg comes off
+the body. *You cannot bend a knee without the hips moving.*
+
+**Second measurement, after making it one composite motion** (shin forward,
+thigh back, body follows): the geometry works — the hip drops 2 voxels at
+0.5 rad, 4 at 0.9, 8 at 1.3 — but the knee crease crowds 2 to 9 cells of 42,
+and the drift that puts them there pushes the foot through the floor. **The
+bend is finer than the grid.** A knee crease at 5 cm is one cell wide.
+
+**So the crouch is a COMPRESSION, which is what is actually visible at this
+size.** Each leg keeps its foot planted, every cell comes down in proportion to
+how far up the leg it sits, and everything above the hips drops by exactly what
+the legs lost — so hip and waist move together by construction and the body
+cannot come apart at the waist. Measured, and mass drift is 0.00000 kg at every
+angle:
+
+    knee     sank    leg height
+    0.2rad     0       14
+    0.4rad     1       13
+    0.6rad     2       12
+    0.8rad     4       10
+    1.0rad     5        9
+    1.2rad     5        9   <- capped
+
+**The cap is `_crouch_of`, not a number in this file** — 0.252 m read off this
+body's own legs, so a tall man sinks further than a child and nobody writes it
+twice. That is the self-referential loop, closed: the legs decide the crouch.
+
+**Two bugs worth keeping.** `_angles` spreads one number over the joint nearest
+the body, which is right for an arm and wrong for two legs — one number that
+way is a man bending one knee, which is a LUNGE. Symmetric-by-default (D2) had
+to be written where the legs are, not where the angles are; pass a pair and you
+get the lunge on purpose. And `_still_joined` looked for the part of the body
+that STAYED PUT to hang the moved part from — but a crouch moves every bone
+there is, so it found nothing to hang from and reported a sinking body as one
+that had come apart. When the whole body goes, joined means joined to ITSELF.
+
+**Flesh bunches, it does not vanish.** Where two bones want one cell the
+surplus goes to the nearest free cell (`_bunch`) instead of the pose being
+refused or the voxel dropped. A folded knee thickens where a real one does, and
+the mass books stay shut. `None` — nowhere within reach for it to go — is a
+real refusal: flesh pressed into a gap smaller than itself.
+
+**And the picture caught one more, as usual.** The crouch scene put a stone
+beam overhead for him to duck under. A slab with nothing holding it up FALLS,
+so the beam came down through the place he was crouching into, and `_crouch`
+reported `blocked` on the way back up — for thirty-odd ticks I read that as the
+crouch failing to reverse. It was the ceiling landing on him. The offending
+cells were STONE at z22 and z26, in mid-air, inside the man.
+
+Nothing was wrong with the body and nothing was wrong with the support law:
+the scene was wrong, and only the scene was wrong. Put the beam on four posts
+and he goes all the way down and all the way back up, 38.138 kg at every one
+of forty-one frames. `renders/crouch/`.
