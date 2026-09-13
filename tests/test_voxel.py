@@ -3954,3 +3954,46 @@ def test_a_LANDING_COSTS_SOMETHING():
     assert spans[10][1] > spans[5][1], \
         f"and longer to gather from it ({spans[10][1]} ticks against " \
         f"{spans[5][1]}), which nobody typed in"
+
+
+def test_a_HOLD_is_RE_EARNED_EVERY_TICK_not_only_when_you_walk():
+    """Whether an arm still reaches is a question about NOW. Nothing about it
+    is about stepping — but the test lived inside `_haul`, which runs when a
+    body takes a step, so a holder who stands still never asked it again.
+
+    Measured on the rescue scene: a man on a ledge went on holding somebody
+    lying on the ground twenty voxels below him for two hundred and sixty
+    ticks, because he had no reason to walk anywhere and walking was the only
+    thing that would have checked.
+
+    And reach is measured in THREE dimensions now. It was across the floor
+    only — a stated softness, on the grounds that an ankle 1.5 m overhead is
+    about an arm away — which compounded with `_span_xy` treating a prone body
+    as its own length wide. Lying down made a man reachable from much further,
+    which is true of his hand and not of the rest of him."""
+    from src.voxel.scenes import _person, _Wants
+    # THREE METRES, not one and a half: at 1.5 m two 1.5 m bodies have
+    # OVERLAPPING bounding boxes and are genuinely within an arm of each other
+    # somewhere. The box test is coarse and this is the coarseness — the honest
+    # measure is fist to target, which is item 64.
+    w = World(40, 16, 100, voxel_cm=5)
+    w.fill(0, 40, 0, 16, 0, 1, STONE)
+    w.fill(0, 20, 0, 16, 1, 61, STONE)            # a ledge, 3 m up
+    w.exits = []
+    up = _person(w, 16, 8, z0=61)                 # standing on it
+    up["name"], up["facing"] = "the holder", (1.0, 0.0)
+    up["strength_N"] = 4000.0
+    low = _person(w, 24, 8, z0=1)                 # standing on the ground below
+    low["name"], low["facing"] = "the other", (-1.0, 0.0)
+    w.policy = _Wants(each={"the holder": {"legs": "stay", "hands": "hands free",
+                                           "waist": "stand"},
+                            "the other": {"legs": "stay", "hands": "hands free"}})
+    w.step()
+    up["dragging"] = "the other"                  # pretend he has hold of him
+    for _ in range(12):
+        w.step()
+        up["events"].clear()
+        low["events"].clear()
+    assert up.get("dragging") is None, \
+        "a man on a ledge cannot hold somebody standing on the ground below " \
+        "him — and he has not walked a step, which is when this used to be asked"

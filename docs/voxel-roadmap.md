@@ -799,6 +799,22 @@ is about to matter" is a region that will drop a bullet on the floor.
 
     **The original:**
 
+64. **REACH IS BOX TO BOX, WHICH IS COARSE.** It is three-dimensional now,
+    but it compares BOUNDING BOXES — so two 1.5 m bodies on either side of a
+    1.5 m ledge are "within an arm", because their boxes overlap vertically
+    even though the parts that would touch are two metres apart. The honest
+    measure is FIST to nearest cell, which every piece of exists (`_fists`,
+    `_fist_of`) and which would also let an arm RAISE to reach something above
+    it — the thing the old floor-only measure was really standing in for.
+
+65. **TWO PEOPLE CAN HOLD THE SAME PERSON AND THE SIM KEEPS ONE.**
+    `holders = {q["dragging"]: q for q in self.persons if q.get("dragging")}`
+    is keyed by the DRAGGED name, so when two people have hold of one man the
+    last in list order silently wins and the other's grip is ignored by
+    `_law_footing`. Found in the rescue scene, where it happened not to matter
+    because the rescuer came last — which is luck, not design. A tug-of-war
+    over one body is exactly the case the scene exists to show.
+
 63. **`_law_pose` poses and un-poses to test balance.** The gate reposes to the
     new angle, asks `_overbalanced`, and reposes back if the answer is no — two
     moves of flesh on the failing tick, and the world briefly holds a pose
@@ -3700,3 +3716,44 @@ That would have made a wrong algorithm faster. Kernels earn their place where
 the work is a dense regular sweep — conduction, oxygen mixing, the support
 relaxation, which is where numba already is — and not on a pointer-chasing
 flood fill in Python. Fix the algorithm; then compile what is left.
+
+
+## What a picture found that a hundred tests did not (2026-09-13)
+
+The first render since the body was rebuilt. Three bugs in an afternoon, none
+of which 113 passing tests had anything to say about.
+
+**Reach ignored height.** `_in_reach` measured across the FLOOR, a softness
+stated in the `ledge` docstring on the grounds that "an ankle 1.5 m overhead is
+about an arm away; at five metres it would be nonsense". It was nonsense at
+1.5 m: a man standing on a ledge held somebody lying on the ground twenty
+voxels below him. It compounded with `_span_xy`, which allows for how WIDE
+both things are — and a body lying down is its own length wide, so falling
+over made a man reachable from much further away. True of his hand; not true
+of the rest of him.
+
+**A grip was only re-tested when its holder WALKED.** The check lived inside
+`_haul`, which runs on a step, so a holder standing still never asked again —
+260 ticks of holding someone he could not possibly be holding. Whether an arm
+still reaches is a question about NOW, and nothing about it is about stepping.
+`_law_grips` asks it every tick.
+
+**And a units bug I introduced fixing it**: `_reach_of` returns METRES and the
+new parameter wanted VOXELS, so passing 0.45 where 9 was meant made every grip
+in the sim let go on the tick after it was made. The scene said so immediately
+— "the puller loses hold at t1" — which is the kind of obvious wrongness a
+picture shows and an assertion does not.
+
+**What the scene shows now:**
+
+    t12  the one pulled overbalances
+    t12  the rescuer catches the one pulled
+    t32  the rescuer loses hold of the one pulled — an arm is only so long
+
+He catches him, holds him twenty ticks, and loses him as the puller drags him
+out of reach. A tug-of-war with an outcome, and none of it written down: the
+scene was built expecting a clean catch.
+
+**The lesson is the one this file keeps learning in different clothes.** Tests
+check what somebody thought to ask. A picture is the whole state at once, and
+it cannot be politely silent about the part nobody asked about.

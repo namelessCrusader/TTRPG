@@ -4694,16 +4694,34 @@ class World:
         self._launch(cells, (half * dx / n, half * dy / n, half),
                      owner=p["name"])
 
-    def _in_reach(self, mine, theirs):
+    def _in_reach(self, mine, theirs, reach_v=None):
+        # `reach_v` is in VOXELS, not metres — the one that got passed metres
+        # made every grip in the sim let go on the tick after it was made
         """Is that thing close enough to get a hand to?
 
         Measured between the two SURFACES, not the two centres. A body is five
         voxels across, so a centre-to-centre limit is a different limit for a
         child and for a cart, and the arm is the same arm."""
-        gap = max(abs(float(theirs[:, 0].mean()) - float(mine[:, 0].mean())),
-                  abs(float(theirs[:, 1].mean()) - float(mine[:, 1].mean())))
-        half = 0.5 * (self._span_xy(mine) + self._span_xy(theirs))
-        return gap - half <= BODY["reach_m"] / max(0.1 * self.scale, 1e-9)
+        # BETWEEN THE BOXES, IN THREE DIMENSIONS. This measured across the
+        # FLOOR and ignored height — a stated softness, on the grounds that an
+        # ankle 1.5 m overhead is about an arm away and it only goes wrong at
+        # five metres. It went wrong: a man standing on a ledge held someone
+        # lying on the ground twenty voxels below him, for two hundred ticks,
+        # because the vertical gap was not in the sum at all.
+        #
+        # It compounded with the other half. `half` allowed for both things'
+        # WIDTH, and a body lying down is its own length wide — so a prone man
+        # was reachable from much further than a standing one. True of his
+        # hand, and not true of the rest of him.
+        mine = np.asarray(mine)
+        theirs = np.asarray(theirs)
+        gap = 0.0
+        for ax in (0, 1, 2):
+            a0, a1 = float(mine[:, ax].min()), float(mine[:, ax].max())
+            b0, b1 = float(theirs[:, ax].min()), float(theirs[:, ax].max())
+            gap = max(gap, b0 - a1, a0 - b1)   # 0 if the boxes overlap on this
+        return gap <= reach_v if reach_v is not None else \
+            gap <= BODY["reach_m"] / max(0.1 * self.scale, 1e-9)
 
     @staticmethod
     def _span_xy(cells):
@@ -6367,6 +6385,45 @@ class World:
         self._slack_mat = None
         self._torque_solid = None
 
+    def _law_grips(self):
+        """A HOLD IS RE-EARNED EVERY TICK, not only when its owner walks.
+
+        This test lived inside `_haul`, which runs when a body takes a STEP —
+        so a holder who stands still never asked it again. Measured on the
+        rescue: a man on a ledge went on holding somebody lying on the ground
+        twenty voxels below him for two hundred and sixty ticks, because he had
+        no reason to walk anywhere and the only thing that would have checked
+        was walking.
+
+        Whether an arm still reaches is a question about now. Nothing about it
+        is about stepping."""
+        for p in self.persons:
+            who = p.get("dragging")
+            if not who:
+                continue
+            q = next((r for r in self.persons if r["name"] == who), None)
+            if q is None or q["safe"] or not q["alive"]:
+                p["dragging"] = None
+                continue
+            if any((b["mats"] == FLESH).any() for b in self.bodies):
+                continue                      # someone is mid-fall: see `_haul`
+            comp, sl = self._person_cells(q)
+            mine, msl = self._person_cells(p)
+            if comp is None or not comp.any() or mine is None or not mine.any():
+                continue
+            theirs = np.argwhere(comp)
+            theirs[:, 0] += sl[0].start
+            theirs[:, 1] += sl[1].start
+            hcell = np.argwhere(mine)
+            hcell[:, 0] += msl[0].start
+            hcell[:, 1] += msl[1].start
+            reach_v = self._reach_of(p) / max(0.1 * self.scale, 1e-9)
+            if not self._in_reach(hcell, theirs, reach_v):   # VOXELS, not metres
+                p["dragging"] = None
+                p["events"].append(
+                    f"t{self.tick}: {p['name']} loses hold of {who} "
+                    f"— an arm is only so long")
+
     def _haul(self, p, sx, sy):
         """Bring along whoever this body took hold of. The dragged body is not
         a passenger with special rules — it is a thing being shoved, moved by
@@ -6871,6 +6928,7 @@ class World:
             self._law_flow()                     # (drops in flight are fluid too)
             self._law_stir()
             self._law_head()
+        self._law_grips()                        # a hold is re-earned every tick
         self._law_footing()                      # before support: a body with no
         self._law_support()                      # footing must leave as a BODY
         self._law_torque()
