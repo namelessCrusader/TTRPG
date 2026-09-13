@@ -176,7 +176,14 @@ that gets made again.
 It buys the pose ENUMERATION and the mass, and costs the reach ACT. Do not do
 it alone; it is a symptom of D3.
 
-**D4. WHAT DOES `facing` MEAN, GIVEN HOW THE BODY IS BUILT?** The humanoid
+**D4 — ANSWERED 2026-09-12: two axes on every joint, built.** The freedom of
+movement was never going to come from which way the body is built; that only
+chooses which single plane an arm swings in. Every joint carries a PAIR now —
+swing (in the plane the body faces) and spread (out of it) — so an arm can
+reach sideways, across its own chest, and overhead-and-out. See "A joint is not
+a hinge" below. The build question below is still open and now matters less.
+
+**D4 (the build). WHAT DOES `facing` MEAN, GIVEN HOW THE BODY IS BUILT?** The humanoid
 has its shoulders along x, and scenes almost always set `facing = (1, 0)` —
 PARALLEL to its own shoulder line. That is the root of the three findings, and
 measurement has now narrowed it to one line of build rather than a redesign:
@@ -595,7 +602,17 @@ landing at the same time.
     stops being the right shape — two hands doing two different things is two
     menus.
 
-58. **THREE QUARTERS OF THE HARVEST IS "THIS PART DID NOTHING".** Measured
+58. ~~**THREE QUARTERS OF THE HARVEST IS "THIS PART DID NOTHING".**~~
+    **DECIDED 2026-09-12: keep them.** A model that never sees "do nothing"
+    cannot choose it, and will fidget — reaching, speaking and looking about
+    every quarter second because it has never been shown a body at rest. The
+    imbalance is handled on the LEARNER's side, per limb, so each limb's nulls
+    are weighed only against that limb's own alternatives. Nothing changes in
+    the sim, which is the right side of the seam.
+
+    **The original:**
+
+60. **THREE QUARTERS OF THE HARVEST IS "THIS PART DID NOTHING".** Measured
     on the rescue, 2026-09-12: 4 decisions x 5 limbs = 20 picks logged, of
     which **15 are null acts** — the mouth saying nothing, the waist standing
     as it is, the eyes going on looking about. It was three limbs a week ago
@@ -3532,3 +3549,74 @@ an artifact of `decide_every` being flat. A real body decides faster when
 something is happening, and the percept seam already knows when that is.
 
 Test: `test_ONE_HAND_ON_THE_RAIL_and_the_OTHER_CATCHES_HIM`.
+
+
+## A joint is not a hinge (2026-09-12)
+
+D4 asked which way a body should be built so it can move freely. The answer was
+that the build only ever chooses WHICH SINGLE PLANE an arm swings in, and one
+plane is not freedom of movement however well you choose it. A shoulder is not
+a hinge.
+
+**Every joint carries a pair now**: swing, in the plane the body faces, and
+SPREAD, about the perpendicular horizontal axis — out of that plane altogether.
+An arm can go sideways, across its own chest, and overhead-and-out. Within one
+joint the spread applies first and the swing on top, which is the order a
+shoulder does it in and the order that keeps "swing" meaning exactly what it
+meant yesterday.
+
+The transform went from a 2x3 affine on (sideways, up) to a 3x4 on (x, y, z),
+because **two rotations in different planes do not compose in two dimensions**.
+The horizontal coordinate a given turn does not touch passes through unchanged,
+which is what makes one axis alone provably the old transform with a row added
+— checked first, both axes, both signs, hinge and shear, five angles: **0
+disagreements in 40 cases**. Without that every pose in the sim would have
+shifted underneath the change.
+
+A bare number still means "the joint nearest the body swings, and nothing
+else", so `reach out` and every existing caller were untouched.
+
+**And `_reach_around` has two ways round now** rather than one: bend the elbow
+IN the plane, or spread the whole arm OUT of it. Elbow first, because bending
+an arm is cheaper than swinging the whole of it sideways.
+
+### The 250x that was hiding behind it
+
+The change looked expensive — a ten-test subset went from about 100 s to 444.
+It was not the axes. Profiled: `_object_at`, the flood fill that answers "what
+is this voxel part of", was **84% of the run and called 4576 times in thirty
+ticks**, with fifty million set operations behind it.
+
+`_object_at` stops at 4000 cells. A stone ledge is sixteen thousand. So the
+memo never covered it, and **every candidate voxel standing on that ledge paid
+another four-thousand-cell flood**. Lengthening a body's reach from 0.30 m to
+0.45 (itself a fix, from reading the arm instead of declaring it) tripled the
+candidates and so tripled that.
+
+"A thing is what is joined to what you grabbed", and JOINED only has to be
+answered inside the box a hand can reach into. Labelling that box is one
+vectorised pass and answers for every candidate at once.
+
+| the two-hand catch scene, 30 ticks | |
+|---|---|
+| flooding per candidate | **100.3 s** |
+| labelling the box once | **0.40 s** |
+
+And the suite came out FASTER than before the axes were added at all — chunks
+of 14-127 s against 31-160 before — because the flood problem was always there
+and only the longer reach made it loud enough to find.
+
+**Two bugs in the fix, and the second is the interesting one.** A component
+that merely TOUCHES the box edge is not necessarily the world — a post is
+nineteen voxels tall and leaves any box drawn round one man's reach — so those
+fall back to a real flood, once each rather than once per candidate. And the
+labelling first merged **iron into the stone ledge it stands on**, because it
+labelled "solid and not flesh" where `_object_at` has always meant SAME
+MATERIAL: a table with iron legs is two things, because joints do not exist
+yet. The post read as the world and could not be picked up.
+
+**On kernels.** The obvious reading of a 100-second profile is "compile it".
+That would have made a wrong algorithm faster. Kernels earn their place where
+the work is a dense regular sweep — conduction, oxygen mixing, the support
+relaxation, which is where numba already is — and not on a pointer-chasing
+flood fill in Python. Fix the algorithm; then compile what is left.

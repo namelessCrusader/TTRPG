@@ -1703,6 +1703,77 @@ class World:
         return np.array([[c, sgn * sn, pivot - c * pivot - sgn * sn * zb],
                          [-sgn * sn, c, zb + sgn * sn * pivot - c * zb]])
 
+    @staticmethod
+    def _axis_xform(piv, theta, ax, sgn, bend=False):
+        """One joint's turn about ONE horizontal axis, as a 3x4 affine on
+        (x, y, z).
+
+        A JOINT HAS TWO AXES. A shoulder is not a hinge: an arm swings forward
+        and back, and it also goes out to the SIDE, and the two are different
+        rotations about perpendicular lines through the same point. With one
+        axis an arm could never reach sideways, never across its own chest, and
+        never overhead-and-out — and which single plane it DID have depended on
+        which way the body happened to be facing.
+
+        Written as a 3x4 rather than the 2x3 this replaces, because two
+        rotations in different planes do not compose in two dimensions. The
+        horizontal coordinate this turn does not touch passes through
+        unchanged, so one axis alone is exactly the old transform with a row
+        added — which is what makes it safe to swap underneath everything."""
+        M = np.zeros((3, 4))
+        M[0, 0] = M[1, 1] = M[2, 2] = 1.0
+        other = 1 - ax
+        M[other, other] = 1.0
+        if bend:
+            t = -float(np.tan(theta))
+            M[ax, ax] = 1.0
+            M[ax, 2] = sgn * t
+            M[ax, 3] = -sgn * t * piv[2]
+            M[2, 2] = 1.0
+            return M
+        c, sn = float(np.cos(theta)), float(np.sin(theta))
+        M[ax, ax] = c
+        M[ax, 2] = sgn * sn
+        M[ax, 3] = piv[ax] - c * piv[ax] - sgn * sn * piv[2]
+        M[2, ax] = -sgn * sn
+        M[2, 2] = c
+        M[2, 3] = piv[2] + sgn * sn * piv[ax] - c * piv[2]
+        return M
+
+    @staticmethod
+    def _comp3(a, b):
+        """Do b, then a — 3x4 affines."""
+        return a @ np.vstack([b, [0.0, 0.0, 0.0, 1.0]])
+
+    @staticmethod
+    def _apply3(M, cells):
+        """Move a set of voxels by a 3x4 affine."""
+        c = np.asarray(cells, np.float64)
+        return c @ M[:, :3].T + M[:, 3]
+
+    def _chain3(self, pivots, pairs, upto, sgn, axis, bends=None):
+        """Where a bone's REST cells end up, with TWO axes at every joint.
+
+        Its own joint turns first, then every joint between it and the limb
+        being moved. Within one joint the SPREAD goes first and the SWING on
+        top of it — an arm is taken out to the side and then swung, which is
+        the order a shoulder does it in and the order that keeps "swing"
+        meaning what it meant when there was only one axis.
+
+        Composed in the REST frame, which is what saves tracking where a
+        shoulder has dragged an elbow to."""
+        M = np.zeros((3, 4))
+        M[0, 0] = M[1, 1] = M[2, 2] = 1.0
+        for j in range(upto, -1, -1):
+            swing, spread = pairs[j]
+            bend = bool(bends[j]) if bends else False
+            R = self._axis_xform(pivots[j], swing, axis, sgn, bend)
+            if spread:
+                R = self._comp3(R, self._axis_xform(pivots[j], spread,
+                                                    1 - axis, sgn, bend))
+            M = self._comp3(R, M)
+        return M
+
     def _chain_xform(self, pivots, thetas, upto, sgn, bends=None):
         """Where a bone's REST cells end up: its OWN joint turns first, then
         every joint above it carries the result along.
@@ -1765,14 +1836,17 @@ class World:
         return out
 
     def _bone_angle(self, p, bone):
-        """One bone's OWN joint angle, whichever limb happens to own it. A bone
-        nobody poses — a head — is at rest, and rides on whatever is below it."""
+        """One bone's OWN joint angles — (swing, spread) — whichever limb owns
+        it. A bone nobody poses, a head, is at rest and rides on what is under
+        it."""
         for limb, bs in (p.get("chain") or {}).items():
             if bone in bs:
-                return self._angles((p.get("pose") or {}).get(limb, 0.0),
-                                    len(bs))[bs.index(bone)]
-        return float(np.atleast_1d(
-            (p.get("pose") or {}).get(bone, 0.0))[0])
+                th = self._angles((p.get("pose") or {}).get(limb, 0.0),
+                                  2 * len(bs))
+                k = bs.index(bone)
+                return (th[2 * k], th[2 * k + 1])
+        a = np.atleast_1d((p.get("pose") or {}).get(bone, 0.0))
+        return (float(a[0]), float(a[1]) if len(a) > 1 else 0.0)
 
     def _limb_cells(self, p, name, own=None):
         """Where one named part of this body actually is, right now.
@@ -2078,28 +2152,32 @@ class World:
         dx, dy = toward if toward else p.get("facing", (1.0, 0.0))
         axis = 0 if abs(dx) >= abs(dy) else 1
         sgn = -1 if (dx if axis == 0 else dy) >= 0 else 1
-        th = self._angles(theta, len(bones))
+        # TWO ANGLES PER BONE, laid out flat: swing, spread, swing, spread.
+        # A bare number is still the joint nearest the body swinging and
+        # nothing else, which is what every caller meant before joints had a
+        # second axis — so nothing above this had to learn about it either.
+        th = self._angles(theta, 2 * len(bones))
         bend = set(p.get("bend") or ())    # which joints bend rather than turn
         pivot = {}
         for b in moving:
-            j = (np.asarray(joints.get(b, joints[bones[0]]))
-                 + origin).astype(np.float64)
-            pivot[b] = (float(j[axis]), float(j[2]))
+            pivot[b] = (np.asarray(joints.get(b, joints[bones[0]]))
+                        + origin).astype(np.float64)
 
         def place(ang):
             """Every moving bone, at these angles: its own joint first, then
             every joint between it and the limb being turned."""
-            held = dict(zip(bones, ang))
+            held = {b: (float(ang[2 * k]), float(ang[2 * k + 1]))
+                    for k, b in enumerate(bones)}
             out = []
             for b in moving:
                 path = paths[b]
-                out.append(self._apply_xform(
-                    self._chain_xform([pivot[x] for x in path],
-                                      [held.get(x, self._bone_angle(p, x))
-                                       for x in path],
-                                      len(path) - 1, sgn,
-                                      [x in bend for x in path]),
-                    (np.asarray(rest[b]) + origin).astype(np.float64), axis))
+                out.append(self._apply3(
+                    self._chain3([pivot[x] for x in path],
+                                 [held.get(x, self._bone_angle(p, x))
+                                  for x in path],
+                                 len(path) - 1, sgn, axis,
+                                 [x in bend for x in path]),
+                    (np.asarray(rest[b]) + origin).astype(np.float64)))
             return out
 
         parts = place(th)
@@ -2168,7 +2246,8 @@ class World:
         # event in the world — they only have to be unoccupied. This is the
         # same rule a walking body already keeps: you may not arrive somewhere
         # by passing through something.
-        was_th = self._angles((p.get("drawn") or {}).get(name, 0.0), len(bones))
+        was_th = self._angles((p.get("drawn") or {}).get(name, 0.0),
+                              2 * len(bones))
         gap = max(abs(a - b) for a, b in zip(th, was_th)) if bones else 0.0
         if gap > _SWEEP_RAD:
             for f in np.arange(_SWEEP_RAD, gap, _SWEEP_RAD) / gap:
@@ -2294,9 +2373,11 @@ class World:
                 want = None
             pose = p.setdefault("pose", {})
             for name in sorted(set(list(pose) + list(want or {}))):
-                n = len(self._bones(p, name))          # sorted: the sim carries
-                at = np.array(self._angles(            # no die, and a set of
-                    pose.get(name, 0.0), n))           # names has no order
+                # TWO ANGLES A BONE: swing and spread, flat. Sorted above
+                # because the sim carries no die and a set of names has no
+                # order.
+                n = 2 * len(self._bones(p, name))
+                at = np.array(self._angles(pose.get(name, 0.0), n))
                 goal = np.array(self._angles((want or {}).get(name, 0.0), n))
                 if np.abs(goal).max() > 0.0:
                     need, _m = self._hold_torque(p, name, goal)
@@ -2319,8 +2400,8 @@ class World:
                     # tail, so a body's angle read 45.8 degrees while it was
                     # bent 19.3, for ever, and anything that believed the angle
                     # was wrong about the body.
-                    dr = np.array(self._angles(
-                        (p.get("drawn") or {}).get(name, 0.0), n))
+                    dr = np.array(self._angles(          # n is already the
+                        (p.get("drawn") or {}).get(name, 0.0), n))   # pair count
                     if np.abs(dr - at).max() > 1e-9:
                         pose[name] = list(dr)
                         if want is not None and name in want:
@@ -2406,10 +2487,21 @@ class World:
         heads = [float(th[0])]
         if at is not None and abs(float(at[0]) - float(th[0])) > 1e-9:
             heads.append(float(at[0]))
+        # AND THERE ARE TWO WAYS ROUND NOW. An elbow bends the arm in the
+        # plane it is swinging in; a SPREAD takes the whole arm out of that
+        # plane altogether, which is the way round a thing directly in front
+        # of you — and is what a shoulder does when you reach past someone.
+        # Least movement first, and the elbow before the shoulder, because
+        # bending an arm is cheaper than swinging the whole of it sideways.
+        rungs = [s * b for b in np.arange(0.15, 1.8, 0.15) for s in (1.0, -1.0)]
+        n2 = 2 * len(bones)
         for head in heads:
-            for bend in [s * b for b in np.arange(0.15, 1.8, 0.15)
-                         for s in (1.0, -1.0)]:
-                alt = [head, float(bend)] + [0.0] * (len(bones) - 2)
+            for bend in rungs:
+                alt = ([head, 0.0, float(bend), 0.0] + [0.0] * n2)[:n2]
+                if self._repose(p, name, alt) == "moved":
+                    return alt
+            for out in rungs:
+                alt = ([head, float(out)] + [0.0] * n2)[:n2]
                 if self._repose(p, name, alt) == "moved":
                     return alt
         return None
@@ -4613,23 +4705,86 @@ class World:
         if not len(cand):
             return []
         cand += np.array([x0, y0, z0])
+        # A WIDER BOX TO ANSWER "IS THIS THING COMPLETE" IN. A thing that runs
+        # out of the box is bigger than the box, which is how the world gets
+        # told from a stone — but a stone sitting at the very edge of a body's
+        # reach touches that edge too, and would be mistaken for the world. So
+        # the labelling gets a margin the candidates do not: anything whose
+        # every voxel lies inside the padded box is whole, and anything that
+        # reaches the padded wall genuinely keeps going.
+        px0 = max(x0 - R, 0); px1 = min(x1 + R, nx)
+        py0 = max(y0 - R, 0); py1 = min(y1 + R, ny)
+        pz0 = max(z0 - R, 0); pz1 = min(z1 + R, nz)
+        box = self.mat[px0:px1, py0:py1, pz0:pz1]
+        x0, y0, z0, x1, y1, z1 = px0, py0, pz0, px1, py1, pz1
         d = np.abs(cand[:, None, :] - cells[None, :, :]).max(axis=2).min(axis=1)
         cand = cand[d <= R]
+        # LABEL THE BOX ONCE, do not flood the world per candidate.
+        #
+        # This used to call `_object_at` for every candidate cell it had not
+        # already seen, which is right when things are small and catastrophic
+        # when they are not: `_object_at` stops at 4000 cells, and a stone
+        # ledge is sixteen thousand, so the memo NEVER covered it and every
+        # candidate standing on it paid another four-thousand-cell flood.
+        # Profiled at 4576 floods in thirty ticks — 84% of the whole run, and
+        # fifty million set operations. Lengthening a body's reach from 0.30 m
+        # to 0.45 tripled the candidates and so tripled that.
+        #
+        # A thing is what is joined to what you grabbed, and "joined" only has
+        # to be answered INSIDE THE BOX a hand can reach into. Labelling the
+        # box is one pass over about thirty thousand cells with no Python loop
+        # in it, and it answers for every candidate at once. Something that
+        # runs out of the box is bigger than the box, which is the same thing
+        # the flood cap was trying to say and says it without a magic number.
+        solid = (box != AIR) & (box != FLESH)
+        lab = np.where(solid, np.arange(solid.size).reshape(solid.shape), -1)
+        while True:
+            prev = lab
+            m = lab.copy()
+            for ax in (0, 1, 2):
+                for sh in (1, -1):
+                    n = np.roll(lab, sh, axis=ax)
+                    # SAME MATERIAL, which is what `_object_at` has always
+                    # meant by "joined": a table with iron legs is two things
+                    # because joints do not exist yet. Labelling only on
+                    # "solid and not flesh" merged an iron post into the stone
+                    # ledge it stands on, and the post then read as the world
+                    # and could not be picked up.
+                    same = solid & (np.roll(box, sh, axis=ax) == box)
+                    take = same & (n >= 0) & ((m < 0) | (n < m))
+                    m = np.where(take, n, m)
+            lab = np.where(solid, m, -1)
+            if np.array_equal(lab, prev):
+                break
         out, seen = [], set()
         strength = p.get("strength_N", BODY["strength_N"])
+        off = np.array([x0, y0, z0])
         for c in map(tuple, cand):
-            if c in seen:
+            key = int(lab[c[0] - x0, c[1] - y0, c[2] - z0])
+            if key in seen:
                 continue
-            obj = self._object_at(*c)
-            seen.update(map(tuple, obj))
-            if len(obj) >= 4000:
-                continue                  # hit the flood cap: that is the world
-            _lift, drag_N = self._effort(obj)
+            seen.add(key)
+            where = np.argwhere(lab == key) + off
+            # A THING THAT RUNS OUT OF THE BOX MIGHT STILL BE A THING. A post
+            # is nineteen voxels tall and a ledge is thousands, and both leave
+            # a box drawn round one man's reach — so leaving it cannot be the
+            # test. For those, and only those, ask the real question with a
+            # flood. It is at most a handful per call now rather than one per
+            # candidate cell, because the memo keys on the COMPONENT and not on
+            # which cells a capped flood happened to visit.
+            if (where[:, 0].min() == x0 or where[:, 0].max() == x1 - 1
+                    or where[:, 1].min() == y0 or where[:, 1].max() == y1 - 1
+                    or where[:, 2].min() == z0 or where[:, 2].max() == z1 - 1):
+                where = self._object_at(*c)
+            if len(where) >= 4000:
+                continue                  # the flood cap: that is the world,
+                                          # not a thing to pick up
+            _lift, drag_N = self._effort(where)
             if drag_N > strength:
                 continue                  # could not even shift it: not a thing
                                           # worth a slot of attention
             m0 = int(self.mat[c])
-            out.append({"cell": tuple(map(int, obj[0])), "mat": m0,
+            out.append({"cell": tuple(map(int, where[0])), "mat": m0,
                         "label": MATNAME.get(m0, "thing")})
             if len(out) >= 2:
                 break

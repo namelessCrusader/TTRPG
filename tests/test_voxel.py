@@ -2703,7 +2703,11 @@ def test_an_ARM_BENDS_round_what_it_cannot_reach_THROUGH():
             w.step()
             p["events"].clear()
         arm = w._limb_cells(p, "right arm")
+        # angles are laid out flat, two per bone: the shoulder's swing and
+        # spread, then the elbow's. `pose[2]` is the ELBOW bending, which is
+        # what this test is about — `pose[1]` is the shoulder going sideways.
         pose = list(np.atleast_1d((p.get("pose") or {})["right arm"]))
+        elbow = pose[2] if len(pose) > 2 else 0.0
         assert len(arm) == n, \
             f"every voxel of the arm is still on him ({len(arm)}, was {n})"
         assert _lumps(w.mat == FLESH) == 1, \
@@ -2711,8 +2715,8 @@ def test_an_ARM_BENDS_round_what_it_cannot_reach_THROUGH():
             "pieces has the right mass and is not an arm"
         assert int((w.mat == STONE).sum()) == stone, \
             "and it did not take a bite out of the wall to get there"
-        assert abs(pose[1]) > 0.1, \
-            f"the arm BENT rather than stopping dead (elbow {pose[1]:.2f} rad)"
+        assert abs(elbow) > 0.1, \
+            f"the arm BENT rather than stopping dead (elbow {elbow:.2f} rad)"
         assert int(arm[:, 0].max()) > x_rest + 2, \
             f"and the hand got out past where it hung ({x_rest} -> " \
             f"{int(arm[:, 0].max())})"
