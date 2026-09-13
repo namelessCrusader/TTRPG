@@ -966,7 +966,62 @@ def parachute(frames_dir, ticks=420, every=3):
     print(f"landed: {down}", flush=True)
 
 
-SCENARIOS = {"two_rooms": two_rooms, "tree_fell": tree_fell, "lamp_shelf": lamp_shelf,
+# ── scenario: somebody goes over the edge, and somebody catches them ─────────
+def rescue(frames_dir, ticks=300, every=4):
+    """This session's first question and its last, in one scene.
+
+    A man below takes an ankle and walks away with it — that is "can a man pull
+    another off a cliff", and the answer is yes if he can out-pull a braced
+    man's own strength. A second man on the ledge has one hand on a post and
+    the other free, and catches him as he goes.
+
+    Nobody wrote a rescue. What meets here was built separately and for other
+    reasons: a percept that tells a falling PERSON from a thrown stone, a flier
+    with a real trajectory, a hand whose strength decides what it can stop, a
+    grip that is an edge in the support graph, and two hands that can do two
+    things at once."""
+    # HEADROOM. The camera frames the whole world, so a body standing on a
+    # ledge at the top of it is a body with its head off the top of the
+    # picture — which is what the first render of this scene was.
+    w = World(52, 24, 86, voxel_cm=5)
+    w.fill(0, 52, 0, 24, 0, 1, STONE)                    # the ground, far below
+    w.fill(22, 52, 0, 24, 1, 31, STONE)                  # the ledge, 1.5 m up
+    w.fill(30, 31, 9, 15, 31, 45, IRON)                  # a post to hold
+    w.exits = []
+    puller = _person(w, 18, 12, z0=1)                    # below, on the ground
+    puller["name"], puller["strength_N"] = "the puller", 900.0
+    puller["facing"] = (-1.0, 0.0)
+    falls = _person(w, 25, 12, z0=31)                    # above, at the lip
+    falls["name"], falls["facing"] = "the one pulled", (-1.0, 0.0)
+    saves = _person(w, 33, 12, z0=31)                    # further back, by the post
+    saves["name"], saves["facing"] = "the rescuer", (-1.0, 0.0)
+    saves["strength_N"] = 4000.0
+    w.policy = _Wants(each={
+        "the puller": {"hands": "take hold of the one pulled",
+                       "legs": "go(straight on", "waist": "stand"},
+        "the one pulled": {"hands": "hands free", "legs": "stay",
+                           "waist": "stand"},
+        "the rescuer": {"hands": "take hold of the iron", "legs": "stay",
+                        "waist": "stand"}})
+    for t in range(ticks):
+        if t == 12:                          # post in hand; now the other hand
+            w.policy = _Wants(each={
+                "the puller": {"hands": "take hold of the one pulled",
+                               "legs": "go(straight on", "waist": "stand"},
+                "the one pulled": {"hands": "hands free", "legs": "stay",
+                                   "waist": "stand"},
+                "the rescuer": {"hands": "catch", "legs": "stay",
+                                "waist": "lean out"}})
+        w.step()
+        for q in (puller, falls, saves):
+            for e in q["events"]:
+                print(e, flush=True)
+            q["events"].clear()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+
+
+SCENARIOS = {"rescue": rescue, "two_rooms": two_rooms, "tree_fell": tree_fell, "lamp_shelf": lamp_shelf,
              "drop_test": drop_test, "forge": forge, "fire_alarm": fire_alarm,
              "glasshouse": glasshouse,
              "alchemist": alchemist, "house_fire": house_fire,

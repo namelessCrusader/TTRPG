@@ -92,11 +92,28 @@ def clear():
         bpy.data.materials.remove(m)
 
 
-def setup_scene(shape):
-    """Frame WHATEVER world was handed over. The camera used to be pinned at one
-    hand-tuned position, which only ever suited the world it was tuned on."""
+def setup_scene(shape, filled=None):
+    """Frame WHAT IS IN the world, not the box it came in.
+
+    The camera used to be pinned at one hand-tuned position, which only ever
+    suited the world it was tuned on; then it was derived from the world's
+    SHAPE, which is better and still wrong the moment a world has headroom. A
+    scene with people standing on a ledge in a tall room aimed at 30% of the
+    room's height and cut their heads off — measured, twice, because making
+    the room taller to fix it moved the camera too and changed nothing.
+
+    `filled` is the bounding box of everything that is not air. Aim at the
+    middle of THAT and stand back by ITS size, and a world can be as empty
+    above as it likes."""
     from mathutils import Vector
     nx, ny, nz = shape
+    if filled is not None and len(filled):
+        lo = filled.min(axis=0).astype(float)
+        hi = filled.max(axis=0).astype(float) + 1.0
+    else:
+        lo, hi = np.zeros(3), np.array([nx, ny, nz], float)
+    cx, cy, cz = (lo + hi) * 0.5
+    ex, ey, ez = hi - lo
     sc = bpy.context.scene
     sc.render.engine = "BLENDER_WORKBENCH"
     sc.display.shading.color_type = "MATERIAL"
@@ -105,11 +122,24 @@ def setup_scene(shape):
     cam = bpy.data.cameras.new("cam")
     cam.lens = 40.0
     co = bpy.data.objects.new("cam", cam)
-    d = float(max(nx, ny, nz))
+    # HOW FAR BACK THE LENS ACTUALLY NEEDS TO BE. Standing off by a multiple
+    # of the content's size is a guess that holds for square rooms and fails
+    # for tall ones — measured twice on the same scene, once by making the room
+    # taller (which moved the camera and changed nothing) and once by framing
+    # the content (which helped and still clipped). A 40 mm lens on a 36 mm
+    # sensor at 640x360 sees about 28 degrees vertically; the distance that
+    # fits a sphere of radius r into that is r / tan(fov/2), and everything
+    # else is the direction to stand in.
+    look = Vector((cx, cy, cz))
+    r = 0.5 * float(np.linalg.norm([ex, ey, ez]))
+    sensor_h = 36.0 * sc.render.resolution_y / sc.render.resolution_x
+    half_fov = np.arctan((sensor_h * 0.5) / cam.lens)
+    dist = r / max(np.tan(half_fov), 1e-6) * 1.05        # a little air round it
     # sit on the -x / -y side, above: those are the two walls the frame hides,
     # so the camera always looks INTO the room rather than at its back
-    loc = Vector((nx * 0.5 - d * 0.85, -d * 0.85, nz * 0.5 + d * 0.62))
-    look = Vector((nx * 0.5, ny * 0.5, nz * 0.30))
+    away = Vector((-0.62, -0.62, 0.48))
+    away.normalize()
+    loc = look + away * dist
     co.location = loc
     co.rotation_euler = (look - loc).to_track_quat("-Z", "Y").to_euler()
     bpy.context.scene.collection.objects.link(co)
@@ -147,7 +177,7 @@ def render_frame(path, out_png):
         "smoke": (mat == AIR) & ~hide & (smoke > SMOKE_SHOW) & CHECKER,
     }
     clear()
-    setup_scene(mat.shape)
+    setup_scene(mat.shape, np.argwhere(mat != 0))
     for name, mask in cats.items():
         color, scale = CATS[name]
         mesh_from(np.argwhere(mask).astype(np.float32), name, color, scale)

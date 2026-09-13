@@ -452,6 +452,45 @@ landing at the same time.
     the far end attached while the angle is driven — sequential impulses with
     soft constraints, documented in Erin Catto's GDC papers.
 
+**D5. HOW MUCH OF THE WORLD IS SIMULATED PROPERLY, AND WHERE?**
+(Answers items 29 and 38; decided 2026-09-13.)
+
+**The rule is: detail follows CONSEQUENCE, not distance.** Far-away things are
+cheap by default, and anything that can reach the player is paid for in full —
+including things that are cheap right up until they are not.
+
+What that has to survive, in the user's words: an earthquake started a mile
+off, a bullet fired from out of sight, and a scope that looks somewhere far
+away and expects it to be there properly when it does. So:
+
+- **cheap is the default, everywhere far.** Coarser grid, cheaper laws, or
+  both. The only requirement is that the answer roughly makes sense — a fire
+  two rooms away must still burn out, still make smoke, still weaken a beam.
+- **a WINDOW can be opened anywhere,** at full fidelity, and moved. A scope is
+  one. So is a player walking somewhere. So is anything the far field says has
+  become interesting.
+- **and coarse must be able to HAND OVER.** The hard part is not running two
+  fidelities, it is the seam: a bullet leaving a fine region into a coarse one
+  and arriving somewhere real, an earthquake computed coarsely that has to
+  shake a room that is being simulated properly. Conservation has to hold
+  ACROSS the seam or the sim quietly leaks — and this file already has the
+  machinery for saying so (`gone`, `shed`, `total_mass`).
+
+**What it means in play, which is the point:**
+
+| | |
+|---|---|
+| a fire in the next building | burns coarsely, spreads coarsely, and is exactly right about whether the building is still standing an hour later |
+| someone shouts a mile away | never computed at all — no path, no consequence |
+| a bullet from out of sight | the SHOT is a consequence that reaches you, so the region it travels through is refined along its path |
+| a scope on that far ridge | opens a window: that patch runs properly for as long as it is looked at |
+| an earthquake | coarse everywhere, fine where it meets anything that can be broken |
+
+The thing to get right is not the far field; it is the PROMOTION rule — what
+makes a coarse region become fine — because everything the player can be
+surprised by comes through it. A coarse region that cannot say "something here
+is about to matter" is a region that will drop a bullet on the floor.
+
 29. **DOES DISTANT AIR GET THE SAME FIDELITY?** A modelling decision in Ruling
     1's stopping-rule family, and the reason a burning town costs what it does:
     its airspace count is ONE, because outdoor air really is all connected, so a
@@ -725,10 +764,14 @@ landing at the same time.
     swing to compose with the waist's, which the bone tree can express and
     `_swing` (which promotes ONE limb to a rigid body) cannot yet.
 
-54. **NO RENDERS THIS SESSION.** Blender is not on PATH in this environment,
-    so nothing built since 2026-09-11 has been LOOKED at — only measured. An
-    elbow, a lean and a body that bends are exactly the things where a picture
-    would catch what a number does not.
+54. ~~**NO RENDERS THIS SESSION.**~~ **MY ERROR (2026-09-13).** Blender is
+    not on PATH and never needed to be: it is vendored at `tools/blender/`
+    (4.2.23 LTS) and runs. I recorded "no renders are possible in this
+    environment" without looking in the repo, and that stood for two days.
+
+    The lesson is the same one as the unmeasured numbers, one floor down: a
+    blocker written down without being checked is worse than an open question,
+    because it stops anybody looking.
 
 62. ~~**A GRIP ON AN ANCHORED THING TRIES TO CARRY IT.**~~ **FIXED
     (2026-09-13).** What the world is holding up does not come with you: a post
