@@ -66,6 +66,14 @@ muscle is IN the limb. Summing the subtree for both made a waist borrow the
 arms hanging at its sides: 570 N·m instead of 400.
 
 | a landing's gather | `sqrt(2 × crouch / g)` | 9 ticks |
+| `BODY["lean_max"]` = 0.8 | bisected: the furthest this spine can be DRAWN | 0.794 rad |
+
+**One of those confirmed its guess instead of correcting it**, which is worth
+as much. `lean_max` was 0.8 rad, a real spine's stop, and I had recorded that
+the lattice cut this body off at 0.34 — so the typed number named an angle it
+could never reach. Bisecting says a free spine bends to **0.794**, essentially
+the guess. The 0.34 was a body holding a POST, and the post has to come along
+for the ride (item 62). The guess was right and my note about it was not.
 
 **And the last two brought the square-cube law with them.** Force goes as area
 and mass goes as volume, so a body twice as tall is four times as strong and
@@ -88,7 +96,6 @@ Still typed, and each one is a loop waiting to be closed:
 
 | number | what it should be read from |
 |---|---|
-| `BODY["lean_max"]` 0.8 | the angle past which the lattice cannot draw this spine (measured 0.34) |
 | `BODY["strength_N"]` 400 | unclear, and that is the finding: it is what a body can SHIFT, which is a whole-body figure — an arm's grip against a back against legs braced on a floor — and reading it off one limb would be picking a limb and calling it the answer |
 
 And one that should NOT be derived, which is worth saying because the ledger is
@@ -130,7 +137,7 @@ it from a leg would be tidy and wrong.
 | `lever_frac` | 0.19 | MEASURED, backwards | the moment arm the DECLARED numbers already implied: 8.6 cm on a 45 cm arm, which is a real deltoid |
 | `arm_wmax` | 15 rad/s | WORLD | Hill's force-velocity: torque fades to nothing at top speed |
 | `waist_wmax` | 1.5 rad/s | GUESS | a trunk is slower than a shoulder. At a shoulder's pace the first tick of a lean is already past what a man can stand at |
-| `lean_max` | 0.8 rad | GUESS | the spine's own stop. The LATTICE stops this body at 0.34 — item 49 |
+| `lean_max` | 0.8 rad | DERIVED per body | fallback and ceiling; bisected against what can be drawn, which for this spine is 0.794 — the guess was right |
 | `strength_N` | 400 N | WORLD | what an adult can shift |
 | `legs_N` | 1400 N | DERIVED per body | fallback only; the legs' section times `muscle_Pa` |
 | `muscle_Pa` | 93 kPa | GUESS | low for muscle (real is ~300) because this body is a stick figure: its legs are thinner, relative to its height, than a person's. Calibrated so the humanoid comes out where it was |

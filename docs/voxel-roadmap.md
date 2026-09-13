@@ -730,7 +730,33 @@ landing at the same time.
     elbow, a lean and a body that bends are exactly the things where a picture
     would catch what a number does not.
 
-46. **`_law_pose` poses and un-poses to test balance.** The gate reposes to the
+62. ~~**A GRIP ON AN ANCHORED THING TRIES TO CARRY IT.**~~ **FIXED
+    (2026-09-13).** What the world is holding up does not come with you: a post
+    set in the ground is not carried by the hand on it, the hand is
+    CONSTRAINED by the post. So the post stays and the ARM has to reach — a
+    pose that would put the fist further from it than an arm is long is
+    refused.
+
+    | a man at the lip | leans to | stopped by |
+    |---|---|---|
+    | nothing to hold | 10.7 deg | his own balance |
+    | a hand on the post | **20.4 deg** | his arm's length |
+    | what the spine could draw | 45.5 deg | — |
+
+    The number barely moved (19.3 to 20.4) and the REASON changed completely,
+    which is the point: "the post refuses to move" is the sort of right answer
+    that stops being right the moment anything changes.
+
+46. ~~**`_law_pose` poses and un-poses to test balance.**~~ **HALF DONE
+    (2026-09-12)**: `_repose` takes `dry` now, so every check can be run
+    without anything moving — which is what made `_bend_max` possible at all.
+    The balance gate still poses and un-poses, because balance needs the
+    body's centre of mass and that wants the prospective cells rather than a
+    verdict. Smaller than it was.
+
+    **The original:**
+
+63. **`_law_pose` poses and un-poses to test balance.** The gate reposes to the
     new angle, asks `_overbalanced`, and reposes back if the answer is no — two
     moves of flesh on the failing tick, and the world briefly holds a pose
     nobody adopted. Correct, because nothing else runs in between, and worth

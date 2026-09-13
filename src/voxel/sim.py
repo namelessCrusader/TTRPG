@@ -2121,8 +2121,13 @@ class World:
         self._slack_mat = None
         return True
 
-    def _repose(self, p, name, theta, toward=None):
+    def _repose(self, p, name, theta, toward=None, dry=False):
         """Put one limb where its ANGLES say it is, on the lattice, now.
+
+        With `dry`, ASK instead: every check runs and nothing moves. That is
+        what lets a body find out what it could do without doing it — which the
+        lattice makes worth having, because whether a pose is possible at all
+        is a question with a surprising answer here.
 
         This is the difference between a pose and a picture. The limb is not
         lifted off the world, turned, and set back down — its voxels are moved
@@ -2223,6 +2228,28 @@ class World:
         # could not reach out while holding anything, because the thing it held
         # was standing in the way of its own arm.
         ride = self._held_cells(p)
+        if ride is not None and self._in_reach(cur, ride) \
+                and len(self._contact(ride, ignore=own)):
+            # WHAT THE WORLD IS HOLDING UP DOES NOT COME WITH YOU. A post set
+            # in the ground is not carried by the hand on it — the hand is
+            # CONSTRAINED by the post. Moved along like a stone, leaning while
+            # holding one tried to drag the post, the move was refused because
+            # the post could not go there, and the lean stopped at 19.3 degrees
+            # where a free spine bends to 45.5. The outcome was right for the
+            # wrong reason, and the wrong reason is the sort that stops being
+            # right the moment anything changes.
+            #
+            # So the post stays and the ARM has to reach: if the pose would put
+            # the fist further from it than an arm is long, it is refused — a
+            # limit that is about the body rather than about what happens to be
+            # under the thing it is holding.
+            tip = moving.index(bones[-1])
+            fist = np.round(parts[tip][0]).astype(np.int64)
+            span = float(np.abs(ride - fist).sum(axis=1).min()) \
+                * 0.1 * self.scale
+            if span > self._reach_of(p):
+                return "blocked"              # the arm does not stretch
+            ride, moved_hold = None, None
         if ride is not None and self._in_reach(cur, ride):
             # A HELD THING HANGS FROM THE FIST — it does not ride CLAMPED to
             # it. So it follows where the hand goes and keeps its own attitude:
@@ -2250,8 +2277,10 @@ class World:
             cur = np.concatenate([cur, ride])
             want = np.concatenate([want, ride_to])
             moved_hold = (tuple(ride_to[0]), tuple(ride[0]))
-        else:
+        elif ride is not None:
             moved_hold = None
+        else:
+            moved_hold = locals().get("moved_hold", None)
         nx, ny, nz = self.shape
         if ((want < 0).any() or (want[:, 0] >= nx).any()
                 or (want[:, 1] >= ny).any() or (want[:, 2] >= nz).any()):
@@ -2296,6 +2325,9 @@ class World:
                            and int(self.mat[tuple(t)]) != AIR]
                     if hit:
                         return "blocked"      # it would have had to go through
+        if dry:
+            return "moved"                # asked, not done: every check above
+                                          # has run and nothing has been touched
         fields = (self.mat, self.smass, self.E, self.fl, self.fvol,
                   self.fpot, self.fallh)
         src, dst = tuple(cur.T), tuple(want.T)
@@ -5094,6 +5126,30 @@ class World:
         h = max(self._crouch_of(p), 1e-6)
         return max(1, int(round(float(np.sqrt(2.0 * h / GRAVITY)) / TICK_S)))
 
+    def _bend_max(self, p, limb, ceiling):
+        """The furthest this body can bend that joint AND STILL BE DRAWN.
+
+        `lean_max` was 0.8 rad — a real spine's stop — and this body cannot be
+        drawn past about 0.34, so the typed number named an angle it could
+        never be at and `pose` chased it for ever (item 49). The honest stop is
+        whichever comes first: anatomy, or the lattice.
+
+        Asked once per body and kept, because it is a fact about a shape and
+        the shape does not change. Asked at all only because `_repose` can now
+        be asked without being obeyed."""
+        got = (p.get("_span") or {}).get("bend:" + limb)
+        if got is not None:
+            return got
+        lo, hi = 0.0, float(ceiling)
+        for _ in range(7):                    # bisect: seven halvings of 0.8
+            mid = 0.5 * (lo + hi)             # rad is finer than the lattice
+            if self._repose(p, limb, mid, dry=True) == "moved":
+                lo = mid
+            else:
+                hi = mid
+        p.setdefault("_span", {})["bend:" + limb] = lo
+        return lo
+
     def _crouch_of(self, p):
         """How far THIS body can sink before it pushes off.
 
@@ -5957,7 +6013,10 @@ class World:
             # walks the angle up at the speed a trunk can manage and stops
             # where the back or the balance says stop — the body asks to lean
             # out, it does not ask for an angle it has no way of knowing.
-            p.setdefault("reach", {})["lean"] = BODY["lean_max"]
+            # AS FAR AS THIS SPINE GOES, which is whichever comes first:
+            # anatomy, or the lattice. Asked once per body and kept.
+            p.setdefault("reach", {})["lean"] = self._bend_max(
+                p, "lean", BODY["lean_max"])
             p["events"].append(f"t{self.tick}: {p['name']} leans out")
         elif waist is not None and waist["verb"] == "upright":
             (p.get("reach") or {}).pop("lean", None)
