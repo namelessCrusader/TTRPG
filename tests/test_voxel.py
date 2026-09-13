@@ -4241,3 +4241,119 @@ def test_a_LOADED_ARM_is_a_SLOWER_ARM():
         f"the same reach takes longer with more in the hand ({ticks})"
     assert ticks[2] >= 3 * ticks[0], \
         f"and not marginally longer — {heavy[0]:.1f} kg should cost real time ({ticks})"
+
+
+def test_a_BODY_IS_HELD_TOGETHER_BY_ITS_SKELETON_not_by_its_FLESH():
+    """A limb is carried by bone, and there is no bone in the lattice.
+
+    Support travels sideways through material one span per hop, and flesh does
+    not span far. So as far as that law was concerned a man was a pile of meat,
+    and an arm held straight out was a cantilever of it — within a hair of
+    breaking, and never measured because nothing had pushed on it.
+
+    A wider arm found the hair. One more voxel put the outer column one hop
+    past what flesh spans, and the support law tore three cells off the end of
+    a reaching hand and dropped them on the floor: mass conserved exactly, man
+    in two pieces. The flesh was not wrong and the span was not wrong. What was
+    missing is that a body does not hang together by cohesion.
+
+    `_grip_cells` already said as much about what a hand HOLDS — "a hanging man
+    does not need his flesh to span like a girder" — and never said it about
+    the man. Now a body with something under its feet seeds its own cells the
+    way the ground does. That is the same edge in the same graph, and it is
+    what a skeleton is."""
+    from src.voxel.scenes import _person, _Wants
+    w = World(34, 16, 44, voxel_cm=5)
+    w.fill(0, 34, 0, 16, 0, 1, STONE)
+    w.exits = []
+    p = _person(w, 12, 8, z0=1)
+    p["name"], p["facing"] = "the reacher", (1.0, 0.0)
+    w.policy = _Wants(each={"the reacher": {"hands": "reach out",
+                                            "legs": "stay"}})
+    w.step()
+
+    # STANDING ON SOMETHING IS WHAT SEEDS IT.
+    borne = w._borne_cells()
+    assert borne, "a man with the floor under his feet carries his own body"
+    cells = w._limb_cells(p, "right arm")
+    assert all(tuple(c) in borne for c in cells), \
+        "and that reaches his arm, which is the part that was tearing"
+
+    # AND NOTHING LOOSER THAN THAT. Seeding anyone merely in CONTACT seeds a
+    # man in mid-fall the instant he brushes a wall, and then he never lands.
+    w2 = World(20, 12, 60, voxel_cm=5)
+    w2.fill(0, 20, 0, 12, 0, 1, STONE)
+    w2.exits = []
+    q = _person(w2, 8, 6, z0=40)                  # stood in mid-air
+    q["name"] = "the faller"
+    assert not w2._borne_cells(), \
+        "a man with nothing under his feet is not carrying anything"
+
+    # THE WHOLE POINT, behaviourally: reach out and stay in one piece.
+    before = _flesh_grams(w)
+    arm0 = len(w._limb_cells(p, "right arm"))
+    for _ in range(30):
+        w.step()
+        p["events"].clear()
+    arm1 = w._limb_cells(p, "right arm")
+    assert arm1 is not None and len(arm1) == arm0, \
+        f"the arm keeps every voxel it had ({len(arm1)} of {arm0})"
+    assert _lumps(w.mat == FLESH) == 1, "and the man is still one man"
+    assert abs(_flesh_grams(w) - before) < 1e-6, "with nothing shed on the way"
+
+
+def test_a_JOINT_LEARNS_WHAT_IT_CANNOT_DO_and_stops_climbing():
+    """The angle outrunning the flesh had no end, and ran for ever.
+
+    A limb crosses angles it cannot be drawn at and catches up at the next one
+    it can — that part is right and deliberate. What was missing is what
+    happens when there IS no next one. The command climbed, the flesh never
+    moved, the angle arrived, the body settled back to where the flesh actually
+    was, and the next tick asked for the same thing again.
+
+    Measured, a man told to raise his arm while facing along x: 0.375, 0.75,
+    0.9, 0.0, 0.375, 0.75, 0.9, 0.0 — for ever, without his arm ever moving a
+    single voxel. It was there before any of today's work and only a picture
+    found it.
+
+    So the body learns it, the way it already learns a wall it cannot reach
+    past. Keyed by which way it was FACING, because that is what decides which
+    angles can be drawn at all — the same arm has 30 of 30 angles one way round
+    and 1 of 30 the other."""
+    from src.voxel.scenes import _person, _Wants
+
+    def told_to_reach(facing, ticks=16):
+        w = World(34, 34, 40, voxel_cm=5)
+        w.fill(0, 34, 0, 34, 0, 1, STONE)
+        w.exits = []
+        p = _person(w, 14, 14)
+        p["name"], p["facing"] = "m", facing
+        p["strength_N"] = 4000.0
+        w.policy = _Wants()
+        seen = []
+        for _ in range(ticks):
+            p["reach"] = {"right arm": [0.9, 0.0, 0.0, 0.0]}   # asked EVERY tick
+            w.step()
+            p["events"].clear()
+            seen.append(round(float(np.atleast_1d(
+                (p.get("pose") or {}).get("right arm", 0.0))[0]), 3))
+        return w, p, seen
+
+    # THE WAY THAT WORKS: it gets there and holds, and asking again is harmless.
+    _w, _p, along_y = told_to_reach((0.0, 1.0))
+    assert along_y[-1] == 0.9 and along_y[-2] == 0.9, \
+        f"facing this way his arm reaches where it was sent ({along_y[-4:]})"
+
+    # THE WAY THAT DOES NOT: he finds out ONCE, and then stops.
+    w, p, along_x = told_to_reach((1.0, 0.0))
+    assert len(set(along_x[6:])) == 1, \
+        f"he stops climbing a ladder that goes nowhere ({along_x})"
+    assert along_x[:3] != along_x[3:6], \
+        f"having tried it at least once ({along_x[:6]})"
+    key = "bend:right arm:%d" % w._face_axis(p)
+    assert key in (p.get("_span") or {}), \
+        f"and it is a thing he now knows about that joint ({list(p.get('_span') or {})})"
+
+    # AND IT IS KEYED BY FACING, not just by the joint.
+    assert w._face_axis({"facing": (1.0, 0.0)}) != w._face_axis({"facing": (0.0, 1.0)}), \
+        "the two ways round are different questions"

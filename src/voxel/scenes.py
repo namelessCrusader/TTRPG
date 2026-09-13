@@ -424,16 +424,19 @@ def _person(w, px, py, z0=1, handed="right"):
     (This said 28.5 kg before the chest had depth and 38.1 kg before the arms
     did. A number in a docstring goes stale the same way a number in a roadmap
     does — 396 cells, 43.9 kg, 7 voxels across, 30 tall, measured 2026-09-13.)
-    Thickness went into DEPTH (y) and not width (x) on purpose — the walking
-    footprint, and so every doorway in every scene, is unchanged.
+    The chest's thickness went into DEPTH (y) and not width (x) on purpose —
+    the walking footprint, and so every doorway in every scene, was unchanged.
 
-    THE ARMS ARE STILL ONE VOXEL ACROSS, and that is a known limit, not an
-    oversight. A bone cannot be turned in the plane it is thin in, so these
-    arms swing freely forward and back (31 of 31 angles) and barely at all out
-    to the SIDE (5 of 31). Two voxels fixes it — measured, 27 of 31 — and also
-    weighs a truer 43.9 kg, but it takes the body from 5 voxels across to 7,
-    and fourteen scenes are built around a man 25 cm wide. That is a change to
-    make deliberately, with the scenes, not quietly here (roadmap 66)."""
+    THE ARMS ARE STILL ONE VOXEL ACROSS, and the number that says how bad that
+    is: a bone cannot be turned in the plane it is thin in, and a shoulder
+    swings in the plane the body FACES. So a man facing along y can put his arm
+    through 30 of 30 angles and a man facing along x through ONE. That is not a
+    limit, it is a paralysis in half the directions he can stand.
+
+    Two voxels across takes it to 15 of 30 and weighs a truer 43.9 kg, but it
+    puts him 35 cm across the shoulders instead of 25 and fourteen scenes are
+    measured against the narrower man. Deliberately not done here — with the
+    scenes open, or not at all (roadmap 66, 70)."""
     z = z0 - 1                                   # stands ON whatever is at z0
     segs = {}
 
@@ -1109,13 +1112,96 @@ def crouch(frames_dir, ticks=120, every=1):
         t += 1
 
 
+# ── scenario: three men, three shoulders ─────────────────────────────────────
+def arms(frames_dir, ticks=170, every=2):
+    """The same arm, three times, and every difference between them is physical.
+
+    All three are told to put an arm out and hold it there. Same build, same
+    shoulder, same command.
+
+    The FIRST has an empty hand and gets there fastest.
+
+    The SECOND is holding a block of iron. What is in the hand is part of the
+    arm, so it is in the inertia, so it is in the TIME — his arm climbs visibly
+    behind the other man's, and nobody wrote down that it should.
+
+    The THIRD is knocked out partway through. Muscle tone is something a living
+    waking body spends energy on every tick; when it stops there is no longer
+    anything holding the joint, gravity has a moment about it, and his arm
+    falls, swings past the bottom, comes back and settles. How long that takes
+    falls out of the limb's own mass and inertia — 1.117 s measured against the
+    1.083 s a pendulum of those numbers asks for.
+
+    THEY FACE ALONG Y ON PURPOSE, and toward the camera. A shoulder swings in
+    the plane the body faces, and a bone cannot be turned in the plane it is
+    thin in: these arms are one voxel across, so facing along y they have 30 of
+    30 angles and facing along x they have ONE. That is the body's largest
+    remaining fault, and it is not hidden here — it is why the scene is built
+    this way round."""
+    w = World(28, 20, 36, voxel_cm=5)
+    w.fill(0, 28, 0, 20, 0, 1, STONE)
+    w.exits = []
+    men = []
+    for name, px in (("the empty hand", 4), ("the laden man", 12),
+                     ("the one out cold", 20)):
+        p = _person(w, px, 13)
+        p["name"], p["facing"] = name, (0.0, -1.0)
+        p["strength_N"] = 4000.0      # this scene is about TIME, not lifting
+        men.append(p)
+    # A BLOCK ON A PEDESTAL at the middle man's own hand height.
+    w.fill(14, 17, 7, 10, 1, 21, STONE)
+    w.fill(14, 17, 7, 10, 21, 24, IRON)
+    w.policy = _Wants(each={"the laden man":
+                            {"hands": "take hold of the iron"}})
+    for _ in range(40):                           # he takes it up
+        w.step()
+        for p in men:
+            p["events"].clear()
+    held = w._held_cells(men[1])
+    kg = 0.0 if held is None else \
+        float(w.smass[tuple(np.asarray(held).T)].sum()) / 1000.0
+    print(f"t0: the laden man has {kg:.1f} kg in his hand", flush=True)
+    for p in men:
+        got = w._swing_of(p, (p.get("held") or {}).get("arm", "right arm"))
+        if got:
+            print(f"t0: {p['name']:18s} arm inertia {got[0]:.3f} kg m2  "
+                  f"({got[1]:.1f} kg hanging off the joint)", flush=True)
+    w.policy = _Wants()
+    _save(w, frames_dir, 0)
+    ang = lambda p: float(np.atleast_1d((p.get("pose") or {}).get(
+        (p.get("held") or {}).get("arm", "right arm"), 0.0))[0])
+    for t in range(1, ticks):
+        for p in men:
+            if p["awake"]:
+                arm = (p.get("held") or {}).get("arm", "right arm")
+                p["reach"] = {arm: [1.2, 0.0, 0.0, 0.0]}
+        # AND ONE OF THEM STOPS PAYING FOR IT. Held under by the scene rather
+        # than hurt by it: an uninjured man comes round on his own, which is
+        # `_law_life` being right and had to be worked around rather than
+        # broken. What the scene is showing is a joint with no muscle on it.
+        if t >= 70:
+            men[2]["awake"] = False
+            men[2]["reach"] = {}
+            if t == 70:
+                print("t70: the third man goes out", flush=True)
+        w.step()
+        for p in men:
+            p["events"].clear()
+        if t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        if t % (2 if t < 40 else 10) == 0:
+            print("t%-4d " % t + "   ".join(
+                f"{p['name'].split()[-1]:5s} {ang(p):+.2f}" for p in men),
+                flush=True)
+
+
 SCENARIOS = {"rescue": rescue, "two_rooms": two_rooms, "tree_fell": tree_fell, "lamp_shelf": lamp_shelf,
              "drop_test": drop_test, "forge": forge, "fire_alarm": fire_alarm,
              "glasshouse": glasshouse,
              "alchemist": alchemist, "house_fire": house_fire,
              "burning_tree": burning_tree,
              "jumper": jumper, "parachute": parachute, "leap": leap,
-             "swing": swing, "ledge": ledge, "crouch": crouch,
+             "swing": swing, "ledge": ledge, "crouch": crouch, "arms": arms,
              "tree_hinge": tree_hinge, "acid_bath": acid_bath, "torch_pillar": torch_pillar,
              "vessels": vessels, "pond": pond}
 

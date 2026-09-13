@@ -1235,7 +1235,8 @@ class World:
         # against ~134 ms to recompute, and it is correct by construction rather
         # than by remembering to invalidate — in a standing room nothing moves,
         # so this is skipped almost every tick.
-        grip = self._grip_cells() if self.persons else frozenset()
+        grip = (self._grip_cells() | self._borne_cells()) \
+            if self.persons else frozenset()
         if self._slack_mat is not None \
                 and np.array_equal(self._slack_mat, self.mat) \
                 and grip == self._slack_grip:
@@ -2746,6 +2747,13 @@ class World:
                 n = 2 * len(self._bones(p, name))
                 at = np.array(self._angles(pose.get(name, 0.0), n))
                 goal = np.array(self._angles((want or {}).get(name, 0.0), n))
+                # AS FAR AS THIS JOINT HAS EVER BEEN ABLE TO GO, this way
+                # round. Asking for more than the flesh can be drawn at is how
+                # the ladder above got climbed in the first place.
+                cap = (p.get("_span") or {}).get(
+                    "bend:%s:%d" % (name, self._face_axis(p)))
+                if cap is not None and np.abs(goal).max() > cap:
+                    goal = np.clip(goal, -cap, cap)
                 can = (p.get("torque_Nm") or {}).get(name)
                 if can is None:
                     can = self._torque_of(
@@ -2775,6 +2783,20 @@ class World:
                         pose[name] = list(dr)
                         if want is not None and name in want:
                             want[name] = list(dr)
+                        # AND IT REMEMBERS. Settling to where the flesh got to
+                        # was only half the story: the next tick asked for the
+                        # same angle again, climbed the same undrawable ladder,
+                        # and snapped back — for ever. A man told to raise his
+                        # arm while facing along x ran that loop 0.375, 0.75,
+                        # 0.9, 0.0 without his arm EVER moving a voxel.
+                        #
+                        # So this is a fact learned about a joint, filed where
+                        # `_bend_max` keeps them, and keyed by which way he was
+                        # facing when he learned it — because that is what
+                        # decides which angles can be drawn at all.
+                        p.setdefault("_span", {})[
+                            "bend:%s:%d" % (name, self._face_axis(p))] = \
+                            float(np.abs(dr).max())
                     continue
                 # HOW FAST THAT JOINT GOES. A property of the joint, like the
                 # torque it can hold — a trunk is not a shoulder. But the cap
@@ -5654,6 +5676,17 @@ class World:
         self._slack_mat = None
         return "moved"
 
+    @staticmethod
+    def _face_axis(p):
+        """Which horizontal axis this body's joints turn in. A shoulder swings
+        in the plane the body FACES, so which angles can be drawn at all
+        depends on which way it is standing — measured, a right arm has 30 of
+        30 angles facing one way and 1 of 30 facing the other. Anything that
+        remembers what a joint can do has to remember which way it was
+        facing when it found out."""
+        dx, dy = p.get("facing", (1.0, 0.0))
+        return 0 if abs(dx) >= abs(dy) else 1
+
     def _bend_max(self, p, limb, ceiling):
         """The furthest this body can bend that joint AND STILL BE DRAWN.
 
@@ -5665,7 +5698,8 @@ class World:
         Asked once per body and kept, because it is a fact about a shape and
         the shape does not change. Asked at all only because `_repose` can now
         be asked without being obeyed."""
-        got = (p.get("_span") or {}).get("bend:" + limb)
+        key = "bend:%s:%d" % (limb, self._face_axis(p))
+        got = (p.get("_span") or {}).get(key)
         if got is not None:
             return got
         lo, hi = 0.0, float(ceiling)
@@ -5675,7 +5709,7 @@ class World:
                 lo = mid
             else:
                 hi = mid
-        p.setdefault("_span", {})["bend:" + limb] = lo
+        p.setdefault("_span", {})[key] = lo
         return lo
 
     def _crouch_of(self, p):
@@ -5823,6 +5857,40 @@ class World:
             for cl in self._held_clusters(p):
                 if self._grip_holds(p, cl):
                     out.update(map(tuple, np.asarray(cl)))
+        return frozenset(out)
+
+    def _borne_cells(self):
+        """A BODY IS HELD TOGETHER BY ITS SKELETON, not by its flesh spanning.
+
+        `_grip_cells` already says a hanging man does not need his flesh to
+        span like a girder — but it said it only about what his HAND holds, and
+        never about the man. So a body was a pile of meat as far as the support
+        law was concerned: load travelled sideways through it one span per hop,
+        and an arm held straight out was a cantilever of flesh.
+
+        It was within a hair of breaking, and a wider arm found the hair. One
+        more voxel of arm put the outer column one hop past what flesh spans,
+        and the support law tore three cells off the end of a reaching hand and
+        dropped them on the floor — mass conserved, man in two pieces. The
+        flesh was not wrong and the span was not wrong: a limb is carried by
+        BONE, and there is no bone in the lattice.
+
+        So a body with something under its feet seeds its own cells as
+        supported, exactly as the ground does and exactly as a grip does. It is
+        the same edge in the same graph, and it is what a skeleton is. A body
+        with nothing under its feet is not seeded — it has already left the
+        lattice as a body by then (`_law_footing`), which is the other way a
+        person stops needing to span."""
+        out = set()
+        for p in self.persons:
+            comp, sl = self._person_cells(p)
+            if comp is None or not comp.any():
+                continue
+            c = np.argwhere(comp)
+            c[:, 0] += sl[0].start or 0
+            c[:, 1] += sl[1].start or 0
+            if self._underfoot(c):
+                out.update(map(tuple, c))
         return frozenset(out)
 
     def _rub(self, p, own):

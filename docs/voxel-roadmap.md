@@ -4019,3 +4019,84 @@ thicker arm is slower than a thin one, and none of it is a second rule.
 men reaching for the same thing is settled by what each is already carrying.
 And a man laden enough is slow enough to be beaten to it — which is a tactical
 fact the sim now has without anybody writing a tactics table.
+
+## 70. Two bugs a picture found, and why the arms are still thin
+
+**Why this is here:** "render something to show me the new body". The scene was
+built, and before it rendered anything it failed twice.
+
+### A joint that climbed a ladder to nowhere, for ever
+
+A limb crosses angles it cannot be drawn at and catches up at the next one it
+can — right, and deliberate. What was missing is what happens when there is no
+next one. Measured, a man told to raise his arm while facing along x:
+
+    pose  0.375  0.750  0.900  0.000  0.375  0.750  0.900  0.000  ...
+    drawn 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  ...
+
+**His arm never moved a single voxel**, and the loop ran as long as the sim
+did. The command climbs, the flesh does not follow, the angle "arrives", the
+body settles back to where the flesh actually is, and the next tick asks again.
+
+Fixed the way this sim already handles a wall it cannot reach past: the body
+LEARNS it. Keyed by which way it was facing, because that is what decides which
+angles can be drawn at all. This bug was there before any of today's work —
+`6b48071` runs it too — and no test caught it because every test asks whether a
+body arrives, not whether it gives up.
+
+### A body held together by its flesh, with no skeleton
+
+Support travels sideways one span per hop and flesh does not span far, so a man
+was a pile of meat: an arm held straight out was a cantilever of it, within one
+hop of breaking and never measured because nothing had leaned on it.
+
+A wider arm leaned on it. One more voxel put the outer column one hop past what
+flesh spans, and `_law_support` **tore three cells off the end of a reaching
+hand and dropped them on the floor** — mass conserved exactly, 396 cells before
+and after, man in two pieces. Neither the flesh nor the span was wrong. A limb
+is carried by BONE, and there is no bone in the lattice.
+
+`_grip_cells` already said this about what a hand HOLDS — *"a hanging man does
+not need his flesh to span like a girder"* — and never said it about the man.
+Now a body with something under its feet seeds its own cells the way the ground
+does. Same edge, same graph; that is what a skeleton is.
+
+**Under its FEET, and nothing looser.** Seeding anyone merely in CONTACT seeds a
+man in mid-fall the instant he brushes a wall, and then he never lands —
+measured, it broke falling, catching and being carried at once, 18 failures
+against 15.
+
+### And the arms are still one voxel across
+
+The case for widening got much stronger and the answer is still not yet:
+
+| | drawable angles, right arm |
+|---|---|
+| facing along y | 30 of 30 |
+| facing along x | **1 of 30** |
+| facing along x, arms 2 voxels | 15 of 30 |
+
+That is not a limit, it is a **paralysis in half the directions a man can
+stand**, and it is the body's largest remaining fault. Widening costs 14 scenes
+recalibrated — he goes from 25 cm across the shoulders to 35, and from 38.1 kg
+to 43.9 — and the failures are the ordinary kind: loads picked to sit "either
+side of what a 38 kg man can balance", two people stood a voxel apart, a gap
+sized to a narrower leaper.
+
+**The skeleton fix removed the one reason it could not be done at all.** What
+is left is bookkeeping with the scenes open, which is the user's call and not a
+thing to slip in under a limb fix.
+
+### What the scene shows
+
+`renders/arms/` — three men told to hold an arm out. Measured at t0:
+
+    the empty hand      arm inertia 0.167 kg m2   (2.9 kg off the joint)
+    the laden man       arm inertia 7.209 kg m2  (29.2 kg off the joint)
+
+The empty hand is at 1.20 rad by t4. The laden man climbs 0.22, 0.42, 0.59,
+0.74 and **stops at 0.41–0.81** — 26 kg at arm's length is past what his
+shoulder will hold, which is `_hold_torque` refusing, and it only refuses now
+because the load is finally in the sum (entry 69). The third holds 1.20 until
+he is put under at t70, and then there is no muscle on the joint and his arm
+falls and swings.
