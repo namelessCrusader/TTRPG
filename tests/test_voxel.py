@@ -3873,3 +3873,42 @@ def test_ONE_HAND_ON_THE_RAIL_and_the_OTHER_CATCHES_HIM():
     assert busy["held"]["arm"] != "left arm" or True
     assert low_busy > 30, \
         f"and the faller is up at the lip, not at the bottom ({low_busy})"
+
+
+def test_a_GIANT_JUMPS_WORSE_THAN_A_MAN_and_nobody_wrote_that_down():
+    """Two numbers that were typed in are read off the body now: how far it can
+    sink before it pushes off (a LEG), and what its legs can push with (a
+    muscle's CROSS-SECTION times a stress).
+
+    And the square-cube law falls out of the pair. Force goes as area and mass
+    goes as volume, so a body twice as tall is four times as strong and eight
+    times as heavy — and jumps LOWER. Nobody wrote "big things jump worse"; it
+    is what those two sentences mean together.
+
+    With a flat `legs_N` for everybody the giant could not jump at all, which
+    is the sort of wrongness a declared constant hides until something changes
+    size."""
+    from src.voxel.scenes import _person
+    out = {}
+    for cm in (5, 10):
+        w = World(40, 30, 70, voxel_cm=cm)
+        w.open_sky = False
+        w.fill(0, 40, 0, 30, 0, 1, STONE)
+        p = _person(w, 12, 15)
+        own = np.argwhere(w.mat == FLESH)
+        kg = float(w.smass[w.mat == FLESH].sum()) / 1000.0
+        v = w._leap_speed(own, p)
+        out[cm] = (kg, w._legs_of(p), w._crouch_of(p), v, v * v / (2 * 9.81))
+    man, giant = out[5], out[10]
+    assert abs(man[1] - BODY["legs_N"]) < 60, \
+        f"the body this was calibrated on comes out where it always was " \
+        f"({man[1]:.0f} N against the declared {BODY['legs_N']:.0f})"
+    assert giant[0] > 7 * man[0], "twice as tall is about eight times the mass"
+    assert giant[1] > 3.5 * man[1], "and about four times the leg section"
+    assert giant[2] > 1.8 * man[2], "and twice the crouch, because twice the leg"
+    assert giant[3] > 0.5, \
+        f"a giant can still jump ({giant[3]:.2f} m/s) — with a flat legs_N it " \
+        f"could not jump at all"
+    assert giant[4] < man[4], \
+        f"and it jumps LOWER than the man does ({giant[4]:.2f} m against " \
+        f"{man[4]:.2f}), which is the square-cube law and is written nowhere"

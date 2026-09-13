@@ -42,6 +42,22 @@ Converted so far:
 | `BODY["reach_m"]` = 0.30 | the arm's own far end from its own shoulder | **0.45 m** |
 | `BODY["off_hand_m"]` = 0.10 | half the body's own shoulder separation | 0.10 m |
 | `WILL["decide_every"]` = 30 | `react_s / TICK_S` | 10 ticks |
+| `BODY["crouch_m"]` = 0.25 | this body's leg, times `crouch_frac` | 0.25 m |
+| `BODY["legs_N"]` = 1400 | the legs' own cross-section, times `muscle_Pa` | 1395 N |
+
+**And the last two brought the square-cube law with them.** Force goes as area
+and mass goes as volume, so a body twice as tall is four times as strong and
+eight times as heavy — and jumps LOWER:
+
+| | mass | legs | crouch | jumps |
+|---|---|---|---|---|
+| a 1.5 m person | 38.1 kg | 1395 N | 0.25 m | 0.69 m |
+| a 3 m giant | 305.1 kg | 5580 N | 0.50 m | **0.43 m** |
+
+Nobody wrote "big things jump worse". It is what those two derivations mean
+together — and with the flat `legs_N` the giant could not jump AT ALL (0.00
+m/s), which is the sort of wrongness a declared constant hides until something
+changes size.
 
 The constants stay as the FALLBACK, for a body with no segments declared. They
 are what a person is like when nobody has said.
@@ -50,10 +66,15 @@ Still typed, and each one is a loop waiting to be closed:
 
 | number | what it should be read from |
 |---|---|
-| `BODY["crouch_m"]` 0.25 | the leg's own length — how far this body can actually sink |
 | `BODY["lean_max"]` 0.8 | the angle past which the lattice cannot draw this spine (measured 0.34) |
-| `BODY["arm_wmax"]`, `arm_Nm` | a muscle's cross-section, which is voxels of flesh |
-| `WILL["step_m"]` 2.0 | a stride, which is a leg length |
+| `BODY["arm_Nm"]`, `back_Nm` | a cross-section times `muscle_Pa`, exactly as `legs_N` now is |
+| `BODY["strength_N"]` 400 | the arm's section — the same sentence a third time |
+
+And one that should NOT be derived, which is worth saying because the ledger is
+as much about that: `WILL["step_m"]` (2.0 m) reads like a stride and is not one.
+It is how far "straight on" MEANS — the distance a body puts an intention at
+when it has nowhere by name to go — and the legs still do the walking. Deriving
+it from a leg would be tidy and wrong.
 
 ## Time and the world
 
@@ -89,7 +110,10 @@ Still typed, and each one is a loop waiting to be closed:
 | `waist_wmax` | 1.5 rad/s | GUESS | a trunk is slower than a shoulder. At a shoulder's pace the first tick of a lean is already past what a man can stand at |
 | `lean_max` | 0.8 rad | GUESS | the spine's own stop. The LATTICE stops this body at 0.34 — item 49 |
 | `strength_N` | 400 N | WORLD | what an adult can shift |
-| `legs_N`, `crouch_m` | 1400 N, 0.25 m | WORLD / GUESS | a jump is legs_N over a crouch; the crouch should be read off the leg |
+| `legs_N` | 1400 N | DERIVED per body | fallback only; the legs' section times `muscle_Pa` |
+| `muscle_Pa` | 93 kPa | GUESS | low for muscle (real is ~300) because this body is a stick figure: its legs are thinner, relative to its height, than a person's. Calibrated so the humanoid comes out where it was |
+| `crouch_m` | 0.25 m | DERIVED per body | fallback only; the leg times `crouch_frac` |
+| `crouch_frac` | 0.36 | GUESS | how much of a leg's length a crouch uses. The lattice does not know this |
 | `MENU_CAP` | 7 | MEASURED | a model of attention, not a budget. Recall 81% → 100% when the cap kept one of each KIND first — "What attention was costing" |
 
 ## Measured thresholds

@@ -511,7 +511,23 @@ BODY = {"breath": 0.02,          # blood O2 relaxes toward inhaled air at this r
         # legs put into the GROUND, and how far the body has to push over
         # (a crouch), which together are all a jump is: work done against
         # weight, turned into speed, turned into height. Nobody types a height.
-        "legs_N": 1400.0, "crouch_m": 0.25,
+        # WHAT LEGS CAN PUSH WITH. A muscle's force is its CROSS-SECTION times
+        # a stress, which is why a thicker leg is a stronger one and why this
+        # should never have been a flat number: a body twice as tall has four
+        # times the leg section and eight times the mass, so with 1400 N for
+        # everybody a giant could not jump at all — measured, 0.00 m/s.
+        #
+        # `legs_N` is the fallback for a body with no legs declared. The stress
+        # is the part still guessed, and it is LOW for muscle (about 90 kPa
+        # against a real 300) because this body is a stick figure: its legs are
+        # thinner, relative to its height, than a person's are. Calibrated so
+        # the humanoid comes out where it always was.
+        "legs_N": 1400.0, "muscle_Pa": 93000.0,
+        # HOW FAR A BODY SINKS BEFORE IT PUSHES OFF. `crouch_m` is the fallback
+        # for a body with no legs declared; a body WITH legs is measured, and
+        # this fraction is the only part of it still a guess — how much of a
+        # leg's length a crouch uses, which the lattice does not know.
+        "crouch_m": 0.25, "crouch_frac": 0.36,
         # A SHOULDER, in newton-metres. This is the only number a swing needs:
         # the segment's own inertia decides how fast it comes round, so a heavy
         # arm is slower than a light one and an arm holding something is slower
@@ -2827,7 +2843,8 @@ class World:
                         if q["name"] == b["owner"]), None)
             if who is not None and who.get("rolling"):
                 tall = (float(pose[:, 2].max() - pose[:, 2].min()) + 1.0) * vox_m
-                shares = max(1, int(round(tall / max(BODY["crouch_m"], 1e-9))))
+                shares = max(1, int(round(
+                    tall / max(self._crouch_of(who), 1e-9))))
                 who["rolling"] = False
                 who["events"].append(f"t{self.tick}: {who['name']} rolls with it")
         e_per = joules / float(shares) / max(int(contact.sum()), 1)
@@ -4550,7 +4567,7 @@ class World:
                                   (ig[:, 0] * ny + ig[:, 1]) * nz + ig[:, 2])
         return cells[on_floor | (under & ~mine)]
 
-    def _leap_speed(self, cells):
+    def _leap_speed(self, cells, p=None):
         """The fastest this body can leave the ground, in m/s. The legs put
         legs_N into the floor over a crouch; what is left after holding the
         body's own weight up becomes speed. A heavier body gets less out of the
@@ -4558,10 +4575,12 @@ class World:
         kg = float(self.smass[tuple(np.asarray(cells).T)].sum()) / 1000.0
         if kg <= 0.0:
             return 0.0
-        net = BODY["legs_N"] / kg - GRAVITY
+        net = (self._legs_of(p) if p is not None else BODY["legs_N"]) / kg \
+            - GRAVITY
         if net <= 0.0:
             return 0.0                        # too heavy to lift itself
-        return float(np.sqrt(2.0 * net * BODY["crouch_m"]))
+        return float(np.sqrt(2.0 * net * (self._crouch_of(p) if p is not None
+                                          else BODY["crouch_m"])))
 
     def _leap_targets(self, p, cells, fit, vmax):
         """Where this body could LAND if it jumped, and how far that is.
@@ -4612,7 +4631,7 @@ class World:
         and at exactly the speed that distance needs (v-squared = g times the
         range), so it lands where it meant to instead of hurling itself as hard
         as it can. A place further than the legs can reach is not offered."""
-        vmax = self._leap_speed(cells)
+        vmax = self._leap_speed(cells, p)
         if vmax <= 0.0:
             return
         if goal is None:
@@ -4983,6 +5002,13 @@ class World:
                         own[:, 1] += sl[1].start or 0
                         j = np.asarray(piv) + own.min(axis=0)
                         out = float(np.abs(cells - j).sum(axis=1).max()) * vox_m
+        elif what == "leg":
+            legs = [k for k in self._limbs(p) if "leg" in k]
+            cells = [c for k in legs
+                     for c in (self._limb_parts(p, k) or []) if len(c)]
+            if cells:
+                c = np.concatenate(cells)
+                out = float(c[:, 2].max() - c[:, 2].min() + 1) * vox_m
         elif what == "shoulders" and len(arms) > 1:
             mids = []
             for a in arms:
@@ -4992,13 +5018,39 @@ class World:
             if len(mids) > 1:
                 out = float(np.abs(mids[0] - mids[1]).max()) * vox_m
         if out is None or out <= 0.0:
-            out = BODY["reach_m"] if what == "reach" else BODY["off_hand_m"] * 2
+            out = {"reach": BODY["reach_m"],
+                   "shoulders": BODY["off_hand_m"] * 2,
+                   "leg": BODY["crouch_m"] / BODY["crouch_frac"]}[what]
         p.setdefault("_span", {})[what] = out
         return out
 
     def _reach_of(self, p):
         """How far THIS body's arm goes."""
         return self._body_span(p, "reach")
+
+    def _legs_of(self, p):
+        """What THIS body's legs can push with, in newtons: the cross-section
+        of the legs it actually has, times a muscle stress."""
+        vox_m = 0.1 * self.scale
+        legs = [k for k in self._limbs(p) if "leg" in k]
+        cells = [c for k in legs
+                 for c in (self._limb_parts(p, k) or []) if len(c)]
+        if not cells:
+            return BODY["legs_N"]
+        c = np.concatenate(cells)
+        tall = max(float(c[:, 2].max() - c[:, 2].min() + 1), 1.0)
+        area = (len(c) / tall) * vox_m * vox_m     # mean section, in m^2
+        return area * BODY["muscle_Pa"]
+
+    def _crouch_of(self, p):
+        """How far THIS body can sink before it pushes off.
+
+        A jump is the legs' force over the distance they have to apply it, and
+        that distance is a LEG — so a child's jump and a tall man's differ
+        without anybody writing two rows. `crouch_frac` is what is left over as
+        a guess: how much of a leg's length a crouch actually uses, which is
+        not something the lattice knows."""
+        return self._body_span(p, "leg") * BODY["crouch_frac"]
 
     def _hand(self, p, own, toward=None, free=False):
         """WHICH HAND does this.
@@ -5464,7 +5516,7 @@ class World:
             fit, _start = self._fit_grid(nav, p)
             ground = self._underfoot(cells)
             places = self._places(p, cells, fit)
-            leaps = self._leap_targets(p, cells, fit, self._leap_speed(cells)) \
+            leaps = self._leap_targets(p, cells, fit, self._leap_speed(cells, p)) \
                 if ground else []
             routes = self._routes(cells, [pl["xy"] for pl in places]
                                   + [lp["xy"] for lp in leaps],
