@@ -3972,3 +3972,50 @@ closes — measured, 3.09 J out of one dropped arm.
   than a record on the person, so a door hinge, an axle and a capstan are the
   same thing as a shoulder. Deliberately held back until there is a second
   user, so the shape of those fields is decided by two cases and not one.
+
+## 69. A loaded arm is a slower arm — and the load was never in the sum
+
+**Why this is here:** `_law_pose` was the last kinematic thing about a body.
+Entry 68 gave an UNHELD joint real dynamics; this gives the held one a real
+speed.
+
+**Two faults, and the first was a docstring telling the truth about code that
+was not.** `_hold_torque` says a shoulder holds "an arm and whatever is in the
+hand" — and counted body segments only. So a man holding an anvil at arm's
+length paid exactly what a man holding nothing paid. The lever was right and
+the mass on the end of it was missing.
+
+Fixed by making "everything beyond this joint" ONE answer (`_hanging_cells`),
+so the muscle's effort and the joint's inertia are read off the same voxels and
+cannot drift apart again.
+
+**The second: a ceiling was being used as a rate.** `arm_wmax` is Hill's
+force-velocity limit — 15 rad/s, a shoulder unloaded. `_law_pose` stepped every
+limb at exactly that, so every angle was crossed at the same speed whatever was
+being carried. Now the cap is a cap, and what a joint MANAGES is
+
+    w = min(wmax, sqrt(2 * (torque / inertia) * angle left))
+
+— the torque it has over the inertia it must shift, and then only as fast as it
+can still stop in the angle it has left to stop in.
+
+**Measured, end to end through `_law_pose`, same man and same 0.6 rad reach:**
+
+    holding   0.0 kg  ->  2 ticks   (50 ms)
+    holding   1.0 kg  ->  3 ticks   (75 ms)
+    holding   7.8 kg  ->  7 ticks  (175 ms)
+
+And at the sizes a rescue actually involves:
+
+    arm alone          I = 0.167 kg m2   a 1 rad reach:  75 ms
+    + 11.7 kg iron     I = 2.936        314 ms
+    + 38.3 kg lead     I = 10.405       591 ms
+
+**Nobody typed any of that.** The anvil is in `_hanging_cells`, so it is in the
+inertia, so it is in the time. A weak man is slower for the same reason, and a
+thicker arm is slower than a thin one, and none of it is a second rule.
+
+**In play:** snatching something heavy out of the way is no longer free. Two
+men reaching for the same thing is settled by what each is already carrying.
+And a man laden enough is slow enough to be beaten to it — which is a tactical
+fact the sim now has without anybody writing a tactics table.

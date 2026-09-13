@@ -2521,6 +2521,34 @@ class World:
         self._slack_mat = None
         return "moved"
 
+    def _hanging_cells(self, p, name, own=None):
+        """EVERYTHING BEYOND THIS JOINT — bones and burden alike.
+
+        What a shoulder holds is an arm AND whatever is in the hand, and for a
+        long time only the first half was true. `_hold_torque` said so in its
+        own docstring and then counted body segments only, so holding an anvil
+        at arm's length cost a man exactly what holding nothing cost him. The
+        lever was right and the mass on the end of it was missing.
+
+        One answer, so the muscle's effort and the joint's inertia are read off
+        the same set of voxels and cannot drift apart."""
+        bones = self._bones(p, name)
+        bones = [b for b in self._subtree(p, bones[0])
+                 if b in (p.get("segs") or {})] if bones else []
+        parts = self._bone_parts(p, bones, own) if bones else None
+        cells = [c for c in (parts or []) if len(c)]
+        # AND WHAT THE HAND HAS, if this is the arm that has it. An arm holding
+        # something is a heavier, slower arm — which is why a loaded reach is
+        # not the same act as an empty one.
+        held = p.get("held") or {}
+        if held.get("arm") == name:
+            ride = self._held_cells(p)
+            if ride is not None and len(ride):
+                cells.append(np.asarray(ride))
+        if not cells:
+            return None
+        return np.concatenate(cells)
+
     def _hold_torque(self, p, name, theta):
         """What the muscle must find to hold this limb at that angle: the limb's
         own weight times how far out its middle hangs from the joint. Zero
@@ -2529,11 +2557,7 @@ class World:
         # EVERYTHING BEYOND THE JOINT hangs off it, not just the bones with
         # angles: what the hips have to hold up is a torso and a head and two
         # arms, and what a shoulder holds is an arm and whatever is in the hand.
-        bones = [b for b in self._subtree(p, self._bones(p, name)[0])
-                 if b in (p.get("segs") or {})] if self._bones(p, name) else []
-        parts = self._bone_parts(p, bones) if bones else None
-        limb = np.concatenate([c for c in parts if len(c)]) \
-            if parts and any(len(c) for c in parts) else None
+        limb = self._hanging_cells(p, name)
         piv = self._pivot_of(p, name)
         if limb is None or piv is None:
             return 0.0, 0.0
@@ -2580,7 +2604,7 @@ class World:
             own[:, 1] += sl[1].start or 0
         origin = own.min(axis=0)
         piv = np.asarray(joints[bones[0]], np.float64) + origin
-        cells = self._limb_cells(p, limb, own)
+        cells = self._hanging_cells(p, limb, own)
         if cells is None or not len(cells):
             return None
         kg = self.smass[tuple(np.asarray(cells).T)] / 1000.0
@@ -2722,12 +2746,12 @@ class World:
                 n = 2 * len(self._bones(p, name))
                 at = np.array(self._angles(pose.get(name, 0.0), n))
                 goal = np.array(self._angles((want or {}).get(name, 0.0), n))
+                can = (p.get("torque_Nm") or {}).get(name)
+                if can is None:
+                    can = self._torque_of(
+                        p, name, p.get("arm_Nm", BODY["arm_Nm"]))
                 if np.abs(goal).max() > 0.0:
                     need, _m = self._hold_torque(p, name, goal)
-                    can = (p.get("torque_Nm") or {}).get(name)
-                    if can is None:
-                        can = self._torque_of(
-                            p, name, p.get("arm_Nm", BODY["arm_Nm"]))
                     if need > can:
                         goal = np.zeros(n)    # too heavy to hold out there
                 d = goal - at
@@ -2753,9 +2777,24 @@ class World:
                             want[name] = list(dr)
                     continue
                 # HOW FAST THAT JOINT GOES. A property of the joint, like the
-                # torque it can hold — a trunk is not a shoulder.
-                step = (p.get("wmax") or {}).get(
-                    name, BODY["arm_wmax"]) * TICK_S
+                # torque it can hold — a trunk is not a shoulder. But the cap
+                # is a CEILING and not a speed: what a limb actually manages is
+                # the torque it has over the inertia it must shift, and then
+                # only as fast as it can still STOP in the angle it has left.
+                #
+                # That is the whole difference between reaching with an empty
+                # hand and reaching with an anvil. Nobody writes down that a
+                # loaded arm is slower; the anvil is in `_hanging_cells`, so it
+                # is in the inertia, so it is in the time.
+                w_cap = float((p.get("wmax") or {}).get(
+                    name, BODY["arm_wmax"]))
+                got = self._swing_of(p, name)
+                if got is not None:
+                    alpha = float(can) / got[0]
+                    w_cap = min(w_cap,
+                                float(np.sqrt(2.0 * alpha
+                                              * max(np.abs(d).max(), 1e-9))))
+                step = w_cap * TICK_S
                 nxt = at + np.clip(d, -step, step)
                 how = self._repose(p, name, nxt)
                 if how == "blocked":

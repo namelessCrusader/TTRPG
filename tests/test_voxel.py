@@ -4170,3 +4170,74 @@ def test_a_SHOULDER_IS_A_JOINT_and_an_UNHELD_ARM_SWINGS():
     assert w.shed > shed0, "the swing it loses is shed as heat, not dropped"
     assert abs(w.total_mass(FLESH) - mass0) < 1e-6, "and no flesh went anywhere"
     assert _lumps(w.mat == FLESH) == 1, "he is still one man"
+
+
+def test_a_LOADED_ARM_is_a_SLOWER_ARM():
+    """What is in the hand is part of the arm, for weight and for time alike.
+
+    `_hold_torque` said in its own docstring that a shoulder holds "an arm and
+    whatever is in the hand", and then counted body segments only — so holding
+    an anvil at arm's length cost a man exactly what holding nothing cost him.
+    The lever was right and the mass on the end of it was missing.
+
+    And the speed was not a speed at all. `arm_wmax` is a ceiling, and it was
+    being used as a rate: every limb crossed every angle at 15 rad/s whatever
+    it was carrying. Now the cap is a cap, and what a joint MANAGES is the
+    torque it has over the inertia it must shift — then only as fast as it can
+    still stop in the angle it has left.
+
+    Nobody writes down that a loaded arm is slower. The load is in
+    `_hanging_cells`, so it is in the inertia, so it is in the time."""
+    from src.voxel.scenes import _person, _Wants
+
+    def holding(n):
+        w = World(52, 12, 90, voxel_cm=5)
+        w.fill(0, 52, 0, 12, 0, 1, STONE)
+        w.fill(16, 52, 0, 12, 1, 41, STONE)          # a shelf to stand on
+        w.exits = []
+        a = _person(w, 20, 6, z0=41)
+        a["name"], a["facing"] = "the holder", (1.0, 0.0)
+        a["strength_N"] = 4000.0     # a winch of a man: this is about TIME
+        if n:
+            w.fill(26, 26 + n, 5, 5 + n, 41, 41 + n, IRON)
+            w.policy = _Wants(each={"the holder":
+                                    {"hands": "take hold of the iron"}})
+        for _ in range(30):
+            w.step()
+            a["events"].clear()
+        arm = (a.get("held") or {}).get("arm", "right arm")
+        got = w._held_cells(a)
+        kg = 0.0 if got is None else \
+            float(w.smass[tuple(np.asarray(got).T)].sum()) / 1000.0
+        assert bool(n) == bool(kg), "he has hold of it, or of nothing"
+
+        # THE SAME REACH EVERY TIME. Only the hand's contents differ.
+        w.policy = _Wants()
+        angle = lambda: float(np.atleast_1d(
+            (a.get("pose") or {}).get(arm, 0.0))[0])
+        for t in range(400):
+            a["reach"] = {arm: [0.6, 0.0, 0.0, 0.0]}
+            w._law_pose()
+            if abs(angle() - 0.6) < 1e-6:
+                return kg, t + 1, w._swing_of(a, arm), w._hold_torque(
+                    a, arm, [0.6, 0.0, 0.0, 0.0])
+        raise AssertionError(f"he never got there ({angle():.3f} with {kg} kg)")
+
+    empty, light, heavy = (holding(n) for n in (0, 1, 2))
+
+    assert empty[0] == 0.0 < light[0] < heavy[0], \
+        f"three hands, and two of them have something in ({[r[0] for r in (empty, light, heavy)]})"
+
+    # WHAT IS IN THE HAND IS IN THE INERTIA.
+    assert empty[2][0] < light[2][0] < heavy[2][0], \
+        f"a loaded arm is harder to turn ({[round(r[2][0], 3) for r in (empty, light, heavy)]})"
+    # AND IN WHAT THE MUSCLE MUST FIND TO HOLD IT THERE.
+    assert empty[3][1] < light[3][1] < heavy[3][1], \
+        f"and heavier to hold out ({[round(r[3][1], 2) for r in (empty, light, heavy)]})"
+
+    # AND THEREFORE IN THE TIME. This is the part nobody wrote down.
+    ticks = [r[1] for r in (empty, light, heavy)]
+    assert ticks[0] < ticks[1] < ticks[2], \
+        f"the same reach takes longer with more in the hand ({ticks})"
+    assert ticks[2] >= 3 * ticks[0], \
+        f"and not marginally longer — {heavy[0]:.1f} kg should cost real time ({ticks})"
