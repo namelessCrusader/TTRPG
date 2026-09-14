@@ -823,6 +823,15 @@ class World:
         self.fallh = np.zeros(self.shape, np.float32)   # voxels of ACCUMULATED free
                                                         # fall — cashed in as impact
                                                         # energy on landing
+        self.rubble = np.zeros(self.shape, bool)        # cells that are BROKEN
+                                                        # PIECES rather than whole
+                                                        # material. A pane spans a
+                                                        # frame; the shards of it
+                                                        # span nothing. See
+                                                        # `_shatter` and
+                                                        # `_relax_slack`
+        self._rub_gen = 0                               # bumped whenever it changes,
+                                                        # so the slack cache knows
         self.edge = np.zeros(self.shape, np.float32)    # DECLARED contact area, m²:
                                                         # "this edge concentrates its
                                                         # blow into X mm²" is a fact
@@ -1239,12 +1248,14 @@ class World:
             if self.persons else frozenset()
         if self._slack_mat is not None \
                 and np.array_equal(self._slack_mat, self.mat) \
-                and grip == self._slack_grip:
+                and grip == self._slack_grip \
+                and self._rub_gen == getattr(self, "_slack_rub", None):
             slack = self._slack
         else:
             slack = self._relax_slack(solid, grip)
             self._slack_mat, self._slack = self.mat.copy(), slack
             self._slack_grip = grip
+            self._slack_rub = self._rub_gen
         falling = solid & (slack < 0)
         if not falling.any():
             return None
@@ -1301,6 +1312,12 @@ class World:
         # a fire-thinned lintel drops its load, and scene `frac` fills (a
         # stick at 0.6) keep their strength — which is why the knee is at a
         # half and not at one.
+        # A CELL WITH NOTHING IN IT IS NOT A BROKEN PIECE OF ANYTHING. Debris
+        # that has fallen away, burned, or been cleared leaves the flag behind,
+        # and the next thing to occupy that cell would inherit "is a fragment".
+        # Support runs every tick, so an emptied cell is always caught while it
+        # is still empty.
+        self.rubble &= self.mat != AIR
         packed = np.clip(self.smass / np.maximum(
             _DENS_ARR[self.mat] * self.vox_l, 1e-9), 0.0, 1.0)
         span = np.round(_SPAN_ARR[self.mat] / self.scale
@@ -1321,9 +1338,20 @@ class World:
             nb[:, 1:, :] = np.maximum(nb[:, 1:, :], slack[:, :-1, :] - 1)
             nb[:, :-1, :] = np.maximum(nb[:, :-1, :], slack[:, 1:, :] - 1)
             nb[:, :, 1:] = np.maximum(nb[:, :, 1:], slack[:, :, :-1] - 1)
-            nb[:, :, :-1] = np.maximum(nb[:, :, :-1], slack[:, :, 1:] - 1)
-            new = np.where(solid, np.maximum(cand, nb), -1).astype(np.int16)
-            new = np.minimum(new, span)          # nothing projects MORE support than its
+            # NOT FROM ABOVE. Resting against the underside of something is not
+            # being held up by it — that takes a bond in TENSION, and the only
+            # thing in this sim that has one is a hand (`_grip_cells` seeds
+            # those). Measured: a glass block touching only a shelf's underside
+            # hung there for ever, and a bottle knocked off a shelf punched
+            # through it and stopped halfway, wedged in its own hole.
+            # nb[:, :, :-1] = np.maximum(nb[:, :, :-1], slack[:, :, 1:] - 1)
+            # A PIECE RESTS ON WHAT IS UNDER IT AND HOLDS NOTHING. `nb` is
+            # support arriving sideways, which is what a continuous member
+            # does; rubble is not a member, so it gets `cand` — carried from
+            # directly below — and nothing else.
+            reach = np.where(self.rubble, cand, np.maximum(cand, nb))
+            new = np.where(solid, reach, -1).astype(np.int16)
+            new = np.minimum(new, np.where(self.rubble, 0, span))
             new = np.maximum(new, slack)         # own material can carry (ash caps at 1)
             if (new == slack).all():
                 break
@@ -1346,13 +1374,18 @@ class World:
             arrived |= m
             if not m.any():
                 continue
+            # `rubble` RIDES WITH THE MATTER, like every other thing a cell
+            # carries. Left out, a shard fell one voxel, arrived as ordinary
+            # glass, and the span it was never supposed to have caught it again
+            # — debris dropped exactly once and then hung there.
             for arr in (self.mat, self.smass, self.fl, self.fvol, self.E,
-                        self.fpot, self.edge):
+                        self.fpot, self.edge, self.rubble):
                 lo, hi = arr[:, :, z - 1], arr[:, :, z]
                 lo[m], hi[m] = hi[m], lo[m].copy()           # the cell and the air swap
             # the drop height RIDES with the voxel and grows — except through
             # liquid, where drag bleeds it away fast (a pond is a cushion, and
             # it also forgives the speed the fall brought INTO the water)
+            self._rub_gen += 1
             self.fallh[:, :, z - 1][m] = np.where(
                 pool[m], self.fallh[:, :, z][m] * 0.4, self.fallh[:, :, z][m] + 1.0)
             self.fallh[:, :, z][m] = 0.0
@@ -1495,6 +1528,8 @@ class World:
         if not targets:
             return
         self._just_shattered.add((x, y, z))
+        self._rub_gen += 1
+        self.rubble[x, y, z] = False         # nothing is there to be a piece of
         self.mat[x, y, z] = AIR
         self.smass[x, y, z] = 0.0
         self.E[x, y, z] = 0.0
@@ -1508,6 +1543,14 @@ class World:
             self.mat[tx, ty, tz] = m0
             self.smass[tx, ty, tz] += mass * wt / wsum
             self.E[tx, ty, tz] += E0 * wt / wsum
+            # AND IT IS A PIECE NOW, not a member. This said "the voxel's
+            # cohesion is gone" in its own first line and then handed the
+            # fragments back as ordinary glass — which spans eight reference
+            # voxels, sixteen cells at 5 cm. So a bottle knocked off a shelf
+            # shattered correctly, conserved its 48750 g exactly, and then hung
+            # in the air beside the shelf: measured, 47 of 234 shards with
+            # nothing at all beneath them. Broken glass does not cantilever.
+            self.rubble[tx, ty, tz] = True
         if fv > 0 and f != NOFLUID:              # the held fluid pours out where
             self.fl[x, y, z] = f                 # the cell used to be — the flow
             self.fvol[x, y, z] = fv              # law takes it from there

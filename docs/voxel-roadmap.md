@@ -4207,3 +4207,64 @@ what they were built to ask.
 somebody thought to ask. Three things here were wrong for a long time and no
 assertion could have caught any of them, because two were about what a picture
 SHOWS and the third only happened after the last frame was already on disk.
+
+## 73. Three complaints, and the third was a law with no direction
+
+**Why this is here:** "i dont see an acid bath video, in alchemist the glass
+bottle breaks weird doesnt shatter, the arms look werid on the arms render".
+
+### The missing videos were mine
+
+Four scenes — acid_bath, pond, tree_fell, vessels — were re-rendered after the
+fluid fix (entry 72) and I ran the render pass without the encode pass, so their
+mp4s were deleted and never rebuilt. Nothing to do with the sim.
+
+### The bottle: a law that had no idea which way is up
+
+The first two suspects were wrong and worth recording. Glass mass is conserved
+EXACTLY — 48750 g at every tick, no drift — so nothing was being destroyed. And
+`_shatter` really was running, 29 times. The cell count rising 156 -> 234 at
+constant mass is shattering working: fewer grams a cell, spread wider.
+
+What the picture showed was a bottle that punched a hole through the shelf and
+stopped halfway, hanging in its own hole:
+
+    z23-24  ....GGGG........GGGG....    part still up top
+    z22     wwwwww.wwwwwwwwwwwwwwww     a HOLE in the shelf
+    z19-21  ....GGGG................    a chunk hanging THROUGH it
+    z18     ........................    and nothing at all beneath it
+
+Isolated, the rule underneath it is stark: **a glass block touching only the
+underside of a shelf hangs there for ever.** Support relaxed outward through
+all six neighbours, so a cell inherited it from ABOVE exactly as readily as
+from below, and anything against a ceiling was glued to it.
+
+Being held from above takes a bond in TENSION. The only thing in this sim that
+has one is a hand, and `_grip_cells` already seeds those — which is why a
+hanging man still hangs and a wedged bottle now does not. Everything else rests
+on what is under it, or on what is beside it while its own material can span.
+
+### And a second fault found on the way: fragments that spanned like panes
+
+`_shatter` opens with "the voxel's cohesion is gone" and then handed the
+fragments back as ordinary material. Glass spans 8 reference voxels — sixteen
+cells at 5 cm — which is right for a window and nonsense for the shards of one.
+
+So a piece is now marked as a piece: it rests on what is under it and holds
+nothing. **The flag has to RIDE WITH THE MATTER**, which took a while to see —
+without that a shard fell exactly one voxel, arrived as ordinary glass, and the
+span it was never supposed to have caught it again.
+
+### The arms are thin, and that is what looks wrong
+
+Nothing is broken in the arms scene: the angles are right (1.2 rad from hanging
+puts a hand forward and 21 degrees below horizontal, which is what it does),
+the flesh matches the angle, and the man is one piece throughout. The arm is
+ONE VOXEL across — 5 cm — so it draws as a blade rather than a limb, and at
+full extension it reads as a slab floating beside the body.
+
+Rendered both ways, same scene, same tick: the two-voxel arm reads as an arm.
+This is the same fault as entries 66 and 70 (30 of 30 drawable angles facing
+one way, ONE of 30 facing the other) arriving for the third time, now as
+something a person can simply see. **It is still not done, because it is still
+14 scenes recalibrated, and that is a decision to take with the scenes open.**

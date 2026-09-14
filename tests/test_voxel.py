@@ -4441,3 +4441,105 @@ def test_a_HOLD_ON_A_FALLING_MAN_is_the_one_that_MUST_be_re_earned():
     assert gap_at_release < 4.0 * reach_v, \
         f"and within sight of an arm's length, not a metre and a half " \
         f"({gap_at_release:.0f} voxels against a reach of {reach_v:.0f})"
+
+
+def test_BROKEN_PIECES_do_not_CANTILEVER_the_way_whole_material_does():
+    """`_shatter` said "the voxel's cohesion is gone" and then handed the
+    fragments back as ordinary material.
+
+    Support travels sideways through a solid one SPAN per hop, and span is read
+    off the material: glass spans 8 reference voxels, which at 5 cm is sixteen
+    cells. That is right for a PANE — a window really does span its frame — and
+    nonsense for the shards of one. So broken glass held itself out in mid-air
+    exactly as well as the window it used to be.
+
+    A piece rests on what is under it and holds nothing. That is the whole of
+    the rule, and it needed the flag to RIDE WITH THE MATTER: without that a
+    shard fell one voxel, arrived as ordinary glass, and the span it was never
+    supposed to have caught it again — debris dropped exactly once and hung."""
+    w = World(24, 10, 20, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 24, 0, 10, 0, 1, STONE)
+    w.fill(11, 13, 4, 7, 1, 10, STONE)         # a pillar
+    w.fill(11, 13, 4, 7, 10, 11, GLASS)        # and a pane sitting on it
+    w.step()
+    mass0 = w.total_mass(GLASS)
+    whole = np.argwhere(w.mat == GLASS)
+    assert len(whole) and set(whole[:, 2].tolist()) == {10}, \
+        "the pane starts on top of the pillar"
+
+    w._shatter(11, 5, 10, over=3.0)            # something hits it
+    marked = int(w.rubble.sum())
+    assert marked > 0, "the fragments know they are fragments"
+    assert not w.rubble[w.mat == AIR].any(), \
+        "and the cell that emptied is not a fragment of anything"
+
+    for _ in range(20):
+        w.step()
+
+    g = np.argwhere(w.mat == GLASS)
+    hanging = [c for c in g if c[2] > 0 and w.mat[c[0], c[1], c[2] - 1] == AIR]
+    assert not hanging, \
+        f"no shard holds itself up over air ({len(hanging)} did)"
+    assert (g[:, 2].min() == 1), \
+        f"what went off the pillar is on the floor ({sorted(set(g[:, 2].tolist()))})"
+    assert abs(w.total_mass(GLASS) - mass0) < 1e-6, \
+        "and every gram of the pane is still glass somewhere"
+
+    # THE WHOLE PANE STILL SPANS. This must not have turned glass into sand:
+    # an unbroken sheet reaching past its support is what SPAN is for.
+    w2 = World(24, 10, 20, voxel_cm=5)
+    w2.open_sky = False
+    w2.fill(0, 24, 0, 10, 0, 1, STONE)
+    w2.fill(11, 13, 4, 7, 1, 10, STONE)
+    w2.fill(9, 15, 4, 7, 10, 11, GLASS)        # a pane overhanging both sides
+    for _ in range(10):
+        w2.step()
+    over = np.argwhere(w2.mat == GLASS)
+    assert (over[:, 2] == 10).all(), \
+        f"an INTACT pane still reaches past what holds it ({sorted(set(over[:, 2].tolist()))})"
+
+
+def test_TOUCHING_A_CEILING_is_not_being_HELD_UP_by_it():
+    """Support had no direction: a cell inherited it from above as readily as
+    from below, so anything against the underside of anything was glued there.
+
+    Measured: a glass block touching only a ledge's underside hung in the air
+    for ever. In the alchemist it showed as a bottle knocked off a shelf
+    punching a hole through it and stopping halfway, wedged in its own hole —
+    which is what "the bottle breaks weird" looks like from outside.
+
+    Being held from above takes a bond in TENSION, and the only thing in this
+    sim that has one is a hand — `_grip_cells` seeds those, which is why a
+    hanging man still hangs. Everything else rests on what is under it, or on
+    what is beside it while its own material can still span."""
+    def ledge_world():
+        w = World(24, 10, 20, voxel_cm=5)
+        w.open_sky = False
+        w.fill(0, 24, 0, 10, 0, 1, STONE)
+        w.fill(2, 12, 3, 8, 1, 15, STONE)       # a broad wall, its own base
+        w.fill(12, 18, 4, 7, 14, 15, STONE)     # and a ledge off the side of it
+        return w
+
+    # THE CANTILEVER STILL HOLDS. Sideways support through whole material is
+    # what SPAN is for, and this must not have turned every overhang into a
+    # collapse.
+    w = ledge_world()
+    stone0 = int((w.mat == STONE).sum())
+    for _ in range(15):
+        w.step()
+    out = np.argwhere(w.mat == STONE)
+    out = out[(out[:, 2] == 14) & (out[:, 0] >= 12)]
+    assert int((w.mat == STONE).sum()) == stone0 and len(out) == 18, \
+        f"the ledge still reaches out from the wall ({len(out)} cells of 18)"
+
+    # AND THE THING UNDER IT COMES DOWN. Touching, and nothing else.
+    w.fill(14, 16, 5, 7, 11, 14, GLASS)
+    kg0 = w.total_mass(GLASS)
+    for _ in range(15):
+        w.step()
+    g = np.argwhere(w.mat == GLASS)
+    assert int(g[:, 2].min()) == 1, \
+        f"it comes down — a ceiling is not a hook ({sorted(set(g[:, 2].tolist()))})"
+    # a gram in ten million: smass is float32 and 3750 g does not round exactly
+    assert abs(w.total_mass(GLASS) - kg0) < 1e-3, "and all of it arrives"
