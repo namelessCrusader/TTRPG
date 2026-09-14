@@ -4343,3 +4343,63 @@ existed and fired only under 0.15 rad, which catches the ones that never start.
 **A topple that does not get halfway over has met something**, so the threshold
 is 0.7 now: alchemist went from 862 saved frames to 217, and a real topple runs
 to pi/2 and is untouched.
+
+## 75. Asking the turn BACKWARDS — built, measured, and not landed
+
+**Why this is here:** "use whatever from existing cutting edge research", and
+two papers — [Love Handles](https://arxiv.org/abs/2608.17930) (sparse
+deformation handles with compact support) and
+[Aokana](https://arxiv.org/abs/2505.02017) (SVDAG, LOD, streaming for voxels).
+Aokana answers a question we have not reached: it is LOD for DRAWING, and D5 is
+LOD for SIMULATING. Love Handles is the skinning family, and reading it against
+this file exposed something plain.
+
+**We forward-map, and every drawing fault in this file is a consequence.**
+`_repose` asks "where does each rest cell GO" — source to destination — and a
+forward map on a lattice has exactly two failure modes: two sources land on one
+cell, and no source lands on a cell. Those are "two voxels into one" and the
+staircase, which between them account for entries 66, 67, 70 and most of 74.
+
+Asked backwards there are no failure modes to have. Walk the cells the limb
+could occupy, put each through the INVERSE turn, keep it if it lands in the
+rest shape. Every cell gets exactly one answer. This is how texture mapping has
+worked since the 1980s.
+
+**Measured, isolated bones, 31 angles, both planes:**
+
+    bone           forward+rint      backward warp
+    1x3x7 swing        9/31              31/31
+    2x3x7 spread      16/31              31/31
+    3x5x12 swing       4/31              31/31     (the torso)
+    1x3x7 spread       3/31               6/31     (genuinely disconnected)
+
+Cells kept: 0.97 to 1.02 of the rest count — so a turned limb covers a few more
+or fewer cells and **mass is conserved by density, not by counting**. Measured
+in the body: 0.00058 g of drift over 30 poses, which is float32 and nothing
+else. (`total_mass` reports 3.9 g of "drift" here and that is its own float32
+summation — one ulp at 43875 g. Worth remembering before chasing one again.)
+
+**In the body it got most of the way and stopped.** Undrawable went from the
+dominant refusal to **0 of 93 facing +y and 11 of 93 facing +x**.
+
+**And then the seams.** Warping bone by bone closes every hole INSIDE a bone
+and opens the joins BETWEEN them: each bone rounds against its own rest shape
+and adjacent bones stop touching. Measured: **83 of 461 accepted poses left the
+man in pieces**, and an arm came back with 45 of its 54 cells.
+
+Warping the whole limb as one field — one pass over the cells, a cell is flesh
+if ANY bone claims it, first claim wins — fixed the simple swings (15 of 15
+angles, 0 in pieces) and **did not fix the compound poses**: the same 83 of 461
+over the full sweep of swings, spreads and elbows.
+
+**Why, and what it needs.** First-claim attribution gives every cell to exactly
+one bone, and at a bent joint the two bones' images pull apart because nothing
+says a cell near the joint belongs to BOTH. That is precisely what skinning
+weights are for: a cell's transform is a BLEND of the bones near it, weighted,
+and the seam is continuous because the blend is. Love Handles is a method for
+choosing those weights with compact support, which is the property we want — an
+arm's handle must not drag the torso.
+
+**So the next step is weights, not another attribution rule**, and it is a real
+piece of work rather than a tweak. Reverted for now; the repo is green at 123.
+The measurements above are the reason to come back to it.
