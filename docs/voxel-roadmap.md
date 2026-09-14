@@ -4403,3 +4403,57 @@ arm's handle must not drag the torso.
 **So the next step is weights, not another attribution rule**, and it is a real
 piece of work rather than a tweak. Reverted for now; the repo is green at 123.
 The measurements above are the reason to come back to it.
+
+## 76. A shoulder is a socket inside the body
+
+**Why this is here:** continuing from 75, which said the next step was skinning
+weights. It was not. A third paper came in on the way —
+[evoxels](https://arxiv.org/pdf/2507.21748v1), differentiable physics on voxel
+grids for microstructure design — and the honest read is that it answers a
+question we do not have: it is micron-scale PDE work, and making this sim
+differentiable would mean numpy to torch plus differentiating through
+shattering, toppling and menu picks. The one real hook is that this repo is
+full of GUESS constants and a differentiable sim can FIT them, and for ten
+scalars that is a coarse sweep, not a framework.
+
+**What the skinning prototype actually found.** Blending the inverses (weights
+in destination space, against each bone's deformed axis) took the sweep from
+83 of 461 accepted poses in pieces to **25 of 1089**. Then the weight power and
+the distance floor made no difference at all across two orders of magnitude —
+which was the clue. The sweep varies the SHOULDER only, so both bones carry the
+same transform and there is nothing to blend. The 25 were never bone-to-bone
+seams.
+
+Every one of them was an arm past 1.2 rad, swung toward the horizontal. **The
+arm was letting go of the man**, and the reason is that the joint was at the
+TOP OF THE ARM — the surface where the arm meets the body. A thing turned about
+its own surface swings that surface away.
+
+**One cell inward, toward the middle of the body: nought of 1089.**
+
+And it is where a shoulder is. A ball in a socket under the deltoid, not a
+hinge on the skin.
+
+    drawable shoulder poses, of 93      facing y    facing x
+    joint on the arm's surface            33          35
+    joint one cell inside the body        62          89
+    (backward warp, surface joint)        62          82
+
+**The socket alone beats the whole backward warp**, and costs three test
+recalibrations against eleven. A one-line anatomical correction, found by
+building the sophisticated thing and watching which of its knobs did nothing.
+
+**What it changed, all measured, all real:**
+
+- an arm now reaches OVER a metre-high wall (x21, arm top z27, wall top z20,
+  stone untouched) where it used to stop at it
+- the axe swing comes round on a longer arc: from x18 the head passed the trunk
+  instead of meeting it, 0 voxels chewed against 53 from x17
+- **the fulcrum moved IN, so the lever every held thing hangs on got longer** —
+  what he can balance at arm's length went from 128/179 kg back down to 77/102.
+  Wider arms had made him harder to tip; the socket makes him easier. The man
+  did not change; where his arm turns about did.
+
+**The warp is still the right idea and is still not landed** (entry 75 has the
+numbers). It is worth less than it was, because the socket took most of what it
+was going to buy.

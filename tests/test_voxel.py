@@ -1524,7 +1524,11 @@ def test_an_axe_SWUNG_bites_where_the_same_axe_PRESSED_does_not():
         w.fill(0, 40, 0, 20, 0, 1, STONE)
         w.fill(24, 27, 9, 12, 1, 30, WOOD)             # the trunk
         w.exits = [(38, 10)]
-        _person(w, 18, 10)
+        # x17, one further back. The shoulder is socketed inside the body now,
+        # so the swing comes round on a slightly longer arc and from x18 the
+        # head passed the trunk instead of meeting it — measured, 0 voxels
+        # chewed at 18 and 53 at 17, with the axe and the tree where they were.
+        _person(w, 17, 10)
         w.fill(22, 24, 10, 11, 1, 2, IRON, edge=2e-4)  # an axe head on the
         w.policy = _Chopper(then)                      # ground, edge declared
         full = float(w.smass[w.mat == WOOD].max())
@@ -2006,17 +2010,18 @@ def test_WHAT_YOU_HOLD_UP_STANDS_ON_YOUR_FEET_TOO():
         return {"kg": kg, "tipped": tipped, "grams": grams, "after": after,
                 "up": comp is not None and comp.any()}
 
-    # RE-MEASURED FOR THIS BODY. He is 43.9 kg and stands 35 cm across since
-    # the arms went to two voxels, and BOTH of those make him harder to tip —
-    # more weight of his own on the other side of the fulcrum, and a wider base
-    # to put it over. The old loads, 64 kg and 128 kg, are now both inside what
-    # he can hold: measured, he keeps his feet to 153 kg and loses them at 179.
-    light = hold_it(10)
-    heavy = hold_it(14)
+    # RE-MEASURED TWICE, and the second time is the interesting one. Wider
+    # arms made him HARDER to tip — heavier, and a wider base to put it over —
+    # and took the pair from 64/128 kg to 128/179. Then the shoulder was
+    # socketed inside the body, which moves the fulcrum IN, lengthens the lever
+    # every held thing hangs on, and took it back down to 77/102. The man did
+    # not change; where his arm turns about did.
+    light = hold_it(6)
+    heavy = hold_it(8)
 
-    assert 115.0 < light["kg"] < 140.0 and 165.0 < heavy["kg"] < 195.0, \
-        f"two loads either side of what a 44 kg man on a 35 cm stance can " \
-        f"balance ({light['kg']:.0f} kg and {heavy['kg']:.0f} kg)"
+    assert 65.0 < light["kg"] < 90.0 and 90.0 < heavy["kg"] < 115.0, \
+        f"two loads either side of what this man can balance " \
+        f"({light['kg']:.0f} kg and {heavy['kg']:.0f} kg)"
     assert light["tipped"] == 0, \
         f"he carries the lighter one and keeps his feet ({light['kg']:.0f} kg)"
     assert heavy["tipped"] >= 1, \
@@ -2895,7 +2900,12 @@ def test_an_ARM_CANNOT_SWEEP_THROUGH_what_it_would_CLEAR_at_the_end():
     assert int(w._limb_cells(p, "right arm")[:, 0].max()) > 16, \
         "with nothing in the way the arm gets well past x16"
 
-    for top in (20, 24, 26):
+    # NOT 20 ANY MORE. A wall a metre high is one this arm now reaches OVER —
+    # measured, it gets to x21 with its top at z27 against a wall topping out
+    # at z20, and the stone is untouched. That is the shoulder being socketed
+    # inside the body rather than sitting on its own surface, and it is the arm
+    # doing what an arm does. This test is about not going THROUGH.
+    for top in (24, 26, 30):
         w, p = _waller(top)
         stone = int((w.mat == STONE).sum())
         for _ in range(60):
@@ -4691,3 +4701,64 @@ def test_TOUCHING_A_CEILING_is_not_being_HELD_UP_by_it():
         f"it comes down — a ceiling is not a hook ({sorted(set(g[:, 2].tolist()))})"
     # a gram in ten million: smass is float32 and 3750 g does not round exactly
     assert abs(w.total_mass(GLASS) - kg0) < 1e-3, "and all of it arrives"
+
+
+def test_a_SHOULDER_IS_A_SOCKET_INSIDE_THE_BODY_not_a_hinge_on_the_skin():
+    """The joint was at the TOP OF THE ARM, which is the surface where the arm
+    meets the man — and an arm turned about its own surface swings that surface
+    away. Raise it toward the horizontal and it lets go of him.
+
+    Measured over 1089 shoulder poses, 25 left the man in two pieces, every one
+    of them an arm past 1.2 rad: the ordinary act of pointing at something. One
+    cell inward, toward the middle of the body: none of 1089.
+
+    And it is where a shoulder IS. A ball in a socket under the deltoid, not a
+    hinge on the skin — which is why this bought more than any amount of work
+    on how the turn is DRAWN. Drawable shoulder poses went from 33 of 93 to 62
+    facing one way, and from 35 to 89 facing the other."""
+    from src.voxel.scenes import _person
+    import collections
+    w = World(40, 30, 50, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 40, 0, 30, 0, 1, STONE)
+    _person(w, 12, 15)
+    w.step()
+    p = w.persons[0]
+
+    # THE SOCKET IS INBOARD OF THE ARM IT TURNS. Both arms, toward the middle.
+    comp, sl = w._person_cells(p)
+    own = np.argwhere(comp)
+    own[:, 0] += sl[0].start or 0
+    own[:, 1] += sl[1].start or 0
+    origin = own.min(axis=0)
+    mid = float(np.asarray(p["segs"]["torso"])[:, 0].mean())
+    for side in ("left", "right"):
+        bone = f"{side} upper arm"
+        arm = np.asarray(p["segs"][bone])
+        j = np.asarray(p["joints"][bone])
+        assert min(abs(j[0] - arm[:, 0].min()), abs(j[0] - arm[:, 0].max())) >= 0, \
+            "the joint is a cell, wherever it is"
+        assert abs(j[0] - mid) < abs(float(arm[:, 0].mean()) - mid), \
+            f"the {side} shoulder sits INBOARD of the arm it turns " \
+            f"(joint x{j[0]}, arm x{arm[:, 0].mean():.1f}, middle x{mid:.1f})"
+
+    # AND THE ARM CAN BE DRAWN ALMOST ANYWHERE, which is what it bought.
+    snap = w.snapshot()
+    got = {}
+    for face, nm in (((0.0, 1.0), "along y"), ((1.0, 0.0), "along x")):
+        tally = collections.Counter()
+        for a in np.arange(0.05, 1.6, 0.05):
+            for sp in (0.0, 0.4, -0.4):
+                w.restore(snap)
+                q = w.persons[0]
+                q["facing"] = face
+                tally[w._repose(q, "right arm",
+                                [float(a), float(sp), 0.0, 0.0], dry=True)] += 1
+        got[nm] = tally
+    assert got["along y"]["moved"] >= 55, \
+        f"facing along y his arm has most of its poses ({got['along y']})"
+    assert got["along x"]["moved"] >= 80, \
+        f"and facing along x nearly all of them ({got['along x']})"
+    # the old surface hinge managed 33 and 35 of 93; this must not slide back
+    assert got["along y"]["moved"] + got["along x"]["moved"] >= 140, \
+        f"well past the 68 of 186 a hinge on the skin could manage ({got})"

@@ -510,13 +510,25 @@ def _person(w, px, py, z0=1, handed="right"):
          for s in ("left", "right")})
     person["chain"] = {k: v for k, v in person["chain"].items() if v}
     person["joints"] = {}
+    # A SOCKET IS INSIDE THE BODY. The shoulder joint was put at the top of the
+    # arm, which is the surface where the arm meets the man — and an arm turned
+    # about its own surface swings that surface AWAY. Measured over 1089
+    # shoulder poses, 25 of them left the man in two pieces, every one of them
+    # an arm raised past 1.2 rad toward the horizontal, which is the ordinary
+    # act of pointing at something. Moved one cell in, toward the middle of the
+    # body: nought of 1089.
+    #
+    # It is where the joint actually is, too. A shoulder is a ball in a socket
+    # under the deltoid, not a hinge on the skin.
+    mid_x = float(px) + 1.0
     for bone in ("left upper arm", "left forearm",
                  "right upper arm", "right forearm"):
         cells = segs.get(bone)
         if cells is None:
             continue
+        cx = int(round(cells[:, 0].mean()))
         person["joints"][bone] = np.array(                 # the joint: the TOP
-            [int(round(cells[:, 0].mean())),               # of the bone, where
+            [cx + (1 if cx < mid_x else -1),               # of the bone, where
              int(round(cells[:, 1].mean())),               # it hangs from what
              int(cells[:, 2].max())]) - origin             # is above it
     # AND A LEG'S JOINTS ARE AT ITS BOTTOM, for the same reason its chain runs
