@@ -639,9 +639,16 @@ def fire_alarm(frames_dir, ticks=700, every=4):
     with open(os.path.join(frames_dir, "traces.json"), "w") as f:
         json.dump(rows, f, indent=1)
     for r in rows:
+        # `menus` and `pick` are PER LIMB — a body decides with its legs and
+        # its hands at once, and has since the menu seam grew limbs. This read
+        # `r['menu']`, which stopped existing at that point, and the scenario
+        # has been dying on its last line ever since with all its frames
+        # already written. Nothing caught it: scenarios are not in the suite.
+        menus = " | ".join(f"{limb}:{opts}" for limb, opts
+                           in sorted((r.get("menus") or {}).items()))
         print(f"t{r['tick']}: {r['who']} [{r['percept']}] "
-              f"menu={r['menu']} -> {r['pick']} ({r['by']}) => {r['outcome']}",
-              flush=True)
+              f"menu={menus} -> {r.get('pick')} ({r.get('by')}) "
+              f"=> {r['outcome']}", flush=True)
 
 
 # ── scenario: the glasshouse — perception reads continuous fields ────────────

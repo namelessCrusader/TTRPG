@@ -170,9 +170,16 @@ def render_frame(path, out_png):
         "leaf":  surface((mat == LEAF) & vis & ~burn, solid),
         "ash":   surface((mat == ASH) & vis, solid),
         "iron":  surface((mat == IRON) & vis, solid),
-        "oil":   (fl == OIL) & ~burn,
-        "water": fl == WATER,
-        "acid":  fl == ACID,
+        # FLUID IN THE AIR IS A POOL; FLUID IN A SOLID IS WETNESS. These drew
+        # a full-size cube wherever the fluid field was set, solid or not — so
+        # a fresh canopy, which holds its own weight of sap on purpose and is
+        # why it resists burning, came out as 2966 cubes of WATER and the tree
+        # rendered blue. Poured fluid only ever enters AIR (`pour` checks), so
+        # a fluid inside a solid is something the solid is carrying, and the
+        # solid is what you should see.
+        "oil":   (mat == AIR) & (fl == OIL) & ~burn,
+        "water": (mat == AIR) & (fl == WATER),
+        "acid":  (mat == AIR) & (fl == ACID),
         "flame": (mat == AIR) & (T > 400) & ~burn,
         "smoke": (mat == AIR) & ~hide & (smoke > SMOKE_SHOW) & CHECKER,
     }

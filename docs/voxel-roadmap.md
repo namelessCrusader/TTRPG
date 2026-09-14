@@ -4150,3 +4150,60 @@ bugs were an escape hatch in a law that was itself written to close a hole:
 `_law_grips` exempted mid-fall, and `_law_pose`'s "the angle outruns the flesh"
 had no end. A law with a `continue` in it for the hard case has not covered the
 hard case — it has documented that nobody looked.
+
+## 72. Rendering all twenty-three scenes, to see what had quietly rotted
+
+**Why this is here:** "render everything again, just to see previous stuff
+works well." Scenarios are not in the test suite, so nothing has been checking
+them. Three things had rotted, and none of them would ever have failed a test.
+
+### 1. `fire_alarm` had been dying on its last line
+
+    KeyError: 'menu'
+
+The menu seam grew LIMBS — a body decides with its hands and its legs at once —
+and the trace row's `menu` became `menus`. The scenario prints its harvest at
+the end and was never updated, so it ran all 700 ticks, wrote all 60 frames,
+and then crashed. Every frame it produced was correct. **The failure was after
+the work, which is why nobody noticed it was failing.**
+
+### 2. The tree was blue
+
+The canopy holds its own weight of WATER, on purpose — it is sap, and it is why
+a fresh canopy resists burning. The renderer drew a full-size cube wherever the
+fluid field was set, without asking whether the cell was air:
+
+    "water": fl == WATER,
+
+So 2966 leaf voxels rendered as 2966 cubes of water over the top of the green,
+and the tree came out blue. Poured fluid only ever enters AIR — `pour` checks —
+so fluid found inside a solid is something the solid is CARRYING, and the solid
+is what you should see. One `& (mat == AIR)` on each of water, oil and acid.
+
+The sim was right the whole time. **The mass was conserved, the sap was doing
+its job, and the picture was lying about it.**
+
+### 3. Every frame of every scene is 373 MB and the repo is 55
+
+The `.npz` dumps were already ignored, with a note that "the rendered
+mp4/stills/traces beside them are kept" — but the per-frame PNGs were being
+committed too, and a full sweep would have taken the repo up sevenfold. The
+frames are a by-product: the scenario plus the Blender pass rebuilds any of
+them exactly. Now ignored; what is kept is what a person actually looks at —
+the mp4 and four stills a scene, 22 MB for all twenty-three.
+
+### What the sweep found working
+
+All 23 run. Measured across every frame of every scene: **no person is ever in
+pieces.** Flesh goes to zero in `fire_alarm` and `glasshouse` with no char and
+no ash beside it, which is both men reaching an exit — the scenes doing exactly
+what they were built to ask.
+
+    acid_bath  alchemist  arms  burning_tree  crouch  drop_test  fire_alarm
+    forge  glasshouse  house_fire  jumper  lamp_shelf  leap  ledge  parachute
+    pond  rescue  swing  torch_pillar  tree_fell  tree_hinge  two_rooms  vessels
+
+**The lesson is the file's oldest one, in new clothes.** A test asks what
+somebody thought to ask. Three things here were wrong for a long time and no
+assertion could have caught any of them, because two were about what a picture
+SHOWS and the third only happened after the last frame was already on disk.
