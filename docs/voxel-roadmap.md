@@ -4268,3 +4268,78 @@ This is the same fault as entries 66 and 70 (30 of 30 drawable angles facing
 one way, ONE of 30 facing the other) arriving for the third time, now as
 something a person can simply see. **It is still not done, because it is still
 14 scenes recalibrated, and that is a decision to take with the scenes open.**
+
+## 74. The arms are two voxels across, and what it cost to get there
+
+**Why this is here:** "do it." Entries 66, 70 and 73 each ended with the same
+unfinished sentence — the arms are one voxel across, which is a paralysis in
+half the directions a man can stand, and fixing it means re-measuring the
+scenes. This is that.
+
+    right arm, drawable angles     one voxel      two voxels
+    facing along y                 30 of 30        15 of 15
+    facing along x                  1 of 30         7 of 15
+
+He is 43.9 kg where he was 38.1, and 35 cm across the shoulders where he was
+25. **Ten tests had to be re-measured, and not one of them was wrong.**
+
+### Four were built through something
+
+A body is 7 voxels across now, and several scenes placed people and obstacles
+with the old 5 in mind. Two men six apart shared a column. The rescuer stood
+INSIDE the post he was meant to be holding. The puller's arm was built into the
+ledge face. A block of lead was built through the holder's own hand. These are
+not interesting; they are arithmetic, and the comments in the tests say so.
+
+### Four were thresholds fitted to the old body
+
+| | was | is | why |
+|---|---|---|---|
+| load he can balance | 64 / 128 kg | 128 / 179 kg | heavier AND a wider base |
+| load that tips him at arm's length | 38 kg | 68 kg | the same |
+| fatal rolled fall | 8 m | 7 m | a fall is his own weight times height |
+| a man lying down, top of | z11 | z14 | he is as tall lying as he is broad |
+
+Each of those is the sim being right about a different man. The one that most
+deserved saying out loud: **an ordinary 400 N grip can no longer hold him** —
+43.9 kg is 430 N — so the grip test now gives its holder the strength to close
+that gap and asserts the 400 N man drops him.
+
+### And two were the sim being genuinely short
+
+**`_reach_around` never touched the shoulder.** It took the angle it was asked
+for and hunted the elbow and the spread underneath it, so an arm that could not
+get out AT THAT SHOULDER ANGLE gave up — while a pose with the same elbow and a
+shallower shoulder sat there unfound. Measured with a wall four cells off: 9
+poses drawable and unblocked, and the search returned None. A man who cannot
+reach at full stretch reaches less far; it tries that now.
+
+**`_law_pose` only went round the WORLD, never the LATTICE.** Bending round was
+tried when a pose came back `blocked` and not when it came back `undrawable`,
+which was left to the "angle outruns the flesh" path — and with a wall four
+cells off and a two-voxel arm there is no later angle to catch up at. Measured:
+183 of 210 poses undrawable, 18 blocked, 9 clear, and the arm never tried one
+of the 9 because nobody told it the refusal came from the grid.
+
+Both of those were true before the arms changed. The wider arm found them.
+
+### A build oddity worth writing down
+
+`_person` always offsets the arms in **x**. A body facing +x therefore wears
+them FORE AND AFT rather than side by side, with one hand permanently nearer
+whatever it faces. With a one-voxel arm that was survivable; with two, the far
+arm is walled in between its own torso and anything it faces, and a left-handed
+man could not free-hand anything at any distance — measured at three
+separations, all of them. The post test is turned ninety degrees for now. **The
+real fix is for the arms to be laid out across the facing, not along it**, and
+that is a change to `_person`, not to a scene.
+
+### And a livelock I shipped in 73 and found here
+
+Removing support-from-above was right and it broke something else. A vessel on
+a shelf edge topples, meets the shelf at 0.41 rad, is set down, is found
+unbalanced on the next tick, and topples again — for ever. The wedge cooldown
+existed and fired only under 0.15 rad, which catches the ones that never start.
+**A topple that does not get halfway over has met something**, so the threshold
+is 0.7 now: alchemist went from 862 saved frames to 217, and a real topple runs
+to pi/2 and is untouched.

@@ -427,16 +427,17 @@ def _person(w, px, py, z0=1, handed="right"):
     The chest's thickness went into DEPTH (y) and not width (x) on purpose —
     the walking footprint, and so every doorway in every scene, was unchanged.
 
-    THE ARMS ARE STILL ONE VOXEL ACROSS, and the number that says how bad that
-    is: a bone cannot be turned in the plane it is thin in, and a shoulder
-    swings in the plane the body FACES. So a man facing along y can put his arm
-    through 30 of 30 angles and a man facing along x through ONE. That is not a
-    limit, it is a paralysis in half the directions he can stand.
+    THE ARMS ARE TWO VOXELS ACROSS, and the number that settled it: a bone
+    cannot be turned in the plane it is thin in, and a shoulder swings in the
+    plane the body FACES. One voxel across, a man facing along y could put his
+    arm through 30 of 30 angles and a man facing along x through ONE — not a
+    limit but a paralysis, in half the directions he can stand. Two voxels
+    takes the bad direction to 15 of 30, and a 5 cm arm drew as a blade rather
+    than a limb besides.
 
-    Two voxels across takes it to 15 of 30 and weighs a truer 43.9 kg, but it
-    puts him 35 cm across the shoulders instead of 25 and fourteen scenes are
-    measured against the narrower man. Deliberately not done here — with the
-    scenes open, or not at all (roadmap 66, 70)."""
+    It cost him two voxels of width: 35 cm across the shoulders where he was
+    25, which is still narrow for a man, and fourteen scenes measured against
+    the narrower one had to be re-measured (roadmap 66, 70, 74)."""
     z = z0 - 1                                   # stands ON whatever is at z0
     segs = {}
 
@@ -482,9 +483,9 @@ def _person(w, px, py, z0=1, handed="right"):
     # It is also the truer body. A 5 cm arm is a matchstick; a real upper arm
     # is about 10 cm through, which is exactly these two voxels, and the man
     # goes from 38 kg to nearer the 47 kg his height asks for.
-    for side, ax0 in (("left", px - 1), ("right", px + 3)):
-        part(f"{side} upper arm", ax0, ax0 + 1, py - 1, py + 2, z + 23, z + 27, 0.85)
-        part(f"{side} forearm", ax0, ax0 + 1, py - 1, py + 2, z + 18, z + 23, 0.85)
+    for side, ax0 in (("left", px - 2), ("right", px + 3)):
+        part(f"{side} upper arm", ax0, ax0 + 2, py - 1, py + 2, z + 23, z + 27, 0.85)
+        part(f"{side} forearm", ax0, ax0 + 2, py - 1, py + 2, z + 18, z + 23, 0.85)
     part("head", px, px + 2, py - 1, py + 2, z + 27, z + 31, 0.9)
     person = w.add_person(px + 1, py)                            # and now: alive
     # segments and joints are kept as OFFSETS from the body's own corner, so
@@ -1046,7 +1047,9 @@ def rescue(frames_dir, ticks=300, every=4):
     puller["facing"] = (-1.0, 0.0)
     falls = _person(w, 25, 12, z0=31)                    # above, at the lip
     falls["name"], falls["facing"] = "the one pulled", (-1.0, 0.0)
-    saves = _person(w, 33, 12, z0=31)                    # further back, by the post
+    # x34, not 33. He is 7 voxels across since the arms went to two, so 33
+    # built him THROUGH the post he is supposed to be holding.
+    saves = _person(w, 34, 12, z0=31)                    # further back, by the post
     saves["name"], saves["facing"] = "the rescuer", (-1.0, 0.0)
     saves["strength_N"] = 4000.0
     w.policy = _Wants(each={

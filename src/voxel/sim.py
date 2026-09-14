@@ -2862,7 +2862,18 @@ class World:
                 step = w_cap * TICK_S
                 nxt = at + np.clip(d, -step, step)
                 how = self._repose(p, name, nxt)
-                if how == "blocked":
+                # UNDRAWABLE IS ALSO A REASON TO BEND. This tried going round
+                # only when the WORLD was in the way, and left the other case —
+                # the lattice cannot draw the arm straight at this angle — to
+                # the "angle outruns the flesh" path, which waits for a later
+                # angle that can be drawn. With a wall four cells off and a
+                # two-voxel arm there is no such angle: measured, 183 of 210
+                # poses were undrawable, 18 blocked, and 9 both drawable and
+                # clear — and the arm never tried one of the 9 because it was
+                # never told the refusal had come from the grid.
+                #
+                # Which way the bones get there is motor competence either way.
+                if how in ("blocked", "undrawable"):
                     bent = self._reach_around(p, name, nxt, at)
                     if bent is not None:
                         pose[name] = list(bent)
@@ -2936,6 +2947,18 @@ class World:
         heads = [float(th[0])]
         if at is not None and abs(float(at[0]) - float(th[0])) > 1e-9:
             heads.append(float(at[0]))
+        # AND A SHORTER REACH, if the full one has nowhere to go. The shoulder
+        # was the one joint this search never touched: it took the angle it was
+        # asked for and hunted the elbow and the spread underneath it. So an
+        # arm that could not get out AT THAT SHOULDER ANGLE gave up, while a
+        # pose with the same elbow and a shallower shoulder sat there unfound —
+        # measured with a wall four cells off, 9 poses were drawable and
+        # unblocked and the search returned None.
+        #
+        # A man who cannot reach at full stretch does not stop reaching; he
+        # reaches less far. Least reduction first, so he still goes as far as
+        # he can.
+        heads += [float(th[0]) * f for f in (0.75, 0.5, 0.25)]
         # AND THERE ARE TWO WAYS ROUND NOW. An elbow bends the arm in the
         # plane it is swinging in; a SPREAD takes the whole arm out of that
         # plane altogether, which is the way round a thing directly in front
@@ -3167,7 +3190,14 @@ class World:
         Blocked cells pile upward as debris; the support law settles the rest.
         A landing at a barely-leant angle means the body is WEDGED — the torque
         law sleeps briefly so it retries occasionally, not every tick."""
-        if theta is not None and theta < 0.15:   # a flying body has no lean to
+        # WEDGED IS NOT A NUMBER NEAR ZERO, it is a topple that did not get
+        # over. A real fall goes the whole way to pi/2 and lands flat; anything
+        # that stops short of halfway has met something. The threshold used to
+        # be 0.15, which caught only the ones that never started — a vessel on
+        # a shelf edge stopped dead at 0.41 every time, was set down, was found
+        # unbalanced again on the next tick, and toppled again, for ever. It
+        # cost alchemist 862 saved frames instead of 130 and nothing else.
+        if theta is not None and theta < 0.7:    # a flying body has no lean to
             self._torque_sleep = max(self._torque_sleep, 20)   # be wedged at
         if b.get("part"):
             # A LIMB IS HELD AT ITS JOINT. Rasterising it wherever the swing
