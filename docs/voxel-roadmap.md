@@ -4100,3 +4100,53 @@ shoulder will hold, which is `_hold_torque` refusing, and it only refuses now
 because the load is finally in the sum (entry 69). The third holds 1.20 until
 he is put under at t70, and then there is no muscle on the joint and his arm
 falls and swings.
+
+## 71. The hold that exempted the only case it was for
+
+**Why this is here:** "a person just breaks in rescue".
+
+**First, what is NOT happening.** Nobody comes apart. Every frame of the
+scenario, measured: 1026 flesh cells in lumps of exactly 342, 342, 342 — three
+whole men, on the lattice and in the air alike. The renderer was suspected too
+and cleared: rendering one frame with surface culling OFF differs from the
+culled one by 21 pixels of 921,600. The picture is honest.
+
+**What the picture was honestly showing** is this, at t16:
+
+    the puller        x12-16  z 1-30    on the ground
+    the one pulled    x18-22  z30-59    UPRIGHT, in mid-air
+    the rescuer       x30-36  z31-60    on the ledge
+
+A man standing on nothing, with the man supposedly holding him eight voxels
+further off than an arm reaches. Two of them stack in the frame and read as one
+figure broken in the middle.
+
+**The cause is one line in `_law_grips`** — the law written to fix exactly this
+class of bug, entry 65, "a hold is re-earned every tick, not only when its
+owner walks":
+
+    if any((b["mats"] == FLESH).any() for b in self.bodies):
+        continue                      # someone is mid-fall: see `_haul`
+
+While ANY flesh in the world was mid-fall, the check was skipped for EVERY
+holder, and the case handed to `_haul` — which only runs when somebody takes a
+step. **So the one hold that most needs re-earning, on a man in the air, was
+the one hold never re-examined.** Measured:
+
+    t12  caught          12 voxels away   (an arm reaches 9)
+    t16                  14 voxels
+    t24                  18 voxels
+    t32  let go          32 voxels — a metre and a half
+
+and t32 is when he LANDED. He was not released because the arm ran out; he was
+released because he stopped being a flying body and became checkable again.
+
+**A body off the lattice still has cells and still has somewhere to be.** Ask
+where they are, and the rescuer lets go at t20 while the man is still falling —
+which is what "an arm is only so long" was always supposed to mean.
+
+**The general lesson, and it is the second time today.** Both of today's worst
+bugs were an escape hatch in a law that was itself written to close a hole:
+`_law_grips` exempted mid-fall, and `_law_pose`'s "the angle outruns the flesh"
+had no end. A law with a `continue` in it for the hard case has not covered the
+hard case — it has documented that nobody looked.

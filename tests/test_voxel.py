@@ -4357,3 +4357,87 @@ def test_a_JOINT_LEARNS_WHAT_IT_CANNOT_DO_and_stops_climbing():
     # AND IT IS KEYED BY FACING, not just by the joint.
     assert w._face_axis({"facing": (1.0, 0.0)}) != w._face_axis({"facing": (0.0, 1.0)}), \
         "the two ways round are different questions"
+
+
+def test_a_HOLD_ON_A_FALLING_MAN_is_the_one_that_MUST_be_re_earned():
+    """`_law_grips` exempted exactly the case it was written for.
+
+    A hold is re-earned every tick, not only when its owner walks — that was
+    the rule, and it had a hole in it one line wide: while ANY flesh in the
+    world was mid-fall, the check was skipped for EVERY holder, and the case
+    was handed to `_haul`, which only runs when somebody takes a step. So a man
+    caught at a lip was never re-examined for as long as he hung there.
+
+    Measured on the rescue before this: the rescuer held him at 12 voxels, then
+    14, then 18, and let go at 32 — a metre and a half — and only then because
+    the man had landed and become checkable again. The picture showed a man
+    standing in mid-air beside somebody far too distant to be holding him.
+
+    A body off the lattice still has cells and still has somewhere to be. Ask
+    where they are."""
+    from src.voxel.scenes import _person, _Wants
+
+    w = World(52, 24, 86, voxel_cm=5)
+    w.fill(0, 52, 0, 24, 0, 1, STONE)
+    w.fill(22, 52, 0, 24, 1, 31, STONE)
+    w.fill(30, 31, 9, 15, 31, 45, IRON)
+    w.exits = []
+    puller = _person(w, 18, 12, z0=1)
+    puller["name"], puller["strength_N"] = "the puller", 900.0
+    puller["facing"] = (-1.0, 0.0)
+    falls = _person(w, 25, 12, z0=31)
+    falls["name"], falls["facing"] = "the one pulled", (-1.0, 0.0)
+    saves = _person(w, 33, 12, z0=31)
+    saves["name"], saves["facing"] = "the rescuer", (-1.0, 0.0)
+    saves["strength_N"] = 4000.0
+    both = {"the puller": {"hands": "take hold of the one pulled",
+                           "legs": "go(straight on", "waist": "stand"},
+            "the one pulled": {"hands": "hands free", "legs": "stay",
+                               "waist": "stand"}}
+    w.policy = _Wants(each=dict(
+        both, **{"the rescuer": {"hands": "take hold of the iron",
+                                 "legs": "stay", "waist": "stand"}}))
+
+    caught = let_go = landed = None
+    gap_at_release = None
+    for t in range(80):
+        if t == 12:
+            w.policy = _Wants(each=dict(
+                both, **{"the rescuer": {"hands": "catch", "legs": "stay",
+                                         "waist": "lean out"}}))
+        w.step()
+        for p in (puller, falls, saves):
+            for e in p["events"]:
+                if "catches" in e and caught is None:
+                    caught = t
+                if "loses hold of the one pulled" in e and let_go is None:
+                    let_go = t
+                    air = next((b for b in w.bodies
+                                if b.get("owner") == "the one pulled"
+                                and not b.get("part")), None)
+                    if air is not None:
+                        mine, msl = w._person_cells(saves)
+                        own = np.argwhere(mine)
+                        own[:, 0] += msl[0].start or 0
+                        own[:, 1] += msl[1].start or 0
+                        pose = np.round(w._fly_pose(air))
+                        gap_at_release = float(np.abs(
+                            pose - own[:, None, :]).sum(axis=2).min())
+                if "lands hard" in e and landed is None:
+                    landed = t
+            p["events"].clear()
+
+    assert caught is not None, "the rescuer catches him at the lip"
+    assert let_go is not None, "and does not hold him for ever"
+    assert landed is not None, "and he reaches the ground"
+
+    # THE POINT: he is let go WHILE FALLING, by an arm that stopped reaching —
+    # not on landing, which is merely when he became checkable again.
+    assert let_go < landed, \
+        f"the hold ends because the arm ran out, not because he landed " \
+        f"(let go t{let_go}, landed t{landed})"
+    assert gap_at_release is not None, "and he was still in the air when it did"
+    reach_v = w._reach_of(saves) / (0.1 * w.scale)
+    assert gap_at_release < 4.0 * reach_v, \
+        f"and within sight of an arm's length, not a metre and a half " \
+        f"({gap_at_release:.0f} voxels against a reach of {reach_v:.0f})"

@@ -6983,15 +6983,33 @@ class World:
             if q is None or q["safe"] or not q["alive"]:
                 p["dragging"] = None
                 continue
-            if any((b["mats"] == FLESH).any() for b in self.bodies):
-                continue                      # someone is mid-fall: see `_haul`
+            # THE ONE HE IS HOLDING MAY BE IN THE AIR — and that is not a
+            # reason to stop checking, it is the whole reason to check. This
+            # skipped the test outright while ANY flesh was mid-fall, for
+            # EVERY holder in the world, and handed the case to `_haul`, which
+            # only runs when somebody walks. So a man caught at the lip was
+            # never re-examined for as long as he hung there: measured on this
+            # scene, the rescuer went on holding him at 12 voxels, then 14,
+            # then 18, and let go at 32 — a metre and a half — and only then
+            # because the man had landed and become checkable again.
+            #
+            # A body off the lattice still has cells and still has somewhere to
+            # be. Ask where they are.
             comp, sl = self._person_cells(q)
             mine, msl = self._person_cells(p)
-            if comp is None or not comp.any() or mine is None or not mine.any():
+            if mine is None or not mine.any():
                 continue
-            theirs = np.argwhere(comp)
-            theirs[:, 0] += sl[0].start
-            theirs[:, 1] += sl[1].start
+            if comp is not None and comp.any():
+                theirs = np.argwhere(comp)
+                theirs[:, 0] += sl[0].start
+                theirs[:, 1] += sl[1].start
+            else:
+                air = next((x for x in self.bodies
+                            if x.get("owner") == q["name"] and not x.get("part")
+                            and (x["mats"] == FLESH).any()), None)
+                if air is None:
+                    continue
+                theirs = np.round(self._fly_pose(air)).astype(np.int64)
             hcell = np.argwhere(mine)
             hcell[:, 0] += msl[0].start
             hcell[:, 1] += msl[1].start
