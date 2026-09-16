@@ -1,0 +1,132 @@
+# Golden eval set for the free-text action composer.
+# Run: python -m src.core eval_composer   → score /40 + per-case misses.
+#
+# Scoring: each case's steps are compiled to deltas and matched against the
+# composer's output deltas (verb names don't matter, effects do). `alt:` lists
+# alternative accepted answers for genuinely ambiguous phrasings. Special steps:
+#   [refuse]            composer must decline (out of scope / impossible)
+#   [social, <npc_id>]  composer must route to the social system, not physics
+#   [any_move]          any move to an adjacent passable cell is accepted
+#
+# Fixtures pin the world state so expected targets are concrete:
+#   near_oil: player at (3,0) — reach: (2,0) Pip, (4,0), (3,1) 800ml oil
+#   fire:     player at (3,0), cell (3,1) oil + on_fire
+#   beam:     player at (3,2) — reach: (3,1) oil, (3,3) wood support, (2,2), (4,2)
+#   start:    player at (0,0) — reach: (0,1), (1,0); water/guard OUT of reach
+
+fixtures:
+  near_oil: {player_pos: [3, 0]}
+  fire:     {player_pos: [3, 0], on_fire: [[3, 1]]}
+  beam:     {player_pos: [3, 2]}
+  start:    {player_pos: [0, 0]}
+  by_vial:  {player_pos: [5, 2]}                        # vial (5,3) + thief (5,1) in reach
+  intact_barrel: {player_pos: [3, 0], intact: true}     # containers NOT pre-spilled
+  fire_vial: {player_pos: [4, 2], on_fire: [[3, 1]], carry: [vial]}  # holding the vial; fire at range 2 — throws reach farther than touch
+
+cases:
+  # ── DIRECT (15) — must-pass, target ~100% ─────────────────────────────
+  - {id: d01, fixture: near_oil, say: "light the oil",                 steps: [[ignite, [3,1]]]}
+  - {id: d02, fixture: near_oil, say: "set fire to the oil slick",     steps: [[ignite, [3,1]]]}
+  - {id: d03, fixture: near_oil, say: "pour water on the oil",         steps: [[pour, [3,1], water]]}
+  - {id: d04, fixture: near_oil, say: "pour oil on the ground here",   steps: [[pour, [3,0], oil]]}
+  - {id: d05, fixture: fire,     say: "put out the fire",              steps: [[pour, [3,1], water]],
+     alt: [[[smother, [3,1]]]]}
+  - {id: d06, fixture: fire,     say: "throw water on the flames",     steps: [[pour, [3,1], water]]}
+  - {id: d07, fixture: beam,     say: "throw acid at the beam",        steps: [[pour, [3,3], acid]]}
+  - {id: d08, fixture: beam,     say: "splash water on the support",   steps: [[pour, [3,3], water]]}
+  - {id: d09, fixture: beam,     say: "burn the wooden support",       steps: [[ignite, [3,3]]]}
+  - {id: d10, fixture: near_oil, say: "walk east",                     steps: [[goto, [4,0]]]}
+  - {id: d11, fixture: start,    say: "go south",                      steps: [[goto, [0,1]]]}
+  - {id: d12, fixture: near_oil, say: "pour acid on the oil",          steps: [[pour, [3,1], acid]]}
+  # sloppy spelling — real players type garbage; meaning must survive
+  - {id: d13, fixture: near_oil, say: "lite the oyl",                  steps: [[ignite, [3,1]]]}
+  - {id: d14, fixture: fire,     say: "poor watr on the fire",         steps: [[pour, [3,1], water]]}
+  - {id: d15, fixture: near_oil, say: "dump oil east",                 steps: [[pour, [4,0], oil]]}
+
+  # ── COMPOUND (10) — multi-step, later steps ground on earlier results ─
+  - {id: c01, fixture: near_oil, say: "pour oil east then light it",             steps: [[pour, [4,0], oil], [ignite, [4,0]]]}
+  - {id: c02, fixture: near_oil, say: "pour oil at my feet and set it alight",   steps: [[pour, [3,0], oil], [ignite, [3,0]]]}
+  - {id: c03, fixture: fire,     say: "douse the fire then pour acid there",     steps: [[pour, [3,1], water], [pour, [3,1], acid]],
+     alt: [[[smother, [3,1]], [pour, [3,1], acid]]]}
+  - {id: c04, fixture: beam,     say: "pour oil on the beam and light it",       steps: [[pour, [3,3], oil], [ignite, [3,3]]]}
+  - {id: c05, fixture: near_oil, say: "light the oil and get clear",             steps: [[ignite, [3,1]], [any_move]]}
+  - {id: c06, fixture: start,    say: "go south then pour water there",          steps: [[goto, [0,1]], [pour, [0,1], water]]}
+  - {id: c07, fixture: beam,     say: "acid on the support, then back away",     steps: [[pour, [3,3], acid], [any_move]]}
+  - {id: c08, fixture: near_oil, say: "oil east, more oil east, then burn it",   steps: [[pour, [4,0], oil], [pour, [4,0], oil], [ignite, [4,0]]]}
+  - {id: c09, fixture: fire,     say: "put the fire out and walk onto that spot", steps: [[pour, [3,1], water], [goto, [3,1]]],
+     alt: [[[smother, [3,1]], [goto, [3,1]]]]}
+  - {id: c10, fixture: beam,     say: "light the oil then douse it",             steps: [[ignite, [3,1]], [pour, [3,1], water]],
+     alt: [[[ignite, [3,1]], [smother, [3,1]]]]}
+
+  # ── VAGUE / REFERENTIAL (10) — needs scene context to resolve ─────────
+  - {id: v01, fixture: fire,     say: "put that out",        steps: [[pour, [3,1], water]],
+     alt: [[[smother, [3,1]]]]}
+  - {id: v02, fixture: near_oil, say: "burn it",             steps: [[ignite, [3,1]]]}
+  - {id: v03, fixture: fire,     say: "make it stop",        steps: [[pour, [3,1], water]],
+     alt: [[[smother, [3,1]]]]}
+  - {id: v04, fixture: beam,     say: "weaken it",           steps: [[pour, [3,3], acid]]}
+  - {id: v05, fixture: near_oil, say: "make a fire trap here",
+     steps: [[pour, [3,0], oil], [ignite, [3,0]]],
+     alt:  [[[pour, [4,0], oil], [ignite, [4,0]]]]}
+  - {id: v06, fixture: start,    say: "soak the ground",
+     steps: [[pour, [0,0], water]],
+     alt:  [[[pour, [0,1], water]], [[pour, [1,0], water]]]}
+  - {id: v07, fixture: near_oil, say: "get rid of the oil",
+     steps: [[ignite, [3,1]]],
+     alt:  [[[pour, [3,1], water]]]}
+  - {id: v08, fixture: fire,     say: "feed the fire",       steps: [[pour, [3,1], oil]]}
+  - {id: v09, fixture: beam,     say: "bring the gallery down",
+     steps: [[pour, [3,3], acid]],
+     alt:  [[[ignite, [3,3]]], [[pour, [3,3], oil], [ignite, [3,3]]]]}
+  - {id: v10, fixture: fire,     say: "make the fire bigger",
+     steps: [[pour, [3,1], oil]],
+     alt:  [[[pour, [3,0], oil], [ignite, [3,0]]], [[pour, [4,0], oil]]]}
+
+  # ── STUNTS (9) — actual-play adjudication patterns (improvised tools,
+  #    environmental leverage, bodies as levers). New verb schemas required:
+  #    shove/drag (= move delta on ANOTHER entity), smother (= clear on_fire).
+  - {id: s01, fixture: near_oil, say: "I throw my torch onto the oil",          steps: [[ignite, [3,1]]]}
+  - {id: s02, fixture: fire,     say: "I smother the flames with my cloak",     steps: [[smother, [3,1]]]}
+  - {id: s03, fixture: fire,     say: "I beat out the fire with my coat",       steps: [[smother, [3,1]]]}
+  - {id: s04, fixture: near_oil, say: "I grab Pip and pull him away from the oil",
+     steps: [[shove, apprentice, away_from, [3,1]]]}
+  - {id: s05, fixture: fire,     say: "I shove Pip clear of the flames",
+     steps: [[shove, apprentice, away_from, [3,1]]]}
+  - {id: s06, fixture: near_oil, say: "I push Pip into the oil slick",
+     steps: [[shove, apprentice, into, [3,1]]]}
+  - {id: s07, fixture: near_oil, say: "I light the oil between me and Pip and tell him to back off",
+     steps: [[ignite, [3,1]], [social, apprentice]]}
+  - {id: s08, fixture: beam,     say: "I douse my own cloak in water before going near the fire",
+     steps: [[pour, self, water]]}
+  - {id: s09, fixture: near_oil, say: "I soak the ground around me so the fire can't reach",
+     steps: [[pour, [3,0], water]],
+     alt:  [[[pour, [2,0], water]], [[pour, [4,0], water]], [[pour, [3,0], water], [pour, [4,0], water]]]}
+
+  # ── OBJECTS (5) — the vial is the scene's Chekhov gun; take/carry/throw.
+  #    take = set_tag(taken)+carry; throw-object = move delta on the object.
+  #    fixture by_vial: player at (5,2) — vial (5,3) in reach, thief (5,1) in reach
+  - {id: o01, fixture: by_vial,  say: "grab the vial",                          steps: [[take, vial]]}
+  - {id: o02, fixture: by_vial,  say: "snatch the starfire before Sly gets it", steps: [[take, vial]]}
+  - {id: o03, fixture: by_vial,  say: "pick up the vial and get out of here",   steps: [[take, vial], [any_move]]}
+  - {id: o04, fixture: fire_vial, say: "throw the vial into the fire",          steps: [[throw_obj, vial, [3,1]]]}
+  - {id: o05, fixture: by_vial,  say: "toss the vial to the thief",             steps: [[throw_obj, vial, [5,1]]]}
+
+  # ── CONTAINERS (2) — smash to spill; fixture intact_barrel: player (3,0),
+  #    UNBROKEN barrel of oil at (3,1) in reach
+  - {id: o06, fixture: intact_barrel, say: "smash the barrel open",             steps: [[smash, barrel_oil]]}
+  - {id: o07, fixture: intact_barrel, say: "break the barrel then light it",    steps: [[smash, barrel_oil], [ignite, [3,1]]]}
+
+  # ── QUESTIONS (2) — info requests route to inspect, never to physics ──
+  - {id: q01, fixture: near_oil, say: "how far does the oil trail go?",         steps: [[inspect, [3,1]]]}
+  - {id: q02, fixture: by_vial,  say: "take a closer look at the vial",         steps: [[inspect, vial]]}
+
+  # ── CONDITIONAL (1) — readied actions don't exist in v1; must refuse
+  #    cleanly, NOT silently execute half the sentence
+  - {id: t01, fixture: fire,     say: "if the fire spreads to me, douse it",    steps: [[refuse]]}
+
+  # ── IMPOSSIBLE / OUT-OF-SCOPE (5) — correct answer is a clean refusal ─
+  - {id: i01, fixture: start,    say: "summon a dragon",             steps: [[refuse]]}
+  - {id: i02, fixture: start,    say: "persuade the floor to open",  steps: [[refuse]]}
+  - {id: i03, fixture: near_oil, say: "ask Pip to help me",          steps: [[social, apprentice]]}
+  - {id: i04, fixture: start,    say: "teleport to the vial",        steps: [[refuse]]}
+  - {id: i05, fixture: start,    say: "rewind time",                 steps: [[refuse]]}

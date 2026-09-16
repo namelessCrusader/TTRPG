@@ -1,7 +1,23 @@
-pydantic>=2.7.0
-numpy>=1.26.0
-networkx>=3.3
-pytest>=8.2.0
+# Core engine needs only PyYAML. The local social LM is optional.
 pyyaml>=6.0.1
-openai>=1.30.0
-tiktoken>=0.7.0
+
+# Optional — the voxel engine's compiled laws. Without it the engine runs on
+# plain numpy and behaves IDENTICALLY (locked by
+# tests/test_voxel.py::test_the_FAST_PATH_and_the_PLAIN_ONE_agree); with it,
+# conduction and oxygen mixing run about 8% quicker on a busy world. numpy
+# stays the definition of what every law means.
+#   pip install numba
+
+# Optional — the test suite in parallel. The voxel tests share no state, so
+# they split across cores exactly; on a 16-core machine this is about ten
+# minutes down to one. Nothing in the engine depends on it, and the suite runs
+# the same way without it, only slower:
+#   pip install pytest-xdist
+#   python3 -m pytest tests/test_voxel.py -n auto
+# (Splitting the list by hand across shells gets most of this — measured 11:47
+# to 2:40 — but xdist hands work out as workers free up, so it does not leave
+# one chunk holding the slowest tests while the others idle.)
+
+# Optional — only for `--brain torch` / `--voice reyna` (local models on GPU):
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124
+#   pip install transformers accelerate

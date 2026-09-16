@@ -137,9 +137,33 @@ cython_debug/
 # Project-specific ignores
 /models/
 /logs/
+/slurm_jobs/
+tools/godot/
 *.jsonl
 *.log
 autogen/
 trace/
 *.pkl
 *.pyc
+
+# Voxel sim: per-frame lattice dumps are regenerable from src/voxel/scenes.py
+# (85MB for one scene). The rendered mp4/stills/traces beside them are kept.
+renders/**/*.npz
+
+# Reference PDFs (papers, books) — third-party, large, not ours to redistribute
+*.pdf
+
+# Stray tooling tests that are not this project's
+.claude/tests/
+
+# Blender ships with the repo layout but is a 1GB third-party binary
+tools/blender/
+
+# EVERY FRAME OF EVERY SCENARIO IS 373 MB and the repo is 55. The frames are a
+# by-product: `python -m src.voxel.scenes <name> <dir>` plus the Blender pass
+# rebuilds any of them exactly. What is KEPT beside them is what a person
+# actually looks at — the mp4 and a handful of stills per scene.
+renders/**/r[0-9][0-9][0-9][0-9].png
+
+# harvested decision rows: a by-product, rebuilt by `python -m src.voxel.harvest`
+*.jsonl

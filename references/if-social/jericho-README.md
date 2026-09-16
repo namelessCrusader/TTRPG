@@ -1,0 +1,111 @@
+<p align="center">
+    <br>
+    <img src="https://raw.githubusercontent.com/microsoft/jericho/master/docs/source/imgs/jericho.png" width="300"/>
+    <br>
+<p>
+
+<p align="center">
+  <a href='https://ms-jericho.readthedocs.io/en/latest/?badge=latest'>
+    <img src='https://readthedocs.org/projects/ms-jericho/badge/?version=latest' alt='Documentation Status' />
+  </a>
+  <a href='https://github.com/microsoft/jericho/actions'>
+    <img src='https://github.com/microsoft/jericho/actions/workflows/main.yml/badge.svg' alt='GitHub Actions Status' />
+  </a>
+  <a href='https://badge.fury.io/py/jericho'>
+    <img src='https://badge.fury.io/py/jericho.svg' alt='PyPI version' />
+  </a>
+<p>
+
+<p align="center">
+  A lightweight python-based interface connecting learning agents with interactive fiction games.
+<p>
+
+<br>
+
+## Requirements
+***Linux***, ***Python 3.12+***, ***Spacy***, and basic build tools like ***gcc***,***make*** & ***curl***.
+
+## Install
+```bash
+conda create -n jericho python=3
+conda activate jericho
+
+python -m pip install jericho
+python -m spacy download en_core_web_sm
+```
+
+## Documentation
+- [Quickstart](https://jericho-py.readthedocs.io/en/latest/tutorial_quick.html)
+- [Frotz Environment](https://jericho-py.readthedocs.io/en/latest/frotz_env.html)
+- [Object Tree](https://jericho-py.readthedocs.io/en/latest/object_tree.html)
+- [Game Dictionary](https://jericho-py.readthedocs.io/en/latest/dictionary.html)
+- [Template Action Generator](https://jericho-py.readthedocs.io/en/latest/template_action_generator.html)
+- [Utilities](https://jericho-py.readthedocs.io/en/latest/util.html)
+- [Defines](https://jericho-py.readthedocs.io/en/latest/defines.html)
+
+## Breaking changes in Jericho 4.0
+
+Prior to version 4.0, creating an environment without specifying a seed would silently
+use the game's walkthrough seed (when known), making episodes deterministic. As described
+in the [Jericho paper](http://arxiv.org/abs/1909.05398), a fixed random seed is a *handicap*
+that should be chosen and disclosed explicitly. Starting with version 4.0:
+
+- `FrotzEnv(rom)` (i.e. without a seed) is now stochastic: a fresh random seed is drawn for
+  each episode. The seed actually used is reported in `reset()`'s info dict and as
+  `FrotzEnv.episode_seed`, so any episode can be reproduced after the fact.
+- `FrotzEnv.reset()` accepts a `use_walkthrough_seed` argument to seed the emulator with the
+  game's walkthrough seed, which is needed to reproduce the walkthrough. It raises `ValueError`
+  if the game has no known walkthrough seed (check `env.walkthrough_seed is None`).
+- `FrotzEnv.walkthrough_seed` returns the game's walkthrough seed, if it is known, otherwise `None`.
+- An `ImplicitRandomSeedWarning` is issued (once per environment) when the first episode of a
+  game that has a walkthrough seed begins — via `reset()` or a direct `step()` — without an
+  explicit seeding choice. Providing any seed (e.g. `seed=-1` to explicitly request random episodes),
+  calling `env.seed()`, or resetting with `use_walkthrough_seed=True` silences it.
+
+To keep the old behavior (e.g. to reproduce results published with Jericho ≤ 3.x), either pin
+`pip install 'jericho<4'` or seed explicitly: `env.seed(env.walkthrough_seed)` before `env.reset()`.
+
+```python
+from jericho import FrotzEnv
+
+env = FrotzEnv("zork1.z5")  # Stochastic (a random seed is drawn per episode).
+obs, info = env.reset()     # info['seed'] (also env.episode_seed) is the drawn seed.
+replay = FrotzEnv("zork1.z5", seed=info['seed'])  # Reproduces the episode above.
+
+env = FrotzEnv("zork1.z5", seed=-1)  # Stochastic, explicitly (no warning).
+env = FrotzEnv("zork1.z5", seed=42)  # Deterministic with seed 42.
+
+env.reset(use_walkthrough_seed=True)  # Deterministic, reproduces env.get_walkthrough().
+print(env.walkthrough_seed)           # 12
+```
+
+## Agents
+
+- [Reading Comprehension Deep Q-Network (RCDQN)](https://github.com/XiaoxiaoGuo/rcdqn)
+- [Contextual Action Language Model (CALM)](https://github.com/princeton-nlp/calm-textgame)
+- [Q*BERT](https://github.com/rajammanabrolu/Q-BERT)
+- [Knowledge Graph Advantage Actor Critic (KG-A2C)](https://github.com/rajammanabrolu/KG-A2C)
+- [Template-DQN and DRRN](https://github.com/microsoft/tdqn)
+
+## Citing Jericho
+If Jericho is used in your research, please cite the following:
+```
+@article{hausknecht19,
+  title={Interactive Fiction Games: A Colossal Adventure},
+  author={Hausknecht, Matthew and Ammanabrolu, Prithviraj and C\^ot\'{e} Marc-Alexandre and Yuan Xingdi},
+  journal={CoRR},
+  year={2019},
+  url={http://arxiv.org/abs/1909.05398},
+  volume={abs/1909.05398}
+}
+```
+
+## Contributing
+
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit https://cla.microsoft.com.
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

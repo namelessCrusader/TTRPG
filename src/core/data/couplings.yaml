@@ -1,0 +1,51 @@
+# THE COUPLING GRAPH — which channels feed which, DECLARED (design doc item 3, D5).
+#
+# Each edge: from-channel → to-channel, `via` = the rule ids (reactions.yaml / packs) or
+# code seams that implement it. Read by (1) tests/test_couplings.py — every via-rule must
+# exist, so the graph can never drift from the rules — and (2) the D5 causal-licensing
+# reader when the AST pen lands: a condition may gate an effect only if a path connects
+# them here. An interaction NOT in this table does not exist; wanting one = adding an edge
+# = an explicit, reviewable decision (the BotW principle: interactions as edges, never
+# special cases).
+#
+# `missing:` is the declared ABSENCE list — the affordance-gap backlog made visible.
+# A propose-channel attempt that needs an absent edge fails diegetically and points here.
+
+channels: [heat, fire, fluid, hp, life, structure, perception, disposition, behavior]
+
+edges:
+  # ── fire / heat ────────────────────────────────────────────────────────
+  - {from: heat, to: fire,          via: [fluid_ignites, solid_ignites, soaked_ignites_easily]}
+  - {from: fire, to: heat,          via: [fire_radiates]}
+  - {from: fire, to: fluid,         via: [fire_consumes_fuel]}          # burning eats its fuel
+  - {from: fire, to: hp,            via: [living_flesh_burns, corpse_burns, burning_container_weakens,
+                                          fire_chars_wood]}             # finding 4's row 1 — OWNED
+  - {from: heat, to: hp,            via: [extreme_heat_scorches_flesh]} # hot ≠ burning; still hurts
+  - {from: fire, to: structure,     via: [wood_burns_away, timber_floor_burns_through]}
+  - {from: fluid, to: fire,         via: [water_extinguishes, water_extinguishes_adjacent,
+                                          burning_entity_doused_in_water]}
+  - {from: fire, to: fire,          via: [entity_ignites_on_fire_cell, container_catches_fire,
+                                          fire_burns_out]}              # spread + burn-out lifecycle
+  - {from: fire, to: structure,     via: [corpse_consumed]}             # burned down to ash
+
+  # ── matter ─────────────────────────────────────────────────────────────
+  - {from: fluid, to: hp,           via: [acid_corrodes, water_dilutes_acid]}
+  - {from: fluid, to: fluid,        via: [liquids_flow, oil_soaks_you, water_washes_you]}
+  - {from: hp, to: structure,       via: [structure_collapses, container_breaks]}
+  - {from: hp, to: life,            via: [death]}                        # dying is DERIVED, never authored
+
+  # ── code-implemented seams (declared here so the graph is complete) ────
+  - {from: structure, to: perception, via: ["code: spatial.line_of_sight — solids occlude"]}
+  - {from: perception, to: behavior,  via: ["code: perceive.observe/perceive — belief gates the menu"]}
+  - {from: disposition, to: behavior, via: ["code: mind._react / social stances — standing shapes replies",
+                                            "code: hexp rooster-calm threshold (prototype; productionize)"]}
+
+missing:
+  # Declared gaps — each is an affordance-gap ticket, evidence-sized. Adding one = a new
+  # rule + moving the row up into `edges`.
+  - {from: fire, to: behavior,   want: "a flame shoved at a creature startles/blinds it briefly",
+     ticket: "propose-channel #1 (torch-to-the-eyes); needs a registry status + a consumer"}
+  - {from: fluid, to: perception, want: "smoke/steam occludes sight",
+     ticket: "steam exists as a gas fluid; nothing couples it to line_of_sight"}
+  - {from: heat, to: disposition, want: "creatures fear nearby fire (fire as crowd control)",
+     ticket: "mind._fire_near exists for the player's NPCs; not a declared channel for all"}
