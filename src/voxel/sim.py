@@ -6632,7 +6632,15 @@ class World:
                 p["events"].append(f"t{self.tick}: {p['name']} lowers the arm")
             elif hands["verb"] == "catch_who":
                 fb = hands.get("body")
-                if fb is not None and fb in self.bodies:
+                # IS IT STILL IN THE AIR — asked by IDENTITY, not by
+                # equality. `fb in self.bodies` compares the body DICT
+                # against every other, and a body dict holds numpy
+                # arrays, so the comparison comes back an array and
+                # Python cannot say whether it is true. It only bites
+                # when more than one flier is in the air at once, which
+                # is why it took eight people in one room to find it
+                # and why no scenario ever did.
+                if fb is not None and any(fb is b for b in self.bodies):
                     who = fb.get("owner")
                     got = self._catch_person(p, fb, hands.get("arm")
                                              or self._hand(p, cells))
@@ -6642,7 +6650,15 @@ class World:
                            else f"grabs at {who} and cannot hold them"))
             elif hands["verb"] == "catch":
                 fb = hands.get("body")
-                if fb is not None and fb in self.bodies:
+                # IS IT STILL IN THE AIR — asked by IDENTITY, not by
+                # equality. `fb in self.bodies` compares the body DICT
+                # against every other, and a body dict holds numpy
+                # arrays, so the comparison comes back an array and
+                # Python cannot say whether it is true. It only bites
+                # when more than one flier is in the air at once, which
+                # is why it took eight people in one room to find it
+                # and why no scenario ever did.
+                if fb is not None and any(fb is b for b in self.bodies):
                     got = self._catch(p, fb, hands.get("arm")
                                       or self._hand(p, cells))
                     p["events"].append(
