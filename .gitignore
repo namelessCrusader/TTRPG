@@ -164,3 +164,6 @@ tools/blender/
 # rebuilds any of them exactly. What is KEPT beside them is what a person
 # actually looks at — the mp4 and a handful of stills per scene.
 renders/**/r[0-9][0-9][0-9][0-9].png
+
+# harvested decision rows: a by-product, rebuilt by `python -m src.voxel.harvest`
+*.jsonl

@@ -25,6 +25,8 @@ file exists to avoid — so `census` reports both and they are printed together.
 """
 from __future__ import annotations
 
+import os
+
 import numpy as np
 
 from .sim import (World, ACTS, AIR, WOOD, STONE, IRON, FLESH, LEAD,
@@ -204,20 +206,79 @@ def census(rows):
             "outcomes": dict(collections.Counter(r["outcome"] for r in rows))}
 
 
+def _one(seed):
+    """One world, for a worker. Top level so it can be pickled."""
+    try:
+        return run(seed)
+    except Exception as e:                       # a world that falls over is
+        return [{"seed": seed, "broke": f"{type(e).__name__}: {e}"}]
+
+
+def to_file(path, seeds, workers=None, chunk=8):
+    """Harvest to a JSONL file, across cores, streaming.
+
+    WORLDS ARE INDEPENDENT AND SEEDED, so this is the easy kind of parallel:
+    no shared state, no ordering, and a worker that dies takes one world with
+    it. What it is NOT is free in memory — each worker carries its own numpy
+    and its own interpreter, about 100 MB, against 0.6 MB for the world it is
+    actually simulating. The cost of running a world is almost entirely the
+    cost of having somewhere to run it.
+
+    So the default is HALF the cores rather than all of them, because this
+    machine has 16 and 2 GB free, and a harvest that swaps is slower than a
+    harvest that waits. Pass `workers` to override.
+
+    Rows stream to disk as they arrive rather than piling up: a hundred
+    thousand of them is not large, but a harvest that has to finish before it
+    writes anything is a harvest you cannot stop.
+    """
+    import json
+    import multiprocessing as mp
+
+    seeds = list(seeds)
+    workers = workers or max(1, min(8, (os.cpu_count() or 2) // 2))
+    n = broke = 0
+    with open(path, "w") as f:
+        if workers == 1:
+            it = map(_one, seeds)
+        else:
+            pool = mp.Pool(workers)
+            it = pool.imap_unordered(_one, seeds, chunksize=chunk)
+        try:
+            for rows in it:
+                for r in rows:
+                    if r.get("broke"):
+                        broke += 1
+                        continue
+                    f.write(json.dumps(r) + "\n")
+                    n += 1
+        finally:
+            if workers > 1:
+                pool.close()
+                pool.join()
+    return {"rows": n, "worlds": len(seeds), "broke": broke, "path": path,
+            "workers": workers}
+
+
+def read(path):
+    """The rows back off disk, for a census or a teacher."""
+    import json
+    with open(path) as f:
+        return [json.loads(line) for line in f if line.strip()]
+
+
 if __name__ == "__main__":
     import sys, time
-    n = int(sys.argv[1]) if len(sys.argv) > 1 else 50
+    args = [a for a in sys.argv[1:] if not a.startswith("-")]
+    n = int(args[0]) if args else 50
+    out = args[1] if len(args) > 1 else "harvest.jsonl"
+    workers = next((int(a.split("=")[1]) for a in sys.argv[1:]
+                    if a.startswith("--workers=")), None)
     t0 = time.time()
-    rows = []
-    for s in range(n):
-        try:
-            rows += run(s)
-        except Exception as e:
-            print(f"  seed {s} fell over: {type(e).__name__}: {e}", flush=True)
-        if (s + 1) % 25 == 0:
-            c = census(rows)
-            print(f"{s + 1:5d} worlds  {c['rows']:6d} rows  "
-                  f"{c['situations']:5d} situations  {time.time() - t0:6.1f}s",
-                  flush=True)
-    c = census(rows)
-    print("\n" + "\n".join(f"  {k}: {v}" for k, v in c.items()))
+    got = to_file(out, range(n), workers=workers)
+    secs = time.time() - t0
+    c = census(read(out))
+    print(f"{got['worlds']} worlds on {got['workers']} workers in {secs:.1f}s "
+          f"({got['worlds'] / secs:.1f} worlds/sec, {got['broke']} fell over)")
+    print("\n".join(f"  {k}: {v}" for k, v in c.items()))
+    print(f"  written to: {out}")
