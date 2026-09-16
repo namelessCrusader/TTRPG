@@ -4596,3 +4596,42 @@ ever had a man holding somebody who tipped over rather than fell.
 
 **That is the argument for random worlds in one line.** The scenarios test what
 somebody thought to ask; a thousand worlds ask what nobody thought of.
+
+## 79. Bugs found by asking the sim to be social
+
+**Why this is here:** working out how to structure actions for bargaining, and
+looking at the speech path to see what is there. Two bugs, one root.
+
+**A reply to an alarm was itself an alarm.** Measured: B says *"I hear you!
+I'm coming!"* and A perceives `hears_alarm`. The sim's only two lines trigger
+each other, so any shout cascades — A shouts fire, B answers, C hears B and
+flees a fire it has no evidence of, answering as it goes.
+
+**And ears carried the eyes' guard.** The loop skipped anybody with
+`not q["fleeing"]` before testing either sense. Seeing somebody RUN reasonably
+requires them to be running; hearing them shout does not. Measured: a body
+shouting "Fire! Fire! Get out!" while standing still was inaudible at any
+range, and the same shout from the same place became audible the moment the
+shouter started running.
+
+**One root: `_shouted` was a timestamp.** The words went into `self.speech` and
+nothing ever read them — the sim modelled the fact of a noise, not what was
+said. It is now `(tick, line)`, `MEANS` says what hearing a given line does to
+you, and a line nobody has given a meaning is audible and means nothing, which
+is what a reply should do to a bystander.
+
+**Two more, elsewhere, both found the same way — by doing something no scenario
+scripted:**
+
+- `_law_grips` asked a body for the `off` that only a flier carries; a body
+  mid-TOPPLE has a `theta`. Found on the harvester's 70th random world, and
+  written THIS WEEK.
+- `fb in self.bodies` compared a body dict against every other, and a body dict
+  holds numpy arrays, so the comparison came back an array Python could not
+  evaluate. Found by putting eight people in one room. Two places.
+
+**Four bugs this week, none of them found by a test.** Two by random worlds,
+one by a crowd, one by reading the speech path with a question in mind. The
+suite is 127 tests and catches regressions; it has never once found something
+nobody had thought to ask about. That is not a criticism of the suite — it is
+what a suite is — but it is the argument for running worlds nobody designed.

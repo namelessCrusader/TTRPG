@@ -4860,3 +4860,58 @@ def test_a_HARVEST_BUYS_SITUATIONS_not_rows():
     once = harvest.run(11, ticks=60)
     assert [r["key"] for r in again] == [r["key"] for r in once], \
         "one seed, one world, one set of decisions"
+
+
+def test_HEARING_A_LINE_is_hearing_WHAT_IT_SAID():
+    """Hearing was "somebody nearby shouted in the last thirty ticks". The
+    words went unread, so the two things a body can say triggered each other:
+    A shouts fire, B answers "I hear you, I'm coming", and C hears B and flees
+    a fire it has no evidence of, answering as it goes. Two lines were enough
+    to build a cascade out of.
+
+    And ears carried the eyes' guard. Seeing somebody RUN reasonably requires
+    them to be running; hearing them shout does not — so a body that shouted
+    "Fire! Fire! Get out!" while standing still was inaudible at any range."""
+    from src.voxel.scenes import _person
+
+    heard = []
+    real = World._decide
+
+    def spy(self, p, percept, *a, **k):
+        if percept:
+            heard.append((p["name"], percept))
+        return real(self, p, percept, *a, **k)
+
+    def probe(line, fleeing):
+        w = World(40, 14, 36, voxel_cm=5)
+        w.fill(0, 40, 0, 14, 0, 1, STONE)
+        w.exits = [(38, 7)]
+        a = _person(w, 6, 7)
+        a["name"] = "A"
+        b = _person(w, 16, 7)
+        b["name"] = "B"
+        w.step()
+        heard.clear()
+        b["fleeing"] = fleeing
+        w._say(b, line)
+        for _ in range(14):
+            w.step()
+        return [s for s in heard if s[0] == "A" and s[1] == "hears_alarm"]
+
+    World._decide = spy
+    try:
+        assert not probe("coming", True), \
+            "a REPLY to an alarm is not itself an alarm — that is the cascade"
+        assert probe("fire", False), \
+            "a man shouting FIRE is heard whether or not he is running"
+        assert probe("fire", True), "and heard when he is"
+    finally:
+        World._decide = real
+
+    # AND THE MEANING LIVES SOMEWHERE A PERSON CAN READ IT. A line nobody has
+    # given a meaning is audible and means nothing, which is what a reply
+    # should do to a bystander.
+    from src.voxel.sim import MEANS, LINES, ANSWERS
+    assert MEANS.get("fire") == "hears_alarm"
+    assert "coming" not in MEANS, "the reply means nothing to whoever overhears"
+    assert set(MEANS) <= set(LINES), "every meaning belongs to a line"

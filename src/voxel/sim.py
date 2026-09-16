@@ -397,6 +397,16 @@ LINES = {"fire":   "Fire! Fire! Get out!",
 # why it is kept apart from the wording: rewriting the line on a character
 # sheet must not be able to lose it.
 ANSWERS = {"coming": "hears_alarm"}
+# AND WHAT HEARING ONE DOES TO YOU. A line is an act, and an act has an effect
+# — which is not the same as the effect of having made a NOISE. Without this,
+# hearing was "somebody nearby shouted within the last thirty ticks", the words
+# went unread, and the reply to an alarm WAS an alarm: A shouts fire, B answers
+# "I'm coming", C hears B and flees a fire it has no evidence of, answering as
+# it goes. Two lines were enough to build a cascade out of.
+#
+# A line absent from this map is audible and means nothing — which is what a
+# reply should do to a bystander.
+MEANS = {"fire": "hears_alarm"}
 # What a body does with its legs when nothing is happening to it. Looking at
 # what you have not seen is not filler: it is how a mind that only knows what
 # it has looked at comes to know the building it is standing in, which is what
@@ -4845,7 +4855,9 @@ class World:
         if text:
             self.speech.append((self.tick, p["name"], text))
             p["events"].append(f"t{self.tick}: {p['name']} shouts: \"{text}\"")
-            p["_shouted"] = self.tick
+            # WHAT was said, not just that something was. A hearer needs the
+            # line to know what the noise meant to it.
+            p["_shouted"] = (self.tick, response)
 
     def _walkable(self, cells):
         """Columns this body could STAND in: clear enough to occupy, and with
@@ -6849,16 +6861,28 @@ class World:
                     percept = "chokes"                   # coughing IS noticing
                 if percept is None:
                     for q in self.persons:
-                        if q is p or not q["fleeing"] or q["safe"]:
+                        # EARS AND EYES ARE NOT THE SAME SENSE and had the same
+                        # guard. Seeing someone RUN requires them to be running;
+                        # hearing them shout does not — and a body that shouted
+                        # "Fire!" without running was inaudible at any distance,
+                        # measured. So sound is asked first and on its own.
+                        if q is p or q["safe"]:
                             continue
                         qeye = q.get("_eye", (*q["anchor"], eye[2]))
+                        said = q.get("_shouted")
+                        if (said is not None
+                                and self.tick - said[0] < 30
+                                and self._hears(eye, qeye)):
+                            # AND WHAT IT MEANT. A line nobody has given a
+                            # meaning is a noise: heard, and no reason to run.
+                            means = MEANS.get(said[1])
+                            if means:
+                                percept = means          # ears have no cone and
+                                break                    # a wall only MUFFLES
+                        if (not q["fleeing"]):
+                            continue
                         dq = max(abs(q["anchor"][0] - ax_),
                                  abs(q["anchor"][1] - ay_))
-                        if (q.get("_shouted") is not None
-                                and self.tick - q["_shouted"] < 30
-                                and self._hears(eye, qeye)):
-                            percept = "hears_alarm"      # ears have no cone and
-                            break                        # a wall only MUFFLES
                         if (dq * vox_m <= WILL["run_see_m"]
                                 and self._in_cone(gaze, eye, qeye)
                                 and self._sees(eye, qeye)):
