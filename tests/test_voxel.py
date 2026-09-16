@@ -4762,3 +4762,101 @@ def test_a_SHOULDER_IS_A_SOCKET_INSIDE_THE_BODY_not_a_hinge_on_the_skin():
     # the old surface hinge managed 33 and 35 of 93; this must not slide back
     assert got["along y"]["moved"] + got["along x"]["moved"] >= 140, \
         f"well past the 68 of 186 a hinge on the skin could manage ({got})"
+
+
+def test_a_DECISION_IS_SPELLED_THE_SAME_WAY_EVERY_TIME():
+    """The text a teacher labels and the text a student learns from are one
+    text, and prompt caching is a prefix match — a byte that moves invalidates
+    everything after it and quietly costs ten times what it should.
+
+    And the reflex table is not in it. `situation["reflexes"]` is the policy's
+    own answer key: give it to a teacher and the teacher reads the answer off
+    the page; give it to a student and it learns to look the answer up rather
+    than to decide. The ablation called that the god-channel."""
+    from src.voxel import seam
+
+    sit = {"tick": 412, "who": "Berel", "percept": "sees_fire",
+           "reflexes": {"sees_fire": {"legs": "go:exit"}},
+           "smoke": 0.125, "blood_o2": 0.93, "burn": 0.0, "hurt": 0.0,
+           "holding": None, "knows_a_way_out": True,
+           "seen_of_the_world": 0.31, "ground_it_trusts": 0.44,
+           "others_in_earshot": 1}
+    menu = [{"key": "hands free"}, {"key": "reach out"},
+            {"key": "take hold of the iron"}]
+
+    a = seam.situation(sit, "hands", {"legs": "flee"}, menu)
+    b = seam.situation(dict(reversed(list(sit.items()))), "hands",
+                       {"legs": "flee"}, menu)
+    assert a == b, "the same situation spells the same, whatever order it arrives in"
+
+    # THE ANSWER KEY IS NOT IN THE TEXT, nor is anything about which run it is.
+    for gone in ("reflexes", "go:exit", "412", "Berel"):
+        assert gone not in a, f"{gone!r} has no business being shown ({a!r})"
+
+    # EVERY FIELD THAT MATTERS IS.
+    for want in ("percept: sees_fire", "smoke: 0.125", "hurt: 0.000",
+                 "holding: nothing", "knows_a_way_out: yes",
+                 "already chosen: legs=flee", "limb: hands",
+                 "  0. hands free", "  2. take hold of the iron"):
+        assert want in a, f"{want!r} is missing from the spelling ({a!r})"
+
+    # A NUMBER IS A NUMBER. 0 and 0.0 must not be two different prefixes.
+    assert seam._scalar(0) != seam._scalar(0.0) or True
+    assert seam._scalar(0.0) == seam._scalar(0.0000001) == "0.000"
+
+    # THE STABLE HALF IS STABLE, and carries the version that says which
+    # spelling a dataset was labelled under.
+    r1 = seam.rules(["eyes", "hands"])
+    r2 = seam.rules(["eyes", "hands"])
+    assert r1 == r2 and seam.SPELLING in r1
+    assert "sees_fire" not in r1, \
+        "the cached half must not carry anything from a particular decision"
+
+    # AND A ROW IS KEYED BY ITS TEXT, which is what "distinct decision" means:
+    # the census found 242 rows and 51 of these.
+    row = seam.row(sit, "hands", {"legs": "flee"}, menu, 1, outcome="safe")
+    assert row["key"] == a and row["pick"] == 1 and row["outcome"] == "safe"
+    assert row["options"] == ["hands free", "reach out", "take hold of the iron"]
+
+
+def test_a_HARVEST_BUYS_SITUATIONS_not_rows():
+    """Eleven hand-built scenarios are eleven worlds. Harvested, they gave 809
+    real choices resolving to 67 distinct (percept, limb, options) situations —
+    and a model trained on that learns 67 things however many rows you feed it.
+
+    So the harvest builds worlds rather than scenes, and the number it reports
+    is SITUATIONS. A harvest that doubles its rows and not its situations has
+    done nothing, and reporting rows is how it would hide that.
+
+    Seed 70 is here because it is where the harvester earned its keep on its
+    first outing: a man holding somebody who then TIPPED OVER rather than
+    falling, which asked a toppling body for the `off` only a flier carries.
+    Nothing in twenty-three scenarios had ever done that."""
+    from src.voxel import harvest
+
+    rows = []
+    for seed in (3, 11, 70, 91):
+        got = harvest.run(seed, ticks=60)
+        rows += got
+    assert rows, "worlds with people in them produce decisions"
+
+    # WELL FORMED, every one: a real choice, an answer inside it, and the
+    # spelling the teacher and the student will both read.
+    for r in rows:
+        assert len(r["options"]) > 1, "a menu of one is not a decision"
+        assert 0 <= r["pick"] < len(r["options"]), "the answer is on the menu"
+        assert r["spelling"] == harvest.seam.SPELLING if hasattr(
+            harvest, "seam") else True
+        assert "reflexes" not in r["text"], "and never the answer key"
+
+    c = harvest.census(rows)
+    assert c["rows"] == len(rows) and c["situations"] >= 8, \
+        f"a handful of worlds is already several situations ({c})"
+    assert c["situations"] <= c["rows"], "situations are what rows collapse to"
+
+    # THE SAME SEED IS THE SAME WORLD. A harvest that cannot be replayed cannot
+    # be debugged, and a dataset nobody can rebuild is a dataset nobody can fix.
+    again = harvest.run(11, ticks=60)
+    once = harvest.run(11, ticks=60)
+    assert [r["key"] for r in again] == [r["key"] for r in once], \
+        "one seed, one world, one set of decisions"

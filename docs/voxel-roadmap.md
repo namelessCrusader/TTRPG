@@ -4519,3 +4519,80 @@ stops weighing the ordinary. 20 rows a second from `jumper` against 0.02 from
 `house_fire`, a thousandfold. **Harvest short physical worlds, not slow fires.**
 
 **The number to watch is distinct (menu, pick) pairs, not rows.**
+
+## 78. Worlds by the thousand, and the number that says whether it worked
+
+**Why this is here:** entry 77 found the model has an architecture and no data.
+This is the data.
+
+### First, the seam had to have a spelling
+
+A teacher labelling a decision and a student learning from that label must see
+the SAME bytes, or the label is attached to something the student is never
+shown. `src/voxel/seam.py` is that text, and three rules shape it:
+
+- **Deterministic to the byte.** Prompt caching is a prefix match and a byte
+  that moves invalidates everything after it — a labelling run that silently
+  stops hitting cache costs about ten times what it should.
+- **The reflex table is not in it.** `situation["reflexes"]` is the policy's own
+  answer key. Give it to a teacher and the teacher reads the answer off the
+  page; give it to a student and it learns to look the answer up rather than to
+  decide. Dropped in the serialiser rather than at the call site so nobody can
+  forget. `tick` and `who` go too — facts about the RUN, not the situation.
+- **Stable and varying are different functions.** `rules()` is cached,
+  `situation()` is not, and they are never concatenated in this file.
+
+The spelled row is also written AS EACH LIMB IS ASKED, because `chosen` is a
+running state: a harvest that reads `menus` and `pick` off the finished trace
+gets the menu and the answer and loses the half of the context that made the
+answer make sense.
+
+### Then the census got sharper, and the news was worse
+
+Re-measuring the scenarios through the spelling:
+
+    809 rows that are actually a CHOICE (41 had one option — not decisions)
+     67 distinct (percept, limb, options) -> pick RULES explain them
+    659 distinct spelled texts feed those 67 rules
+
+Adding every body-state field splits 67 classes into 413 and resolves ONE
+ambiguity. **The input is ten times richer than the function.** A model trained
+on this learns "read the menu, ignore the body" — precisely the wrong lesson,
+and an argument FOR an LM teacher rather than against one, since the reflex
+table is a lookup on percept and cannot use state it never reads.
+
+### And then worlds instead of scenes
+
+`src/voxel/harvest.py`. Small rooms, short runs, randomised ground, drops,
+gaps, posts, things to hand, sometimes a fire, sometimes a second person,
+sometimes a door, and a body that does not arrive fresh.
+
+Two choices earn their place:
+
+- **`Roam`, an exploring policy.** `_Wants()` with no argument wants nothing,
+  so the body chooses the null act every tick — 25 worlds gave 143 rows and 24
+  situations. Picking off the menu at random, leaning away from doing nothing,
+  gave 41 from the same 25. A random policy is not a good policy and is not
+  meant to be: what a harvest buys is where the body ENDS UP, and the label
+  comes from the teacher later.
+- **Menus of one are dropped.** 41 of 850 rows offered a single option. That is
+  not a decision and it is not a training row.
+
+**One thousand worlds, 703 seconds:**
+
+    7736 rows
+     832 distinct situations        (against 67 from eleven scenarios)
+    outcomes: 7135 inside, 555 safe, 41 down, 5 dead
+
+Twelvefold on the number that matters, an outcome signal that finally
+separates, and still climbing at a thousand — 780 at 900 worlds, 832 at 1000.
+
+### And the harvest found a bug on its seventieth world
+
+`_law_grips` — written THIS WEEK to fix "a hold on a falling man is the one
+that must be re-earned" — asked a body for the `off` that only a flier carries.
+A body mid-TOPPLE has a `theta` instead. Nothing in twenty-three scenarios had
+ever had a man holding somebody who tipped over rather than fell.
+
+**That is the argument for random worlds in one line.** The scenarios test what
+somebody thought to ask; a thousand worlds ask what nobody thought of.

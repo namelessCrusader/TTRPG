@@ -29,6 +29,7 @@ no randomness anywhere.
 """
 import copy
 
+from . import seam
 import numpy as np
 
 # OPTIONAL ACCELERATOR. numpy cannot express the shape a cellular-automata
@@ -6543,6 +6544,7 @@ class World:
                                    if p.get("free") is not None else 0.0,
                "others_in_earshot": heard}
         menus, picks, chosen, seen, would = {}, {}, {}, {}, {}
+        spelled = []
         for limb in LIMBS:
             menu = self._menu(p, cells, percept, limb, chosen)
             if not menu:
@@ -6564,6 +6566,13 @@ class World:
                 j = j if isinstance(j, int) and 0 <= j < len(full) else 0
                 would[limb] = full[j]["key"] if len(full) > len(menu) \
                     else opt["key"]
+            # THE DECISION, SPELLED. One row per limb, written as the limb is
+            # asked — `chosen` is a running state and there is no way to
+            # reconstruct afterwards what the other limbs had settled on when
+            # THIS one was put the question. A harvest that reads `menus` and
+            # `pick` off the finished row gets the menu and the answer and
+            # loses the half of the context that made the answer make sense.
+            spelled.append(seam.row(sit, limb, dict(chosen), menu, i))
             picks[limb] = opt
             chosen[limb] = opt["tag"]
         if not picks:
@@ -6572,6 +6581,7 @@ class World:
                           if l in picks and not ACTS[picks[l]["verb"]]["null"])
         self.traces.append({"tick": self.tick, "who": p["name"],
                             "percept": percept, "situation": sit,
+                            "spelled": spelled,   # one row a limb, see `seam`
                             "menus": menus,
                             "offered": seen,  # what a full sweep found, so the
                                               # cost of the cap is on the record
@@ -7082,7 +7092,16 @@ class World:
                             and (x["mats"] == FLESH).any()), None)
                 if air is None:
                     continue
-                theirs = np.round(self._fly_pose(air)).astype(np.int64)
+                # A BODY OFF THE LATTICE IS ONE OF TWO THINGS and they are not
+                # posed the same way. A flier carries an `off` and is placed by
+                # it; a body mid-TOPPLE carries a `theta` and is swung about
+                # its pivot. Asking a toppling body for its `off` is a KeyError
+                # — found by the harvester on its seventieth random world,
+                # which is the first time in this repo that a man has been
+                # holding somebody who then tipped over rather than fell.
+                theirs = np.round(self._fly_pose(air) if air.get("fly")
+                                  else self._body_pose(air, air["theta"])
+                                  ).astype(np.int64)
             hcell = np.argwhere(mine)
             hcell[:, 0] += msl[0].start
             hcell[:, 1] += msl[1].start
