@@ -4457,3 +4457,65 @@ building the sophisticated thing and watching which of its knobs did nothing.
 **The warp is still the right idea and is still not landed** (entry 75 has the
 numbers). It is worth less than it was, because the socket took most of what it
 was going to buy.
+
+## 77. The menu-select model has an architecture and no data
+
+**Why this is here:** [jevlike](https://github.com/vinnylarouge/jevlike) (MIT,
+Minimal Labs) — "takes a piece of text and a list of N text options, returns
+one probability for each option" in ONE pass. Each option is a query, it
+attends over the context, a shared dot-product scorer turns each option-context
+pair into a score, softmax over the options.
+
+**That is `policy.pick(situation, menu) -> int`, exactly.** Same inputs, same
+output, no decoding and no grammar to constrain — the "0 violations by
+construction" the ablation wanted, for free. Their reported speed is the other
+half: one pass against a small decoder writing 400 tokens was about 100x. That
+is the shape the latency budget needs, and MIT means it can be ported with
+attribution rather than reimplemented from the paper.
+
+**So the architecture question looks settled, and then you count the data.**
+
+Every scenario with people in it, traces harvested, outcomes stamped:
+
+    scenario      rows    secs        rows/sec
+    jumper          36     1.8          20.0
+    leap             9     0.7          12.9
+    arms            63    10.8           5.8
+    ledge           24     4.9           4.9
+    swing           24     3.2           7.5
+    rescue          37    11.8           3.1
+    glasshouse      43   199.9           0.2
+    fire_alarm       4    79.3           0.05
+    house_fire       2   131.0           0.02
+    two_rooms        0    61.3           0
+    parachute        0     9.8           0
+
+    TOTAL 242 rows in ~530 s
+    menu sizes 1-7 (mode 2), ~5 menus a row, one per limb
+    outcomes: 47 safe, 195 still inside — no dead, no unconscious
+    percepts: 205 none, 27 falling, 5 sees_falling, 4 sees_fire, 1 sees_runner
+
+**And 242 rows collapse to 51 DISTINCT (menu, pick) pairs.**
+
+That is the finding. It is not a volume problem you can fix by running longer:
+the teacher is a deterministic reflex table, so the same menu always draws the
+same pick, and a student can learn nothing that is not in those 51 rows. Any
+architecture memorises that in a minute.
+
+**Three things have to change before an architecture matters:**
+
+- **Situations, not scenarios.** Eleven hand-built worlds is eleven worlds.
+  This wants randomised ones by the thousand.
+- **A teacher worth copying.** A reflex table can only teach itself. This is
+  what "big models generate grounded data, the sim stays authoritative" was
+  for.
+- **An outcome signal that discriminates.** 47 safe against 195 still-inside,
+  with nobody dead and nobody unconscious, barely separates anything.
+
+**And the throughput table says how to build the harvester.** Decisions are
+dense where bodies keep re-deciding — falling, jumping, catching — and almost
+absent in the long fire scenarios, because `emergency` commits a body and it
+stops weighing the ordinary. 20 rows a second from `jumper` against 0.02 from
+`house_fire`, a thousandfold. **Harvest short physical worlds, not slow fires.**
+
+**The number to watch is distinct (menu, pick) pairs, not rows.**
