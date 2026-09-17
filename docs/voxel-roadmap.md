@@ -4635,3 +4635,81 @@ one by a crowd, one by reading the speech path with a question in mind. The
 suite is 127 tests and catches regressions; it has never once found something
 nobody had thought to ask about. That is not a criticism of the suite — it is
 what a suite is — but it is the argument for running worlds nobody designed.
+
+## 80. The queue, re-ordered by what we now know
+
+Ordered by what BLOCKS what, not by what is interesting. Every claim below was
+measured this week.
+
+### First — because they spoil work done after them
+
+**1. Credit assignment is flat, and it mislabels every row we harvest.**
+`trace_outcomes` stamps the person's FINAL state on every decision in the run:
+a choice at t=5 and one at t=400 get identical credit, and 92% of harvested
+rows read "still inside", which mostly means the run ended. HiPER's phrasing
+for why this is worse than sparse: flat credit "must propagate across the
+entire trajectory... leading to unstable optimization". **Every row harvested
+before this is fixed is waste**, which is why it goes first and not last.
+Cheapest honest version: record the tick of the decision and of the terminal
+event, and let credit fall off with the distance between them.
+
+**2. Walkers cannot change elevation — not 5 cm.** Measured: a body told to
+walk to a door behind a one-voxel step goes x5 to x9, stops, and stands there
+with its feet at z1 for two hundred ticks. So every ledge and gap the harvester
+builds is traversable DOWNWARD ONLY, and situation diversity — the one number
+the harvest is judged on — is capped by it. Roadmap item 5 says this was tried
+in September and taken back out behind item 13; item 13 has since been built.
+
+**3. `TOUGH` has no temperature term.** All four readings are
+`_TOUGH_ARR[mat]`; no `T`, no `E`, anywhere. Iron is as hard at 1200 C as at
+20. The forge scene MELTS metal and nothing ever SOFTENS, so there is no window
+to work in — which is what smithing is. `tough_eff = TOUGH[mat] * f(T/T_melt)`
+has the shape `span = SPAN[mat]/scale * clip(packed/0.5, 0, 1)` already uses.
+Small, and it makes a whole craft domain simulable rather than decorative.
+
+### Then — the model path, which cannot start without them
+
+**4. The teacher loop.** An API call constrained to a menu INDEX: one output
+token, no grammar to violate, the rules half of the spelling cached and the
+situation half varying. About $0.00025 a label, so $2.50 for ten thousand — the
+teacher is not the bottleneck, rate limits and wall-clock are.
+
+**5. And the check on it**: re-run the table from entry 78 against the
+teacher's labels. Under the reflex policy, 67 rules explain 809 choices and
+adding every body-state field resolves ONE ambiguity — the state is a
+distractor. If the LM teacher's labels are no more state-dependent than that,
+the teacher is not worth its cost and we have learned it cheaply.
+
+### Then — the direction, which is a design question before it is code
+
+**6. Wanting.** An offer means nothing to a body that wants nothing. Drives
+live in the old `src/core` engine, so this is the seam between the two engines
+rather than new physics.
+
+**7. Speech acts with slots** — `say(offer|ask|refuse, about=<thing in view>,
+to=<person in earshot>)`, filled by the same conditioned menu loop the limbs
+already use. No parse step: the AST is built by selection and every leaf is a
+reference the sim resolved.
+
+**8. Options.** Wanted for horizon (one decision spanning 2000 ticks instead of
+400 decisions) — and wanted by item 1, which needs boundaries to aggregate
+returns over. Note what options do NOT buy: the 2000 ticks of physics still
+run. That lever is separate, and it is that physics steps at 40 Hz while
+decisions happen at 4.
+
+### Last — physics polish, which blocks none of the above
+
+`_law_pose` is still kinematic (68); loaded joints do not pass load down the
+chain (68); the round voxel is a record on the person rather than three world
+fields (68); the backward warp is measured and not landed (75); gas species,
+flame-above-fuel and pyrolysis (2, 4, 5); the door leaks 450x too little (18);
+a felled body falls like a plank (10).
+
+### And a standing note about how bugs are found here
+
+Four this week, none by a test: a toppling body asked for a flier's `off` (70th
+random world), `fb in self.bodies` comparing dicts of numpy arrays (eight
+people in a room), a reply heard as a fresh alarm, and a shout inaudible unless
+the shouter was running. The suite has 127 tests and has never once found
+something nobody thought to ask about. That is what a suite is — and it is the
+argument for spending compute on worlds nobody designed.
