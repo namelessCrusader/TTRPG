@@ -1,0 +1,470 @@
+# The verb catalog of the mind interface (docs/sim-mind-design.md 3.5).
+# src/mind/catalog.py reads this file and checks it. tests/test_mind_catalog.py
+# also holds it to the inn (lab/world2/world.py): the same verbs, durations,
+# flags and option words.
+#
+# A VERB is a task that a mind can choose ("take the axe"), not a limb move.
+# The fields of a verb:
+#   id            the name of the verb in the mind
+#   group         its menu group. A menu shows the groups in the order of
+#                 `groups`, then the verbs of a group in the order of this file.
+#                 `groups` is sorted by name, with the null act's group last.
+#                 The rules' favourite is then first in about 9% of the inn's
+#                 menus. With `move` first it was first in 28%, because a walk
+#                 is the rules' favourite in about a third of the decisions:
+#                 a position bias for the model chooser (design 3.5, step M4).
+#   null_act      true for the one act that does nothing. Do not write `null:`
+#                 as a key: YAML reads that key as None.
+#   roles         what the verb is done to or with, and the tests on each:
+#                   kind      person | thing | place
+#                   optional  the role can stay empty ("strike Tom")
+#                   is, not   states that the referent must have, or must not have
+#                   held_by   self, or the role of the person who holds it
+#                   cap       capabilities that it must have (all of them)
+#                   cap_any   capabilities that it must have (one of them)
+#                   reach     a distance band that the backend measures
+#   needs         capabilities of the actor itself ("a free hand")
+#   serves        drives that the verb can satisfy. When a verb that serves a
+#                 drive above its threshold is blocked, the scene text says
+#                 what is missing.
+#   hint          the capability whose words help a chooser to pick the verb
+#   text          the words of the option; text_with when an optional role is filled
+#   told          the report of the done act, as others tell it; told_with when
+#                 an optional role is filled; told_start when the act starts.
+#                 A loud or violent verb has a told_start.
+#   duration      for each backend: turns (rooms), ticks (voxel), or "route"
+#   commit_after  the fraction of the act after which nothing interrupts it
+#   interrupt_on  the percept classes that stop it (see interrupts_known)
+#   flags         see flags_known
+#   backends      one program for each backend. null: not offered there.
+version: 2
+
+groups: [body, care, fight, handle, move, social, wait]
+
+# WHAT EACH BACKEND CAN RUN. A program for the inn names one of its verbs. A
+# program for voxel is a list of steps: the limb to ask, the menu row to
+# match, and the step test that ends the step.
+backends:
+  rooms:
+    # lab/world2/world.py, the keys of DUR
+    verbs: [walk to, flee to, take, steal, drop, give, eat, drink, strike, shove,
+            threaten, insult, praise, tell, accuse, shout for help, help up,
+            bandage, defend, hide, search, open, play, wait]
+  voxel:
+    limbs: [legs, hands, mouth, waist, eyes]          # src/voxel/sim.py LIMBS
+    step_tests: [arrived, in_reach, took, swung, said, wake]
+
+# A CAPABILITY is a test on a thing (or, with self: true, on the actor), and
+# the words that a chooser reads. Each backend has its own test, or null.
+capabilities:
+  sharp:
+    says: "something with a sharp edge"
+    rooms: {prop: sharp}
+    voxel: {edge_gt_m2: 0.0, edge_max_m2: 1.0e-3}   # fill(edge=...) default 0.0 is blunt
+  heavy:
+    says: "something heavy and hard to hit with"
+    rooms: {weapon_min: 2}
+    voxel: {mass_min_kg: 0.8}
+  food:
+    says: "something to eat"
+    rooms: {prop: food}
+    voxel: null
+  drinkable:
+    says: "something to drink"
+    rooms: {prop_any: [ale, water, ale_source, water_source]}
+    voxel: null
+  playable:
+    says: "something to play music on"
+    rooms: {prop: music}
+    voxel: null
+  openable:
+    says: "something closed to open"
+    rooms: {prop: chest}
+    voxel: null
+  free_hand:
+    says: "a free hand"
+    self: true
+    rooms: {always: true}               # the inn has no hand limit
+    voxel: {free_hand: true}
+  known_exit:
+    says: "a way out it has seen"
+    self: true
+    rooms: {always: true}               # every room of the inn is known
+    voxel: {knows_exit: true}
+
+# DRIVES that a verb can serve, with the test of "above its threshold" for
+# each backend.
+drives:
+  hunger: {rooms: {field: hunger, above: 0.6}, voxel: null}
+  thirst: {rooms: {field: thirst, above: 0.6}, voxel: null}
+  safety: {rooms: {field: fear, above: 0.4},
+           voxel: {percept_any: [sees_fire, scorched, chokes, hears_alarm, struck]}}
+  harm:   {rooms: {field: anger_max, above: 0.4}, voxel: {sheet: harm}}
+
+# loud: heard in the next room. harmful: an act against its target.
+# violent: a blow. physical: a threat to the body.
+flags_known: [loud, harmful, violent, physical]
+
+# The classes of percept that can stop a job:
+#   any            any news
+#   harm_to_me     a harmful act aimed at the actor
+#   violence_seen  a violent act seen or heard
+#   alarm_heard    a shout for help, or a warning of fire
+#   fire_seen      fire seen
+interrupts_known: [any, harm_to_me, violence_seen, alarm_heard, fire_seen]
+
+verbs:
+  # ------------------------------------------------------------------ move
+  - id: walk_to
+    group: move
+    roles: {place: {kind: place}}
+    text: "walk to {place}"
+    told: "{actor} walked to {place}"
+    told_start: "{actor} set off for {place}"
+    duration: {rooms: 3, voxel: route}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard, fire_seen]
+    backends:
+      rooms: {verb: "walk to"}
+      voxel: [{limb: legs, match: goal, until: arrived}]
+
+  - id: flee_to
+    group: move
+    roles: {place: {kind: place}}
+    needs: [known_exit]
+    serves: [safety]
+    text: "flee to {place}"
+    told: "{actor} fled to {place}"
+    told_start: "{actor} ran for {place}"
+    duration: {rooms: 2, voxel: route}
+    interrupt_on: [harm_to_me]
+    flags: [loud]
+    backends:
+      rooms: {verb: "flee to"}
+      voxel: [{limb: legs, match: goal, until: arrived, flee: true}]
+
+  # ---------------------------------------------------------------- handle
+  - id: take
+    group: handle
+    roles: {target: {kind: thing, not: [fixed, held]}}
+    needs: [free_hand]
+    text: "take {target}"
+    told: "{actor} took {target}"
+    duration: {rooms: 2, voxel: 20}
+    interrupt_on: [harm_to_me, violence_seen]
+    backends:
+      rooms: {verb: "take"}
+      voxel: [{limb: hands, match: cell, until: took}]
+
+  - id: drop
+    group: handle
+    roles: {target: {kind: thing, held_by: self}}
+    text: "drop {target}"
+    told: "{actor} dropped {target}"
+    duration: {rooms: 1, voxel: 2}
+    backends:
+      rooms: {verb: "drop"}
+      voxel: [{limb: hands, match: {tag: let_go}, until: wake}]
+
+  - id: give
+    group: handle
+    roles: {thing: {kind: thing, held_by: self}, target: {kind: person, not: [down]}}
+    text: "give {thing} to {target}"
+    told: "{actor} gave {thing} to {target}"
+    duration: {rooms: 2}
+    interrupt_on: [harm_to_me, violence_seen]
+    backends:
+      rooms: {verb: "give"}
+      voxel: null
+
+  - id: hide
+    group: handle
+    roles: {target: {kind: thing, held_by: self}}
+    text: "hide {target} under your cloak"
+    told: "{actor} hid {target}"
+    duration: {rooms: 2}
+    interrupt_on: [harm_to_me, violence_seen]
+    backends:
+      rooms: {verb: "hide"}
+      voxel: null
+
+  - id: open
+    group: handle
+    roles: {target: {kind: thing, cap: openable}}
+    hint: openable
+    text: "open {target}"
+    told: "{actor} opened {target}"
+    duration: {rooms: 3}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    backends:
+      rooms: {verb: "open"}
+      voxel: null
+
+  - id: steal
+    group: handle
+    roles: {thing: {kind: thing, held_by: target}, target: {kind: person, not: [down]}}
+    needs: [free_hand]
+    text: "steal {thing} from {target}"
+    told: "{actor} stole {thing} from {target}"
+    duration: {rooms: 3}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    flags: [harmful]
+    backends:
+      rooms: {verb: "steal"}
+      voxel: null
+
+  # the inn's "steal" from a person who lies on the floor has other words
+  - id: take_from
+    group: handle
+    roles: {thing: {kind: thing, held_by: target}, target: {kind: person, is: [down]}}
+    needs: [free_hand]
+    text: "take {thing} from {target}"
+    told: "{actor} took {thing} from {target}"
+    duration: {rooms: 3}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    flags: [harmful]
+    backends:
+      rooms: {verb: "steal"}
+      voxel: null
+
+  - id: cut
+    group: handle
+    roles: {target: {kind: thing, is: [cuttable]},
+            instrument: {kind: thing, held_by: self, cap: sharp}}
+    hint: sharp
+    text: "cut {target} with {instrument}"
+    told: "{actor} cut {target}"
+    duration: {}
+    backends: {rooms: null, voxel: null}
+
+  # ------------------------------------------------------------------ body
+  - id: eat
+    group: body
+    roles: {target: {kind: thing, held_by: self, cap: food}}
+    serves: [hunger]
+    hint: food
+    text: "eat {target}"
+    told: "{actor} ate {target}"
+    duration: {rooms: 4}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    backends:
+      rooms: {verb: "eat"}
+      voxel: null
+
+  - id: drink
+    group: body
+    roles: {target: {kind: thing, held_by: self, cap: drinkable}}
+    serves: [thirst]
+    hint: drinkable
+    text: "drink {target}"
+    told: "{actor} drank {target}"
+    duration: {rooms: 3}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    backends:
+      rooms: {verb: "drink"}
+      voxel: null
+
+  # a bucket in the hand, or a well or a barrel in the room
+  - id: drink_from
+    group: body
+    roles: {target: {kind: thing, cap: drinkable}}
+    serves: [thirst]
+    hint: drinkable
+    text: "drink from {target}"
+    told: "{actor} drank from {target}"
+    duration: {rooms: 3}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    backends:
+      rooms: {verb: "drink"}
+      voxel: null
+
+  # ------------------------------------------------------------------ care
+  - id: help_up
+    group: care
+    roles: {target: {kind: person, is: [down]}}
+    text: "help {target} up"
+    told: "{actor} helped {target} up"
+    duration: {rooms: 2}
+    interrupt_on: [harm_to_me]
+    backends:
+      rooms: {verb: "help up"}
+      voxel: null
+
+  - id: bandage
+    group: care
+    roles: {target: {kind: person, is: [hurt]}}
+    text: "bandage {target}"
+    told: "{actor} bandaged {target}"
+    duration: {rooms: 5}
+    interrupt_on: [harm_to_me]
+    backends:
+      rooms: {verb: "bandage"}
+      voxel: null
+
+  - id: defend
+    group: care
+    roles: {target: {kind: person, is: [attacked]}}
+    text: "defend {target}"
+    told: "{actor} stood up for {target}"
+    duration: {rooms: 2}
+    interrupt_on: [harm_to_me]
+    backends:
+      rooms: {verb: "defend"}
+      voxel: null
+
+  # ---------------------------------------------------------------- social
+  - id: praise
+    group: social
+    roles: {target: {kind: person}}
+    text: "praise {target}"
+    told: "{actor} praised {target}"
+    duration: {rooms: 1}
+    backends:
+      rooms: {verb: "praise"}
+      voxel: null
+
+  # the same words for the truth and for a lie: only the teller knows which
+  - id: tell
+    group: social
+    roles: {target: {kind: person}, culprit: {kind: person}, thing: {kind: thing}}
+    text: "tell {target} that {culprit} took {thing}"
+    told: "{actor} told {target} that {culprit} took {thing}"
+    duration: {rooms: 3}
+    interrupt_on: [harm_to_me, violence_seen]
+    backends:
+      rooms: {verb: "tell"}
+      voxel: null
+
+  - id: accuse
+    group: social
+    roles: {target: {kind: person}, thing: {kind: thing}}
+    text: "accuse {target} of taking {thing}"
+    told: "{actor} accused {target} of taking {thing}"
+    told_start: "{actor} turned on {target}"
+    duration: {rooms: 2}
+    interrupt_on: [harm_to_me, violence_seen]
+    flags: [loud, harmful]
+    backends:
+      rooms: {verb: "accuse"}
+      voxel: null
+
+  - id: insult
+    group: social
+    roles: {target: {kind: person}}
+    text: "insult {target}"
+    told: "{actor} insulted {target}"
+    duration: {rooms: 1}
+    flags: [harmful]
+    backends:
+      rooms: {verb: "insult"}
+      voxel: null
+
+  - id: threaten
+    group: social
+    roles: {target: {kind: person}}
+    serves: [harm]
+    text: "threaten {target}"
+    told: "{actor} threatened {target}"
+    told_start: "{actor} squared up to {target}"
+    duration: {rooms: 2}
+    interrupt_on: [harm_to_me, violence_seen]
+    flags: [loud, harmful, physical]
+    backends:
+      rooms: {verb: "threaten"}
+      voxel: null
+
+  - id: play
+    group: social
+    roles: {target: {kind: thing, held_by: self, cap: playable}}
+    hint: playable
+    text: "play {target}"
+    told: "{actor} played {target}"
+    told_start: "{actor} began to play {target}"
+    duration: {rooms: 6}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    flags: [loud]
+    backends:
+      rooms: {verb: "play"}
+      voxel: null
+
+  - id: shout_for_help
+    group: social
+    roles: {}
+    serves: [safety]
+    text: "shout for help"
+    told: "{actor} shouted for help"
+    told_start: "{actor} began to shout for help"
+    duration: {rooms: 1}
+    flags: [loud]
+    backends:
+      rooms: {verb: "shout for help"}
+      voxel: null
+
+  - id: shout_fire
+    group: social
+    roles: {}
+    serves: [safety]
+    text: "shout a warning"
+    told: "{actor} shouted that there is a fire"
+    told_start: "{actor} began to shout"
+    duration: {voxel: 4}
+    flags: [loud]
+    backends:
+      rooms: null
+      voxel: [{limb: mouth, match: {tag: "say:fire"}, until: said}]
+
+  # ----------------------------------------------------------------- fight
+  - id: strike
+    group: fight
+    roles: {target: {kind: person, reach: strike_band},
+            instrument: {kind: thing, held_by: self, optional: true, cap_any: [sharp, heavy]}}
+    serves: [harm, safety]
+    text: "strike {target}"
+    text_with: "strike {target} with {instrument}"
+    told: "{actor} struck {target}"
+    told_with: "{actor} struck {target} with {instrument}"
+    told_start: "{actor} raised a hand against {target}"
+    duration: {rooms: 2, voxel: 12}
+    commit_after: 0.5
+    interrupt_on: [harm_to_me]
+    flags: [loud, harmful, violent, physical]
+    backends:
+      rooms: {verb: "strike"}
+      voxel: [{limb: hands, match: {tag: swing}, until: swung, aim: target}]
+
+  - id: shove
+    group: fight
+    roles: {target: {kind: person}}
+    serves: [harm]
+    text: "shove {target}"
+    told: "{actor} shoved {target}"
+    told_start: "{actor} lunged at {target}"
+    duration: {rooms: 1}
+    flags: [loud, harmful, violent, physical]
+    backends:
+      rooms: {verb: "shove"}
+      voxel: null
+
+  - id: search
+    group: fight
+    roles: {target: {kind: person}}
+    text: "search {target}"
+    told: "{actor} searched {target}"
+    duration: {rooms: 3}
+    interrupt_on: [harm_to_me, violence_seen]
+    flags: [harmful]
+    backends:
+      rooms: {verb: "search"}
+      voxel: null
+
+  # ------------------------------------------------------------------ wait
+  - id: wait
+    group: wait
+    null_act: true
+    roles: {}
+    text: "wait"
+    told: "{actor} waited"
+    duration: {rooms: 3, voxel: 40}
+    interrupt_on: [any]
+    backends:
+      rooms: {verb: "wait"}
+      voxel: [{limb: null, until: wake}]

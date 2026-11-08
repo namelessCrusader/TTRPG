@@ -1,0 +1,4208 @@
+{
+"__init__": {
+"lines": [
+909,
+1033
+],
+"globals": [
+"HAVE_NUMBA",
+"Matter",
+"TablePolicy",
+"np"
+],
+"calls": [],
+"reads": [
+"scale",
+"shape",
+"vox_l"
+],
+"writes": [
+"E",
+"_airblur",
+"_aircells",
+"_bulk",
+"_bulk_gen",
+"_cap",
+"_cap_key",
+"_just_shattered",
+"_matter_gen",
+"_por",
+"_region_air",
+"_region_count",
+"_rub_gen",
+"_slack",
+"_slack_grip",
+"_slack_mat",
+"_torque_sleep",
+"_torque_solid",
+"air_region",
+"bodies",
+"c_airbase",
+"cap",
+"drops",
+"edge",
+"exits",
+"fallh",
+"fdrop",
+"fl",
+"fpot",
+"free_fall_to_seam",
+"fused",
+"fvol",
+"gone",
+"left_mass",
+"mat",
+"matter",
+"moving",
+"o2",
+"open_sky",
+"p_add",
+"pcell",
+"persons",
+"policy",
+"recall_check",
+"rubble",
+"scale",
+"shape",
+"shed",
+"skip_quiet",
+"smass",
+"smoke",
+"sounds",
+"speech",
+"thermostats",
+"tick",
+"traces",
+"vcell",
+"vfall",
+"vox_l"
+],
+"clsref": [],
+"static": false
+},
+"heat_capacity": {
+"lines": [
+1036,
+1055
+],
+"globals": [
+"_CSOLID_ARR",
+"_FC_ARR",
+"_FDENS_ARR"
+],
+"calls": [
+"_matter_moved"
+],
+"reads": [
+"_cap",
+"c_airbase",
+"fl",
+"fvol",
+"mat",
+"smass"
+],
+"writes": [
+"_cap"
+],
+"clsref": [],
+"static": false
+},
+"_matter_moved": {
+"lines": [
+1057,
+1079
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"_cap_key",
+"fl",
+"fvol",
+"mat",
+"smass"
+],
+"writes": [
+"_cap",
+"_cap_key",
+"_matter_gen",
+"_por"
+],
+"clsref": [],
+"static": false
+},
+"T": {
+"lines": [
+1081,
+1082
+],
+"globals": [
+"AMBIENT"
+],
+"calls": [
+"heat_capacity"
+],
+"reads": [
+"E"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"porosity": {
+"lines": [
+1084,
+1108
+],
+"globals": [
+"_DENS_ARR",
+"np"
+],
+"calls": [
+"_matter_moved"
+],
+"reads": [
+"_por",
+"cap",
+"fvol",
+"mat",
+"smass",
+"vox_l"
+],
+"writes": [
+"_por"
+],
+"clsref": [],
+"static": false
+},
+"solid": {
+"lines": [
+1110,
+1111
+],
+"globals": [
+"AIR"
+],
+"calls": [],
+"reads": [
+"mat"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"burning": {
+"lines": [
+1113,
+1120
+],
+"globals": [
+"FLUID",
+"OIL",
+"SOLID"
+],
+"calls": [
+"T"
+],
+"reads": [
+"fl",
+"fvol",
+"mat",
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"fill": {
+"lines": [
+1123,
+1129
+],
+"globals": [
+"SOLID"
+],
+"calls": [],
+"reads": [
+"edge",
+"mat",
+"smass",
+"vox_l"
+],
+"writes": [
+"edge",
+"mat",
+"smass"
+],
+"clsref": [],
+"static": false
+},
+"pour": {
+"lines": [
+1131,
+1141
+],
+"globals": [
+"AIR",
+"_REACTIVE"
+],
+"calls": [
+"_mix"
+],
+"reads": [
+"cap",
+"fl",
+"fpot",
+"fvol",
+"mat"
+],
+"writes": [
+"fl",
+"fpot",
+"fvol"
+],
+"clsref": [],
+"static": false
+},
+"_mix": {
+"lines": [
+1144,
+1149
+],
+"globals": [
+"MISCIBLE",
+"NOFLUID"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_move_fluid": {
+"lines": [
+1152,
+1175
+],
+"globals": [
+"FLUID",
+"NOFLUID",
+"SOLID"
+],
+"calls": [
+"_mix"
+],
+"reads": [
+"E",
+"c_airbase",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"smass"
+],
+"writes": [
+"E",
+"fl",
+"fpot",
+"fvol"
+],
+"clsref": [],
+"static": false
+},
+"_fly_drops": {
+"lines": [
+1177,
+1216
+],
+"globals": [
+"AIR"
+],
+"calls": [
+"_mix"
+],
+"reads": [
+"cap",
+"drops",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"shape"
+],
+"writes": [
+"drops",
+"fl",
+"fpot",
+"fvol"
+],
+"clsref": [],
+"static": false
+},
+"_law_head": {
+"lines": [
+1218,
+1276
+],
+"globals": [
+"AIR",
+"NOFLUID",
+"_FLIDS",
+"np"
+],
+"calls": [
+"_move_fluid"
+],
+"reads": [
+"cap",
+"fl",
+"fvol",
+"mat",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_flow": {
+"lines": [
+1278,
+1320
+],
+"globals": [
+"AIR",
+"FLUID",
+"_FDENS_ARR",
+"np"
+],
+"calls": [
+"_fly_drops",
+"_mix",
+"_move_fluid"
+],
+"reads": [
+"E",
+"cap",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_stir": {
+"lines": [
+1322,
+1340
+],
+"globals": [
+"AIR",
+"_REACTIVE",
+"np"
+],
+"calls": [],
+"reads": [
+"fl",
+"fpot",
+"fvol",
+"mat"
+],
+"writes": [
+"fpot"
+],
+"clsref": [],
+"static": false
+},
+"_law_support": {
+"lines": [
+1342,
+1362
+],
+"globals": [
+"FALL_SUBSTEPS"
+],
+"calls": [
+"_cash_impacts",
+"_support_once"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_support_once": {
+"lines": [
+1364,
+1406
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [
+"_borne_cells",
+"_fall_speed",
+"_free_fall_to_seam",
+"_grip_cells",
+"_relax_slack",
+"_settle"
+],
+"reads": [
+"_rub_gen",
+"_slack",
+"_slack_grip",
+"_slack_mat",
+"free_fall_to_seam",
+"mat",
+"persons",
+"shape"
+],
+"writes": [
+"_slack",
+"_slack_grip",
+"_slack_mat",
+"_slack_rub"
+],
+"clsref": [],
+"static": false
+},
+"_fall_speed": {
+"lines": [
+1408,
+1433
+],
+"globals": [
+"AIR_DENS",
+"DRAG_CD",
+"FALL_SUBSTEPS",
+"GRAVITY",
+"TICK_S",
+"np"
+],
+"calls": [],
+"reads": [
+"fdrop",
+"scale",
+"smass",
+"vfall"
+],
+"writes": [
+"fdrop",
+"vfall"
+],
+"clsref": [],
+"static": false
+},
+"_relax_slack": {
+"lines": [
+1435,
+1497
+],
+"globals": [
+"AIR",
+"_DENS_ARR",
+"_SPAN_ARR",
+"np"
+],
+"calls": [],
+"reads": [
+"mat",
+"rubble",
+"scale",
+"shape",
+"smass",
+"vox_l"
+],
+"writes": [
+"rubble"
+],
+"clsref": [],
+"static": false
+},
+"_free_fall_to_seam": {
+"lines": [
+1499,
+1573
+],
+"globals": [
+"math",
+"np"
+],
+"calls": [
+"_person_cells"
+],
+"reads": [
+"fallh",
+"matter",
+"persons",
+"scale",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_settle": {
+"lines": [
+1575,
+1621
+],
+"globals": [
+"AIR",
+"_FDENS_ARR",
+"np"
+],
+"calls": [
+"_splash"
+],
+"reads": [
+"E",
+"cap",
+"edge",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"rubble",
+"shape",
+"smass",
+"vox_l"
+],
+"writes": [
+"_rub_gen",
+"fallh"
+],
+"clsref": [],
+"static": false
+},
+"_cash_impacts": {
+"lines": [
+1625,
+1675
+],
+"globals": [
+"AIR",
+"STONE",
+"_TOUGH_ARR",
+"np"
+],
+"calls": [
+"_flaw01",
+"_noise",
+"_shatter"
+],
+"reads": [
+"fallh",
+"mat",
+"scale",
+"smass"
+],
+"writes": [
+"_just_shattered",
+"fallh"
+],
+"clsref": [],
+"static": false
+},
+"_splash": {
+"lines": [
+1677,
+1705
+],
+"globals": [
+"AIR",
+"NOFLUID"
+],
+"calls": [
+"_mix",
+"_move_fluid"
+],
+"reads": [
+"cap",
+"drops",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"shape"
+],
+"writes": [
+"fvol"
+],
+"clsref": [],
+"static": false
+},
+"_flaw01": {
+"lines": [
+1708,
+1713
+],
+"globals": [],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_shatter": {
+"lines": [
+1715,
+1777
+],
+"globals": [
+"AIR",
+"NOFLUID"
+],
+"calls": [
+"_flaw01"
+],
+"reads": [
+"E",
+"_just_shattered",
+"edge",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"rubble",
+"shape",
+"smass"
+],
+"writes": [
+"E",
+"_rub_gen",
+"edge",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"rubble",
+"smass"
+],
+"clsref": [],
+"static": false
+},
+"_law_crack": {
+"lines": [
+1779,
+1804
+],
+"globals": [
+"AIR",
+"TSHOCK",
+"_TSHOCK_ARR",
+"np"
+],
+"calls": [
+"T",
+"_shatter"
+],
+"reads": [
+"mat"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_topple": {
+"lines": [
+1806,
+1875
+],
+"globals": [
+"AIR",
+"NOFLUID",
+"np"
+],
+"calls": [
+"_body_pose"
+],
+"reads": [
+"E",
+"bodies",
+"edge",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"matter",
+"shape",
+"smass"
+],
+"writes": [
+"E",
+"_torque_solid",
+"edge",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"smass"
+],
+"clsref": [],
+"static": false
+},
+"_launch": {
+"lines": [
+1877,
+1906
+],
+"globals": [
+"AIR",
+"NOFLUID",
+"np"
+],
+"calls": [],
+"reads": [
+"E",
+"bodies",
+"edge",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"smass"
+],
+"writes": [
+"_slack_mat",
+"_torque_solid"
+],
+"clsref": [],
+"static": false
+},
+"_limbs": {
+"lines": [
+1908,
+1918
+],
+"globals": [],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_bones": {
+"lines": [
+1920,
+1925
+],
+"globals": [],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_parents": {
+"lines": [
+1927,
+1940
+],
+"globals": [],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_kids": {
+"lines": [
+1942,
+1947
+],
+"globals": [],
+"calls": [
+"_parents"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_subtree": {
+"lines": [
+1949,
+1965
+],
+"globals": [],
+"calls": [
+"_kids"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_path_from": {
+"lines": [
+1967,
+1978
+],
+"globals": [],
+"calls": [
+"_parents"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_pivot_of": {
+"lines": [
+1980,
+1987
+],
+"globals": [
+"np"
+],
+"calls": [
+"_bones"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_joint_xform": {
+"lines": [
+1990,
+2023
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_axis_xform": {
+"lines": [
+2026,
+2060
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_shear_steps": {
+"lines": [
+2063,
+2093
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_apply_shears": {
+"lines": [
+2096,
+2101
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_turn_cells": {
+"lines": [
+2103,
+2124
+],
+"globals": [
+"np"
+],
+"calls": [
+"_apply3",
+"_apply_shears",
+"_chain3",
+"_chain_shear"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_chain_shear": {
+"lines": [
+2126,
+2142
+],
+"globals": [],
+"calls": [
+"_shear_steps"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_comp3": {
+"lines": [
+2145,
+2147
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_apply3": {
+"lines": [
+2150,
+2153
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_chain3": {
+"lines": [
+2155,
+2176
+],
+"globals": [
+"np"
+],
+"calls": [
+"_axis_xform",
+"_comp3"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_chain_xform": {
+"lines": [
+2178,
+2191
+],
+"globals": [
+"np"
+],
+"calls": [
+"_joint_xform"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_apply_xform": {
+"lines": [
+2194,
+2200
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_limb_parts": {
+"lines": [
+2202,
+2212
+],
+"globals": [],
+"calls": [
+"_bone_parts",
+"_bones"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_bone_parts": {
+"lines": [
+2214,
+2237
+],
+"globals": [
+"FLESH",
+"np"
+],
+"calls": [
+"_person_cells"
+],
+"reads": [
+"mat",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_bone_angle": {
+"lines": [
+2239,
+2250
+],
+"globals": [
+"np"
+],
+"calls": [
+"_angles"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_limb_cells": {
+"lines": [
+2252,
+2264
+],
+"globals": [
+"np"
+],
+"calls": [
+"_limb_parts"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_swing": {
+"lines": [
+2266,
+2354
+],
+"globals": [
+"AIR",
+"BODY",
+"np"
+],
+"calls": [
+"_body_pose",
+"_bones",
+"_held_cells",
+"_in_reach",
+"_launch",
+"_limb_parts",
+"_person_cells",
+"_pivot_of"
+],
+"reads": [
+"mat",
+"scale",
+"shape",
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_still_joined": {
+"lines": [
+2356,
+2391
+],
+"globals": [
+"_SIX"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_angles": {
+"lines": [
+2394,
+2400
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_inv_xform": {
+"lines": [
+2403,
+2407
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_comp_xform": {
+"lines": [
+2410,
+2412
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_turn": {
+"lines": [
+2414,
+2497
+],
+"globals": [
+"AIR",
+"CHEST0",
+"np"
+],
+"calls": [
+"_person_cells"
+],
+"reads": [
+"E",
+"edge",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"shape",
+"smass"
+],
+"writes": [
+"_slack_mat",
+"_torque_solid"
+],
+"clsref": [],
+"static": false
+},
+"_square_up": {
+"lines": [
+2499,
+2532
+],
+"globals": [
+"CHEST0"
+],
+"calls": [
+"_turn"
+],
+"reads": [
+"persons"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_repose": {
+"lines": [
+2534,
+2834
+],
+"globals": [
+"AIR",
+"_SWEEP_RAD",
+"np"
+],
+"calls": [
+"_angles",
+"_apply3",
+"_bone_angle",
+"_bone_parts",
+"_bones",
+"_chain3",
+"_contact",
+"_held_cells",
+"_in_reach",
+"_path_from",
+"_person_cells",
+"_reach_of",
+"_still_joined",
+"_subtree",
+"_turn_cells"
+],
+"reads": [
+"E",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"scale",
+"shape",
+"smass"
+],
+"writes": [
+"_slack_mat",
+"_torque_solid"
+],
+"clsref": [],
+"static": false
+},
+"_hanging_cells": {
+"lines": [
+2836,
+2862
+],
+"globals": [
+"np"
+],
+"calls": [
+"_bone_parts",
+"_bones",
+"_held_cells",
+"_subtree"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_hold_torque": {
+"lines": [
+2864,
+2891
+],
+"globals": [
+"GRAVITY",
+"np"
+],
+"calls": [
+"_hanging_cells",
+"_person_cells",
+"_pivot_of"
+],
+"reads": [
+"scale",
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_swing_of": {
+"lines": [
+2893,
+2930
+],
+"globals": [
+"np"
+],
+"calls": [
+"_bones",
+"_hanging_cells",
+"_person_cells"
+],
+"reads": [
+"scale",
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_joints": {
+"lines": [
+2932,
+3028
+],
+"globals": [
+"BODY",
+"TICK_S",
+"np"
+],
+"calls": [
+"_angles",
+"_bones",
+"_contact",
+"_limb_cells",
+"_limbs",
+"_person_cells",
+"_repose",
+"_swing_of"
+],
+"reads": [
+"persons"
+],
+"writes": [
+"shed"
+],
+"clsref": [],
+"static": false
+},
+"_law_pose": {
+"lines": [
+3030,
+3188
+],
+"globals": [
+"BODY",
+"TICK_S",
+"np"
+],
+"calls": [
+"_angles",
+"_bones",
+"_face_axis",
+"_hold_torque",
+"_overbalanced",
+"_person_cells",
+"_reach_around",
+"_repose",
+"_swing_of",
+"_torque_of",
+"_underfoot"
+],
+"reads": [
+"persons"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_reach_around": {
+"lines": [
+3192,
+3247
+],
+"globals": [
+"np"
+],
+"calls": [
+"_bones",
+"_repose"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_fly_pose": {
+"lines": [
+3249,
+3252
+],
+"globals": [],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_drag_a": {
+"lines": [
+3254,
+3278
+],
+"globals": [
+"AIR_DENS",
+"DRAG_CD",
+"np"
+],
+"calls": [],
+"reads": [
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_body_pose": {
+"lines": [
+3280,
+3291
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_release": {
+"lines": [
+3296,
+3340
+],
+"globals": [
+"TICK_S",
+"np"
+],
+"calls": [],
+"reads": [
+"bodies",
+"persons",
+"scale",
+"tick"
+],
+"writes": [],
+"clsref": [
+"_PERCELL"
+],
+"static": false
+},
+"loose": {
+"lines": [
+3342,
+3366
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"bodies",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_bodies": {
+"lines": [
+3368,
+3512
+],
+"globals": [
+"AIR",
+"BODY",
+"GRAVITY",
+"TICK_S",
+"np"
+],
+"calls": [
+"_body_pose",
+"_drag_a",
+"_fly_pose",
+"_land_body",
+"_release",
+"_spend"
+],
+"reads": [
+"bodies",
+"mat",
+"scale",
+"shape"
+],
+"writes": [
+"bodies"
+],
+"clsref": [],
+"static": false
+},
+"_left_world": {
+"lines": [
+3514,
+3527
+],
+"globals": [],
+"calls": [],
+"reads": [
+"gone"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_spend": {
+"lines": [
+3529,
+3575
+],
+"globals": [
+"FLESH",
+"_TOUGH_ARR"
+],
+"calls": [
+"_blow",
+"_flaw01",
+"_noise",
+"_person_at",
+"_shatter"
+],
+"reads": [
+"mat",
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_land_body": {
+"lines": [
+3577,
+3815
+],
+"globals": [
+"AIR",
+"BODY",
+"FLESH",
+"TICK_S",
+"_TOUGH_ARR",
+"np"
+],
+"calls": [
+"_body_pose",
+"_crouch_of",
+"_flaw01",
+"_fly_pose",
+"_left_world",
+"_noise",
+"_shatter",
+"_spend",
+"_wound"
+],
+"reads": [
+"E",
+"_torque_sleep",
+"edge",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"persons",
+"scale",
+"shape",
+"smass",
+"tick"
+],
+"writes": [
+"E",
+"_torque_sleep",
+"_torque_solid",
+"edge",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"smass"
+],
+"clsref": [],
+"static": false
+},
+"_person_at": {
+"lines": [
+3817,
+3831
+],
+"globals": [],
+"calls": [
+"_claim_bodies"
+],
+"reads": [
+"persons",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_bone_at": {
+"lines": [
+3833,
+3850
+],
+"globals": [
+"np"
+],
+"calls": [
+"_bone_parts"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_blow": {
+"lines": [
+3852,
+3908
+],
+"globals": [
+"BODY",
+"WOUND"
+],
+"calls": [
+"_blood0",
+"_bone_at",
+"_thickness",
+"_wound"
+],
+"reads": [
+"scale",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_blood0": {
+"lines": [
+3910,
+3918
+],
+"globals": [
+"BLEED"
+],
+"calls": [
+"_person_cells"
+],
+"reads": [
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_perfusion": {
+"lines": [
+3920,
+3926
+],
+"globals": [
+"BLEED",
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_delivered_o2": {
+"lines": [
+3928,
+3931
+],
+"globals": [],
+"calls": [
+"_perfusion"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_bleed": {
+"lines": [
+3933,
+3971
+],
+"globals": [
+"BLEED",
+"BLOOD",
+"TICK_S"
+],
+"calls": [
+"_blood0",
+"_spill_from"
+],
+"reads": [
+"persons"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_spill_from": {
+"lines": [
+3973,
+3994
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [
+"_bone_parts",
+"pour"
+],
+"reads": [
+"fvol",
+"mat",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_thickness": {
+"lines": [
+3996,
+4003
+],
+"globals": [
+"np"
+],
+"calls": [
+"_bone_parts"
+],
+"reads": [
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_cut_section": {
+"lines": [
+4005,
+4014
+],
+"globals": [],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_wound": {
+"lines": [
+4016,
+4022
+],
+"globals": [
+"BODY"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"bodies_array": {
+"lines": [
+4024,
+4033
+],
+"globals": [
+"np"
+],
+"calls": [
+"_body_pose",
+"_fly_pose"
+],
+"reads": [
+"bodies"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_torque": {
+"lines": [
+4035,
+4217
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [
+"_person_cells",
+"_topple"
+],
+"reads": [
+"_torque_sleep",
+"_torque_solid",
+"mat",
+"persons",
+"shape",
+"smass"
+],
+"writes": [
+"_torque_sleep",
+"_torque_solid"
+],
+"clsref": [],
+"static": false
+},
+"_hot_window": {
+"lines": [
+4219,
+4245
+],
+"globals": [],
+"calls": [
+"_window"
+],
+"reads": [
+"E"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_window": {
+"lines": [
+4247,
+4260
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"shape",
+"skip_quiet"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_conduct": {
+"lines": [
+4262,
+4297
+],
+"globals": [
+"AIR",
+"AMBIENT",
+"HAVE_NUMBA",
+"RAD",
+"_FK_ARR",
+"_KSOLID_ARR",
+"_conduct_pairs",
+"np"
+],
+"calls": [
+"heat_capacity"
+],
+"reads": [
+"E",
+"cap",
+"fl",
+"fused",
+"fvol",
+"mat",
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_rise": {
+"lines": [
+4299,
+4319
+],
+"globals": [
+"AIR",
+"AMBIENT",
+"np"
+],
+"calls": [
+"heat_capacity"
+],
+"reads": [
+"E",
+"c_airbase",
+"cap",
+"fvol",
+"mat"
+],
+"writes": [
+"E"
+],
+"clsref": [],
+"static": false
+},
+"_gas_access": {
+"lines": [
+4321,
+4334
+],
+"globals": [
+"AIR"
+],
+"calls": [],
+"reads": [
+"cap",
+"fvol",
+"mat"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_burn": {
+"lines": [
+4336,
+4477
+],
+"globals": [
+"AIR",
+"AMBIENT",
+"ASH",
+"CHAR",
+"COMBUST_CEIL",
+"FLESH",
+"FLUID",
+"NOFLUID",
+"O2_PER_L",
+"O2_RATIO",
+"O2_RATIO_OIL",
+"OIL",
+"PLUME_REACH_M",
+"SOLID",
+"SOOT",
+"SOOT_OIL",
+"WOOD",
+"np"
+],
+"calls": [
+"T",
+"_blur_cells",
+"_cells",
+"_gas_access",
+"_region_of_surface",
+"_upcell"
+],
+"reads": [
+"E",
+"_airblur",
+"_aircells",
+"_region_count",
+"air_region",
+"fl",
+"fvol",
+"mat",
+"o2",
+"p_add",
+"scale",
+"shape",
+"smass",
+"smoke",
+"vox_l"
+],
+"writes": [
+"E",
+"_airblur",
+"_aircells",
+"fl",
+"fvol",
+"mat",
+"o2",
+"p_add",
+"smass",
+"smoke"
+],
+"clsref": [
+"_CS"
+],
+"static": false
+},
+"_law_boil": {
+"lines": [
+4479,
+4496
+],
+"globals": [
+"BOIL",
+"LATENT",
+"NOFLUID",
+"WATER",
+"np"
+],
+"calls": [
+"T",
+"_upcell",
+"heat_capacity"
+],
+"reads": [
+"E",
+"fl",
+"fpot",
+"fvol",
+"p_add",
+"pcell"
+],
+"writes": [
+"E",
+"fl",
+"fpot",
+"fvol",
+"p_add"
+],
+"clsref": [],
+"static": false
+},
+"_law_melt": {
+"lines": [
+4498,
+4533
+],
+"globals": [
+"AIR",
+"FLUID",
+"FREEZE",
+"MELT",
+"NOFLUID",
+"np"
+],
+"calls": [
+"T",
+"heat_capacity"
+],
+"reads": [
+"E",
+"fl",
+"fvol",
+"mat",
+"smass"
+],
+"writes": [
+"E",
+"fl",
+"fvol",
+"mat",
+"smass"
+],
+"clsref": [],
+"static": false
+},
+"_law_acid": {
+"lines": [
+4535,
+4582
+],
+"globals": [
+"AIR",
+"NMAT",
+"REACTIONS",
+"_REACTIVE",
+"np"
+],
+"calls": [],
+"reads": [
+"E",
+"cap",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"scale",
+"smass",
+"smoke"
+],
+"writes": [
+"E",
+"fpot",
+"mat",
+"smass",
+"smoke"
+],
+"clsref": [],
+"static": false
+},
+"_blur_cells": {
+"lines": [
+4586,
+4599
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_cells": {
+"lines": [
+4601,
+4612
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"shape"
+],
+"writes": [],
+"clsref": [
+"_CS"
+],
+"static": false
+},
+"_upcell": {
+"lines": [
+4614,
+4618
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"shape"
+],
+"writes": [],
+"clsref": [
+"_CS"
+],
+"static": false
+},
+"_law_air": {
+"lines": [
+4620,
+4708
+],
+"globals": [
+"AIR",
+"AMBIENT",
+"np"
+],
+"calls": [
+"T",
+"_cells",
+"_upcell",
+"porosity"
+],
+"reads": [
+"mat",
+"open_sky",
+"p_add",
+"pcell",
+"shape",
+"smoke",
+"vcell"
+],
+"writes": [
+"p_add",
+"pcell",
+"vcell"
+],
+"clsref": [
+"_CS"
+],
+"static": false
+},
+"_law_smoke": {
+"lines": [
+4721,
+4780
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [
+"porosity"
+],
+"reads": [
+"mat",
+"open_sky",
+"shape",
+"smoke"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_air_regions": {
+"lines": [
+4782,
+4809
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [],
+"reads": [
+"_region_air",
+"air_region",
+"mat",
+"shape"
+],
+"writes": [
+"_airblur",
+"_aircells",
+"_region_air",
+"_region_count",
+"air_region"
+],
+"clsref": [],
+"static": false
+},
+"_region_of_surface": {
+"lines": [
+4811,
+4822
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"air_region"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_o2": {
+"lines": [
+4824,
+4960
+],
+"globals": [
+"AIR",
+"HAVE_NUMBA",
+"O2_PER_L",
+"PLUME_REACH_M",
+"SMOKE_STILL",
+"_gas_overturn",
+"_o2_diffuse",
+"np"
+],
+"calls": [
+"T",
+"_blur_cells",
+"_cells",
+"_upcell",
+"_window",
+"porosity"
+],
+"reads": [
+"_region_count",
+"air_region",
+"fused",
+"mat",
+"o2",
+"open_sky",
+"scale",
+"skip_quiet",
+"smoke",
+"vox_l"
+],
+"writes": [
+"o2"
+],
+"clsref": [
+"_CS"
+],
+"static": false
+},
+"add_person": {
+"lines": [
+4963,
+4988
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"persons",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_person_cells": {
+"lines": [
+4990,
+5002
+],
+"globals": [],
+"calls": [
+"_claim_bodies"
+],
+"reads": [
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_claim_bodies": {
+"lines": [
+5004,
+5139
+],
+"globals": [
+"FLESH",
+"np"
+],
+"calls": [
+"_own_claim"
+],
+"reads": [
+"bodies",
+"mat",
+"matter",
+"persons",
+"scale",
+"shape",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_carry_own": {
+"lines": [
+5143,
+5167
+],
+"globals": [],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_own_claim": {
+"lines": [
+5169,
+5177
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_flood_person": {
+"lines": [
+5179,
+5230
+],
+"globals": [
+"FLESH",
+"np"
+],
+"calls": [],
+"reads": [
+"mat",
+"scale",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"person_status": {
+"lines": [
+5232,
+5237
+],
+"globals": [],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_life": {
+"lines": [
+5239,
+5328
+],
+"globals": [
+"AIR",
+"BODY",
+"FLESH",
+"O2_PER_L",
+"np"
+],
+"calls": [
+"T",
+"_collapse",
+"_delivered_o2",
+"_person_cells"
+],
+"reads": [
+"bodies",
+"mat",
+"o2",
+"persons",
+"scale",
+"shape",
+"smoke",
+"tick",
+"vox_l"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_look_around": {
+"lines": [
+5330,
+5465
+],
+"globals": [
+"SEE_TAU",
+"WILL",
+"_DENS_ARR",
+"_TRANSMIT_ARR",
+"np"
+],
+"calls": [
+"_held_cells",
+"_walkable",
+"burning"
+],
+"reads": [
+"mat",
+"scale",
+"shape",
+"smass",
+"vox_l"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_sees": {
+"lines": [
+5467,
+5506
+],
+"globals": [
+"SEE_TAU",
+"SMOKE_EXT",
+"_DENS_ARR",
+"_TRANSMIT_ARR",
+"np"
+],
+"calls": [],
+"reads": [
+"mat",
+"scale",
+"shape",
+"smass",
+"smoke",
+"vox_l"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_in_cone": {
+"lines": [
+5509,
+5517
+],
+"globals": [
+"WILL",
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_hears": {
+"lines": [
+5519,
+5521
+],
+"globals": [
+"HEAR_DB",
+"SHOUT_DB"
+],
+"calls": [
+"_level"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_hear": {
+"lines": [
+5523,
+5577
+],
+"globals": [
+"SOUND",
+"np"
+],
+"calls": [
+"_level",
+"_person_cells"
+],
+"reads": [
+"persons",
+"shape",
+"sounds",
+"tick"
+],
+"writes": [
+"sounds"
+],
+"clsref": [],
+"static": false
+},
+"_noise": {
+"lines": [
+5579,
+5591
+],
+"globals": [
+"SOUND",
+"np"
+],
+"calls": [],
+"reads": [
+"sounds",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_level": {
+"lines": [
+5593,
+5630
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"scale",
+"shape",
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_say": {
+"lines": [
+5632,
+5643
+],
+"globals": [
+"LINES",
+"SHOUT_DB"
+],
+"calls": [],
+"reads": [
+"sounds",
+"speech",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_walkable": {
+"lines": [
+5645,
+5667
+],
+"globals": [
+"AIR",
+"PUSH_THROUGH",
+"_DENS_ARR",
+"np"
+],
+"calls": [],
+"reads": [
+"mat",
+"smass",
+"vox_l"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_bearing": {
+"lines": [
+5669,
+5674
+],
+"globals": [
+"_DIRS",
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_reach_along": {
+"lines": [
+5676,
+5697
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_places": {
+"lines": [
+5699,
+5803
+],
+"globals": [
+"WILL",
+"np"
+],
+"calls": [
+"_bearing",
+"_reach_along"
+],
+"reads": [
+"exits",
+"scale",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_underfoot": {
+"lines": [
+5805,
+5817
+],
+"globals": [
+"AIR"
+],
+"calls": [],
+"reads": [
+"mat"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_contact": {
+"lines": [
+5819,
+5843
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [],
+"reads": [
+"mat",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_leap_speed": {
+"lines": [
+5845,
+5858
+],
+"globals": [
+"BODY",
+"GRAVITY",
+"np"
+],
+"calls": [
+"_crouch_of",
+"_legs_of"
+],
+"reads": [
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_leap_targets": {
+"lines": [
+5860,
+5900
+],
+"globals": [
+"GRAVITY",
+"np"
+],
+"calls": [],
+"reads": [
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_leap": {
+"lines": [
+5902,
+5925
+],
+"globals": [
+"GRAVITY",
+"np"
+],
+"calls": [
+"_launch",
+"_leap_speed"
+],
+"reads": [
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_in_reach": {
+"lines": [
+5927,
+5954
+],
+"globals": [
+"BODY",
+"np"
+],
+"calls": [],
+"reads": [
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_span_xy": {
+"lines": [
+5957,
+5959
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_resist": {
+"lines": [
+5961,
+5982
+],
+"globals": [
+"BODY"
+],
+"calls": [
+"_effort",
+"_underfoot"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_within_reach": {
+"lines": [
+5984,
+6006
+],
+"globals": [
+"np"
+],
+"calls": [
+"_in_reach",
+"_person_cells"
+],
+"reads": [
+"persons"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_objects_within_reach": {
+"lines": [
+6008,
+6136
+],
+"globals": [
+"AIR",
+"BODY",
+"FLESH",
+"MATNAME",
+"np"
+],
+"calls": [
+"_effort",
+"_matter_moved",
+"_object_at",
+"_reach_of"
+],
+"reads": [
+"_bulk",
+"_bulk_gen",
+"mat",
+"scale",
+"shape"
+],
+"writes": [
+"_bulk",
+"_bulk_gen"
+],
+"clsref": [],
+"static": false
+},
+"_held_cells": {
+"lines": [
+6138,
+6159
+],
+"globals": [
+"FLESH",
+"np"
+],
+"calls": [
+"_object_at"
+],
+"reads": [
+"bodies",
+"mat",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_in_flight_near": {
+"lines": [
+6161,
+6187
+],
+"globals": [
+"np"
+],
+"calls": [
+"_fists",
+"_fly_pose",
+"_reach_of"
+],
+"reads": [
+"bodies",
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_falling_near": {
+"lines": [
+6189,
+6211
+],
+"globals": [
+"np"
+],
+"calls": [
+"_fists",
+"_fly_pose",
+"_reach_of"
+],
+"reads": [
+"bodies",
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_catch_person": {
+"lines": [
+6213,
+6232
+],
+"globals": [
+"BODY",
+"np"
+],
+"calls": [
+"_hand_strength",
+"_land_body"
+],
+"reads": [
+"bodies"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_catch": {
+"lines": [
+6234,
+6263
+],
+"globals": [
+"AIR",
+"BODY",
+"MATNAME",
+"TICK_S",
+"np"
+],
+"calls": [
+"_fly_pose",
+"_hand_strength",
+"_land_body"
+],
+"reads": [
+"bodies",
+"mat",
+"shape",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_body_span": {
+"lines": [
+6265,
+6320
+],
+"globals": [
+"BODY",
+"np"
+],
+"calls": [
+"_limb_parts",
+"_limbs",
+"_person_cells",
+"_pivot_of"
+],
+"reads": [
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_reach_of": {
+"lines": [
+6322,
+6324
+],
+"globals": [],
+"calls": [
+"_body_span"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_legs_of": {
+"lines": [
+6326,
+6340
+],
+"globals": [
+"BODY",
+"np"
+],
+"calls": [
+"_bones",
+"_cut_section",
+"_limb_parts",
+"_limbs"
+],
+"reads": [
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_torque_of": {
+"lines": [
+6342,
+6364
+],
+"globals": [
+"BODY",
+"np"
+],
+"calls": [
+"_bone_parts",
+"_bones",
+"_cut_section"
+],
+"reads": [
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_gather_ticks": {
+"lines": [
+6366,
+6380
+],
+"globals": [
+"GRAVITY",
+"TICK_S",
+"np"
+],
+"calls": [
+"_crouch_of"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_bunch": {
+"lines": [
+6382,
+6440
+],
+"globals": [
+"AIR",
+"_SIX",
+"np"
+],
+"calls": [],
+"reads": [
+"mat",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_crouch": {
+"lines": [
+6442,
+6575
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [
+"_angles",
+"_bone_parts",
+"_bones",
+"_bunch",
+"_crouch_of",
+"_limbs",
+"_person_cells",
+"_still_joined"
+],
+"reads": [
+"E",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"scale",
+"shape",
+"smass"
+],
+"writes": [
+"_slack_mat",
+"_torque_solid"
+],
+"clsref": [],
+"static": false
+},
+"_face_axis": {
+"lines": [
+6578,
+6586
+],
+"globals": [],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": true
+},
+"_bend_max": {
+"lines": [
+6588,
+6611
+],
+"globals": [],
+"calls": [
+"_face_axis",
+"_repose"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_crouch_of": {
+"lines": [
+6613,
+6621
+],
+"globals": [
+"BODY"
+],
+"calls": [
+"_body_span"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_hand": {
+"lines": [
+6623,
+6658
+],
+"globals": [
+"np"
+],
+"calls": [
+"_body_span",
+"_fist_of",
+"_limbs"
+],
+"reads": [
+"scale"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_hand_strength": {
+"lines": [
+6660,
+6665
+],
+"globals": [
+"BODY"
+],
+"calls": [],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_fist_of": {
+"lines": [
+6667,
+6685
+],
+"globals": [
+"np"
+],
+"calls": [
+"_limb_parts",
+"_pivot_of"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_fists": {
+"lines": [
+6687,
+6701
+],
+"globals": [],
+"calls": [
+"_fist_of",
+"_limbs"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_grip_holds": {
+"lines": [
+6703,
+6743
+],
+"globals": [
+"BODY",
+"np"
+],
+"calls": [
+"_effort",
+"_fists",
+"_person_cells",
+"_underfoot"
+],
+"reads": [
+"scale",
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_grip_cells": {
+"lines": [
+6745,
+6758
+],
+"globals": [
+"np"
+],
+"calls": [
+"_grip_holds",
+"_held_clusters"
+],
+"reads": [
+"persons"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_borne_cells": {
+"lines": [
+6760,
+6792
+],
+"globals": [
+"np"
+],
+"calls": [
+"_person_cells",
+"_underfoot"
+],
+"reads": [
+"persons"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_rub": {
+"lines": [
+6794,
+6830
+],
+"globals": [
+"np"
+],
+"calls": [
+"_contact",
+"_effort",
+"_held_clusters"
+],
+"reads": [
+"E",
+"scale",
+"shape"
+],
+"writes": [
+"E"
+],
+"clsref": [],
+"static": false
+},
+"_haul_cost": {
+"lines": [
+6832,
+6847
+],
+"globals": [
+"np"
+],
+"calls": [
+"_contact",
+"_effort",
+"_held_clusters"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_held_clusters": {
+"lines": [
+6849,
+6866
+],
+"globals": [
+"np"
+],
+"calls": [
+"_held_cells",
+"_person_cells"
+],
+"reads": [
+"persons"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_overbalanced": {
+"lines": [
+6868,
+6960
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [
+"_contact",
+"_fists",
+"_held_clusters"
+],
+"reads": [
+"mat",
+"shape",
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_pulled_over": {
+"lines": [
+6962,
+7036
+],
+"globals": [
+"np"
+],
+"calls": [
+"_contact",
+"_fists",
+"_grip_holds",
+"_held_clusters",
+"_span_xy"
+],
+"reads": [
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_take_up": {
+"lines": [
+7038,
+7075
+],
+"globals": [
+"np"
+],
+"calls": [
+"_effort",
+"_fist_of",
+"_hand",
+"_hand_strength",
+"_held_cells",
+"_shove"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_haul_held": {
+"lines": [
+7077,
+7110
+],
+"globals": [
+"BODY",
+"MATNAME",
+"np"
+],
+"calls": [
+"_effort",
+"_held_cells",
+"_in_reach",
+"_person_cells",
+"_shove",
+"_span_xy"
+],
+"reads": [
+"mat",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_menu": {
+"lines": [
+7112,
+7375
+],
+"globals": [
+"ANSWERS",
+"LINES",
+"MATNAME",
+"MENU_CAP",
+"REFLEXES",
+"WILL",
+"np"
+],
+"calls": [
+"_bones",
+"_falling_near",
+"_fit_grid",
+"_gather_ticks",
+"_hand",
+"_held_cells",
+"_in_flight_near",
+"_leap_speed",
+"_leap_targets",
+"_limbs",
+"_objects_within_reach",
+"_places",
+"_routes",
+"_underfoot",
+"_within_reach"
+],
+"reads": [
+"bodies",
+"tick"
+],
+"writes": [
+"_offered"
+],
+"clsref": [],
+"static": false
+},
+"_full_menu": {
+"lines": [
+7377,
+7384
+],
+"globals": [
+"MENU_CAP"
+],
+"calls": [
+"_menu"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_decide": {
+"lines": [
+7386,
+7598
+],
+"globals": [
+"ACTS",
+"BODY",
+"LIMBS",
+"ORIENTING",
+"REFLEXES",
+"np",
+"seam"
+],
+"calls": [
+"_bend_max",
+"_catch",
+"_catch_person",
+"_full_menu",
+"_hand",
+"_hears",
+"_leap",
+"_menu",
+"_say",
+"_swing",
+"_take_up"
+],
+"reads": [
+"_offered",
+"bodies",
+"exits",
+"persons",
+"policy",
+"recall_check",
+"tick",
+"traces"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"trace_outcomes": {
+"lines": [
+7600,
+7617
+],
+"globals": [],
+"calls": [],
+"reads": [
+"persons",
+"traces"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_law_will": {
+"lines": [
+7619,
+7970
+],
+"globals": [
+"AMBIENT",
+"BODY",
+"FLESH",
+"GAZE_SWEEP",
+"GRAVITY",
+"MEANS",
+"SOUND",
+"WILL",
+"np"
+],
+"calls": [
+"_carry_own",
+"_decide",
+"_decide_falling",
+"_falling_near",
+"_haul",
+"_haul_cost",
+"_haul_held",
+"_hears",
+"_held_cells",
+"_in_cone",
+"_in_flight_near",
+"_leave",
+"_look_around",
+"_noise",
+"_person_cells",
+"_plan_path",
+"_rub",
+"_sees",
+"_square_up",
+"_underfoot",
+"_walk",
+"burning"
+],
+"reads": [
+"exits",
+"mat",
+"persons",
+"scale",
+"shape",
+"smass",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_decide_falling": {
+"lines": [
+7972,
+8019
+],
+"globals": [
+"REFLEXES",
+"WILL"
+],
+"calls": [],
+"reads": [
+"bodies",
+"policy",
+"tick",
+"traces"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_leave": {
+"lines": [
+8021,
+8058
+],
+"globals": [
+"np"
+],
+"calls": [],
+"reads": [
+"E",
+"edge",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"gone",
+"mat",
+"smass"
+],
+"writes": [
+"_slack_mat",
+"_torque_solid",
+"left_mass"
+],
+"clsref": [],
+"static": false
+},
+"_law_grips": {
+"lines": [
+8060,
+8124
+],
+"globals": [
+"FLESH",
+"np"
+],
+"calls": [
+"_body_pose",
+"_fly_pose",
+"_in_reach",
+"_person_cells",
+"_reach_of"
+],
+"reads": [
+"bodies",
+"persons",
+"scale",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_haul": {
+"lines": [
+8126,
+8212
+],
+"globals": [
+"BODY",
+"FLESH",
+"np"
+],
+"calls": [
+"_carry_own",
+"_grip_holds",
+"_in_reach",
+"_person_cells",
+"_resist",
+"_shove",
+"_span_xy",
+"_underfoot"
+],
+"reads": [
+"bodies",
+"persons",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_fit_grid": {
+"lines": [
+8214,
+8263
+],
+"globals": [
+"np"
+],
+"calls": [
+"_walkable"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_routes": {
+"lines": [
+8265,
+8311
+],
+"globals": [
+"np"
+],
+"calls": [
+"_fit_grid"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_plan_path": {
+"lines": [
+8313,
+8316
+],
+"globals": [],
+"calls": [
+"_routes"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_object_at": {
+"lines": [
+8318,
+8342
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [],
+"reads": [
+"mat",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_effort": {
+"lines": [
+8344,
+8357
+],
+"globals": [
+"FRICTION",
+"GRAVITY"
+],
+"calls": [],
+"reads": [
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_shove": {
+"lines": [
+8359,
+8383
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [],
+"reads": [
+"E",
+"edge",
+"fallh",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"shape",
+"smass"
+],
+"writes": [
+"_slack_mat",
+"_torque_solid"
+],
+"clsref": [],
+"static": false
+},
+"_walk": {
+"lines": [
+8385,
+8424
+],
+"globals": [
+"PUSH_THROUGH",
+"_DENS_ARR"
+],
+"calls": [],
+"reads": [
+"E",
+"edge",
+"fl",
+"fpot",
+"fvol",
+"mat",
+"shape",
+"smass",
+"vox_l"
+],
+"writes": [
+"_torque_solid"
+],
+"clsref": [],
+"static": false
+},
+"_law_footing": {
+"lines": [
+8426,
+8534
+],
+"globals": [
+"GRAVITY",
+"np"
+],
+"calls": [
+"_contact",
+"_grip_holds",
+"_launch",
+"_overbalanced",
+"_person_cells",
+"_pulled_over",
+"_repose",
+"_underfoot"
+],
+"reads": [
+"bodies",
+"matter",
+"persons",
+"scale",
+"smass",
+"tick"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_collapse": {
+"lines": [
+8536,
+8564
+],
+"globals": [
+"AIR",
+"np"
+],
+"calls": [
+"_topple"
+],
+"reads": [
+"mat",
+"shape"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_busy": {
+"lines": [
+8566,
+8576
+],
+"globals": [],
+"calls": [],
+"reads": [
+"skip_quiet"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_mixing": {
+"lines": [
+8578,
+8586
+],
+"globals": [
+"O2_PER_L"
+],
+"calls": [],
+"reads": [
+"o2",
+"open_sky",
+"skip_quiet",
+"vox_l"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"_pushed": {
+"lines": [
+8588,
+8608
+],
+"globals": [],
+"calls": [],
+"reads": [
+"E",
+"p_add",
+"pcell",
+"skip_quiet",
+"vcell"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"step": {
+"lines": [
+8610,
+8698
+],
+"globals": [
+"AMBIENT",
+"LEAK",
+"O2_PER_L",
+"RAD",
+"SMOKE_STILL",
+"TICK_S",
+"np"
+],
+"calls": [
+"T",
+"_air_regions",
+"_busy",
+"_hot_window",
+"_law_acid",
+"_law_air",
+"_law_bleed",
+"_law_bodies",
+"_law_boil",
+"_law_burn",
+"_law_conduct",
+"_law_crack",
+"_law_flow",
+"_law_footing",
+"_law_grips",
+"_law_head",
+"_law_hear",
+"_law_joints",
+"_law_life",
+"_law_melt",
+"_law_o2",
+"_law_pose",
+"_law_rise",
+"_law_smoke",
+"_law_stir",
+"_law_support",
+"_law_torque",
+"_law_will",
+"_mixing",
+"_pushed",
+"_window",
+"heat_capacity"
+],
+"reads": [
+"E",
+"drops",
+"fvol",
+"matter",
+"o2",
+"scale",
+"shape",
+"smoke",
+"thermostats",
+"vox_l"
+],
+"writes": [
+"E",
+"o2",
+"shed",
+"tick"
+],
+"clsref": [
+"_SMOKE_REACH"
+],
+"static": false
+},
+"snapshot": {
+"lines": [
+8703,
+8721
+],
+"globals": [
+"copy"
+],
+"calls": [],
+"reads": [
+"__dict__"
+],
+"writes": [],
+"clsref": [
+"_NOT_STATE"
+],
+"static": false
+},
+"restore": {
+"lines": [
+8723,
+8730
+],
+"globals": [
+"copy"
+],
+"calls": [],
+"reads": [
+"__dict__"
+],
+"writes": [],
+"clsref": [
+"_NOT_STATE"
+],
+"static": false
+},
+"total_fluid": {
+"lines": [
+8733,
+8751
+],
+"globals": [
+"BLOOD"
+],
+"calls": [],
+"reads": [
+"bodies",
+"drops",
+"fl",
+"fvol",
+"gone",
+"matter",
+"persons"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"total_mass": {
+"lines": [
+8753,
+8774
+],
+"globals": [],
+"calls": [],
+"reads": [
+"bodies",
+"gone",
+"mat",
+"matter",
+"moving",
+"smass"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"total_wood": {
+"lines": [
+8776,
+8777
+],
+"globals": [
+"WOOD"
+],
+"calls": [
+"total_mass"
+],
+"reads": [],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"total_energy": {
+"lines": [
+8779,
+8787
+],
+"globals": [],
+"calls": [],
+"reads": [
+"E",
+"bodies",
+"gone",
+"matter",
+"moving",
+"shed"
+],
+"writes": [],
+"clsref": [],
+"static": false
+},
+"total_lost": {
+"lines": [
+8789,
+8794
+],
+"globals": [
+"AIR"
+],
+"calls": [],
+"reads": [
+"gone"
+],
+"writes": [],
+"clsref": [],
+"static": false
+}
+}

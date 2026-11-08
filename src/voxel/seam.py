@@ -33,14 +33,22 @@ thing worse than re-labelling is not knowing you have to.
 """
 from __future__ import annotations
 
-SPELLING = "mark1-menu-v1"
+# v1: the first spelling. v2: named things reach the menu rows ("take hold of
+# the axe"), and a thing's number never does (`HIDDEN`). The words of a
+# situation are otherwise the same bytes as v1; only this header moved.
+SPELLING = "mark1-menu-v2"
 
 # WHAT A BODY IS NEVER TOLD ABOUT ITSELF. `reflexes` is the answer key (rule 2).
 # `tick` and `who` are facts about the RUN rather than about the situation: a
 # body does not decide differently because it is tick 400 or because it is
 # called Berel, and putting them in would hand the model a way to memorise runs
 # instead of learning situations — as well as busting the cache on every call.
-HIDDEN = ("reflexes", "tick", "who")
+# `eid` and `eids` are the same kind of fact (v2): the number a world gave a
+# thing when it was made. It says nothing a noun does not ("the axe"), and it
+# differs between two runs of the same situation, so it would bust the cache
+# the same way and teach the same memorising. A thing reaches the text by
+# its name and never by its number.
+HIDDEN = ("reflexes", "tick", "who", "eid", "eids")
 
 # The order fields are written in. Fixed here rather than sorted at use, so that
 # adding a field is a deliberate edit to this list and bumps SPELLING.

@@ -1,0 +1,1082 @@
+{
+ "_meta": {
+  "lane": "A-S",
+  "schema": "entries[key] = {value, unit, status, citation, retrieved, note?, alt?, derived?, vs_spec?}; status is \"sourced\" or \"not_found\"; a not_found entry has value null",
+  "retrieved": "2026-10-29",
+  "count_sourced": 33,
+  "count_not_found": 5,
+  "rules": "No value was invented. Two sources that disagree are both recorded (value plus alt). Secondary sources are marked SECONDARY in note. Derived numbers carry a derived field."
+ },
+ "entries": {
+  "wood.tension_parallel": {
+   "value": {
+    "green": {
+     "douglas_fir_interior_north": 107.6,
+     "loblolly_pine": 80.0,
+     "eastern_white_pine": 73.1,
+     "ponderosa_pine": 57.9,
+     "western_hemlock": 89.6,
+     "sitka_spruce": 59.3,
+     "virginia_pine": 94.5,
+     "american_beech": 86.2,
+     "sugar_maple": 108.2,
+     "yellow_poplar": 109.6,
+     "pin_oak": 112.4,
+     "overcup_oak": 77.9
+    },
+    "note_12pct": "softwoods about 13 % higher at 12 % MC, hardwoods about 32 % higher"
+   },
+   "unit": "MPa",
+   "status": "sourced",
+   "citation": "Forest Products Laboratory, Wood handbook: wood as an engineering material, General Technical Report FPL-GTR-282, 2021 (the edition after FPL-GTR-190, 2010; same tables). https://research.fs.usda.gov/download/treesearch/62200.pdf Table 5-7 (clear straight-grained, tested green).",
+   "retrieved": "2026-10-29",
+   "note": "Few species were tested in tension. The handbook says modulus of rupture is \"a low or conservative estimate of tensile strength\" for clear wood. Lumber with knots is much weaker (not covered by this table).",
+   "vs_spec": "T9 spec WOOD st = 4.0e7 Pa (u, \"pine 33-50 MPa\"). Sourced pine green: loblolly 80, eastern white 73, ponderosa 58 MPa; x1.13 at 12 % MC. So the spec value is 0.5-0.7x the sourced clear-wood value (sourced is 1.4-2x higher); oak/hardwood 78-112 MPa."
+  },
+  "wood.bending_mor": {
+   "value": {
+    "12pct": {
+     "douglas_fir_coast": 85,
+     "loblolly_pine": 88,
+     "eastern_white_pine": 59,
+     "longleaf_pine": 100,
+     "white_oak": 105,
+     "northern_red_oak": 99
+    },
+    "green": {
+     "douglas_fir_coast": 53,
+     "loblolly_pine": 50,
+     "eastern_white_pine": 34,
+     "longleaf_pine": 59,
+     "white_oak": 57,
+     "northern_red_oak": 57
+    }
+   },
+   "unit": "MPa",
+   "status": "sourced",
+   "citation": "Forest Products Laboratory, Wood handbook: wood as an engineering material, General Technical Report FPL-GTR-282, 2021 (the edition after FPL-GTR-190, 2010; same tables). https://research.fs.usda.gov/download/treesearch/62200.pdf Table 5-3a (metric), modulus of rupture column; kPa converted to MPa.",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T9 spec WOOD bending 6.0e7 Pa (\"low end of 59-99\"). Sourced 12 % MC: eastern white pine 59, Douglas-fir coast 85, loblolly 88, longleaf 100, white oak 105 MPa. 60 MPa is fine for the weakest pine, about 0.7x the Douglas-fir/loblolly value."
+  },
+  "wood.shear_parallel": {
+   "value": {
+    "12pct": {
+     "douglas_fir_coast": 7.8,
+     "loblolly_pine": 9.6,
+     "eastern_white_pine": 6.2,
+     "longleaf_pine": 10.4,
+     "white_oak": 13.8,
+     "northern_red_oak": 12.3
+    },
+    "green": {
+     "douglas_fir_coast": 6.2,
+     "loblolly_pine": 5.9,
+     "eastern_white_pine": 4.7,
+     "longleaf_pine": 7.2,
+     "white_oak": 8.6,
+     "northern_red_oak": 8.3
+    }
+   },
+   "unit": "MPa",
+   "status": "sourced",
+   "citation": "Forest Products Laboratory, Wood handbook: wood as an engineering material, General Technical Report FPL-GTR-282, 2021 (the edition after FPL-GTR-190, 2010; same tables). https://research.fs.usda.gov/download/treesearch/62200.pdf Table 5-3a (metric), shear parallel to grain column.",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T9 spec WOOD shear 8e6 Pa (u, 6-12). Sourced 12 % MC: 6.2-13.8 MPa (Douglas-fir 7.8, loblolly 9.6). Spec is inside the range; no retune needed for softwoods."
+  },
+  "wood.tension_perpendicular": {
+   "value": {
+    "12pct": {
+     "douglas_fir_coast": 2.3,
+     "loblolly_pine": 3.2,
+     "eastern_white_pine": 2.1,
+     "longleaf_pine": 3.2,
+     "white_oak": 5.5,
+     "northern_red_oak": 5.5
+    },
+    "green": {
+     "douglas_fir_coast": 2.1,
+     "loblolly_pine": 1.8,
+     "eastern_white_pine": 1.7,
+     "longleaf_pine": 2.3,
+     "white_oak": 5.3,
+     "northern_red_oak": 5.2
+    }
+   },
+   "unit": "MPa",
+   "status": "sourced",
+   "citation": "Forest Products Laboratory, Wood handbook: wood as an engineering material, General Technical Report FPL-GTR-282, 2021 (the edition after FPL-GTR-190, 2010; same tables). https://research.fs.usda.gov/download/treesearch/62200.pdf Table 5-3a (metric), tension perpendicular to grain column.",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T9 spec WOOD perp tension 3.0e6 Pa. Sourced 12 % MC: Douglas-fir 2.3, loblolly 3.2, eastern white pine 2.1, white oak 5.5 MPa. Spec is inside the range."
+  },
+  "wood.compression_parallel": {
+   "value": {
+    "12pct": {
+     "douglas_fir_coast": 49.9,
+     "loblolly_pine": 49.2,
+     "eastern_white_pine": 33.1,
+     "longleaf_pine": 58.4,
+     "white_oak": 51.3,
+     "northern_red_oak": 46.6
+    }
+   },
+   "unit": "MPa",
+   "status": "sourced",
+   "citation": "Forest Products Laboratory, Wood handbook: wood as an engineering material, General Technical Report FPL-GTR-282, 2021 (the edition after FPL-GTR-190, 2010; same tables). https://research.fs.usda.gov/download/treesearch/62200.pdf Table 5-3a (metric), compression parallel to grain (max crushing strength).",
+   "retrieved": "2026-10-29",
+   "note": "Extra, for T9 compression rows."
+  },
+  "wood.duration_of_load_10yr": {
+   "value": 0.6,
+   "unit": "fraction of short-test strength",
+   "status": "sourced",
+   "citation": "Forest Products Laboratory, Wood handbook: wood as an engineering material, General Technical Report FPL-GTR-282, 2021 (the edition after FPL-GTR-190, 2010; same tables). https://research.fs.usda.gov/download/treesearch/62200.pdf Chapter 5, Duration of Load, Figure 5-23: \"a wood member under the continuous action of bending stress for 10 years may carry only 60 % (or perhaps less) of the load required to produce failure ... in a standard bending strength test of only a few minutes\".",
+   "retrieved": "2026-10-29",
+   "note": "Time-to-failure is described as approximately exponential in stress (Figure 5-23, composite of several studies; a band, not a line).",
+   "vs_spec": "T9 spec n = 24.7 reproduces 0.57 at 10 years. Sourced 0.60 \"or perhaps less\": the spec is inside the stated band (about 3 points lower). No retune needed."
+  },
+  "wood.screw_withdrawal": {
+   "value": {
+    "formula": "p = 108.25 * G^2 * D * L",
+    "p_unit": "N",
+    "D_L_unit": "mm",
+    "G_basis": "ovendry weight, volume at 12 % MC"
+   },
+   "unit": "N",
+   "status": "sourced",
+   "citation": "Forest Products Laboratory, Wood handbook: wood as an engineering material, General Technical Report FPL-GTR-282, 2021 (the edition after FPL-GTR-190, 2010; same tables). https://research.fs.usda.gov/download/treesearch/62200.pdf Chapter 8, Equation 8-10a (ultimate withdrawal, side grain, seasoned wood; valid for the screw sizes of Table 8-8; lead holes 70 % of root diameter in softwood, 90 % in hardwood).",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T11 spec P = 108.25 G^2 D L: identical."
+  },
+  "wood.nail_withdrawal": {
+   "value": {
+    "formula": "p = 54.12 * G^2.5 * D * L",
+    "p_unit": "N"
+   },
+   "unit": "N",
+   "status": "sourced",
+   "citation": "Forest Products Laboratory, Wood handbook: wood as an engineering material, General Technical Report FPL-GTR-282, 2021 (the edition after FPL-GTR-190, 2010; same tables). https://research.fs.usda.gov/download/treesearch/62200.pdf Chapter 8, Equation 8-1a (smooth common wire nail, side grain).",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T2 joinery nail row 54.12 G^2.5 D: identical."
+  },
+  "wood.dowel_embedment": {
+   "value": {
+    "formula": "Fe = 114.5 * G^1.84",
+    "unit": "MPa",
+    "inch_pound": "Fe = 16,600 G^1.84 psi",
+    "G_basis": "ovendry weight and volume"
+   },
+   "unit": "MPa",
+   "status": "sourced",
+   "citation": "Forest Products Laboratory, Wood handbook: wood as an engineering material, General Technical Report FPL-GTR-282, 2021 (the edition after FPL-GTR-190, 2010; same tables). https://research.fs.usda.gov/download/treesearch/62200.pdf Chapter 8, Equation 8-3 (dowel bearing strength, 5 % diameter offset).",
+   "retrieved": "2026-10-29",
+   "note": "G = 0.45 gives 26.3 MPa.",
+   "vs_spec": "T11 spec Fe = 16600 G^1.84 psi = 26 MPa for G 0.45: identical."
+  },
+  "rock.granite.compressive": {
+   "value": 148.5,
+   "unit": "MPa",
+   "status": "sourced",
+   "citation": "Table \"Physical properties for unweathered rocks\" (author and year not printed in the PDF extract; layout matches Deere and Miller 1966 but that is NOT confirmed), AusIMM Minerals Processing Toolbox, https://www.ausimm.com/globalassets/insights-and-resources/minerals-processing-toolbox/rockprop-1.pdf ; row \"Granite, biotite\" 0A: UCS range 142.2-160.5 MPa, average 148.5",
+   "retrieved": "2026-10-29",
+   "note": "Also in the same table: a second biotite granite (12B) 76.1-100.8 MPa, average 88.8; granodiorite 179.5; so granite UCS varies by 2x between sources.",
+   "alt": [
+    {
+     "value": 159.0,
+     "unit": "MPa",
+     "range": [
+      132,
+      187
+     ],
+     "note": "Najran black granite, 0-30 m depth cores, mean",
+     "citation": "Abd El Aal et al., Depth variations as effective indicators for strength variation of Najran granites, Frontiers in Materials, 2025, doi 10.3389/fmats.2025.1382313, https://www.frontiersin.org/journals/materials/articles/10.3389/fmats.2025.1382313/xml"
+    },
+    {
+     "value": 113.51,
+     "unit": "MPa",
+     "note": "Qingdao microweathered granite, 3 tests (118.87, 109.16, 112.50)",
+     "citation": "Sci Rep 14:10506, 2024, doi 10.1038/s41598-024-60918-6, https://pmc.ncbi.nlm.nih.gov/articles/PMC11076607/"
+    }
+   ],
+   "vs_spec": "T9 spec STONE compression 1.5e8 Pa (u, \"granite 100-250\"): inside the sourced 89-159 MPa spread (1.0x of the 148.5 row)."
+  },
+  "rock.granite.tensile": {
+   "value": 18.48,
+   "unit": "MPa (Brazilian splitting)",
+   "status": "sourced",
+   "citation": "Abd El Aal et al., Depth variations as effective indicators for strength variation of Najran granites, Frontiers in Materials, 2025, doi 10.3389/fmats.2025.1382313, https://www.frontiersin.org/journals/materials/articles/10.3389/fmats.2025.1382313/xml ; Brazilian strength range 16.65-20.46, average 18.48 MPa",
+   "retrieved": "2026-10-29",
+   "note": "Najran black granite is a very strong rock (UCS 159 MPa), so tensile/compressive = 0.116. Typical granite tensile is lower; one other granite figure found only in a search summary (13.37 MPa, MDPI Appl. Sci. 15(8):4385) could not be opened (HTTP 403) and is not recorded.",
+   "vs_spec": "T9 spec STONE st = 1.0e7 Pa (and 1.5e7 for another column). Sourced 18.5 MPa is 1.2-1.8x the spec for strong granite."
+  },
+  "rock.limestone.compressive": {
+   "value": 85.1,
+   "unit": "MPa",
+   "status": "sourced",
+   "citation": "Lazarova, Krupa, Vavrek, Hudakova, Ivanicova, Kiovsky, Failure criterion of limestone and granodiorite determined by laboratory testing..., 56th International October Conference on Mining and Metallurgy, Bor, 2025, doi 10.5937/IOC25052L, https://scindeks-clanci.ceon.rs/data/pdf/proc-0055/2025/proc-00552502052L.pdf ; Table 1 (Vcelare quarry, n=15): mean 85.1, median 77.8, min 55.1, max 119.2",
+   "retrieved": "2026-10-29",
+   "note": "Limestone varies from about 40 to 240 MPa between quarries; one quarry mean is given as the value.",
+   "alt": [
+    {
+     "value": [
+      48.0,
+      96.97
+     ],
+     "unit": "MPa",
+     "note": "12 limestones, means, Jamshidi and Sousa",
+     "citation": "Jamshidi and Sousa, Materials 17(20):5081, 2024, doi 10.3390/ma17205081, https://pmc.ncbi.nlm.nih.gov/articles/PMC11509414/"
+    },
+    {
+     "value": [
+      40.89,
+      236.19
+     ],
+     "unit": "MPa",
+     "note": "12 limestones, Teymen and Menguc 2020 (Int. J. Min. Sci. Technol. 30:785, doi 10.1016/j.ijmst.2020.06.008), as tabulated in the Jamshidi and Sousa paper",
+     "citation": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11509414/"
+    }
+   ],
+   "vs_spec": "T9 spec has ONE STONE row at 1.5e8 Pa compression. Limestone is about 0.6x of it (85 MPa). If STONE is meant as granite-like, limestone needs its own row."
+  },
+  "rock.limestone.tensile": {
+   "value": 9.3,
+   "unit": "MPa (Brazilian splitting)",
+   "status": "sourced",
+   "citation": "Lazarova et al., 56th International October Conference on Mining and Metallurgy, Bor, 2025, doi 10.5937/IOC25052L, https://scindeks-clanci.ceon.rs/data/pdf/proc-0055/2025/proc-00552502052L.pdf ; Table 1 Brazilian test, n=10: mean 9.3, median 9.5, min 6.5, max 10.8",
+   "retrieved": "2026-10-29",
+   "note": "Brazilian tensile is about 0.11 of UCS for this limestone.",
+   "alt": [
+    {
+     "value": [
+      4.7,
+      9.07
+     ],
+     "unit": "MPa",
+     "note": "12 limestones, BTS means",
+     "citation": "Jamshidi and Sousa, Materials 17(20):5081, 2024, https://pmc.ncbi.nlm.nih.gov/articles/PMC11509414/"
+    }
+   ],
+   "vs_spec": "T9 spec STONE st = 1.0e7 Pa. Limestone 9.3 MPa: 0.9x. Fine."
+  },
+  "cusn.resistivity_vs_tin": {
+   "value": {
+    "room_temp_20C": [
+     {
+      "wt_pct_Sn": 5.0,
+      "alloy": "C51000 (about 5 % Sn, 0.2 % P)",
+      "iacs_pct": 15,
+      "S_per_m": 8800000.0,
+      "resistivity_uOhm_cm_derived": 11.49
+     },
+     {
+      "wt_pct_Sn": 8.0,
+      "alloy": "C52100 (7-9 % Sn)",
+      "iacs_pct": 13,
+      "S_per_m": 7600000.0,
+      "resistivity_uOhm_cm_derived": 13.26
+     }
+    ],
+    "cryogenic_4K2": {
+     "wt_pct_Sn": [
+      0.0,
+      10.7
+     ],
+     "resistivity_ohm_cm": [
+      1.27e-08,
+      1.3e-05
+     ]
+    }
+   },
+   "unit": "mixed (see value)",
+   "status": "sourced",
+   "citation": "Wieland Concast data sheets C51000 and C52100 (electrical conductivity at 68 F, determined on 5 % Sn, 0.2 % P), https://www.concast.com/files/C51000.pdf and https://www.concast.com/files/C52100.pdf ; Cogan and Rose, Properties of CuSn bronze at 4.2 K, Cryogenics 20(6), 1980, https://iifiir.org/en/fridoc/properties-of-cusn-bronze-at-4-2-k-70163",
+   "retrieved": "2026-10-29",
+   "note": "Resistivity in micro-ohm cm = 1.7241 / (IACS fraction); 100 % IACS = 1.7241 micro-ohm cm is the IACS definition (not fetched here). Phosphorus (0.03-0.35 %) adds a little to the bronze values. The 4.2 K abstract gives 1.27e-8 ohm cm for pure copper and 1.3e-5 ohm cm at 10.7 w/o Sn (that is 13 micro-ohm cm, the residual resistivity).",
+   "vs_spec": "T1 spec has a \"Cu-Sn increment\" for electronic Nordheim, number not stated in the (u) list; no value to compare."
+  },
+  "cusn.nordheim_coefficient": {
+   "value": null,
+   "unit": "micro-ohm cm",
+   "status": "not_found",
+   "citation": "No published Cu-Sn Nordheim coefficient C (rho_excess = C x(1-x)) was found. Searched: web searches for Nordheim / residual resistivity per at.% Sn in Cu; Cogan and Rose 1980 abstract (https://iifiir.org/en/fridoc/properties-of-cusn-bronze-at-4-2-k-70163). Leads not opened: Linde 1932 (resistivity of dilute alloys of Cu, Ag, Au), the 1944 Physical Review paper on Cu-Sn alpha-phase alloys, Landolt-Bornstein 1.4.1 (resistivity per at.% in dilute alloys).",
+   "retrieved": "2026-10-29",
+   "note": "Spread of the derived C (about 230-370 micro-ohm cm) shows the pure Nordheim form does not fit across 3-6 at.% Sn; use the resistivity table directly or interpolate it.",
+   "derived": {
+    "method": "C = (rho_alloy - 1.7241) / (x (1 - x)), x = atom fraction Sn from wt %, from the SOURCED resistivities in cusn.resistivity_vs_tin; indicative only (phosphorus and temper included in the bronze data; Nordheim is a dilute-alloy law)",
+    "C_from_5wtpct_20C_uOhm_cm": 367.0,
+    "C_from_8wtpct_20C_uOhm_cm": 271.0,
+    "C_from_10.7wtpct_4K2_residual_uOhm_cm": 230.0,
+    "x_atom_fraction": [
+     0.0274,
+     0.0445,
+     0.0603
+    ]
+   }
+  },
+  "nacl.k_app": {
+   "value": {
+    "S_per_m": {
+     "5": 6.72,
+     "10": 12.11,
+     "15": 16.42,
+     "20": 19.57,
+     "25": 21.35
+    },
+    "temperature_C": 18,
+    "unit_note": "wt % NaCl in water",
+    "temp_coeff_pct_per_C": {
+     "5": 2.17,
+     "10": 2.14,
+     "15": 2.12,
+     "20": 2.16,
+     "25": 2.27
+    }
+   },
+   "unit": "S/m",
+   "status": "sourced",
+   "citation": "Conductivity and temperature coefficients table, NAVI D-25 instrument manual section 7.4, page 206 (an instrument-maker manual; the primary data source is not named there), https://www.manualslib.com/manual/1453652/Navi-D-25.html?page=206 (read through WebFetch; the page later refused automated access)",
+   "retrieved": "2026-10-29",
+   "note": "SECONDARY source. Two readings of the table disagreed on the temperature label (one extraction said 18 C, a web-search summary said 25 C). The 18 C reading is consistent with the second point below: 22.20 S/m at 20 C for 25 wt % is 4 % above 21.35 at 18 C, as the 2.27 %/C coefficient predicts. A primary table (Isono 1984 J. Chem. Eng. Data 29:45; Light et al. 2005) was not retrieved.",
+   "alt": [
+    {
+     "value": 22.2,
+     "unit": "S/m",
+     "temperature_C": 20,
+     "wt_pct": 25,
+     "note": "single point seen only in a search-result snippet of an Electrochimica Acta 2018 table (PMC8828734/PMC6004532 family); not opened (site blocked automated access)",
+     "citation": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6004532/table/tbl1 (UNVERIFIED snippet)"
+    }
+   ],
+   "vs_spec": "T1/T4 spec: \"NaCl apparent k\" listed as (u) with no number given in the spec text; nothing to compare. Use the table (S/m, 18 C) and scale with the listed coefficient (about 2.2 %/C)."
+  },
+  "nacl.rel_viscosity_20C": {
+   "value": {
+    "5": {
+     "molality": 0.901,
+     "mu_uPas": 1080.4,
+     "relative": 1.0783
+    },
+    "10": {
+     "molality": 1.901,
+     "mu_uPas": 1190.8,
+     "relative": 1.1884
+    },
+    "15": {
+     "molality": 3.02,
+     "mu_uPas": 1346.4,
+     "relative": 1.3438
+    },
+    "20": {
+     "molality": 4.278,
+     "mu_uPas": 1565.1,
+     "relative": 1.562
+    },
+    "25": {
+     "molality": 5.704,
+     "mu_uPas": 1876.2,
+     "relative": 1.8725
+    }
+   },
+   "unit": "dimensionless (mu_solution / mu_water, both at 20 C, 0.1 MPa)",
+   "status": "sourced",
+   "citation": "Kestin, Khalifa, Correia, Tables of the dynamic and kinematic viscosity of aqueous NaCl solutions in the temperature range 20-150 C and the pressure range 0.1-35 MPa, J. Phys. Chem. Ref. Data 10, 71 (1981), doi 10.1063/1.555641, https://srd.nist.gov/jpcrdreprint/1.555641.pdf",
+   "retrieved": "2026-10-29",
+   "note": "Table is by molality in steps of 0.5 mol/kg; read from the scanned reprint (text layer is OCR: values at 4.5-5.5 mol/kg carry a possible +-1 in the last digit). Wt pct converted to molality (M = 58.443 g/mol) and interpolated with a degree-5 polynomial in molality (max fit residual 1.6 micro-Pa s). Water at 20 C in the same table: 1002.0 micro-Pa s.",
+   "alt": [
+    {
+     "value": {
+      "5": 1.085,
+      "10": 1.193,
+      "15": 1.352,
+      "20": 1.557
+     },
+     "unit": "mPa s (absolute, 20 C)",
+     "note": "Wikipedia List of viscosities (CRC-based table), seen through a search summary; agrees with the Kestin numbers above to within 0.5 %",
+     "citation": "https://en.wikipedia.org/wiki/List_of_viscosities"
+    }
+   ],
+   "vs_spec": "T1 spec \"NaCl viscosity table (mu_rel)\" is (u) with no numbers in the text; compare with relative: 5 wt pct 1.078, 10 wt pct 1.188, 15 wt pct 1.344, 20 wt pct 1.562, 25 wt pct 1.873."
+  },
+  "water.viscosity_andrade": {
+   "value": {
+    "eta_20C_mPas": 1.002,
+    "eta_50C_mPas": 0.5471,
+    "andrade_B_K_two_point_fit": 1910.8,
+    "andrade_A_mPas": 0.001479,
+    "form": "mu = A exp(B / T_K)"
+   },
+   "unit": "mPa s",
+   "status": "sourced",
+   "citation": "Kestin, Khalifa, Correia, J. Phys. Chem. Ref. Data 10, 71 (1981), doi 10.1063/1.555641, https://srd.nist.gov/jpcrdreprint/1.555641.pdf ; 0 molal rows: 1002.0 micro-Pa s at 20 C and 547.1 micro-Pa s at 50 C (OCR of scan)",
+   "retrieved": "2026-10-29",
+   "note": "The 1978 Kestin water-viscosity correlation (JPCRD 7:941) gives 1.0016 mPa s at 20 C; this 1981 table prints 1.0020 for 0.1 MPa. A two-point Andrade fit is about 1 % high between 20 and 50 C (see andrade_error_pct in derived; table values read from the same 0.0 molal dynamic-viscosity table, OCR).",
+   "derived": {
+    "what": "A and B come from a two-point Andrade fit to the two sourced values (derived, not published)",
+    "andrade_35C_mPas": 0.7296,
+    "table_35C_mPas": 0.7192,
+    "table_25C_mPas": 0.8901,
+    "table_40C_mPas": 0.6529,
+    "andrade_error_pct_at_25_35_40C": [
+     0.9,
+     1.4,
+     1.2
+    ]
+   },
+   "vs_spec": "T1 spec: 1.002 mPa s at 20 C and 0.547 at 50 C: identical to 3 digits."
+  },
+  "nacl.solubility_g_per_100g_water": {
+   "value": {
+    "T_C": [
+     0,
+     10,
+     20,
+     30,
+     40,
+     50,
+     60,
+     70,
+     80,
+     90,
+     100
+    ],
+    "g_per_100g": [
+     35.65,
+     35.72,
+     35.89,
+     36.09,
+     36.37,
+     36.69,
+     37.04,
+     37.46,
+     37.93,
+     38.47,
+     38.99
+    ],
+    "saturated_wt_pct_20C": 26.4
+   },
+   "unit": "g per 100 g water",
+   "status": "sourced",
+   "citation": "Wikipedia, Solubility table (NaCl row, 0-100 C in steps of 10; the page does not name one origin for the row, values are the usual CRC series), https://en.wikipedia.org/wiki/Solubility_table ; saturated at 20 C = 26.4 wt %: Wikipedia, Sodium chloride (citing Ullmann's Encyclopedia 5th ed. A24 p.319), https://en.wikipedia.org/wiki/Sodium_chloride",
+   "retrieved": "2026-10-29",
+   "note": "SECONDARY. 26.4 wt % is 35.9 g/100 g, consistent with the row (35.99 interpolated at 20 C). CRC itself was not opened.",
+   "vs_spec": "T4 spec: \"CRC solubility remembered (u)\"; its NaCl numbers are not in the spec text. The sourced curve is nearly flat (35.7 -> 39.0)."
+  },
+  "nacl.freezing_curve_C": {
+   "value": {
+    "wt_pct_to_freezing_C": {
+     "1": -0.56,
+     "2": -1.11,
+     "3": -1.72,
+     "4": -2.33,
+     "5": -2.94,
+     "6": -3.61,
+     "7": -4.33,
+     "8": -5.06,
+     "9": -5.78,
+     "10": -6.56,
+     "11": -7.33,
+     "12": -8.17,
+     "13": -9.06,
+     "14": -9.94,
+     "15": -10.89,
+     "16": -11.89,
+     "17": -12.94,
+     "18": -14.06,
+     "19": -15.22,
+     "20": -16.44,
+     "21": -17.78,
+     "22": -19.17,
+     "23": -20.67
+    },
+    "branch": "ice liquidus up to 23 wt %"
+   },
+   "unit": "C",
+   "status": "sourced",
+   "citation": "Texas Brine Company, Physical Properties of Sodium Chloride Solutions (data at 60 F; freezing point column in F converted here), https://texasbrine.com/physical-properties-of-sodium-chloride-solutions/",
+   "retrieved": "2026-10-29",
+   "note": "The same table lists 24-26 wt % rows as 1.4, 13.3, 27.9 F: those are on the other (hydrohalite/halite saturation) branch and are not freezing points of ice. 1 wt % = -0.56 C, 5 wt % = -2.89 C, 10 wt % = -6.56 C, 15 wt % = -10.9 C, 20 wt % = -16.4 C.",
+   "vs_spec": "T4 spec: eutectic -21.1 C at 23.3 wt %; table gives -20.7 C at 23 wt %: consistent."
+  },
+  "nacl.eutectic": {
+   "value": {
+    "T_C": -21.12,
+    "wt_pct": 23.31,
+    "phases": "ice + NaCl.2H2O (hydrohalite)",
+    "note_other": "slow-freezing eutectic quoted at -22.4 C near 25 wt %"
+   },
+   "unit": "C and wt %",
+   "status": "sourced",
+   "citation": "Wikipedia, Sodium chloride (eutectic -21.12 C at 23.31 wt %; citing Ullmann's Encyclopedia of Industrial Chemistry 5th ed. A24 p.319), https://en.wikipedia.org/wiki/Sodium_chloride ; Wikipedia, Brine: -21.1 C at 23.3 % (https://en.wikipedia.org/wiki/Brine)",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T4 spec -21.1 C at 23.3 wt %: identical."
+  },
+  "janaf.boudouard": {
+   "value": {
+    "reaction": "C(graphite) + CO2 = 2 CO",
+    "standard_state_bar": 1,
+    "by_T_C": {
+     "600": {
+      "T_K": 873.15,
+      "log10K": -1.0575,
+      "lnK": -2.435,
+      "K": 0.08759,
+      "spec_K": 0.08001
+     },
+     "700": {
+      "T_K": 973.15,
+      "log10K": -0.0038,
+      "lnK": -0.0088,
+      "K": 0.9912,
+      "spec_K": 0.8964
+     },
+     "800": {
+      "T_K": 1073.15,
+      "log10K": 0.8488,
+      "lnK": 1.9545,
+      "K": 7.061,
+      "spec_K": 6.401
+     },
+     "900": {
+      "T_K": 1173.15,
+      "log10K": 1.5516,
+      "lnK": 3.5726,
+      "K": 35.61,
+      "spec_K": 32.69
+     },
+     "1000": {
+      "T_K": 1273.15,
+      "log10K": 2.1405,
+      "lnK": 4.9287,
+      "K": 138.2,
+      "spec_K": 129.3
+     }
+    }
+   },
+   "unit": "K (dimensionless, p in bar)",
+   "status": "sourced",
+   "citation": "NIST-JANAF tables (log Kf column; graphite is the reference element, log Kf = 0): carbon monoxide NIST-JANAF Thermochemical Tables, 4th ed. (Chase 1998), https://janaf.nist.gov/tables/C-093.html ; carbon dioxide NIST-JANAF Thermochemical Tables, 4th ed. (Chase 1998), https://janaf.nist.gov/tables/C-095.html",
+   "retrieved": "2026-10-29",
+   "note": "log K = 2 logKf(CO) - logKf(CO2), interpolated linearly in 1/T between the 100 K table rows. Enthalpy of reaction from the same tables at 1000 K: 170.7 kJ.",
+   "vs_spec": "T6/T4 spec: a = 170700 J, b = 174.5 J/K (K = 1 at 705 C). JANAF K = 1 at about 700.3 C (see by_T_C); spec_K inside by_T_C is the spec value. Ratio at 600 C: 0.91, at 800 C: 0.91, at 1000 C: 0.94 (spec/sourced)."
+  },
+  "janaf.wuestite": {
+   "value": {
+    "reaction": "FeO + CO = Fe + CO2",
+    "standard_state_bar": 1,
+    "by_T_C": {
+     "600": {
+      "T_K": 873.15,
+      "log10K": -0.4829,
+      "lnK": -1.112,
+      "K": 0.3289,
+      "spec_K": 1.244
+     },
+     "700": {
+      "T_K": 973.15,
+      "log10K": -0.5714,
+      "lnK": -1.3157,
+      "K": 0.2683,
+      "spec_K": 0.9006
+     },
+     "800": {
+      "T_K": 1073.15,
+      "log10K": -0.637,
+      "lnK": -1.4667,
+      "K": 0.2307,
+      "spec_K": 0.6926
+     },
+     "900": {
+      "T_K": 1173.15,
+      "log10K": -0.6857,
+      "lnK": -1.5788,
+      "K": 0.2062,
+      "spec_K": 0.557
+     },
+     "1000": {
+      "T_K": 1273.15,
+      "log10K": -0.7246,
+      "lnK": -1.6685,
+      "K": 0.1885,
+      "spec_K": 0.4636
+     }
+    },
+    "variant_Fe0.947O_(real_wuestite)": {
+     "600": {
+      "T_K": 873.15,
+      "log10K": -0.0448,
+      "lnK": -0.1032,
+      "K": 0.9019
+     },
+     "700": {
+      "T_K": 973.15,
+      "log10K": -0.1682,
+      "lnK": -0.3873,
+      "K": 0.6789
+     },
+     "800": {
+      "T_K": 1073.15,
+      "log10K": -0.2622,
+      "lnK": -0.6038,
+      "K": 0.5467
+     },
+     "900": {
+      "T_K": 1173.15,
+      "log10K": -0.3349,
+      "lnK": -0.7711,
+      "K": 0.4625
+     },
+     "1000": {
+      "T_K": 1273.15,
+      "log10K": -0.3938,
+      "lnK": -0.9068,
+      "K": 0.4038
+     }
+    }
+   },
+   "unit": "K (dimensionless)",
+   "status": "sourced",
+   "citation": "NIST-JANAF tables: FeO crystal NIST-JANAF Thermochemical Tables, 4th ed. (Chase 1998), https://janaf.nist.gov/tables/Fe-018.html ; wuestite Fe0.947O NIST-JANAF Thermochemical Tables, 4th ed. (Chase 1998), https://janaf.nist.gov/tables/Fe-001.html ; CO NIST-JANAF Thermochemical Tables, 4th ed. (Chase 1998), https://janaf.nist.gov/tables/C-093.html ; CO2 NIST-JANAF Thermochemical Tables, 4th ed. (Chase 1998), https://janaf.nist.gov/tables/C-095.html (Fe is the reference element)",
+   "retrieved": "2026-10-29",
+   "note": "log K = logKf(CO2) - logKf(CO) - logKf(FeO), 1/T interpolation. The variant uses real non-stoichiometric wuestite, reaction Fe0.947O + CO = 0.947 Fe + CO2. Alpha/gamma iron transition at 1185 K is inside the reference (Kf = 0 by definition).",
+   "vs_spec": "T4 spec: a = -22800, b = -24.3 (u), K = 1.244 at 600 C and 0.464 at 1000 C. Sourced real wuestite (Fe0.947O) K = 0.902 at 600 C, 0.547 at 800 C, 0.404 at 1000 C, so the spec K is 1.38x, 1.27x, 1.15x too high (CO fraction at 1000 C: spec 68 pct, sourced 71 pct). Against stoichiometric FeO (Fe-018) the spec is 2.5-3.8x too high at 600-1000 C: use the Fe0.947O row."
+  },
+  "janaf.calcite": {
+   "value": {
+    "reaction": "CaCO3(calcite) = CaO + CO2",
+    "standard_state_bar": 1,
+    "by_T_C": {
+     "600": {
+      "T_K": 873.15,
+      "log10K": -2.5285,
+      "lnK": -5.8221,
+      "K": 0.002961,
+      "spec_K": 0.003795
+     },
+     "700": {
+      "T_K": 973.15,
+      "log10K": -1.4693,
+      "lnK": -3.3832,
+      "K": 0.03394,
+      "spec_K": 0.03605
+     },
+     "800": {
+      "T_K": 1073.15,
+      "log10K": -0.6167,
+      "lnK": -1.4199,
+      "K": 0.2417,
+      "spec_K": 0.2251
+     },
+     "900": {
+      "T_K": 1173.15,
+      "log10K": 0.0766,
+      "lnK": 0.1764,
+      "K": 1.193,
+      "spec_K": 1.029
+     }
+    },
+    "p_eq_bar_equals_K": true,
+    "range_note": "Robie and Hemingway calcite table ends at 1200 K (927 C), so 1000 C is not given",
+    "T_p1bar_C": 888.0
+   },
+   "unit": "K = p_CO2 in bar",
+   "status": "sourced",
+   "citation": "Calcite is NOT in the NIST-JANAF tables (no CaCO3 entry in the Ca or C indexes). Used: Robie and Hemingway, Thermodynamic properties of minerals and related substances at 298.15 K and 1 bar (10^5 pascals) pressure and at higher temperatures, USGS Bulletin 2131, 1995, pp. 268 (calcite, log Kf 600-1200 K) and lime (CaO) table, https://pubs.usgs.gov/bul/2131/report.pdf ; CO2: NIST-JANAF Thermochemical Tables, 4th ed. (Chase 1998), https://janaf.nist.gov/tables/C-095.html",
+   "retrieved": "2026-10-29",
+   "note": "log K = logKf(CaO) + logKf(CO2) - logKf(calcite); calcite log Kf (K: 600 91.40, 700 76.44, 800 65.23, 900 56.52, 1000 49.55, 1100 43.86, 1200 39.10) and lime log Kf (49.72, 41.84, 35.93, 31.33, 27.65, 24.64, 22.10) transcribed from a scanned bulletin (OCR); mixed sources, so +-0.1 in log K.",
+   "vs_spec": "T4 spec: ln K = 16.335 - 19130/T (1 atm at 898 C by construction). Sourced K = 1 bar at 888 C (value.T_p1bar_C); at 900 C sourced K 1.19 vs spec 1.03. Spec_K inside by_T_C; ratio spec/sourced: 600 C 1.28, 700 C 1.06, 800 C 0.93, 900 C 0.86."
+  },
+  "ethanol.freezing_curve_C": {
+   "value": {
+    "wt_pct_ethanol": [
+     0,
+     2.5,
+     4.8,
+     6.8,
+     11.3,
+     13.78,
+     16.4,
+     17.5,
+     18.8,
+     20.3,
+     22.11,
+     24.2,
+     26.7,
+     29.9,
+     33.8,
+     39.0,
+     46.3,
+     56.1,
+     71.9,
+     100.0
+    ],
+    "freezing_C": [
+     0,
+     -1,
+     -2,
+     -3,
+     -5,
+     -6.1,
+     -7.5,
+     -8.7,
+     -9.4,
+     -10.6,
+     -12.2,
+     -14.0,
+     -16.0,
+     -18.9,
+     -23.6,
+     -28.7,
+     -33.9,
+     -41.0,
+     -51.3,
+     -114.3
+    ]
+   },
+   "unit": "C",
+   "status": "sourced",
+   "citation": "Wikipedia, Ethanol (data page): table of ethanol-water mixtures, mass fraction vs density and freezing temperature (page attributes the density/boiling tables to the CRC Handbook of Chemistry and Physics), https://en.wikipedia.org/wiki/Ethanol_(data_page)",
+   "retrieved": "2026-10-29",
+   "note": "SECONDARY; the CRC table itself was not opened. By volume the same rows read 20.2 vol % = -7.5 C, 40.5 vol % = -23.6 C.",
+   "vs_spec": "T4 spec says its model gives 16.4 wt % -6.2 C and 33.4 wt % -11.9 C \"against about -9 and -27 C in the usual tables\". Sourced: 16.4 wt % -7.5 C, 33.8 wt % -23.6 C. So the \"usual table\" numbers in the spec were off (-9 is at 18.8 wt %, -27 is near 36 wt %), and the digitised-table fix in T4 should use the sourced curve above."
+  },
+  "ethanol.latent_heat": {
+   "value": {
+    "dH_vap_kJ_per_mol": 38.56,
+    "T_K": 351.5,
+    "J_per_g": 837.0,
+    "M_g_mol": 46.068,
+    "fit": "dHvap = A exp(-alpha Tr)(1-Tr)^beta, A 50.43 kJ/mol, alpha -0.4475, beta 0.4989, Tc 513.9 K, valid 298-469 K"
+   },
+   "unit": "kJ/mol and J/g",
+   "status": "sourced",
+   "citation": "NIST Chemistry WebBook (SRD 69), ethanol, phase change data, enthalpy of vaporization: Majer and Svoboda, Enthalpies of vaporization of organic compounds, 1985, https://webbook.nist.gov/cgi/cbook.cgi?ID=C64175&Units=SI&Mask=4",
+   "retrieved": "2026-10-29",
+   "alt": [
+    {
+     "value": 42.3,
+     "unit": "kJ/mol (298 K)",
+     "citation": "Wikipedia, Ethanol (data page), https://en.wikipedia.org/wiki/Ethanol_(data_page)"
+    }
+   ],
+   "vs_spec": "T4 spec Lv ethanol 837 J/g = 38.56 kJ/mol: identical (837.1)."
+  },
+  "richardson_zaki": {
+   "value": {
+    "n_low_Re (Re < ~0.2)": 4.65,
+    "n_high_Re (500 < Re < 7000)": 2.39,
+    "form": "V(phi) = V(0) (1 - phi)^n"
+   },
+   "unit": "dimensionless",
+   "status": "sourced",
+   "citation": "Richardson and Zaki, Sedimentation and fluidisation: Part I, Trans. Instn. Chem. Engrs 32, 35-53 (1954) (original not opened). Values A = 4.65 (viscous limit) and B = 2.39 (inertial limit) as quoted in Oke, Lettieri, Mazzei, An investigation on the mechanics of homogeneous expansion in gas-fluidized beds, Chem. Eng. Sci. 127 (2015) 95-105, https://discovery.ucl.ac.uk/id/eprint/1464221/1/1-s2.0-S0009250915000354-main.pdf ; and n = 2.39 for 500 < Re < 7000 in D. D. Joseph, Lift correlations from direct numerical simulation of solid-liquid flow, 4th Int. Conf. Multiphase Flow, 2001, https://dept.aem.umn.edu/people/faculty/joseph/PL-correlations/docs-ln/conf-MultiphFlow.pdf",
+   "retrieved": "2026-10-29",
+   "note": "Sources disagree by 2-3 %; the d/D wall term (19.5 d/D) and the middle Re band 4.35 Re^-0.03 / 4.45 Re^-0.1 were NOT verified in any source opened. Interpolation between A and B in Re is a closed form (Khan-Richardson 1989 uses a 0.175 Re^0.75 blend; numerator garbled in extraction, not recorded).",
+   "alt": [
+    {
+     "value": {
+      "A": 4.7,
+      "B": 2.35
+     },
+     "note": "Rowe (1987)",
+     "citation": "quoted in Oke, Lettieri, Mazzei, Chem. Eng. Sci. 127 (2015) 95-105, https://discovery.ucl.ac.uk/id/eprint/1464221/1/1-s2.0-S0009250915000354-main.pdf"
+    },
+    {
+     "value": {
+      "A": 4.8,
+      "B": 2.4
+     },
+     "note": "Khan and Richardson (1989); Gibilaro (2001)",
+     "citation": "quoted in Oke, Lettieri, Mazzei, Chem. Eng. Sci. 127 (2015) 95-105, https://discovery.ucl.ac.uk/id/eprint/1464221/1/1-s2.0-S0009250915000354-main.pdf"
+    }
+   ],
+   "vs_spec": "T1 spec lists \"Richardson-Zaki exponents\" as (u) and says \"n by Re continuous at the joins\" without numbers; sourced end values 4.65 and 2.39."
+  },
+  "hasselman_kingery_quench": {
+   "value": null,
+   "unit": "dimensionless",
+   "status": "not_found",
+   "citation": "The Biot-number coefficient (3.25 in dT_c = R(1 + 3.25/Bi), equivalently sigma* = Bi/(Bi+3.25) = 0.31 Bi at small Bi) was not located in any source opened. Originals not retrieved: Kingery, J. Am. Ceram. Soc. 38, 3 (1955); Hasselman, J. Am. Ceram. Soc. 52, 600 (1969) (both only confirmed as references in https://www.irsm.cas.cz/materialy/cs_content/2013/Malou_CS_2013_0000.pdf). Wikipedia Thermal shock gives only the form dT = A4 K_Ic/(E alpha sqrt(pi H)) k/(h H) with the constant unspecified (https://en.wikipedia.org/wiki/Thermal_shock).",
+   "retrieved": "2026-10-29",
+   "note": "Weak lead: the plate-surface stress table of Lei, Wang, Liu, Wang, Quantitative law of diffusion induced stress and fracture, arXiv:1405.3734, prints a prefactor 0.31 for plates at Bi < 0.1 (diffusion-induced stress, an analogue of thermal stress; the formula was garbled in text extraction, so it is NOT recorded as sourced). 1/3.25 = 0.308 is the same number.",
+   "vs_spec": "T9 spec: dT_c = R(1 + 3.25/Bi) (u). Still unverified."
+  },
+  "steel.strength_retention_EN1993-1-2": {
+   "value": {
+    "T_C": [
+     20,
+     100,
+     200,
+     300,
+     400,
+     500,
+     600,
+     700,
+     800,
+     900,
+     1000,
+     1100,
+     1200
+    ],
+    "k_y_effective_yield": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     0.78,
+     0.47,
+     0.23,
+     0.11,
+     0.06,
+     0.04,
+     0.02,
+     0.0
+    ],
+    "k_p_proportional_limit": [
+     1.0,
+     1.0,
+     0.807,
+     0.613,
+     0.42,
+     0.36,
+     0.18,
+     0.075,
+     0.05,
+     0.0375,
+     0.025,
+     0.0125,
+     0.0
+    ],
+    "k_E_modulus": [
+     1.0,
+     1.0,
+     0.9,
+     0.8,
+     0.7,
+     0.6,
+     0.31,
+     0.13,
+     0.09,
+     0.0675,
+     0.045,
+     0.0225,
+     0.0
+    ],
+    "interpolation": "linear between rows"
+   },
+   "unit": "fraction of the 20 C value",
+   "status": "sourced",
+   "citation": "EN 1993-1-2:2005 (Eurocode 3, structural fire design) Table 3.1, reduction factors for the stress-strain relationship of carbon steel at elevated temperatures, as printed verbatim (English text alongside) in the Ukrainian adoption DSTU-N B EN 1993-1-2:2010, https://dnaop.com/html/62813_6.html ; interpolated values k_y(547 C) = 0.634 and k_E(547 C) = 0.464 quoted in New Steel Construction (BCSA), April 2024, https://www.newsteelconstruction.com/wp/wp-content/uploads/2024/04/NSCApr2024-Tech.pdf agree.",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T9 spec IRON strength/modulus columns (recalled): 300 C 1/0.80; 500 C 0.78/0.60; 600 C 0.47/0.31; 700 C 0.23/0.13; 800 C 0.11/0.09; 900 C 0.06/0.0675; 1000 C 0.04/0.045; 1100 0.02/0.0225; 1200 0/0; 200 C 1/0.90; 400 C 1/0.70: all identical to Table 3.1 (the spec pairs k_y with k_E). The k_p column (0.807, 0.613, 0.420, 0.360, 0.180, 0.075, ...) is new information, not in the spec."
+  },
+  "body.kick": {
+   "value": {
+    "foot_speed_at_impact_m_s": {
+     "muay_thai": 7.22,
+     "taekwondo": 6.36,
+     "karate": 5.57
+    },
+    "foot_speed_max_m_s": {
+     "muay_thai": 13.24,
+     "karate": 13.66,
+     "taekwondo": 14.66
+    },
+    "foot_speed_range_review_m_s": [
+     5.2,
+     18.3
+    ],
+    "effective_mass": {
+     "front_kick_fraction_of_body_mass": 0.44,
+     "athlete_body_mass_kg": 60,
+     "impact_force_N": {
+      "front": 2008.6,
+      "side": 2406.9
+     }
+    }
+   },
+   "unit": "m/s, fraction, N",
+   "status": "sourced",
+   "citation": "Foot speeds: Gavagan and Sayers, A biomechanical analysis of the roundhouse kicking technique of expert practitioners, PLoS ONE 12(8):e0182645, 2017, doi 10.1371/journal.pone.0182645 (Table: linear foot velocity at impact, means), https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5571909/ ; review range 5.2-18.3 m/s: Impact force and velocities for kicking strikes in combat sports: a literature review, Sports 12(3):74, 2024, https://pmc.ncbi.nlm.nih.gov/articles/PMC10974023 ; effective mass: Wasik, Mosler, Gora, Scurek, Conception of effective mass and effect of force-measurement of taekwon-do master, Physical Activity Review 11:11-16, 2023, doi 10.16926/par.2023.11.02, https://dspace.vsb.cz/items/fdc33772-a7d3-468a-a659-9d39014924c7",
+   "retrieved": "2026-10-29",
+   "note": "Effective mass is reported only as a PERCENT (front kick 44 % of a 60 kg athlete, abstract; kg values not in the abstract). One athlete. The method is impulse-based (m_eff from force x contact time / foot speed), so it is a different quantity from the spec striker mass. The review says skilled athletes stiffen the limb at impact to raise m_eff. Impact foot speeds are lower than the peak speeds because the foot is already decelerating at the target.",
+   "vs_spec": "T11 spec: m_s 5.6 kg, v_s 6 m/s (100 J), both (u). Speed 6 m/s is inside the sourced impact-speed band (5.6-7.2 m/s; the unconfirmed peak up to 13-18 m/s). Mass: sourced m_eff is up to 44 % of body mass = about 26 kg for a 60 kg athlete (4.7x the 5.6 kg spec); with 6 m/s that would be about 470 J, or 100 J if the effective speed is 2.8 m/s. Owners must decide which definition they want before retuning; do not take 26 kg and 6 m/s together."
+  },
+  "body.stair_power": {
+   "value": {
+    "mechanical_power_W_per_kg": {
+     "walking_1_flight": 2.43,
+     "walking_2_flights": 2.53,
+     "running_every_other_step_1": 7.72,
+     "running_2": 6.67
+    },
+    "cost_J_per_kg_per_m_vertical": {
+     "walking": [
+      10.48,
+      11.07
+     ],
+     "running": [
+      12.34,
+      12.83
+     ]
+    },
+    "efficiency": {
+     "walking": [
+      0.155,
+      0.17
+     ],
+     "running": [
+      0.142,
+      0.147
+     ]
+    },
+    "speeds_m_s": {
+     "walk_diagonal": 0.47,
+     "run_diagonal": 1.1
+    },
+    "for_70_kg_W": {
+     "walking": [
+      170,
+      177
+     ],
+     "running": [
+      467,
+      540
+     ]
+    }
+   },
+   "unit": "W/kg",
+   "status": "sourced",
+   "citation": "Minetti, Rapuzzi, Alberton, Pavei, A slow VO2 on-response allows comfortable adoption of aerobically unaffordable walking and running speeds on short stair ascents, J. Exp. Biol. 223, jeb218982 (2020), doi 10.1242/jeb.218982, Table 2 (24 subjects, flights of 2.57 m and 4.81 m, 53 % gradient), https://air.unimi.it/retrieve/dfa8b9a3-6bf8-748b-e053-3a05fe0a3a96/Minetti%20et%20al.%202020%20-%20A%20slow%20VO2%20on-response%20allows%20comfortable%20adoption%20of%20aerobically%20unaffordable%20walking%20and%20running%20speeds%20on%20short%20stair%20ascents.pdf",
+   "retrieved": "2026-10-29",
+   "note": "Mechanical power here counts the whole mechanical work (not just m g h); the cost per metre of height (10.5-11.1 J/kg/m) is 1.07-1.13x g (9.81). Spontaneous short-flight walking is slow (0.47 m/s along the stair); the power is per kg of body mass.",
+   "vs_spec": "T11 spec P_stair = 250 W for 70 kg (3.6 W/kg, 1.8 steps/s). Sourced spontaneous walking up stairs 2.4-2.5 W/kg = 170-177 W for 70 kg (0.7x), running up 6.7-7.7 W/kg = 470-540 W (1.9-2.2x). The spec 250 W sits between: a brisk walk. The 150 W sustained value is about 0.85x of the spontaneous walk power."
+  },
+  "bone.femur_fracture_load": {
+   "value": {
+    "proximal_femur_failure_kN_greater_than": 12
+   },
+   "unit": "kN",
+   "status": "sourced",
+   "citation": "Statement \"the failure load of the proximal femur even exceeds 12 kN\" citing Juszczyk, Cristofolini, Salva, Zani, Schileo, Viceconti, Accurate in vitro identification of fracture onset in bones: failure mechanism of the proximal human femur, J. Biomech. 46(1):158-164, 2013, in: The impact of coronal configuration of the proximal femur on its mechanical properties..., Orthop. Surg. 2023, https://pmc.ncbi.nlm.nih.gov/articles/PMC9837247/ (the Juszczyk paper itself was not opened)",
+   "retrieved": "2026-10-29",
+   "note": "SECONDARY and a lower bound for the proximal femur in a sideways-fall style test; the same text gives 8.7 body weights as the in-vivo peak load. A shaft axial value was not found.",
+   "vs_spec": "T10 spec femur F_fail 12 kN: consistent with \">12 kN\". Not a firm number."
+  },
+  "bone.tibia_fracture_load": {
+   "value": null,
+   "unit": "kN",
+   "status": "not_found",
+   "citation": "No tibia axial fracture-load value was verified. Leads: a University of Virginia transfer-function study (search summary only: about 6.4 kN human leg for 50 % injury risk; not opened); NHTSA/FMVSS 208 tibia axial criteria (nhtsa.gov refused automated access, HTTP 403). Searched Europe PMC open-access full texts for cadaver tibia loads in kN: no hit.",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T10 spec tibia 8.5 kN (u): unverified. The unopened lead (6.4 kN) would be 0.75x."
+  },
+  "bone.vertebra_fracture_load": {
+   "value": {
+    "lumbar_ultimate_compressive_strength_kN": {
+     "all_mean": 4.84,
+     "all_sd": 2.5,
+     "male_adult_mean": 6.09,
+     "male_adult_sd": 2.69,
+     "female_adult_mean": 3.95,
+     "female_adult_sd": 1.79,
+     "min": 0.6,
+     "max": 15.6
+    },
+    "age_regression_kN": {
+     "male": "10.43 - 0.923 per decade",
+     "female": "7.65 - 0.685 per decade"
+    },
+    "n_values": 1192
+   },
+   "unit": "kN",
+   "status": "sourced",
+   "citation": "Jager M., Extended compilation of autopsy-material measurements on lumbar ultimate compressive strength for deriving reference values in ergonomic work design: the Revised Dortmund Recommendations, EXCLI Journal 17:362-385, 2018, doi 10.17179/excli2018-1206, https://pmc.ncbi.nlm.nih.gov/articles/PMC5962898/",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T10 spec lumbar F_fail 8.0 kN. Sourced adult male mean 6.09 kN (SD 2.69), 25-year-old male regression about 8 kN (10.43 - 0.923 x 2.5 = 8.1). So 8.0 is right for a young adult male and about 1.3x the all-adult male mean; female adults 3.95 kN."
+  },
+  "bone.calcaneus_fracture_load": {
+   "value": null,
+   "unit": "kN",
+   "status": "not_found",
+   "citation": "No calcaneus axial fracture-load value was verified (searched web and Europe PMC open-access full texts; the Yoganandan / Begeman and Prasad foot-ankle papers were not retrievable).",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T10 spec calcaneus 6.5 kN each (u): unverified."
+  },
+  "burn.moritz_henriques": {
+   "value": {
+    "second_degree_exposure_time_by_surface_temp": [
+     {
+      "T_F": 122,
+      "T_C": 50.0,
+      "first_degree": "1 min",
+      "second_third_degree": "5 min"
+     },
+     {
+      "T_F": 131,
+      "T_C": 55.0,
+      "first_degree": "5 s",
+      "second_third_degree": "25 s"
+     },
+     {
+      "T_F": 140,
+      "T_C": 60.0,
+      "first_degree": "2 s",
+      "second_third_degree": "5 s"
+     },
+     {
+      "T_F": 149,
+      "T_C": 65.0,
+      "first_degree": "1 s",
+      "second_third_degree": "2 s"
+     },
+     {
+      "T_F": 154,
+      "T_C": 67.8,
+      "first_degree": "instantaneous",
+      "second_third_degree": "1 s"
+     }
+    ],
+    "pain_threshold_F": 116,
+    "damage_integral": {
+     "P_per_s": 3.1e+98,
+     "dE_J_per_mol": 628000.0,
+     "injury_threshold_C": 43.0,
+     "form": "Omega = integral P exp(-dE/(R T)) dt, Omega = 1 for second degree"
+    }
+   },
+   "unit": "time in s, C",
+   "status": "sourced",
+   "citation": "Time-temperature table (full-immersion scalds) compiled by the US Consumer Product Safety Commission 1978 from Moritz and Henriques, Studies of thermal injury II, Am. J. Pathol. 23:695-720 (1947), reproduced in State Water Heaters Technical Bulletin 34 \"Burn rate\", https://www.StateWaterHeaters.com/lit/bulletin/bulletin34.pdf ; rate constants P = 3.1e98 1/s and dE as printed in Log T., Modeling skin injury from hot rice porridge spills, Int. J. Environ. Res. Public Health 2018, https://pmc.ncbi.nlm.nih.gov/articles/PMC5923850/ and Log T., Modeling skin injury from hot spills on clothing, 2017, https://pmc.ncbi.nlm.nih.gov/articles/PMC5708013/",
+   "retrieved": "2026-10-29",
+   "note": "The papers print dE = 6.28e8 \"J/mol\", a unit slip: the original is 6.28e8 J/kmol = 6.28e5 J/mol. The integral is evaluated at the BASAL layer temperature (depth about 0.1 mm), not the surface: at a constant basal temperature of 65 C it reaches 1 in 0.04 s, at 60 C in 0.94 s, at 55 C in 30 s, at 50 C in 17 min (with a lag of seconds before the basal layer warms, the surface-temperature times of the table follow) through the epidermis (a surface-temperature model like T10 skinburn must reproduce it). The Moritz-Henriques 1947 paper itself was not opened (PMC page blocked).",
+   "vs_spec": "T10 spec table ~1 s at 70 C, ~2 s at 65 C, ~5 s at 60 C, ~30 s at 55 C, ~10 min at 50 C. Sourced second-degree: 2 s at 65, 5 s at 60, 25 s at 55, 5 min at 50. All inside the spec band except 50 C (spec 10 min is 2x the sourced 5 min). Burn-model times (T10 proto): 70 C 0.98, 65 C 2.3, 60 C 8.3, 55 C 56, 50 C ~19 min: the 55 C value is 2.2x the sourced 25 s, 60 C is 1.7x the sourced 5 s, 50 C is 3.8x the sourced 5 min (the model burns more slowly at low temperature than the table)."
+  },
+  "bleeding.femoral_flow": {
+   "value": null,
+   "unit": "mL/min",
+   "status": "not_found",
+   "citation": "Searched the web and Europe PMC open-access full texts: no sourced bleeding rate for a cut femoral artery was found. A search summary mentioned resting common femoral artery flow of 226.2 +- 82.1 mL/min (duplex, 49 young men and 15 young women) but the paper could not be opened, so it is not recorded. Other found values are exercise or passive-leg-movement flows (1000-2000 mL/min), not bleeding.",
+   "retrieved": "2026-10-29",
+   "vs_spec": "T10 spec: femoral artery cut, full flow 15 mL/s = 0.9 L/min (u). Unverified. Note the leading resting-flow figure (about 0.23 L/min) would make 0.9 L/min a pulsatile, free-flow estimate about 4x resting."
+  },
+  "jos3.package": {
+   "value": {
+    "on_pypi": true,
+    "name": "jos3",
+    "version": "0.5.0",
+    "released": "2023-05-28",
+    "licence": "MIT",
+    "python_requires": "not declared (classifiers list 3.6-3.8)",
+    "requires_dist": "none declared on PyPI (numpy needed in practice)",
+    "repo": "https://github.com/TanabeLab/JOS-3",
+    "repo_licence_api": "mit",
+    "repo_last_push": "2024-11-10"
+   },
+   "unit": "n/a",
+   "status": "sourced",
+   "citation": "PyPI JSON API https://pypi.org/pypi/jos3/json (retrieved 2026-10-29: summary \"Joint-thermoregulation system, JOS-3\", licence MIT, 0.5.0) ; GitHub API https://api.github.com/repos/TanabeLab/JOS-3 (licence MIT, pushed 2024-11-10)",
+   "retrieved": "2026-10-29",
+   "note": "Parameter availability: the package source was not downloaded in this lane (lane T7b reads it)."
+  }
+ }
+}

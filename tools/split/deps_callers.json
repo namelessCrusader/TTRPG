@@ -1,0 +1,740 @@
+{
+"__init__": [],
+"heat_capacity": [
+"T",
+"_law_conduct",
+"_law_rise",
+"_law_boil",
+"_law_melt",
+"step"
+],
+"_matter_moved": [
+"heat_capacity",
+"porosity",
+"_objects_within_reach"
+],
+"T": [
+"burning",
+"_law_crack",
+"_law_burn",
+"_law_boil",
+"_law_melt",
+"_law_air",
+"_law_o2",
+"_law_life",
+"step"
+],
+"porosity": [
+"_law_air",
+"_law_smoke",
+"_law_o2"
+],
+"solid": [],
+"burning": [
+"_look_around",
+"_law_will"
+],
+"fill": [],
+"pour": [
+"_spill_from"
+],
+"_mix": [
+"pour",
+"_move_fluid",
+"_fly_drops",
+"_law_flow",
+"_splash"
+],
+"_move_fluid": [
+"_law_head",
+"_law_flow",
+"_splash"
+],
+"_fly_drops": [
+"_law_flow"
+],
+"_law_head": [
+"step"
+],
+"_law_flow": [
+"step"
+],
+"_law_stir": [
+"step"
+],
+"_law_support": [
+"step"
+],
+"_support_once": [
+"_law_support"
+],
+"_fall_speed": [
+"_support_once"
+],
+"_relax_slack": [
+"_support_once"
+],
+"_free_fall_to_seam": [
+"_support_once"
+],
+"_settle": [
+"_support_once"
+],
+"_cash_impacts": [
+"_law_support"
+],
+"_splash": [
+"_settle"
+],
+"_flaw01": [
+"_cash_impacts",
+"_shatter",
+"_spend",
+"_land_body"
+],
+"_shatter": [
+"_cash_impacts",
+"_law_crack",
+"_spend",
+"_land_body"
+],
+"_law_crack": [
+"step"
+],
+"_topple": [
+"_law_torque",
+"_collapse"
+],
+"_launch": [
+"_swing",
+"_leap",
+"_law_footing"
+],
+"_limbs": [
+"_law_joints",
+"_body_span",
+"_legs_of",
+"_crouch",
+"_hand",
+"_fists",
+"_menu"
+],
+"_bones": [
+"_pivot_of",
+"_limb_parts",
+"_swing",
+"_repose",
+"_hanging_cells",
+"_swing_of",
+"_law_joints",
+"_law_pose",
+"_reach_around",
+"_legs_of",
+"_torque_of",
+"_crouch",
+"_menu"
+],
+"_parents": [
+"_kids",
+"_path_from"
+],
+"_kids": [
+"_subtree"
+],
+"_subtree": [
+"_repose",
+"_hanging_cells"
+],
+"_path_from": [
+"_repose"
+],
+"_pivot_of": [
+"_swing",
+"_hold_torque",
+"_body_span",
+"_fist_of"
+],
+"_joint_xform": [
+"_chain_xform"
+],
+"_axis_xform": [
+"_chain3"
+],
+"_shear_steps": [
+"_chain_shear"
+],
+"_apply_shears": [
+"_turn_cells"
+],
+"_turn_cells": [
+"_repose"
+],
+"_chain_shear": [
+"_turn_cells"
+],
+"_comp3": [
+"_chain3"
+],
+"_apply3": [
+"_turn_cells",
+"_repose"
+],
+"_chain3": [
+"_turn_cells",
+"_repose"
+],
+"_chain_xform": [],
+"_apply_xform": [],
+"_limb_parts": [
+"_limb_cells",
+"_swing",
+"_body_span",
+"_legs_of",
+"_fist_of"
+],
+"_bone_parts": [
+"_limb_parts",
+"_repose",
+"_hanging_cells",
+"_bone_at",
+"_spill_from",
+"_thickness",
+"_torque_of",
+"_crouch"
+],
+"_bone_angle": [
+"_repose"
+],
+"_limb_cells": [
+"_law_joints"
+],
+"_swing": [
+"_decide"
+],
+"_still_joined": [
+"_repose",
+"_crouch"
+],
+"_angles": [
+"_bone_angle",
+"_repose",
+"_law_joints",
+"_law_pose",
+"_crouch"
+],
+"_inv_xform": [],
+"_comp_xform": [],
+"_turn": [
+"_square_up"
+],
+"_square_up": [
+"_law_will"
+],
+"_repose": [
+"_law_joints",
+"_law_pose",
+"_reach_around",
+"_bend_max",
+"_law_footing"
+],
+"_hanging_cells": [
+"_hold_torque",
+"_swing_of"
+],
+"_hold_torque": [
+"_law_pose"
+],
+"_swing_of": [
+"_law_joints",
+"_law_pose"
+],
+"_law_joints": [
+"step"
+],
+"_law_pose": [
+"step"
+],
+"_reach_around": [
+"_law_pose"
+],
+"_fly_pose": [
+"_law_bodies",
+"_land_body",
+"bodies_array",
+"_in_flight_near",
+"_falling_near",
+"_catch",
+"_law_grips"
+],
+"_drag_a": [
+"_law_bodies"
+],
+"_body_pose": [
+"_topple",
+"_swing",
+"_law_bodies",
+"_land_body",
+"bodies_array",
+"_law_grips"
+],
+"_release": [
+"_law_bodies"
+],
+"loose": [],
+"_law_bodies": [
+"step"
+],
+"_left_world": [
+"_land_body"
+],
+"_spend": [
+"_law_bodies",
+"_land_body"
+],
+"_land_body": [
+"_law_bodies",
+"_catch_person",
+"_catch"
+],
+"_person_at": [
+"_spend"
+],
+"_bone_at": [
+"_blow"
+],
+"_blow": [
+"_spend"
+],
+"_blood0": [
+"_blow",
+"_law_bleed"
+],
+"_perfusion": [
+"_delivered_o2"
+],
+"_delivered_o2": [
+"_law_life"
+],
+"_law_bleed": [
+"step"
+],
+"_spill_from": [
+"_law_bleed"
+],
+"_thickness": [
+"_blow"
+],
+"_cut_section": [
+"_legs_of",
+"_torque_of"
+],
+"_wound": [
+"_land_body",
+"_blow"
+],
+"bodies_array": [],
+"_law_torque": [
+"step"
+],
+"_hot_window": [
+"step"
+],
+"_window": [
+"_hot_window",
+"_law_o2",
+"step"
+],
+"_law_conduct": [
+"step"
+],
+"_law_rise": [
+"step"
+],
+"_gas_access": [
+"_law_burn"
+],
+"_law_burn": [
+"step"
+],
+"_law_boil": [
+"step"
+],
+"_law_melt": [
+"step"
+],
+"_law_acid": [
+"step"
+],
+"_blur_cells": [
+"_law_burn",
+"_law_o2"
+],
+"_cells": [
+"_law_burn",
+"_law_air",
+"_law_o2"
+],
+"_upcell": [
+"_law_burn",
+"_law_boil",
+"_law_air",
+"_law_o2"
+],
+"_law_air": [
+"step"
+],
+"_law_smoke": [
+"step"
+],
+"_air_regions": [
+"step"
+],
+"_region_of_surface": [
+"_law_burn"
+],
+"_law_o2": [
+"step"
+],
+"add_person": [],
+"_person_cells": [
+"_free_fall_to_seam",
+"_bone_parts",
+"_swing",
+"_turn",
+"_repose",
+"_hold_torque",
+"_swing_of",
+"_law_joints",
+"_law_pose",
+"_blood0",
+"_law_torque",
+"_law_life",
+"_law_hear",
+"_within_reach",
+"_body_span",
+"_crouch",
+"_grip_holds",
+"_borne_cells",
+"_held_clusters",
+"_haul_held",
+"_law_will",
+"_law_grips",
+"_haul",
+"_law_footing"
+],
+"_claim_bodies": [
+"_person_at",
+"_person_cells"
+],
+"_carry_own": [
+"_law_will",
+"_haul"
+],
+"_own_claim": [
+"_claim_bodies"
+],
+"_flood_person": [],
+"person_status": [],
+"_law_life": [
+"step"
+],
+"_look_around": [
+"_law_will"
+],
+"_sees": [
+"_law_will"
+],
+"_in_cone": [
+"_law_will"
+],
+"_hears": [
+"_decide",
+"_law_will"
+],
+"_law_hear": [
+"step"
+],
+"_noise": [
+"_cash_impacts",
+"_spend",
+"_land_body",
+"_law_will"
+],
+"_level": [
+"_hears",
+"_law_hear"
+],
+"_say": [
+"_decide"
+],
+"_walkable": [
+"_look_around",
+"_fit_grid"
+],
+"_bearing": [
+"_places"
+],
+"_reach_along": [
+"_places"
+],
+"_places": [
+"_menu"
+],
+"_underfoot": [
+"_law_pose",
+"_resist",
+"_grip_holds",
+"_borne_cells",
+"_menu",
+"_law_will",
+"_haul",
+"_law_footing"
+],
+"_contact": [
+"_repose",
+"_law_joints",
+"_rub",
+"_haul_cost",
+"_overbalanced",
+"_pulled_over",
+"_law_footing"
+],
+"_leap_speed": [
+"_leap",
+"_menu"
+],
+"_leap_targets": [
+"_menu"
+],
+"_leap": [
+"_decide"
+],
+"_in_reach": [
+"_swing",
+"_repose",
+"_within_reach",
+"_haul_held",
+"_law_grips",
+"_haul"
+],
+"_span_xy": [
+"_pulled_over",
+"_haul_held",
+"_haul"
+],
+"_resist": [
+"_haul"
+],
+"_within_reach": [
+"_menu"
+],
+"_objects_within_reach": [
+"_menu"
+],
+"_held_cells": [
+"_swing",
+"_repose",
+"_hanging_cells",
+"_look_around",
+"_held_clusters",
+"_take_up",
+"_haul_held",
+"_menu",
+"_law_will"
+],
+"_in_flight_near": [
+"_menu",
+"_law_will"
+],
+"_falling_near": [
+"_menu",
+"_law_will"
+],
+"_catch_person": [
+"_decide"
+],
+"_catch": [
+"_decide"
+],
+"_body_span": [
+"_reach_of",
+"_crouch_of",
+"_hand"
+],
+"_reach_of": [
+"_repose",
+"_objects_within_reach",
+"_in_flight_near",
+"_falling_near",
+"_law_grips"
+],
+"_legs_of": [
+"_leap_speed"
+],
+"_torque_of": [
+"_law_pose"
+],
+"_gather_ticks": [
+"_menu"
+],
+"_bunch": [
+"_crouch"
+],
+"_crouch": [],
+"_face_axis": [
+"_law_pose",
+"_bend_max"
+],
+"_bend_max": [
+"_decide"
+],
+"_crouch_of": [
+"_land_body",
+"_leap_speed",
+"_gather_ticks",
+"_crouch"
+],
+"_hand": [
+"_take_up",
+"_menu",
+"_decide"
+],
+"_hand_strength": [
+"_catch_person",
+"_catch",
+"_take_up"
+],
+"_fist_of": [
+"_hand",
+"_fists",
+"_take_up"
+],
+"_fists": [
+"_in_flight_near",
+"_falling_near",
+"_grip_holds",
+"_overbalanced",
+"_pulled_over"
+],
+"_grip_holds": [
+"_grip_cells",
+"_pulled_over",
+"_haul",
+"_law_footing"
+],
+"_grip_cells": [
+"_support_once"
+],
+"_borne_cells": [
+"_support_once"
+],
+"_rub": [
+"_law_will"
+],
+"_haul_cost": [
+"_law_will"
+],
+"_held_clusters": [
+"_grip_cells",
+"_rub",
+"_haul_cost",
+"_overbalanced",
+"_pulled_over"
+],
+"_overbalanced": [
+"_law_pose",
+"_law_footing"
+],
+"_pulled_over": [
+"_law_footing"
+],
+"_take_up": [
+"_decide"
+],
+"_haul_held": [
+"_law_will"
+],
+"_menu": [
+"_full_menu",
+"_decide"
+],
+"_full_menu": [
+"_decide"
+],
+"_decide": [
+"_law_will"
+],
+"trace_outcomes": [],
+"_law_will": [
+"step"
+],
+"_decide_falling": [
+"_law_will"
+],
+"_leave": [
+"_law_will"
+],
+"_law_grips": [
+"step"
+],
+"_haul": [
+"_law_will"
+],
+"_fit_grid": [
+"_menu",
+"_routes"
+],
+"_routes": [
+"_menu",
+"_plan_path"
+],
+"_plan_path": [
+"_law_will"
+],
+"_object_at": [
+"_objects_within_reach",
+"_held_cells"
+],
+"_effort": [
+"_resist",
+"_objects_within_reach",
+"_grip_holds",
+"_rub",
+"_haul_cost",
+"_take_up",
+"_haul_held"
+],
+"_shove": [
+"_take_up",
+"_haul_held",
+"_haul"
+],
+"_walk": [
+"_law_will"
+],
+"_law_footing": [
+"step"
+],
+"_collapse": [
+"_law_life"
+],
+"_busy": [
+"step"
+],
+"_mixing": [
+"step"
+],
+"_pushed": [
+"step"
+],
+"step": [],
+"snapshot": [],
+"restore": [],
+"total_fluid": [],
+"total_mass": [
+"total_wood"
+],
+"total_wood": [],
+"total_energy": [],
+"total_lost": []
+}

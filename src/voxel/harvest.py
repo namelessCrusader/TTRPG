@@ -30,8 +30,9 @@ import os
 import numpy as np
 
 from .sim import (World, ACTS, AIR, WOOD, STONE, IRON, FLESH, LEAD,
-                  GLASS)
-from .scenes import _person, _Wants
+                  GLASS, BODY)
+from .scenes import _person, _room_for, _Wants
+from . import seam
 
 
 def _rng(seed):
@@ -78,31 +79,44 @@ def world(seed):
     drawn here is drawn to put something different on a menu."""
     r = _rng(seed)
     nx, ny, nz = 26, 18, 36
-    w = World(nx, ny, nz, voxel_cm=5)
-    w.open_sky = bool(r.integers(0, 2))
-    w.fill(0, nx, 0, ny, 0, 1, STONE)                     # the ground
+    open_sky = bool(r.integers(0, 2))
 
     # THE SHAPE OF THE PLACE. A ledge makes falling and catching possible; a
     # gap makes leaping possible; pillars make going ROUND something possible.
     # Each of those is a different menu.
     kind = int(r.integers(0, 4))
     lip = 0
+    solid = []                                            # stone, as fill boxes
     if kind == 1:                                         # a ledge to stand on
         lip = int(r.integers(9, 15))
         h = int(r.integers(8, 20))
-        w.fill(lip, nx, 0, ny, 1, h, STONE)
+        solid.append((lip, nx, 0, ny, 1, h))
     elif kind == 2:                                       # a gap to leap
         g0 = int(r.integers(8, 13))
         g1 = g0 + int(r.integers(2, 6))
         h = int(r.integers(6, 14))
-        w.fill(0, g0, 0, ny, 1, h, STONE)
-        w.fill(min(g1, nx - 2), nx, 0, ny, 1, h, STONE)
+        solid.append((0, g0, 0, ny, 1, h))
+        solid.append((min(g1, nx - 2), nx, 0, ny, 1, h))
         lip = g0
     elif kind == 3:                                       # posts to go round
         for _ in range(int(r.integers(1, 4))):
             px = int(r.integers(4, nx - 4))
             py = int(r.integers(3, ny - 4))
-            w.fill(px, px + 2, py, py + 2, 1, int(r.integers(8, 30)), STONE)
+            solid.append((px, px + 2, py, py + 2, 1, int(r.integers(8, 30))))
+    # AS HIGH ABOVE ITS RAISED FLOOR AS ABOVE ITS GROUND. A ledge or the two
+    # sides of a gap are floors people are put on, and a room 36 cells (1.8 m)
+    # high over the ground was 1.3 m or less over them: a 1.5 m man put there
+    # was built without his head (`fill` clamps at the lattice), in 53 of 150
+    # worlds before this (F9). So the room is 36 cells over the higher floor.
+    # Drawn in the same order as before; only the lattice is taller. A post
+    # is not a floor, and nobody is put on one (`_room_for`, below).
+    if kind in (1, 2):
+        nz += h - 1
+    w = World(nx, ny, nz, voxel_cm=5)
+    w.open_sky = open_sky
+    w.fill(0, nx, 0, ny, 0, 1, STONE)                     # the ground
+    for box in solid:
+        w.fill(*box, STONE)
 
     def ground(x, y):
         """The first free cell above whatever is at this column.
@@ -117,14 +131,34 @@ def world(seed):
 
     # SOMEBODY, and sometimes somebody else — two people is the only way a
     # menu ever says "take hold of" a person, or "catch".
+    #
+    # ONLY WHERE THE WHOLE BODY FITS (`_room_for`). The draw says where we
+    # would like him; if the body does not fit there (a post under part of
+    # him, a ledge through his leg, a post so tall his head is past the
+    # ceiling), the nearest x that does is taken instead, nearest first and
+    # the lower x on a tie. No random draw is spent on the search, so every
+    # world whose drawn place fits is the same world it always was.
+    # Measured before this: seed 31 built 'one' as two legs on a post, 84
+    # cells of his 396, with no pelvis to join them.
+    def place(x, lo):
+        for c in sorted(range(lo, nx - 4), key=lambda c: (abs(c - x), c)):
+            z = ground(c, ny // 2)
+            if _room_for(w, c, ny // 2, z):
+                return c, z
+        return None
+
     people = []
-    px = int(r.integers(3, 8))
-    floor = ground(px, ny // 2)
+    at = place(int(r.integers(3, 8)), 2)
+    if at is None:
+        raise RuntimeError(f"harvest seed {seed}: no room for anybody")
+    px, floor = at
     p = _person(w, px, ny // 2, z0=floor)
     p["name"], p["facing"] = "one", (0.0, 1.0) if r.integers(0, 2) else (1.0, 0.0)
     people.append(p)
-    if r.integers(0, 3) == 0 and px + 9 < nx - 3:
-        q = _person(w, px + 9, ny // 2, z0=ground(px + 9, ny // 2))
+    # (from px + 7 on, so his box never meets the first man's)
+    if r.integers(0, 3) == 0 and px + 9 < nx - 3 \
+            and (at := place(px + 9, px + 7)) is not None:
+        q = _person(w, at[0], ny // 2, z0=at[1])
         q["name"] = "two"
         people.append(q)
 
@@ -155,25 +189,70 @@ def world(seed):
     # AND THE BODY DOES NOT ALWAYS ARRIVE FRESH. A hurt, winded, half-blind
     # body is the same world and a different decision — or it should be, and
     # whether it is is exactly what a harvest is for finding out.
+    #
+    # ALIVE, every one. The hurt was drawn in [0, 0.5) with death at 0.45
+    # (BODY death_burn), so about one body in ten was dead on its first
+    # tick: a corpse that never decided anything (the user's decision,
+    # 2026-10-10). Drawn below the death line now.
+    #
+    # AND AWAKE ON ITS BREATH. The blood was drawn in [0.35, 1.0), under the
+    # faint line (0.55) about a third of the time. When the blood came back
+    # in a second or so that was a body that fainted and CAME ROUND inside
+    # the run. Since the breathing clock (tau 40 s, R5) it comes round only
+    # after tens of seconds, far past a 90-tick (2.25 s) run, so it was one
+    # more body that never decided: 32 worlds fell from 211 rows and 71
+    # situations to 143 and 55 with no other change. A body that is out is
+    # still drawn, on purpose, by `awake` below. Same draws in the same
+    # order; only the ranges moved.
+    #
+    # AND ON ITS FEET. Hurt between the faint line (0.2, BODY faint_burn)
+    # and the death line is a body that is out from its first tick, and
+    # stays out: burns do not heal inside a run. Drawn below the faint line
+    # now (the user's decision, 2026-10-16). 32 worlds give 684 rows and 168
+    # situations this way (wave 11), against 217 rows before.
     for q in people:
-        q["hurt"] = float(round(r.uniform(0.0, 0.5), 3))
-        q["blood_o2"] = float(round(r.uniform(0.35, 1.0), 3))
+        q["hurt"] = float(round(r.uniform(0.0, BODY["faint_burn"]), 3))
+        q["blood_o2"] = float(round(r.uniform(BODY["faint_o2"], 1.0), 3))
         if r.integers(0, 4) == 0:
             q["awake"] = False
     return w, people, lip
 
 
-def run(seed, ticks=90):
-    """One world, stepped, handed back as spelled decision rows."""
-    w, people, _lip = world(seed)
+def run(seed, ticks=90, build=None):
+    """One world, stepped, handed back as spelled decision rows.
+
+    `build(seed)` makes the world, as `world` does and by default. A named
+    scene (`scenes.workshop_world`) passes its own, so that the things on
+    its menus are called by their nouns."""
+    w, people, _lip = (build or world)(seed)
+    w.seed = seed                          # what every `hash01` draw is keyed on
     w.recall_check = bool(seed % 8 == 0)   # what the cap hid, on one run in 8
     w.policy = Roam(seed)
     for _ in range(ticks):
         w.step()
         for p in people:
             p["events"].clear()
+    return rows_of(w, seed)
+
+
+# WHAT A LINKED MIND'S BODY WROTE IS NOT A CHOICE OVER ITS MENU. A body that a
+# mind drives (mindlink.py) is asked one limb at a time, and the row it picks
+# is the one that matches the step of a job the mind chose: its trace rows
+# say `by: "mind"`, and what they record is a matcher finding its row, not a
+# policy weighing the options. Learnt as per-limb choices, they would teach
+# that every other row on the menu was passed over for a reason. The mind's
+# own decisions are its rows (`Mind.rows`), and the lab reads those.
+LINKED = "mind"                     # MindPolicy.name
+
+
+def rows_of(w, seed):
+    """The spelled decision rows of a stepped world, each with how its body
+    ended and the seed: the rows of a choice (more than one option), and
+    not the rows of a linked mind's body."""
     out = []
     for t in w.trace_outcomes():
+        if t.get("by") == LINKED:
+            continue
         for row in t.get("spelled", ()):
             if len(row["options"]) > 1:    # ONE option is not a choice
                 out.append(dict(row, outcome=t.get("outcome"), seed=seed))
@@ -214,7 +293,24 @@ def _one(seed):
         return [{"seed": seed, "broke": f"{type(e).__name__}: {e}"}]
 
 
-def to_file(path, seeds, workers=None, chunk=8):
+class MixedSpelling(ValueError):
+    """Rows written in two spellings, in one file."""
+
+
+def _spelling_of(path):
+    """The spelling of the first row of a harvest file, or None if it has
+    none yet."""
+    import json
+    if not os.path.exists(path):
+        return None
+    with open(path) as f:
+        for line in f:
+            if line.strip():
+                return json.loads(line).get("spelling")
+    return None
+
+
+def to_file(path, seeds, workers=None, chunk=8, append=False):
     """Harvest to a JSONL file, across cores, streaming.
 
     WORLDS ARE INDEPENDENT AND SEEDED, so this is the easy kind of parallel:
@@ -228,6 +324,12 @@ def to_file(path, seeds, workers=None, chunk=8):
     machine has 16 and 2 GB free, and a harvest that swaps is slower than a
     harvest that waits. Pass `workers` to override.
 
+    ONE FILE, ONE SPELLING. A row labelled under one spelling and a row
+    labelled under another are not the same kind of row (`seam`), and a file
+    that holds both is a dataset nobody can tell is broken. So `append` onto
+    a file of another spelling is refused before anything runs, and so is
+    any row that comes back spelled differently from the rows before it.
+
     Rows stream to disk as they arrive rather than piling up: a hundred
     thousand of them is not large, but a harvest that has to finish before it
     writes anything is a harvest you cannot stop.
@@ -238,7 +340,11 @@ def to_file(path, seeds, workers=None, chunk=8):
     seeds = list(seeds)
     workers = workers or max(1, min(8, (os.cpu_count() or 2) // 2))
     n = broke = 0
-    with open(path, "w") as f:
+    spelling = _spelling_of(path) if append else None
+    if spelling is not None and spelling != seam.SPELLING:
+        raise MixedSpelling(f"{path} is spelled {spelling!r}; this harvest "
+                            f"spells {seam.SPELLING!r}")
+    with open(path, "a" if append else "w") as f:
         if workers == 1:
             it = map(_one, seeds)
         else:
@@ -250,6 +356,10 @@ def to_file(path, seeds, workers=None, chunk=8):
                     if r.get("broke"):
                         broke += 1
                         continue
+                    spelling = spelling or r["spelling"]
+                    if r["spelling"] != spelling:
+                        raise MixedSpelling(f"a row spelled {r['spelling']!r} "
+                                            f"among rows spelled {spelling!r}")
                     f.write(json.dumps(r) + "\n")
                     n += 1
         finally:
@@ -261,10 +371,15 @@ def to_file(path, seeds, workers=None, chunk=8):
 
 
 def read(path):
-    """The rows back off disk, for a census or a teacher."""
+    """The rows back off disk, for a census or a teacher. A file in more
+    than one spelling is refused rather than read (`to_file`)."""
     import json
     with open(path) as f:
-        return [json.loads(line) for line in f if line.strip()]
+        rows = [json.loads(line) for line in f if line.strip()]
+    got = sorted({str(r.get("spelling")) for r in rows})
+    if len(got) > 1:
+        raise MixedSpelling(f"{path} mixes spellings: {', '.join(got)}")
+    return rows
 
 
 if __name__ == "__main__":

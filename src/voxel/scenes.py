@@ -10,13 +10,16 @@
 
 Run:  python -m src.voxel.scenes <name> <frames_dir>
 """
+import contextlib
 import os
 import sys
 
 import numpy as np
 
-from .sim import (ACID, AIR, BODY, CHAR, FLESH, GLASS, IRON, LEAD, LEAF, MIRON,
-                  MLEAD, MTIN, O2_PER_L, OIL, STONE, TIN, WATER, WOOD, World)
+from .materials import IGNITER_W
+from .sim import (ACID, AIR, AMBIENT, BODY, CHAR, FLESH, GLASS, IRON, LEAD,
+                  LEAF, MIRON, MLEAD, MTIN, O2_PER_L, OIL, STONE, TICK_S, TIN,
+                  WATER, WOOD, World)
 
 
 def _save(w, frames_dir, t):
@@ -28,6 +31,32 @@ def _save(w, frames_dir, t):
         fpot=w.fpot.astype(np.float16),
         T=w.T().astype(np.float16), burn=w.burning(),
         smoke=w.smoke.astype(np.float16), drops=drops, bodies=w.bodies_array())
+
+
+# ── authoring: making a thing ────────────────────────────────────────────────
+@contextlib.contextmanager
+def thing(w, name, kind="thing", parts=None, says=None):
+    """Make a THING: whatever the block puts into the world is one thing,
+    called by `name` (3.3). The block is given its eid.
+
+        with thing(w, "axe", kind="tool", parts={"head": IRON, "haft": WOOD},
+                   says={"affords": ["cut", "chop"]}):
+            w.fill(...)                         # the haft
+            w.fill(..., IRON, edge=2e-4)        # the head
+
+    What the block made is found by the same diff `part` uses for a body:
+    every cell whose `mat` or `smass` is not what it was. So it does not
+    matter what wrote the matter, `fill` or a direct write such as
+    `_grow_tree`'s canopy. A thing made inside this one keeps its own cells.
+
+    On the way out the world notes what the thing weighed and audits what
+    `says` claims against the thing's own cells (`_made`)."""
+    e = w.register(name, kind, parts=parts, says=says)
+    mat0, smass0 = w.mat.copy(), w.smass.copy()
+    yield e
+    made = (w.mat != mat0) | (w.smass != smass0)
+    w.stamp(e, made & (w.eid <= e))     # an eid above `e` was made inside
+    w._made(e)
 
 
 # ── scenario: two rooms, one doorway ─────────────────────────────────────────
@@ -51,9 +80,8 @@ def two_rooms(frames_dir, ticks=800, every=10):
         m = (w.mat[xs, 1:59, 1:43] == AIR)
         return float(w.o2[xs, 1:59, 1:43][m].mean()) / (O2_PER_L * w.vox_l)
 
+    w.ignite(22, 24, 2, IGNITER_W["torch"], 30.0)        # a torch held to one stick
     for t in range(ticks):
-        if t < 60:
-            w.E[22, 24, 2] += 2500.0                     # a torch held to one stick
         w.step()
         if t % every == 0 or t == ticks - 1:
             _save(w, frames_dir, t)
@@ -63,11 +91,23 @@ def two_rooms(frames_dir, ticks=800, every=10):
                   f"roomB {100 * o2_frac(slice(61, 119)):.0f}%", flush=True)
 
 
-def _grow_tree(w, cx, cy, trunk_top=41, ball_z=46, r=9):
+def _grow_tree(w, cx, cy, trunk_top=41, ball_z=46, r=9, leader_top=50):
     """A tree with a SKELETON: trunk, wood branch spokes through the canopy (real
     leaves hang on twigs — without branches the canopy's underside is beyond
-    leaf-span of the trunk and sheds immediately), and fresh sap-wet leaves."""
+    leaf-span of the trunk and sheds immediately), and fresh sap-wet leaves.
+
+    WOOD HOLDS WOOD, as in a real tree (the user's decision, 2026-10-16: fix
+    the tree, not the torque law). The trunk goes on up into the crown as a
+    leader, two cells square, to `leader_top`, and each spoke grows out of
+    the leader and steps from cell to cell through a shared face. The trunk
+    used to stop at z 40 and the spokes to start at z 43, each of them a
+    chain of cells touching only by their edges, so the crown was 26 bits of
+    wood held to the trunk by nothing but leaves. The torque law weighed the
+    leaves as one body standing on the trunk's top, found its weight off to
+    one side, and tipped the whole crown off the tree at t12, before any axe
+    had touched it."""
     w.fill(cx - 2, cx + 2, cy - 2, cy + 2, 1, trunk_top, WOOD)
+    w.fill(cx - 1, cx + 1, cy - 1, cy + 1, trunk_top, leader_top, WOOD)   # the leader
     X, Y, Z = np.ogrid[:w.shape[0], :w.shape[1], :w.shape[2]]
     ball = (X - cx) ** 2 + (Y - cy) ** 2 + (Z - ball_z) ** 2 <= r * r
     ball &= w.mat == AIR
@@ -77,11 +117,24 @@ def _grow_tree(w, cx, cy, trunk_top=41, ball_z=46, r=9):
     w.fvol[ball] = 0.06 * w.cap                          # of sap
     for (bx, by) in ((1, 0), (-1, 0), (0, 1), (0, -1),
                      (1, 1), (-1, -1), (1, -1), (-1, 1)):
-        for t in range(1, r):                            # branch spokes
-            px, py = cx + int(round(bx * t * 0.8)), cy + int(round(by * t * 0.8))
-            pz = ball_z - 3 + t // 3
-            if 0 <= px < w.shape[0] and 0 <= py < w.shape[1]:
-                w.fill(px, px + 1, py, py + 1, pz, pz + 1, WOOD, frac=0.4)
+        px, py = cx, cy                                  # branch spokes, from the
+        for t in range(1, r):                            # leader outwards
+            tx = cx + int(round(bx * t * 0.8))
+            ty = cy + int(round(by * t * 0.8))
+            z0, z1 = ball_z - 3 + (t - 1) // 3, ball_z - 3 + t // 3
+            path = []                                    # face to face: along x,
+            while px != tx:                              # then along y, and up
+                px += 1 if tx > px else -1               # where the spoke rises
+                path.append((px, py))
+            while py != ty:
+                py += 1 if ty > py else -1
+                path.append((px, py))
+            for (qx, qy) in path or [(px, py)]:
+                if not (0 <= qx < w.shape[0] and 0 <= qy < w.shape[1]):
+                    continue
+                for pz in range(z0, z1 + 1):
+                    if w.mat[qx, qy, pz] != WOOD:        # never thins the leader
+                        w.fill(qx, qx + 1, qy, qy + 1, pz, pz + 1, WOOD, frac=0.4)
 
 
 # ── scenario: felling a tree ─────────────────────────────────────────────────
@@ -123,10 +176,9 @@ def lamp_shelf(frames_dir, ticks=520, every=8):
         for (x, y) in ((cx, 19), (cx, 20), (cx + 1, 19), (cx + 1, 20)):
             w.pour(x, y, zc + 1, OIL, 60.0)              # 240 ml of lamp oil
         lamps.append((cx, zc + 1))
+    for cx, zf in lamps:
+        w.ignite(cx, 19, zf, IGNITER_W["taper"], 15.0)   # a taper lights all three
     for t in range(ticks):
-        if t < 40:
-            for cx, zf in lamps:
-                w.E[cx, 19, zf] += 2500.0                # a taper lights all three
         w.step()
         if t % every == 0 or t == ticks - 1:
             _save(w, frames_dir, t)
@@ -192,10 +244,9 @@ def torch_pillar(frames_dir, ticks=600, every=10):
                                                          # burns in place instead of
                                                          # dribbling off the top
     w.fill(29, 31, 19, 21, 1, 16, WOOD, frac=0.5)        # bare stick
+    w.ignite(9, 19, 15, IGNITER_W["torch"], 12.0)        # a torch to the soaked head
+    w.ignite(29, 19, 15, IGNITER_W["torch"], 12.0)       # and to the bare stick's top
     for t in range(ticks):
-        if t < 30:
-            w.E[9, 19, 15] += 2000.0                     # taper to the soaked head
-            w.E[29, 19, 15] += 2000.0                    # taper to the bare stick's top
         w.step()
         if t % every == 0 or t == ticks - 1:
             _save(w, frames_dir, t)
@@ -275,9 +326,8 @@ def burning_tree(frames_dir, ticks=900, every=8):
     for (px, py) in ((27, 30), (33, 30), (30, 27), (30, 33)):
         w.pour(px, py, 1, OIL, 120.0)                    # kindling oil at the base
     leaf0 = None
+    w.ignite(27, 30, 1, IGNITER_W["torch"], 10.0)        # the arsonist's torch
     for t in range(ticks):
-        if t < 40:
-            w.E[27, 30, 1] += 2500.0                     # the arsonist's torch
         w.step()
         if leaf0 is None:
             leaf0 = float(w.smass[w.mat == LEAF].sum())
@@ -377,24 +427,28 @@ def alchemist(frames_dir, ticks=900, every=8):
     business: spilled acid eats the shelf, weakened wood drops the next vat,
     pools eat the bench and the uprights. A consequence CASCADE, zero scripting
     past the first crack."""
-    w = World(50, 44, 40, voxel_cm=5)
+    w = World(50, 44, 54, voxel_cm=5)
     w.fill(0, 50, 0, 44, 0, 1, STONE)
     for x0 in (8, 40):                                       # shelving uprights
         w.fill(x0, x0 + 2, 34, 36, 1, 25, WOOD)
     w.fill(6, 44, 32, 38, 11, 12, WOOD, frac=0.8)            # lower shelf board
     w.fill(6, 44, 32, 38, 22, 23, WOOD, frac=0.8)            # upper shelf board
-    _vat(w, 12, 33, 23)                                      # vat A (upper, will tip)
     _vat(w, 24, 33, 23)                                      # vat B (upper)
     _vat(w, 32, 33, 12)                                      # vat C (lower)
+    # VAT A IS DROPPED, and that is the whole of the scripting. It used to be
+    # a hole punched in the shelf under a vat that was already standing on it
+    # — the author reaching into the world and deleting six wooden voxels,
+    # which is not a thing that happens and not a cause the laws can own.
+    # A vial let go above the bench is: it falls by the support law, leaves
+    # the lattice as a free body the moment nothing holds it (see
+    # `_free_fall_to_seam`), turns on the way down, and breaks where it
+    # lands. Everything after is the laws' business, as it always was.
+    _vat(w, 12, 33, 44)                                      # vat A, in the air
     w.fill(10, 34, 16, 37, 8, 9, WOOD, frac=0.8)             # the workbench top runs
     for (lx, ly) in ((11, 17), (11, 27), (31, 17), (31, 27)):    # back UNDER the shelves
         w.fill(lx, lx + 2, ly, ly + 2, 1, 8, WOOD)           # bench legs
     a0 = w.total_fluid(ACID)
     for t in range(ticks):
-        if t == 40:                                          # the shelf SPLITS along
-            w.mat[11:17, 32:36, 22] = AIR                    # its front edge — vat A
-            w.smass[11:17, 32:36, 22] = 0.0                  # keeps only its back row
-            print("t40: the shelf cracks away under vat A's front", flush=True)
         w.step()
         if w.bodies or t % every == 0 or t == ticks - 1:
             _save(w, frames_dir, t)
@@ -408,7 +462,55 @@ def alchemist(frames_dir, ticks=900, every=8):
 
 
 # ── the blocky humanoid ──────────────────────────────────────────────────────
-def _person(w, px, py, z0=1, handed="right"):
+def _room_for(w, px, py, z0=1):
+    """Is there room for a WHOLE `_person` at (px, py), standing on z0?
+
+    The box he is built in, arms and head included: x px-2 to px+4, y py-2
+    to py+2, z z0 to z0+29. All of it inside the world and all of it air.
+    `fill` clamps at the edge of the lattice and writes over whatever is
+    there, so a body placed without asking this is clipped or buried: a man
+    on a tall post in a 36-high room was built as two legs with no pelvis
+    (harvest seed 31, fuzzer seed 21), and a man whose ground was taken from
+    one column had a leg built inside the ledge beside it. A place that says
+    no here is a place nobody is put (F9)."""
+    nx, ny, nz = w.shape
+    if px - 2 < 0 or py - 2 < 0 or z0 < 0 \
+            or px + 5 > nx or py + 3 > ny or z0 + 30 > nz:
+        return False
+    return bool((w.mat[px - 2:px + 5, py - 2:py + 3, z0:z0 + 30] == AIR).all())
+
+
+# ── the body sheet (wave 13, G10) ───────────────────────────────────────────
+def _sheet_parts(w, sheet, px, py, z0, part):
+    """Build the named bones of a body from a body sheet, through `part`.
+
+    `sheet` is a name or a sheet dict. bodysheet.adult_layout gives one box of
+    whole cells for each segment with the fill that makes it weigh what the
+    sheet says. The stock builder's bones are kept by name: trunk is "torso",
+    shank is "shin" and carries the foot, forearm carries the hand. Cells come
+    with x = 0, y = 0 on the midline and z = 0 at the floor; the midline is put
+    at px + 1 (where add_person puts the person) and the feet on z0 - 1 + 1.
+    Returns (sheet dict copy, cells from the floor to the top of the head)."""
+    from . import bodysheet
+    sh = bodysheet.get_sheet(sheet) if isinstance(sheet, str) else dict(sheet)
+    lay = bodysheet.adult_layout(w.scale * 10.0, sh)
+    seg = lay["segments"]
+    ox, oy, oz = px + 1, py, z0
+    groups = [("torso", ["trunk"]), ("head", ["head"])]
+    for side in ("left", "right"):
+        groups += [(f"{side} shin", [f"{side} shank", f"{side} foot"]),
+                   (f"{side} thigh", [f"{side} thigh"]),
+                   (f"{side} upper arm", [f"{side} upper arm"]),
+                   (f"{side} forearm", [f"{side} forearm", f"{side} hand"])]
+    for name, parts in groups:
+        for sub in parts:
+            x0, x1, y0, y1, c0, c1 = seg[sub]["cells"]
+            part(name, ox + x0, ox + x1, oy + y0, oy + y1, oz + c0, oz + c1,
+                 seg[sub]["frac"])
+    return sh, seg["head"]["cells"][5]
+
+
+def _person(w, px, py, z0=1, handed="right", sheet=None):
     """A person, finally with a body: two legs, torso, two arms, a head.
     ~1.5 m of FLESH at 5 cm voxels. A physical object first — it stands by the
     support law, tips by the torque law, chars by the combustion law.
@@ -437,7 +539,13 @@ def _person(w, px, py, z0=1, handed="right"):
 
     It cost him two voxels of width: 35 cm across the shoulders where he was
     25, which is still narrow for a man, and fourteen scenes measured against
-    the narrower one had to be re-measured (roadmap 66, 70, 74)."""
+    the narrower one had to be re-measured (roadmap 66, 70, 74).
+
+    `sheet` (wave 13, G10) is None for the stock figure above, exactly as it
+    has always been built. A sheet NAME ("adult male", "adult female", ...) or
+    a sheet dict builds the body bodysheet.adult_layout draws for those
+    numbers, with the same named bones, and stores the sheet in p["sheet"]. The
+    adult body is an option; no scene asks for it unless it says so (D7)."""
     z = z0 - 1                                   # stands ON whatever is at z0
     segs = {}
 
@@ -452,7 +560,9 @@ def _person(w, px, py, z0=1, handed="right"):
         own business to declare (Ruling 2, question 1)."""
         was = w.mat == FLESH
         w.fill(x0, x1, y0, y1, z1, z2, FLESH, frac=frac)
-        segs[name] = np.argwhere((w.mat == FLESH) & ~was)
+        new = np.argwhere((w.mat == FLESH) & ~was)
+        # a bone drawn from two boxes (sheet body: shin + foot) adds to itself
+        segs[name] = np.concatenate([segs[name], new]) if name in segs else new
 
     # A LEG IS TWO BONES TOO. Same voxels, same outline, same mass — split at
     # the knee, so the body has somewhere to bend on the way down. Without a
@@ -464,30 +574,38 @@ def _person(w, px, py, z0=1, handed="right"):
     # from the body and its far end is the hand; a leg STANDS ON THE GROUND and
     # its far end is the hip. So a leg's chain runs upward from the ankle, and
     # bending the knee carries the hip — which is what a crouch is.
-    for side, lx0 in (("left", px), ("right", px + 2)):
-        part(f"{side} shin", lx0, lx0 + 1, py - 1, py + 2, z + 1, z + 8, 0.9)
-        part(f"{side} thigh", lx0, lx0 + 1, py - 1, py + 2, z + 8, z + 15, 0.9)
-    part("torso", px, px + 3, py - 2, py + 3, z + 15, z + 27, 0.9)
-    # AN ARM IS TWO BONES. Same voxels, same outline, same 28.5 kg — split at
-    # the elbow so the arm has somewhere to BEND. One bone can only reach a
-    # place along one path, and a man standing beside the person he is holding
-    # found that path already occupied by the person.
-    # TWO VOXELS THICK, NOT ONE, AND THAT IS WHAT LETS AN ARM MOVE. A bone one
-    # voxel across cannot be turned in the plane it is thin in: it rounds into
-    # a staircase whose steps touch at corners only, which is not a limb.
-    # Measured, 31 angles apiece: one voxel thick held 4 of them, two voxels
-    # held 27. It showed up as a left-handed man who could not reach out while
-    # facing along x — his arm had no drawable path at all — and it was the
-    # flesh, not the reach.
-    #
-    # It is also the truer body. A 5 cm arm is a matchstick; a real upper arm
-    # is about 10 cm through, which is exactly these two voxels, and the man
-    # goes from 38 kg to nearer the 47 kg his height asks for.
-    for side, ax0 in (("left", px - 2), ("right", px + 3)):
-        part(f"{side} upper arm", ax0, ax0 + 2, py - 1, py + 2, z + 23, z + 27, 0.85)
-        part(f"{side} forearm", ax0, ax0 + 2, py - 1, py + 2, z + 18, z + 23, 0.85)
-    part("head", px, px + 2, py - 1, py + 2, z + 27, z + 31, 0.9)
+    if sheet is not None:
+        sheet, top = _sheet_parts(w, sheet, px, py, z0, part)
+    else:
+        for side, lx0 in (("left", px), ("right", px + 2)):
+            part(f"{side} shin", lx0, lx0 + 1, py - 1, py + 2, z + 1, z + 8, 0.9)
+            part(f"{side} thigh", lx0, lx0 + 1, py - 1, py + 2, z + 8, z + 15, 0.9)
+        part("torso", px, px + 3, py - 2, py + 3, z + 15, z + 27, 0.9)
+        # AN ARM IS TWO BONES. Same voxels, same outline, same 28.5 kg — split at
+        # the elbow so the arm has somewhere to BEND. One bone can only reach a
+        # place along one path, and a man standing beside the person he is holding
+        # found that path already occupied by the person.
+        # TWO VOXELS THICK, NOT ONE, AND THAT IS WHAT LETS AN ARM MOVE. A bone one
+        # voxel across cannot be turned in the plane it is thin in: it rounds into
+        # a staircase whose steps touch at corners only, which is not a limb.
+        # Measured, 31 angles apiece: one voxel thick held 4 of them, two voxels
+        # held 27. It showed up as a left-handed man who could not reach out while
+        # facing along x — his arm had no drawable path at all — and it was the
+        # flesh, not the reach.
+        #
+        # It is also the truer body. A 5 cm arm is a matchstick; a real upper arm
+        # is about 10 cm through, which is exactly these two voxels, and the man
+        # goes from 38 kg to nearer the 47 kg his height asks for.
+        for side, ax0 in (("left", px - 2), ("right", px + 3)):
+            part(f"{side} upper arm", ax0, ax0 + 2, py - 1, py + 2, z + 23, z + 27, 0.85)
+            part(f"{side} forearm", ax0, ax0 + 2, py - 1, py + 2, z + 18, z + 23, 0.85)
+        part("head", px, px + 2, py - 1, py + 2, z + 27, z + 31, 0.9)
     person = w.add_person(px + 1, py)                            # and now: alive
+    if person.get("eid"):
+        # THE BODY CARRIES ITS EID from the moment it is built, so the flesh
+        # is this person's before any claim has been made on it (3.3; only
+        # when the world asks for it, `stamp_bodies`)
+        w.stamp(person["eid"], np.concatenate(list(segs.values())))
     # segments and joints are kept as OFFSETS from the body's own corner, so
     # they survive the body walking, being shoved, or being carried out
     origin = np.concatenate(list(segs.values())).min(axis=0)
@@ -570,6 +688,9 @@ def _person(w, px, py, z0=1, handed="right"):
     # a scene that wants a left-handed one says so.
     person["handed"] = handed
     person.update({"px": px, "py": py, "head_z": z + 28})
+    if sheet is not None:
+        person["sheet"] = sheet                 # the numbers this body was drawn from
+        person["head_z"] = z0 + top - 3       # stock: top 30 cells, head_z = z0 + 27
     return person
 
 
@@ -577,7 +698,9 @@ def _exposure(w, p):
     """What the world is DOING to the body: peak skin heat, and the air at head
     height vs knee height (O2 %% and smoke) — the damage model's raw senses."""
     flesh = w.mat == FLESH
-    skin = float(w.T()[flesh].max()) if flesh.any() else 0.0
+    # out by a door (`w.exits`), the body has left the world: no skin to read
+    skin = ("- (out, safe)" if p.get("safe") else
+            f"{float(w.T()[flesh].max()):.0f} °C" if flesh.any() else "-")
     def air_at(z):
         sl = (slice(max(p["px"] - 4, 0), p["px"] + 6),
               slice(max(p["py"] - 4, 0), p["py"] + 6), slice(z, z + 3))
@@ -588,11 +711,32 @@ def _exposure(w, p):
         return o2, float(w.smoke[sl][m].mean())
     ho2, hsm = air_at(p["head_z"])
     ko2, ksm = air_at(4)
-    return (f"skin {skin:.0f} °C | head air: O2 {ho2:.0f}%, smoke {hsm:.2f} g | "
+    return (f"skin {skin} | head air: O2 {ho2:.0f}%, smoke {hsm:.2f} g | "
             f"knee air: O2 {ko2:.0f}%, smoke {ksm:.2f} g | {w.person_status(p)}")
 
 
-def fire_alarm(frames_dir, ticks=700, every=4):
+# ── the spilled lamp ────────────────────────────────────────────────────────
+def _spilled_lamp(w):
+    """A lamp knocked over at the foot of the bed, a few seconds ago, and
+    its oil run out under the platform.
+
+    The oil is 300 ml, a thin patch of twelve 5 cm cells (3 x 4) under the
+    bed 20 cm below its platform, and the lamp lies in it still burning: the
+    flame of a lit lamp whose oil has spilled round the wick, taken as a
+    taper's (500 W, `IGNITER_W`), held to the spill for 10 s. Nothing else is
+    set: the oil takes the flame's heat, burns, and the flame it makes
+    reaches the bed's underside and lights it (flame height, F25). (The scene
+    used to START with the oil burning and the whole underside of the bed
+    alight, because flames had no height.) Everything is the fire laws on the
+    real clock."""
+    for x in range(68, 72):
+        for y in range(19, 22):
+            w.pour(x, y, 1, OIL, 25.0)                       # the dropped lamp's oil
+    for (ox, oy) in ((69, 20), (70, 20), (69, 19)):
+        w.ignite(ox, oy, 1, IGNITER_W["taper"], 10.0)        # its flame, in the spill
+
+
+def fire_alarm(frames_dir, ticks=2400, every=8):
     """SOCIAL SITUATION, layer one — no minds yet, just reflexes (the WILL
     data): the same burning house with TWO people and a door. Aldan stands
     near the bed and SEES the flames catch; he bolts. Berel stands behind an
@@ -618,11 +762,8 @@ def fire_alarm(frames_dir, ticks=700, every=4):
     b = _person(w, 32, 58)                                   # see is a man running
     b["name"] = "Berel"                                      # for it — but a SHOUT
     b["lines"] = {"coming": "I hear you! I'm coming!"}   # gets there first
-    for (ox, oy) in ((64, 16), (65, 17), (64, 18)):
-        w.pour(ox, oy, 1, OIL, 100.0)
+    _spilled_lamp(w)                                         # the bed has caught
     for t in range(ticks):
-        if t < 30:
-            w.E[64, 16, 1] += 2500.0
         w.step()
         for p in (a, b):
             for e in p["events"]:
@@ -711,9 +852,8 @@ def glasshouse(frames_dir, ticks=760, every=4):
     fire_at = (25.0, 26.0, 6.0)
     seen_through_glass = None
     blinded_at = None
+    w.ignite(24, 25, 5, IGNITER_W["torch"], 15.0)         # a torch to the oil on the bench
     for t in range(ticks):
-        if t < 30:
-            w.E[24, 25, 5] += 2500.0
         w.step()
         if seen_through_glass is None and w._sees(eye_w, fire_at) and w.burning().any():
             seen_through_glass = t
@@ -763,11 +903,14 @@ def glasshouse(frames_dir, ticks=760, every=4):
 
 
 # ── scenario: house fire, someone inside ─────────────────────────────────────
-def house_fire(frames_dir, ticks=900, every=10):
+def house_fire(frames_dir, ticks=2800, every=14):
     """A furnished room: bed, table, wardrobe — and a PERSON standing in it.
-    A spilled lamp lights the bed. The scene is the world acting on a body:
+    A spilled lamp lights the oil under the bed, and its flame, 20 cm up,
+    lights the bed (about half a minute): the scene runs 70 s now that the fire
+    has to catch. The scene is the world acting on a body:
     smoke banks down from the ceiling, the air at head height goes foul while
-    the knee-level air stays breathable (crawl low), the skin readout climbs."""
+    the knee-level air stays breathable (crawl low), the skin readout climbs.
+    The room's one door is its exit (`w.exits`), so the person can get out."""
     w = World(100, 80, 50, voxel_cm=5)
     w.fill(0, 100, 0, 80, 0, 1, STONE)
     w.fill(10, 90, 10, 70, 0, 45, STONE)                     # the house block...
@@ -782,12 +925,11 @@ def house_fire(frames_dir, ticks=900, every=10):
     for (lx, ly) in ((31, 51), (31, 59), (41, 51), (41, 59)):
         w.fill(lx, lx + 2, ly, ly + 2, 1, 10, WOOD)
     w.fill(84, 88, 55, 67, 1, 30, WOOD, frac=0.5)            # wardrobe
+    w.exits = [(13, 40)]                                     # the door, as the
+                                                             # person knows it
     p = _person(w, 46, 34)                                   # someone mid-room
-    for (ox, oy) in ((64, 16), (65, 17), (64, 18)):
-        w.pour(ox, oy, 1, OIL, 100.0)                        # the dropped lamp
+    _spilled_lamp(w)                                         # and it has caught
     for t in range(ticks):
-        if t < 30:
-            w.E[64, 16, 1] += 2500.0                         # its burning wick
         w.step()
         for e in p["events"]:                                # physiology narrates itself
             print(e, flush=True)
@@ -1064,6 +1206,17 @@ def rescue(frames_dir, ticks=300, every=4):
     saves = _person(w, 34, 12, z0=31)                    # further back, by the post
     saves["name"], saves["facing"] = "the rescuer", (-1.0, 0.0)
     saves["strength_N"] = 4000.0
+    # HE IS WAITING FOR IT. A man with a hand on the post and the other out
+    # for a friend he has watched being pulled is not REACTING to the fall,
+    # he is ANTICIPATING it, and an anticipated event is answered as it
+    # happens, not a reaction time after it. So: ready, and answering on the
+    # next tick (TICK_S), as the HOLD test in test_voxel.py (this scene) does.
+    # Not the 0.15-0.30 s band of a simple reaction (R3), because the band
+    # misses by one tick: the man goes over at t7, a 0.15 s hand can close
+    # first at t13, and by then he is out of reach. Measured F9: 0.125 s and
+    # less catches him (t12 at most), 0.15 s does not. Left unready (1-1.5 s)
+    # the man went past him altogether, which was the render after R3.
+    saves["ready"], saves["ready_s"] = True, TICK_S
     w.policy = _Wants(each={
         "the puller": {"hands": "take hold of the one pulled",
                        "legs": "go(straight on", "waist": "stand"},
@@ -1072,7 +1225,7 @@ def rescue(frames_dir, ticks=300, every=4):
         "the rescuer": {"hands": "take hold of the iron", "legs": "stay",
                         "waist": "stand"}})
     for t in range(ticks):
-        if t == 12:                          # post in hand; now the other hand
+        if t == 6:                           # post in hand; now the other hand
             w.policy = _Wants(each={
                 "the puller": {"hands": "take hold of the one pulled",
                                "legs": "go(straight on", "waist": "stand"},
@@ -1217,7 +1370,211 @@ def arms(frames_dir, ticks=170, every=2):
                 flush=True)
 
 
-SCENARIOS = {"rescue": rescue, "two_rooms": two_rooms, "tree_fell": tree_fell, "lamp_shelf": lamp_shelf,
+# ── scenario: one blow, and what it costs ──────────────────────────────────
+class _OneBlow:
+    """The attacker picks up the axe at his feet and swings once; the other
+    man stands where he is. Nobody is told to hit anybody, and nobody is told
+    to bleed: the swing goes where the arm goes, and the rest is the laws."""
+    name = "one_blow"
+
+    def __init__(self):
+        self.done = False
+
+    def pick(self, sit, menu):
+        want = "stay"
+        if sit["who"] == "attacker" and sit["limb"] == "hands":
+            want = ("keep" if self.done else "swing") if sit["holding"] else "take"
+        elif sit["limb"] == "hands":
+            want = "keep"
+        for i, o in enumerate(menu):
+            if o["tag"] == want:
+                return i
+        return 0
+
+
+def duel(frames_dir, ticks=36000, every=150):
+    """ONE AXE BLOW (roadmap 95, steps 1 and 2). A man picks up an axe and
+    swings it once at another man standing at the edge of his reach. The
+    wound law opens a cut in the upper arm; the bleed law pours what leaves
+    it onto the floor; blood loss starves the brain of oxygen on the same
+    lines smoke does; and ten minutes later he goes down. Nothing after the
+    swing is scripted."""
+    # 64 wide, because a man 1.5 m tall falls 1.5 m: at 46 he went down
+    # against the edge of the world and was propped up by it.
+    w = World(64, 20, 40, voxel_cm=5)
+    w.fill(0, 64, 0, 20, 0, 1, STONE)
+    w.exits = [(62, 10)]
+    a = _person(w, 17, 10)
+    a["name"] = "attacker"
+    b = _person(w, 31, 10)
+    b["name"] = "defender"
+    w.fill(22, 24, 10, 11, 1, 2, IRON, edge=2e-4)          # the axe, edge declared
+    pol = _OneBlow()
+    w.policy = pol
+    said = set()
+    for t in range(ticks):
+        w.step()
+        if b.get("wounds") and not pol.done:
+            pol.done = True
+        if w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        for e in b["events"]:
+            if e not in said:
+                said.add(e)
+                print(e, flush=True)
+        if t % 2400 == 0:
+            lost = 1.0 - b.get("blood_ml", 1.0) / b.get("blood0_ml", 1.0)
+            print(f"t{t}: {b['name']} has lost {100 * lost:.0f}% of his blood, "
+                  f"awake={b['awake']} alive={b['alive']}", flush=True)
+        if not b["alive"]:
+            _save(w, frames_dir, t)
+            break
+    for wd in b.get("wounds") or []:
+        if wd["open"] or wd.get("shed_ml"):
+            print(f"wound: {wd['bone']}, {100 * wd['depth_m']:.1f} cm deep, "
+                  f"{100 * wd['length_m']:.0f} cm long, shed {wd.get('shed_ml', 0):.0f} ml",
+                  flush=True)
+
+
+# ── scenario: a workshop of NAMED things ────────────────────────────────────
+def workshop_world(seed=0):
+    """A small room with an axe, a bottle and a plank in it, each made with
+    `thing()`, and a smith standing among them (sometimes an apprentice too).
+
+    THE FIRST WORLD WHOSE MENUS SAY NOUNS. Everything else in this file is
+    matter: "take hold of the iron", "take hold of the wood". Here the iron
+    and the wood are an axe, and a body is offered "take hold of the axe",
+    "swing the axe", "the plank", "the bottle" — what a mind reading the menu
+    would call them. Built for `harvest.run(seed, build=workshop_world)` as
+    much as for a render, so `seed` moves things about a little and returns
+    what `harvest.world` returns: the world, its people, and a lip (none).
+
+    Small on purpose, like a harvest world: 32x20x40 at 5 cm."""
+    r = np.random.default_rng(seed)
+    nx, ny, nz = 32, 20, 40
+    w = World(nx, ny, nz, voxel_cm=5)
+    w.fill(0, nx, 0, ny, 0, 1, STONE)                     # the floor
+    w.exits = [(nx - 2, ny // 2)]
+    smith = _person(w, 8, ny // 2)
+    smith["name"], smith["facing"] = "smith", (1.0, 0.0)
+    people = [smith]
+    if seed and r.integers(0, 3) == 0:
+        q = _person(w, 24, ny // 2)
+        q["name"], q["facing"] = "apprentice", (-1.0, 0.0)
+        people.append(q)
+    # THE AXE: an iron head with an edge, on a wooden haft, lying on the floor
+    # in front of the smith. "cut" and "chop" are what its author says it is
+    # for; `_made` checks the claim against the edge.
+    ay = ny // 2 + int(r.integers(-2, 3))
+    with thing(w, "axe", kind="tool", parts={"head": IRON, "haft": WOOD},
+               says={"affords": ["cut", "chop"]}):
+        w.fill(12, 15, ay, ay + 1, 1, 2, WOOD)            # the haft
+        w.fill(15, 16, ay, ay + 1, 1, 2, IRON, edge=2e-4)  # the head
+    # THE BOTTLE: glass, standing, to one side. Glass breaks; when it does,
+    # what is left is "the pieces of the bottle", not "the glass".
+    by = int(r.integers(3, 6))
+    with thing(w, "bottle", parts={"glass": GLASS}):
+        w.fill(11, 12, by, by + 1, 1, 4, GLASS)
+    # THE PLANK: a board on the floor on the other side.
+    py = ny - int(r.integers(4, 7))
+    with thing(w, "plank", parts={"board": WOOD}):
+        w.fill(11, 17, py, py + 2, 1, 2, WOOD)
+    return w, people, 0
+
+
+class _Workshop:
+    """The smith takes the axe and swings it, once, then keeps it; the
+    apprentice, if there is one, takes the bottle. Asked for by NAME
+    ("the axe"), the way a mind that reads the menu would ask."""
+    name = "workshop"
+
+    def __init__(self):
+        self.swung = False
+
+    def pick(self, sit, menu):
+        want = "stay"
+        if sit["limb"] == "hands":
+            if sit["who"] == "smith":
+                want = ("keep" if self.swung else "swing the axe") \
+                    if sit["holding"] else "take hold of the axe"
+            else:
+                want = "keep" if sit["holding"] else "take hold of the bottle"
+        for i, o in enumerate(menu):
+            if o["key"].startswith(want) or o["tag"] == want:
+                if want.startswith("swing"):
+                    self.swung = True
+                return i
+        return 0
+
+
+def workshop(frames_dir, ticks=160, every=2):
+    """NAMED THINGS (step E5). An axe, a bottle and a plank, each made with
+    `thing()`, and a smith who takes the axe by its name and swings it. What
+    is printed is what the people said they did: "smith takes hold of the
+    axe", not "of the iron"."""
+    w, people, _lip = workshop_world(1)
+    w.policy = _Workshop()
+    for t in range(ticks):
+        w.step()
+        if w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+        for p in people:
+            for e in p["events"]:
+                print(e, flush=True)
+            p["events"].clear()
+    print("things: " + ", ".join(w.name(e, "?") for e, t in sorted(w.things.items())
+                                 if t["kind"] != "person"), flush=True)
+
+
+# ── scenario: an arrow trap ─────────────────────────────────────────────────
+def arrow_trap(frames_dir, ticks=2400, every=20):
+    """FOUR BOLTS FROM A WALL (roadmap 95, step 3). A trap looses a bolt
+    from each of four slits, one per lane, at chest height and 50 m/s.
+
+      lane 1  a man with nothing on
+      lane 2  a man behind a plank someone propped against the wall
+      lane 3  a man in a breastplate, and the bolt has a bodkin point
+      lane 4  a man in the same breastplate, and the bolt has a broad head
+
+    Nothing knows what an arrow or a plate is. Each bolt is one cell of wood
+    in flight with its point's area and its shaft's face declared; the
+    sweep stops it at the first thing in the way; the wound law reads
+    energy per area through plate, skin and tissue. Then the ones that were
+    opened bleed onto the floor."""
+    from .sim import WOOD as _W
+    w = World(46, 24, 36, voxel_cm=5)
+    w.fill(0, 46, 0, 24, 0, 1, STONE)
+    w.fill(0, 46, 0, 1, 1, 30, STONE)                      # the trap wall
+    w.exits = [(44, 22)]
+    plate = {"torso": {"mat": IRON, "thick_m": 1.5e-3, "kind": "plate",
+                       "area_m2": 0.06}}
+    people = []
+    for k, px in enumerate((5, 15, 25, 35)):
+        q = _person(w, px, 12)
+        q["name"] = f"lane {k + 1}"
+        if k >= 2:
+            q["worn"] = dict(plate)
+        people.append(q)
+    w.fill(14, 19, 4, 5, 1, 28, _W)                        # the plank, lane 2
+    heads = (1e-5, 1e-5, 1e-5, 2e-4)                       # bodkin x3, broadhead
+    for k, px in enumerate((5, 15, 25, 35)):
+        w.loose((px + 1, 1, 20), (0.0, 50.0, 0.0), _W, 60.0,
+                edge=heads[k], area_m2=8e-5)
+    for t in range(ticks):
+        w.step()
+        if t < 12 or w.bodies or t % every == 0 or t == ticks - 1:
+            _save(w, frames_dir, t)
+    for q in people:
+        ws = q.get("wounds") or []
+        if not ws:
+            print(f"{q['name']}: untouched", flush=True)
+        for wd in ws:
+            print(f"{q['name']}: {wd['bone']}, armour {wd['armour']}, "
+                  f"{'OPEN ' + format(100 * wd['depth_m'], '.0f') + ' cm deep' if wd['open'] or wd.get('shed_ml') else 'closed'}"
+                  f", shed {wd.get('shed_ml', 0):.0f} ml", flush=True)
+
+
+SCENARIOS = {"duel": duel, "workshop": workshop, "arrow_trap": arrow_trap, "rescue": rescue, "two_rooms": two_rooms, "tree_fell": tree_fell, "lamp_shelf": lamp_shelf,
              "drop_test": drop_test, "forge": forge, "fire_alarm": fire_alarm,
              "glasshouse": glasshouse,
              "alchemist": alchemist, "house_fire": house_fire,

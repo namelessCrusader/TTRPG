@@ -1,0 +1,431 @@
+{
+ "_meta": {
+  "lane": "A-T7b",
+  "status_of_numbers": "all (u): from memory of the literature, not verified; tests/data/sourced_numbers.json had no body-heat entries when this was written",
+  "tolerances_written_before_fit": true,
+  "revisions": [
+   "1: first write, before any fit",
+   "2: after fit pass 1-2 the fit set had no hot steady case (the held-out case step_29_to_40C then missed on sweat). Added the fit case nude_40C_rest with a target derived from the heat balance, not from model output. The held-out case step_29_to_40C is therefore SEEN for sweat and says so. Nothing else changed; two scenario inputs (dehydration 35 C, immersion film 25 x 8.3) were corrected earlier, after the baseline run and before any fit.",
+   "3 (fix after verify): the fit was redone with HC_FLESH = RAD_VIEW = 1.0 (ISO, not fitted; the first fit had let them fall to 0.41 and 0.40, which hid a wrong heat balance). Scenario definitions added, none of them chosen from a result: SEATED_EXPOSED (8 percent of the skin on the chair, for the chamber rest cases), LYING_EXPOSED (Henssge's body lies on a floor, for the corpse kind), immersion unchanged. Structure added: shell blood flow follows the vessel reflex (SHELL_VASO = 1, not fitted), work hyperemia is capped on the unscaled basal flow, Gagge sweat run-off (RUNOFF_K = 0.5, not fitted), and the compact model now shares shiver, gait, act and TEF heat between shell and core by capacity like the voxel law (it had put it all in the shell). The fit uses a linear cost, the skin diffusion is bounded by the physical TEWL (DRY 0.4-1.0 of 0.04), controller scales by 0.2-6. Targets and inputs are untouched (the sha guard still passes); nothing was fitted on a held_out case."
+  ],
+  "rule": "the targets and inputs below were written first; the fit may change only the fit block; a test checks tolerance_sha256",
+  "fit_on": "role fit (steady)",
+  "tested_on": "role held_out (transients, clothing handled in fit set, humid, hot, immersion, dehydration, corpse)"
+ },
+ "tolerance_sha256": "270b1b34084e270d52044d9c610fc537b7e832d7a0358eb89377964378c64a5c",
+ "fit": {
+  "status": "weaker: human-data-only fit (the JOS-3 oracle was run afterwards, 2026-10-30, decision D8 approved, as a check only: nothing was refitted to it; see tests/data/jos3_cases.json and test_u_jos3_*)",
+  "fitted_on": "the role 'fit' cases only (steady states); a (1+6) evolution strategy on the log of each controller scale and of the skin-diffusion wetting; the physical coefficients HC_FLESH, RAD_VIEW and the structural constants SHELL_VASO, RUNOFF_K are NOT fitted",
+  "constants": {
+   "HC_FLESH": 1.0,
+   "RAD_VIEW": 1.0,
+   "DRY_WETTEDNESS_FIT": 0.016,
+   "PRM_SCALE": {
+    "sw_k_c": 0.662,
+    "sw_k_s": 2.255,
+    "sw_k_cs": 0.895,
+    "vd_k_dil": 0.88,
+    "vc_k_con": 2.056,
+    "sh_k1": 2.893,
+    "sh_k2": 0.25,
+    "sh_max_w_kg": 0.718,
+    "set_core": 1.0
+   },
+   "SHELL_VASO": 1.0,
+   "RUNOFF_K": 0.5
+  },
+  "not_fitted": [
+   "HC_FLESH",
+   "RAD_VIEW",
+   "SHELL_VASO",
+   "RUNOFF_K"
+  ],
+  "bounds": {
+   "DRY (x 0.04)": [
+    0.4,
+    1.0
+   ],
+   "sw_k_c, sw_k_s, sw_k_cs, vd_k_dil, vc_k_con, sh_k1, sh_k2": [
+    0.2,
+    6.0
+   ],
+   "sh_max_w_kg": [
+    0.5,
+    2.0
+   ],
+   "set_core": [
+    1.0,
+    1.0
+   ]
+  },
+  "cost_at_end": "0.4644 (linear cost: the sum over the fit cases of the distance outside each band in units of the band width, 4 percent margin; the single band that cannot close is nude_22C_rest heat production, 0.27 of it)",
+  "counts": {
+   "fit_inside": 4,
+   "fit_total": 5,
+   "held_out_inside": 3,
+   "held_out_total": 6
+  },
+  "misses": {
+   "nude_22C_rest": {
+    "role": "fit",
+    "out_of_band": {
+     "heat_prod_W": [
+      155.064,
+      85.0,
+      140.0
+     ]
+    },
+    "cause": "heat production 155 W against a band that ends at 140 W (1.57 MET). The exported rest constant (1.22 W/kg x 73 kg = 89 W, 47 W/m2) is below the 58 W/m2 of the ISO tables this band follows, so the body shivers 66 W to hold its core in a 22 C room (core 36.43 K and mean skin 30.59 K are inside their bands). At the ISO transfer coefficients the passive loss there is about 130 W plus 25 W of insensible loss. Not closed by fitting: the controller scales sit inside 0.25-2.9 of the thermoreg.py draw ranges and the skin diffusion is at its physical floor (4 g/m2/h). JOS-3 CHECK (lane J, 2026-10-30, seated nude 22 C RH 50, 24 h): JOS-3 makes 141 W at the same rest power (89 W), which is the band edge, against our 150 W in the same protocol (6 h, hour-of-day term off: +6 percent, inside the 15 percent tolerance) and 155 W in this fixture (3 h, term on); 133 W at PAR 1.00; 157 W at JOS-3's own rest (PAR 1.25, 106 W). We shiver 61 W, JOS-3 43 W plus 9 W non-shivering. Option (a) of decision N2 tried in a scratch copy: 153 W (protocol) and 159 W (fixture), so the rest constant alone does not close this; the total here is set by the heat lost and by the shiver gain."
+   },
+   "step_29_to_40C": {
+    "role": "held_out",
+    "out_of_band": {
+     "sweat_Lh": [
+      0.179,
+      0.2,
+      0.9
+     ]
+    },
+    "cause": "sweat 0.179 L/h at 60 min against >=0.2. The steady 40 C case (nude_40C_rest) is inside (0.213 L/h); at 60 min the sweat controller (dead time, lag, and a core error that has risen only 0.45 K) has not reached its steady value. Mean skin (36.21 K) and the core rise (0.45 K) are inside. JOS-3 CHECK (lane J, 2026-10-30): from a 24 h start at 29 C JOS-3 sweats 0.164 L/h at minute 60 at the same rest power (0.154 at PAR 1.00, 0.202 at its own rest PAR 1.25). Ours from a 6 h start makes 0.227 L/h with the hour-of-day term off and 0.213 with it on (clock 18-19 h); this fixture (120 min start, term on, clock 14-15 h) makes 0.179. So the miss is the clock of the fixture, not a slow controller: at the same rest power ours is 30 to 40 percent ABOVE JOS-3, and the band floor 0.2 (u) is passed whenever the set point is not at its afternoon peak."
+   },
+   "immersion_10C_lean_vs_fat": {
+    "role": "held_out",
+    "out_of_band": {
+     "drop_lean": [
+      3.712,
+      0.4,
+      3.5
+     ]
+    },
+    "cause": "lean core drop 3.71 K in 30 min of 10 C water against <=3.5 (the fat subject drops 2.35 K and the ratio 0.63 is inside). It was 4.6 K before the shiver and gait heat was shared between shell and core by capacity (as the voxel law does) and before the shell blood flow followed the vessel reflex. Still missing: tissue insulation rises on cold vasoconstriction by more than the reflex floor of the shell flow gives (Burton and Edholm 1955: 0.15 to 0.8 clo, u)."
+   },
+   "corpse_20C": {
+    "role": "held_out",
+    "out_of_band": {
+     "T_12h": [
+      28.582,
+      28.9,
+      31.9
+     ],
+     "T_18h": [
+      25.746,
+      25.9,
+      28.9
+     ]
+    },
+    "cause": "T_12h 28.58 K (band 28.9-31.9) and T_18h 25.75 K (band 25.9-28.9): the corpse cools 0.3 K and 0.15 K too fast late; T_1h and T_6h are inside. The lying-posture shares (scenes_bodyheat.LYING_EXPOSED, u) were written once before this fit and were not tuned to the curve."
+   }
+  },
+  "passes": [
+   "first fit (recorded in revision 2, HC_FLESH and RAD_VIEW free): discarded, it hid a wrong heat balance",
+   "this fit: ISO coefficients, squared cost, then linear cost, three structural fixes in between (see revision 3)"
+  ]
+ },
+ "cases": [
+  {
+   "id": "nude_29C_rest",
+   "role": "fit",
+   "kind": "steady",
+   "source": "thermoneutral zone of a nude resting adult, 28-30 C (Fanger 1970; ASHRAE Fundamentals thermal comfort chapter); Stolwijk and Hardy 1966 chamber data (u: values from memory)",
+   "inputs": {
+    "T_air": 29.0,
+    "rh": 0.5,
+    "v": 0.1,
+    "settle_min": 180
+   },
+   "targets": {
+    "core": [
+     36.7,
+     37.1
+    ],
+    "skin_mean": [
+     33.2,
+     34.8
+    ],
+    "heat_prod_W": [
+     75.0,
+     100.0
+    ],
+    "shiver_W": [
+     0.0,
+     8.0
+    ],
+    "sweat_Lh": [
+     0.0,
+     0.05
+    ]
+   }
+  },
+  {
+   "id": "nude_22C_rest",
+   "role": "fit",
+   "kind": "steady",
+   "source": "Stolwijk and Hardy 1966 (nude, seated, 40-50 percent RH) (u)",
+   "inputs": {
+    "T_air": 22.0,
+    "rh": 0.5,
+    "v": 0.1,
+    "settle_min": 180
+   },
+   "targets": {
+    "core": [
+     36.4,
+     37.1
+    ],
+    "skin_mean": [
+     30.0,
+     32.2
+    ],
+    "heat_prod_W": [
+     85.0,
+     140.0
+    ],
+    "sweat_Lh": [
+     0.0,
+     0.01
+    ]
+   }
+  },
+  {
+   "id": "nude_35C_rest",
+   "role": "fit",
+   "kind": "steady",
+   "source": "Stolwijk and Hardy 1966 (nude, seated, hot chamber) (u)",
+   "inputs": {
+    "T_air": 35.0,
+    "rh": 0.5,
+    "v": 0.1,
+    "settle_min": 180
+   },
+   "targets": {
+    "core": [
+     36.8,
+     37.35
+    ],
+    "skin_mean": [
+     34.6,
+     36.2
+    ],
+    "sweat_Lh": [
+     0.0,
+     0.3
+    ],
+    "shiver_W": [
+     0.0,
+     0.5
+    ]
+   }
+  },
+  {
+   "id": "nude_40C_rest",
+   "role": "fit",
+   "kind": "steady",
+   "source": "added in REVISION 2 (see _meta.revisions): holding a steady state at 40 C needs the skin to lose M plus the heat gained from the room, about 143 W = 0.21 L/h of evaporation at 2.43 kJ/g (spec F5, heat balance of a 1.9 m2 person with h 8.2 W/m2K and skin 36.5 C); Stolwijk and Hardy 1966 rectal 37.2-37.8 at 40 C (u)",
+   "inputs": {
+    "T_air": 40.0,
+    "rh": 0.3,
+    "v": 0.1,
+    "settle_min": 180
+   },
+   "targets": {
+    "core": [
+     37.0,
+     37.8
+    ],
+    "skin_mean": [
+     36.0,
+     37.5
+    ],
+    "sweat_Lh": [
+     0.2,
+     0.7
+    ],
+    "shiver_W": [
+     0.0,
+     0.5
+    ]
+   }
+  },
+  {
+   "id": "clothed_1clo_22C",
+   "role": "fit",
+   "kind": "steady",
+   "source": "ISO 7730 / Fanger: 1 clo is comfortable at about 22-24 C, mean skin 32-34 C (u)",
+   "inputs": {
+    "T_air": 22.0,
+    "rh": 0.5,
+    "v": 0.1,
+    "clo": 1.0,
+    "settle_min": 180
+   },
+   "targets": {
+    "core": [
+     36.6,
+     37.1
+    ],
+    "skin_mean": [
+     32.0,
+     34.2
+    ],
+    "heat_prod_W": [
+     75.0,
+     100.0
+    ]
+   }
+  },
+  {
+   "id": "step_29_to_40C",
+   "role": "held_out",
+   "kind": "step",
+   "source": "Stolwijk and Hardy 1966 heat step; sweat 0.3-0.6 L/h at 40 C dry (u)",
+   "inputs": {
+    "T0": 29.0,
+    "T1": 40.0,
+    "rh": 0.4,
+    "v": 0.1,
+    "minutes": 60
+   },
+   "targets": {
+    "sweat_Lh": [
+     0.2,
+     0.9
+    ],
+    "core_rise": [
+     -0.05,
+     0.9
+    ],
+    "skin_mean": [
+     36.0,
+     37.6
+    ]
+   }
+  },
+  {
+   "id": "step_29_to_15C",
+   "role": "held_out",
+   "kind": "step",
+   "source": "cold step; shivering starts when skin falls several kelvin and core barely moves (Stolwijk and Hardy; Gordon 1974) (u)",
+   "inputs": {
+    "T0": 29.0,
+    "T1": 15.0,
+    "rh": 0.5,
+    "v": 0.1,
+    "minutes": 30
+   },
+   "targets": {
+    "skin_drop": [
+     2.5,
+     6.5
+    ],
+    "core_drop": [
+     -0.2,
+     0.7
+    ],
+    "shiver_W": [
+     10.0,
+     260.0
+    ]
+   }
+  },
+  {
+   "id": "humid_vs_dry_40C",
+   "role": "held_out",
+   "kind": "pair_humid",
+   "source": "humid air stops sweat from cooling, and at 40 C and 90 percent RH vapour CONDENSES on a 35 C skin (spec F5, S4); the ratio of skin-plus-breath latent loss may be negative (u)",
+   "inputs": {
+    "T0": 29.0,
+    "T1": 40.0,
+    "rh_lo": 0.3,
+    "rh_hi": 0.9,
+    "v": 0.1,
+    "minutes": 60
+   },
+   "targets": {
+    "delta_core": [
+     0.3,
+     2.5
+    ],
+    "latent_ratio": [
+     -2.0,
+     0.5
+    ]
+   }
+  },
+  {
+   "id": "immersion_10C_lean_vs_fat",
+   "role": "held_out",
+   "kind": "immersion",
+   "source": "Hayward et al 1975 (cooling in 10 C water falls with fat thickness; core fall tens of minutes) (u)",
+   "inputs": {
+    "T_air": 29.0,
+    "T_water": 10.0,
+    "minutes": 30,
+    "fat_lean": 0.08,
+    "fat_fat": 0.3
+   },
+   "targets": {
+    "drop_lean": [
+     0.4,
+     3.5
+    ],
+    "ratio": [
+     0.15,
+     0.9
+    ]
+   }
+  },
+  {
+   "id": "dehydration_3pct",
+   "role": "held_out",
+   "kind": "dehydration",
+   "source": "Sawka: about 0.15-0.25 K more core rise per percent of body mass lost, at the same work (u)",
+   "inputs": {
+    "T_air": 35.0,
+    "rh": 0.4,
+    "v": 0.3,
+    "met": 3.0,
+    "minutes": 60,
+    "dehydrated_pct": 3.0
+   },
+   "targets": {
+    "delta_core": [
+     0.15,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "corpse_20C",
+   "role": "held_out",
+   "kind": "corpse",
+   "source": "Henssge nomogram, still air 20 C, 73 kg, no clothes: Q = 1.25 exp(Bt) - 0.25 exp(5Bt), B = -1.2815 m^-0.625 + 0.0284 per h, T = Ta + (37.2 - Ta) Q; band is plus or minus 1.5 K (Henssge's own 95 percent error is 2.8 K) (u)",
+   "inputs": {
+    "T_air": 20.0,
+    "hours": [
+     1,
+     6,
+     12,
+     18
+    ]
+   },
+   "targets": {
+    "T_1h": [
+     36.0,
+     37.4
+    ],
+    "T_6h": [
+     32.8,
+     35.8
+    ],
+    "T_12h": [
+     28.9,
+     31.9
+    ],
+    "T_18h": [
+     25.9,
+     28.9
+    ]
+   }
+  }
+ ]
+}

@@ -21,6 +21,7 @@ AIR, WOOD, STONE, IRON, FLESH = 0, 1, 2, 3, 4
 ASH, GLASS, LEAF, CHAR, TIN, LEAD = 5, 6, 7, 8, 9, 10
 NOFLUID, WATER, OIL, ACID, WEAK_ACID = 0, 1, 2, 3, 4
 MTIN, MLEAD, MIRON = 5, 6, 7
+BLOOD = 8
 
 CATS = {   # name: (color rgba, cube scale)
     "stone": ((0.66, 0.60, 0.50, 1.0), 1.0),   # warm plaster — grey smoke must
@@ -30,6 +31,7 @@ CATS = {   # name: (color rgba, cube scale)
     "oil":   ((0.10, 0.08, 0.03, 1.0), 0.95),
     "water": ((0.15, 0.35, 0.85, 1.0), 0.95),
     "acid":  ((0.25, 0.90, 0.25, 1.0), 0.95),   # potent vitriol: vivid green
+    "blood": ((0.45, 0.02, 0.03, 1.0), 0.95),   # dark arterial red
     "acidweak":  ((0.58, 0.72, 0.28, 1.0), 0.95),   # half-spent: murky yellow-green
     "acidspent": ((0.46, 0.43, 0.32, 1.0), 0.95),   # exhausted sludge: dull brown
     "vinegar":   ((0.68, 0.85, 0.55, 1.0), 0.95),   # aqua debilis: pale watery green
@@ -180,6 +182,7 @@ def render_frame(path, out_png):
         "oil":   (mat == AIR) & (fl == OIL) & ~burn,
         "water": (mat == AIR) & (fl == WATER),
         "acid":  (mat == AIR) & (fl == ACID),
+        "blood": (mat == AIR) & (fl == BLOOD),
         "flame": (mat == AIR) & (T > 400) & ~burn,
         "smoke": (mat == AIR) & ~hide & (smoke > SMOKE_SHOW) & CHECKER,
     }

@@ -1,0 +1,197 @@
+--- "/home/nisargparikh/Desktop/Fun Stuff/Mark_1/src/voxel/sim.py"	2026-09-22 19:32:53.859377538 -0400
++++ /tmp/claude-1000/-home-nisargparikh-Desktop-Fun-Stuff-Mark-1/88440bcd-3d95-4f09-8a13-ebe021f962f7/scratchpad/design/onset/src/voxel/sim.py	2026-10-01 21:32:35.389505449 -0400
+@@ -330,6 +330,7 @@
+         # spend it on the rail or on the catch. At a quarter second he gets
+         # two, which is the difference between a rescue being possible and not.
+         "react_s": 0.25,
++        "attend_gap": 40,
+         "decide_every": 10}      # filled in from `react_s` below, once TICK_S
+                                  # exists. Ten is what 0.25 s comes to at the
+                                  # tick this sim has always run at.
+@@ -462,6 +463,8 @@
+         want = []
+         if situation["percept"] is not None:
+             row = situation["reflexes"].get(situation["percept"]) or {}
++            if limb == "mouth" and not situation.get("onset", True):
++                row = {}
+             if row.get(limb):
+                 want = [row[limb]]
+         else:
+@@ -1024,6 +1027,7 @@
+         # Measure what the attention cap costs (see _decide). Off: it doubles
+         # the work of deciding, and answers a question rather than doing one.
+         self.recall_check = False
++        self.attention = "latch"
+         # Use the compiled laws where there are any. Turned off, the world runs
+         # on the numpy ones, which are what the laws MEAN — the compiled path
+         # has to agree with them cell for cell, and a test says so.
+@@ -3561,6 +3565,8 @@
+                     blows[k] = [q, (int(sx), int(sy), int(sz)), 0.0]
+                 blows[k][2] += per
+         for q, cell, e in blows.values():
++            if q is not None:
++                q["_struck"] = (self.tick, b.get("owner"))
+             # flesh DEFORMS, it does not fragment — TOUGH[FLESH] said so
+             # in words while a big enough blow shattered feet into debris
+             # anyway. What a blow does to a body is `_blow`'s business:
+@@ -7412,6 +7418,13 @@
+                "ground_it_trusts": round(float(p["free"].mean()), 3)
+                                    if p.get("free") is not None else 0.0,
+                "others_in_earshot": heard}
++        if self.attention == "onset":
++            sit["onset"] = bool(p.get("_onset"))
++        prep = getattr(self.policy, "prepare", None)
++        if prep is not None:
++            prep(self, p, percept)
++        ask = getattr(self.policy, "limbs", None)
++        asked = ask(self, p, percept) if ask is not None else None
+         menus, picks, chosen, seen, would = {}, {}, {}, {}, {}
+         spelled = []
+         # A NOISE ASKS THE EYES, and only the eyes. Asked of every limb, the
+@@ -7420,6 +7433,8 @@
+         # come down until a cell of the arm came away. What the other limbs
+         # were doing, they go on doing.
+         for limb in (("eyes",) if percept in ORIENTING else LIMBS):
++            if asked is not None and limb not in asked:
++                continue          # not asked: it goes on as it was
+             menu = self._menu(p, cells, percept, limb, chosen)
+             if not menu:
+                 continue
+@@ -7450,6 +7465,7 @@
+             picks[limb] = opt
+             chosen[limb] = opt["tag"]
+         if not picks:
++            p["_decided"] = self.tick
+             return
+         prog = " & ".join(picks[l]["key"] for l in LIMBS
+                           if l in picks and not ACTS[picks[l]["verb"]]["null"])
+@@ -7475,9 +7491,12 @@
+         if hands is not None:            # HANDS. Holding is not a rescue
+             if hands["verb"] in ("swing", "throw"):
+                 b = self._swing(p, hands.get("arm") or self._hand(p, cells),
+-                                toward=p.get("facing"),
++                                toward=(p.get("intent") or {}).get("aim")
++                                or p.get("facing"),
+                                 back=(BODY["windup_rad"]
+                                       if hands["verb"] == "throw" else 0.0))
++                if b is not None:
++                    p["_swung"] = (self.tick, hands["verb"])
+                 if b is not None and hands["verb"] == "throw":
+                     b["throw"] = True
+                 p["events"].append(
+@@ -7498,6 +7517,7 @@
+                                  "arm": self._hand(p, cells, toward=ob["cell"],
+                                                    free=True)}
+                     self._take_up(p, cells)    # to the fist, if the arm can
++                    p["_took"] = (self.tick, tuple(ob["cell"]))
+                     p["events"].append(f"t{self.tick}: {p['name']} takes up "
+                                        f"the {ob['label']}")
+             elif hands["verb"] == "reach":
+@@ -7694,8 +7714,9 @@
+             # be is not the same as being in an emergency: a body strolling
+             # across a room must still notice the room is alight. Gating the
+             # percepts on "is moving" made a wandering person blind.
+-            if not p.get("emergency"):
++            if not p.get("emergency") or self.attention == "onset":
+                 percept = None
++                src = None
+                 if fire_at is not None:
+                     d = np.abs(fire_at[:, :2] - np.array([ax_, ay_])).max(axis=1)
+                     close = fire_at[d * vox_m <= WILL["fire_see_m"]]
+@@ -7716,8 +7737,13 @@
+                     # suffocated there over two hundred ticks without once
+                     # perceiving the thing he was stood in.
+                     percept = "scorched"
++                if percept is None and self.attention == "onset" and p.get("_struck") \
++                        and self.tick - p["_struck"][0] <= 1:
++                    percept = "struck"
++                    src = p["_struck"]
+                 if percept is None and self._falling_near(p, cells):
+                     percept = "sees_falling"     # somebody is going past you
++                    src = tuple(sorted(str(b.get('owner')) for b in self._falling_near(p, cells)))
+                 if percept is None and self._in_flight_near(p, cells):
+                     # SOMETHING IS COMING. Needs no sight cone and no distance
+                     # rule: it is already within a hand's reach, which is the
+@@ -7744,6 +7770,7 @@
+                             means = MEANS.get(said[1])
+                             if means:
+                                 percept = means          # ears have no cone and
++                                src = (q['name'], said[0])
+                                 break                    # a wall only MUFFLES
+                         if (not q["fleeing"]):
+                             continue
+@@ -7753,6 +7780,7 @@
+                                 and self._in_cone(gaze, eye, qeye)
+                                 and self._sees(eye, qeye)):
+                             percept = "sees_runner"
++                            src = q['name']
+                             break
+                 # A BARE NOISE COMES LAST. A shout is a noise too, and asked
+                 # first it turned "Fire!" into "something, over there": the
+@@ -7762,6 +7790,7 @@
+                 if percept is None and nz_ is not None \
+                         and self.tick - nz_["tick"] <= 1:
+                     percept = "hears_noise"              # something, over there
++                    src = nz_['tick']
+                 # a body with NOTHING happening to it still has a life. If no
+                 # percept fires it weighs its ordinary options — go and look at
+                 # what it has not seen, walk somewhere it has, or stand still —
+@@ -7774,7 +7803,19 @@
+                 # while the hearer was still inside its own 30-tick pause.
+                 due = self.tick - p.get("_decided", -10 ** 9) >= \
+                     WILL["decide_every"]
+-                if percept is not None or (due and p.get("goal") is None):
++                if self.attention == "onset":
++                    onset = False
++                    if percept is not None:
++                        seen_ = p.setdefault("_attn", {})
++                        k_ = (percept, src)
++                        onset = k_ not in seen_ or self.tick - seen_[k_] > WILL["attend_gap"]
++                        seen_[k_] = self.tick
++                    wake_ = (p.get("intent") or {}).get("wake_at")
++                    if onset or (due and p.get("goal") is None) or (wake_ is not None and self.tick >= wake_):
++                        p["_onset"] = onset
++                        self.attn_decides = getattr(self, 'attn_decides', 0) + 1
++                        self._decide(p, percept, cells, ax_, ay_, eye, vox_m)
++                elif percept is not None or (due and p.get("goal") is None):
+                     self._decide(p, percept, cells, ax_, ay_, eye, vox_m)
+             goal = p.get("goal")
+             if goal is None:
+@@ -7825,14 +7866,18 @@
+                     # get there — and it fades, because a doorway that was
+                     # blocked an hour ago may not be now.
+                     p.setdefault("_baulked", {})[tuple(goal)] = self.tick
++                    p["_gave_up"] = (self.tick, tuple(goal))
+                     p["goal"], p["_path"], p["_near"] = None, None, None
+                     p["_tried"] = (None, 0)
+                     p["fleeing"] = False
++                    if self.attention == "onset":
++                        p["emergency"] = False
+                     p["events"].append(
+                         f"t{self.tick}: {p['name']} gives up on getting there")
+                     continue
+             if reach * vox_m <= WILL["arrive_m"]:
+                 p["_near"] = None
++                p["_arrived"] = (self.tick, tuple(goal))
+                 if tuple(goal) in {tuple(e) for e in self.exits}:
+                     p["safe"] = True
+                     p["events"].append(f"t{self.tick}: {p['name']} reaches the doorway")
+@@ -7853,6 +7898,8 @@
+                         p["dragging"] = None
+                 else:                                # arrived somewhere ordinary:
+                     p["goal"] = None                 # pick again next time round
++                    if self.attention == "onset":
++                        p["emergency"] = False
+                     p["fleeing"] = False
+                     p["_path"] = None
+                 continue
+@@ -8728,6 +8775,9 @@
+         for k in [k for k in self.__dict__ if k not in self._NOT_STATE]:
+             del self.__dict__[k]
+         self.__dict__.update(copy.deepcopy(snap))
++        cb = getattr(self.policy, "on_restore", None)
++        if cb is not None:
++            cb(self)
+ 
+     # ── totals (the conservation the tests watch) ────────────────────────────
+     def total_fluid(self, f):

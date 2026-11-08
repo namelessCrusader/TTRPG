@@ -1,0 +1,156 @@
+# DRAFT v2 of src/mind/data/verbs.yaml (design only). Matches the schema in
+# the design doc section 3; checked by check_catalog_v2.py.
+version: 2
+
+# CAPABILITY = a property test on an entity + the words a chooser reads.
+capabilities:
+  sharp:
+    says: "something with a sharp edge"
+    rooms: {prop: sharp}
+    voxel: {edge_gt_m2: 0.0, edge_max_m2: 1.0e-3}   # fill(edge=...) default 0.0 is blunt
+  heavy:
+    says: "something heavy and hard to hit with"
+    rooms: {weapon_min: 2}
+    voxel: {mass_min_kg: 0.8}
+  food:
+    says: "something to eat"
+    rooms: {prop: food}
+    voxel: null
+  drinkable:
+    says: "something to drink"
+    rooms: {prop_any: [ale, water]}
+    voxel: null
+  free_hand:
+    says: "a free hand"
+    self: true
+    rooms: {always: true}               # the inn has no hand limit
+    voxel: {free_hand: true}
+  known_exit:
+    says: "a way out it has seen"
+    self: true
+    rooms: {always: true}                # every room of the inn is known
+    voxel: {knows_exit: true}
+
+# DRIVES a verb can serve: a NEEDS sentence is written only for a blocked verb
+# that serves a drive above its threshold (or the interrupted job's verb).
+drives:
+  hunger: {rooms: {field: hunger, above: 0.6}, voxel: null}
+  thirst: {rooms: {field: thirst, above: 0.6}, voxel: null}
+  safety: {rooms: {field: fear, above: 0.4}, voxel: {percept_any: [sees_fire, scorched, chokes, hears_alarm, struck]}}
+  harm:   {rooms: {field: anger_max, above: 0.4}, voxel: {sheet: harm}}
+
+flags_known: [loud, harmful, violent, physical]
+step_tests: [arrived, in_reach, took, swung, said, wake]
+
+verbs:
+  - id: wait
+    group: wait
+    null_act: true
+    roles: {}
+    text: "wait"
+    told: "{actor} waited"
+    duration: {rooms: 3, voxel: 40}
+    interrupt_on: [any]
+    backends:
+      rooms: {verb: "wait"}
+      voxel: [{limb: null, until: wake}]
+
+  - id: walk_to
+    group: move
+    roles: {place: {kind: place}}
+    text: "walk to {place}"
+    told: "{actor} walked to {place}"
+    told_start: "{actor} set off for {place}"
+    duration: {rooms: 3, voxel: route}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard, fire_seen]
+    backends:
+      rooms: {verb: "walk to"}
+      voxel: [{limb: legs, match: goal, until: arrived}]
+
+  - id: flee_to
+    group: move
+    roles: {place: {kind: place}}
+    needs: [known_exit]
+    serves: [safety]
+    text: "flee to {place}"
+    told: "{actor} fled to {place}"
+    told_start: "{actor} ran for {place}"
+    duration: {rooms: 2, voxel: route}
+    interrupt_on: [harm_to_me]
+    flags: [loud]
+    backends:
+      rooms: {verb: "flee to"}
+      voxel: [{limb: legs, match: goal, until: arrived, flee: true}]
+
+  - id: take
+    group: handle
+    roles: {target: {kind: thing, not: [fixed, held]}}
+    needs: [free_hand]
+    text: "take {target}"
+    told: "{actor} took {target}"
+    duration: {rooms: 2, voxel: 20}
+    interrupt_on: [harm_to_me, violence_seen]
+    backends:
+      rooms: {verb: "take"}
+      voxel: [{limb: hands, match: cell, until: took}]
+
+  - id: drop
+    group: handle
+    roles: {target: {kind: thing, held_by: self}}
+    text: "drop {target}"
+    told: "{actor} dropped {target}"
+    duration: {rooms: 1, voxel: 2}
+    backends:
+      rooms: {verb: "drop"}
+      voxel: [{limb: hands, match: {tag: let_go}, until: wake}]
+
+  - id: eat
+    group: body
+    roles: {target: {kind: thing, held_by: self, cap: food}}
+    serves: [hunger]
+    hint: food
+    text: "eat {target}"
+    told: "{actor} ate {target}"
+    duration: {rooms: 4, voxel: null}
+    backends:
+      rooms: {verb: "eat"}
+      voxel: null
+
+  - id: strike
+    group: fight
+    roles: {target: {kind: person, reach: strike_band},
+            instrument: {held_by: self, optional: true, cap_any: [sharp, heavy]}}
+    serves: [harm, safety]
+    text: "strike {target}"
+    text_with: "strike {target} with {instrument}"
+    told: "{actor} struck {target}"
+    told_with: "{actor} struck {target} with {instrument}"
+    told_start: "{actor} raised a hand against {target}"
+    duration: {rooms: 2, voxel: 12}
+    commit_after: 0.5
+    interrupt_on: [harm_to_me]
+    flags: [loud, harmful, violent, physical]
+    backends:
+      rooms: {verb: "strike"}
+      voxel: [{limb: hands, match: {tag: swing}, until: swung, aim: target}]
+
+  - id: shout_fire
+    group: social
+    roles: {}
+    serves: [safety]
+    text: "shout a warning"
+    told: "{actor} shouted that there is a fire"
+    duration: {rooms: null, voxel: 4}
+    flags: [loud]
+    backends:
+      rooms: null
+      voxel: [{limb: mouth, match: {tag: "say:fire"}, until: said}]
+
+  - id: cut
+    group: handle
+    roles: {target: {kind: thing, tag: cuttable}, instrument: {held_by: self, cap: sharp}}
+    hint: sharp
+    text: "cut {target} with {instrument}"
+    told: "{actor} cut {target}"
+    duration: {rooms: null, voxel: null}
+    backends: {rooms: null, voxel: null}

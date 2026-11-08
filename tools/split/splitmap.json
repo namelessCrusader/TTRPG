@@ -1,0 +1,963 @@
+{
+ "where": {
+  "__init__": "sim",
+  "step": "sim",
+  "heat_capacity": "fields",
+  "_matter_moved": "fields",
+  "T": "fields",
+  "porosity": "fields",
+  "solid": "fields",
+  "burning": "fields",
+  "fill": "fields",
+  "pour": "fields",
+  "_mix": "fields",
+  "_window": "fields",
+  "_hot_window": "fields",
+  "_busy": "fields",
+  "_move_fluid": "fluids",
+  "_fly_drops": "fluids",
+  "_law_head": "fluids",
+  "_law_flow": "fluids",
+  "_law_stir": "fluids",
+  "_splash": "fluids",
+  "_law_acid": "fluids",
+  "_law_conduct": "heat",
+  "_law_rise": "heat",
+  "_gas_access": "heat",
+  "_law_burn": "heat",
+  "_law_boil": "heat",
+  "_law_melt": "heat",
+  "_blur_cells": "air",
+  "_cells": "air",
+  "_upcell": "air",
+  "_law_air": "air",
+  "_law_smoke": "air",
+  "_air_regions": "air",
+  "_region_of_surface": "air",
+  "_law_o2": "air",
+  "_mixing": "air",
+  "_pushed": "air",
+  "_law_support": "support",
+  "_support_once": "support",
+  "_fall_speed": "support",
+  "_relax_slack": "support",
+  "_free_fall_to_seam": "support",
+  "_settle": "support",
+  "_cash_impacts": "support",
+  "_flaw01": "support",
+  "_shatter": "support",
+  "_law_crack": "support",
+  "_law_torque": "support",
+  "_topple": "support",
+  "_collapse": "support",
+  "_launch": "bodies",
+  "_fly_pose": "bodies",
+  "_drag_a": "bodies",
+  "_body_pose": "bodies",
+  "_release": "bodies",
+  "loose": "bodies",
+  "_law_bodies": "bodies",
+  "_left_world": "bodies",
+  "_spend": "bodies",
+  "_land_body": "bodies",
+  "bodies_array": "bodies",
+  "_limbs": "skeleton",
+  "_bones": "skeleton",
+  "_parents": "skeleton",
+  "_kids": "skeleton",
+  "_subtree": "skeleton",
+  "_path_from": "skeleton",
+  "_pivot_of": "skeleton",
+  "_joint_xform": "skeleton",
+  "_axis_xform": "skeleton",
+  "_shear_steps": "skeleton",
+  "_apply_shears": "skeleton",
+  "_turn_cells": "skeleton",
+  "_chain_shear": "skeleton",
+  "_comp3": "skeleton",
+  "_apply3": "skeleton",
+  "_chain3": "skeleton",
+  "_chain_xform": "skeleton",
+  "_apply_xform": "skeleton",
+  "_limb_parts": "skeleton",
+  "_bone_parts": "skeleton",
+  "_bone_angle": "skeleton",
+  "_limb_cells": "skeleton",
+  "_still_joined": "skeleton",
+  "_angles": "skeleton",
+  "_inv_xform": "skeleton",
+  "_comp_xform": "skeleton",
+  "_bone_at": "skeleton",
+  "_thickness": "skeleton",
+  "_cut_section": "skeleton",
+  "_body_span": "skeleton",
+  "_reach_of": "skeleton",
+  "_legs_of": "skeleton",
+  "_torque_of": "skeleton",
+  "_face_axis": "skeleton",
+  "_crouch_of": "skeleton",
+  "_fist_of": "skeleton",
+  "_fists": "skeleton",
+  "_hand": "skeleton",
+  "_hand_strength": "skeleton",
+  "_in_reach": "skeleton",
+  "_span_xy": "skeleton",
+  "_swing": "pose",
+  "_turn": "pose",
+  "_square_up": "pose",
+  "_repose": "pose",
+  "_hanging_cells": "pose",
+  "_hold_torque": "pose",
+  "_swing_of": "pose",
+  "_law_joints": "pose",
+  "_law_pose": "pose",
+  "_reach_around": "pose",
+  "_bunch": "pose",
+  "_crouch": "pose",
+  "_bend_max": "pose",
+  "add_person": "persons",
+  "_person_cells": "persons",
+  "_claim_bodies": "persons",
+  "_carry_own": "persons",
+  "_own_claim": "persons",
+  "_flood_person": "persons",
+  "_person_at": "persons",
+  "person_status": "persons",
+  "_blow": "physiology",
+  "_blood0": "physiology",
+  "_perfusion": "physiology",
+  "_delivered_o2": "physiology",
+  "_law_bleed": "physiology",
+  "_spill_from": "physiology",
+  "_wound": "physiology",
+  "_law_life": "physiology",
+  "_look_around": "senses",
+  "_sees": "senses",
+  "_in_cone": "senses",
+  "_hears": "senses",
+  "_law_hear": "senses",
+  "_noise": "senses",
+  "_level": "senses",
+  "_say": "senses",
+  "_in_flight_near": "senses",
+  "_falling_near": "senses",
+  "_walkable": "motion",
+  "_bearing": "motion",
+  "_reach_along": "motion",
+  "_places": "motion",
+  "_underfoot": "motion",
+  "_contact": "motion",
+  "_leap_speed": "motion",
+  "_leap_targets": "motion",
+  "_leap": "motion",
+  "_gather_ticks": "motion",
+  "_fit_grid": "motion",
+  "_routes": "motion",
+  "_plan_path": "motion",
+  "_walk": "motion",
+  "_leave": "motion",
+  "_overbalanced": "motion",
+  "_pulled_over": "motion",
+  "_law_footing": "motion",
+  "_resist": "hands",
+  "_within_reach": "hands",
+  "_objects_within_reach": "hands",
+  "_held_cells": "hands",
+  "_object_at": "hands",
+  "_effort": "hands",
+  "_shove": "hands",
+  "_catch_person": "hands",
+  "_catch": "hands",
+  "_grip_holds": "hands",
+  "_grip_cells": "hands",
+  "_borne_cells": "hands",
+  "_rub": "hands",
+  "_haul_cost": "hands",
+  "_held_clusters": "hands",
+  "_take_up": "hands",
+  "_haul_held": "hands",
+  "_haul": "hands",
+  "_law_grips": "hands",
+  "_menu": "will",
+  "_full_menu": "will",
+  "_decide": "will",
+  "trace_outcomes": "will",
+  "_law_will": "will",
+  "_decide_falling": "will",
+  "snapshot": "ledgers",
+  "restore": "ledgers",
+  "total_fluid": "ledgers",
+  "total_mass": "ledgers",
+  "total_wood": "ledgers",
+  "total_energy": "ledgers",
+  "total_lost": "ledgers"
+ },
+ "report": {
+  "sim": {
+   "imports": {
+    "..mpm.matter": [
+     "Matter"
+    ],
+    "kernels": [
+     "HAVE_NUMBA"
+    ],
+    "materials": [
+     "AMBIENT",
+     "LEAK",
+     "O2_PER_L",
+     "RAD",
+     "SMOKE_STILL",
+     "TICK_S"
+    ],
+    "numpy": [
+     "np"
+    ],
+    "policy": [
+     "TablePolicy"
+    ]
+   },
+   "calls_into": {
+    "air": [
+     "_air_regions",
+     "_law_air",
+     "_law_o2",
+     "_law_smoke",
+     "_mixing",
+     "_pushed"
+    ],
+    "bodies": [
+     "_law_bodies"
+    ],
+    "fields": [
+     "T",
+     "_busy",
+     "_hot_window",
+     "_window",
+     "heat_capacity"
+    ],
+    "fluids": [
+     "_law_acid",
+     "_law_flow",
+     "_law_head",
+     "_law_stir"
+    ],
+    "hands": [
+     "_law_grips"
+    ],
+    "heat": [
+     "_law_boil",
+     "_law_burn",
+     "_law_conduct",
+     "_law_melt",
+     "_law_rise"
+    ],
+    "motion": [
+     "_law_footing"
+    ],
+    "physiology": [
+     "_law_bleed",
+     "_law_life"
+    ],
+    "pose": [
+     "_law_joints",
+     "_law_pose"
+    ],
+    "senses": [
+     "_law_hear"
+    ],
+    "support": [
+     "_law_crack",
+     "_law_support",
+     "_law_torque"
+    ],
+    "will": [
+     "_law_will"
+    ]
+   },
+   "class_attrs_used": [
+    "_SMOKE_REACH"
+   ],
+   "lines": 214
+  },
+  "fields": {
+   "imports": {
+    "materials": [
+     "AIR",
+     "AMBIENT",
+     "FLUID",
+     "MISCIBLE",
+     "NOFLUID",
+     "OIL",
+     "SOLID",
+     "_CSOLID_ARR",
+     "_DENS_ARR",
+     "_FC_ARR",
+     "_FDENS_ARR",
+     "_REACTIVE"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {},
+   "class_attrs_used": [],
+   "lines": 156
+  },
+  "fluids": {
+   "imports": {
+    "materials": [
+     "AIR",
+     "FLUID",
+     "NMAT",
+     "NOFLUID",
+     "REACTIONS",
+     "SOLID",
+     "_FDENS_ARR",
+     "_FLIDS",
+     "_REACTIVE"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {
+    "fields": [
+     "_mix"
+    ]
+   },
+   "class_attrs_used": [],
+   "lines": 262
+  },
+  "heat": {
+   "imports": {
+    "kernels": [
+     "HAVE_NUMBA",
+     "_conduct_pairs"
+    ],
+    "materials": [
+     "AIR",
+     "AMBIENT",
+     "ASH",
+     "BOIL",
+     "CHAR",
+     "COMBUST_CEIL",
+     "FLESH",
+     "FLUID",
+     "FREEZE",
+     "LATENT",
+     "MELT",
+     "NOFLUID",
+     "O2_PER_L",
+     "O2_RATIO",
+     "O2_RATIO_OIL",
+     "OIL",
+     "PLUME_REACH_M",
+     "RAD",
+     "SOLID",
+     "SOOT",
+     "SOOT_OIL",
+     "WATER",
+     "WOOD",
+     "_FK_ARR",
+     "_KSOLID_ARR"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {
+    "air": [
+     "_blur_cells",
+     "_cells",
+     "_region_of_surface",
+     "_upcell"
+    ],
+    "fields": [
+     "T",
+     "heat_capacity"
+    ]
+   },
+   "class_attrs_used": [
+    "_CS"
+   ],
+   "lines": 267
+  },
+  "air": {
+   "imports": {
+    "kernels": [
+     "HAVE_NUMBA",
+     "_gas_overturn",
+     "_o2_diffuse"
+    ],
+    "materials": [
+     "AIR",
+     "AMBIENT",
+     "O2_PER_L",
+     "PLUME_REACH_M",
+     "SMOKE_STILL"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {
+    "fields": [
+     "T",
+     "_window",
+     "porosity"
+    ]
+   },
+   "class_attrs_used": [
+    "_CS"
+   ],
+   "lines": 387
+  },
+  "support": {
+   "imports": {
+    "materials": [
+     "AIR",
+     "AIR_DENS",
+     "DRAG_CD",
+     "FALL_SUBSTEPS",
+     "GRAVITY",
+     "NOFLUID",
+     "STONE",
+     "TICK_S",
+     "TSHOCK",
+     "_DENS_ARR",
+     "_FDENS_ARR",
+     "_SPAN_ARR",
+     "_TOUGH_ARR",
+     "_TSHOCK_ARR"
+    ],
+    "math": [
+     "math"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {
+    "bodies": [
+     "_body_pose"
+    ],
+    "fields": [
+     "T"
+    ],
+    "fluids": [
+     "_splash"
+    ],
+    "hands": [
+     "_borne_cells",
+     "_grip_cells"
+    ],
+    "persons": [
+     "_person_cells"
+    ],
+    "senses": [
+     "_noise"
+    ]
+   },
+   "class_attrs_used": [],
+   "lines": 703
+  },
+  "bodies": {
+   "imports": {
+    "materials": [
+     "AIR",
+     "AIR_DENS",
+     "BODY",
+     "DRAG_CD",
+     "FLESH",
+     "GRAVITY",
+     "NOFLUID",
+     "TICK_S",
+     "_TOUGH_ARR"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {
+    "persons": [
+     "_person_at"
+    ],
+    "physiology": [
+     "_blow",
+     "_wound"
+    ],
+    "senses": [
+     "_noise"
+    ],
+    "skeleton": [
+     "_crouch_of"
+    ],
+    "support": [
+     "_flaw01",
+     "_shatter"
+    ]
+   },
+   "class_attrs_used": [
+    "_PERCELL"
+   ],
+   "lines": 596
+  },
+  "skeleton": {
+   "imports": {
+    "materials": [
+     "BODY",
+     "FLESH",
+     "_SIX"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {
+    "persons": [
+     "_person_cells"
+    ]
+   },
+   "class_attrs_used": [],
+   "lines": 638
+  },
+  "pose": {
+   "imports": {
+    "materials": [
+     "AIR",
+     "BODY",
+     "CHEST0",
+     "GRAVITY",
+     "TICK_S",
+     "_SIX"
+    ],
+    "numpy": [
+     "np"
+    ],
+    "pose": [
+     "_SWEEP_RAD"
+    ]
+   },
+   "calls_into": {
+    "bodies": [
+     "_body_pose",
+     "_launch"
+    ],
+    "hands": [
+     "_held_cells"
+    ],
+    "motion": [
+     "_contact",
+     "_overbalanced",
+     "_underfoot"
+    ],
+    "persons": [
+     "_person_cells"
+    ],
+    "skeleton": [
+     "_angles",
+     "_apply3",
+     "_bone_angle",
+     "_bone_parts",
+     "_bones",
+     "_chain3",
+     "_crouch_of",
+     "_face_axis",
+     "_in_reach",
+     "_limb_cells",
+     "_limb_parts",
+     "_limbs",
+     "_path_from",
+     "_pivot_of",
+     "_reach_of",
+     "_still_joined",
+     "_subtree",
+     "_torque_of",
+     "_turn_cells"
+    ]
+   },
+   "class_attrs_used": [],
+   "lines": 1130
+  },
+  "persons": {
+   "imports": {
+    "materials": [
+     "FLESH"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {},
+   "class_attrs_used": [],
+   "lines": 282
+  },
+  "physiology": {
+   "imports": {
+    "materials": [
+     "AIR",
+     "BLEED",
+     "BLOOD",
+     "BODY",
+     "FLESH",
+     "O2_PER_L",
+     "TICK_S",
+     "WOUND"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {
+    "fields": [
+     "T",
+     "pour"
+    ],
+    "persons": [
+     "_person_cells"
+    ],
+    "skeleton": [
+     "_bone_at",
+     "_bone_parts",
+     "_thickness"
+    ],
+    "support": [
+     "_collapse"
+    ]
+   },
+   "class_attrs_used": [],
+   "lines": 235
+  },
+  "senses": {
+   "imports": {
+    "materials": [
+     "HEAR_DB",
+     "SEE_TAU",
+     "SHOUT_DB",
+     "SMOKE_EXT",
+     "SOUND",
+     "_DENS_ARR",
+     "_TRANSMIT_ARR"
+    ],
+    "numpy": [
+     "np"
+    ],
+    "policy": [
+     "LINES",
+     "WILL"
+    ]
+   },
+   "calls_into": {
+    "bodies": [
+     "_fly_pose"
+    ],
+    "fields": [
+     "burning"
+    ],
+    "hands": [
+     "_held_cells"
+    ],
+    "motion": [
+     "_walkable"
+    ],
+    "persons": [
+     "_person_cells"
+    ],
+    "skeleton": [
+     "_fists",
+     "_reach_of"
+    ]
+   },
+   "class_attrs_used": [],
+   "lines": 356
+  },
+  "motion": {
+   "imports": {
+    "materials": [
+     "AIR",
+     "BODY",
+     "GRAVITY",
+     "PUSH_THROUGH",
+     "TICK_S",
+     "_DENS_ARR"
+    ],
+    "numpy": [
+     "np"
+    ],
+    "policy": [
+     "WILL",
+     "_DIRS"
+    ]
+   },
+   "calls_into": {
+    "bodies": [
+     "_launch"
+    ],
+    "hands": [
+     "_grip_holds",
+     "_held_clusters"
+    ],
+    "persons": [
+     "_person_cells"
+    ],
+    "pose": [
+     "_repose"
+    ],
+    "skeleton": [
+     "_crouch_of",
+     "_fists",
+     "_legs_of",
+     "_span_xy"
+    ]
+   },
+   "class_attrs_used": [],
+   "lines": 744
+  },
+  "hands": {
+   "imports": {
+    "materials": [
+     "AIR",
+     "BODY",
+     "FLESH",
+     "FRICTION",
+     "GRAVITY",
+     "MATNAME",
+     "TICK_S"
+    ],
+    "numpy": [
+     "np"
+    ]
+   },
+   "calls_into": {
+    "bodies": [
+     "_body_pose",
+     "_fly_pose",
+     "_land_body"
+    ],
+    "fields": [
+     "_matter_moved"
+    ],
+    "motion": [
+     "_contact",
+     "_underfoot"
+    ],
+    "persons": [
+     "_carry_own",
+     "_person_cells"
+    ],
+    "skeleton": [
+     "_fist_of",
+     "_fists",
+     "_hand",
+     "_hand_strength",
+     "_in_reach",
+     "_reach_of",
+     "_span_xy"
+    ]
+   },
+   "class_attrs_used": [],
+   "lines": 693
+  },
+  "will": {
+   "imports": {
+    ". seam": [
+     "seam"
+    ],
+    "materials": [
+     "AMBIENT",
+     "BODY",
+     "FLESH",
+     "GRAVITY",
+     "MATNAME",
+     "SOUND"
+    ],
+    "numpy": [
+     "np"
+    ],
+    "policy": [
+     "ACTS",
+     "ANSWERS",
+     "GAZE_SWEEP",
+     "LIMBS",
+     "LINES",
+     "MEANS",
+     "MENU_CAP",
+     "ORIENTING",
+     "REFLEXES",
+     "WILL"
+    ]
+   },
+   "calls_into": {
+    "fields": [
+     "burning"
+    ],
+    "hands": [
+     "_catch",
+     "_catch_person",
+     "_haul",
+     "_haul_cost",
+     "_haul_held",
+     "_held_cells",
+     "_objects_within_reach",
+     "_rub",
+     "_take_up",
+     "_within_reach"
+    ],
+    "motion": [
+     "_fit_grid",
+     "_gather_ticks",
+     "_leap",
+     "_leap_speed",
+     "_leap_targets",
+     "_leave",
+     "_places",
+     "_plan_path",
+     "_routes",
+     "_underfoot",
+     "_walk"
+    ],
+    "persons": [
+     "_carry_own",
+     "_person_cells"
+    ],
+    "pose": [
+     "_bend_max",
+     "_square_up",
+     "_swing"
+    ],
+    "senses": [
+     "_falling_near",
+     "_hears",
+     "_in_cone",
+     "_in_flight_near",
+     "_look_around",
+     "_noise",
+     "_say",
+     "_sees"
+    ],
+    "skeleton": [
+     "_bones",
+     "_hand",
+     "_limbs"
+    ]
+   },
+   "class_attrs_used": [],
+   "lines": 903
+  },
+  "ledgers": {
+   "imports": {
+    "copy": [
+     "copy"
+    ],
+    "materials": [
+     "AIR",
+     "BLOOD",
+     "WOOD"
+    ]
+   },
+   "calls_into": {},
+   "class_attrs_used": [
+    "_NOT_STATE"
+   ],
+   "lines": 85
+  }
+ },
+ "G": {
+  "HAVE_NUMBA": "kernels",
+  "njit": "kernels",
+  "_conduct_pairs": "kernels",
+  "_o2_diffuse": "kernels",
+  "_gas_overturn": "kernels",
+  "NOFLUID": "materials",
+  "WATER": "materials",
+  "OIL": "materials",
+  "ACID": "materials",
+  "WEAK_ACID": "materials",
+  "MTIN": "materials",
+  "MLEAD": "materials",
+  "MIRON": "materials",
+  "BLOOD": "materials",
+  "AMBIENT": "materials",
+  "AIR": "materials",
+  "WOOD": "materials",
+  "STONE": "materials",
+  "IRON": "materials",
+  "FLESH": "materials",
+  "ASH": "materials",
+  "GLASS": "materials",
+  "LEAF": "materials",
+  "CHAR": "materials",
+  "TIN": "materials",
+  "LEAD": "materials",
+  "NMAT": "materials",
+  "SOLID": "materials",
+  "FLUID": "materials",
+  "_FLIDS": "materials",
+  "_FDENS": "materials",
+  "_FC": "materials",
+  "_FK": "materials",
+  "REACTIONS": "materials",
+  "MISCIBLE": "materials",
+  "CHEST0": "materials",
+  "BODY": "materials",
+  "WOUND": "materials",
+  "BLEED": "materials",
+  "FRICTION": "materials",
+  "GRAVITY": "materials",
+  "TICK_S": "materials",
+  "AIR_DENS": "materials",
+  "DRAG_CD": "materials",
+  "FALL_SUBSTEPS": "materials",
+  "_REACTIVE": "materials",
+  "PLUME_REACH_M": "materials",
+  "BOIL": "materials",
+  "LATENT": "materials",
+  "COMBUST_CEIL": "materials",
+  "RAD": "materials",
+  "LEAK": "materials",
+  "SPAN": "materials",
+  "MELT": "materials",
+  "FREEZE": "materials",
+  "TOUGH": "materials",
+  "TSHOCK": "materials",
+  "MATNAME": "materials",
+  "TRANSMIT": "materials",
+  "SEE_TAU": "materials",
+  "SMOKE_EXT": "materials",
+  "_SIX": "materials",
+  "SMOKE_STILL": "materials",
+  "SHOUT_DB": "materials",
+  "HEAR_DB": "materials",
+  "SOUND": "materials",
+  "PUSH_THROUGH": "materials",
+  "_TOUGH_ARR": "materials",
+  "_TSHOCK_ARR": "materials",
+  "_DENS_ARR": "materials",
+  "_CSOLID_ARR": "materials",
+  "_KSOLID_ARR": "materials",
+  "_SPAN_ARR": "materials",
+  "_FDENS_ARR": "materials",
+  "_FC_ARR": "materials",
+  "_FK_ARR": "materials",
+  "_TRANSMIT_ARR": "materials",
+  "O2_PER_L": "materials",
+  "O2_RATIO": "materials",
+  "SOOT": "materials",
+  "SOOT_OIL": "materials",
+  "O2_RATIO_OIL": "materials",
+  "_SWEEP_RAD": "pose",
+  "GAZE_SWEEP": "policy",
+  "WILL": "policy",
+  "LIMBS": "policy",
+  "_DIRS": "policy",
+  "ACTS": "policy",
+  "REFLEXES": "policy",
+  "ORIENTING": "policy",
+  "LINES": "policy",
+  "ANSWERS": "policy",
+  "MEANS": "policy",
+  "IDLE": "policy",
+  "MENU_CAP": "policy",
+  "TablePolicy": "policy"
+ }
+}

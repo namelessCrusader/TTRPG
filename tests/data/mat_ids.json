@@ -1,0 +1,6 @@
+{
+ "schema": 1,
+ "what": "the material ids and fluid ids that exist, pinned: a retired name keeps its id and names a successor, an id is never renumbered, reused or renamed. Appending is allowed; a reorder, a rename or a removal fails tests/test_mattables.py. mat 0-11 are the old materials, 12 is ICE, 13-26 are the planned skeleton materials of species_seed.MAT_SLOTS; fluid 0-8 are the old fluids, 9-10 the planned new ones.",
+ "mat": [[0,"air"],[1,"wood"],[2,"stone"],[3,"iron"],[4,"flesh"],[5,"ash"],[6,"glass"],[7,"leaf"],[8,"char"],[9,"tin"],[10,"lead"],[11,"rope"],[12,"ice"],[13,"copper"],[14,"quartz_rock"],[15,"sand"],[16,"calcite"],[17,"clay"],[18,"graphite"],[19,"magnetite"],[20,"iron_oxide"],[21,"salt"],[22,"tallow"],[23,"sugar"],[24,"quicklime"],[25,"slaked_lime"],[26,"humus"]],
+ "fluid": [[0,"none"],[1,"water"],[2,"oil"],[3,"acid"],[4,"weak_acid"],[5,"molten_tin"],[6,"molten_lead"],[7,"molten_iron"],[8,"blood"],[9,"ethanol"],[10,"molten_copper"]]
+}

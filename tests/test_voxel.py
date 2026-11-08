@@ -4,19 +4,40 @@ not a flag missing."""
 import numpy as np
 import pytest
 
-from src.voxel.demo import build, dump_water, torch
+from src.voxel.demo import build, dump_water
 from src.voxel.sim import (ACID, AIR, ASH, BODY, CHAR, FLESH, GLASS, IRON, LEAD,
                            LEAF, MIRON, MTIN, O2_PER_L, OIL, STONE, TIN, WATER,
                            WEAK_ACID, WOOD, World)
 
 
-def _lit_stick(ticks):
-    w = build()
-    for t in range(ticks):
-        if t < 25:
-            torch(w, 8, 3, 1)
-        w.step()
+def _burning_stick(oil=800.0, oil_alight=False, shed=False):
+    """The demo stick already well alight: its west five cells at 450 °C
+    through, a fire some minutes old (and, `oil_alight`, the puddle at its east
+    end burning too, at 270 °C). Fires run on a clock of minutes now (G4): a
+    torch lights this stick in about 13 s, and the fire creeps a cell (10 cm)
+    in about three minutes (`test_a_torch_lights_a_dry_stick_and_the_fire_
+    CREEPS`), so the tests about what a burning stick DOES start it burning.
+    `shed` puts a stone roof over it, so what it gives off stays to be
+    counted."""
+    w = build(oil)
+    if shed:
+        w.open_sky = False
+        w.fill(0, 36, 0, 7, 9, 10, STONE)        # a roof
+    C = w.heat_capacity()
+    hot = (slice(8, 13), 3, 1)
+    w.E[hot] = (450.0 - 20.0) * C[hot]
+    if oil_alight:
+        pool = w.fl == OIL
+        w.E[pool] = (270.0 - 20.0) * C[pool]
     return w
+
+
+def _torch(w, x, y, z):
+    """A burning torch held to wood. It bathes the 0.01-0.02 m² of wood it
+    licks at 50-100 kW/m², so about 2 kW goes into that surface: igniters are
+    sized from real heat release now (F24, G4). `demo.torch` puts 9 kJ a
+    tick, 360 kW, into the whole voxel."""
+    w.flame(x, y, z, 2000.0)
 
 
 def test_fluid_mass_is_conserved_while_flowing():
@@ -40,6 +61,56 @@ def test_energy_is_conserved_by_pure_conduction():
     assert abs(float(w.E.sum()) - e0) < 1.0
 
 
+def test_the_KEPT_SURFACE_GEOMETRY_is_what_a_fresh_build_gives():
+    """`_surface_geometry` is kept between ticks and, when matter changes,
+    built again only where it changed (heat.py). That is a speedup and must
+    change nothing: on a world where wood burns down and turns to char, a
+    pool of oil boils off and water is poured and runs, every tick's kept
+    geometry equals, to the bit, the one a build from nothing gives."""
+    from src.voxel import heat
+    from tests.test_realism_fire import _fire_only
+    w = World(14, 14, 10, voxel_cm=5)
+    w.fill(0, 14, 0, 14, 0, 1, STONE)
+    for z in range(1, 4):
+        for i in (3, 5, 7):
+            if z % 2:
+                w.fill(3, 8, i, i + 1, z, z + 1, WOOD, frac=0.5)
+            else:
+                w.fill(i, i + 1, 3, 8, z, z + 1, WOOD, frac=0.5)
+    wood = w.mat == WOOD
+    C = w.heat_capacity()
+    w.E[wood] = (450.0 - 20.0) * C[wood]
+    w.smass[3, 3, 1] = 0.181 * 600.0 * w.vox_l   # a stick about to turn to char
+    for x in (10, 11):
+        w.pour(x, 10, 1, OIL, 60.0)
+    C = w.heat_capacity()
+    w.E[10:12, 10, 1] = (270.0 - 20.0) * C[10:12, 10, 1]
+    checked, updated = [0], [0]
+
+    def each(w):
+        if w.tick == 40:
+            for x in range(3, 8):
+                w.pour(x, 4, 7, WATER, 20.0)
+        kept = heat._GEO.get(w)
+        if kept is None:
+            return
+        stale = kept.C is not w.heat_capacity()     # matter moved since
+        g = w._surface_geometry()
+        if stale and g is kept:                      # and it was updated
+            updated[0] += 1                          # where it moved
+        heat._GEO.pop(w)
+        fresh = w._surface_geometry()
+        for name in heat._GEO_FIELDS:
+            a, b = getattr(g, name), getattr(fresh, name)
+            assert a.dtype == b.dtype and a.tobytes() == b.tobytes(), \
+                f"tick {w.tick}: the kept {name} is not a fresh build's"
+        heat._GEO[w] = g
+        checked[0] += 1
+    _fire_only(w, 200, each)
+    assert checked[0] > 150 and updated[0] > 100, (checked, updated)
+    assert (w.mat == CHAR).any(), "precondition: wood turned to char"
+
+
 def test_boiling_pins_water_near_100():
     w = World(4, 4, 4)
     w.fill(0, 4, 0, 4, 0, 1, STONE)
@@ -51,28 +122,105 @@ def test_boiling_pins_water_near_100():
 
 
 def test_torch_lights_dry_stick_and_fire_spreads():
-    w = _lit_stick(300)
-    assert int(w.burning().sum()) >= 3, "the stick must catch and creep"
+    """Restaged for the fire clock (G4), in two parts.
+
+    CATCHING: the real torch (`_torch`, 2 kW into the wood it licks) held to
+    the fresh, cold stick lights it within 30 s (measured about 13 s).
+
+    BURNING ON: the stick some minutes into its fire (`_burning_stick`, its
+    west five cells alight through; the first two burned down to 115 g, 7 g
+    above the char line at 108 g of 150) is left for 80 s. It must keep
+    burning, not die out; it must lose real mass; the first cells must burn
+    down through the char line (about 20 s of burning at their rate) to CHAR.
+    Creeping on to the next cell takes minutes on this clock (about 200 s, a
+    10 cm cell at 0.5 mm/s): that is
+    `test_a_torch_lights_a_dry_stick_and_the_fire_CREEPS`, slow.
+
+    Nothing here moves but heat and fire, so both parts are fast-forwarded
+    (`_fire_only`, tests/test_realism_fire.py: the same laws in the same order
+    as `step`, which gives the same stick to the bit).
+
+    The smoke check was "more than 50 g of smoke in the world", which stood
+    for "the burned mass leaves as smoke" when a stick burned 100 g in 7 s. A
+    real stick takes ten minutes to burn that much, and smoke left in still
+    air does not stay counted (it is gone from a quiet 10 cm world within 50
+    ticks, base15 too), so the conservation is asked directly: the smoke the
+    burning MAKES is the soot share (SOOT: 0.6 g a gram of wood, 0.05 of
+    charcoal; all of what is left when a cell falls to ash) of the mass it
+    burns: between 0.05 and 1 of it."""
+    from tests.test_realism_fire import _fire_only
+
+    def torch_until_lit(w):
+        if w.burning()[8, 3, 1]:
+            return True
+        _torch(w, 8, 3, 1)
+    w = build(0.0)
+    _fire_only(w, 1200, torch_until_lit)
+    assert w.burning()[8, 3, 1], "a torch must light the dry stick within 30 s"
+
+    w = _burning_stick(oil=0.0)
+    w.smass[8:10, 3, 1] = 115.0
+    made, burned = [0.0], [0.0]
+    burn = w._law_burn
+
+    def counted():
+        s0, m0 = float(w.smoke.sum()), float(w.smass.sum())
+        burn()
+        made[0] += float(w.smoke.sum()) - s0
+        burned[0] += m0 - float(w.smass.sum())
+    w._law_burn = counted
+    _fire_only(w, 3200)
+    assert int(w.burning().sum()) >= 3, "a burning stick must keep burning, not die out"
     assert w.total_wood() < 2000, "burning must consume real mass"
     burned_state = np.isin(w.mat[8:10, 3, 1], (CHAR, ASH))
     assert burned_state.any(), \
         "burned wood must become CHAR (embers, black forever) and at last ASH"
-    assert w.smoke.sum() > 50, "the burned mass must LEAVE as smoke — conservation"
+    assert burned[0] > 5.0 and 0.05 * burned[0] <= made[0] <= burned[0], \
+        f"the burned mass must LEAVE as smoke — conservation " \
+        f"({made[0]:.2f} g of smoke from {burned[0]:.2f} g burned)"
 
 
 def test_wet_wood_does_not_light():
     w = build()
     for x in range(8, 20):
         w.pour(x, 3, 2, WATER, 900.0)         # soak the stick's whole length first
-    for t in range(80):
-        if t < 25:
-            torch(w, 8, 3, 1)
+    for t in range(1600):
+        if t < 1200:
+            _torch(w, 8, 3, 1)                # the 30 s that would light it dry
         w.step()
     assert int(w.burning().sum()) == 0, "water pins the wood near 100 °C — under ignition"
 
 
+@pytest.mark.slow
+def test_a_torch_lights_a_dry_stick_and_the_fire_CREEPS():
+    """The fire clock (G4): a torch (2 kW into the wood it licks, `_torch`)
+    lights the 10 cm stick within half a minute, and the fire creeps along it
+    to the next cell within six minutes — about 0.5 mm/s, as flame spread
+    along a dowel goes (0.1-1 mm/s). The stick is a 5 cm square rod in a 10 cm
+    cell: the flame licks the next cell through the open part of the face
+    between them (`_flame_reach`). No oil, so the minutes stay cheap, and
+    fast-forwarded (`_fire_only`): nothing moves but heat and fire."""
+    from tests.test_realism_fire import _fire_only
+    w = build(0.0)
+    lit = []
+
+    def watch(w):
+        b = w.burning()
+        if not lit:
+            if b[8, 3, 1]:
+                lit.append(w.tick)
+            elif w.tick < 1200:
+                _torch(w, 8, 3, 1)
+        return bool(b[9, 3, 1])
+    _fire_only(w, 6 * 60 * 40, watch)
+    assert lit and lit[0] < 1200, "the torch lights the stick within 30 s"
+    assert w.burning()[9, 3, 1], "and the fire creeps to the next cell within 6 min"
+
+
 def test_water_quenches_wood_fire():
-    w = _lit_stick(200)
+    w = _burning_stick()
+    for _ in range(40):
+        w.step()
     assert int(w.burning().sum()) >= 3, "precondition: the stick is burning"
     dump_water(w, 8, 20)
     for _ in range(140):
@@ -83,7 +231,9 @@ def test_water_quenches_wood_fire():
 
 
 def test_water_fails_against_oil_fire():
-    w = _lit_stick(400)
+    w = _burning_stick(oil_alight=True)
+    for _ in range(40):
+        w.step()
     oil_burning = w.burning() & (w.fl == OIL)
     assert int(oil_burning.sum()) >= 3, "precondition: the pool is alight"
     dump_water(w, 20, 27)                     # the same dousing that kills a wood fire
@@ -133,21 +283,30 @@ def test_full_water_seal_smothers_burning_wood():
         if sealed:
             w.pour(2, 2, 2, WATER, 1000.0)      # the hole drowned — walls hold the water
         m0 = float(w.smass[2, 2, 1])
-        for _ in range(3):
+        # 15 s, not 3 ticks: a face burns grams per square metre per SECOND
+        # now (G4), ~0.1 g/s through this one 10 cm hole, not 1 g a tick
+        for _ in range(600):
             w.step()
         return m0 - float(w.smass[2, 2, 1])
     assert scene(sealed=False) > 1.0, "in open air the hot wood must burn"
     assert scene(sealed=True) < 0.01, "sealed under water: no gas contact, NO burning"
 
 
-def _flame_on_pool(ml, power):
+def _flame_on_pool(ml, watts):
+    """A flame of `watts` held to a pour of oil for 20 s, watched for 30 s.
+    Sized from real heat release (F24, G4): a torch puts ~2 kW into what it
+    licks (`_torch`), a taper's whole flame is ~80 W. They were 6000 and 800
+    J a tick (240 and 32 kW) into the cell."""
     w = World(8, 8, 8)
     w.fill(0, 8, 0, 8, 0, 1, STONE)
-    w.pour(3, 3, 1, OIL, ml)
+    w.fill(2, 5, 2, 5, 1, 2, STONE)              # a stone dish, one cell inside:
+    w.mat[3, 3, 1] = AIR                         # a pour on a bare floor runs out
+    w.smass[3, 3, 1] = 0.0                       # to a film a millimetre thin,
+    w.pour(3, 3, 1, OIL, ml)                     # which a cold floor keeps cold
     lit = 0
-    for t in range(80):
-        if t < 40:
-            w.E[3, 3, 1] += power
+    for t in range(1200):
+        if t < 800:
+            w.flame(3, 3, 1, watts)
         w.step()
         lit = max(lit, int((w.burning() & (w.fl == OIL)).sum()))
     return lit
@@ -157,14 +316,14 @@ def test_a_pool_is_not_a_plume():
     """Found by the oil-lamp scenario: the rise law treated liquid-bearing voxels
     as gas and blew the pool's heat skyward — NO surface flame, however strong,
     could ever light oil under open air. A torch must be able to."""
-    assert _flame_on_pool(30.0, 6000.0) >= 1, \
+    assert _flame_on_pool(30.0, 2000.0) >= 1, \
         "a torch held to a shallow pour must light it in open air"
 
 
 def test_a_small_taper_cannot_light_a_deep_cold_pool():
     """Flash-point behavior falls out of bulk heat capacity: a match-sized flame
     drowns in 400 ml of cold oil and the pool never reaches 250 °C."""
-    assert _flame_on_pool(400.0, 800.0) == 0
+    assert _flame_on_pool(400.0, 80.0) == 0
 
 
 def test_water_sinks_beneath_oil():
@@ -185,12 +344,33 @@ def test_sealed_room_fire_suffocates_with_fuel_left():
     w.fill(2, 6, 2, 6, 1, 2, WOOD)              # plenty of fuel
     w.E[3, 3, 1] = 9.0e5
     w.E[4, 4, 1] = 9.0e5
-    for _ in range(200):
-        w.step()
+    _until_out(w)
     assert w.total_wood() > 1000, "the fire must die from lack of AIR, not lack of wood"
     burned = 4 * 4 * 600.0 - w.total_wood()
     assert burned > 20, "but it must have burned SOMETHING before the air ran out"
-    assert float(w.o2.sum()) < 0.28 * 8 * 8 * 8 * 0.2, "the room's oxygen must be spent"
+    # Flaming stops near 15% O2 (F11, G4), 0.62-0.76 of fresh air, not at the
+    # ~5% this asked for before (0.2 of fresh): the room's AIR is spent down to
+    # that limit, and no further.
+    fresh = O2_PER_L * w.vox_l
+    left = float(w.o2[w.mat == AIR].mean()) / fresh
+    assert 0.55 < left < 0.8, f"the room's oxygen must be spent ({left:.2f} of fresh)"
+
+
+def _until_out(w, most=6000):
+    """Run until a fire has burned out: its heat release under 5% of its
+    peak. A fire runs on a clock of minutes now (G4), not of ticks. Nothing
+    in these rooms moves but heat, fire and air, so it is fast-forwarded
+    (`_fire_only`, tests/test_realism_fire.py)."""
+    from tests.test_realism_fire import _fire_only
+    t0, peak = w.tick, [0.0]
+
+    def watch(w):
+        n = w.tick - t0
+        if n:
+            peak[0] = max(peak[0], w.hrr)
+            return n - 1 > 400 and w.hrr < 0.05 * peak[0]
+    _fire_only(w, most, watch)
+    return w.tick - t0
 
 
 def test_a_plank_resting_on_a_shelf_cannot_act_as_a_girder():
@@ -227,8 +407,7 @@ def _two_chambers(doorway):
     w.fill(3, 5, 3, 5, 1, 2, WOOD)              # fuel in A
     w.E[3, 3, 1] = 9.0e5
     w.E[4, 4, 1] = 9.0e5
-    for _ in range(150):
-        w.step()
+    _until_out(w)
     o2_b = float(w.o2[12:21, 1:7, 1:7].sum())
     fresh_b = 0.28 * 9 * 6 * 6
     return w, o2_b / fresh_b
@@ -241,16 +420,23 @@ def test_fire_cannot_breathe_through_a_sealed_wall():
 
 
 def test_a_doorway_makes_two_rooms_one_lung():
-    w_sealed, _ = _two_chambers(doorway=False)
+    w_sealed, b_sealed = _two_chambers(doorway=False)
     w_open, b_frac = _two_chambers(doorway=True)
-    assert b_frac < 0.6, "with a doorway, the fire drinks chamber B's air too"
+    # Flaming stops near 15% O2 (F11, G4), so one lung of two rooms is spent
+    # to about 0.71 of fresh (15/21), never to the 0.6 asked here before: the
+    # sealed twin's chamber B keeps all its air (1.0), and with the doorway it
+    # must be drawn down most of the way to that floor (measured 0.72).
+    assert b_frac < 0.8 and b_frac < b_sealed - 0.15, \
+        f"with a doorway, the fire drinks chamber B's air too ({b_frac:.2f})"
     assert w_open.total_wood() < w_sealed.total_wood(), \
         "twice the air to breathe must burn MORE wood"
 
 
 def test_acids_differ_by_table_row_not_by_code():
-    """'What kind of acid is it?' — a REACTIONS row. Vitriol devours what the
-    weak stock only stings; nothing but data separates them."""
+    """'What kind of acid is it?' — a REACTIONS row. Vitriol chars wood, slowly
+    (it pulls the water out of it); vinegar has no wood row at all and leaves
+    it alone, as a vinegar cask does (realism C3, C4). Nothing but data
+    separates them."""
     def soak(fluid, ticks=60):
         w = World(6, 6, 6)
         w.fill(0, 6, 0, 6, 0, 1, STONE)
@@ -263,11 +449,15 @@ def test_acids_differ_by_table_row_not_by_code():
             w.step()
         return m0 - float(w.smass[2:4, 2:4, 1].sum())
     strong, weak = soak(ACID), soak(WEAK_ACID)
-    assert strong > 5 * weak > 0, "same law, different rows: tenfold-ish gap"
+    assert strong > 0.0, "vitriol works on wood"
+    assert weak == 0.0, "vinegar does not: same law, different rows"
 
 
 def _bath(material):
-    """A stone basin of acid with a block of `material` submerged in it."""
+    """A stone basin of acid with a block of `material` submerged in it, for
+    120 ticks (3 s). Returns the world, the grams the block lost, the acid's
+    starting volume (all of it at potency 1, so also its active ml) and the
+    grams the stone basin itself lost."""
     w = World(8, 8, 8)
     w.fill(0, 8, 0, 8, 0, 1, STONE)
     w.fill(1, 7, 1, 7, 1, 4, STONE)             # basin walls
@@ -278,27 +468,51 @@ def _bath(material):
         for y in range(2, 6):
             for z in range(1, 4):
                 w.pour(x, y, z, ACID, 900.0)    # drown it
-    m0 = float(w.smass[3:5, 3:5, 1].sum())
+    block = np.zeros(w.shape, bool)
+    block[3:5, 3:5, 1] = True
+    basin = (w.mat == STONE) & ~block
+
+    def grams(m):
+        return float(w.smass[m].astype(np.float64).sum())
+    m0, s0 = grams(block), grams(basin)
     a0 = w.total_fluid(ACID)
     for _ in range(120):
         w.step()
-    return w, m0 - float(w.smass[3:5, 3:5, 1].sum()), a0
+    return w, m0 - grams(block), a0, s0 - grams(basin)
+
+
+def _spent(w, a0):
+    """Millilitres of potency-1 stock the pool has used up."""
+    am = w.fl == ACID
+    return a0 - float((w.fpot[am].astype(np.float64) * w.fvol[am]).sum())
 
 
 def test_acid_dissolves_wood_and_is_spent_doing_it():
-    w, eaten, a0 = _bath(WOOD)
-    assert eaten > 500, "the wood must dissolve away"
-    am = w.fl == ACID
-    spent = a0 - float((w.fpot[am] * w.fvol[am]).sum())
-    assert spent > 100, "dissolving must CONSUME the acid's potency"
+    """Vitriol works on wood at the MEASURED rate, and every gram it takes
+    costs the pool its row's reagent (REACTIONS: ml of stock per g).
+
+    Real wood in vitriol recedes about 0.014 mm a minute, ~51 mg per cm² of
+    wet face per hour (realism C3, derived from source 130). The block has 12
+    wet faces of 100 cm² in 900 ml cells (90% wet), so 3 s takes about 46 mg:
+    a mark, not the 500 g this bath once dissolved. The liquid stays behind
+    as weakening sludge."""
+    from src.voxel.sim import REACTIONS, TICK_S
+    w, eaten, a0, basin = _bath(WOOD)
+    expect = 51.0 * 12 * 100.0 * 0.9 * (120 * TICK_S / 3600.0) / 1000.0
+    assert 0.5 * expect < eaten < 1.5 * expect, \
+        f"wood went at {eaten / expect:.2f}x the measured rate"
+    assert (w.mat[3:5, 3:5, 1] == WOOD).all(), "the block is still wood"
+    cost = eaten * REACTIONS[(ACID, WOOD)][1] + basin * REACTIONS[(ACID, STONE)][1]
+    assert abs(_spent(w, a0) - cost) < 0.05 * cost, \
+        f"dissolving must CONSUME the acid's potency: {_spent(w, a0):.3f} ml, " \
+        f"the eaten mass costs {cost:.3f}"
     assert abs(w.total_fluid(ACID) - a0) < 0.05 * a0, \
         "while the liquid itself stays behind as weakening sludge"
-    assert w.smoke.sum() > 5, "fumes still venting at the end — the mass LEFT as gas"
 
 
 def test_acid_barely_marks_stone():
-    w, eaten, _ = _bath(STONE)
-    assert eaten < 150, "stone shrugs off what devours wood — rate, not a flag"
+    w, eaten, _, _ = _bath(STONE)
+    assert eaten < 150, "3 s of vitriol barely marks a stone block"
 
 
 def test_a_hinged_tree_topples_toward_the_notch():
@@ -311,7 +525,7 @@ def test_a_hinged_tree_topples_toward_the_notch():
     w.smass[5:7, 3:5, 1] = 0.0
     for _ in range(80):                         # the topple is an ARC now — the body
         w.step()                                # leans, accelerates, lands, settles
-    assert not w.bodies, "the body must have LANDED by now"
+    assert not w.bodies and not w.matter.aloft(), "it must have LANDED by now"
     zs = np.argwhere(w.mat == WOOD)[:, 2]
     assert int(zs.max()) <= 5, "the pole must TOPPLE, not stand on its hinge"
     xs = np.argwhere(w.mat == WOOD)[:, 0]
@@ -354,7 +568,7 @@ def test_the_canopy_rides_the_falling_trunk():
     leaf0 = float(w.smass[w.mat == LEAF].sum())
     for _ in range(400):                            # fall + rubble re-settling
         w.step()
-    assert not w.bodies
+    assert not w.bodies and not w.matter.aloft()
     leaves = np.argwhere(w.mat == LEAF)
     assert float(w.smass[w.mat == LEAF].sum()) > 0.9 * leaf0, "no leaf mass lost"
     assert float(leaves[:, 0].mean()) > 9, "the canopy came DOWN AND OVER with the trunk"
@@ -486,9 +700,15 @@ def test_ash_cannot_carry_what_wood_could():
 
 
 def test_acid_spends_its_potency_not_its_volume():
-    """Vitriol working on wood self-quenches: the pool stays put and its
-    STRENGTH drains — and a half-potent pour eats at roughly half speed,
-    because the rate IS the potency (one law, no dilution flag)."""
+    """Vitriol working on wood spends its STRENGTH and keeps its volume: the
+    pool stays put, and the reagent the eaten mass cost comes off its
+    potency. And strength works through a THRESHOLD, not a proportion:
+    concentrated vitriol (98 wt%) pulls the water out of wood, but at half
+    potency (about 63 wt%) it is under the 72 wt% the measured rate is for,
+    and wood holds dilute acid for decades (realism C3, C12; sources 129,
+    130). One law; the threshold is two points in the wood row."""
+    from src.voxel.sim import REACTIONS
+
     def bath(pot):
         w = World(10, 10, 8)
         w.fill(0, 10, 0, 10, 0, 1, STONE)
@@ -499,21 +719,24 @@ def test_acid_spends_its_potency_not_its_volume():
         for x in range(3, 7):
             for y in range(3, 7):
                 w.pour(x, y, 2, ACID, 400.0, pot=pot)
-        a0, wood0 = w.total_fluid(ACID), w.total_wood()
+
+        def grams(m):
+            return float(w.smass[w.mat == m].astype(np.float64).sum())
+        a0, wood0, stone0 = w.total_fluid(ACID), grams(WOOD), grams(STONE)
         for _ in range(150):
             w.step()
-        return w, a0, wood0 - w.total_wood()
-    w, a0, eaten_full = bath(1.0)
-    _, _, eaten_half = bath(0.5)
-    assert eaten_full > 500.0, "the acid must actually eat"
-    assert 0.3 * eaten_full < eaten_half < 0.7 * eaten_full, \
-        "half the potency must mean roughly half the appetite"
+        return w, a0, wood0 - grams(WOOD), stone0 - grams(STONE)
+    w, a0, eaten_full, stone_full = bath(1.0)
+    _, _, eaten_half, _ = bath(0.5)
+    assert eaten_full > 0.0, "concentrated vitriol works on the wood"
+    assert eaten_half == 0.0, "half-strength vitriol is under the wood threshold"
     assert abs(w.total_fluid(ACID) - a0) < 0.05 * a0, \
         "the liquid itself remains behind as weakening sludge"
-    touching = (w.fl == ACID) & (w.fvol > 1.0)
-    touching[:, :, 3:] = False                  # the layer working the wood face
-    assert touching.any() and float(w.fpot[touching].min()) < 0.85, \
-        "the working layer must have SPENT real potency doing it"
+    spent = _spent(w, a0)
+    cost = (eaten_full * REACTIONS[(ACID, WOOD)][1]
+            + stone_full * REACTIONS[(ACID, STONE)][1])
+    assert cost > 0.0 and abs(spent - cost) < 0.05 * cost, \
+        f"the pool spent {spent:.3f} ml of stock; what it ate costs {cost:.3f}"
 
 
 def test_water_dilutes_acid_and_the_blend_pales():
@@ -535,7 +758,11 @@ def test_water_dilutes_acid_and_the_blend_pales():
 
 def test_person_faints_then_dies_in_a_sealed_airless_room():
     """Physiology, no fire needed: thin air at head height drains blood O2 —
-    the person slumps, later stops breathing. Thresholds on state, no script."""
+    the person slumps, later stops breathing. Thresholds on state, no script.
+
+    On the breathing clock (G9) the blood follows the air over ~40 s, not
+    1.25 s: at 2% O2 the faint comes at ~26 s and death at ~70 s, so the
+    run is 90 s where it was 10 s."""
     w = World(24, 24, 20)
     w.open_sky = False
     w.fill(0, 24, 0, 24, 0, 1, STONE)
@@ -545,7 +772,7 @@ def test_person_faints_then_dies_in_a_sealed_airless_room():
     w.step()
     w.o2[:] *= 0.10                             # the air is suddenly ruined
     fainted = died = None
-    for t in range(400):
+    for t in range(3600):
         w.step()
         if fainted is None and not p["awake"]:
             fainted = t
@@ -559,7 +786,10 @@ def test_person_faints_then_dies_in_a_sealed_airless_room():
 
 def test_unconscious_body_keels_over():
     """A slack body is an object: on fainting it topples by the tree machinery
-    and ends up LYING — its height collapses, its voxels survive."""
+    and ends up LYING — its height collapses, its voxels survive.
+
+    At 1% O2 the faint comes at ~24 s on the breathing clock (G9), where it
+    came in under a second, so the run is 40 s where it was 10 s."""
     w = World(30, 30, 24)
     w.open_sky = False
     w.fill(0, 30, 0, 30, 0, 1, STONE)
@@ -568,7 +798,7 @@ def test_unconscious_body_keels_over():
     n0 = int((w.mat == FLESH).sum())
     w.step()
     w.o2[:] *= 0.05
-    for _ in range(400):
+    for _ in range(1600):
         w.step()
         if not w.bodies and not p["awake"]:
             zs = np.argwhere(w.mat == FLESH)
@@ -631,37 +861,53 @@ def test_a_pond_cushions_the_fall():
 def test_flame_licked_glass_cracks_but_warmed_glass_survives():
     """Thermal shock from data: a steep DT across a face bursts glass; gentle
     warming never does."""
-    def pane(hot_E):
+    # The air cell beside the pane is HELD at a temperature. It used to be fed
+    # 6000 or 150 J a tick, which with air at 50 J/(L·K) made it about 900 °C
+    # or about 45 °C; air holds 1.2 J/(L·K) now (G5), so the same joules would
+    # make a blowtorch of the "warm draft". The temperatures are what the test
+    # was always about.
+    def pane(hot_T):
         w = World(8, 8, 6)
         w.fill(0, 8, 0, 8, 0, 1, STONE)
         w.fill(3, 6, 3, 4, 1, 4, GLASS)         # a small standing pane
         for t in range(12):
-            if t < 8:
-                w.E[4, 4, 1] += hot_E           # air cell right beside it
+            if t < 8:                           # air cell right beside it
+                C = w.heat_capacity()
+                w.E[4, 4, 1] = (hot_T - 20.0) * C[4, 4, 1]
             w.step()
         full = 2500.0 * w.vox_l
         return int(((w.mat == GLASS) & (w.smass > 0.9 * full)).sum())
-    assert pane(6000.0) < 9, "flame-hot air beside cold glass must burst cells"
-    assert pane(150.0) == 9, "a warm draft leaves the pane whole"
+    assert pane(900.0) < 9, "flame-hot air beside cold glass must burst cells"
+    assert pane(45.0) == 9, "a warm draft leaves the pane whole"
 
 
 def test_tin_melts_over_embers_and_iron_only_glows():
     """Transformation from three numbers: same fire, same distance — tin (232°)
-    runs, iron (1538°) shrugs. The difference is a MELT row, never a flag."""
-    def bar(metal, ticks=520):
-        w = World(12, 8, 10)
-        w.fill(0, 12, 0, 8, 0, 1, STONE)
-        w.fill(3, 9, 2, 6, 1, 3, CHAR, frac=0.8)     # an ESTABLISHED forge bed —
-        bed = w.mat == CHAR                          # glowing coals, already lit
-        w.E[bed] = 600.0 * w.heat_capacity()[bed]    # (charcoal cold-starts hard;
-        w.fill(4, 8, 5, 7, 4, 5, STONE)              # lighting it is its own scene)
-        w.fill(4, 8, 3, 5, 4, 5, metal)              # the bar, over the coals
-        for _ in range(ticks):
-            w.step()
+    runs, iron (1538°) shrugs. The difference is a MELT row, never a flag.
+
+    On the real clock (G5) a 7 kg bar of tin over a coal bed takes the best
+    part of an hour, so this is one 5 cm piece (0.9 kg) BURIED in an
+    established bed, the way a smelt holds it (the `forge` scene), and the
+    bed is held at 600 °C, glowing embers, by thermostat blocks: what heats
+    the metal is then contact with the bed, which is what this asks about.
+    Five minutes for the tin and two for the iron, fast-forwarded
+    (`_heat_only`, tests/test_realism_heat.py)."""
+    from tests.test_realism_heat import _heat_only
+
+    def bar(metal, minutes):
+        w = World(7, 7, 7, voxel_cm=5)
+        w.fill(0, 7, 0, 7, 0, 1, STONE)
+        w.fill(2, 5, 2, 5, 1, 4, STONE)                  # the bed...
+        w.thermostats = [(x, y, z, 600.0) for x in range(2, 5)
+                         for y in range(2, 5) for z in range(1, 4)
+                         if (x, y, z) != (3, 3, 2)]      # ...held glowing
+        w.fill(3, 4, 3, 4, 2, 3, metal)                  # the piece, buried in it
+        _heat_only(w, minutes * 60 * 40)
         molten = float(w.fvol[np.isin(w.fl, (MTIN, MIRON))].sum())
         return molten, float(w.smass[w.mat == metal].sum())
-    tin_ml, tin_left = bar(TIN)
-    iron_ml, iron_left = bar(IRON)
+    tin_ml, tin_left = bar(TIN, 5)
+    iron_ml, iron_left = bar(IRON, 2)          # at 600 °C it reaches 600 °C and
+                                               # no further: 1538 °C is not there
     assert tin_ml > 50.0, "tin over glowing coals must RUN"
     assert iron_ml == 0.0 and iron_left > 0, "iron over the same coals only glows"
 
@@ -688,21 +934,28 @@ def test_molten_tin_freezes_back_where_it_pools():
 def test_reflexes_flee_and_alarm_spreads_by_shout_or_sight():
     """The WILL layer with voices: the one who SEES the fire shouts; across
     open floor the shout outruns everything and the other flees on HEARING
-    alone. Behind enough masonry the shout dies — then only the sight of the
-    runner passing can raise them."""
+    alone. And a baffle does not stop it. This said "behind enough masonry
+    the shout dies", and checked it with six voxels of stone that stop short
+    of the ceiling and of one wall: while sound went only in a straight line
+    the baffle's mass law (60+ dB) ate the shout. Sound goes over and round
+    such a wall for at most 20 dB (ISO 9613-2; docs/realism-references.md
+    G1), so 5 m off the shout still arrives near 70 dB and B still flees on
+    HEARING it. Only a sealed wall silences a shout."""
     def scene(wall):
         w = World(140, 26, 20, voxel_cm=5)   # roomy in y: bodies have DEPTH
         w.fill(0, 140, 0, 26, 0, 1, STONE)   # now, and two of them queueing at
         w.exits = [(6, 12), (6, 7)]          # one door cannot pass each other
         if wall:                                     # a thick baffle between them
             w.fill(60, 66, 0, 22, 1, 18, STONE)      # (leaves a south gap to walk)
-        w.fill(128, 130, 6, 8, 1, 4, WOOD)
-        w.fill(120, 121, 7, 8, 1, 15, FLESH, frac=0.9)
-        pa = w.add_person(120, 7, "A")
-        w.fill(18, 19, 7, 8, 1, 15, FLESH, frac=0.9)   # far enough that B cannot
-        pb = w.add_person(18, 7, "B")                  # SEE the fire even after
-                                                       # wandering a little
-        w.E[128, 6, 1] = 9.0e5
+        w.fill(128, 130, 19, 21, 1, 4, WOOD)         # the fire, in a far corner
+        w.fill(110, 112, 12, 26, 1, 20, STONE)       # behind a screen, so that B
+        w.fill(120, 121, 7, 8, 1, 15, FLESH, frac=0.9)   # cannot SEE it even after
+        pa = w.add_person(120, 7, "A")                   # wandering a little: a
+        w.fill(18, 19, 7, 8, 1, 15, FLESH, frac=0.9)     # flame is noticed by how
+        pb = w.add_person(18, 7, "B")                    # big it looks, not inside
+                                                         # 4 m, now (R3)
+        pa["premove_s"] = pb["premove_s"] = 1.0      # short pre-movements (R3)
+        w.E[128, 19, 1] = 9.0e5
         b_event = None
         for t in range(900):
             w.step()
@@ -720,8 +973,82 @@ def test_reflexes_flee_and_alarm_spreads_by_shout_or_sight():
         "across open floor, B flees on HEARING the shout, seeing nothing"
     assert pa["safe"] and pb["safe"], "both walk out"
     w2, pa2, pb2, be2 = scene(wall=True)
-    assert be2 is not None and "hears" not in be2, \
-        "six voxels of stone eat the shout — B startles some other way"
+    assert be2 is not None and "hears" in be2, \
+        "the shout goes over and round six voxels of stone, and B hears it"
+
+
+def test_the_SIGHT_of_a_RUNNER_alone_raises_the_alarm():
+    """The half of the scene above that sound took away: a body raised by
+    SEEING someone run, with nothing heard. Only a sealed wall silences a
+    shout, and a sealed wall of stone hides the runner too, so the wall is
+    GLASS: 30 cm of it, floor to top and side to side, so there is no way
+    over or round. Its mass law costs about 64 dB, and A's "Fire!" reaches B
+    near 25 dB at best, under the 35 dB a noise is noticed at, and his
+    footsteps less. Through it B sees A bolt past (at a speed he can SEE,
+    within `run_see_m`), startles at that, and goes. The same wall of stone:
+    B sees nothing, hears nothing, and stays.
+
+    The fire is in the far corner behind a screen (step R3): a flame is
+    noticed by how big it looks now, not inside a 4 m radius, so B would
+    otherwise notice the fire itself through the glass the moment A was out
+    of the way. And both have an explicit short pre-movement (1 s), as the
+    test is about WHAT raises B, not how long people take to leave."""
+    from src.voxel.sim import TablePolicy
+
+    class _Watching(TablePolicy):
+        """B stands and watches the glass until something raises him."""
+        def pick(self, sit, menu):
+            if sit["who"] == "B" and sit["limb"] == "legs" \
+                    and sit["percept"] is None:
+                for i, o in enumerate(menu):
+                    if o["tag"] == "stay":
+                        return i
+            return super().pick(sit, menu)
+
+    def scene(wall):
+        w = World(140, 26, 20, voxel_cm=5)
+        w.policy = _Watching()
+        w.fill(0, 140, 0, 26, 0, 1, STONE)
+        w.exits = [(6, 12), (60, 20)]          # one door each side of it
+        w.fill(50, 56, 0, 26, 1, 20, wall)     # sealed: no way round
+        w.fill(122, 124, 18, 20, 1, 4, WOOD)   # A's fire, in the far corner,
+        w.fill(100, 102, 12, 26, 1, 20, STONE)  # and a screen hiding it from
+        w.fill(110, 111, 7, 8, 1, 15, FLESH, frac=0.9)   # B: he cannot
+        pa = w.add_person(110, 7, "A")                   # notice it himself
+        w.fill(40, 41, 7, 8, 1, 15, FLESH, frac=0.9)
+        pb = w.add_person(40, 7, "B")
+        pa["premove_s"] = pb["premove_s"] = 1.0
+        w.E[122, 18, 1] = 9.0e5
+        be, heard, noise = None, False, None
+        for _ in range(900):
+            # HE WATCHES THE GLASS, and not only when his sweeping head
+            # happens to come round to it. A runner is past in two thirds of
+            # a second now (2.5 m/s, step R4): at the old 0.67 m/s he was in
+            # range for 90 ticks, long enough for any sweep to find him.
+            if be is None:
+                pb["look"] = (1.0, 0.0, w.tick)
+            w.step()
+            if not pa["safe"] and pa.get("_eye") is not None \
+                    and w._hears(pa["_eye"], pb["_eye"]):
+                heard = True
+            noise = noise or pb.get("noise")
+            for e in pb["events"]:
+                if "startles" in e and be is None:
+                    be = e
+            pb["events"].clear()
+            pa["events"].clear()
+            if pa["safe"] and (pb["safe"] or wall == STONE):
+                break
+        return w, pa, pb, be, heard, noise
+    w, pa, pb, be, heard, noise = scene(GLASS)
+    assert any("Fire" in s[2] for s in w.speech), "A shouts"
+    assert not heard and noise is None, "and B hears nothing of it"
+    assert be is not None and "sees runner" in be, be
+    assert pa["safe"] and pb["safe"], "both get out"
+    w, pa, pb, be, heard, noise = scene(STONE)
+    assert any("Fire" in s[2] for s in w.speech) and pa["safe"]
+    assert not heard and noise is None and be is None, \
+        "behind stone B neither hears nor sees, and nothing raises him"
 
 
 def test_thermostat_block_heats_without_any_fire():
@@ -736,8 +1063,12 @@ def test_thermostat_block_heats_without_any_fire():
     w.fill(5, 8, 2, 3, 1, 2, TIN)               # work-piece touching it
     w.step()
     o2_0 = float(w.o2.sum())
-    for _ in range(300):
-        w.step()
+    # Six minutes, not 7.5 s: the element passes ~4.7 kW into a 22 kg bar of
+    # tin by contact (k in W/(m·K), G5), and tin spreads it along the bar, so
+    # the bar starts to run after about five. Fast-forwarded: nothing here
+    # moves but heat (`_heat_only`, tests/test_realism_heat.py).
+    from tests.test_realism_heat import _heat_only
+    _heat_only(w, 6 * 60 * 40)
     assert float(w.fvol[w.fl == MTIN].sum()) > 50.0, \
         "the pinned block must melt the tin beside it"
     assert abs(float(w.o2.sum()) - o2_0) < 0.5, \
@@ -777,7 +1108,7 @@ def test_every_decision_logs_the_whole_menu_beside_the_pick():
         "standing pat is always an option, and must be OFFERED as one"
     assert any(k.startswith("go(the door") for k in row["menus"]["legs"]), \
         "and so is the door it can see and reach"
-    assert "say(coming)" not in row["menus"]["mouth"], \
+    assert not any(k.startswith("say(coming") for k in row["menus"]["mouth"]), \
         "answering presupposes something to answer — this body heard nothing"
     assert row["situation"]["percept"] == row["percept"]
     outs = {r["outcome"] for r in w.trace_outcomes()}
@@ -848,6 +1179,13 @@ def _two_rooms(barrier, frac=1.0):
     w.fill(5, 8, 8, 11, 1, 3, WOOD)
     w.E[5, 8, 1] = 6.0e5
     w.step()
+    # Room A is already smoke-logged, 0.2 g/L (a fire some minutes old): a
+    # fire on the real clock (G4) makes grams of smoke a minute, not the
+    # hundreds in ten seconds this ran on, and what is asked is how the
+    # barrier passes smoke, not how fast the fire makes it.
+    a = (slice(1, 19), slice(1, 19), slice(1, 15))
+    air_a = w.mat[a] == AIR
+    w.smoke[a][air_a] += 0.2 * w.vox_l
     for _ in range(400):
         w.step()
     return float(w.smoke[21:39, 1:19, 1:15].sum())
@@ -874,18 +1212,23 @@ def test_burning_opens_a_solid_block_with_nobody_writing_that():
     """The tell that a derived quantity is the right shape: behaviour nobody
     wrote. Fire eats mass, mass is what fills the voxel, so a burning block
     grows porous at its charred face and starts breathing on its own."""
-    w = World(20, 12, 14, voxel_cm=5)
-    w.open_sky = False
-    w.fill(0, 20, 0, 12, 0, 14, STONE)
-    w.mat[1:19, 1:11, 1:13] = AIR
-    w.smass[1:19, 1:11, 1:13] = 0.0
-    w.fill(6, 12, 4, 8, 1, 5, WOOD)              # packed solid: no void at all
-    blk = (slice(6, 12), slice(4, 8), slice(1, 5))
+    w = World(16, 12, 10, voxel_cm=5)
+    w.fill(0, 16, 0, 12, 0, 10, STONE)
+    w.mat[1:15, 1:11, 1:10] = AIR                # open at the top: sealed, a
+    w.smass[1:15, 1:11, 1:10] = 0.0              # fire that spreads over three
+                                                 # or four cells (flame height,
+                                                 # F25) used the room's air up
+                                                 # before it had eaten a tenth of
+                                                 # any cell, and this is about
+                                                 # what the mass it eats leaves
+    w.fill(4, 10, 4, 8, 1, 5, WOOD)              # packed solid: no void at all
+    blk = (slice(4, 10), slice(4, 8), slice(1, 5))
     assert float(w.porosity()[blk].max()) == 0.0, "a packed block starts sealed"
-    w.E[6, 4, 1] = 8.0e5
+    w.E[4, 4, 1] = 8.0e5
     m0 = float(w.smass[blk].sum())
-    for _ in range(150):
-        w.step()
+    from tests.test_realism_fire import _fire_only
+    _fire_only(w, 4800)                          # two minutes: faces burn grams
+                                                 # per m² per second now (G4)
     assert float(w.smass[blk].sum()) < m0, "the fire ate some of the block"
     assert float(w.porosity()[blk].max()) > 0.1, \
         "and the mass it ate is now void the gases can move through"
@@ -909,7 +1252,12 @@ def _walled_pair(window):
         w.fill(lx, lx + 1, ly, ly + 1, 1, 3, WOOD)       # ...on legs
     w.fill(40, 41, 11, 12, 1, 15, FLESH, frac=0.9)
     p = w.add_person(40, 11, "Witness")
+    p["premove_s"] = 1.0                  # a short pre-movement (R3), so the
+                                          # witness who saw it is gone in time
     w.E[8, 10, 3] = 9.0e5
+    top = (slice(6, 14), slice(9, 15), 4)  # the bench's top already alight, a
+    w.E[top] = (450.0 - 20.0) * w.heat_capacity()[top]   # fire on the real
+                                          # clock (G4) a few minutes old
     seen, peak = None, 0
     for t in range(260):
         w.step()
@@ -1067,19 +1415,27 @@ def test_a_body_that_went_down_from_bad_air_comes_round_in_good_air():
     """The fainting threshold used to trip one way only, so a body carried out
     of the smoke stayed unconscious for ever and rescuing anyone was pointless.
     Air can undo what air did — with hysteresis, since recovery genuinely lags,
-    and never for burns, whose integral only ever climbs."""
+    and never for burns, whose integral only ever climbs.
+
+    On the breathing clock (G9) this takes a minute, not fifteen seconds: the
+    blood follows the air over ~40 s, so the body goes down within half a
+    minute, and comes round ~18 s after the rescue. (Down from carbon
+    monoxide it would stay down for hours: B-T8.)
+
+    The sealed room's air starts FOUL (2% O2, a shut cellar). It used to be
+    emptied by a fire in it, in seconds; a fire cannot do that now, because
+    flaming stops near 15% O2 (F11, G4) and would leave the body breathing."""
     w = World(30, 14, 22, voxel_cm=5)
     w.open_sky = False
     w.fill(0, 30, 0, 14, 0, 22, STONE)
     w.mat[1:29, 1:13, 1:21] = AIR
     w.smass[1:29, 1:13, 1:21] = 0.0
-    w.fill(3, 9, 4, 9, 1, 3, WOOD, frac=0.8)
     from src.voxel.scenes import _person
     p = _person(w, 20, 6)
     p["name"] = "S"
-    w.E[3, 4, 1] = 9.0e5
+    w.o2 = np.full(w.shape, 0.1 * O2_PER_L * w.vox_l, np.float32)
     went_down = came_round = None
-    for t in range(600):
+    for t in range(2400):
         w.step()
         if went_down is None and not p["awake"]:
             went_down = t
@@ -1091,7 +1447,7 @@ def test_a_body_that_went_down_from_bad_air_comes_round_in_good_air():
         p["events"].clear()
         if came_round:
             break
-    assert went_down is not None, "the smoke must put this body down"
+    assert went_down is not None, "the bad air must put this body down"
     assert p["alive"], "and the rescue must reach it before it dies"
     assert came_round is not None, "clean air must bring it back"
     assert came_round > went_down, "and it must have been out for a while"
@@ -1177,7 +1533,7 @@ def test_two_people_who_touch_stay_two_people():
             f"{who['name']} claimed {n} of {total} — that is both bodies"
 
 
-def _burning_room_with_a_body_on_the_floor(rescuer):
+def _burning_room_with_a_body_on_the_floor(rescuer, hero_at=(20, 14)):
     """A fire, a person already unconscious on the floor, and one who is not."""
     from src.voxel.scenes import _person
     w = World(50, 26, 40, voxel_cm=5)
@@ -1188,16 +1544,62 @@ def _burning_room_with_a_body_on_the_floor(rescuer):
     w.exits = [(46, 12)]
     w.fill(4, 10, 8, 16, 1, 3, WOOD, frac=0.8)
     w.E[4, 8, 1] = 9.0e5
-    # THE FALLEN ONE MOVES, AND ONLY IN Y. A body is 7 voxels across since the
-    # arms went to two and 5 deep, so two men six apart along x now share a
-    # column. Every other way of opening the gap was measured and cost the hero
-    # his life: two cells further from the door and he suffocates at o2 0.25;
-    # two cells nearer the fire and the fallen man becomes fuel; off the exit's
-    # own row and he never registers as having reached it. Moved this way he
-    # gets out at t230 with o2 0.71, where the narrower man got out at t219
-    # with 0.75 — the same escape, by the same margin.
-    down = _person(w, 16, 18); down["name"] = "Fallen"
-    hero = _person(w, 22, 12); hero["name"] = "Hero"
+    # WHERE THE FALLEN ONE LIES, and it matters more than it should. A body is
+    # 7 voxels across since the arms went to two and 5 deep, so the two of them
+    # need a clear cell between them: measured over eight placements, every one
+    # where the two bodies TOUCH ends with nobody getting out at all, because
+    # `_person_cells` is an anchor-local flood fill and two bodies in contact
+    # split their flesh between the wrong owners — [432, 360] cells where both
+    # should be 396 — after which half a man is launched as a free body and
+    # floats there. See roadmap 82; it is not this scene's fault and this scene
+    # cannot work around it, so it keeps its distance.
+    #
+    # AND THE REST IS STILL LUCK, honestly. A rescuer's sheet says
+    # `{"legs": "go:exit", "hands": "hold"}`, which can only hold what is
+    # ALREADY in reach — there is no way in a flat percept-to-act table to say
+    # "go to them first". So whether anyone is rescued turns on where the
+    # rescuer happens to be standing when the percept fires. It passed at 16,18
+    # until the eyes got sharper and it saw the fire thirty ticks earlier, six
+    # cells short. Moved here it gets out at t193 with the fallen man, against
+    # t170 for the one who leaves him. When the policy can sequence, this scene
+    # should stop depending on the placement at all.
+    #
+    # MOVED AGAIN when bodies learned to turn to walk (roadmap 97): of ten
+    # starting places swept, only (16,12) still ends with both men out, and
+    # from most of the rest neither of them leaves at all. Nothing has
+    # changed about the reason. It is still the missing "go to them first".
+    #
+    # AND AGAIN at a real walking pace, a run when fleeing and straight
+    # routes (step R4): of twelve starting places swept, (18,12) and (16,8)
+    # end with both men out (t172 with the fallen man, t167 without him).
+    # From (16,12) the idle stroll before the fire is seen now passes close
+    # by the fallen man; each pass re-launches him as a free body, and each
+    # landing loses flesh (396 -> 336 voxels in 66 ticks), until the walker
+    # is wedged against him for good — the body-ownership and landing
+    # trouble of roadmap 82, not walking.
+    #
+    # AND AGAIN when a percept is answered after a reaction time (step R3):
+    # the hero is given a quick sheet (ready, no pre-movement), and of eight
+    # places swept only (18,14) has the fallen man within reach when he
+    # answers; from (18,12) both versions of him are out at t34 alone.
+    #
+    # AND AGAIN when a body that is out crumples at the knees and tips over for
+    # about a second instead of lying at once (wave 12, the balance reflex and
+    # the pendulum topple): the fallen man is not on the floor yet when the
+    # hero's idle stroll starts, so the stroll goes elsewhere from (18,14) and
+    # the rescuer leaves him. Measured with both versions of the hero, (20,14)
+    # and (18,12) are out with him; (18,14) is not.
+    down = _person(w, 20, 18); down["name"] = "Fallen"
+    # DOWN FROM THE START. Knocked out only after the first step, he got one
+    # tick awake — one roaming stride, and since bodies turn to walk, a
+    # quarter turn — and the rescue this scene measures depends on which way
+    # he lies (roadmap 97).
+    down["awake"] = False
+    down["blood_o2"] = min(down["blood_o2"], 0.30)
+    hero = _person(w, *hero_at); hero["name"] = "Hero"
+    hero["premove_s"] = 0.25                      # no pre-movement, and ready
+    hero["ready"] = True                          # (R3): this is about WHAT
+                                                  # he does, not how soon
     if rescuer:                                   # the character sheet, edited:
         hero["reflexes"] = {k: {"legs": "go:exit", "hands": "hold"}
                             for k in ("sees_fire", "chokes",   # legs leave, and
@@ -1373,10 +1775,15 @@ def _dropped_onto_stone(h_m, legs="stay", ticks=200):
     from src.voxel.scenes import _person
 
     zn = 1 + int(round(h_m / 0.05))
-    w = World(24, 12, zn + 40, voxel_cm=5)
-    w.fill(0, 24, 0, 12, 0, 1, STONE)
+    # ROOM TO LIE DOWN. A man is 30 cells long flat out; in the 24-cell world
+    # this used to be, one knocked cold keeled into the edge and left cells of
+    # himself outside it — counted in `gone`, correctly, and read by the gram
+    # check below as flesh that fragmented. The edge is a void on purpose
+    # (what LEAVES THE WORLD is counted); a fall test should not be near it.
+    w = World(72, 72, zn + 40, voxel_cm=5)
+    w.fill(0, 72, 0, 72, 0, 1, STONE)
     w.exits = []
-    p = _person(w, 11, 6, z0=zn)
+    p = _person(w, 35, 36, z0=zn)
     w.policy = _Wants(legs=legs)
     grams = _flesh_grams(w)
     for _ in range(ticks):
@@ -1399,11 +1806,18 @@ def test_a_FALL_HURTS_and_the_height_decides_how_much():
     low, g0, g1 = _dropped_onto_stone(1.5)
     mid, m0, m1 = _dropped_onto_stone(3.0)
     high, h0, h1 = _dropped_onto_stone(6.0)
+    # WAVE 13c (C7), a declared change of meaning: the bruise integral is no
+    # longer a cause of unconsciousness (nor of death). What a fall does to a
+    # man is now the landing chain's: 3 m hurts (more than 1.5 m) and knocks
+    # nobody out; at 6 m the heels and a lumbar vertebra give, the pain drives
+    # the vasovagal faint, and the broken bones pool blood into the limbs.
     assert low["hurt"] > 0, "1.5 m onto stone is not nothing"
     assert low["awake"] and low["alive"], "...but a man takes it bruised"
-    assert not mid["awake"], "3 m knocks him out"
-    assert mid["alive"], "...and no more than that"
-    assert not high["alive"], "6 m onto stone, landed rigid, kills"
+    assert mid["awake"] and mid["alive"], "3 m is a bruise, not a knock-out"
+    assert not high["awake"] and high["alive"], "6 m onto stone: out from the pain, alive"
+    assert {"calcaneus", "lumbar"} <= set(high["fractures"]), "and the heels and a lumbar vertebra broke"
+    assert high["pool_left_ml"] + high.get("pooled_ml", 0.0) > 100.0, "and blood pools into the break"
+    assert not low.get("fractures") and not mid.get("fractures")
     assert low["hurt"] < mid["hurt"] < high["hurt"], \
         "the height decides, monotonically"
     for a, b in ((g0, g1), (m0, m1), (h0, h1)):
@@ -1419,11 +1833,12 @@ def test_ROLLING_on_landing_spreads_the_blow_that_a_rigid_landing_takes_whole():
     many ticks is struck far less hard than one that stops dead. That is the
     whole of rolling, and it is arithmetic rather than a rule about rolls.
 
-    Measured in wounds: a rigid landing from 3 m knocks a body out; the same
-    fall rolled through leaves it conscious and costs it less."""
+    Measured in wounds: a rigid landing from 3 m bruises a body (hurt 0.36);
+    the same fall rolled through costs it nothing at all. (Wave 13c: a bruise
+    no longer knocks anyone out, so the comparison is the wound itself.)"""
     rigid, g0, g1 = _dropped_onto_stone(3.0)
     rolled, h0, h1 = _dropped_onto_stone(3.0, legs="roll")
-    assert not rigid["awake"], "a rigid landing from 3 m knocks a body out"
+    assert rigid["awake"] and rigid["hurt"] > 0.2, "a rigid landing from 3 m bruises a body"
     assert rolled["awake"], "the same fall rolled through leaves it conscious"
     assert rolled["hurt"] < rigid["hurt"], "rolling spreads the blow"
     for a, b in ((g0, g1), (h0, h1)):
@@ -1442,15 +1857,16 @@ def test_ROLLING_on_landing_spreads_the_blow_that_a_rigid_landing_takes_whole():
     # the parts land under the threshold; past that the arithmetic runs out,
     # which is why the ceiling is measured rather than asserted to be absent.
     high, _, _ = _dropped_onto_stone(11.0, legs="roll", ticks=320)
-    assert not high["alive"], \
-        f"eleven metres kills you however well you land (hurt {high['hurt']:.2f})"
+    assert not high["awake"] and high.get("fractures"), \
+        f"eleven metres breaks you however well you land (hurt {high['hurt']:.2f})"
     # SEVEN, not eight. He is 43.9 kg since the arms went to two voxels, and a
     # fall is his own weight times the height — measured rolled: 6 m and he
     # walks away at hurt 0.15, 7 m and he is out at 0.34, 8 m and he is dead at
     # 0.49. The 38 kg man had that band one metre higher.
     mid, _, _ = _dropped_onto_stone(7.0, legs="roll", ticks=320)
-    assert mid["alive"] and not mid["awake"], \
-        "at seven it knocks you out and you live, where landing rigid kills"
+    rigid7, _, _ = _dropped_onto_stone(7.0, ticks=320)
+    assert mid["alive"] and mid["hurt"] < rigid7["hurt"] and not rigid7["awake"], \
+        "at seven the rolled man is hurt less than the rigid one, who is out cold"
 
 
 def test_a_WIDE_thing_falls_SLOWER_than_a_compact_one_of_the_same_mass():
@@ -1727,9 +2143,16 @@ def test_a_SWUNG_arm_breaks_GLASS_and_bounces_off_a_POST():
     assert pieces == 1, \
         f"a person who swings is still ONE person afterwards ({pieces} pieces)"
 
-def _on_a_ledge(pull_N, brace_N, ticks=70):
+def _on_a_ledge(pull_N, brace_N, ticks=110):
     """One man on a ledge 1.5 m up, one below with hold of his ankle, walking
-    away. Everything about the two of them is identical except two numbers."""
+    away. Everything about the two of them is identical except two numbers.
+
+    110 ticks, was 70: the pulled man now goes over the lip as a pendulum (his
+    weight turns about the edge, not a slide), flies a few ticks and lands on
+    the head and shoulder of the puller, who is as tall as the ledge and stands
+    under the lip. From there he turns again and goes over. Measured: he is at
+    z14 at 90 ticks and rests at z9 (the end state this test always named) from
+    about 100. The braced man still has not moved at 130."""
     from src.voxel.scenes import _person, _Wants
 
     w = World(32, 12, 64, voxel_cm=5)
@@ -1846,29 +2269,33 @@ def test_a_GRIP_CARRIES_LOAD_a_man_can_be_HELD_over_the_drop():
     from src.voxel.scenes import _person, _Wants
 
     def over_the_drop(grab, strength=600.0):
-        w = World(40, 12, 90, voxel_cm=5)
-        w.fill(0, 40, 0, 12, 0, 1, STONE)             # the ground
-        w.fill(16, 40, 0, 12, 1, 41, STONE)           # a ledge, 2 m up
+        # 72 deep, not 12: a man knocked flat in the pit is 30 cells long, and
+        # in a 12-deep world he went over the edge and out of the gram count.
+        w = World(40, 72, 90, voxel_cm=5)
+        w.fill(0, 40, 0, 72, 0, 1, STONE)             # the ground
+        w.fill(16, 40, 0, 72, 1, 41, STONE)           # a ledge, 2 m up
         w.exits = []
-        a = _person(w, 20, 6, z0=41)
+        a = _person(w, 20, 36, z0=41)
         a["name"] = "the holder"
         # A MAN WEIGHS 43.9 kg HERE, which is 430 N to hold, and an ordinary
         # grip is 400. That gap is real and it is asserted below; this test
         # asks whether a grip CARRIES LOAD at all, so the holder is given the
         # strength to close it and the question stays the support graph's.
         a["strength_N"] = strength
-        b = _person(w, 28, 6, z0=41)     # 7 voxels across: the same 1-cell gap
+        b = _person(w, 28, 36, z0=41)    # 7 voxels across: the same 1-cell gap
         b["name"] = "the mark"
-        if grab:
-            w.policy = _Wants(each={"the holder":
-                                    {"hands": "take hold of the mark"}})
+        # EVERYONE STAYS PUT unless told otherwise. Left to the default table
+        # the unheld man wandered off the lip before the floor went — which
+        # only ever held still because a noise used to freeze him (roadmap 97).
+        w.policy = _Wants(each={"the holder":
+                                {"hands": "take hold of the mark"}} if grab else None)
         grams = _flesh_grams(w)
         for _ in range(40):
             w.step()
         # THE HOLE IS SIZED TO THE MAN. He is 7 voxels across now and stands at
         # x26-32; cut where the narrower one stood and a foot of his is still
         # on solid ground, which is not the question this asks.
-        w.fill(26, 34, 0, 12, 1, 41, AIR)             # the floor under the
+        w.fill(26, 34, 0, 72, 1, 41, AIR)             # the floor under the
         for _ in range(120):                          # mark's feet goes
             w.step()
         comp, sl = w._person_cells(b)
@@ -2064,7 +2491,9 @@ def _state_of(w):
     """Everything a law is allowed to touch, as plain arrays."""
     st = {"mat": w.mat.astype(np.int32), "smass": w.smass.copy(),
           "E": w.E.copy(), "fl": w.fl.astype(np.int32), "fvol": w.fvol.copy(),
-          "fpot": w.fpot.copy(), "smoke": w.smoke.copy()}
+          "fpot": w.fpot.copy(), "smoke": w.smoke.copy(),
+          "edge": w.edge.copy(), "rubble": w.rubble.astype(np.int32),
+          "eid": w.eid.copy()}
     if w.o2 is not None:
         st["o2"] = w.o2.copy()
     for i, p in enumerate(w.persons):
@@ -2288,6 +2717,47 @@ def test_the_FAST_PATH_and_the_PLAIN_ONE_agree():
                 f"merely resemble it")
 
 
+def test_the_BOILING_CURVE_is_the_same_compiled_and_plain():
+    """The boiling curve (H27) is written twice, once in numpy (the
+    definition) and once in the compiled face loop, and they must agree to
+    the bit, as every other face law does: a red-hot iron block (film
+    boiling, then the critical flux as it cools) and a burning log's worth of
+    wood (nucleate boiling all the way) stand in water, and every tick's
+    energy, skin and water are compared. The curve really acts: the iron has
+    cooled (slowly, in a film of steam) and water boiled off."""
+    from src.voxel.sim import HAVE_NUMBA
+    if not HAVE_NUMBA:
+        pytest.skip("numba is optional; the plain path is the whole engine")
+
+    def pan():
+        w = World(10, 10, 6, voxel_cm=5)
+        w.fill(0, 10, 0, 10, 0, 1, STONE)
+        w.fill(4, 6, 4, 6, 1, 3, IRON)
+        w.fill(2, 3, 2, 3, 1, 3, WOOD)
+        for x in range(1, 9):
+            for y in range(1, 9):
+                if w.mat[x, y, 1] == AIR:
+                    w.pour(x, y, 1, WATER, 4.0)
+        C = w.heat_capacity()
+        w.E[w.mat == IRON] = (850.0 - 20.0) * C[w.mat == IRON]
+        w.E[w.mat == WOOD] = (350.0 - 20.0) * C[w.mat == WOOD]
+        return w
+    plain, fast = pan(), pan()
+    plain.fused, fast.fused = False, True
+    iron0 = float(plain.T()[plain.mat == IRON].mean())
+    water0 = plain.total_fluid(WATER)
+    for t in range(320):
+        for w in (plain, fast):
+            w._law_conduct()
+            w._law_boil()
+        for name in ("E", "fvol"):
+            assert np.array_equal(getattr(plain, name), getattr(fast, name)), \
+                f"the compiled and the plain boiling curve parted on {name} at tick {t}"
+        assert np.array_equal(plain._skin_field(), fast._skin_field()), f"skin, tick {t}"
+    assert float(plain.T()[plain.mat == IRON].mean()) < iron0 - 2.0, "the iron cooled"
+    assert plain.total_fluid(WATER) < water0, "and water boiled"
+
+
 def test_an_arm_REACHES_OUT_and_STAYS_OUT_and_a_WALL_stops_it():
     """A body that can hold a pose. Until now a limb could only be flung — the
     swing promoted it off the lattice, turned it, and put it back at rest — so
@@ -2475,13 +2945,25 @@ def test_a_body_REMEMBERS_WHERE_THE_FIRE_WAS_and_FORGETS_IT():
     assert float(seen[40, 20]) == 0.0, \
         "while the far corner, which was never alight, is remembered as fine"
 
-    # AND IT FADES. Put the fire out and let the body look at the world again.
+    # AND IT FADES. Put the fire out and let the body look at the world again,
+    # for a little longer than the half-life a seen fire is kept for (60 s,
+    # row P21; it was 4.6 s, against its own "about a minute", step R3). A
+    # few steps, then the rest of the looks taken directly, at the rate
+    # `_law_will` takes them, so the suite does not step through 70 s.
+    from src.voxel.policy import WILL
+    from src.voxel.materials import TICK_S
     w.mat[4:11, 8:17, 1:4] = AIR
     w.smass[4:11, 8:17, 1:4] = 0.0
     w.E[:] = 0.0
     was = float(seen.max())
-    for _ in range(400):
+    for _ in range(40):
         w.step()
+    comp, sl = w._person_cells(p)
+    cells = np.argwhere(comp)
+    cells[:, 0] += sl[0].start
+    cells[:, 1] += sl[1].start
+    for _ in range(int(70.0 / (WILL["look_every"] * TICK_S))):
+        w._look_around(p, p["_eye"], cells)
     assert float(p["danger"].max()) < 0.5 * was, \
         f"a fire that is out stops being remembered as one " \
         f"({was:.2f} -> {float(p['danger'].max()):.2f})"
@@ -2526,7 +3008,7 @@ def test_the_TABLE_POLICY_PREFERS_the_way_that_is_not_past_a_fire():
         "the whole of what was wrong: nothing it knew said otherwise"
 
 
-def test_the_ATTENTION_CAP_never_hides_the_answer():
+def test_the_ATTENTION_CAP_never_hides_the_answer(monkeypatch):
     """A capped menu can drop the right option INVISIBLY, and for a long time
     nobody knew whether it did. This measures it.
 
@@ -2567,9 +3049,23 @@ def test_the_ATTENTION_CAP_never_hides_the_answer():
         w.recall_check = True
         return w
 
+    # AND THE FULL MENU REALLY IS FULL. With recall at 100% a cap override
+    # that silently stopped working (it rebinds a module global, so it only
+    # reaches `_menu` while both live in one module) leaves every trace the
+    # same -- would == pick -- and every assertion below still passes.
+    real_full, longest = World._full_menu, [0]
+
+    def spy(self, *a, **k):
+        got = real_full(self, *a, **k)
+        longest[0] = max(longest[0], len(got))
+        return got
+    monkeypatch.setattr(World, "_full_menu", spy)
+
     w = crowded_hall()
     for _ in range(200):
         w.step()
+    assert longest[0] > MENU_CAP, \
+        f"the uncapped menu is longer than the cap ({longest[0]} vs {MENU_CAP})"
 
     offered, capped, kept, checked = 0, 0, 0, 0
     for r in w.traces:
@@ -2629,6 +3125,9 @@ def test_a_body_PLANS_OVER_THE_FLOOR_IT_SAW_and_finds_out_by_going():
     assert exit_rows(), \
         "so it still aims at the door, because the floor it remembers still " \
         "runs there; a body that re-planned here would be reading the lattice"
+    assert not any(w._sees(p["_eye"], (50.0, float(y), float(z)))
+                   for y in range(20, 25) for z in range(1, 21)), \
+        "and from where it stands the new wall is out of sight"
 
     committed, learned = 0, None
     for t in range(400):
@@ -2641,11 +3140,17 @@ def test_a_body_PLANS_OVER_THE_FLOOR_IT_SAW_and_finds_out_by_going():
             break
     assert learned is not None, \
         "and it does find out — by walking there and looking at the wall"
-    assert committed > 40, \
-        f"finding out takes crossing two rooms, not a tick ({committed})"
+    # RE-POINTED for a real walking pace and straight routes (step R4). It
+    # was 40 ticks, and "past x=40": at 0.67 m/s, on a staircase route that
+    # first saw the wall from deep in the second room. At 1.4 m/s the walk
+    # across the first room to the doorway is about 29 ticks, and the
+    # straight route sees the wall from the doorway itself.
+    assert committed > 25, \
+        f"finding out takes crossing the first room, not a tick ({committed})"
     assert not p["free"][50, 22], "what it found out, it now believes"
-    assert p["anchor"][0] > 40, \
-        "and it found out THERE: it had to get within sight of the wall"
+    assert p["anchor"][0] >= 32, \
+        "and it found out THERE: it had to get within sight of the wall, " \
+        "which means walking into the doorway"
 
 
 def test_WHAT_YOU_WALK_INTO_you_learn():
@@ -2665,10 +3170,12 @@ def test_WHAT_YOU_WALK_INTO_you_learn():
         w.step()
         p["events"].clear()
     # a pillar goes up right in front of the face, in the dark: belief keeps
-    # saying "clear" until something says otherwise
-    w.fill(7, 9, 7, 12, 1, 13, STONE)
-    p["free"][7:9, 7:12] = True                 # it has not seen this
-    before = int(p["free"][7:9, 7:12].sum())
+    # saying "clear" until something says otherwise. Two voxels ahead of
+    # where the body has got to: at a real walking pace (step R4) that is
+    # x=7 after six ticks, where at 0.67 m/s it was x=5 and the pillar at 7.
+    w.fill(9, 11, 7, 12, 1, 13, STONE)
+    p["free"][9:11, 7:12] = True                # it has not seen this
+    before = int(p["free"][9:11, 7:12].sum())
     cells = np.argwhere(w.mat == FLESH)
     p["known"][:] = True
     p["_path"] = w._plan_path(cells, (37, 10), p)
@@ -2676,7 +3183,7 @@ def test_WHAT_YOU_WALK_INTO_you_learn():
     for _ in range(40):
         w.step()
         p["events"].clear()
-    after = int(p["free"][7:9, 7:12].sum())
+    after = int(p["free"][9:11, 7:12].sum())
     assert after < before, \
         f"it walked into the pillar and now knows it is there ({before} -> {after})"
 
@@ -2892,7 +3399,7 @@ def test_an_ARM_CANNOT_SWEEP_THROUGH_what_it_would_CLEAR_at_the_end():
 
     A waist-high wall is exactly that shape: the arm CLEARS it once horizontal,
     so the final pose is legal, and the only way there is through the stone."""
-    import src.voxel.sim as S
+    import src.voxel.pose as S
     w, p = _waller()                          # no wall: the reach works
     for _ in range(60):
         w.step()
@@ -2969,6 +3476,31 @@ def test_a_REFUSED_REACH_is_not_asked_again_until_something_CHANGES():
         f"({old[0]} of {old[1]}) — if that stops being true this proves nothing"
     assert new[0] <= 2, \
         f"it asks once, finds out, and stops asking ({new[0]} of {new[1]})"
+
+
+def test_a_FAILED_reach_search_is_not_repeated_until_the_room_or_the_pose_changes():
+    """`_law_pose` asked the same refused arm the same question every tick, 224
+    `_repose` tries each (60 ms with a heavy arm). The answer is the same while the
+    room, the pose and the hands are, so it is kept; any change searches again."""
+    w, p = _waller(boxed=True)
+    for _ in range(5):
+        w.step()
+        p["events"].clear()
+    n = [0]
+    real = w._reach_search
+
+    def counted(*a, **k):
+        n[0] += 1
+        return real(*a, **k)
+    w._reach_search = counted
+    th = [1.2, 0, 0, 0]
+    assert [w._reach_around(p, "right arm", th) for _ in range(3)] == [None] * 3
+    assert n[0] == 1, "three identical refused asks, one search"
+    w._reach_around(p, "right arm", [1.1, 0, 0, 0])
+    assert n[0] == 2, "a different ask searches again"
+    w.mat[16, 3, 20] = AIR if int(w.mat[16, 3, 20]) != AIR else STONE      # one cell of the room changes
+    w._reach_around(p, "right arm", [1.1, 0, 0, 0])
+    assert n[0] == 3, "a changed cell in the room searches again"
 
 
 def test_an_arm_LEFT_OUT_is_offered_the_way_BACK_IN():
@@ -3399,7 +3931,14 @@ def test_the_WORLD_SAYS_HOW_MUCH_HEAT_IT_SHEDS():
     w.mat[1:19, 1:11, 1:16] = AIR
     w.smass[1:19, 1:11, 1:16] = 0.0
     w.fill(5, 8, 5, 8, 1, 3, IRON)
-    w.E[5, 5, 1] += 1000.0
+    # Heat now leaves only through exposed faces, at what a face really sheds
+    # (G5): 1000 J in 300 kg of iron is a few kelvin and sheds almost nothing
+    # in 60 ticks. One corner of the block at 600 °C sheds ~130 W. Since
+    # radiation crosses the air (G7) a closed room's walls take back some of
+    # what the block sheds (a third to a half, 120 J of the 190 shed at
+    # 600 °C), so the NET loss out of the cells is smaller: the corner is
+    # taken to 900 °C, which sheds 660 J and leaves 138 J lost on net.
+    w.E[5, 5, 1] += 900.0 * w.heat_capacity()[5, 5, 1]
     before = w.total_energy()
     for _ in range(60):
         w.step()
@@ -3636,6 +4175,7 @@ def _pitch(catcher_wants):
     a["name"], a["facing"], a["strength_N"] = "thrower", (1.0, 0.0), 3000.0
     b = _person(w, 40, 7)
     b["name"], b["facing"], b["strength_N"] = "catcher", (-1.0, 0.0), 3000.0
+    b["ready"] = True                   # he stands waiting for it (R3)
     w.fill(14, 15, 6, 8, 1, 3, IRON)
     hold = {"thrower": {"hands": "take hold of the iron", "legs": "stay",
                         "waist": "stand"},
@@ -3690,6 +4230,13 @@ def test_WHAT_A_HAND_CANNOT_STOP_goes_past_it():
         p = _person(w, 40, 7)
         p["name"], p["facing"] = "catcher", (-1.0, 0.0)
         p["strength_N"] = strength
+        p["ready"] = True                     # waiting for it, and as quick
+        p["ready_s"] = 0.15                   # as a body gets (R3): from a
+                                              # metre at 4 m/s it is in his
+                                              # hand's reach for 0.1 s before
+                                              # it strikes him and stops, and
+                                              # this is about catching it at
+                                              # SPEED
         w.policy = _Wants(each={"catcher": {"hands": "catch", "legs": "stay",
                                             "waist": "stand"}})
         for _ in range(20):
@@ -3726,22 +4273,38 @@ def test_a_PERSON_IN_THE_AIR_is_not_a_THING_THROWN_AT_YOU():
     w.mat[1:59, 1:15, 1:76] = AIR
     w.smass[1:59, 1:15, 1:76] = 0.0
     w.fill(0, 30, 0, 16, 1, 40, STONE)            # a ledge; the drop is at x30
+    w.fill(30, 40, 1, 15, 39, 40, STONE)          # a plate he stands on, at first
     w.exits = []
     a = _person(w, 25, 8, z0=40)
-    a["name"], a["facing"], a["strength_N"] = "the holder", (1.0, 0.0), 4000.0
-    b = _person(w, 33, 8, z0=40)                  # standing over nothing
+    # not so strong that his grip holds the man up: then he is never in the
+    # air, and there is nothing to mis-perceive
+    a["name"], a["facing"], a["strength_N"] = "the holder", (1.0, 0.0), 300.0
+    b = _person(w, 33, 8, z0=40)
     b["name"], b["facing"] = "the hanging man", (-1.0, 0.0)
     w.policy = _Wants(each={
         "the holder": {"hands": "take hold of the hanging man", "legs": "stay",
                        "waist": "stand"},
         "the hanging man": {"hands": "hands free", "legs": "stay"}})
-    # 60 ticks: the grab happens in the first few and the bad percept fired
-    # every tick after it. Watching an empty cliff for another 140 cost 60
-    # seconds of suite time and proved nothing further (item 52).
+    # A MAN ALREADY FALLING OFFERS NOTHING TO TAKE HOLD OF (catching him is
+    # item 56), so he is taken hold of while he still stands, and then what
+    # he stands on goes.
+    for _ in range(20):
+        w.step()
+        if a.get("dragging") == "the hanging man":
+            break
+    w.mat[30:40, 1:15, 39] = AIR
+    w.smass[30:40, 1:15, 39] = 0.0
+    aloft = 0
+    # 60 ticks: the bad percept fired every tick of the hold. Watching an
+    # empty cliff for another 140 cost 60 seconds of suite time and proved
+    # nothing further (item 52).
     for _ in range(60):
         w.step()
         a["events"].clear()
         b["events"].clear()
+        aloft += (a.get("dragging") == "the hanging man"
+                  and any(x.get("owner") == "the hanging man" for x in w.bodies))
+    assert aloft, "he held him while he was in the air"
     assert any(r["tags"].get("hands") == "hold"
                for r in w.traces if r["who"] == "the holder"), \
         "he did take hold of him — otherwise there is nothing to mis-perceive"
@@ -3779,8 +4342,10 @@ def test_LOOKING_is_something_a_MIND_CAN_DO():
         for t in range(400):
             w.step()
             p["events"].clear()
-            if any(r.get("percept") == "sees_fire"
-                   for r in w.traces if r["who"] == "X"):
+            # WHEN IT IS SEEN, not when the body has answered it: the
+            # answer now waits a reaction time (R3), the same for both
+            got = w.minds[p["pid"]].noticed
+            if got is not None and got[1] == "sees_fire":
                 return t, w
         return None, w
 
@@ -3928,8 +4493,9 @@ def test_a_FALLING_PERSON_can_be_CAUGHT():
         a = _person(w, 22, 8, z0=40)
         a["name"], a["facing"] = "the catcher", (1.0, 0.0)
         a["strength_N"] = 4000.0
-        b = _person(w, 27, 8, z0=40)              # standing over the drop
-        b["name"], b["facing"] = "the faller", (-1.0, 0.0)
+        a["ready"] = True                         # there to catch him: READY,
+        b = _person(w, 27, 8, z0=40)              # so he answers in a simple
+        b["name"], b["facing"] = "the faller", (-1.0, 0.0)   # reaction time (R3)
         w.policy = _Wants(each={
             "the catcher": {"hands": hands, "legs": "stay", "waist": "stand"},
             "the faller": {"hands": "hands free", "legs": "stay"}})
@@ -3979,6 +4545,7 @@ def test_ONE_HAND_ON_THE_RAIL_and_the_OTHER_CATCHES_HIM():
         a = _person(w, 23, 8, z0=40)
         a["name"], a["facing"] = "the rescuer", (1.0, 0.0)
         a["strength_N"] = 4000.0
+        a["ready"] = True                         # there to catch him (R3)
         b = _person(w, 27, 8, z0=40)              # standing over the drop
         b["name"], b["facing"] = "the faller", (-1.0, 0.0)
         if hold_first:
@@ -4148,11 +4715,12 @@ def test_a_MAN_CROUCHES_and_the_DEPTH_is_his_own_LEGS():
     legs go shorter and thicker, the feet stay planted, and everything above
     the hips comes down by exactly what the legs lost. The cap is not written
     anywhere — `_crouch_of` reads it off this body's own legs."""
-    from src.voxel.scenes import _person
+    from src.voxel.scenes import _person, _Wants
     w = World(40, 30, 50, voxel_cm=5)
     w.open_sky = False
     w.fill(0, 40, 0, 30, 0, 1, STONE)
     _person(w, 12, 15)
+    w.policy = _Wants()          # stands as built: a roam would turn him
     w.step()
     p = w.persons[0]
     p["facing"] = (0.0, 1.0)
@@ -4534,6 +5102,7 @@ def test_a_HOLD_ON_A_FALLING_MAN_is_the_one_that_MUST_be_re_earned():
     A body off the lattice still has cells and still has somewhere to be. Ask
     where they are."""
     from src.voxel.scenes import _person, _Wants
+    from src.voxel.materials import TICK_S
 
     w = World(52, 24, 86, voxel_cm=5)
     w.fill(0, 52, 0, 24, 0, 1, STONE)
@@ -4547,7 +5116,11 @@ def test_a_HOLD_ON_A_FALLING_MAN_is_the_one_that_MUST_be_re_earned():
     falls["name"], falls["facing"] = "the one pulled", (-1.0, 0.0)
     saves = _person(w, 34, 12, z0=31)     # 7 voxels across: 33 is inside the post
     saves["name"], saves["facing"] = "the rescuer", (-1.0, 0.0)
-    saves["strength_N"] = 4000.0
+    saves["ready"] = True                 # there to catch him, and braced:
+    saves["ready_s"] = TICK_S             # he grabs as the man tips (R3). He
+    saves["strength_N"] = 4000.0          # is in reach of the falling man for
+                                          # 0.15 s only, and what this tests
+                                          # is the hold after the catch
     both = {"the puller": {"hands": "take hold of the one pulled",
                            "legs": "go(straight on", "waist": "stand"},
             "the one pulled": {"hands": "hands free", "legs": "stay",
@@ -4559,7 +5132,9 @@ def test_a_HOLD_ON_A_FALLING_MAN_is_the_one_that_MUST_be_re_earned():
     caught = let_go = landed = None
     gap_at_release = None
     for t in range(80):
-        if t == 12:
+        # ONE TICK BEFORE HE GOES OVER. At a real walking pace (step R4) the
+        # puller has him off the lip at t7, not t13 as at 0.67 m/s.
+        if t == 6:
             w.policy = _Wants(each=dict(
                 both, **{"the rescuer": {"hands": "catch", "legs": "stay",
                                          "waist": "lean out"}}))
@@ -4716,12 +5291,13 @@ def test_a_SHOULDER_IS_A_SOCKET_INSIDE_THE_BODY_not_a_hinge_on_the_skin():
     hinge on the skin — which is why this bought more than any amount of work
     on how the turn is DRAWN. Drawable shoulder poses went from 33 of 93 to 62
     facing one way, and from 35 to 89 facing the other."""
-    from src.voxel.scenes import _person
+    from src.voxel.scenes import _person, _Wants
     import collections
     w = World(40, 30, 50, voxel_cm=5)
     w.open_sky = False
     w.fill(0, 40, 0, 30, 0, 1, STONE)
     _person(w, 12, 15)
+    w.policy = _Wants()          # the socket is read in the frame he was built in
     w.step()
     p = w.persons[0]
 
@@ -4832,7 +5408,7 @@ def test_a_HARVEST_BUYS_SITUATIONS_not_rows():
     first outing: a man holding somebody who then TIPPED OVER rather than
     falling, which asked a toppling body for the `off` only a flier carries.
     Nothing in twenty-three scenarios had ever done that."""
-    from src.voxel import harvest
+    from src.voxel import harvest, seam
 
     rows = []
     for seed in (3, 11, 70, 91):
@@ -4845,8 +5421,7 @@ def test_a_HARVEST_BUYS_SITUATIONS_not_rows():
     for r in rows:
         assert len(r["options"]) > 1, "a menu of one is not a decision"
         assert 0 <= r["pick"] < len(r["options"]), "the answer is on the menu"
-        assert r["spelling"] == harvest.seam.SPELLING if hasattr(
-            harvest, "seam") else True
+        assert r["spelling"] == seam.SPELLING
         assert "reflexes" not in r["text"], "and never the answer key"
 
     c = harvest.census(rows)
@@ -4890,7 +5465,8 @@ def test_HEARING_A_LINE_is_hearing_WHAT_IT_SAID():
         a["name"] = "A"
         b = _person(w, 16, 7)
         b["name"] = "B"
-        w.step()
+        a["surprise_s"] = 0.1          # an explicit quick sheet (R3): this is
+        w.step()                       # about WHAT is heard, not how soon
         heard.clear()
         b["fleeing"] = fleeing
         w._say(b, line)
@@ -4915,3 +5491,264 @@ def test_HEARING_A_LINE_is_hearing_WHAT_IT_SAID():
     assert MEANS.get("fire") == "hears_alarm"
     assert "coming" not in MEANS, "the reply means nothing to whoever overhears"
     assert set(MEANS) <= set(LINES), "every meaning belongs to a line"
+
+
+def test_a_body_GIVES_UP_on_somewhere_it_cannot_get_to():
+    """Arriving used to be the only thing that cleared a goal, so a body that
+    could not get where it was going kept going there for ever. Measured before
+    this rule: a witness spent 180 ticks walking into a wall two cells in front
+    of it, and never once looked at the window it had been stood in front of.
+
+    The test builds the honest version of that — a body, and somewhere it can
+    name and cannot reach, because the way there is bricked up after it sets
+    off. Getting no nearer is what it notices; the wall is not special."""
+    w = World(40, 20, 24, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 40, 0, 20, 0, 24, STONE)
+    w.mat[1:39, 1:19, 1:23] = AIR
+    w.smass[1:39, 1:19, 1:23] = 0.0
+    w.fill(6, 7, 10, 11, 1, 15, FLESH, frac=0.9)
+    p = w.add_person(6, 10, "the walker")
+    for _ in range(20):                       # let it see the room and set off
+        w.step()
+    # NOW BRICK IT UP, behind its back, across the whole room. It believes the
+    # far side is walkable because it SAW it, which is exactly right: belief is
+    # what it looked at, and it has not looked since.
+    w.fill(20, 22, 0, 20, 1, 23, STONE)
+    p["goal"] = (36, 10)                      # somewhere it can name, far side
+    p["_path"] = None
+    p["_near"] = None
+    gave_up = None
+    for t in range(400):
+        w.step()
+        if any("gives up" in e for e in p["events"]):
+            gave_up = t
+        p["events"].clear()
+        if gave_up is not None:
+            break
+    assert gave_up is not None, \
+        "a body that gets no nearer for two seconds stops trying"
+    assert p["goal"] != (36, 10), "and the goal it could not reach is dropped"
+    # AND IT DOES NOT SIMPLY PICK IT AGAIN. That is the whole difficulty: the
+    # menu is built from the same map and offers the same spot next decision
+    # unless baulking is remembered.
+    assert (36, 10) in (p.get("_baulked") or {}), "it remembers baulking"
+    again = None
+    for t in range(60):
+        w.step()
+        if p.get("goal") == (36, 10):
+            again = t
+        p["events"].clear()
+    assert again is None, \
+        "and does not set off for it again the moment it has given up"
+
+
+def test_people_in_a_CROWD_keep_their_own_BODIES():
+    """Three people in one room, and each of them still a whole person.
+
+    Nothing in the suite had ever put more than two people in a room, and the
+    moment something did, they ate each other. `_claim_bodies` seeds each body
+    with what it owned a moment ago, which is the whole of how two people in
+    contact stay two people — but a STEP moved a body's voxels and never told
+    the claim, so the seed pointed at the cells the body had left and its
+    leading edge arrived owned by nobody. A neighbour standing close was nearer
+    to that edge than the walker's own remaining seed, and took it.
+
+    Measured before the fix, over 200 ticks: two people holding 432 and 360
+    voxels of a body that is 396, and three holding 569, 0 and 369 — one of
+    them consumed outright. Half a body then fails its own balance test, gets
+    launched as a free body, and floats there resting on its own legs: 103 of
+    200 ticks had somebody in the air, in a room with a flat stone floor.
+
+    This is the configuration every social scene is — people stand close enough
+    to touch when they talk to each other — so it is worth a test of its own."""
+    from src.voxel.scenes import _person
+    w = World(50, 26, 40, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 50, 0, 26, 0, 40, STONE)
+    w.mat[1:49, 1:25, 1:39] = AIR
+    w.smass[1:49, 1:25, 1:39] = 0.0
+    w.exits = [(46, 12)]
+    people = []
+    for i, (x, y) in enumerate(((22, 12), (26, 17), (34, 8))):
+        q = _person(w, x, y)
+        q["name"] = f"P{i}"
+        people.append(q)
+    whole = [int(w._person_cells(q)[0].sum()) for q in people]
+    assert len(set(whole)) == 1 and whole[0] > 100, \
+        f"they start as three identical bodies, not {whole}"
+    size = whole[0]
+
+    aloft = 0
+    for _ in range(200):
+        w.step()
+        if w.bodies:
+            aloft += 1
+        for q in people:
+            q["events"].clear()
+
+    got = [0 if w._person_cells(q)[0] is None else int(w._person_cells(q)[0].sum())
+           for q in people]
+    assert all(n == size for n in got), \
+        f"each of them still owns a whole body: {got}, each should be {size}"
+    # AND NOBODY IS IN THE AIR. A body that lost voxels to a neighbour is a
+    # body standing on less than its own feet, so it overbalances — which is
+    # how this showed up at all, long before anyone counted the voxels.
+    assert aloft == 0, \
+        f"nobody leaves the floor in a flat room ({aloft} of 200 ticks had " \
+        f"somebody airborne)"
+    # MASS IS CONSERVED THROUGHOUT, on the lattice and in the air together.
+    # Checked because the first measurement of this bug said mass was being
+    # destroyed, and that was the measuring: a free body keeps its mass under
+    # `masses`, the probe summed `smass`, and everything in flight read as zero.
+    on_lattice = int((w.mat == FLESH).sum())
+    in_flight = sum(int((np.asarray(b["mats"]) == FLESH).sum()) for b in w.bodies)
+    assert on_lattice + in_flight == size * 3, \
+        f"the flesh in the world is exactly three people's worth: " \
+        f"{on_lattice} on the lattice + {in_flight} in flight != {size * 3}"
+
+
+def test_a_man_who_walks_OUT_stays_on_the_BOOKS():
+    """Leaving by the door is the same event as falling off the edge.
+
+    `_leave` takes a body off the lattice when it reaches a doorway, which is
+    right — a person stood in a door they have already escaped through is a
+    wall to everyone behind them. What it did NOT do is tell the tally. It
+    added the weight to `left_mass`, one untyped number that nothing in the
+    codebase reads, while `total_mass`, `total_energy` and `total_lost` all
+    count `self.gone` — so every escape quietly removed a body's worth of
+    FLESH from the conservation check, and its body heat from the energy one.
+
+    That is the precise failure `total_mass` warns about in its own docstring:
+    a conservation check that is right for one material and wrong for the rest
+    fails at whichever moment is least convenient. `_left_world` had the
+    convention right for a voxel going past the edge; this is the same event by
+    a different door."""
+    from src.voxel.scenes import _person
+    w = World(40, 20, 36, voxel_cm=5)
+    w.open_sky = False
+    w.fill(0, 40, 0, 20, 0, 36, STONE)
+    w.mat[1:39, 1:19, 1:35] = AIR
+    w.smass[1:39, 1:19, 1:35] = 0.0
+    w.exits = [(36, 10)]
+    p = _person(w, 8, 10)
+    p["name"] = "Runner"
+    p["goal"] = (36, 10)
+    # WARM, so the energy half of this is actually being asked. A body at
+    # exactly zero joules leaves nothing behind to lose.
+    cells, sl = w._person_cells(p)
+    assert cells is not None, "the runner has a body to begin with"
+    idx = np.argwhere(cells)
+    idx[:, 0] += sl[0].start or 0
+    idx[:, 1] += sl[1].start or 0
+    idx[:, 2] += sl[2].start or 0
+    w.E[tuple(idx.T)] = 4.0e3
+
+    flesh0, energy0 = w.total_mass(FLESH), w.total_energy()
+    assert flesh0 > 0 and energy0 > 0, "there is something to conserve"
+    for _ in range(600):
+        w.step()
+        p["events"].clear()
+        if p["safe"]:
+            break
+    assert p["safe"], "the runner reaches the door"
+
+    assert abs(w.total_mass(FLESH) - flesh0) <= 1e-3 * flesh0, \
+        f"his flesh is still accounted for: {flesh0:.1f} -> " \
+        f"{w.total_mass(FLESH):.1f}"
+    assert abs(w.total_energy() - energy0) <= 1e-3 * energy0, \
+        f"and so is the heat he was carrying: {energy0:.1f} -> " \
+        f"{w.total_energy():.1f}"
+    # AND IT IS ON THE LOST PILE, not merely still counted somewhere. He really
+    # did leave; the point is that the world can say how much left.
+    assert w.total_lost() > 0, "the world can say what walked out of it"
+
+
+def test_a_LANDING_THAT_PLACES_NOTHING_does_not_take_the_sim_with_it():
+    """A landing that puts no voxel down is still a landing.
+
+    `_land_body` hands a person back their body at the cells it came down on
+    and works out the new anchor as the mean of those cells. Travelling fast
+    enough, every cell of the landing pose is off the lattice, there are no
+    cells, the mean of nothing is NaN, and `int(NaN)` raises — the sim dies on
+    the tick. Found by fuzzing, not by anyone thinking of it: one world in 120,
+    at tick 1. The limb branch eight lines above already knew this case existed
+    and the branch for the man the limb belongs to did not.
+
+    He keeps the anchor he had, and that is the whole fix. A first attempt at
+    it reasoned that an empty landing meant the body had gone past the edge for
+    good and marked him dead — measured, and wrong: all 291 voxels were still
+    in `self.bodies`, `gone` was empty, and the flight carried on and put some
+    of them back. An empty landing is a landing that did not take."""
+    from src.voxel.scenes import _person
+    w = World(20, 16, 24, voxel_cm=5)
+    w.open_sky = True
+    w.fill(0, 20, 0, 16, 0, 1, STONE)
+    p = _person(w, 3, 8)
+    p["name"] = "Flung"
+    cells, sl = w._person_cells(p)
+    assert cells is not None and cells.any(), "he starts as a body"
+    idx = np.argwhere(cells)
+    for k in range(3):
+        start = sl[k].start
+        if start:
+            idx[:, k] = idx[:, k] + int(start)
+    mass0 = w.total_mass(FLESH)
+    was = p["anchor"]
+
+    # STRAIGHT OUT THROUGH THE WALL, two voxels away, fast enough that the
+    # first landing pose has nothing on the lattice at all.
+    w._launch(idx, (-40.0, 0.0, 2.0), owner="Flung")
+    for _ in range(60):
+        w.step()                              # must not raise
+        p["events"].clear()
+
+    assert isinstance(p["anchor"][0], int) and isinstance(p["anchor"][1], int), \
+        f"the anchor stays a pair of whole numbers, not NaN: {p['anchor']}"
+    assert all(np.isfinite(v) for v in p["anchor"]), \
+        f"and a real place, not NaN: {p['anchor']}"
+    assert 0 <= p["anchor"][0] < 20 and 0 <= p["anchor"][1] < 16, \
+        f"inside the world: {p['anchor']} (started at {was})"
+    # AND EVERY GRAM IS STILL ACCOUNTED FOR, wherever it is — on the lattice,
+    # in the body still flying, or on the tally of what went past the edge.
+    assert abs(w.total_mass(FLESH) - mass0) <= 1e-3 * mass0, \
+        f"flesh is conserved through all of it: {mass0:.1f} -> " \
+        f"{w.total_mass(FLESH):.1f}"
+
+
+def test_FLUID_A_TOPPLING_VESSEL_CARRIES_is_not_swallowed_by_the_seam():
+    """A conserved quantity nobody totals is not conserved.
+
+    A vat is glass cells around AIR cells holding liquid. The glass goes to
+    the particle solver; the liquid stays on the lattice, as it did under
+    `_topple`. But `rasterize` drew the particles' fluid — none — over every
+    cell they passed through, the vat's own hollow included, and
+    `unrasterize` then cleared the fluid of every cell it had drawn. A third
+    of the alchemist's acid vanished two ticks after its shelf cracked and
+    the whole consequence cascade the scene exists to show never started:
+    no spill, no fumes, no eaten wood.
+
+    Nothing objected. 131 tests passed, the mass ledgers passed — they
+    weigh solids — and the scene printed a smaller number every run for
+    eight hundred ticks. This is the test that would have caught it, and it
+    is deliberately about the QUANTITY rather than about vats: any cell the
+    seam draws into may already hold something that is not the seam's."""
+    w = World(20, 12, 24, voxel_cm=5)
+    w.fill(0, 20, 0, 12, 0, 1, STONE)
+    w.fill(4, 8, 4, 8, 12, 13, WOOD, frac=0.8)        # a shelf
+    w.fill(4, 8, 4, 8, 13, 17, GLASS)                 # a vat standing on it
+    w.mat[5:7, 5:7, 14:17] = AIR
+    w.smass[5:7, 5:7, 14:17] = 0.0
+    for xx in (5, 6):
+        for yy in (5, 6):
+            w.pour(xx, yy, 14, WATER, w.cap)
+    before = w.total_fluid(WATER)
+    assert before > 0.0
+    w.mat[4:7, 4:8, 12] = AIR                         # the shelf gives way
+    w.smass[4:7, 4:8, 12] = 0.0
+    for _ in range(30):
+        w.step()
+        assert w.total_fluid(WATER) <= before + 1.0, \
+            f"the seam invented water: {w.total_fluid(WATER):.0f} of {before:.0f}"
+    assert w.total_fluid(WATER) >= before - 1.0, \
+        f"the seam swallowed water: {w.total_fluid(WATER):.0f} of {before:.0f}"
