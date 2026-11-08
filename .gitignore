@@ -152,6 +152,9 @@ renders/**/*.npz
 
 # Reference PDFs (papers, books) — third-party, large, not ours to redistribute
 *.pdf
+# Source books for scenario cases (PDF, EPUB, text), and the epubs left in the root
+books/
+*.epub
 
 # Stray tooling tests that are not this project's
 .claude/tests/
@@ -167,3 +170,34 @@ renders/**/r[0-9][0-9][0-9][0-9].png
 
 # harvested decision rows: a by-product, rebuilt by `python -m src.voxel.harvest`
 *.jsonl
+
+# renders keep only the video; stills are scratch
+renders/**/*.png
+
+# the mind lab keeps its own environment
+lab/.venv/
+
+# fine-tuned checkpoints from the mind lab
+lab/checkpoints/
+lab/vendor/
+
+# test fixtures (the inn goldens) are data the tests read: keep them
+!tests/data/*.jsonl
+
+# mind-lab caches and raw lifetimes: large, rebuilt by the lab scripts
+lab/results/methods/
+lab/results/**/runs*/
+lab/results/**/0a_runs/
+lab/results/**/before_known/
+lab/results/**/*.npz
+lab/results/gpu.lock
+lab/results/**/*.log
+
+# book-derived results stay local (the books are copyrighted)
+lab/results/books*/
+
+# third-party installers kept for reference
+references/*.tar.gz
+
+# stray output
+/python3
