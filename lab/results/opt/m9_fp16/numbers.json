@@ -1,0 +1,358 @@
+{
+ "missing": {
+  "new": 0,
+  "lab": 0,
+  "full": 0,
+  "perm": 0
+ },
+ "a_describe": {
+  "n": 2691,
+  "new": {
+   "agree_argmax": {
+    "n": 2691,
+    "k": 364,
+    "rate": 0.13526570048309178,
+    "ci95": [
+     0.1229,
+     0.1487
+    ]
+   },
+   "mass_on_argmax": 0.13108596603701875,
+   "rules_p_of_pick": 0.13817131863946688,
+   "unexpected": 1.2461734704522331,
+   "unexpected_rules": 4.301401861260992,
+   "in_character": {
+    "n": 2691,
+    "k": 88,
+    "rate": 0.032701597918989224
+   },
+   "harm": {
+    "n": 2691,
+    "k": 993,
+    "rate": 0.3690078037904125
+   },
+   "help": {
+    "n": 2691,
+    "k": 44,
+    "rate": 0.016350798959494612
+   },
+   "take": {
+    "n": 2691,
+    "k": 33,
+    "rate": 0.012263099219620958
+   }
+  },
+  "lab": {
+   "agree_argmax": {
+    "n": 2691,
+    "k": 455,
+    "rate": 0.16908212560386474,
+    "ci95": [
+     0.1554,
+     0.1837
+    ]
+   },
+   "mass_on_argmax": 0.14682364257872002,
+   "rules_p_of_pick": 0.16149088485145907,
+   "unexpected": 1.1792460642248292,
+   "unexpected_rules": 4.009435246141256,
+   "in_character": {
+    "n": 2691,
+    "k": 94,
+    "rate": 0.03493125232255667
+   },
+   "harm": {
+    "n": 2691,
+    "k": 945,
+    "rate": 0.3511705685618729
+   },
+   "help": {
+    "n": 2691,
+    "k": 46,
+    "rate": 0.017094017094017096
+   },
+   "take": {
+    "n": 2691,
+    "k": 101,
+    "rate": 0.03753251579338536
+   }
+  },
+  "rules_argmax": {
+   "harm": {
+    "n": 2691,
+    "k": 413,
+    "rate": 0.1534745447788926
+   },
+   "help": {
+    "n": 2691,
+    "k": 46,
+    "rate": 0.017094017094017096
+   },
+   "take": {
+    "n": 2691,
+    "k": 12,
+    "rate": 0.004459308807134894
+   }
+  },
+  "paired": {
+   "new_only": 124,
+   "lab_only": 215,
+   "same_pick": {
+    "n": 2691,
+    "k": 1656,
+    "rate": 0.6153846153846154
+   },
+   "p_two_sided": 8.816592484768988e-07
+  },
+  "new_ge_lab": false
+ },
+ "b_recall": {
+  "cut_requests": {
+   "n": 1953,
+   "k": 1400,
+   "rate": 0.7168458781362007,
+   "ci95": [
+    0.6965,
+    0.7364
+   ]
+  },
+  "all_requests": {
+   "n": 3231,
+   "k": 2678,
+   "rate": 0.8288455586505726
+  },
+  "full_menu": {
+   "median_options": 35,
+   "max_options": 88
+  },
+  "rules_mass_cut": 0.011137591340947162,
+  "lost_examples": [
+   {
+    "id": "0:1:Fenn",
+    "pick": "strike Oren with the dagger",
+    "rules_rank": 31,
+    "of": 35,
+    "p_model": 0.1667
+   },
+   {
+    "id": "0:1:Sir Ada",
+    "pick": "steal the dagger from Fenn",
+    "rules_rank": 27,
+    "of": 35,
+    "p_model": 0.2069
+   },
+   {
+    "id": "0:1:Oren",
+    "pick": "steal the dagger from Fenn",
+    "rules_rank": 15,
+    "of": 36,
+    "p_model": 0.2088
+   },
+   {
+    "id": "0:4:Sir Ada",
+    "pick": "steal the lute from Oren",
+    "rules_rank": 12,
+    "of": 28,
+    "p_model": 0.1651
+   },
+   {
+    "id": "0:5:Fenn",
+    "pick": "drop the purse of silver",
+    "rules_rank": 27,
+    "of": 31,
+    "p_model": 0.17
+   },
+   {
+    "id": "0:7:Fenn",
+    "pick": "drop the purse of silver",
+    "rules_rank": 28,
+    "of": 31,
+    "p_model": 0.2277
+   },
+   {
+    "id": "0:10:Fenn",
+    "pick": "drop the purse of silver",
+    "rules_rank": 29,
+    "of": 31,
+    "p_model": 0.2642
+   },
+   {
+    "id": "0:12:Marta",
+    "pick": "steal the dagger from Fenn",
+    "rules_rank": 13,
+    "of": 27,
+    "p_model": 0.1973
+   },
+   {
+    "id": "0:14:Fenn",
+    "pick": "drop the purse of silver",
+    "rules_rank": 19,
+    "of": 31,
+    "p_model": 0.2136
+   },
+   {
+    "id": "0:17:Fenn",
+    "pick": "drop the purse of silver",
+    "rules_rank": 22,
+    "of": 43,
+    "p_model": 0.1272
+   },
+   {
+    "id": "0:19:Fenn",
+    "pick": "drop the purse of silver",
+    "rules_rank": 16,
+    "of": 42,
+    "p_model": 0.0762
+   },
+   {
+    "id": "0:22:Fenn",
+    "pick": "tell Sir Ada that Marta took the purse of silver",
+    "rules_rank": 7,
+    "of": 41,
+    "p_model": 0.1126
+   }
+  ],
+  "surprise": {
+   "without_cut": {
+    "unexpected": 2.065533202638367,
+    "unexpected_rules": 5.407636658933563,
+    "in_character": {
+     "n": 1953,
+     "k": 75,
+     "rate": 0.03840245775729647
+    }
+   },
+   "with_cut": {
+    "unexpected": 1.5297393682702622,
+    "unexpected_rules": 4.09039421407911,
+    "in_character": {
+     "n": 1953,
+     "k": 86,
+     "rate": 0.044034818228366614
+    }
+   }
+  },
+  "recall": 0.7168458781362007,
+  "recall_bounds": [
+   0.7168458781362007,
+   0.7168458781362007
+  ]
+ },
+ "c_order": {
+  "rooms": {
+   "requests": 2691,
+   "orders": 10764,
+   "pick_moves": {
+    "n": 10764,
+    "k": 1274,
+    "rate": 0.11835748792270531
+   },
+   "any_of_4_moves": {
+    "n": 2691,
+    "k": 632,
+    "rate": 0.23485693050910442
+   },
+   "picks_first_canonical": {
+    "n": 2691,
+    "k": 426,
+    "rate": 0.15830546265328874
+   },
+   "picks_first_reordered": {
+    "n": 10764,
+    "k": 721,
+    "rate": 0.06698253437383872
+   },
+   "first_by_chance": 0.08712672706541157
+  },
+  "voxel": {
+   "requests": 504,
+   "orders": 1281,
+   "pick_moves": {
+    "n": 1281,
+    "k": 74,
+    "rate": 0.05776736924277908
+   },
+   "any_of_4_moves": {
+    "n": 504,
+    "k": 30,
+    "rate": 0.05952380952380952
+   },
+   "picks_first_canonical": {
+    "n": 504,
+    "k": 242,
+    "rate": 0.4801587301587302
+   },
+   "picks_first_reordered": {
+    "n": 1281,
+    "k": 299,
+    "rate": 0.23341139734582358
+   },
+   "first_by_chance": 0.38515211640211644
+  }
+ },
+ "d_gated": {
+  "rooms": {
+   "gated": {
+    "n": 830,
+    "k": 149,
+    "rate": 0.17951807228915662,
+    "ci95": [
+     0.1549,
+     0.2071
+    ]
+   },
+   "not_gated": {
+    "n": 1861,
+    "k": 215,
+    "rate": 0.1155292853304675
+   },
+   "gated_share": 0.30843552582683015
+  },
+  "voxel": {
+   "gated": {
+    "n": 310,
+    "k": 147,
+    "rate": 0.47419354838709676,
+    "ci95": [
+     0.4193,
+     0.5298
+    ]
+   },
+   "not_gated": {
+    "n": 194,
+    "k": 91,
+    "rate": 0.4690721649484536
+   },
+   "gated_share": 0.6150793650793651
+  },
+  "all": {
+   "gated": {
+    "n": 1140,
+    "k": 296,
+    "rate": 0.2596491228070175,
+    "ci95": [
+     0.235,
+     0.2859
+    ]
+   },
+   "not_gated": {
+    "n": 2055,
+    "k": 306,
+    "rate": 0.14890510948905109
+   },
+   "gated_share": 0.3568075117370892
+  }
+ },
+ "e_memory": {
+  "gpu": null,
+  "cpu": null,
+  "free_mib": null
+ },
+ "gate": {
+  "recall_ok": false,
+  "describe_ok": false,
+  "memory_ok": false,
+  "complete": true,
+  "go_M11": false
+ }
+}

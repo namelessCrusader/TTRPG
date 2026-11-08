@@ -1,0 +1,171 @@
+{
+ "policy": "rules",
+ "partners": {},
+ "seed": 0,
+ "fade": 0.9,
+ "nights": 200,
+ "turns": 300,
+ "flags": [
+  "check",
+  "drives",
+  "gossip",
+  "trade",
+  "watch"
+ ],
+ "seconds": 33.6,
+ "seconds_per_night": 0.168,
+ "blocks": [
+  {
+   "nights": "0-99",
+   "deaths": 0.05,
+   "lies": 9.19,
+   "lies_found_share": 0.004,
+   "lies_believed_share": 0.007,
+   "believed_lies_found_share": 0.667,
+   "liking_mean": -0.369,
+   "drive_error": {
+    "Tom": 0.551,
+    "Sir Ada": 0.329,
+    "Oren": 1.4626,
+    "Fenn": 0.845,
+    "Marta": 0.1641
+   },
+   "acts_per_night": {
+    "wait": 75.71,
+    "walk to": 65.98,
+    "drink": 32.3,
+    "accuse": 29.64,
+    "flee to": 25.12,
+    "tell": 24.29,
+    "strike": 15.76,
+    "gossip": 14.43,
+    "sit down": 14.37,
+    "hide": 9.4,
+    "search": 9.14,
+    "take": 8.24,
+    "defend": 7.15,
+    "look around": 6.74,
+    "notice": 3.12,
+    "steal": 2.93,
+    "play": 2.82,
+    "praise": 2.79,
+    "eat": 2.0,
+    "insult": 1.74,
+    "open": 1.59,
+    "ask": 1.33,
+    "drop": 1.28,
+    "help up": 1.18,
+    "bandage": 1.03,
+    "offer": 0.83,
+    "give": 0.73,
+    "refuse": 0.68,
+    "arrive": 0.64,
+    "shove": 0.6,
+    "shout for help": 0.4,
+    "threaten": 0.14,
+    "accept": 0.06,
+    "doubt": 0.03,
+    "sleep": 0.02
+   }
+  },
+  {
+   "nights": "100-199",
+   "deaths": 0.02,
+   "lies": 7.21,
+   "lies_found_share": 0.001,
+   "lies_believed_share": 0.001,
+   "believed_lies_found_share": 1.0,
+   "liking_mean": -0.176,
+   "drive_error": {
+    "Tom": 0.547,
+    "Sir Ada": 0.3464,
+    "Oren": 1.3467,
+    "Fenn": 0.8953,
+    "Marta": 0.1537
+   },
+   "acts_per_night": {
+    "wait": 81.0,
+    "walk to": 66.22,
+    "drink": 32.88,
+    "accuse": 27.64,
+    "flee to": 26.3,
+    "tell": 22.19,
+    "sit down": 15.66,
+    "strike": 14.79,
+    "gossip": 12.08,
+    "hide": 8.94,
+    "take": 8.64,
+    "search": 8.16,
+    "look around": 6.93,
+    "defend": 6.6,
+    "praise": 3.31,
+    "notice": 2.97,
+    "steal": 2.62,
+    "play": 2.52,
+    "eat": 2.0,
+    "insult": 1.93,
+    "open": 1.75,
+    "drop": 1.31,
+    "bandage": 1.27,
+    "refuse": 1.24,
+    "ask": 1.13,
+    "help up": 0.83,
+    "offer": 0.7,
+    "arrive": 0.56,
+    "shove": 0.55,
+    "shout for help": 0.4,
+    "give": 0.34,
+    "threaten": 0.11,
+    "doubt": 0.02
+   }
+  }
+ ],
+ "memory_sizes": {
+  "Tom": 187,
+  "Sir Ada": 386,
+  "Oren": 866,
+  "Fenn": 41,
+  "Marta": 106
+ },
+ "liking_at_end": {
+  "Tom": {
+   "Sir Ada": 0.915,
+   "Oren": -0.275,
+   "Fenn": -0.915,
+   "Marta": 0.739
+  },
+  "Sir Ada": {
+   "Tom": 0.698,
+   "Oren": 0.424,
+   "Fenn": -0.791,
+   "Marta": 0.923
+  },
+  "Oren": {
+   "Tom": -0.263,
+   "Sir Ada": 0.086,
+   "Fenn": -0.845,
+   "Marta": 0.268
+  },
+  "Fenn": {
+   "Tom": -0.86,
+   "Sir Ada": -0.885,
+   "Oren": -0.825,
+   "Marta": -0.881
+  },
+  "Marta": {
+   "Tom": 0.821,
+   "Sir Ada": 0.71,
+   "Oren": -0.032,
+   "Fenn": -0.948
+  }
+ },
+ "drives": [
+  "energy",
+  "safety",
+  "company",
+  "standing",
+  "wealth",
+  "rest",
+  "curiosity"
+ ]
+}

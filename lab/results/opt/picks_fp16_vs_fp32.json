@@ -1,0 +1,96 @@
+{
+ "rooms": {
+  "n": 2691,
+  "only_a": 0,
+  "only_b": 0,
+  "same_pick": 2690,
+  "same_pick_rate": 0.99963,
+  "same_pick_ci95": [
+   0.9979,
+   0.9999
+  ],
+  "bit_identical": 0,
+  "max_score_diff": 0.0035812504612204865,
+  "median_score_diff": 0.00037094291186695605
+ },
+ "voxel": {
+  "n": 540,
+  "only_a": 0,
+  "only_b": 0,
+  "same_pick": 540,
+  "same_pick_rate": 1.0,
+  "same_pick_ci95": [
+   0.9929,
+   1.0
+  ],
+  "bit_identical": 36,
+  "max_score_diff": 0.0015751033833407146,
+  "median_score_diff": 0.00021582902695782558
+ },
+ "rooms_lab": {
+  "n": 2691,
+  "only_a": 0,
+  "only_b": 0,
+  "same_pick": 2688,
+  "same_pick_rate": 0.99889,
+  "same_pick_ci95": [
+   0.9967,
+   0.9996
+  ],
+  "bit_identical": 0,
+  "max_score_diff": 0.005060840457017712,
+  "median_score_diff": 0.0003719497337342226
+ },
+ "rooms_full": {
+  "n": 1953,
+  "only_a": 0,
+  "only_b": 0,
+  "same_pick": 1951,
+  "same_pick_rate": 0.99898,
+  "same_pick_ci95": [
+   0.9963,
+   0.9997
+  ],
+  "bit_identical": 0,
+  "max_score_diff": 0.002234477083707276,
+  "median_score_diff": 0.00029890620572026183
+ },
+ "voxel_perm": {
+  "n": 1281,
+  "only_a": 0,
+  "only_b": 0,
+  "same_pick": 1281,
+  "same_pick_rate": 1.0,
+  "same_pick_ci95": [
+   0.997,
+   1.0
+  ],
+  "bit_identical": 0,
+  "max_score_diff": 0.0022014667337008076,
+  "median_score_diff": 0.00026488391229501085
+ },
+ "rooms_perm": {
+  "n": 10764,
+  "only_a": 0,
+  "only_b": 0,
+  "same_pick": 10744,
+  "same_pick_rate": 0.99814,
+  "same_pick_ci95": [
+   0.9971,
+   0.9988
+  ],
+  "bit_identical": 0,
+  "max_score_diff": 0.004805681069930123,
+  "median_score_diff": 0.0003503484674676205
+ },
+ "all": {
+  "n": 19920,
+  "same_pick": 19894,
+  "rate": 0.9986947791164659,
+  "ci95": [
+   0.9981,
+   0.9991
+  ],
+  "max_score_diff": 0.005060840457017712
+ }
+}

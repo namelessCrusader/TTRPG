@@ -1,0 +1,274 @@
+{
+ "batch": {
+  "median": 1,
+  "runs": [
+   1,
+   1,
+   1
+  ]
+ },
+ "n": {
+  "median": 500,
+  "runs": [
+   500,
+   500,
+   500
+  ]
+ },
+ "import_s": {
+  "median": 3.8,
+  "runs": [
+   4.3,
+   3.8,
+   3.51
+  ]
+ },
+ "load_s": {
+  "median": 2.59,
+  "runs": [
+   3.71,
+   2.59,
+   2.35
+  ]
+ },
+ "load.rss_peak_mib": {
+  "median": 952.6,
+  "runs": [
+   952.8,
+   952.5,
+   952.6
+  ]
+ },
+ "load.anon_peak_mib": {
+  "median": 618.8,
+  "runs": [
+   618.8,
+   618.8,
+   618.8
+  ]
+ },
+ "load.file_peak_mib": {
+  "median": 324.6,
+  "runs": [
+   324.9,
+   324.6,
+   324.6
+  ]
+ },
+ "load.shmem_peak_mib": {
+  "median": 10.0,
+  "runs": [
+   10.0,
+   10.0,
+   10.0
+  ]
+ },
+ "load.cgroup_anon_peak_mib": {
+  "median": 620.9,
+  "runs": [
+   620.9,
+   620.9,
+   620.3
+  ]
+ },
+ "load.cgroup_file_peak_mib": {
+  "median": 1759.4,
+  "runs": [
+   1446.4,
+   1759.4,
+   1868.1
+  ]
+ },
+ "load.cuda_alloc_peak_mib": {
+  "median": 2105.7,
+  "runs": [
+   2105.7,
+   2105.7,
+   2105.7
+  ]
+ },
+ "load.cuda_reserved_peak_mib": {
+  "median": 2118.0,
+  "runs": [
+   2118.0,
+   2118.0,
+   2118.0
+  ]
+ },
+ "after_load.rss": {
+  "median": 901.3,
+  "runs": [
+   901.5,
+   901.2,
+   901.3
+  ]
+ },
+ "after_load.anon": {
+  "median": 566.7,
+  "runs": [
+   566.7,
+   566.7,
+   566.7
+  ]
+ },
+ "after_load.file": {
+  "median": 324.6,
+  "runs": [
+   324.9,
+   324.6,
+   324.6
+  ]
+ },
+ "after_load.shmem": {
+  "median": 10.0,
+  "runs": [
+   10.0,
+   10.0,
+   10.0
+  ]
+ },
+ "after_load.gpu_process_mib": {
+  "median": 1082,
+  "runs": [
+   1082,
+   1082,
+   1082
+  ]
+ },
+ "after_load.cuda_alloc_mib": {
+  "median": 927.8,
+  "runs": [
+   927.8,
+   927.8,
+   927.8
+  ]
+ },
+ "score.rss_peak_mib": {
+  "median": 1491.0,
+  "runs": [
+   1489.9,
+   1491.0,
+   1491.1
+  ]
+ },
+ "score.anon_peak_mib": {
+  "median": 1085.6,
+  "runs": [
+   1085.6,
+   1085.5,
+   1085.6
+  ]
+ },
+ "score.file_peak_mib": {
+  "median": 393.5,
+  "runs": [
+   392.3,
+   393.5,
+   393.6
+  ]
+ },
+ "score.shmem_peak_mib": {
+  "median": 12.0,
+  "runs": [
+   12.0,
+   12.0,
+   12.0
+  ]
+ },
+ "score.cgroup_anon_peak_mib": {
+  "median": 1087.7,
+  "runs": [
+   1087.7,
+   1087.6,
+   1087.7
+  ]
+ },
+ "score.cgroup_file_peak_mib": {
+  "median": 1761.5,
+  "runs": [
+   1452.9,
+   1761.5,
+   1870.1
+  ]
+ },
+ "score.cuda_alloc_peak_mib": {
+  "median": 969.6,
+  "runs": [
+   969.6,
+   969.6,
+   969.6
+  ]
+ },
+ "score.cuda_reserved_peak_mib": {
+  "median": 1012.0,
+  "runs": [
+   1012.0,
+   1012.0,
+   1012.0
+  ]
+ },
+ "score.ms_median": {
+  "median": 22.55,
+  "runs": [
+   22.55,
+   22.48,
+   22.84
+  ]
+ },
+ "score.ms_p90": {
+  "median": 23.7,
+  "runs": [
+   23.63,
+   23.7,
+   24.09
+  ]
+ },
+ "score.per_s": {
+  "median": 41.2,
+  "runs": [
+   40.9,
+   41.6,
+   41.2
+  ]
+ },
+ "steady.rss": {
+  "median": 1491.0,
+  "runs": [
+   1489.9,
+   1491.0,
+   1491.1
+  ]
+ },
+ "steady.anon": {
+  "median": 1085.6,
+  "runs": [
+   1085.6,
+   1085.5,
+   1085.6
+  ]
+ },
+ "steady.file": {
+  "median": 393.5,
+  "runs": [
+   392.3,
+   393.5,
+   393.6
+  ]
+ },
+ "steady.shmem": {
+  "median": 12.0,
+  "runs": [
+   12.0,
+   12.0,
+   12.0
+  ]
+ },
+ "steady.gpu_process_mib": {
+  "median": 1122,
+  "runs": [
+   1122,
+   1122,
+   1122
+  ]
+ }
+}

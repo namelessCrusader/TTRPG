@@ -1,0 +1,22 @@
+{
+ "lifetimes": {
+  "L04": 80,
+  "L12": 0,
+  "L35": 0
+ },
+ "cpu_hours": {
+  "L04": 3.48
+ },
+ "verdicts": {
+  "L0": {
+   "mind": true,
+   "bandit": true,
+   "ppo": true
+  },
+  "L4": {
+   "mind": false,
+   "bandit": false,
+   "ppo": false
+  }
+ }
+}

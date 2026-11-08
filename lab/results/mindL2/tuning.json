@@ -1,0 +1,938 @@
+{
+ "world": "flags all2, seed 0, fade 0.9, plain inn, rest of cast = rules; focals Tom,Oren,Fenn (80 nights) and, for the mind's combinations, 5 focals (120 nights)",
+ "rows": [
+  {
+   "learner": "bandit",
+   "name": "t0.001_lr0.2",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.001,
+    "lr": 0.2
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.9901,
+   "all": 0.9761,
+   "per_focal_last": {
+    "Oren": 1.342,
+    "Fenn": 0.801,
+    "Tom": 0.827
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.001_lr0.4",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.001,
+    "lr": 0.4
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.9199,
+   "all": 0.9715,
+   "per_focal_last": {
+    "Oren": 1.306,
+    "Fenn": 0.807,
+    "Tom": 0.647
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.002_lr0.05",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.002,
+    "lr": 0.05
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.007,
+   "all": 1.0433,
+   "per_focal_last": {
+    "Oren": 1.642,
+    "Fenn": 0.85,
+    "Tom": 0.528
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.002_lr0.1",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.002,
+    "lr": 0.1
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.9744,
+   "all": 0.9755,
+   "per_focal_last": {
+    "Tom": 0.546,
+    "Fenn": 0.749,
+    "Oren": 1.628
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.002_lr0.2",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.002,
+    "lr": 0.2
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8601,
+   "all": 0.9061,
+   "per_focal_last": {
+    "Fenn": 0.792,
+    "Oren": 1.257,
+    "Tom": 0.531
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.002_lr0.4",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.002,
+    "lr": 0.4
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.9353,
+   "all": 0.9749,
+   "per_focal_last": {
+    "Fenn": 0.767,
+    "Tom": 0.591,
+    "Oren": 1.448
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.005_lr0.05",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.005,
+    "lr": 0.05
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.0548,
+   "all": 1.0979,
+   "per_focal_last": {
+    "Fenn": 0.833,
+    "Oren": 1.638,
+    "Tom": 0.693
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.005_lr0.1",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.005,
+    "lr": 0.1
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.893,
+   "all": 0.9613,
+   "per_focal_last": {
+    "Tom": 0.63,
+    "Fenn": 0.763,
+    "Oren": 1.286
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.005_lr0.2",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.005,
+    "lr": 0.2
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.9041,
+   "all": 0.9443,
+   "per_focal_last": {
+    "Fenn": 0.853,
+    "Oren": 1.319,
+    "Tom": 0.541
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.01_lr0.05",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.01,
+    "lr": 0.05
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.1517,
+   "all": 1.1687,
+   "per_focal_last": {
+    "Tom": 0.864,
+    "Oren": 1.667,
+    "Fenn": 0.924
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.01_lr0.1",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.01,
+    "lr": 0.1
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.111,
+   "all": 1.1084,
+   "per_focal_last": {
+    "Tom": 0.862,
+    "Fenn": 0.863,
+    "Oren": 1.608
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.01_lr0.2",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.01,
+    "lr": 0.2
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.0877,
+   "all": 1.095,
+   "per_focal_last": {
+    "Tom": 0.681,
+    "Fenn": 0.845,
+    "Oren": 1.737
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.02_lr0.05",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.02,
+    "lr": 0.05
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.278,
+   "all": 1.3355,
+   "per_focal_last": {
+    "Tom": 1.196,
+    "Oren": 1.679,
+    "Fenn": 0.959
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.02_lr0.1",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.02,
+    "lr": 0.1
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.191,
+   "all": 1.2474,
+   "per_focal_last": {
+    "Fenn": 0.911,
+    "Oren": 1.617,
+    "Tom": 1.044
+   }
+  },
+  {
+   "learner": "bandit",
+   "name": "t0.02_lr0.2",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.02,
+    "lr": 0.2
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.2171,
+   "all": 1.2379,
+   "per_focal_last": {
+    "Oren": 1.763,
+    "Tom": 0.954,
+    "Fenn": 0.934
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "C1",
+   "nights": 120,
+   "cfg": {
+    "lr_actor": 0.005,
+    "b_val": 0.25,
+    "b_wm": 0.5,
+    "b_cur": 1.0
+   },
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "last_half": 0.6547,
+   "all": 0.6742,
+   "per_focal_last": {
+    "Sir Ada": 0.438,
+    "Tom": 0.849,
+    "Oren": 1.011,
+    "Fenn": 0.709,
+    "Marta": 0.266
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "C2",
+   "nights": 120,
+   "cfg": {
+    "lr_actor": 0.005,
+    "b_val": 0.25,
+    "b_wm": 0.5,
+    "b_cur": 1.0,
+    "tau": 0.02
+   },
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "last_half": 0.6153,
+   "all": 0.6571,
+   "per_focal_last": {
+    "Sir Ada": 0.352,
+    "Fenn": 0.678,
+    "Oren": 1.238,
+    "Marta": 0.306,
+    "Tom": 0.503
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "C3",
+   "nights": 120,
+   "cfg": {
+    "lr_actor": 0.005,
+    "tau": 0.02
+   },
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "last_half": 0.6653,
+   "all": 0.7158,
+   "per_focal_last": {
+    "Sir Ada": 0.354,
+    "Tom": 0.664,
+    "Oren": 1.307,
+    "Marta": 0.356,
+    "Fenn": 0.645
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "base",
+   "nights": 80,
+   "cfg": {},
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8875,
+   "all": 0.884,
+   "per_focal_last": {
+    "Tom": 0.58,
+    "Oren": 1.301,
+    "Fenn": 0.781
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "base",
+   "nights": 120,
+   "cfg": {},
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "last_half": 0.648,
+   "all": 0.6544,
+   "per_focal_last": {
+    "Sir Ada": 0.359,
+    "Tom": 0.582,
+    "Fenn": 0.786,
+    "Oren": 1.302,
+    "Marta": 0.211
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "bcur025",
+   "nights": 80,
+   "cfg": {
+    "b_cur": 0.25
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.9077,
+   "all": 0.8784,
+   "per_focal_last": {
+    "Fenn": 0.834,
+    "Tom": 0.783,
+    "Oren": 1.106
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "bcur1",
+   "nights": 80,
+   "cfg": {
+    "b_cur": 1.0
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8616,
+   "all": 0.9112,
+   "per_focal_last": {
+    "Fenn": 0.679,
+    "Tom": 0.616,
+    "Oren": 1.29
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "bhab0",
+   "nights": 80,
+   "cfg": {
+    "b_habit": 0.0
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8795,
+   "all": 0.8992,
+   "per_focal_last": {
+    "Oren": 1.312,
+    "Fenn": 0.71,
+    "Tom": 0.616
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "bhab15",
+   "nights": 80,
+   "cfg": {
+    "b_habit": 0.15
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.942,
+   "all": 0.9681,
+   "per_focal_last": {
+    "Tom": 0.747,
+    "Oren": 1.369,
+    "Fenn": 0.71
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "bval025",
+   "nights": 80,
+   "cfg": {
+    "b_val": 0.25
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8535,
+   "all": 0.8891,
+   "per_focal_last": {
+    "Oren": 1.277,
+    "Tom": 0.561,
+    "Fenn": 0.722
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "bval1",
+   "nights": 80,
+   "cfg": {
+    "b_val": 1.0
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8734,
+   "all": 0.8765,
+   "per_focal_last": {
+    "Oren": 1.347,
+    "Fenn": 0.694,
+    "Tom": 0.579
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "bwm05",
+   "nights": 80,
+   "cfg": {
+    "b_wm": 0.5
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8527,
+   "all": 0.8939,
+   "per_focal_last": {
+    "Fenn": 0.833,
+    "Tom": 0.651,
+    "Oren": 1.074
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "bwm2",
+   "nights": 80,
+   "cfg": {
+    "b_wm": 2.0
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8906,
+   "all": 0.9374,
+   "per_focal_last": {
+    "Oren": 1.364,
+    "Fenn": 0.647,
+    "Tom": 0.661
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "lra005",
+   "nights": 80,
+   "cfg": {
+    "lr_actor": 0.005
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8602,
+   "all": 0.8818,
+   "per_focal_last": {
+    "Fenn": 0.678,
+    "Tom": 0.552,
+    "Oren": 1.351
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "lra02",
+   "nights": 80,
+   "cfg": {
+    "lr_actor": 0.02
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.901,
+   "all": 0.9055,
+   "per_focal_last": {
+    "Oren": 1.173,
+    "Tom": 0.777,
+    "Fenn": 0.753
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "tau005",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.005
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.1077,
+   "all": 1.0958,
+   "per_focal_last": {
+    "Fenn": 1.355,
+    "Oren": 1.333,
+    "Tom": 0.635
+   }
+  },
+  {
+   "learner": "mind",
+   "name": "tau02",
+   "nights": 80,
+   "cfg": {
+    "tau": 0.02
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8629,
+   "all": 0.8939,
+   "per_focal_last": {
+    "Tom": 0.605,
+    "Oren": 1.12,
+    "Fenn": 0.863
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "base",
+   "nights": 80,
+   "cfg": {},
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.179,
+   "all": 1.4779,
+   "per_focal_last": {
+    "Tom": 0.963,
+    "Oren": 1.719,
+    "Fenn": 0.855
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "ent003",
+   "nights": 80,
+   "cfg": {
+    "ent_coef": 0.003
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.1711,
+   "all": 1.4922,
+   "per_focal_last": {
+    "Oren": 1.71,
+    "Fenn": 0.887,
+    "Tom": 0.916
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "ent03",
+   "nights": 80,
+   "cfg": {
+    "ent_coef": 0.03
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.2305,
+   "all": 1.5287,
+   "per_focal_last": {
+    "Oren": 1.941,
+    "Tom": 0.904,
+    "Fenn": 0.847
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "lr1e-2",
+   "nights": 80,
+   "cfg": {
+    "learning_rate": 0.01
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.0077,
+   "all": 1.3176,
+   "per_focal_last": {
+    "Fenn": 0.863,
+    "Tom": 0.687,
+    "Oren": 1.474
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "lr1e-2_n128",
+   "nights": 80,
+   "cfg": {
+    "learning_rate": 0.01,
+    "n_steps": 128
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.906,
+   "all": 1.0858,
+   "per_focal_last": {
+    "Tom": 0.582,
+    "Fenn": 0.74,
+    "Oren": 1.396
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "lr3e-3",
+   "nights": 80,
+   "cfg": {
+    "learning_rate": 0.003
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.9464,
+   "all": 1.2379,
+   "per_focal_last": {
+    "Fenn": 0.787,
+    "Oren": 1.202,
+    "Tom": 0.85
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "lr3e-3_n128",
+   "nights": 80,
+   "cfg": {
+    "learning_rate": 0.003,
+    "n_steps": 128
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.9221,
+   "all": 1.1117,
+   "per_focal_last": {
+    "Fenn": 0.743,
+    "Tom": 0.752,
+    "Oren": 1.271
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "lr3e-3_n64",
+   "nights": 80,
+   "cfg": {
+    "learning_rate": 0.003,
+    "n_steps": 64,
+    "batch_size": 32
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.8677,
+   "all": 1.0814,
+   "per_focal_last": {
+    "Tom": 0.621,
+    "Fenn": 0.875,
+    "Oren": 1.107
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "lr3e-4",
+   "nights": 80,
+   "cfg": {
+    "learning_rate": 0.0003
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.8113,
+   "all": 1.87,
+   "per_focal_last": {
+    "Tom": 1.441,
+    "Fenn": 1.659,
+    "Oren": 2.334
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "n128",
+   "nights": 80,
+   "cfg": {
+    "n_steps": 128
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.1011,
+   "all": 1.4016,
+   "per_focal_last": {
+    "Fenn": 0.902,
+    "Oren": 1.425,
+    "Tom": 0.976
+   }
+  },
+  {
+   "learner": "ppo",
+   "name": "n512",
+   "nights": 80,
+   "cfg": {
+    "n_steps": 512
+   },
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.2871,
+   "all": 1.5073,
+   "per_focal_last": {
+    "Oren": 1.897,
+    "Fenn": 0.973,
+    "Tom": 0.992
+   }
+  },
+  {
+   "learner": "ref",
+   "name": "random",
+   "nights": 80,
+   "cfg": {},
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 1.9412,
+   "all": 1.9243,
+   "per_focal_last": {
+    "Tom": 1.581,
+    "Oren": 2.354,
+    "Fenn": 1.888
+   }
+  },
+  {
+   "learner": "ref",
+   "name": "rules",
+   "nights": 80,
+   "cfg": {},
+   "focals": [
+    "Fenn",
+    "Oren",
+    "Tom"
+   ],
+   "last_half": 0.9739,
+   "all": 0.9581,
+   "per_focal_last": {
+    "Fenn": 0.783,
+    "Oren": 1.686,
+    "Tom": 0.452
+   }
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+# The mind lab's own environment. Nothing here is needed by the simulation,
+# and nothing in src/ may import from lab/ (or the other way round).
+#   uv venv lab/.venv --python 3.12
+#   uv pip install --python lab/.venv -r lab/requirements.txt \
+#       --extra-index-url https://download.pytorch.org/whl/cu124
+torch==2.6.0
+transformers>=4.51
+accelerate
+laya
+von-sdk
+gliner
+gliclass
+sentencepiece   # GLiNER's DeBERTa tokenizer
+tiktoken
+protobuf        # the DeBERTa tokenizer conversion
+gliner2          # GLiNER2.5-Decide
+peft             # needed by gliner2 at import
+bev-decider      # bev-decider-0.4B (CC-BY-NC-4.0: testing only)
+stable-baselines3==2.6.0  # the PPO null (lab/mindL/nulls.py), CPU only; 2.6 keeps torch at 2.6 (newer pulls torch 2.14)

@@ -1,0 +1,1 @@
+{"rss_peak_mib": 3275.0, "rss_now_mib": 2510.5, "rss_anon_now_mib": 2467.7, "rss_file_now_mib": 42.8, "cgroup_peak_mib": 3300.0, "cgroup_max_mib": 3300.0, "rss_anon_peak_mib": 2467.7, "rss_file_peak_mib": 888.9, "at_rss_peak": {"anon_mib": 2386.2, "file_mib": 888.9, "phase": "load"}, "cgroup_anon_peak_mib": 2467.8, "cgroup_file_peak_mib": 894.1}

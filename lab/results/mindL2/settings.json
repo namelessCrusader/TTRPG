@@ -1,0 +1,6 @@
+{
+ "mind2": {"lr_actor": 0.005, "b_val": 0.25, "b_wm": 0.5, "b_cur": 1.0, "tau": 0.02},
+ "bandit": {"tau": 0.002, "lr": 0.2},
+ "ppo": {"learning_rate": 0.003, "n_steps": 64, "batch_size": 32},
+ "note": "mind2 settings are ON TOP of mind.FIXES (b_partner 2.0, b_trust 1.0, pm_forget 0.02, pm_detect). Tuned on seed 0, flags all2, fade 0.9, plain inn; objective = drive error, mean of the second half of the life (see tuning.json)."
+}

@@ -1,0 +1,8 @@
+training on 772 decisions from 6 rooms (0 dropped: menu over budget)
+trained in 23s
+TUNED / unseen names: chained hands 63% (n=574), chained legs 50% (n=892), chained mouth 90% (n=217), hands 52% (n=574), legs 43% (n=892), mouth 86% (n=217), target 37% (n=875)
+TUNED / train names, new rooms: chained hands 63% (n=590), chained legs 52% (n=903), chained mouth 91% (n=249), hands 58% (n=590), legs 44% (n=903), mouth 90% (n=249), target 39% (n=886)
+TUNED flat / unseen names            learned 0/2 | reached 0/2 | opened 0/2 | took 0/2 | reached 1/2 | unlocked 0/2 | opened 0/2 | OUT 0/2
+TUNED chained / unseen names         learned 0/2 | reached 0/2 | opened 0/2 | took 0/2 | reached 0/2 | unlocked 0/2 | opened 0/2 | OUT 0/2
+TUNED flat / train names, new rooms  learned 0/2 | reached 0/2 | opened 0/2 | took 0/2 | reached 1/2 | unlocked 0/2 | opened 0/2 | OUT 0/2
+TUNED chained / train names, new rooms learned 0/2 | reached 1/2 | opened 0/2 | took 0/2 | reached 2/2 | unlocked 0/2 | opened 0/2 | OUT 0/2

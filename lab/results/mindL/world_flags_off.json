@@ -1,0 +1,98 @@
+{
+ "random/seed0/banditNone": [
+  "58d68c8022b5889ab4bdc4bd8b3353b45437632057fc8619fe0ae5badec28efb",
+  700
+ ],
+ "random/seed0/banditTrue": [
+  "3804fad70b2f95543d0dd05dc5ef4c90c541d924c2fc2137093345662acc8695",
+  753
+ ],
+ "random/seed1/banditNone": [
+  "81d38636a179bc98c70df4a8353d1b37fe3ab3f2bef4ff7356d41ea697544a06",
+  767
+ ],
+ "random/seed1/banditTrue": [
+  "c7a7f908c6419d00bf17d55f7f34e6999ebd870925313ddd193d0fbb839e7d2b",
+  721
+ ],
+ "random/seed2/banditNone": [
+  "626738881ac26df1bc0bfa4558cf94d6606185776716f2f9704f2e1c0812dfbf",
+  653
+ ],
+ "random/seed2/banditTrue": [
+  "46713ba816a92b084458a68d28fb7f529e6862bd7e0e9ca71386fea5c0225923",
+  740
+ ],
+ "random/seed3/banditNone": [
+  "ea92bc45673793b2fa2a77c7f3fbf4a7142db8e191ea8cbbb539058947800eaf",
+  592
+ ],
+ "random/seed3/banditTrue": [
+  "0456042e28ffc1c5e5464ddab1999c2b2f30af53c2371d67bee3cd54929a9368",
+  689
+ ],
+ "random/seed4/banditNone": [
+  "247b7aecc6dd4910a4982f8be000dee54e77246849bba35afc43b30de3d91a4d",
+  723
+ ],
+ "random/seed4/banditTrue": [
+  "3ddc66e4786035e660efad9ed8626e38555b0d5c6cc80eb06e8491a58c302823",
+  687
+ ],
+ "random/seed5/banditNone": [
+  "58ee5c7f26fef4e7ef3de56f8b4b18a7e1cfcf7073a7ee9224303c377a993942",
+  612
+ ],
+ "random/seed5/banditTrue": [
+  "f86a6ab6405ffc8ac636f5d54740a35c0e1c7302e62a294a45545185e5e727fc",
+  659
+ ],
+ "rules/seed0/banditNone": [
+  "13c0ea067d1363d0fddda873d324a8ab2767a3e6524f93a217e57eea87c9b09a",
+  438
+ ],
+ "rules/seed0/banditTrue": [
+  "6a79eb338f69a9306b47e6ecf46c56caf5339842e04dfb1c5bc300c26c558b59",
+  440
+ ],
+ "rules/seed1/banditNone": [
+  "040150242c620454fd39d337a2de98be1c03fb2055e98bc8de05b6644ea0b70a",
+  425
+ ],
+ "rules/seed1/banditTrue": [
+  "83ff7bf0fb74d0df18a0b19e925f860b27a5da824cfdf47090dcf16237da9f69",
+  504
+ ],
+ "rules/seed2/banditNone": [
+  "afa1916e3a616b020abe63ace204173e248cb64b1fbd0ccafebd4dc1f826009f",
+  449
+ ],
+ "rules/seed2/banditTrue": [
+  "61c510070ccf417d194b51fd5b603592d373538eef8fce1c74b8a2257d1e407c",
+  496
+ ],
+ "rules/seed3/banditNone": [
+  "ba24f7860656ad76ffc69ea49248c5ccbcf7e1a21d3398cb28470df9e43834b9",
+  409
+ ],
+ "rules/seed3/banditTrue": [
+  "4022e2b6eda4b87c8d284bb14511f2ef3df457b4f260cfa33638b205443a204e",
+  444
+ ],
+ "rules/seed4/banditNone": [
+  "493271efc39efded49e51e32fa013a3ee7200c9148ef4717518372eada01b63e",
+  484
+ ],
+ "rules/seed4/banditTrue": [
+  "bf4bbfd77645bba610b760ed1b2e4f21784eecde0b1c7b871706aeced9122494",
+  463
+ ],
+ "rules/seed5/banditNone": [
+  "2244987dd251cae63b88c426e3c1af938102d2dfb07a2872870cb9757e8665dd",
+  419
+ ],
+ "rules/seed5/banditTrue": [
+  "2a8fdd86f71a267739f28b593ae59287fdb12794b87c4eaaa9661cbf7e0135e9",
+  486
+ ]
+}

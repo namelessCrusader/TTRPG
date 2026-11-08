@@ -1,0 +1,435 @@
+{
+ "rates": {
+  "a_describe.new.agree_argmax": {
+   "base": 0.13527,
+   "new": 0.13527,
+   "base_ci95": [
+    0.1229,
+    0.1487
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.new.in_character": {
+   "base": 0.03307,
+   "new": 0.0327,
+   "base_ci95": [
+    0.027,
+    0.0405
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.new.harm": {
+   "base": 0.36901,
+   "new": 0.36901,
+   "base_ci95": [
+    0.351,
+    0.3874
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.new.help": {
+   "base": 0.01635,
+   "new": 0.01635,
+   "base_ci95": [
+    0.0122,
+    0.0219
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.new.take": {
+   "base": 0.01226,
+   "new": 0.01226,
+   "base_ci95": [
+    0.0087,
+    0.0172
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.lab.agree_argmax": {
+   "base": 0.16908,
+   "new": 0.16908,
+   "base_ci95": [
+    0.1554,
+    0.1837
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.lab.in_character": {
+   "base": 0.0353,
+   "new": 0.03493,
+   "base_ci95": [
+    0.029,
+    0.043
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.lab.harm": {
+   "base": 0.35117,
+   "new": 0.35117,
+   "base_ci95": [
+    0.3334,
+    0.3694
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.lab.help": {
+   "base": 0.01709,
+   "new": 0.01709,
+   "base_ci95": [
+    0.0128,
+    0.0227
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.lab.take": {
+   "base": 0.03753,
+   "new": 0.03753,
+   "base_ci95": [
+    0.031,
+    0.0454
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.rules_argmax.harm": {
+   "base": 0.15347,
+   "new": 0.15347,
+   "base_ci95": [
+    0.1404,
+    0.1676
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.rules_argmax.help": {
+   "base": 0.01709,
+   "new": 0.01709,
+   "base_ci95": [
+    0.0128,
+    0.0227
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.rules_argmax.take": {
+   "base": 0.00446,
+   "new": 0.00446,
+   "base_ci95": [
+    0.0026,
+    0.0078
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "a_describe.paired.same_pick": {
+   "base": 0.61576,
+   "new": 0.61538,
+   "base_ci95": [
+    0.5972,
+    0.634
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "b_recall.cut_requests": {
+   "base": 0.71633,
+   "new": 0.71685,
+   "base_ci95": [
+    0.6959,
+    0.7359
+   ],
+   "n": [
+    1953,
+    1953
+   ],
+   "inside": true
+  },
+  "b_recall.all_requests": {
+   "base": 0.82854,
+   "new": 0.82885,
+   "base_ci95": [
+    0.8152,
+    0.8411
+   ],
+   "n": [
+    3231,
+    3231
+   ],
+   "inside": true
+  },
+  "b_recall.surprise.without_cut.in_character": {
+   "base": 0.0384,
+   "new": 0.0384,
+   "base_ci95": [
+    0.0307,
+    0.0479
+   ],
+   "n": [
+    1953,
+    1953
+   ],
+   "inside": true
+  },
+  "b_recall.surprise.with_cut.in_character": {
+   "base": 0.04455,
+   "new": 0.04403,
+   "base_ci95": [
+    0.0363,
+    0.0546
+   ],
+   "n": [
+    1953,
+    1953
+   ],
+   "inside": true
+  },
+  "c_order.rooms.pick_moves": {
+   "base": 0.11966,
+   "new": 0.11836,
+   "base_ci95": [
+    0.1137,
+    0.1259
+   ],
+   "n": [
+    10764,
+    10764
+   ],
+   "inside": true
+  },
+  "c_order.rooms.any_of_4_moves": {
+   "base": 0.23597,
+   "new": 0.23486,
+   "base_ci95": [
+    0.2203,
+    0.2524
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "c_order.rooms.picks_first_canonical": {
+   "base": 0.15831,
+   "new": 0.15831,
+   "base_ci95": [
+    0.145,
+    0.1726
+   ],
+   "n": [
+    2691,
+    2691
+   ],
+   "inside": true
+  },
+  "c_order.rooms.picks_first_reordered": {
+   "base": 0.06689,
+   "new": 0.06698,
+   "base_ci95": [
+    0.0623,
+    0.0718
+   ],
+   "n": [
+    10764,
+    10764
+   ],
+   "inside": true
+  },
+  "c_order.voxel.pick_moves": {
+   "base": 0.05777,
+   "new": 0.05777,
+   "base_ci95": [
+    0.0463,
+    0.0719
+   ],
+   "n": [
+    1281,
+    1281
+   ],
+   "inside": true
+  },
+  "c_order.voxel.any_of_4_moves": {
+   "base": 0.05952,
+   "new": 0.05952,
+   "base_ci95": [
+    0.042,
+    0.0837
+   ],
+   "n": [
+    504,
+    504
+   ],
+   "inside": true
+  },
+  "c_order.voxel.picks_first_canonical": {
+   "base": 0.48016,
+   "new": 0.48016,
+   "base_ci95": [
+    0.4369,
+    0.5238
+   ],
+   "n": [
+    504,
+    504
+   ],
+   "inside": true
+  },
+  "c_order.voxel.picks_first_reordered": {
+   "base": 0.23341,
+   "new": 0.23341,
+   "base_ci95": [
+    0.2111,
+    0.2574
+   ],
+   "n": [
+    1281,
+    1281
+   ],
+   "inside": true
+  },
+  "d_gated.rooms.gated": {
+   "base": 0.17952,
+   "new": 0.17952,
+   "base_ci95": [
+    0.1549,
+    0.2071
+   ],
+   "n": [
+    830,
+    830
+   ],
+   "inside": true
+  },
+  "d_gated.rooms.not_gated": {
+   "base": 0.11553,
+   "new": 0.11553,
+   "base_ci95": [
+    0.1018,
+    0.1309
+   ],
+   "n": [
+    1861,
+    1861
+   ],
+   "inside": true
+  },
+  "d_gated.voxel.gated": {
+   "base": 0.47419,
+   "new": 0.47419,
+   "base_ci95": [
+    0.4193,
+    0.5298
+   ],
+   "n": [
+    310,
+    310
+   ],
+   "inside": true
+  },
+  "d_gated.voxel.not_gated": {
+   "base": 0.46907,
+   "new": 0.46907,
+   "base_ci95": [
+    0.4001,
+    0.5392
+   ],
+   "n": [
+    194,
+    194
+   ],
+   "inside": true
+  },
+  "d_gated.all.gated": {
+   "base": 0.25965,
+   "new": 0.25965,
+   "base_ci95": [
+    0.235,
+    0.2859
+   ],
+   "n": [
+    1140,
+    1140
+   ],
+   "inside": true
+  },
+  "d_gated.all.not_gated": {
+   "base": 0.14891,
+   "new": 0.14891,
+   "base_ci95": [
+    0.1342,
+    0.165
+   ],
+   "n": [
+    2055,
+    2055
+   ],
+   "inside": true
+  }
+ },
+ "moved": [],
+ "gate_base": {
+  "recall_ok": false,
+  "describe_ok": false,
+  "memory_ok": false,
+  "complete": true,
+  "go_M11": false
+ },
+ "gate_new": {
+  "recall_ok": false,
+  "describe_ok": false,
+  "memory_ok": false,
+  "complete": true,
+  "go_M11": false
+ }
+}

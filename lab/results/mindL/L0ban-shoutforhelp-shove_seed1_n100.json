@@ -1,0 +1,2700 @@
+{
+ "test": "L0-ban",
+ "seed": 1,
+ "nights": 100,
+ "rows": {
+  "bandit-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    0.9777,
+    0.1903
+   ],
+   "first20": [
+    1.0786,
+    0.2287
+   ],
+   "last20": [
+    0.8706,
+    0.1956
+   ],
+   "deaths": 7,
+   "deaths_last20": 0,
+   "per_focal_last": {
+    "Tom": 0.6662,
+    "Sir Ada": 0.5637,
+    "Oren": 1.5748,
+    "Fenn": 1.0139,
+    "Marta": 0.5347
+   },
+   "per_focal_mean": {
+    "Tom": 0.9952,
+    "Sir Ada": 0.6623,
+    "Oren": 1.662,
+    "Fenn": 0.9868,
+    "Marta": 0.5823
+   },
+   "split_last": {
+    "energy": 0.3902,
+    "safety": 0.1531,
+    "company": 0.1144,
+    "standing": 0.1325,
+    "wealth": 0.0613,
+    "rest": 0.0103,
+    "curiosity": 0.0049
+   },
+   "seconds": 129.2,
+   "settings": {
+    "tau": 0.005,
+    "lr": 0.1
+   },
+   "paired_last": {
+    "rules": [
+     0.1142,
+     0.0558
+    ],
+    "ppo": [
+     0.0105,
+     0.0748
+    ]
+   }
+  },
+  "mind:AKVPEW-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    0.8688,
+    0.1514
+   ],
+   "first20": [
+    0.9149,
+    0.1758
+   ],
+   "last20": [
+    0.8667,
+    0.1541
+   ],
+   "deaths": 0,
+   "deaths_last20": 0,
+   "per_focal_last": {
+    "Tom": 0.7248,
+    "Sir Ada": 0.3994,
+    "Oren": 1.2867,
+    "Fenn": 0.8155,
+    "Marta": 1.1069
+   },
+   "per_focal_mean": {
+    "Tom": 0.7436,
+    "Sir Ada": 0.3884,
+    "Oren": 1.2984,
+    "Fenn": 0.8785,
+    "Marta": 1.0351
+   },
+   "split_last": {
+    "energy": 0.449,
+    "safety": 0.0758,
+    "company": 0.1432,
+    "standing": 0.032,
+    "wealth": 0.1532,
+    "rest": 0.007,
+    "curiosity": 0.0112
+   },
+   "seconds": 222.2,
+   "settings": {
+    "modules": "AKVPEW",
+    "tau": 0.01,
+    "gamma": 0.98,
+    "lr_actor": 0.01,
+    "lr_critic": 0.1,
+    "lr_val": 0.2,
+    "lr_habit": 0.02,
+    "habit_fade": 0.98,
+    "lr_wm": 0.2,
+    "lr_partner": 0.3,
+    "k_episodes": 5,
+    "cap": 200,
+    "replay": 0.3,
+    "replay_scale": 0.5,
+    "hab": 30.0,
+    "b_habit": 0.05,
+    "b_val": 0.5,
+    "b_wm": 1.0,
+    "b_partner": 0.5,
+    "b_ep": 0.5,
+    "b_cur": 0.5
+   },
+   "paired_last": {
+    "rules": [
+     0.1102,
+     0.2067
+    ],
+    "ppo": [
+     0.0065,
+     0.1478
+    ],
+    "bandit": [
+     -0.004,
+     0.1549
+    ]
+   }
+  },
+  "mind:AKVPE-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    0.7849,
+    0.1404
+   ],
+   "first20": [
+    0.8464,
+    0.1831
+   ],
+   "last20": [
+    0.8213,
+    0.1311
+   ],
+   "deaths": 2,
+   "deaths_last20": 1,
+   "per_focal_last": {
+    "Tom": 0.705,
+    "Sir Ada": 0.5599,
+    "Oren": 1.1908,
+    "Fenn": 1.0756,
+    "Marta": 0.5753
+   },
+   "per_focal_mean": {
+    "Tom": 0.7617,
+    "Sir Ada": 0.5915,
+    "Oren": 1.2909,
+    "Fenn": 0.8114,
+    "Marta": 0.4689
+   },
+   "split_last": {
+    "energy": 0.3937,
+    "safety": 0.0573,
+    "company": 0.1146,
+    "standing": 0.026,
+    "wealth": 0.2007,
+    "rest": 0.0078,
+    "curiosity": 0.0172
+   },
+   "seconds": 141.6,
+   "settings": {
+    "modules": "AKVPE",
+    "tau": 0.01,
+    "gamma": 0.98,
+    "lr_actor": 0.01,
+    "lr_critic": 0.1,
+    "lr_val": 0.2,
+    "lr_habit": 0.02,
+    "habit_fade": 0.98,
+    "lr_wm": 0.2,
+    "lr_partner": 0.3,
+    "k_episodes": 5,
+    "cap": 200,
+    "replay": 0.3,
+    "replay_scale": 0.5,
+    "hab": 30.0,
+    "b_habit": 0.05,
+    "b_val": 0.5,
+    "b_wm": 1.0,
+    "b_partner": 0.5,
+    "b_ep": 0.5,
+    "b_cur": 0.5
+   },
+   "paired_last": {
+    "rules": [
+     0.0648,
+     0.1121
+    ],
+    "ppo": [
+     -0.0388,
+     0.1424
+    ],
+    "bandit": [
+     -0.0493,
+     0.0843
+    ]
+   }
+  },
+  "mind:AKVP-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    0.8657,
+    0.1353
+   ],
+   "first20": [
+    0.8573,
+    0.1615
+   ],
+   "last20": [
+    0.9348,
+    0.1402
+   ],
+   "deaths": 2,
+   "deaths_last20": 0,
+   "per_focal_last": {
+    "Tom": 0.7977,
+    "Sir Ada": 0.4918,
+    "Oren": 1.3212,
+    "Fenn": 0.9601,
+    "Marta": 1.1034
+   },
+   "per_focal_mean": {
+    "Tom": 0.8091,
+    "Sir Ada": 0.5226,
+    "Oren": 1.3416,
+    "Fenn": 0.9169,
+    "Marta": 0.7384
+   },
+   "split_last": {
+    "energy": 0.4043,
+    "safety": 0.1002,
+    "company": 0.164,
+    "standing": 0.04,
+    "wealth": 0.2008,
+    "rest": 0.0105,
+    "curiosity": 0.0189
+   },
+   "seconds": 113.4,
+   "settings": {
+    "modules": "AKVP",
+    "tau": 0.01,
+    "gamma": 0.98,
+    "lr_actor": 0.01,
+    "lr_critic": 0.1,
+    "lr_val": 0.2,
+    "lr_habit": 0.02,
+    "habit_fade": 0.98,
+    "lr_wm": 0.2,
+    "lr_partner": 0.3,
+    "k_episodes": 5,
+    "cap": 200,
+    "replay": 0.3,
+    "replay_scale": 0.5,
+    "hab": 30.0,
+    "b_habit": 0.05,
+    "b_val": 0.5,
+    "b_wm": 1.0,
+    "b_partner": 0.5,
+    "b_ep": 0.5,
+    "b_cur": 0.5
+   },
+   "paired_last": {
+    "rules": [
+     0.1784,
+     0.1909
+    ],
+    "ppo": [
+     0.0747,
+     0.1446
+    ],
+    "bandit": [
+     0.0642,
+     0.1401
+    ]
+   }
+  },
+  "mind:AKV-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    1.0317,
+    0.1886
+   ],
+   "first20": [
+    1.1618,
+    0.1821
+   ],
+   "last20": [
+    0.933,
+    0.208
+   ],
+   "deaths": 22,
+   "deaths_last20": 0,
+   "per_focal_last": {
+    "Tom": 0.9482,
+    "Sir Ada": 0.4207,
+    "Oren": 1.675,
+    "Fenn": 0.9145,
+    "Marta": 0.7065
+   },
+   "per_focal_mean": {
+    "Tom": 1.0166,
+    "Sir Ada": 0.5362,
+    "Oren": 1.6484,
+    "Fenn": 1.1785,
+    "Marta": 0.7788
+   },
+   "split_last": {
+    "energy": 0.4537,
+    "safety": 0.0679,
+    "company": 0.1476,
+    "standing": 0.0151,
+    "wealth": 0.175,
+    "rest": 0.0516,
+    "curiosity": 0.0233
+   },
+   "seconds": 107.1,
+   "settings": {
+    "modules": "AKV",
+    "tau": 0.01,
+    "gamma": 0.98,
+    "lr_actor": 0.01,
+    "lr_critic": 0.1,
+    "lr_val": 0.2,
+    "lr_habit": 0.02,
+    "habit_fade": 0.98,
+    "lr_wm": 0.2,
+    "lr_partner": 0.3,
+    "k_episodes": 5,
+    "cap": 200,
+    "replay": 0.3,
+    "replay_scale": 0.5,
+    "hab": 30.0,
+    "b_habit": 0.05,
+    "b_val": 0.5,
+    "b_wm": 1.0,
+    "b_partner": 0.5,
+    "b_ep": 0.5,
+    "b_cur": 0.5
+   },
+   "paired_last": {
+    "rules": [
+     0.1765,
+     0.1106
+    ],
+    "ppo": [
+     0.0728,
+     0.0606
+    ],
+    "bandit": [
+     0.0623,
+     0.0806
+    ]
+   }
+  },
+  "mind:AK-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    0.9012,
+    0.2022
+   ],
+   "first20": [
+    0.9514,
+    0.1612
+   ],
+   "last20": [
+    0.8933,
+    0.2139
+   ],
+   "deaths": 0,
+   "deaths_last20": 0,
+   "per_focal_last": {
+    "Tom": 0.7969,
+    "Sir Ada": 0.3307,
+    "Oren": 1.6505,
+    "Fenn": 0.769,
+    "Marta": 0.9197
+   },
+   "per_focal_mean": {
+    "Tom": 0.8699,
+    "Sir Ada": 0.4317,
+    "Oren": 1.6461,
+    "Fenn": 0.8546,
+    "Marta": 0.7035
+   },
+   "split_last": {
+    "energy": 0.3951,
+    "safety": 0.0803,
+    "company": 0.1649,
+    "standing": 0.0355,
+    "wealth": 0.1567,
+    "rest": 0.0476,
+    "curiosity": 0.0114
+   },
+   "seconds": 107.0,
+   "settings": {
+    "modules": "AK",
+    "tau": 0.01,
+    "gamma": 0.98,
+    "lr_actor": 0.01,
+    "lr_critic": 0.1,
+    "lr_val": 0.2,
+    "lr_habit": 0.02,
+    "habit_fade": 0.98,
+    "lr_wm": 0.2,
+    "lr_partner": 0.3,
+    "k_episodes": 5,
+    "cap": 200,
+    "replay": 0.3,
+    "replay_scale": 0.5,
+    "hab": 30.0,
+    "b_habit": 0.05,
+    "b_val": 0.5,
+    "b_wm": 1.0,
+    "b_partner": 0.5,
+    "b_ep": 0.5,
+    "b_cur": 0.5
+   },
+   "paired_last": {
+    "rules": [
+     0.1369,
+     0.1642
+    ],
+    "ppo": [
+     0.0332,
+     0.0756
+    ],
+    "bandit": [
+     0.0227,
+     0.1189
+    ]
+   }
+  },
+  "mind-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    0.9293,
+    0.1466
+   ],
+   "first20": [
+    0.8851,
+    0.1418
+   ],
+   "last20": [
+    0.8832,
+    0.1468
+   ],
+   "deaths": 1,
+   "deaths_last20": 0,
+   "per_focal_last": {
+    "Tom": 1.0003,
+    "Sir Ada": 0.3488,
+    "Oren": 1.0797,
+    "Fenn": 0.8083,
+    "Marta": 1.1787
+   },
+   "per_focal_mean": {
+    "Tom": 1.0642,
+    "Sir Ada": 0.3844,
+    "Oren": 1.1222,
+    "Fenn": 0.874,
+    "Marta": 1.2017
+   },
+   "split_last": {
+    "energy": 0.3934,
+    "safety": 0.0864,
+    "company": 0.1986,
+    "standing": 0.055,
+    "wealth": 0.1363,
+    "rest": 0.0142,
+    "curiosity": 0.003
+   },
+   "seconds": 183.5,
+   "settings": {
+    "modules": "AKVWPEC",
+    "tau": 0.01,
+    "gamma": 0.98,
+    "lr_actor": 0.01,
+    "lr_critic": 0.1,
+    "lr_val": 0.2,
+    "lr_habit": 0.02,
+    "habit_fade": 0.98,
+    "lr_wm": 0.2,
+    "lr_partner": 0.3,
+    "k_episodes": 5,
+    "cap": 200,
+    "replay": 0.3,
+    "replay_scale": 0.5,
+    "hab": 30.0,
+    "b_habit": 0.05,
+    "b_val": 0.5,
+    "b_wm": 1.0,
+    "b_partner": 0.5,
+    "b_ep": 0.5,
+    "b_cur": 0.5
+   },
+   "paired_last": {
+    "rules": [
+     0.1267,
+     0.2505
+    ],
+    "ppo": [
+     0.023,
+     0.2046
+    ],
+    "bandit": [
+     0.0125,
+     0.2073
+    ]
+   }
+  },
+  "ppo-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    1.237,
+    0.2357
+   ],
+   "first20": [
+    1.5911,
+    0.2024
+   ],
+   "last20": [
+    0.8602,
+    0.2245
+   ],
+   "deaths": 29,
+   "deaths_last20": 0,
+   "per_focal_last": {
+    "Tom": 0.6981,
+    "Sir Ada": 0.4745,
+    "Oren": 1.7383,
+    "Fenn": 0.7556,
+    "Marta": 0.6343
+   },
+   "per_focal_mean": {
+    "Tom": 1.2422,
+    "Sir Ada": 0.7679,
+    "Oren": 2.1118,
+    "Fenn": 1.1758,
+    "Marta": 0.8872
+   },
+   "split_last": {
+    "energy": 0.356,
+    "safety": 0.0718,
+    "company": 0.1868,
+    "standing": 0.0809,
+    "wealth": 0.1567,
+    "rest": 0.0019,
+    "curiosity": 0.0005
+   },
+   "seconds": 157.5,
+   "settings": {
+    "n_steps": 256,
+    "batch_size": 64,
+    "n_epochs": 4,
+    "learning_rate": 0.001,
+    "gamma": 0.94,
+    "gae_lambda": 0.95,
+    "ent_coef": 0.01,
+    "clip_range": 0.2
+   },
+   "paired_last": {
+    "rules": [
+     0.1037,
+     0.1074
+    ],
+    "bandit": [
+     -0.0105,
+     0.0748
+    ]
+   }
+  },
+  "random-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    1.6126,
+    0.2041
+   ],
+   "first20": [
+    1.5921,
+    0.2112
+   ],
+   "last20": [
+    1.6226,
+    0.2291
+   ],
+   "deaths": 74,
+   "deaths_last20": 16,
+   "per_focal_last": {
+    "Tom": 1.6139,
+    "Sir Ada": 1.1703,
+    "Oren": 2.3873,
+    "Fenn": 1.7983,
+    "Marta": 1.1432
+   },
+   "per_focal_mean": {
+    "Tom": 1.6267,
+    "Sir Ada": 1.1833,
+    "Oren": 2.2651,
+    "Fenn": 1.8064,
+    "Marta": 1.1817
+   },
+   "split_last": {
+    "energy": 0.3896,
+    "safety": 0.3519,
+    "company": 0.2354,
+    "standing": 0.2653,
+    "wealth": 0.3538,
+    "rest": 0.0045,
+    "curiosity": 0.0003
+   },
+   "seconds": 84.7,
+   "settings": {},
+   "paired_last": {
+    "rules": [
+     0.8661,
+     0.0563
+    ],
+    "ppo": [
+     0.7624,
+     0.0958
+    ],
+    "bandit": [
+     0.7519,
+     0.0651
+    ]
+   }
+  },
+  "rules-no[shout for help,shove]": {
+   "focals": [
+    "Fenn",
+    "Marta",
+    "Oren",
+    "Sir Ada",
+    "Tom"
+   ],
+   "mean": [
+    0.7675,
+    0.2018
+   ],
+   "first20": [
+    0.7739,
+    0.1998
+   ],
+   "last20": [
+    0.7565,
+    0.2234
+   ],
+   "deaths": 11,
+   "deaths_last20": 1,
+   "per_focal_last": {
+    "Tom": 0.6215,
+    "Sir Ada": 0.5065,
+    "Oren": 1.5118,
+    "Fenn": 0.9446,
+    "Marta": 0.198
+   },
+   "per_focal_mean": {
+    "Tom": 0.5868,
+    "Sir Ada": 0.611,
+    "Oren": 1.4197,
+    "Fenn": 0.986,
+    "Marta": 0.2341
+   },
+   "split_last": {
+    "energy": 0.3302,
+    "safety": 0.1361,
+    "company": 0.0344,
+    "standing": 0.0622,
+    "wealth": 0.162,
+    "rest": 0.0219,
+    "curiosity": 0.0012
+   },
+   "seconds": 89.6,
+   "settings": {},
+   "paired_last": {
+    "ppo": [
+     -0.1037,
+     0.1074
+    ],
+    "bandit": [
+     -0.1142,
+     0.0558
+    ]
+   }
+  }
+ },
+ "per_focal": {
+  "bandit-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     0.9952,
+     0.0345
+    ],
+    "first20": [
+     1.3114,
+     0.0591
+    ],
+    "last20": [
+     0.6662,
+     0.0303
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4638,
+     "safety": 0.1561,
+     "company": 0.0242,
+     "standing": 0.0057,
+     "wealth": 0.0,
+     "rest": 0.0032,
+     "curiosity": 0.0049
+    },
+    "acts_per_night_last20": {
+     "praise": 134.1,
+     "take": 16.0,
+     "drop": 14.7,
+     "sleep": 10.9,
+     "insult": 7.4,
+     "sit down": 6.4,
+     "give": 1.0,
+     "drink": 0.6,
+     "help up": 0.2,
+     "accept": 0.1,
+     "bandage": 0.1,
+     "defend": 0.1
+    },
+    "seconds": 22.9,
+    "decisions": 15334
+   },
+   "Sir Ada": {
+    "mean": [
+     0.6623,
+     0.0258
+    ],
+    "first20": [
+     0.6725,
+     0.0722
+    ],
+    "last20": [
+     0.5637,
+     0.0367
+    ],
+    "deaths": 3,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3341,
+     "safety": 0.0311,
+     "company": 0.1187,
+     "standing": 0.07,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0044
+    },
+    "acts_per_night_last20": {
+     "praise": 71.1,
+     "sleep": 18.8,
+     "strike": 11.4,
+     "insult": 11.1,
+     "drink": 9.3,
+     "take": 5.5,
+     "walk to": 4.2,
+     "drop": 2.9,
+     "give": 2.0,
+     "help up": 0.4,
+     "offer": 0.3,
+     "open": 0.3
+    },
+    "seconds": 19.4,
+    "decisions": 12168
+   },
+   "Oren": {
+    "mean": [
+     1.662,
+     0.0266
+    ],
+    "first20": [
+     1.8543,
+     0.0766
+    ],
+    "last20": [
+     1.5748,
+     0.0498
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4712,
+     "safety": 0.2061,
+     "company": 0.2084,
+     "standing": 0.383,
+     "wealth": 0.2739,
+     "rest": 0.0244,
+     "curiosity": 0.0
+    },
+    "acts_per_night_last20": {
+     "praise": 159.8,
+     "insult": 58.7,
+     "steal": 8.2,
+     "hide": 5.5,
+     "sleep": 4.8,
+     "walk to": 4.0,
+     "help up": 1.3,
+     "take": 0.8,
+     "accuse": 0.5,
+     "refuse": 0.3,
+     "open": 0.2,
+     "sit down": 0.1
+    },
+    "seconds": 32.0,
+    "decisions": 21893
+   },
+   "Fenn": {
+    "mean": [
+     0.9868,
+     0.0203
+    ],
+    "first20": [
+     0.9257,
+     0.0238
+    ],
+    "last20": [
+     1.0139,
+     0.0483
+    ],
+    "deaths": 2,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4434,
+     "safety": 0.2545,
+     "company": 0.1205,
+     "standing": 0.1273,
+     "wealth": 0.0326,
+     "rest": 0.0221,
+     "curiosity": 0.0142
+    },
+    "acts_per_night_last20": {
+     "insult": 183.7,
+     "praise": 25.6,
+     "offer": 5.5,
+     "walk to": 5.2,
+     "drink": 4.8,
+     "hide": 4.7,
+     "steal": 4.5,
+     "take": 2.8,
+     "sit down": 1.4,
+     "strike": 0.7,
+     "play": 0.3,
+     "ask": 0.3
+    },
+    "seconds": 32.3,
+    "decisions": 21118
+   },
+   "Marta": {
+    "mean": [
+     0.5823,
+     0.0272
+    ],
+    "first20": [
+     0.6292,
+     0.0644
+    ],
+    "last20": [
+     0.5347,
+     0.0408
+    ],
+    "deaths": 2,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.2384,
+     "safety": 0.1175,
+     "company": 0.1003,
+     "standing": 0.0766,
+     "wealth": 0.0,
+     "rest": 0.0018,
+     "curiosity": 0.0012
+    },
+    "acts_per_night_last20": {
+     "praise": 48.5,
+     "ask": 40.6,
+     "drop": 15.8,
+     "take": 14.8,
+     "insult": 13.8,
+     "sleep": 12.2,
+     "search": 9.3,
+     "drink": 3.1,
+     "give": 2.5,
+     "offer": 2.5,
+     "accuse": 2.1,
+     "eat": 1.9
+    },
+    "seconds": 22.6,
+    "decisions": 14533
+   }
+  },
+  "mind:AKVPEW-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     0.7436,
+     0.0118
+    ],
+    "first20": [
+     0.8185,
+     0.0371
+    ],
+    "last20": [
+     0.7248,
+     0.0238
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.519,
+     "safety": 0.1952,
+     "company": 0.002,
+     "standing": 0.0,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0014
+    },
+    "acts_per_night_last20": {
+     "sit down": 64.5,
+     "praise": 12.7,
+     "drop": 1.1,
+     "ask": 0.3,
+     "help up": 0.1,
+     "look around": 0.1,
+     "steal": 0.1,
+     "gossip": 0.1
+    },
+    "seconds": 27.8,
+    "decisions": 9559
+   },
+   "Sir Ada": {
+    "mean": [
+     0.3884,
+     0.0105
+    ],
+    "first20": [
+     0.3847,
+     0.0158
+    ],
+    "last20": [
+     0.3994,
+     0.0292
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3506,
+     "safety": 0.0019,
+     "company": 0.0228,
+     "standing": 0.0262,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0004
+    },
+    "acts_per_night_last20": {
+     "sleep": 31.5,
+     "gossip": 12.8,
+     "look around": 6.8,
+     "drink": 4.6,
+     "sit down": 2.6,
+     "walk to": 1.8,
+     "drop": 0.8,
+     "praise": 0.4,
+     "take": 0.3,
+     "wait": 0.3,
+     "steal": 0.2,
+     "strike": 0.2
+    },
+    "seconds": 22.2,
+    "decisions": 7132
+   },
+   "Oren": {
+    "mean": [
+     1.2984,
+     0.0191
+    ],
+    "first20": [
+     1.4856,
+     0.043
+    ],
+    "last20": [
+     1.2867,
+     0.0349
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4696,
+     "safety": 0.0352,
+     "company": 0.0153,
+     "standing": 0.0363,
+     "wealth": 0.726,
+     "rest": 0.0014,
+     "curiosity": 0.0007
+    },
+    "acts_per_night_last20": {
+     "praise": 217.4,
+     "sleep": 10.3,
+     "take": 1.8,
+     "strike": 0.7,
+     "insult": 0.7,
+     "look around": 0.5,
+     "help up": 0.3,
+     "search": 0.1,
+     "tell": 0.1,
+     "walk to": 0.1
+    },
+    "seconds": 50.9,
+    "decisions": 22741
+   },
+   "Fenn": {
+    "mean": [
+     0.8785,
+     0.0184
+    ],
+    "first20": [
+     0.9527,
+     0.0468
+    ],
+    "last20": [
+     0.8155,
+     0.0353
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4842,
+     "safety": 0.032,
+     "company": 0.1085,
+     "standing": 0.0886,
+     "wealth": 0.0402,
+     "rest": 0.0337,
+     "curiosity": 0.0269
+    },
+    "acts_per_night_last20": {
+     "insult": 292.9,
+     "steal": 1.9,
+     "praise": 0.1,
+     "sleep": 0.1,
+     "take": 0.1
+    },
+    "seconds": 78.2,
+    "decisions": 28177
+   },
+   "Marta": {
+    "mean": [
+     1.0351,
+     0.036
+    ],
+    "first20": [
+     0.933,
+     0.1034
+    ],
+    "last20": [
+     1.1069,
+     0.0305
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4217,
+     "safety": 0.1149,
+     "company": 0.5672,
+     "standing": 0.0089,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0266
+    },
+    "acts_per_night_last20": {
+     "sleep": 55.9,
+     "insult": 8.8,
+     "eat": 1.1,
+     "walk to": 0.5,
+     "threaten": 0.1,
+     "give": 0.1,
+     "drop": 0.1
+    },
+    "seconds": 43.1,
+    "decisions": 15967
+   }
+  },
+  "mind:AKVPE-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     0.7617,
+     0.0144
+    ],
+    "first20": [
+     0.848,
+     0.0434
+    ],
+    "last20": [
+     0.705,
+     0.0249
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.5186,
+     "safety": 0.1172,
+     "company": 0.0455,
+     "standing": 0.0,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0206
+    },
+    "acts_per_night_last20": {
+     "sleep": 43.4,
+     "flee to": 3.8,
+     "drop": 0.6,
+     "wait": 0.1,
+     "look around": 0.1,
+     "praise": 0.1
+    },
+    "seconds": 26.0,
+    "decisions": 9389
+   },
+   "Sir Ada": {
+    "mean": [
+     0.5915,
+     0.0203
+    ],
+    "first20": [
+     0.4993,
+     0.0395
+    ],
+    "last20": [
+     0.5599,
+     0.019
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3154,
+     "safety": 0.0101,
+     "company": 0.1849,
+     "standing": 0.0299,
+     "wealth": 0.0,
+     "rest": 0.002,
+     "curiosity": 0.0095
+    },
+    "acts_per_night_last20": {
+     "flee to": 26.0,
+     "drink": 25.3,
+     "sleep": 10.8,
+     "strike": 9.6,
+     "threaten": 1.9,
+     "drop": 0.9,
+     "take": 0.5,
+     "praise": 0.5,
+     "accuse": 0.4,
+     "wait": 0.3,
+     "gossip": 0.3,
+     "open": 0.2
+    },
+    "seconds": 22.1,
+    "decisions": 8295
+   },
+   "Oren": {
+    "mean": [
+     1.2909,
+     0.0229
+    ],
+    "first20": [
+     1.5223,
+     0.0571
+    ],
+    "last20": [
+     1.1908,
+     0.0363
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4178,
+     "safety": 0.0318,
+     "company": 0.0333,
+     "standing": 0.0,
+     "wealth": 0.6907,
+     "rest": 0.0,
+     "curiosity": 0.0013
+    },
+    "acts_per_night_last20": {
+     "drink": 78.5,
+     "walk to": 1.1
+    },
+    "seconds": 24.2,
+    "decisions": 8285
+   },
+   "Fenn": {
+    "mean": [
+     0.8114,
+     0.0243
+    ],
+    "first20": [
+     0.8198,
+     0.051
+    ],
+    "last20": [
+     1.0756,
+     0.0634
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.484,
+     "safety": 0.0223,
+     "company": 0.1062,
+     "standing": 0.0765,
+     "wealth": 0.313,
+     "rest": 0.0339,
+     "curiosity": 0.0387
+    },
+    "acts_per_night_last20": {
+     "insult": 295.1,
+     "steal": 1.4,
+     "flee to": 0.1
+    },
+    "seconds": 45.1,
+    "decisions": 17832
+   },
+   "Marta": {
+    "mean": [
+     0.4689,
+     0.0229
+    ],
+    "first20": [
+     0.5424,
+     0.0703
+    ],
+    "last20": [
+     0.5753,
+     0.0593
+    ],
+    "deaths": 2,
+    "deaths_last20": 1,
+    "split_last20": {
+     "energy": 0.2329,
+     "safety": 0.1053,
+     "company": 0.203,
+     "standing": 0.0238,
+     "wealth": 0.0,
+     "rest": 0.0029,
+     "curiosity": 0.0158
+    },
+    "acts_per_night_last20": {
+     "sleep": 24.2,
+     "drink": 21.2,
+     "take": 6.0,
+     "insult": 4.9,
+     "look around": 4.8,
+     "wait": 4.0,
+     "drop": 3.1,
+     "eat": 2.9,
+     "strike": 2.8,
+     "flee to": 1.3,
+     "search": 0.7,
+     "threaten": 0.7
+    },
+    "seconds": 24.2,
+    "decisions": 8253
+   }
+  },
+  "mind:AKVP-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     0.8091,
+     0.0107
+    ],
+    "first20": [
+     0.8332,
+     0.0229
+    ],
+    "last20": [
+     0.7977,
+     0.0219
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.5249,
+     "safety": 0.2215,
+     "company": 0.0292,
+     "standing": 0.0,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0295
+    },
+    "acts_per_night_last20": {
+     "sleep": 59.0,
+     "ask": 0.2,
+     "insult": 0.1,
+     "strike": 0.1,
+     "offer": 0.1,
+     "give": 0.1,
+     "praise": 0.1,
+     "steal": 0.1,
+     "gossip": 0.1
+    },
+    "seconds": 18.5,
+    "decisions": 5878
+   },
+   "Sir Ada": {
+    "mean": [
+     0.5226,
+     0.0158
+    ],
+    "first20": [
+     0.4606,
+     0.0194
+    ],
+    "last20": [
+     0.4918,
+     0.0136
+    ],
+    "deaths": 1,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3188,
+     "safety": 0.0,
+     "company": 0.1573,
+     "standing": 0.0024,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0054
+    },
+    "acts_per_night_last20": {
+     "drink": 51.8,
+     "gossip": 16.6,
+     "flee to": 3.6,
+     "take": 1.8,
+     "look around": 1.8,
+     "drop": 1.4,
+     "tell": 1.4,
+     "walk to": 0.8,
+     "sleep": 0.8,
+     "strike": 0.2,
+     "sit down": 0.2,
+     "search": 0.1
+    },
+    "seconds": 18.3,
+    "decisions": 7755
+   },
+   "Oren": {
+    "mean": [
+     1.3416,
+     0.0178
+    ],
+    "first20": [
+     1.4388,
+     0.0431
+    ],
+    "last20": [
+     1.3212,
+     0.0277
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4262,
+     "safety": 0.0416,
+     "company": 0.05,
+     "standing": 0.0004,
+     "wealth": 0.8109,
+     "rest": 0.0,
+     "curiosity": 0.0006
+    },
+    "acts_per_night_last20": {
+     "drink": 78.2,
+     "walk to": 1.3,
+     "wait": 0.1,
+     "drop": 0.1
+    },
+    "seconds": 19.1,
+    "decisions": 7489
+   },
+   "Fenn": {
+    "mean": [
+     0.9169,
+     0.023
+    ],
+    "first20": [
+     0.8561,
+     0.0505
+    ],
+    "last20": [
+     0.9601,
+     0.025
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.484,
+     "safety": 0.0135,
+     "company": 0.1083,
+     "standing": 0.0756,
+     "wealth": 0.1931,
+     "rest": 0.0324,
+     "curiosity": 0.0538
+    },
+    "acts_per_night_last20": {
+     "insult": 291.2,
+     "steal": 2.2,
+     "flee to": 0.1,
+     "praise": 0.1,
+     "gossip": 0.1,
+     "sleep": 0.1,
+     "look around": 0.1
+    },
+    "seconds": 34.5,
+    "decisions": 19568
+   },
+   "Marta": {
+    "mean": [
+     0.7384,
+     0.0348
+    ],
+    "first20": [
+     0.698,
+     0.0598
+    ],
+    "last20": [
+     1.1034,
+     0.0858
+    ],
+    "deaths": 1,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.2678,
+     "safety": 0.2242,
+     "company": 0.4752,
+     "standing": 0.1217,
+     "wealth": 0.0,
+     "rest": 0.0201,
+     "curiosity": 0.0054
+    },
+    "acts_per_night_last20": {
+     "insult": 111.5,
+     "sit down": 16.8,
+     "drink": 6.0,
+     "flee to": 5.0,
+     "tell": 3.8,
+     "take": 3.0,
+     "drop": 2.1,
+     "eat": 2.0,
+     "threaten": 0.8,
+     "wait": 0.8,
+     "give": 0.8,
+     "bandage": 0.6
+    },
+    "seconds": 23.0,
+    "decisions": 11084
+   }
+  },
+  "mind:AKV-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     1.0166,
+     0.0148
+    ],
+    "first20": [
+     1.0491,
+     0.027
+    ],
+    "last20": [
+     0.9482,
+     0.032
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.51,
+     "safety": 0.1827,
+     "company": 0.2385,
+     "standing": 0.0004,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0016
+    },
+    "acts_per_night_last20": {
+     "sit down": 67.8
+    },
+    "seconds": 19.4,
+    "decisions": 6923
+   },
+   "Sir Ada": {
+    "mean": [
+     0.5362,
+     0.0151
+    ],
+    "first20": [
+     0.6938,
+     0.052
+    ],
+    "last20": [
+     0.4207,
+     0.0118
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3803,
+     "safety": 0.0,
+     "company": 0.0013,
+     "standing": 0.0,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0462
+    },
+    "acts_per_night_last20": {
+     "sleep": 55.9,
+     "gossip": 0.1,
+     "drop": 0.1,
+     "strike": 0.1,
+     "tell": 0.1
+    },
+    "seconds": 17.4,
+    "decisions": 5961
+   },
+   "Oren": {
+    "mean": [
+     1.6484,
+     0.021
+    ],
+    "first20": [
+     1.7207,
+     0.0463
+    ],
+    "last20": [
+     1.675,
+     0.0332
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.468,
+     "safety": 0.0457,
+     "company": 0.2297,
+     "standing": 0.0,
+     "wealth": 0.7043,
+     "rest": 0.224,
+     "curiosity": 0.0014
+    },
+    "acts_per_night_last20": {
+     "walk to": 81.5
+    },
+    "seconds": 19.2,
+    "decisions": 8738
+   },
+   "Fenn": {
+    "mean": [
+     1.1785,
+     0.0299
+    ],
+    "first20": [
+     1.4163,
+     0.0713
+    ],
+    "last20": [
+     0.9145,
+     0.0257
+    ],
+    "deaths": 22,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4834,
+     "safety": 0.0104,
+     "company": 0.1068,
+     "standing": 0.0751,
+     "wealth": 0.1707,
+     "rest": 0.0338,
+     "curiosity": 0.0333
+    },
+    "acts_per_night_last20": {
+     "insult": 293.2,
+     "steal": 1.9
+    },
+    "seconds": 31.7,
+    "decisions": 17479
+   },
+   "Marta": {
+    "mean": [
+     0.7788,
+     0.0211
+    ],
+    "first20": [
+     0.9291,
+     0.0716
+    ],
+    "last20": [
+     0.7065,
+     0.0359
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4267,
+     "safety": 0.1005,
+     "company": 0.1615,
+     "standing": 0.0,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0342
+    },
+    "acts_per_night_last20": {
+     "sleep": 60.8,
+     "search": 0.7,
+     "strike": 0.1,
+     "insult": 0.1,
+     "take": 0.1,
+     "drop": 0.1,
+     "ask": 0.1,
+     "sit down": 0.1,
+     "bandage": 0.1,
+     "give": 0.1
+    },
+    "seconds": 19.4,
+    "decisions": 6622
+   }
+  },
+  "mind:AK-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     0.8699,
+     0.0136
+    ],
+    "first20": [
+     0.9371,
+     0.037
+    ],
+    "last20": [
+     0.7969,
+     0.0277
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.5185,
+     "safety": 0.1607,
+     "company": 0.0836,
+     "standing": 0.0,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0332
+    },
+    "acts_per_night_last20": {
+     "sleep": 49.5,
+     "search": 0.1
+    },
+    "seconds": 19.6,
+    "decisions": 5623
+   },
+   "Sir Ada": {
+    "mean": [
+     0.4317,
+     0.0153
+    ],
+    "first20": [
+     0.5871,
+     0.0507
+    ],
+    "last20": [
+     0.3307,
+     0.0116
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3097,
+     "safety": 0.0,
+     "company": 0.0038,
+     "standing": 0.0001,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0065
+    },
+    "acts_per_night_last20": {
+     "drink": 67.5,
+     "praise": 26.9,
+     "walk to": 1.8,
+     "gossip": 0.7,
+     "take": 0.2,
+     "search": 0.1,
+     "wait": 0.1,
+     "ask": 0.1,
+     "drop": 0.1,
+     "give": 0.1,
+     "threaten": 0.1,
+     "tell": 0.1
+    },
+    "seconds": 19.9,
+    "decisions": 9523
+   },
+   "Oren": {
+    "mean": [
+     1.6461,
+     0.017
+    ],
+    "first20": [
+     1.5441,
+     0.0568
+    ],
+    "last20": [
+     1.6505,
+     0.0231
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4716,
+     "safety": 0.0396,
+     "company": 0.2376,
+     "standing": 0.0,
+     "wealth": 0.676,
+     "rest": 0.2276,
+     "curiosity": 0.0004
+    },
+    "acts_per_night_last20": {
+     "walk to": 81.2,
+     "insult": 0.1,
+     "offer": 0.1
+    },
+    "seconds": 18.0,
+    "decisions": 8269
+   },
+   "Fenn": {
+    "mean": [
+     0.8546,
+     0.0169
+    ],
+    "first20": [
+     0.924,
+     0.0443
+    ],
+    "last20": [
+     0.769,
+     0.0198
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4123,
+     "safety": 0.0169,
+     "company": 0.1213,
+     "standing": 0.0974,
+     "wealth": 0.1073,
+     "rest": 0.0,
+     "curiosity": 0.0145
+    },
+    "acts_per_night_last20": {
+     "drink": 75.3,
+     "offer": 11.8,
+     "steal": 3.0,
+     "flee to": 2.1,
+     "walk to": 1.0,
+     "wait": 0.5,
+     "ask": 0.4,
+     "sleep": 0.2,
+     "strike": 0.1,
+     "insult": 0.1,
+     "praise": 0.1,
+     "take": 0.1
+    },
+    "seconds": 29.4,
+    "decisions": 15422
+   },
+   "Marta": {
+    "mean": [
+     0.7035,
+     0.0246
+    ],
+    "first20": [
+     0.7647,
+     0.0483
+    ],
+    "last20": [
+     0.9197,
+     0.0866
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.2632,
+     "safety": 0.1842,
+     "company": 0.378,
+     "standing": 0.0802,
+     "wealth": 0.0,
+     "rest": 0.0104,
+     "curiosity": 0.0026
+    },
+    "acts_per_night_last20": {
+     "insult": 71.5,
+     "drink": 33.5,
+     "sleep": 7.8,
+     "take": 6.3,
+     "drop": 3.1,
+     "sit down": 2.0,
+     "tell": 1.7,
+     "eat": 1.4,
+     "threaten": 1.1,
+     "give": 1.0,
+     "look around": 1.0,
+     "wait": 0.8
+    },
+    "seconds": 20.1,
+    "decisions": 7821
+   }
+  },
+  "mind-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     1.0642,
+     0.0322
+    ],
+    "first20": [
+     1.2024,
+     0.0405
+    ],
+    "last20": [
+     1.0003,
+     0.0811
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4813,
+     "safety": 0.1769,
+     "company": 0.2698,
+     "standing": 0.0333,
+     "wealth": 0.0,
+     "rest": 0.0352,
+     "curiosity": 0.0044
+    },
+    "acts_per_night_last20": {
+     "insult": 169.1,
+     "drink": 24.4,
+     "sleep": 5.8,
+     "flee to": 1.3,
+     "look around": 0.2,
+     "take": 0.2,
+     "praise": 0.2,
+     "walk to": 0.1,
+     "wait": 0.1
+    },
+    "seconds": 36.2,
+    "decisions": 12581
+   },
+   "Sir Ada": {
+    "mean": [
+     0.3844,
+     0.0112
+    ],
+    "first20": [
+     0.487,
+     0.0339
+    ],
+    "last20": [
+     0.3488,
+     0.0164
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3119,
+     "safety": 0.0003,
+     "company": 0.018,
+     "standing": 0.0117,
+     "wealth": 0.0,
+     "rest": 0.0,
+     "curiosity": 0.0012
+    },
+    "acts_per_night_last20": {
+     "sleep": 37.1,
+     "walk to": 14.0,
+     "drink": 4.6,
+     "drop": 1.9,
+     "take": 1.8,
+     "tell": 1.7,
+     "praise": 1.4,
+     "open": 0.9,
+     "strike": 0.8,
+     "flee to": 0.5,
+     "offer": 0.5,
+     "defend": 0.5
+    },
+    "seconds": 25.2,
+    "decisions": 7605
+   },
+   "Oren": {
+    "mean": [
+     1.1222,
+     0.0218
+    ],
+    "first20": [
+     1.1864,
+     0.0499
+    ],
+    "last20": [
+     1.0797,
+     0.0299
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4194,
+     "safety": 0.0588,
+     "company": 0.0131,
+     "standing": 0.0211,
+     "wealth": 0.5549,
+     "rest": 0.0236,
+     "curiosity": 0.0
+    },
+    "acts_per_night_last20": {
+     "praise": 117.2,
+     "look around": 25.1,
+     "drink": 14.6,
+     "walk to": 7.7,
+     "take": 3.6,
+     "tell": 2.0,
+     "drop": 0.9,
+     "flee to": 0.8,
+     "offer": 0.5,
+     "gossip": 0.3,
+     "eat": 0.2,
+     "open": 0.1
+    },
+    "seconds": 33.7,
+    "decisions": 11439
+   },
+   "Fenn": {
+    "mean": [
+     0.874,
+     0.0162
+    ],
+    "first20": [
+     0.8931,
+     0.0366
+    ],
+    "last20": [
+     0.8083,
+     0.0318
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.482,
+     "safety": 0.0301,
+     "company": 0.1033,
+     "standing": 0.0544,
+     "wealth": 0.1268,
+     "rest": 0.0024,
+     "curiosity": 0.0072
+    },
+    "acts_per_night_last20": {
+     "look around": 40.0,
+     "sleep": 38.1,
+     "steal": 3.8,
+     "accuse": 0.1,
+     "insult": 0.1,
+     "tell": 0.1,
+     "defend": 0.1
+    },
+    "seconds": 33.6,
+    "decisions": 9078
+   },
+   "Marta": {
+    "mean": [
+     1.2017,
+     0.0506
+    ],
+    "first20": [
+     0.6567,
+     0.0905
+    ],
+    "last20": [
+     1.1787,
+     0.0935
+    ],
+    "deaths": 1,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.2722,
+     "safety": 0.1661,
+     "company": 0.5889,
+     "standing": 0.1543,
+     "wealth": 0.0,
+     "rest": 0.0099,
+     "curiosity": 0.0022
+    },
+    "acts_per_night_last20": {
+     "insult": 149.7,
+     "sit down": 23.4,
+     "drink": 5.7,
+     "eat": 2.4,
+     "flee to": 1.5,
+     "drop": 1.1,
+     "take": 1.1,
+     "defend": 0.5,
+     "look around": 0.5,
+     "wait": 0.5,
+     "ask": 0.2,
+     "steal": 0.1
+    },
+    "seconds": 54.8,
+    "decisions": 20656
+   }
+  },
+  "ppo-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     1.2422,
+     0.0425
+    ],
+    "first20": [
+     1.679,
+     0.0406
+    ],
+    "last20": [
+     0.6981,
+     0.0316
+    ],
+    "deaths": 5,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4314,
+     "safety": 0.1279,
+     "company": 0.1021,
+     "standing": 0.0283,
+     "wealth": 0.0,
+     "rest": 0.0001,
+     "curiosity": 0.0011
+    },
+    "acts_per_night_last20": {
+     "drink": 20.6,
+     "walk to": 16.5,
+     "take": 10.2,
+     "tell": 8.4,
+     "drop": 5.4,
+     "wait": 4.0,
+     "sit down": 4.0,
+     "flee to": 3.9,
+     "give": 3.6,
+     "gossip": 3.2,
+     "sleep": 2.0,
+     "praise": 1.8
+    },
+    "seconds": 32.3,
+    "decisions": 9167,
+    "truncated_menus": 0
+   },
+   "Sir Ada": {
+    "mean": [
+     0.7679,
+     0.0352
+    ],
+    "first20": [
+     1.0992,
+     0.0678
+    ],
+    "last20": [
+     0.4745,
+     0.0439
+    ],
+    "deaths": 3,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3317,
+     "safety": 0.0088,
+     "company": 0.0633,
+     "standing": 0.0678,
+     "wealth": 0.0,
+     "rest": 0.0001,
+     "curiosity": 0.0
+    },
+    "acts_per_night_last20": {
+     "drink": 16.9,
+     "look around": 10.8,
+     "wait": 9.1,
+     "walk to": 8.3,
+     "gossip": 7.0,
+     "tell": 6.3,
+     "sit down": 6.2,
+     "flee to": 3.9,
+     "accuse": 1.9,
+     "praise": 1.9,
+     "search": 1.8,
+     "insult": 1.5
+    },
+    "seconds": 29.1,
+    "decisions": 8893,
+    "truncated_menus": 0
+   },
+   "Oren": {
+    "mean": [
+     2.1118,
+     0.0324
+    ],
+    "first20": [
+     2.202,
+     0.055
+    ],
+    "last20": [
+     1.7383,
+     0.0705
+    ],
+    "deaths": 14,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4323,
+     "safety": 0.1496,
+     "company": 0.2235,
+     "standing": 0.1841,
+     "wealth": 0.7372,
+     "rest": 0.0016,
+     "curiosity": 0.0
+    },
+    "acts_per_night_last20": {
+     "walk to": 16.4,
+     "look around": 7.4,
+     "gossip": 7.2,
+     "take": 6.5,
+     "wait": 6.5,
+     "sleep": 6.5,
+     "drink": 5.8,
+     "flee to": 4.2,
+     "drop": 3.8,
+     "offer": 3.5,
+     "give": 3.0,
+     "search": 2.6
+    },
+    "seconds": 29.7,
+    "decisions": 8470,
+    "truncated_menus": 0
+   },
+   "Fenn": {
+    "mean": [
+     1.1758,
+     0.0458
+    ],
+    "first20": [
+     1.7839,
+     0.0418
+    ],
+    "last20": [
+     0.7556,
+     0.0222
+    ],
+    "deaths": 7,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4172,
+     "safety": 0.0393,
+     "company": 0.1226,
+     "standing": 0.1243,
+     "wealth": 0.0462,
+     "rest": 0.0075,
+     "curiosity": 0.0011
+    },
+    "acts_per_night_last20": {
+     "offer": 37.2,
+     "walk to": 20.4,
+     "steal": 13.2,
+     "flee to": 13.0,
+     "drink": 6.9,
+     "tell": 5.2,
+     "praise": 5.0,
+     "gossip": 4.2,
+     "ask": 3.6,
+     "take": 2.7,
+     "give": 2.4,
+     "sleep": 2.3
+    },
+    "seconds": 36.2,
+    "decisions": 11532,
+    "truncated_menus": 384
+   },
+   "Marta": {
+    "mean": [
+     0.8872,
+     0.0296
+    ],
+    "first20": [
+     1.1916,
+     0.0699
+    ],
+    "last20": [
+     0.6343,
+     0.031
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.1674,
+     "safety": 0.0333,
+     "company": 0.4227,
+     "standing": 0.0002,
+     "wealth": 0.0,
+     "rest": 0.0003,
+     "curiosity": 0.0002
+    },
+    "acts_per_night_last20": {
+     "take": 18.7,
+     "look around": 17.6,
+     "drop": 17.5,
+     "drink": 14.8,
+     "wait": 9.1,
+     "sit down": 5.3,
+     "flee to": 2.9,
+     "walk to": 2.5,
+     "sleep": 2.1,
+     "eat": 2.0,
+     "tell": 1.5,
+     "gossip": 1.3
+    },
+    "seconds": 30.2,
+    "decisions": 9379,
+    "truncated_menus": 0
+   }
+  },
+  "random-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     1.6267,
+     0.0254
+    ],
+    "first20": [
+     1.6013,
+     0.0617
+    ],
+    "last20": [
+     1.6139,
+     0.0483
+    ],
+    "deaths": 15,
+    "deaths_last20": 2,
+    "split_last20": {
+     "energy": 0.4743,
+     "safety": 0.5948,
+     "company": 0.3693,
+     "standing": 0.1577,
+     "wealth": 0.0,
+     "rest": 0.0074,
+     "curiosity": 0.0001
+    },
+    "acts_per_night_last20": {
+     "gossip": 7.3,
+     "walk to": 7.2,
+     "search": 5.3,
+     "strike": 5.3,
+     "tell": 5.0,
+     "look around": 4.5,
+     "wait": 4.4,
+     "ask": 4.3,
+     "praise": 4.2,
+     "sit down": 4.1,
+     "insult": 4.0,
+     "threaten": 3.9
+    },
+    "seconds": 17.6
+   },
+   "Sir Ada": {
+    "mean": [
+     1.1833,
+     0.0293
+    ],
+    "first20": [
+     1.1052,
+     0.0845
+    ],
+    "last20": [
+     1.1703,
+     0.0633
+    ],
+    "deaths": 7,
+    "deaths_last20": 2,
+    "split_last20": {
+     "energy": 0.3425,
+     "safety": 0.0646,
+     "company": 0.2025,
+     "standing": 0.5511,
+     "wealth": 0.0,
+     "rest": 0.0004,
+     "curiosity": 0.0007
+    },
+    "acts_per_night_last20": {
+     "walk to": 8.4,
+     "gossip": 7.5,
+     "wait": 5.5,
+     "sit down": 5.5,
+     "look around": 5.3,
+     "sleep": 5.1,
+     "ask": 5.0,
+     "take": 4.7,
+     "strike": 4.5,
+     "praise": 4.4,
+     "threaten": 4.3,
+     "tell": 4.0
+    },
+    "seconds": 16.5
+   },
+   "Oren": {
+    "mean": [
+     2.2651,
+     0.0244
+    ],
+    "first20": [
+     2.2437,
+     0.0558
+    ],
+    "last20": [
+     2.3873,
+     0.0345
+    ],
+    "deaths": 19,
+    "deaths_last20": 4,
+    "split_last20": {
+     "energy": 0.4526,
+     "safety": 0.4474,
+     "company": 0.2173,
+     "standing": 0.3666,
+     "wealth": 0.8628,
+     "rest": 0.0085,
+     "curiosity": 0.0
+    },
+    "acts_per_night_last20": {
+     "gossip": 8.4,
+     "strike": 6.2,
+     "walk to": 5.6,
+     "tell": 5.6,
+     "praise": 5.1,
+     "threaten": 5.0,
+     "ask": 5.0,
+     "search": 4.6,
+     "sleep": 4.3,
+     "insult": 4.0,
+     "sit down": 3.9,
+     "wait": 3.9
+    },
+    "seconds": 16.8
+   },
+   "Fenn": {
+    "mean": [
+     1.8064,
+     0.0219
+    ],
+    "first20": [
+     1.8331,
+     0.0501
+    ],
+    "last20": [
+     1.7983,
+     0.055
+    ],
+    "deaths": 24,
+    "deaths_last20": 6,
+    "split_last20": {
+     "energy": 0.4517,
+     "safety": 0.3216,
+     "company": 0.0496,
+     "standing": 0.058,
+     "wealth": 0.906,
+     "rest": 0.0002,
+     "curiosity": 0.0004
+    },
+    "acts_per_night_last20": {
+     "gossip": 7.5,
+     "walk to": 7.0,
+     "sit down": 5.5,
+     "sleep": 5.1,
+     "look around": 5.0,
+     "ask": 5.0,
+     "take": 4.8,
+     "strike": 4.8,
+     "threaten": 4.2,
+     "wait": 4.2,
+     "insult": 3.6,
+     "drop": 3.5
+    },
+    "seconds": 16.0
+   },
+   "Marta": {
+    "mean": [
+     1.1817,
+     0.0373
+    ],
+    "first20": [
+     1.1771,
+     0.0781
+    ],
+    "last20": [
+     1.1432,
+     0.0798
+    ],
+    "deaths": 9,
+    "deaths_last20": 2,
+    "split_last20": {
+     "energy": 0.2269,
+     "safety": 0.3313,
+     "company": 0.3382,
+     "standing": 0.1932,
+     "wealth": 0.0,
+     "rest": 0.0058,
+     "curiosity": 0.0002
+    },
+    "acts_per_night_last20": {
+     "gossip": 6.5,
+     "walk to": 6.0,
+     "take": 6.0,
+     "drop": 5.8,
+     "ask": 5.5,
+     "strike": 5.0,
+     "wait": 4.8,
+     "threaten": 4.3,
+     "look around": 4.3,
+     "insult": 4.2,
+     "praise": 4.1,
+     "sleep": 3.9
+    },
+    "seconds": 17.8
+   }
+  },
+  "rules-no[shout for help,shove]": {
+   "Tom": {
+    "mean": [
+     0.5868,
+     0.0166
+    ],
+    "first20": [
+     0.5826,
+     0.0421
+    ],
+    "last20": [
+     0.6215,
+     0.0335
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3907,
+     "safety": 0.2083,
+     "company": 0.0071,
+     "standing": 0.0,
+     "wealth": 0.0,
+     "rest": 0.0075,
+     "curiosity": 0.0
+    },
+    "acts_per_night_last20": {
+     "walk to": 27.9,
+     "wait": 13.8,
+     "flee to": 9.6,
+     "tell": 7.0,
+     "drink": 6.9,
+     "gossip": 4.5,
+     "sit down": 4.3,
+     "accuse": 2.8,
+     "take": 2.1,
+     "bandage": 1.5,
+     "look around": 1.4,
+     "help up": 1.1
+    },
+    "seconds": 17.5
+   },
+   "Sir Ada": {
+    "mean": [
+     0.611,
+     0.0322
+    ],
+    "first20": [
+     0.6086,
+     0.08
+    ],
+    "last20": [
+     0.5065,
+     0.0707
+    ],
+    "deaths": 4,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.3176,
+     "safety": 0.0137,
+     "company": 0.011,
+     "standing": 0.148,
+     "wealth": 0.0,
+     "rest": 0.0106,
+     "curiosity": 0.0
+    },
+    "acts_per_night_last20": {
+     "wait": 16.4,
+     "walk to": 14.9,
+     "strike": 11.7,
+     "accuse": 8.9,
+     "gossip": 6.2,
+     "drink": 5.8,
+     "search": 5.3,
+     "tell": 4.8,
+     "defend": 4.5,
+     "sit down": 3.0,
+     "take": 2.0,
+     "look around": 1.6
+    },
+    "seconds": 18.0
+   },
+   "Oren": {
+    "mean": [
+     1.4197,
+     0.0304
+    ],
+    "first20": [
+     1.4161,
+     0.0743
+    ],
+    "last20": [
+     1.5118,
+     0.0577
+    ],
+    "deaths": 1,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.4288,
+     "safety": 0.2328,
+     "company": 0.0201,
+     "standing": 0.0515,
+     "wealth": 0.723,
+     "rest": 0.0498,
+     "curiosity": 0.0
+    },
+    "acts_per_night_last20": {
+     "walk to": 17.9,
+     "accuse": 13.1,
+     "flee to": 11.6,
+     "wait": 9.8,
+     "strike": 9.0,
+     "drink": 5.3,
+     "gossip": 4.9,
+     "sit down": 4.9,
+     "search": 2.6,
+     "play": 2.4,
+     "tell": 1.9,
+     "take": 1.4
+    },
+    "seconds": 18.1
+   },
+   "Fenn": {
+    "mean": [
+     0.986,
+     0.0218
+    ],
+    "first20": [
+     1.0062,
+     0.0514
+    ],
+    "last20": [
+     0.9446,
+     0.0588
+    ],
+    "deaths": 6,
+    "deaths_last20": 1,
+    "split_last20": {
+     "energy": 0.4007,
+     "safety": 0.1742,
+     "company": 0.1087,
+     "standing": 0.1115,
+     "wealth": 0.0871,
+     "rest": 0.0343,
+     "curiosity": 0.0059
+    },
+    "acts_per_night_last20": {
+     "tell": 22.5,
+     "strike": 16.2,
+     "hide": 11.8,
+     "walk to": 11.7,
+     "flee to": 9.0,
+     "wait": 8.4,
+     "drink": 5.2,
+     "steal": 3.1,
+     "sit down": 3.0,
+     "take": 1.4,
+     "insult": 0.9,
+     "look around": 0.8
+    },
+    "seconds": 18.2
+   },
+   "Marta": {
+    "mean": [
+     0.2341,
+     0.0087
+    ],
+    "first20": [
+     0.2558,
+     0.0177
+    ],
+    "last20": [
+     0.198,
+     0.0139
+    ],
+    "deaths": 0,
+    "deaths_last20": 0,
+    "split_last20": {
+     "energy": 0.1131,
+     "safety": 0.0514,
+     "company": 0.025,
+     "standing": 0.0001,
+     "wealth": 0.0,
+     "rest": 0.0072,
+     "curiosity": 0.0
+    },
+    "acts_per_night_last20": {
+     "wait": 21.4,
+     "walk to": 17.1,
+     "drink": 8.4,
+     "gossip": 7.7,
+     "flee to": 4.8,
+     "accuse": 4.3,
+     "tell": 4.2,
+     "sit down": 3.0,
+     "take": 2.3,
+     "eat": 2.1,
+     "search": 1.8,
+     "look around": 1.6
+    },
+    "seconds": 17.8
+   }
+  }
+ },
+ "markdown": "DIAGNOSTIC (banned verbs off the focal menu). L0, seed 1, 100 nights, focal design (the other four on rules). Drive error of the focal character, sampled every 10 turns; mean over the 5 focal characters' own means, +- the standard error over those 5 (the focal is the unit: its nights are not independent).\n\n| chooser | all nights | nights 0-19 | nights 80-99 | deaths (all / last 20) | Tom last 20 | Sir Ada last 20 | Oren last 20 | Fenn last 20 | Marta last 20 | time |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| mind-no[shout for help,shove] | 0.929 +- 0.147 | 0.885 +- 0.142 | 0.883 +- 0.147 | 1 / 0 | 1.000 | 0.349 | 1.080 | 0.808 | 1.179 | 183.5 s |\n| mind:AK-no[shout for help,shove] | 0.901 +- 0.202 | 0.951 +- 0.161 | 0.893 +- 0.214 | 0 / 0 | 0.797 | 0.331 | 1.651 | 0.769 | 0.920 | 107.0 s |\n| mind:AKV-no[shout for help,shove] | 1.032 +- 0.189 | 1.162 +- 0.182 | 0.933 +- 0.208 | 22 / 0 | 0.948 | 0.421 | 1.675 | 0.914 | 0.707 | 107.1 s |\n| mind:AKVP-no[shout for help,shove] | 0.866 +- 0.135 | 0.857 +- 0.162 | 0.935 +- 0.140 | 2 / 0 | 0.798 | 0.492 | 1.321 | 0.960 | 1.103 | 113.4 s |\n| mind:AKVPE-no[shout for help,shove] | 0.785 +- 0.140 | 0.846 +- 0.183 | 0.821 +- 0.131 | 2 / 1 | 0.705 | 0.560 | 1.191 | 1.076 | 0.575 | 141.6 s |\n| mind:AKVPEW-no[shout for help,shove] | 0.869 +- 0.151 | 0.915 +- 0.176 | 0.867 +- 0.154 | 0 / 0 | 0.725 | 0.399 | 1.287 | 0.816 | 1.107 | 222.2 s |\n| bandit-no[shout for help,shove] | 0.978 +- 0.190 | 1.079 +- 0.229 | 0.871 +- 0.196 | 7 / 0 | 0.666 | 0.564 | 1.575 | 1.014 | 0.535 | 129.2 s |\n| ppo-no[shout for help,shove] | 1.237 +- 0.236 | 1.591 +- 0.202 | 0.860 +- 0.225 | 29 / 0 | 0.698 | 0.474 | 1.738 | 0.756 | 0.634 | 157.5 s |\n| rules-no[shout for help,shove] | 0.767 +- 0.202 | 0.774 +- 0.200 | 0.756 +- 0.223 | 11 / 1 | 0.622 | 0.506 | 1.512 | 0.945 | 0.198 | 89.6 s |\n| random-no[shout for help,shove] | 1.613 +- 0.204 | 1.592 +- 0.211 | 1.623 +- 0.229 | 74 / 16 | 1.614 | 1.170 | 2.387 | 1.798 | 1.143 | 84.7 s |\n\nError by drive, nights 80-99, mean over the focals:\n\n| chooser | energy | safety | company | standing | wealth | rest | curiosity |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| mind-no[shout for help,shove] | 0.393 | 0.086 | 0.199 | 0.055 | 0.136 | 0.014 | 0.003 |\n| mind:AK-no[shout for help,shove] | 0.395 | 0.080 | 0.165 | 0.035 | 0.157 | 0.048 | 0.011 |\n| mind:AKV-no[shout for help,shove] | 0.454 | 0.068 | 0.148 | 0.015 | 0.175 | 0.052 | 0.023 |\n| mind:AKVP-no[shout for help,shove] | 0.404 | 0.100 | 0.164 | 0.040 | 0.201 | 0.011 | 0.019 |\n| mind:AKVPE-no[shout for help,shove] | 0.394 | 0.057 | 0.115 | 0.026 | 0.201 | 0.008 | 0.017 |\n| mind:AKVPEW-no[shout for help,shove] | 0.449 | 0.076 | 0.143 | 0.032 | 0.153 | 0.007 | 0.011 |\n| bandit-no[shout for help,shove] | 0.390 | 0.153 | 0.114 | 0.133 | 0.061 | 0.010 | 0.005 |\n| ppo-no[shout for help,shove] | 0.356 | 0.072 | 0.187 | 0.081 | 0.157 | 0.002 | 0.001 |\n| rules-no[shout for help,shove] | 0.330 | 0.136 | 0.034 | 0.062 | 0.162 | 0.022 | 0.001 |\n| random-no[shout for help,shove] | 0.390 | 0.352 | 0.235 | 0.265 | 0.354 | 0.004 | 0.000 |\n\nPaired difference of nights 80-99 (chooser minus null, per focal; mean +- standard error over the 5 focals; below 0 = the chooser keeps itself better):\n\n| chooser | minus rules | minus PPO | minus bandit |\n| --- | --- | --- | --- |\n| mind-no[shout for help,shove] | +0.127 +- 0.251 | +0.023 +- 0.205 | +0.013 +- 0.207 |\n| mind:AK-no[shout for help,shove] | +0.137 +- 0.164 | +0.033 +- 0.076 | +0.023 +- 0.119 |\n| mind:AKV-no[shout for help,shove] | +0.176 +- 0.111 | +0.073 +- 0.061 | +0.062 +- 0.081 |\n| mind:AKVP-no[shout for help,shove] | +0.178 +- 0.191 | +0.075 +- 0.145 | +0.064 +- 0.140 |\n| mind:AKVPE-no[shout for help,shove] | +0.065 +- 0.112 | -0.039 +- 0.142 | -0.049 +- 0.084 |\n| mind:AKVPEW-no[shout for help,shove] | +0.110 +- 0.207 | +0.006 +- 0.148 | -0.004 +- 0.155 |\n| bandit-no[shout for help,shove] | +0.114 +- 0.056 | +0.011 +- 0.075 | \u2014 |\n| ppo-no[shout for help,shove] | +0.104 +- 0.107 | \u2014 | -0.011 +- 0.075 |\n| rules-no[shout for help,shove] | \u2014 | -0.104 +- 0.107 | -0.114 +- 0.056 |\n| random-no[shout for help,shove] | +0.866 +- 0.056 | +0.762 +- 0.096 | +0.752 +- 0.065 |"
+}

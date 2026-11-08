@@ -1,0 +1,4 @@
+{"what": "lies told under rules, single nights (no lifetime carry), seeds 0-29, 300 turns; script ~/.cache/mark1-build/mindL/lies.py",
+ "flags_off": {"lies": 113, "found_out": 7, "believed_not_found_at_end": 18, "not_believed_or_replaced": 88},
+ "check": {"lies": 125, "found_out": 23, "believed_not_found_at_end": 3, "not_believed_or_replaced": 99},
+ "all": {"lies": 137, "found_out": 23, "believed_not_found_at_end": 5, "not_believed_or_replaced": 109}}

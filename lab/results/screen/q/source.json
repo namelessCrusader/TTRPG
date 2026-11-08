@@ -1,0 +1,29 @@
+{
+ "labeled": "describe_ab q/new.jsonl (the src describe)",
+ "src": {
+  "header": true,
+  "spelling": "mark1-mind-v1",
+  "root": "/home/nisargparikh/.cache/mark1-build/base15",
+  "describe_sha256": "3c26c05f0f8ab51e12182034be81af3ef0d6a159566e20f4ab6e1e22d698286f",
+  "rendered": {
+   "things": 1260,
+   "lure": 360,
+   "ablate": 600,
+   "present": 1320,
+   "pipe": 1080,
+   "creative": 240,
+   "state": 720,
+   "state2": 1080,
+   "places": 1140,
+   "people": 1140,
+   "personality": 45,
+   "personality2": 140
+  },
+  "refused": 0,
+  "not_rendered": {
+   "die": "a fair die: every face is acceptable",
+   "primitives": "questions about the scene, not decisions; no fields to render"
+  }
+ },
+ "m9": "the first 250 of m9/q/rooms.jsonl and of m9/q/voxel.jsonl"
+}

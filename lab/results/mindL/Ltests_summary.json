@@ -1,0 +1,28 @@
+{
+ "lifetimes": {
+  "L04": 80,
+  "L12": 210,
+  "L35": 100
+ },
+ "cpu_hours": {
+  "L04": 3.46,
+  "L12": 6.66,
+  "L35": 4.03
+ },
+ "verdicts": {
+  "L0": {
+   "mind": true,
+   "bandit": true,
+   "ppo": true
+  },
+  "L4": {
+   "mind": false,
+   "bandit": false,
+   "ppo": false
+  },
+  "L1": "FAIL: the mind does not show it",
+  "L2": "FAIL: the mind does not show it",
+  "L3": "FAIL: the mind's trust does not follow the first betrayal within the window",
+  "L5": "FAIL: the mind does not show it"
+ }
+}

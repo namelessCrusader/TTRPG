@@ -1,0 +1,1009 @@
+{
+ "test": "L3",
+ "switch_nights": [
+  80,
+  160,
+  200,
+  280
+ ],
+ "window": 10,
+ "measure": "response to a betrayal (P-kind turns P-hard at night S): treat(Fenn) over nights [S, S+10) minus over [S-20, S); below 0 = it trusts Fenn less within 10 nights",
+ "first_betrayal_A": {
+  "mind": {
+   "value": {
+    "mean": -0.0,
+    "lo": -0.1208,
+    "hi": 0.1208,
+    "n": 10
+   },
+   "shows": false
+  },
+  "bandit": {
+   "value": {
+    "mean": -0.377,
+    "lo": -0.6473,
+    "hi": -0.1068,
+    "n": 10
+   },
+   "shows": true,
+   "mind_minus": {
+    "mean": 0.377,
+    "lo": 0.0641,
+    "hi": 0.69,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "ppo": {
+   "value": {
+    "mean": -0.0063,
+    "lo": -0.1761,
+    "hi": 0.1635,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": 0.0063,
+    "lo": -0.1208,
+    "hi": 0.1334,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "rules": {
+   "value": {
+    "mean": -0.026,
+    "lo": -0.1435,
+    "hi": 0.0916,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": 0.026,
+    "lo": -0.1471,
+    "hi": 0.199,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "random": {
+   "value": {
+    "mean": 0.0304,
+    "lo": -0.0248,
+    "hi": 0.0857,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.0305,
+    "lo": -0.1659,
+    "hi": 0.105,
+    "n": 10
+   },
+   "mind_beats": false
+  }
+ },
+ "second_betrayal_A": {
+  "mind": {
+   "value": {
+    "mean": -0.0705,
+    "lo": -0.3786,
+    "hi": 0.2377,
+    "n": 10
+   },
+   "shows": false
+  },
+  "bandit": {
+   "value": {
+    "mean": -0.1164,
+    "lo": -0.2123,
+    "hi": -0.0204,
+    "n": 10
+   },
+   "shows": true,
+   "mind_minus": {
+    "mean": 0.0459,
+    "lo": -0.2883,
+    "hi": 0.38,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "ppo": {
+   "value": {
+    "mean": -0.0302,
+    "lo": -0.1242,
+    "hi": 0.0638,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.0403,
+    "lo": -0.3495,
+    "hi": 0.2689,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "rules": {
+   "value": {
+    "mean": 0.0136,
+    "lo": -0.069,
+    "hi": 0.0962,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.0841,
+    "lo": -0.4052,
+    "hi": 0.237,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "random": {
+   "value": {
+    "mean": 0.0302,
+    "lo": -0.031,
+    "hi": 0.0914,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.1007,
+    "lo": -0.4428,
+    "hi": 0.2415,
+    "n": 10
+   },
+   "mind_beats": false
+  }
+ },
+ "first_betrayal_B_same_age": {
+  "mind": {
+   "value": {
+    "mean": 0.1536,
+    "lo": -0.0034,
+    "hi": 0.3106,
+    "n": 10
+   },
+   "shows": false
+  },
+  "bandit": {
+   "value": {
+    "mean": -0.1615,
+    "lo": -0.2542,
+    "hi": -0.0687,
+    "n": 10
+   },
+   "shows": true,
+   "mind_minus": {
+    "mean": 0.3151,
+    "lo": 0.0987,
+    "hi": 0.5315,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "ppo": {
+   "value": {
+    "mean": 0.0909,
+    "lo": -0.1014,
+    "hi": 0.2832,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": 0.0627,
+    "lo": -0.1917,
+    "hi": 0.3172,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "rules": {
+   "value": {
+    "mean": -0.0407,
+    "lo": -0.2274,
+    "hi": 0.1459,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": 0.1944,
+    "lo": -0.0015,
+    "hi": 0.3902,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "random": {
+   "value": {
+    "mean": -0.0253,
+    "lo": -0.0705,
+    "hi": 0.0198,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": 0.179,
+    "lo": 0.002,
+    "hi": 0.356,
+    "n": 10
+   },
+   "mind_beats": false
+  }
+ },
+ "second_minus_first_A": {
+  "mind": {
+   "value": {
+    "mean": -0.0705,
+    "lo": -0.4092,
+    "hi": 0.2683,
+    "n": 10
+   },
+   "shows": false
+  },
+  "bandit": {
+   "value": {
+    "mean": 0.2607,
+    "lo": -0.0469,
+    "hi": 0.5682,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.3312,
+    "lo": -0.805,
+    "hi": 0.1426,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "ppo": {
+   "value": {
+    "mean": -0.0239,
+    "lo": -0.2132,
+    "hi": 0.1653,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.0466,
+    "lo": -0.3713,
+    "hi": 0.2782,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "rules": {
+   "value": {
+    "mean": 0.0396,
+    "lo": -0.0581,
+    "hi": 0.1373,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.1101,
+    "lo": -0.4857,
+    "hi": 0.2655,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "random": {
+   "value": {
+    "mean": -0.0003,
+    "lo": -0.0911,
+    "hi": 0.0906,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.0702,
+    "lo": -0.4259,
+    "hi": 0.2854,
+    "n": 10
+   },
+   "mind_beats": false
+  }
+ },
+ "second_A_minus_first_B_same_age": {
+  "mind": {
+   "value": {
+    "mean": -0.2241,
+    "lo": -0.5008,
+    "hi": 0.0526,
+    "n": 10
+   },
+   "shows": false
+  },
+  "bandit": {
+   "value": {
+    "mean": 0.0451,
+    "lo": -0.0146,
+    "hi": 0.1048,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.2692,
+    "lo": -0.5372,
+    "hi": -0.0013,
+    "n": 10
+   },
+   "mind_beats": true
+  },
+  "ppo": {
+   "value": {
+    "mean": -0.1211,
+    "lo": -0.3309,
+    "hi": 0.0886,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.103,
+    "lo": -0.4412,
+    "hi": 0.2352,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "rules": {
+   "value": {
+    "mean": 0.0544,
+    "lo": -0.1075,
+    "hi": 0.2162,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.2785,
+    "lo": -0.5742,
+    "hi": 0.0172,
+    "n": 10
+   },
+   "mind_beats": false
+  },
+  "random": {
+   "value": {
+    "mean": 0.0555,
+    "lo": -0.0136,
+    "hi": 0.1246,
+    "n": 10
+   },
+   "shows": false,
+   "mind_minus": {
+    "mean": -0.2797,
+    "lo": -0.5945,
+    "hi": 0.0352,
+    "n": 10
+   },
+   "mind_beats": false
+  }
+ },
+ "mind_internal": {
+  "what": "change of p_harm(Fenn, provocations) over the first 5 nights after the switch: [A first betrayal, A second, B first at the same age]",
+  "ci": [
+   {
+    "mean": 0.0179,
+    "lo": -0.0114,
+    "hi": 0.0472,
+    "n": 10
+   },
+   {
+    "mean": 0.0218,
+    "lo": -0.0283,
+    "hi": 0.0719,
+    "n": 10
+   },
+   {
+    "mean": -0.0003,
+    "lo": -0.001,
+    "hi": 0.0004,
+    "n": 10
+   }
+  ]
+ },
+ "plain": {
+  "mind": {
+   "A_before_b1": {
+    "kind_share": 0.384,
+    "prov_share": 0.39,
+    "kind_per_night": 1.37,
+    "prov_per_night": 26.165,
+    "from_kind_per_night": 0.085,
+    "from_harsh_per_night": 0.0,
+    "near": 0.485
+   },
+   "A_after_b1": {
+    "kind_share": 0.309,
+    "prov_share": 0.315,
+    "kind_per_night": 2.53,
+    "prov_per_night": 8.04,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.12,
+    "near": 0.544
+   },
+   "A_before_b4": {
+    "kind_share": 0.292,
+    "prov_share": 0.402,
+    "kind_per_night": 1.205,
+    "prov_per_night": 27.73,
+    "from_kind_per_night": 0.04,
+    "from_harsh_per_night": 0.0,
+    "near": 0.596
+   },
+   "A_after_b4": {
+    "kind_share": 0.155,
+    "prov_share": 0.336,
+    "kind_per_night": 2.36,
+    "prov_per_night": 49.51,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.13,
+    "near": 0.667
+   },
+   "B_after_b4": {
+    "kind_share": 0.222,
+    "prov_share": 0.106,
+    "kind_per_night": 12.94,
+    "prov_per_night": 0.26,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.02,
+    "near": 0.634
+   },
+   "A_test": {
+    "kind_share": 0.224,
+    "prov_share": 0.41,
+    "kind_per_night": 2.77,
+    "prov_per_night": 13.03,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.545
+   },
+   "B_test": {
+    "kind_share": 0.121,
+    "prov_share": 0.242,
+    "kind_per_night": 6.94,
+    "prov_per_night": 0.745,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.606
+   }
+  },
+  "bandit": {
+   "A_before_b1": {
+    "kind_share": 0.474,
+    "prov_share": 0.244,
+    "kind_per_night": 2.75,
+    "prov_per_night": 33.885,
+    "from_kind_per_night": 0.4,
+    "from_harsh_per_night": 0.0,
+    "near": 0.518
+   },
+   "A_after_b1": {
+    "kind_share": 0.226,
+    "prov_share": 0.373,
+    "kind_per_night": 1.35,
+    "prov_per_night": 49.16,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 2.0,
+    "near": 0.663
+   },
+   "A_before_b4": {
+    "kind_share": 0.148,
+    "prov_share": 0.266,
+    "kind_per_night": 1.635,
+    "prov_per_night": 37.14,
+    "from_kind_per_night": 0.265,
+    "from_harsh_per_night": 0.0,
+    "near": 0.533
+   },
+   "A_after_b4": {
+    "kind_share": 0.101,
+    "prov_share": 0.336,
+    "kind_per_night": 1.02,
+    "prov_per_night": 44.75,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 1.49,
+    "near": 0.639
+   },
+   "B_after_b4": {
+    "kind_share": 0.091,
+    "prov_share": 0.339,
+    "kind_per_night": 0.88,
+    "prov_per_night": 48.81,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 1.46,
+    "near": 0.652
+   },
+   "A_test": {
+    "kind_share": 0.323,
+    "prov_share": 0.267,
+    "kind_per_night": 1.27,
+    "prov_per_night": 36.735,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.533
+   },
+   "B_test": {
+    "kind_share": 0.2,
+    "prov_share": 0.236,
+    "kind_per_night": 1.905,
+    "prov_per_night": 32.835,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.498
+   }
+  },
+  "ppo": {
+   "A_before_b1": {
+    "kind_share": 0.499,
+    "prov_share": 0.534,
+    "kind_per_night": 4.255,
+    "prov_per_night": 2.51,
+    "from_kind_per_night": 1.39,
+    "from_harsh_per_night": 0.0,
+    "near": 0.315
+   },
+   "A_after_b1": {
+    "kind_share": 0.481,
+    "prov_share": 0.522,
+    "kind_per_night": 2.46,
+    "prov_per_night": 1.21,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.81,
+    "near": 0.296
+   },
+   "A_before_b4": {
+    "kind_share": 0.675,
+    "prov_share": 0.65,
+    "kind_per_night": 23.56,
+    "prov_per_night": 0.905,
+    "from_kind_per_night": 1.625,
+    "from_harsh_per_night": 0.0,
+    "near": 0.368
+   },
+   "A_after_b4": {
+    "kind_share": 0.587,
+    "prov_share": 0.592,
+    "kind_per_night": 20.82,
+    "prov_per_night": 0.43,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.23,
+    "near": 0.347
+   },
+   "B_after_b4": {
+    "kind_share": 0.606,
+    "prov_share": 0.514,
+    "kind_per_night": 10.06,
+    "prov_per_night": 0.55,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.35,
+    "near": 0.319
+   },
+   "A_test": {
+    "kind_share": 0.609,
+    "prov_share": 0.612,
+    "kind_per_night": 7.26,
+    "prov_per_night": 0.625,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.324
+   },
+   "B_test": {
+    "kind_share": 0.606,
+    "prov_share": 0.705,
+    "kind_per_night": 8.195,
+    "prov_per_night": 1.35,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.303
+   }
+  },
+  "rules": {
+   "A_before_b1": {
+    "kind_share": 0.46,
+    "prov_share": 0.008,
+    "kind_per_night": 1.81,
+    "prov_per_night": 0.005,
+    "from_kind_per_night": 0.24,
+    "from_harsh_per_night": 0.0,
+    "near": 0.401
+   },
+   "A_after_b1": {
+    "kind_share": 0.426,
+    "prov_share": 0.0,
+    "kind_per_night": 1.44,
+    "prov_per_night": 0.0,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.423
+   },
+   "A_before_b4": {
+    "kind_share": 0.477,
+    "prov_share": 0.002,
+    "kind_per_night": 2.24,
+    "prov_per_night": 0.005,
+    "from_kind_per_night": 0.29,
+    "from_harsh_per_night": 0.0,
+    "near": 0.404
+   },
+   "A_after_b4": {
+    "kind_share": 0.488,
+    "prov_share": 0.0,
+    "kind_per_night": 1.9,
+    "prov_per_night": 0.0,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.405
+   },
+   "B_after_b4": {
+    "kind_share": 0.452,
+    "prov_share": 0.045,
+    "kind_per_night": 1.58,
+    "prov_per_night": 0.13,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.05,
+    "near": 0.388
+   },
+   "A_test": {
+    "kind_share": 0.329,
+    "prov_share": 0.002,
+    "kind_per_night": 1.155,
+    "prov_per_night": 0.01,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.401
+   },
+   "B_test": {
+    "kind_share": 0.397,
+    "prov_share": 0.0,
+    "kind_per_night": 1.61,
+    "prov_per_night": 0.0,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.408
+   }
+  },
+  "random": {
+   "A_before_b1": {
+    "kind_share": 0.253,
+    "prov_share": 0.222,
+    "kind_per_night": 3.04,
+    "prov_per_night": 3.43,
+    "from_kind_per_night": 1.35,
+    "from_harsh_per_night": 0.0,
+    "near": 0.364
+   },
+   "A_after_b1": {
+    "kind_share": 0.297,
+    "prov_share": 0.236,
+    "kind_per_night": 3.54,
+    "prov_per_night": 3.6,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 1.83,
+    "near": 0.412
+   },
+   "A_before_b4": {
+    "kind_share": 0.259,
+    "prov_share": 0.226,
+    "kind_per_night": 2.985,
+    "prov_per_night": 3.31,
+    "from_kind_per_night": 1.34,
+    "from_harsh_per_night": 0.0,
+    "near": 0.354
+   },
+   "A_after_b4": {
+    "kind_share": 0.293,
+    "prov_share": 0.23,
+    "kind_per_night": 3.4,
+    "prov_per_night": 3.55,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 1.79,
+    "near": 0.393
+   },
+   "B_after_b4": {
+    "kind_share": 0.268,
+    "prov_share": 0.231,
+    "kind_per_night": 3.04,
+    "prov_per_night": 3.36,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 1.75,
+    "near": 0.37
+   },
+   "A_test": {
+    "kind_share": 0.258,
+    "prov_share": 0.221,
+    "kind_per_night": 2.97,
+    "prov_per_night": 3.425,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.366
+   },
+   "B_test": {
+    "kind_share": 0.276,
+    "prov_share": 0.216,
+    "kind_per_night": 3.145,
+    "prov_per_night": 3.405,
+    "from_kind_per_night": 0.0,
+    "from_harsh_per_night": 0.0,
+    "near": 0.356
+   }
+  }
+ },
+ "per_seed": {
+  "first_A": {
+   "mind": {
+    "1": 0.014285714285714346,
+    "2": 0.16628263538910704,
+    "3": -0.0003333333333333333,
+    "4": 0.05555555555555558,
+    "5": 0.27972516433636396,
+    "6": 0.0,
+    "7": 0.0,
+    "8": -0.17234848484848486,
+    "9": -0.3432371146204187,
+    "10": 0.0
+   },
+   "bandit": {
+    "1": -0.19776557266020361,
+    "2": -0.9020916907833832,
+    "3": -1.050675567687179,
+    "4": -0.3220920394647082,
+    "5": 0.06520952732138968,
+    "6": -0.03283068764944064,
+    "7": -0.3584255437042221,
+    "8": -0.2449148122715855,
+    "9": -0.05682258823798747,
+    "10": -0.6700083580746538
+   },
+   "ppo": {
+    "1": 0.01962325210489224,
+    "2": -0.11138505450161174,
+    "3": -0.10935179685179686,
+    "4": -0.08387681045169443,
+    "5": 0.3209987248177379,
+    "6": 0.08874443982803115,
+    "7": 0.2311564925095433,
+    "8": 0.0901048160066491,
+    "9": -0.5493136332698588,
+    "10": 0.04025291763360572
+   },
+   "rules": {
+    "1": 0.22958397534668717,
+    "2": 0.10963062911114857,
+    "3": -0.1833996568215837,
+    "4": 0.07509968985378823,
+    "5": -0.3053814002089864,
+    "6": 0.1306122448979592,
+    "7": -0.1315524193548387,
+    "8": -0.015873015873015872,
+    "9": -0.12668463611859837,
+    "10": -0.04166666666666666
+   },
+   "random": {
+    "1": -0.03616618027881768,
+    "2": 0.09158494613816487,
+    "3": 0.11793188181947686,
+    "4": 0.059993634839789034,
+    "5": 0.01948484289662128,
+    "6": -0.1434967316297216,
+    "7": 0.06529568180313336,
+    "8": 0.09506438869535147,
+    "9": 0.038683513234366446,
+    "10": -0.003922060556243473
+   }
+  },
+  "second_A": {
+   "mind": {
+    "1": 0.4375,
+    "2": -0.22701252236135955,
+    "3": 0.0,
+    "4": -0.3333333333333333,
+    "5": 0.00029922202274090814,
+    "6": -0.0013247539742619052,
+    "7": -1.0559603821931483,
+    "8": -0.02523543773979775,
+    "9": 0.00016666666666666666,
+    "10": 0.5
+   },
+   "bandit": {
+    "1": -0.17822346295709213,
+    "2": 0.04698904862700182,
+    "3": 0.009438699603241785,
+    "4": -0.06469320272301182,
+    "5": -0.2523974559289761,
+    "6": 0.026466064294028535,
+    "7": -0.22370534544428192,
+    "8": -0.21106245188235512,
+    "9": 0.00012414224367957027,
+    "10": -0.31652769644599965
+   },
+   "ppo": {
+    "1": 0.09837339244189702,
+    "2": 0.09552063902042374,
+    "3": -0.246831955922865,
+    "4": 0.05896019977345279,
+    "5": 0.07517556422665905,
+    "6": -0.19587382419765736,
+    "7": -0.04932728868090086,
+    "8": -0.16836646499567848,
+    "9": -0.03985642946317103,
+    "10": 0.06999999999999995
+   },
+   "rules": {
+    "1": 0.2666666666666666,
+    "2": -0.05095283146371132,
+    "3": -0.13177026535805159,
+    "4": 0.11728074727555782,
+    "5": -0.07164382229999028,
+    "6": -0.04473418006069463,
+    "7": 0.07668231611893589,
+    "8": 0.01019955654101995,
+    "9": 0.02298850574712641,
+    "10": -0.058321479374110974
+   },
+   "random": {
+    "1": -0.08462873759013012,
+    "2": -0.0391141598827211,
+    "3": -0.06081013332517257,
+    "4": 0.05634313788835302,
+    "5": -0.03082724567099568,
+    "6": 0.12801741795587226,
+    "7": 0.16156926031581098,
+    "8": 0.1017739565440994,
+    "9": -0.005626849579941279,
+    "10": 0.07519539704400782
+   }
+  },
+  "first_B": {
+   "mind": {
+    "1": 0.6131856638452944,
+    "2": -0.0256916996047431,
+    "3": 0.0,
+    "4": 0.07423425022199587,
+    "5": 0.00019743336623889436,
+    "6": -0.00033467202141900936,
+    "7": 0.14480483087280355,
+    "8": 0.36403025311386616,
+    "9": 0.0,
+    "10": 0.3658406200535288
+   },
+   "bandit": {
+    "1": -0.2671719602914293,
+    "2": -0.16237633684257408,
+    "3": -0.03480121979888551,
+    "4": -0.15135762417532211,
+    "5": -0.3269752222955763,
+    "6": 0.004057538491990809,
+    "7": -0.21202783389690313,
+    "8": -0.09400670950994794,
+    "9": -0.010245032183739733,
+    "10": -0.35961017260752004
+   },
+   "ppo": {
+    "1": -0.1256148046401715,
+    "2": 0.39705811546054215,
+    "3": -0.1131758097021438,
+    "4": 0.1743002166536306,
+    "5": 0.24305230288836854,
+    "6": -0.082927566913655,
+    "7": -0.11958632019115889,
+    "8": 0.65359477124183,
+    "9": -0.02483492901947837,
+    "10": -0.09283950617283948
+   },
+   "rules": {
+    "1": 0.14615384615384613,
+    "2": -0.21208644100210367,
+    "3": -0.11818528402592454,
+    "4": 0.10353753235547891,
+    "5": -0.6896139743748197,
+    "6": 0.1594637855142057,
+    "7": 0.17132006846384254,
+    "8": -0.060256410256410264,
+    "9": 0.04359925788497221,
+    "10": 0.04863221884498481
+   },
+   "random": {
+    "1": -0.028127060927016667,
+    "2": 0.02822920965733261,
+    "3": -0.026751696804180825,
+    "4": 0.0007275254120697183,
+    "5": -0.1234098846721702,
+    "6": 0.10485306549738818,
+    "7": -0.03229731581617443,
+    "8": -0.07721151922114813,
+    "9": -0.02012003615781524,
+    "10": -0.07933964167614482
+   }
+  },
+  "second_minus_first_same_age": {
+   "mind": {
+    "1": -0.17568566384529438,
+    "2": -0.20132082275661645,
+    "3": 0.0,
+    "4": -0.4075675835553292,
+    "5": 0.00010178865650201378,
+    "6": -0.0009900819528428958,
+    "7": -1.2007652130659519,
+    "8": -0.3892656908536639,
+    "9": 0.00016666666666666666,
+    "10": 0.1341593799464712
+   },
+   "bandit": {
+    "1": 0.08894849733433718,
+    "2": 0.2093653854695759,
+    "3": 0.04423991940212729,
+    "4": 0.08666442145231029,
+    "5": 0.07457776636660018,
+    "6": 0.022408525802037726,
+    "7": -0.011677511547378783,
+    "8": -0.11705574237240718,
+    "9": 0.010369174427419303,
+    "10": 0.04308247616152039
+   },
+   "ppo": {
+    "1": 0.22398819708206852,
+    "2": -0.3015374764401184,
+    "3": -0.1336561462207212,
+    "4": -0.11534001688017781,
+    "5": -0.1678767386617095,
+    "6": -0.11294625728400237,
+    "7": 0.07025903151025803,
+    "8": -0.8219612362375084,
+    "9": -0.015021500443692659,
+    "10": 0.16283950617283943
+   },
+   "rules": {
+    "1": 0.12051282051282047,
+    "2": 0.16113360953839234,
+    "3": -0.013584981332127044,
+    "4": 0.013743214920078906,
+    "5": 0.6179701520748295,
+    "6": -0.20419796557490033,
+    "7": -0.09463775234490665,
+    "8": 0.07045596679743021,
+    "9": -0.0206107521378458,
+    "10": -0.10695369821909578
+   },
+   "random": {
+    "1": -0.056501676663113454,
+    "2": -0.06734336954005371,
+    "3": -0.03405843652099175,
+    "4": 0.0556156124762833,
+    "5": 0.09258263900117453,
+    "6": 0.023164352458484083,
+    "7": 0.1938665761319854,
+    "8": 0.17898547576524754,
+    "9": 0.014493186577873962,
+    "10": 0.15453503872015265
+   }
+  }
+ },
+ "verdict": "FAIL: the mind's trust does not follow the first betrayal within the window",
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10
+ ],
+ "lifetimes": {
+  "L04": 80,
+  "L12": 210,
+  "L35": 100
+ },
+ "cpu_hours": {
+  "L04": 3.46,
+  "L12": 6.66,
+  "L35": 4.03
+ }
+}

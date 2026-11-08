@@ -1,0 +1,16 @@
+2026-09-24 15:22
+base  random A: target 13%  legs 22%  hands 41%  mouth 29%  | B: learned 16  at box 12  opened 11  key 3  at door 6  unlocked 0  door open 0  OUT 0  /30  (0s)
+base  words  A: target 34%  legs 23%  hands 22%  mouth 4%  | B: learned 19  at box 13  opened 6  key 3  at door 10  unlocked 0  door open 0  OUT 0  /30  (0s)
+opts  random A: target 12%  legs 24%  hands 36%  mouth 28%  | B: learned 19  at box 11  opened 8  key 6  at door 4  unlocked 1  door open 1  OUT 0  /30  (0s)
+opts  words  A: target 32%  legs 29%  hands 24%  mouth 4%  | B: learned 18  at box 24  opened 6  key 6  at door 5  unlocked 0  door open 0  OUT 0  /30  (0s)
+view  random A: target 11%  legs 22%  hands 36%  mouth 33%  | B: learned 19  at box 15  opened 11  key 8  at door 7  unlocked 2  door open 0  OUT 0  /30  (0s)
+view  words  A: target 34%  legs 23%  hands 23%  mouth 2%  | B: learned 17  at box 13  opened 5  key 3  at door 6  unlocked 0  door open 0  OUT 0  /30  (0s)
+both  random A: target 13%  legs 24%  hands 37%  mouth 29%  | B: learned 18  at box 11  opened 9  key 4  at door 5  unlocked 0  door open 0  OUT 0  /30  (0s)
+both  words  A: target 32%  legs 30%  hands 22%  mouth 3%  | B: learned 19  at box 22  opened 10  key 9  at door 2  unlocked 0  door open 0  OUT 0  /30  (0s)
+
+2026-09-24 15:38
+base  laya   A: target 33%  legs 42%  hands 44%  mouth 59%  | B: learned 6  at box 7  opened 4  key 2  at door 11  unlocked 1  door open 0  OUT 0  /30  (160s)
+opts  laya   A: target 39%  legs 41%  hands 44%  mouth 59%  | B: learned 4  at box 1  opened 0  key 0  at door 3  unlocked 0  door open 0  OUT 0  /30  (237s)
+view  laya   A: target 42%  legs 43%  hands 43%  mouth 20%  | B: learned 5  at box 5  opened 2  key 2  at door 4  unlocked 0  door open 0  OUT 0  /30  (225s)
+both  laya   A: target 38%  legs 43%  hands 43%  mouth 20%  | B: learned 5  at box 1  opened 0  key 0  at door 4  unlocked 0  door open 0  OUT 0  /30  (290s)
+
