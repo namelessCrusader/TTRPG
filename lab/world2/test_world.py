@@ -716,6 +716,256 @@ def test_unknown_flag_is_refused():
     raise AssertionError("an unknown flag was accepted")
 
 
+# ---------------------------------------------------------------- the inn fix (2026-11-08): meals, partner, news, calm
+def _fix(flags, seed=0, **kw):
+    w = World(seed=seed, flags=flags, **kw)
+    _quiet(w)
+    return w
+
+
+def test_fix_flags_are_new_and_all2_has_none_of_them():
+    from lab.world2.world import ALL3, NEW_FLAGS
+    assert not set(NEW_FLAGS) & set(World(flags="all2").flags)
+    assert set(World(flags="all3").flags) == set(FLAGS) | set(NEW_FLAGS) == set(ALL3)
+    try:
+        World(flags=("meals",))                      # meals needs the cook's trade
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("meals without trade was accepted")
+
+
+def test_meals_a_portion_feeds_a_little_and_the_pot_stays():
+    from lab.world2.world import PORTION, STOCK
+    w = _fix(("trade", "meals"))
+    marta = w.people["Marta"]
+    assert w.portions == STOCK and "the bowl of stew" not in w.things
+    assert w.things["the pot of stew"]["at"] == "Marta"
+    marta.hunger = 0.8
+    _act(w, "Marta", "eat a portion of the pot of stew")
+    assert abs(marta.hunger - (0.8 - PORTION)) < 1e-9
+    assert w.portions["the pot of stew"] == STOCK["the pot of stew"] - 1 and w.things["the pot of stew"]["at"] == "Marta"
+    marta.hunger = 0.05                                  # a full stomach holds no more
+    assert not any(t.startswith("eat") for t in _texts(w, "Marta"))
+    # the whole supply can feed five people through a night, with effort (and not with none)
+    assert sum(STOCK.values()) * PORTION >= 5 * (0.003 * 300 + 0.3 - 0.3)
+    # the supply is a dial
+    assert World(flags=("trade", "meals"), supply=0.5).portions["the pot of stew"] == 6
+    assert World(flags=("trade", "meals"), supply=0.0).portions["the loaf of bread"] == 1   # never none at all
+
+
+def test_meals_serving_costs_a_fed_giver_a_portion_and_feeds_a_hungry_one():
+    from lab.world2.world import PORTION
+    w = _fix(("trade", "meals"))
+    marta, tom = w.people["Marta"], w.people["Tom"]
+    marta.hunger, tom.hunger, tom.aff["Marta"] = 0.05, 0.9, 0.0
+    n0 = w.portions["the pot of stew"]
+    _act(w, "Marta", "serve Tom a portion of the pot of stew")
+    assert abs(tom.hunger - (0.9 - PORTION)) < 1e-9 and marta.hunger == 0.05      # the giver did not lose any need
+    assert w.portions["the pot of stew"] == n0 - 1 and tom.aff["Marta"] >= 0.3
+    # a whole pot is not handed over: the portions are shared
+    assert not any(t.startswith("give the pot") for t in _texts(w, "Marta"))
+    # the one asked answers by serving, and the request is cleared
+    _act(w, "Tom", "ask Marta for a portion of the pot of stew")
+    opts = {o["text"]: o for o in w.options(marta)}
+    assert opts["serve Tom a portion of the pot of stew"]["f"]["asked"] == 1.0
+    _act(w, "Marta", "serve Tom a portion of the pot of stew")
+    assert "Tom" not in marta.requests
+    # the rules score serves the hungry asker and not a stranger it distrusts
+    marta.aff["Tom"], marta.liars.pop("Tom", None) and None
+    w.people["Tom"].hunger = 0.9
+    _act(w, "Tom", "ask Marta for a portion of the pot of stew")
+    u = {o["text"]: utility(w, marta, o, marta.base) for o in w.options(marta)}
+    assert u["serve Tom a portion of the pot of stew"] > u["refuse Tom"] and u["serve Tom a portion of the pot of stew"] > 0
+
+
+def test_meals_a_thing_buys_a_meal_and_work_earns_a_ration():
+    from lab.world2.world import PORTION, STOCK
+    w = _fix(("trade", "meals", "drives"))
+    tom, marta = w.people["Tom"], w.people["Marta"]
+    tom.hunger = 0.9
+    assert "pay Marta the copper coin for a meal from the pot of stew" in _texts(w, "Tom")
+    assert not any("purse of silver" in t and t.startswith("pay") for t in _texts(w, "Oren"))   # no change is given
+    _act(w, "Tom", "pay Marta the copper coin for a meal from the pot of stew")
+    assert abs(tom.hunger - (0.9 - 2 * PORTION)) < 1e-9
+    assert w.things["the copper coin"]["at"] == "Marta" and w.things["the copper coin"]["owner"] == "Marta"
+    f0, m0 = tom.fatigue, marta.fatigue
+    _act(w, "Tom", "work for Marta for a share of the pot of stew")
+    assert abs(tom.hunger - (0.9 - 3 * PORTION)) < 1e-9
+    assert tom.fatigue > f0 and marta.fatigue < m0
+    assert w.portions["the pot of stew"] == STOCK["the pot of stew"] - 3
+    # an empty pot is gone and the counter offers nothing
+    w.portions["the pot of stew"] = 1
+    _act(w, "Tom", "work for Marta for a share of the pot of stew")
+    assert w.things["the pot of stew"]["at"] is None
+    assert not any("pot of stew" in t and not t.startswith("tell") for t in _texts(w, "Tom"))
+
+
+def test_meals_flags_off_the_cook_still_holds_one_bowl():
+    w = _fix(("trade",))
+    assert w.portions == {} and "the bowl of stew" in w.things and "eat the bowl of stew" in _texts(w, "Marta")
+
+
+def test_partner_one_rule_for_everyone_trust_from_history():
+    from lab.world2.policy import flag_terms
+    w = _fix(("partner", "trade"))
+    tom = w.people["Tom"]
+    tom.aff.update({"Sir Ada": 0.8, "Fenn": -0.5, "Oren": 0.0})
+    tom.liars["Oren"] = 1
+    tom.memory.append({"what": "robbed", "who": "Fenn", "night": 0, "t": 1})
+    assert w.trust(tom, "Sir Ada") == 0.8 and w.trust(tom, "Oren") == -0.5
+    assert w.trust(tom, "Fenn") < -0.5                    # liking, and the robbery it remembers
+    opts = {o["text"]: o for o in w.options(tom)}
+    assert abs(opts["praise Sir Ada"]["f"]["trust"] - 0.8) < 1e-9
+    kind = flag_terms(w, tom, opts["praise Sir Ada"])
+    harm = flag_terms(w, tom, opts["insult Sir Ada"])
+    assert kind > 0 and harm < 0                           # kind to the trusted, restraint toward the trusted
+    assert flag_terms(w, tom, opts["praise Fenn"]) < 0 and flag_terms(w, tom, opts["insult Fenn"]) == 0.0
+    # the same terms for any character with the same history, and no trait in them
+    ada = w.people["Sir Ada"]
+    ada.aff.update({"Tom": 0.8})
+    aopts = {o["text"]: o for o in w.options(ada)}
+    assert abs(flag_terms(w, ada, aopts["praise Tom"]) - kind) < 1e-9
+    assert utility(w, tom, opts["praise Sir Ada"], tom.base) - utility(w, tom, opts["praise Sir Ada"], tom.base) == 0
+    w0 = _fix(("trade",))
+    assert "trust" not in {k for o in w0.options(w0.people["Tom"]) for k in o["f"]}
+
+
+def test_news_a_rare_good_deed_is_worth_telling_and_is_told():
+    w = _fix(("gossip", "news", "reprisal"))
+    marta = w.people["Marta"]
+    deeds = [{"key": (0, f"e{i}"), "actor": "Fenn", "action": "insult", "target": "Tom"} for i in range(8)]
+    good = {"key": (0, "e9"), "actor": "Fenn", "action": "give", "target": "Tom"}
+    marta.deeds = [good] + deeds                          # the good deed is the OLDEST
+    marta.aff["Fenn"] = -0.6                              # and it goes against her opinion of the doer
+    assert w._salience(marta, good) > 4 * w._salience(marta, deeds[0])
+    opts = {o["text"]: o for o in w.options(marta)}
+    t = "tell Sir Ada that Fenn gave a gift to Tom"
+    assert t in opts, list(opts)                          # top 3 by salience, not the 3 newest
+    bad = [o for o in opts.values() if o["verb"] == "gossip" and o["f"]["bad"]]
+    u_good = utility(w, marta, opts[t], marta.base)
+    assert u_good > max(utility(w, marta, o, marta.base) for o in bad)
+    # flag off: only the three newest
+    w0 = _fix(("gossip",))
+    w0.people["Marta"].deeds = [dict(good)] + [dict(d) for d in deeds]
+    assert t not in _texts(w0, "Marta")
+    # deeds are forgotten from the commoner kind, so the rare one is kept
+    for i in range(20):
+        w._witness(marta, "Fenn", "insult", "Tom", f"x{i}")
+    assert any(d["action"] == "give" for d in marta.deeds) and len(marta.deeds) == 12
+
+
+def test_news_a_witness_warms_to_one_who_helps_as_it_cools_to_one_who_harms():
+    w = _fix(("drives", "reprisal", "news"))
+    ada, tom = w.people["Sir Ada"], w.people["Tom"]
+    ada.aff["Marta"], ada.slight, w.people["Marta"].lonely = 0.0, 0.5, 0.5
+    _act(w, "Marta", "give the ladle to Tom")
+    assert abs(ada.aff["Marta"] - 0.04) < 1e-9           # WITNESS_COST, the mirror of reprisal
+    assert w.people["Marta"].lonely < 0.5
+    w0 = _fix(("drives", "reprisal"))
+    w0.people["Sir Ada"].aff["Marta"] = 0.0
+    _act(w0, "Marta", "give the ladle to Tom")
+    assert w0.people["Sir Ada"].aff["Marta"] == 0.0
+
+
+def test_calm_what_one_said_weighs_all_night_and_anger_is_spent_by_acting():
+    from lab.world2.world import DISCHARGE
+    w = _fix(("calm", "gossip", "drives"))
+    fenn, ada = w.people["Fenn"], w.people["Sir Ada"]
+    ada.anger["Fenn"] = 0.8
+    ada.bel[("took", "the dagger")] = ("Fenn", "e0")
+    _act(w, "Sir Ada", "insult Fenn")
+    assert abs(ada.anger["Fenn"] - 0.8 * (1 - DISCHARGE)) < 1e-6
+    w.t += 100                                            # well past the old 40-turn habit window
+    o = next(o for o in w.options(ada) if o["text"] == "insult Fenn")
+    assert 0.3 < o["f"]["repeat"] < 1.0 and o["f"]["repeat_kind"] > o["f"]["repeat"]   # remembered, faded
+    w0 = _fix(("gossip", "drives"))
+    w0.people["Sir Ada"].anger["Fenn"] = 0.8
+    _act(w0, "Sir Ada", "insult Fenn")
+    w0.t += 100
+    o0 = next(o for o in w0.options(w0.people["Sir Ada"]) if o["text"] == "insult Fenn")
+    assert o0["f"]["repeat"] == 0.0 and w0.people["Sir Ada"].anger["Fenn"] == 0.8      # flag off: as before
+
+
+def test_calm_a_witness_charges_the_answer_to_a_wrong_less():
+    from lab.world2.world import PROVOKED_SHARE, WITNESS_COST
+    def cost(flags, first):
+        w = _fix(flags)
+        for p in w.people.values():
+            p.aff = {k: 0.0 for k in p.aff}
+        if first:
+            _act(w, "Fenn", "strike Tom")
+        before = w.people["Sir Ada"].aff["Tom"]
+        _act(w, "Tom", "strike Fenn")
+        return before - w.people["Sir Ada"].aff["Tom"], w
+    c_wrong, w = cost(("reprisal", "calm"), first=False)         # Tom strikes first
+    c_answer, _ = cost(("reprisal", "calm"), first=True)         # Tom answers Fenn's blow
+    c_old, _ = cost(("reprisal",), first=True)
+    assert c_old > 0 and abs(c_answer - c_old * PROVOKED_SHARE) < 1e-9 and c_wrong >= c_old - 1e-9
+
+
+def test_calm_the_rules_read_wounds_and_loneliness_and_drop_a_moot_charge():
+    from lab.world2.policy import flag_terms
+    w = _fix(("calm", "drives", "known", "gossip"))
+    tom = w.people["Tom"]
+    o = next(o for o in w.options(tom) if o["text"] == "threaten Fenn")
+    tom.hp = 10.0
+    well = flag_terms(w, tom, o)
+    tom.hp = 4.0
+    assert flag_terms(w, tom, o) < well - 1.0                      # a hurt one is held back from blows and threats
+    p = next(o for o in w.options(tom) if o["text"] == "praise Fenn")
+    tom.lonely = 0.1
+    a = flag_terms(w, tom, p)
+    tom.lonely = 0.9
+    assert flag_terms(w, tom, p) > a + 0.5
+    # a charge about a thing the accuser no longer thinks the culprit holds is moot
+    tom.bel[("took", "the purse of silver")] = ("Fenn", "e0")
+    tom.bel[("where", "the purse of silver")] = ("Fenn", "e0")
+    acc = next(o for o in w.options(tom) if o["text"] == "accuse Fenn of taking the purse of silver")
+    assert acc["f"]["moot"] == 0.0
+    tom.bel[("where", "the purse of silver")] = ("Oren", "e1")
+    acc2 = next(o for o in w.options(tom) if o["text"] == "accuse Fenn of taking the purse of silver")
+    assert acc2["f"]["moot"] == 1.0 and utility(w, tom, acc2, tom.base) < utility(w, tom, acc, tom.base) - 1.0
+
+
+def test_fix_all3_random_turns_are_valid():
+    w = World(seed=6, turns=1000, bandit=True, flags="all3")
+    pol = Random()
+    for _ in range(1000):
+        w.step(pol)
+        for p in w.people.values():
+            for d, x in w.drives(p).items():
+                assert 0 <= x <= 1, (p.name, d, x)
+    choices = [e for e in w.log if e.get("options")]
+    for e in choices:
+        assert e["options"][e["chosen"]] == e["text"], e
+    acts = {e["action"] for e in w.log if e["done"]}
+    assert {"serve", "work", "buy"} & acts, acts
+    # and 200 turns of rules with everything on
+    w = World(seed=7, turns=200, bandit=True, flags="all3")
+    for _ in range(200):
+        w.step(Rules())
+
+
+def test_fix_all3_the_food_reaches_people_who_are_not_the_cook():
+    """Rules characters over a few nights: more of the food leaves the cook's own mouth than before."""
+    def fed(flags):
+        got = {}
+        for night in range(4):
+            w = World(seed=night, bandit=False, flags=flags)
+            for _ in range(300):
+                w.step(Rules())
+            for e in w.log:
+                if e["done"] and e["action"] in ("serve", "buy", "work", "eat") and e["actor"] != "the bandit":
+                    who = e["target"] if e["action"] == "serve" else e["actor"]
+                    got[who] = got.get(who, 0) + 1
+        return got
+    old, new = fed("all2"), fed("all3")
+    others_old = sum(v for k, v in old.items() if k != "Marta")
+    others_new = sum(v for k, v in new.items() if k != "Marta")
+    assert others_new >= 5 * max(1, others_old), (old, new)
+
+
 if __name__ == "__main__":
     n = 0
     for name, f in list(globals().items()):

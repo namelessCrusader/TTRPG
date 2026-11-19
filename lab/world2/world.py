@@ -80,6 +80,31 @@ the world; it never chooses for anyone.
              each earlier one by the same actor to the same target within
              WEAR_SPAN turns multiplies the effect by WEAR (liking, anger, the
              slight to standing, lonely, the hostility perceived).
+    NEW FLAGS (2026-11-08, the inn fix; all four OFF in "all" and "all2", ON in "all3"):
+    meals    food in shareable PORTIONS (a pot of stew, a loaf). Whoever holds the pot may eat a portion,
+             SERVE one to somebody (sharing costs a fed giver little and feeds a hungry one a lot), and the inn's
+             house rules sell a meal for a thing of small value (`buy`) or for work (`work`). The supply is a
+             dial (World(supply=...)). Needs `trade`.
+    partner  one rule for everybody: every act aimed at a person carries the actor's TRUST in that person (its
+             liking, the deeds it heard of, lies and robberies it remembers). The rules score reads it the same
+             for all: kind acts go to the trusted, restraint toward the trusted, less for the distrusted.
+    news     gossip by SALIENCE, not by sign: a deed is worth telling by how unusual it is among the deeds the
+             teller has seen, how much it goes against its own opinion of the doer, and how big it is. A witness
+             warms to one who helps in view as it cools to one who harms (the mirror of `reprisal`).
+    calm     the causes of the rules cast's quarrels, found in step 0a2 (all-rules cast, 5 seeds, 30 nights):
+             the cast made about 52 harsh acts a night (24 charges, 16 blows, 7 searches), mean liking -0.77.
+             (1) A charge was repeated: habit forgot what one had said after 40 turns, so every believer accused
+                 again and again. Now the memory of what one said lasts the night and fades slowly (ECHO_HALF), and
+                 saying the same kind of thing to the same person pulls less, as the same words do.
+             (2) A blow never spent the anger behind it, so a fight ran until someone fell. Acting on a grievance
+                 now spends part of it (DISCHARGE), as eating spends hunger.
+             (3) The rules score read neither one's wounds nor the company drive. A hurt one is now held back
+                 from blows and threats, and a lonely one is drawn to warm acts (policy.flag_terms).
+             (4) A charge about a thing one no longer thinks the culprit holds is moot (feature `moot`, and a
+                 search only of one still suspected).
+             (5) Reprisal charged an answer to a wrong as much as the wrong: every witness cooled to the one who hit
+                 back. A witness now charges an answer a quarter of a first harm (PROVOKED_SHARE), which is the
+                 main cause of the liking spiral (liking -0.77 -> -0.33 with the rest).
     The first six flags are what "all" means (as in the first test round, so
     its numbers can be redone); "all2" is every flag, these two included.
 
@@ -158,14 +183,39 @@ PHYSICAL = {"strike", "shove", "threaten"}
 # ---------------------------------------------------------------- flags
 BASE_FLAGS = ("drives", "gossip", "trade", "watch", "check", "known")      # what "all" means
 FLAGS = BASE_FLAGS + ("reprisal", "wear")                                  # "all2" is all of them
+NEW_FLAGS = ("meals", "partner", "news", "calm")                          # the inn fix; "all3" is FLAGS + these
+ALL3 = FLAGS + NEW_FLAGS
 HARM_MIN = 3             # reprisal: the least turns a harmful act aimed at a person takes
 WITNESS_COST = 0.04      # reprisal: a witness's liking of the actor falls by this
 WITNESS_SLIGHT = 0.03    # reprisal (+drives): the actor's standing / company worsen by this per witness
 RESUME_SPAN = 20         # reprisal: an interrupted act can be taken up again within this many turns
+# meals: a ration takes PORTION off the hunger need. One need unit is about 1,100 kcal a day-night (a night's drift of
+# 0.9 is about 1,000 kcal), so a ration of 0.25 is about 275 kcal (u): a bowl of stew of 290 g at 95 kcal/100 g, or a
+# 100 g slab of bread at 265 kcal/100 g. The pot holds 12 bowls (3.5 kg), the loaf 8 slabs (0.8 kg): 20 rations = 5.0 need units, against about 4.6 that
+# five people need to stay at their set point through a night (0.9 drift + 0.3 start - 0.3 set point, each). All (u).
+PORTION = 0.25
+FULL = 0.10             # meals: below this hunger a person is full and eats no more
+STOCK = {"the pot of stew": 12, "the loaf of bread": 8}
+MEAL_PORTIONS, WORK_PORTIONS = 2, 1     # a thing paid buys a meal (two rations); an hour's chores earn one
+WORK_TIRE, CHORE_RELIEF = 0.06, 0.04    # work tires the worker, and eases the one it helps
+PAYABLE = (1, 3)                        # the values a house will take for a meal (no change is given)
+# partner: the weight of trust in the score of an act aimed at a person (the same for every actor)
+PARTNER_W = 1.5
+BENEFIT_ACTS = {"give", "praise", "help up", "bandage", "defend", "gossip", "offer", "accept", "serve", "buy", "work"}
+RESTRAINT_ACTS = {"strike", "shove", "threaten", "insult", "steal", "accuse", "search"}
+HELPED = {"give", "help up", "bandage", "defend", "serve"}   # news: a witness warms to the one who does these
+SURPRISE_BITS = 3.0     # news: a deed 1 in 8 of what the teller has seen is fully surprising
+# calm
+WOUND_W = 2.0           # calm: the rules score reads one's own wounds (the safety drive), as it reads hunger
+PROVOKED_SHARE, PROVOKED_SPAN = 0.25, 60   # calm: a witness charges an answer to a wrong this share of a first harm
+ECHO_HALF = 150         # calm: the memory of what one has said halves every 150 turns (half a night)
+DISCHARGE = 0.5         # calm: a harmful act aimed at a person spends this share of the actor's anger at it
+LONELY_W, LONELY_SET = 1.5, 0.3      # calm: weight of the company drive (above the set point) on warm acts
+WARM_ACTS = {"praise", "gossip", "serve", "give"}
 WEAR_VERBS = {"praise", "insult"}
 WEAR, WEAR_SPAN = 0.5, 40   # wear: each repeat within the span halves the effect
 DUR.update({"sit down": 4, "sleep": 12, "look around": 2, "gossip": 3, "ask": 1, "offer": 1,
-            "accept": 2, "refuse": 1})
+            "accept": 2, "refuse": 1, "serve": 2, "buy": 2, "work": 10})
 DRIVES = ("energy", "safety", "company", "standing", "wealth", "rest", "curiosity")
 # NATURE: for each type, each drive's (weight, set point). The error of a drive
 # is max(0, need - set point); a weight of 0 means the type does not care.
@@ -190,21 +240,21 @@ EXERT = {"walk to": 0.01, "flee to": 0.02, "strike": 0.02, "shove": 0.01, "play"
 # how being the TARGET of an act moves standing (slight) and company (lonely)
 SLIGHT = {"insult": .20, "accuse": .25, "search": .20, "threaten": .15, "strike": .10, "shove": .10,
           "refuse": .15, "praise": -.20, "give": -.15, "help up": -.10, "bandage": -.10, "defend": -.10,
-          "accept": -.10, "gossip": -.05}
-KIND_ACTS = {"praise", "give", "help up", "bandage", "defend", "accept", "gossip"}
+          "accept": -.10, "gossip": -.05, "serve": -.15}
+KIND_ACTS = {"praise", "give", "help up", "bandage", "defend", "accept", "gossip", "serve"}
 HARSH_ACTS = {"insult", "refuse", "threaten", "strike", "shove", "accuse", "search"}
 # deeds a witness may tell of (gossip): +1 kind, -1 harm, -1.5 a lie found out
 DEED = {**{a: -1.0 for a in HARMFUL}, "give": 1.0, "help up": 1.0, "bandage": 1.0, "defend": 1.0,
-        "praise": 0.5, "refuse": -0.5, "lie": -1.5}
+        "praise": 0.5, "refuse": -0.5, "lie": -1.5, "serve": 1.0}
 PAST = {"strike": "struck", "shove": "shoved", "threaten": "threatened", "insult": "insulted",
         "steal": "robbed", "accuse": "accused", "search": "searched", "give": "gave a gift to",
         "help up": "helped up", "bandage": "bandaged", "defend": "defended", "praise": "praised",
-        "refuse": "refused", "lie": "lied to"}
+        "refuse": "refused", "lie": "lied to", "serve": "fed"}
 # known: how much a perceived act aimed at me says about the actor's hostility
 # toward me (a kind act lowers it); it fades as anger fades (0.985 a turn)
 HOSTILE = {"strike": .6, "shove": .5, "threaten": .4, "steal": .4, "insult": .25, "accuse": .25,
            "search": .25, "refuse": .1, "give": -.3, "help up": -.3, "bandage": -.3, "defend": -.2,
-           "praise": -.1, "accept": -.1}
+           "praise": -.1, "accept": -.1, "serve": -.3}
 START_ROOM = {n: room for n, _, room, _ in CAST}
 
 
@@ -244,6 +294,8 @@ class Person:
         self.seen_open = False     # p saw (or did) the old chest opened tonight
         self.hostile = {}          # name -> (perceived hostility toward p, turn it was set)
         self.partial = {}          # reprisal: (verb, target, obj) -> (turns done, turn interrupted)
+        self.said = {}             # calm: option text -> turns it was done tonight
+        self.said_kind = {}        # calm: (verb, object) -> turns
 
     @property
     def public(self):
@@ -259,9 +311,10 @@ class Person:
 
 
 class World:
-    def __init__(self, seed=0, bandit=None, turns=300, flags=(), carry=None, night=0):
-        self.flags = frozenset(BASE_FLAGS if flags == "all" else FLAGS if flags == "all2" else flags)
-        bad = self.flags - set(FLAGS)
+    def __init__(self, seed=0, bandit=None, turns=300, flags=(), carry=None, night=0, supply=1.0):
+        self.flags = frozenset(BASE_FLAGS if flags == "all" else FLAGS if flags == "all2" else
+                               ALL3 if flags == "all3" else flags)
+        bad = self.flags - set(FLAGS) - set(NEW_FLAGS)
         assert not bad, f"unknown flags {sorted(bad)}"
         self.night = night
         self.rng = random.Random(seed)
@@ -301,6 +354,14 @@ class World:
             cook = next(p.name for p in self.people.values() if p.kind == "cook")
             for n in ("the loaf of bread", "the bowl of stew"):
                 self.things[n].update(at=cook, owner=cook)
+        self.portions = {}             # meals: thing -> rations left
+        if "meals" in self.flags:
+            assert "trade" in self.flags, "meals needs trade (the cook holds the food)"
+            cook = next(p.name for p in self.people.values() if p.kind == "cook")
+            del self.things["the bowl of stew"]          # a pot to share instead of one bowl
+            self.things["the pot of stew"] = {"at": cook, "props": {"food"}, "value": 0, "owner": cook,
+                                              "hidden": False}
+            self.portions = {n: max(1, round(k * supply)) for n, k in STOCK.items()}
         self.start_at = {n: th["at"] for n, th in self.things.items()}   # the inn as each night sets it
         for p in self.people.values():
             self._look(p, "start")
@@ -427,7 +488,13 @@ class World:
         W = self.things
         out = []
 
+        tcache = {}
+
         def add(verb, text, target=None, obj=None, **f):
+            if partner and target in self.people and "trust" not in f:
+                if target not in tcache:
+                    tcache[target] = self.trust(p, target)
+                f["trust"] = tcache[target]
             dur = DUR[verb]
             if reprisal and verb in HARMFUL and target in self.people:
                 dur = max(dur, HARM_MIN)
@@ -441,6 +508,7 @@ class World:
                               for e in self.log[-80:] if e["t"] >= self.t - 40 and self._knows(p, e)))
         known = "known" in self.flags
         reprisal = "reprisal" in self.flags
+        partner = "partner" in self.flags
         for r in ROOMS[p.room]:
             add("walk to", f"walk to {r}", target=r, goal=self._goal(p, r))
             if danger > 0.2:
@@ -455,8 +523,8 @@ class World:
         mine = self.held(p)
         for n in mine:
             th = W[n]
-            if "food" in th["props"]:
-                add("eat", f"eat {n}", obj=n, need=p.hunger)
+            if "food" in th["props"] and not (n in self.portions and p.hunger <= FULL):   # a full stomach holds no more
+                add("eat", f"eat a portion of {n}" if n in self.portions else f"eat {n}", obj=n, need=p.hunger)
             if "ale" in th["props"]:
                 add("drink", f"drink {n}", obj=n, need=p.thirst, ale=1.0)
             if "water" in th["props"]:
@@ -467,6 +535,8 @@ class World:
             stolen = th["owner"] not in (None, p.name)
             if stolen and not th["hidden"]:
                 add("hide", f"hide {n} under your cloak", obj=n, stolen=1.0)
+            if n in self.portions:                  # meals: a pot is shared by the portion (serve), not handed over
+                continue
             for q in others:
                 if q.acts():
                     add("give", f"give {n} to {q.name}", target=q.name, obj=n,
@@ -525,8 +595,11 @@ class World:
                 if kind != "took" or culprit == p.name:
                     continue
                 if culprit == q.name:
+                    extra = {}
+                    if "calm" in self.flags:     # a charge about a thing p no longer thinks the culprit holds is moot
+                        extra["moot"] = float(p.bel.get(("where", thing), (None,))[0] != q.name)
                     add("accuse", f"accuse {q.name} of taking {thing}", target=q.name, obj=thing,
-                        mine=float(W[thing]["owner"] == p.name), **f)
+                        mine=float(W[thing]["owner"] == p.name), **extra, **f)
                 elif q.acts():
                     add("tell", f"tell {q.name} that {culprit} took {thing}", target=q.name, obj=thing,
                         truth=1.0, useful=float(W[thing]["owner"] == q.name),
@@ -554,6 +627,7 @@ class World:
         done_kinds = [(e["action"], e["parts"].get("thing")) for e in mine_ev]
         last = mine_ev[-1] if mine_ev and mine_ev[-1]["t"] >= self.t - 10 else None
         undo = {"take": ("drop",), "steal": ("drop",), "drop": ("take",)}
+        calm = "calm" in self.flags
         for o in out:
             if o["text"] not in seen:
                 seen.add(o["text"])
@@ -563,6 +637,10 @@ class World:
                                        and o["obj"] == last["parts"].get("thing"))
                 o["f"]["repeat"] = float(done.count(o["text"]))     # habit: the same act again pulls less
                 o["f"]["repeat_kind"] = float(sum(1 for (v_, ob) in done_kinds if v_ == o["verb"] and ob == o["obj"]))
+                if calm:                    # calm: one remembers what one said all night, fading slowly
+                    o["f"]["repeat"] = self._echo(p.said.get(o["text"]))
+                    o["f"]["repeat_kind"] = self._echo(p.said_kind.get((o["verb"], o["obj"]))) + \
+                        (self._echo(p.said_kind.get((o["verb"], o["target"]))) if o["target"] else 0.0)
                 uniq.append(o)
         return uniq
 
@@ -581,18 +659,18 @@ class World:
             add("look around", "look around", unseen=len(new) / max(1, room_things), boredom=p.boredom)
         if "gossip" in self.flags:
             for q in awake:
-                told = 0
-                for d in reversed(p.deeds):
-                    if told == 3:
-                        break
-                    if q.name in (d["actor"], d["target"]) or (q.name, d["key"]) in p.told:
-                        continue
-                    told += 1
+                fresh = [d for d in reversed(p.deeds)
+                         if not (q.name in (d["actor"], d["target"]) or (q.name, d["key"]) in p.told)]
+                news = "news" in self.flags
+                if news:        # the most salient deeds, whatever their sign (a stable sort: ties keep the newest first)
+                    fresh.sort(key=lambda d: -self._salience(p, d))
+                for d in fresh[:3]:
                     sign = DEED[d["action"]]
+                    extra = {"sal": self._salience(p, d)} if news else {}
                     add("gossip", f"tell {q.name} that {d['actor']} {PAST[d['action']]} {d['target']}",
                         target=q.name, deed=d, bad=float(sign < 0), good=float(sign > 0),
                         dislike_actor=max(0, -p.aff.get(d["actor"], 0)), like_actor=max(0, p.aff.get(d["actor"], 0)),
-                        like=max(0, p.aff.get(q.name, 0)), dislike=max(0, -p.aff.get(q.name, 0)))
+                        like=max(0, p.aff.get(q.name, 0)), dislike=max(0, -p.aff.get(q.name, 0)), **extra)
         if "trade" in self.flags:
             mine = [n for n in self.held(p) if W[n]["value"] >= 1]
             for q in awake:
@@ -602,6 +680,10 @@ class World:
                     props = W[n]["props"]
                     food, drink = float("food" in props), float(bool(props & {"ale", "water"}))
                     need = max(food * p.hunger, drink * p.thirst)
+                    if n in self.portions:       # meals: one asks for a portion; the counter sells (buy, work)
+                        add("ask", f"ask {q.name} for a portion of {n}", target=q.name, obj=n, need=need,
+                            gain=0.0, like=like, distrust=dq)
+                        continue
                     if food or drink or W[n]["value"] >= 1:
                         add("ask", f"ask {q.name} for {n}", target=q.name, obj=n, need=need,
                             gain=W[n]["value"] / 10, like=like, distrust=dq)
@@ -618,6 +700,34 @@ class World:
                             get=W[r["pay"]]["value"] / 10, like=like, distrust=dq)
                     add("refuse", f"refuse {q.name}", target=q.name, obj=r["thing"], like=like,
                         dislike=max(0, -p.aff.get(q.name, 0)), distrust=dq)
+
+        if "meals" in self.flags:
+            self._meal_options(p, add, awake)
+
+    def _meal_options(self, p, add, awake):
+        """meals: serve a portion from a pot p holds; buy a meal or work for one at a pot another holds."""
+        W = self.things
+        for n in self.held(p):
+            if n not in self.portions or self.portions[n] <= 0:
+                continue
+            left = self.portions[n] / STOCK[n]
+            for q in awake:
+                r = p.requests.get(q.name, {})
+                asked = float(r.get("thing") == n and r.get("pay") is None)
+                add("serve", f"serve {q.name} a portion of {n}", target=q.name, obj=n, asked=asked,
+                    seen_need=q.hunger if q.hunger > 0.6 else 0.0, own=p.hunger, left=left,
+                    like=max(0, p.aff.get(q.name, 0)), distrust=self.distrust(p, q.name))
+        pay = [m for m in self.held(p) if PAYABLE[0] <= W[m]["value"] <= PAYABLE[1] and m not in self.portions]
+        for q in awake:
+            for n in self.held(q, visible_only=True):
+                if n not in self.portions or self.portions[n] <= 0:
+                    continue
+                dq = self.distrust(p, q.name)
+                for m in pay:
+                    add("buy", f"pay {q.name} {m} for a meal from {n}", target=q.name, obj=n, pay=m, need=p.hunger,
+                        cost=W[m]["value"] / 10, distrust=dq)
+                add("work", f"work for {q.name} for a share of {n}", target=q.name, obj=n, need=p.hunger,
+                    fatigue=p.fatigue, distrust=dq)
 
     def _goal(self, p, room):
         """What a room offers p: food, drink, whoever p is angry at, loot, safety."""
@@ -675,6 +785,9 @@ class World:
         return False
 
     def _suspects(self, p, q):
+        if "calm" in self.flags:         # still suspects q only of what it believes q still holds
+            return any(k == "took" and v == q.name and p.bel.get(("where", th), (None,))[0] == q.name
+                       for (k, th), (v, _s) in p.bel.items())
         return any(k == "took" and v == q.name for (k, _), (v, _s) in p.bel.items())
 
     # ------------------------------------------------------------ the turn
@@ -743,6 +856,11 @@ class World:
         d, p.doing = p.doing, None
         ok, info = self._apply(p, d)
         ev = self._emit(p, d, done=ok, **info)
+        if "calm" in self.flags and ok:
+            p.said.setdefault(d["text"], []).append(self.t)
+            p.said_kind.setdefault((d["verb"], d["obj"]), []).append(self.t)
+            if d["target"]:
+                p.said_kind.setdefault((d["verb"], d["target"]), []).append(self.t)
         if self.flags and ok:
             self._after(p, d, ev)
 
@@ -792,6 +910,10 @@ class World:
         if v == "eat":
             if W[o]["at"] != p.name:
                 return False, {"why": "not held"}
+            if o in self.portions:                       # meals: one portion of the pot
+                if not self._feed(p, 1, o):
+                    return False, {"why": "none left"}
+                return True, {}
             p.hunger = max(0, p.hunger - 0.6)
             W[o]["at"] = None
             return True, {}
@@ -910,7 +1032,61 @@ class World:
             p.requests.pop(q.name, None)
             q.aff[p.name] = max(-1, q.aff.get(p.name, 0) - 0.1)
             return True, {}
+        if v == "serve":                                     # meals: a portion from the pot p holds
+            if o not in self.portions or W[o]["at"] != p.name or not self._feed(q, 1, o):
+                return False, {"why": "none left"}
+            q.aff[p.name] = min(1, q.aff.get(p.name, 0) + 0.3)        # as a gift (give)
+            q.anger[p.name] = max(0, q.anger.get(p.name, 0) - 0.3)
+            return True, {}
+        if v == "buy":                                       # meals: a thing for a meal, at the house's price
+            m = d["f"]["pay"]
+            if W[m]["at"] != p.name or W[o]["at"] != q.name or not self._feed(p, MEAL_PORTIONS, o):
+                return False, {"why": "not held"}
+            W[m].update(at=q.name, owner=q.name, hidden=False)
+            for a, b in ((p, q), (q, p)):
+                a.aff[b.name] = min(1, a.aff.get(b.name, 0) + 0.1)
+            return True, {"traded": m}
+        if v == "work":                                      # meals: chores for a ration
+            if W[o]["at"] != q.name or not self._feed(p, WORK_PORTIONS, o):
+                return False, {"why": "none left"}
+            p.fatigue = min(1.0, p.fatigue + WORK_TIRE)
+            self._rested(q, CHORE_RELIEF)
+            for a, b in ((p, q), (q, p)):
+                a.aff[b.name] = min(1, a.aff.get(b.name, 0) + 0.1)
+            return True, {}
         raise ValueError(v)
+
+    def _feed(self, person, n, item):
+        """meals: `person` eats up to n rations of `item`. Returns how many it got (0 if the pot is empty)."""
+        n = min(n, self.portions.get(item, 0))
+        if n <= 0:
+            return 0
+        self.portions[item] -= n
+        person.hunger = max(0.0, person.hunger - PORTION * n)
+        if self.portions[item] <= 0:
+            self.things[item]["at"] = None
+        return n
+
+    def trust(self, p, name):
+        """partner: how much p trusts `name`, -1..1, from what p already has: its liking, the deeds it heard of
+        (rep), the lies it caught, the robberies and the killing it remembers. One rule for everybody."""
+        bad = sum(1 for m in p.memory if m.get("who") == name and m.get("what") == "robbed")
+        bad += 2 * sum(1 for m in p.memory if m.get("by") == name and m.get("what") == "died")
+        t = p.aff.get(name, 0.0) + 0.1 * p.rep.get(name, 0) - 0.5 * p.liars.get(name, 0) - 0.2 * min(3, bad)
+        return max(-1.0, min(1.0, t))
+
+    def _salience(self, p, d):
+        """news: how worth telling a deed is. Unusual among the deeds p has seen (its surprisal, in bits), against
+        p's own opinion of the doer, and big. The same for a good deed and a bad one."""
+        sign = DEED[d["action"]]
+        same = sum(1 for x in p.deeds if (DEED[x["action"]] > 0) == (sign > 0))
+        surprise = min(1.0, -math.log2((same + 1) / (len(p.deeds) + 2)) / SURPRISE_BITS)
+        against = min(1.0, 2 * max(0.0, -math.copysign(1, sign) * p.aff.get(d["actor"], 0)))
+        return abs(sign) / 1.5 * (0.6 * surprise + 0.4 * against)
+
+    def _echo(self, turns):
+        """calm: how much of what p said before still weighs on it, from the turns it said it."""
+        return sum(0.5 ** ((self.t - t0) / ECHO_HALF) for t0 in turns) if turns else 0.0
 
     def _after(self, p, d, ev):
         """What a done act does to the actor itself, under the flags."""
@@ -926,7 +1102,9 @@ class World:
                 self._novel(p, 0.15)
             if v == "open":
                 self._novel(p, 0.4 if ev.get("found") and self.chest and p.name == self._first_opener() else 0.15)
-        if v == "give" and "trade" in self.flags:
+        if "calm" in self.flags and v in HARMFUL and d["target"] in self.people and d["target"] in p.anger:
+            p.anger[d["target"]] *= 1.0 - DISCHARGE           # acting on a grievance spends part of it
+        if v in ("give", "serve") and "trade" in self.flags:
             q = self.people[d["target"]]
             if p.requests.get(q.name, {}).get("thing") == d["obj"]:
                 del p.requests[q.name]                         # served
@@ -936,7 +1114,7 @@ class World:
             p.told.add((d["target"], d["f"]["deed"]["key"]))
         if "known" in self.flags:            # p knows where the things it just handled went
             for n in (d.get("obj"), d["f"].get("pay")):
-                if n in self.things and v in ("take", "steal", "drop", "give", "eat", "drink", "hide", "accept"):
+                if n in self.things and v in ("take", "steal", "drop", "give", "eat", "drink", "hide", "accept", "buy"):
                     at = self.things[n]["at"]
                     if at is None:
                         p.bel.pop(("where", n), None)
@@ -1120,10 +1298,17 @@ class World:
                 q.lonely = min(1.0, q.lonely + 0.05 * wear)
         if "reprisal" in self.flags and a in HARMFUL and v in self.people and v != q.name and ev.get("done"):
             # a witness thinks the less of one who does harm; the doer pays for being seen
-            q.aff[actor.name] = max(-1, q.aff.get(actor.name, 0) - WITNESS_COST)
+            share = PROVOKED_SHARE if "calm" in self.flags and self._provoked(q, actor, v, ev) else 1.0
+            q.aff[actor.name] = max(-1, q.aff.get(actor.name, 0) - WITNESS_COST * share)
             if "drives" in self.flags:
-                actor.slight = min(1.0, actor.slight + WITNESS_SLIGHT)
-                actor.lonely = min(1.0, actor.lonely + WITNESS_SLIGHT)
+                actor.slight = min(1.0, actor.slight + WITNESS_SLIGHT * share)
+                actor.lonely = min(1.0, actor.lonely + WITNESS_SLIGHT * share)
+        if "news" in self.flags and a in HELPED and v in self.people and v != q.name and ev.get("done"):
+            # the mirror of reprisal: a witness warms to one who helps in view, and the helper gains standing
+            q.aff[actor.name] = min(1, q.aff.get(actor.name, 0) + WITNESS_COST)
+            if "drives" in self.flags:
+                actor.slight = max(0.0, actor.slight - WITNESS_SLIGHT)
+                actor.lonely = max(0.0, actor.lonely - WITNESS_SLIGHT)
         if "gossip" in self.flags and a in DEED and v in self.people and v != q.name and ev.get("done"):
             self._witness(q, actor.name, a, v, ev["id"])
         if a == "gossip" and v == q.name and "facts" in ev:
@@ -1148,10 +1333,26 @@ class World:
             if old and old[0] != ev["facts"]["who"] and old[1].startswith("e") and self._saw(q, old[1]):
                 self._caught(q, actor.name, ev["facts"]["thing"], ev["id"], "it contradicts what I saw")
 
+    def _provoked(self, q, actor, target, ev):
+        """calm: witness q saw `actor` answer a wrong: the target had harmed the actor within PROVOKED_SPAN turns
+        (q saw it), or, for a charge or a search, q itself believes the target took the thing. A witness
+        condemns the one who began a quarrel, not the one who answers it."""
+        if ev["action"] == "accuse":
+            return q.bel.get(("took", ev["parts"].get("thing")), (None,))[0] == target
+        if ev["action"] == "search" and any(k == "took" and v == target for (k, _), (v, _s) in q.bel.items()):
+            return True
+        return any(e["actor"] == target and e.get("target") == actor.name and e["action"] in HARMFUL and e.get("done")
+                   and e["id"] in q.perceived for e in self.log[-80:] if e["t"] >= self.t - PROVOKED_SPAN)
+
     def _witness(self, q, actor, action, target, eid):
         q.deeds.append({"key": (self.night, eid), "actor": actor, "action": action, "target": target})
         if len(q.deeds) > 12:
-            del q.deeds[0]
+            if "news" in self.flags:     # forget the oldest of the commoner kind, so a rare good deed is kept
+                good = [x for x in q.deeds if DEED[x["action"]] > 0]
+                bad = [x for x in q.deeds if DEED[x["action"]] <= 0]
+                q.deeds.remove((good if len(good) > len(bad) else bad)[0])
+            else:
+                del q.deeds[0]
 
     def _caught(self, q, liar, thing, eid, why):
         """q finds that `liar` told it something false."""

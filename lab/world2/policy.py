@@ -31,6 +31,9 @@ import math
 import os
 import time
 
+from lab.world2.world import (BENEFIT_ACTS, LONELY_SET, LONELY_W, PARTNER_W, PHYSICAL, RESTRAINT_ACTS, WARM_ACTS,
+                              WOUND_W)
+
 MID = {t: 0.5 for t in ("bravery", "greed", "pride", "kindness", "temper")}
 T_RULES = 0.2
 
@@ -45,7 +48,35 @@ def softmax(z, t=1.0):
 def utility(w, p, o, t):
     """The rule score of one option for person p with traits t. Mood, needs
     and beliefs are p's own; only the traits change between p_char and p_avg."""
-    return _utility(w, p, o, t) + habit(o)
+    u = _utility(w, p, o, t) + habit(o)
+    if w.flags & _NEW:
+        u += flag_terms(w, p, o)
+    return u
+
+
+_NEW = frozenset(("partner", "calm"))
+
+
+def flag_terms(w, p, o):
+    """What the inn fix (world flags `partner`, `calm`) adds to the score of an act. The same terms for every
+    character; none of them reads a trait (a trait is a dial, not a flag), so p_char and p_avg share them.
+      partner  an act aimed at a person carries the trust in that person (world.trust): kind acts go to the
+               trusted and are withheld from the distrusted; harm is held back toward the trusted.
+      calm     the company drive: a lonely one (above its set point) is drawn to warm acts; the wounds: a hurt
+               one is held back from blows and threats (the rules score read neither before)."""
+    f, v = o["f"], o["verb"]
+    u = 0.0
+    if "partner" in w.flags and "trust" in f:
+        if v in BENEFIT_ACTS:
+            u += PARTNER_W * f["trust"]
+        elif v in RESTRAINT_ACTS:
+            u -= PARTNER_W * max(0.0, f["trust"])
+    if "calm" in w.flags:
+        if "drives" in w.flags and v in WARM_ACTS:
+            u += LONELY_W * max(0.0, p.lonely - LONELY_SET)
+        if v in PHYSICAL:                       # a wounded one does not pick a fight
+            u -= WOUND_W * max(0.0, (10.0 - p.hp) / 10.0)
+    return u
 
 
 def habit(o):
@@ -125,7 +156,8 @@ def _utility(w, p, o, t):
     if v == "defend":
         return -1.2 + 1.4 * k + 1.2 * b - 1.2 * F + 0.8 * f["like"] - 1.0 * A
     if v == "accuse":
-        return -0.9 + 1.0 * (1 + f["mine"]) + 0.5 * pr + 0.6 * A - 0.6 * F * (1 - b)
+        return (-0.9 + 1.0 * (1 + f["mine"]) + 0.5 * pr + 0.6 * A - 0.6 * F * (1 - b)
+                - 1.5 * f.get("moot", 0.0))             # world flag `calm`: no charge about what was given back
     if v == "tell":
         if f.get("lie"):                # a lie needs a reason: suspicion, or the owner asking
             return (-2.0 + 1.6 * (1 - k) * (0.2 + f["suspected"] + 0.5 * f["owner"]) + 0.3 * g
@@ -141,6 +173,8 @@ def _utility(w, p, o, t):
                 - 0.2 * f["others"])
     if v == "look around":
         return -0.6 + 1.6 * f["boredom"] * f["unseen"] + 0.2 * f["boredom"]
+    if v == "gossip" and "sal" in f:        # world flag `news`: worth telling by salience, not by sign
+        return -1.4 + 2.6 * f["sal"] + 0.4 * f["like"] - 0.4 * f["dislike"]
     if v == "gossip":
         return (-1.5 + f["bad"] * (0.8 * f["dislike_actor"] + 0.4 * (1 - k) + 0.3)
                 + f["good"] * (0.6 * f["like_actor"] + 0.3 * k) + 0.4 * f["like"] - 0.4 * f["dislike"])
@@ -152,6 +186,14 @@ def _utility(w, p, o, t):
         return -0.5 + (f["get"] - f["gain"]) * (0.5 + 2 * g) + 0.4 * f["like"] + 0.5 * k - 2.2 * f["distrust"]
     if v == "refuse":
         return -0.6 + 2.2 * f["distrust"] + 0.4 * f["dislike"] - 0.5 * k
+    # ---- world flag `meals`
+    if v == "serve":       # sharing costs a fed giver little: only its own hunger and a short pot weigh against it
+        return (-1.3 + 2.0 * f["seen_need"] + f["asked"] * (1.4 + 0.6 * k) + 0.8 * k * f["like"]
+                - 2.0 * f["distrust"] - 1.2 * max(0.0, f["own"] - 0.45) - 0.8 * (1 - f["left"]) ** 2)
+    if v == "buy":
+        return -0.9 + 2.2 * f["need"] - f["cost"] * (0.5 + 2 * g) - f["distrust"]
+    if v == "work":
+        return -1.1 + 2.2 * f["need"] - 1.2 * f["fatigue"] - 0.5 * f["distrust"]
     raise ValueError(v)
 
 

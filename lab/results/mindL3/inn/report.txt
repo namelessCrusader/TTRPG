@@ -1,0 +1,142 @@
+LANE I: THE INN-WORLD FIX (2026-11-08)  -  report incl. "Fix round"
+
+Code (all under lab/, nothing in src/, tests/, docs/; no git change):
+  lab/world2/world.py   four NEW flags: meals, partner, news, calm. Off in "all" and "all2", on in "all3".
+  lab/world2/policy.py  flag_terms(): the same extra score terms for every character (no trait is read).
+  lab/world2/test_world.py  13 new tests. Whole file: 43 passed (includes test_flags_off_is_the_inn_as_before).
+  lab/mindL/tournament.py   worlds "fix" (= all3) and "fixnoR" (all3 without reprisal), env MINDL3_SUPPLY (food dial).
+  lab/mindL/test_tournament.py: 15 passed.
+Results: lab/results/mindL3/inn/ (runs/ 170 lifetimes, runs_fresh/ 36, runs_scarce/ 50, analysis_*.txt, calm_ablation.txt).
+Scratch: /home/nisargparikh/.cache/mark1-build/mindL3/inn/ . CPU: about 0.6 h in all (run time 549 s + 203 s + 160 s + 278 s on 4 workers, plus the ablation).
+
+------------------------------------------------------------------
+1. THE FOUR MECHANISMS (what each does; each is one rule for everybody)
+------------------------------------------------------------------
+meals    Food in portions. A pot of stew = 12 bowls (3.5 kg, ~290 g, ~95 kcal/100 g), a loaf = 8 slabs (100 g, 265 kcal/100 g).
+         One portion = 0.25 need units = ~275 kcal (u). Supply 20 portions = 5.0 need units vs ~4.6 that five people need a
+         night (all (u): the 1,100 kcal per unit is the world's own scale). Whoever holds the pot may eat a portion, SERVE one
+         (a fed giver gives up one portion; a hungry receiver gains 0.25), or sell a meal for a thing worth 1-3 (buy) or for
+         an hour's chores (work). Dial: World(supply=...), env MINDL3_SUPPLY.
+partner  Every act aimed at a person carries the actor's trust in that person, computed from what the actor already has (its
+         liking, deeds it heard, lies it caught, robberies it remembers). The score reads it the same way for everyone: kind
+         acts go to the trusted, harm is held back toward the trusted. Not authored for the learned mind.
+news     Gossip chosen by salience (how unusual the deed is among those the teller has seen, how much it goes against the
+         teller's opinion of the doer, how big), whatever its sign. A witness warms to one who helps in view, as it already
+         cooled to one who harmed. Memory keeps the rarer kind of deed.
+calm     Causes found, not a number lowered (see 3).
+
+Generality check (done by reading the diff): no mechanism names the learned mind or a character; no trait flag; all go through
+the existing options/score/effect paths; flags off gives the old inn byte for byte (test_flags_off_is_the_inn_as_before passes).
+Caveat to keep in mind: "partner" is a trust-weighted preference. It makes reciprocity AROUND (kind is answered 55 percent), but
+the rule itself says only "prefer whom you trust".
+
+------------------------------------------------------------------
+2. THE TOURNAMENT: fixed world ("fix") vs old all2 world, seeds 1-10, 100 nights, nights 20-99 scored, same focal and night seeds
+------------------------------------------------------------------
+Focal drive error (lower is better). diff = fix minus all2, paired, 95% t over 10 seeds:
+  chooser         all2    fix    diff
+  always-giving  0.727  0.298  -0.429 [-0.631, -0.227]
+  always-harsh   1.255  1.310  +0.055 [+0.019, +0.090]
+  extractor      1.247  1.229  -0.018 [-0.058, +0.022]
+  feeder         0.607  0.349  -0.258 [-0.316, -0.201]
+  hermit         0.711  0.475  -0.236 [-0.328, -0.145]
+  hermit_ask     0.695  0.346  -0.349 [-0.436, -0.262]
+  hoarder        0.646  0.384  -0.262 [-0.324, -0.199]
+  protector      0.893  0.533  -0.360 [-0.497, -0.223]
+  random         1.668  1.492  -0.176 [-0.250, -0.102]
+  rules          0.947  0.491  -0.456 [-0.600, -0.311]
+  tit-for-tat    0.802  0.433  -0.369 [-0.669, -0.069]
+Deaths in 80 scored nights: rules 1.00 -> 0.00, always-harsh 2.4 -> 0.1, random 8.6 -> 0.4.
+(The old all2 numbers re-run from the 0a files match the 0a report: hermit -0.235 vs rules, oracle gap +0.061, etc.)
+
+PASS RULES (each world: minus-rules is paired by seed, 95% t, n = 10):
+                                           OLD all2 (0a)                         FIXED
+ 1 Oracle gap >= 0.1, CI above 0           FAIL +0.061 [+0.011,+0.111]            FAIL -0.003 [-0.013,+0.007]
+ 2 Hermit and always-harsh lose to rules   FAIL hermit -0.235 [-0.421,-0.050]     FAIL hermit -0.016 [-0.216,+0.184] (a tie)
+                                               (hermit WINS)                          always-harsh PASS +0.819 [+0.661,+0.977]
+ 3 Always-giving loses to tit-for-tat      FAIL -0.075 [-0.286,+0.136]           FAIL -0.135 [-0.382,+0.112]
+ 4 q*b > c  (help group, q = third party   PASS +0.090 [+0.084,+0.095] (hollow:  FAIL +0.003 [-0.003,+0.008] (CI holds 0)
+   present)                                   with q_eff -0.013)                      with q_eff -0.007 [-0.015,+0.002]
+ 5 Extractor wins only where reprisal      FAIL wins nowhere (+0.300 all2,        FAIL wins nowhere (+0.738 fix,
+   is weak                                     +0.569 noR)                            +0.753 fixnoR; both worse than rules)
+Rule 4 changed from PASS to FAIL because of b, not q: see the b, c, q, q_eff, w line.
+
+b, c, q, q_eff, w for the help acts (give, bandage, help up, defend, serve), 8 plan choosers pooled, per-act units of drive error:
+                 b       c       q     q_eff   w_same  w_next
+  old all2   0.133   0.015   0.79    0.02    0.99    0.998
+  fixed      0.030   0.022   0.81    0.53    0.99    0.998     (n = 116,606 acts)
+  fixed, supply 0.6 (exploratory)  b 0.028  c 0.028  q 0.80  q_eff 0.51
+  q_eff*b - c: old -0.013 [-0.015,-0.009]; fixed -0.007 [-0.015,+0.002]; scarce -0.014 [-0.023,-0.006]  (all FAIL)
+All kind acts (kind_all, fixed): b 0.015, c 0.012, q 0.82, q_eff 0.20; harsh acts: b -0.112, c -0.021, q_eff 0.56.
+w: the pair is in one room again that night 99 percent of the time: the future is always there.
+
+What the world now does (what 0a found missing):
+  - Kindness answered: reply_kind after a help act 0.029 -> 0.552 [0.510, 0.593] (harm is answered 0.71 for a strike).
+  - Reputation of kindness: q_eff 0.02 -> 0.53. Gossip: good deeds told 538 -> 32,696 times (bad 47,586 -> 44,588); ratio 88:1 -> 1.4:1.
+    A told good deed moves the hearer's liking by +0.028 (23 percent of tellings), a bad one by -0.057 (41 percent).
+  - Food reaches people: the focal hermit eats 0.40 -> 1.16 times a night and receives 0.88 served meals; always-giving receives 3.3.
+  - Rules cast: harsh acts per person per night 10.39 -> 5.05; mean liking -0.77 -> -0.26 (see 3).
+  - Hunger share of the rules focal's error: energy 0.346 -> 0.207 (still the largest part, with wealth 0.149).
+
+WHICH CONSEQUENCE IS STILL MISSING (no tuning was done; the first run is the reported run):
+  (a) The world is now too easy for ANY policy. The rules focal's total error fell 0.947 -> 0.491 and, in the oracle setting, 0.423 -> 0.124.
+      The share partners can touch (company + standing + safety) is only 0.020 (was 0.130), so an oracle partner policy can
+      win back at most that: the oracle gap (-0.003) cannot reach 0.1. Fix: a need that ONLY another person can meet
+      (more scarcity, a danger one cannot survive alone, a good that needs two), so a partner is worth more than the house is.
+  (b) Hermit ties rules (-0.016) because the house now feeds a hermit that buys or works for its meal. The social acts of
+      "rules" still cost harsh replies (5.9 harsh acts a night made, 6.0 received), which probably cancels what its kind acts earn (u, not isolated).
+  (c) Always-giving beats tit-for-tat by 0.135 (not significant), because giving is now cheap (c 0.022) and answered. Giving does
+      not yet cost enough, nor harm hurt a giver enough, for conditional kindness to win.
+  (d) The extractor still loses everywhere, including with reprisal off: the cast's hostility is not what defeats it; harsh replies
+      probably are (u, not isolated). The extractor rule needs a cast that gives to threats; the new partner rule says
+      the opposite (restraint toward the trusted only), so a threatened one may still hand over little (u).
+  (e) q*b-c: b fell because needs are met. q_eff (0.53) is no longer the weak part.
+
+Fresh seeds 11-13 (6 choosers, fix vs all2, 3 seeds so CIs are wide; fix minus rules, drive error):
+  fix : tit-for-tat 0.367, always-giving 0.418, rules 0.676, hermit 0.720 (+0.044 [-0.893,+0.981]), extractor 1.265 (+0.589 [+0.046,+1.132]),
+        always-harsh 1.396 (+0.720 [+0.474,+0.967]); giving minus tit-for-tat +0.051 [-0.281,+0.384]
+  all2: hermit 0.885, always-giving 0.971, rules 1.105, tit-for-tat 1.192, extractor 1.290, always-harsh 1.368; hermit -0.219 vs rules [-1.318,+0.879]
+  Same picture: the fixed world lowers every error, hermit no longer clearly beats rules, harsh plays lose.
+Scarce food (supply 0.6 = 12 rations for ~4.6 needed, seeds 1-10, exploratory, one value chosen in advance):
+  always-giving 0.330, feeder 0.401, rules 0.483, tit-for-tat 0.527, hermit 0.535 (hermit minus rules +0.052 [-0.089,+0.192]);
+  always-giving minus tit-for-tat -0.197 [-0.550,+0.156]. Hermit now loses by a nose to rules, but not significantly. No pass rule flips.
+Oracle family (L2 setting): rules fix 0.124 vs all2 0.423; oracle_both 0.127 vs 0.362.
+
+------------------------------------------------------------------
+3. WHY THE RULES CAST WAS HARSH (leave-one-out, 5 seeds x 40 nights, all-rules cast; lab/results/mindL3/inn/calm_ablation.txt)
+------------------------------------------------------------------
+  config                          harsh/person/night   kind/person/night   mean liking
+  all2 (old)                              10.39                1.34            -0.772
+  all3 (fix)                               5.05                5.41            -0.263
+  all3 minus meals                         5.56                4.70            -0.416
+  all3 minus partner                       5.55                1.93            -0.248
+  all3 minus news                          5.40                6.36            -0.382
+  all3 minus calm                          8.53                9.35            -0.516
+  calm part off: echo memory               13.53              32.69            -0.561   (memory of what one said, ECHO_HALF)
+  calm part off: discharge of anger         5.86                4.70            -0.332
+  calm part off: provoked share             5.38                4.45            -0.464   (witness charges an answer less)
+  calm part off: wound term                 5.48                4.45            -0.256
+  calm part off: lonely term                5.69                5.53            -0.334
+Reading: the causes were in the world, not the score constants:
+  - Charges were repeated because the habit memory of what one had said forgot after 40 turns (every believer accused again). Echo
+    memory (fades with a half-life of 150 turns) is the biggest single effect (without it 13.5 harsh acts).
+  - Reprisal cooled every witness to one who HIT BACK as much as to the one who began it. That is the main driver of the liking
+    spiral (without the provoked-share term, liking -0.46).
+  - A blow never spent the anger behind it; acting now spends half (small effect, 0.8 harsh acts).
+  - Wounded and lonely terms are small. Moot charges (the thing given back) are handled by a feature.
+Still 5 harsh acts a person a night remain (real remaining causes: hunger in the first hours, the unresolved first blow, accusations
+that have a real thief behind them). The ablation was NOT used to tune; the numbers are the pre-chosen constants.
+Caveat: removing "meals" makes the harsh count a bit worse (5.56) and liking much worse (-0.42): food scarcity is part of the cause too.
+
+------------------------------------------------------------------
+FIX ROUND (answers to the checker's problems)
+------------------------------------------------------------------
+ 1. Report was missing: this file.
+ 2. Only 36 of 110 runs: the full set is on disk now: 110 A runs + 40 O runs (fix), 20 fixnoR (extractor, rules), 36 fresh-seed
+    runs, 50 scarce runs = 256 lifetimes; 170 are in runs/. The earlier log was just a run in progress.
+ 3. Done now: the general-rule review (above); test_world 43 passed; test_tournament 15 passed; seeds 11-13; calm-cause ablation;
+    old all2 re-analysed from 0a files and compared paired. Nothing was tuned: constants were fixed before the runs.
+ 4. Added: world "fixnoR" so rule 5 compares a strong-reprisal and a weak-reprisal fixed world; a supply dial for the tournament.
+ 5. Open/unverified: the portion sizes are marked (u) (kcal per need unit is the world's own scale); rule 5's "weak world" is only
+    reprisal off, the noG/none worlds of 0a were not re-made for the fixed world; the 3-seed re-run has very wide intervals.
+ 6. git: only lab/mindL/tournament.py, tournament_report.py, lab/world2/{policy,test_world,world}.py are modified; src/, tests/, docs/ untouched; nothing staged.

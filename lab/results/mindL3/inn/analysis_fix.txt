@@ -1,0 +1,80 @@
+
+WORLD all2: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+always-giving  0.298 [0.109, 0.486]       -0.193 [-0.411, +0.024]            0.00     80.0    10
+hermit_ask     0.346 [0.118, 0.573]       -0.145 [-0.348, +0.057]            0.00     80.0    10
+feeder         0.349 [0.103, 0.595]       -0.142 [-0.342, +0.058]            0.00     80.0    10
+hoarder        0.384 [0.116, 0.652]       -0.107 [-0.262, +0.048]            0.00     80.0    10
+tit-for-tat    0.433 [0.058, 0.808]       -0.058 [-0.312, +0.195]            0.00     80.0    10
+hermit         0.475 [0.219, 0.732]       -0.016 [-0.216, +0.184]            0.00     80.0    10
+rules          0.491 [0.144, 0.839]       -                                  0.00     80.0    10
+protector      0.533 [0.213, 0.852]       +0.042 [-0.095, +0.178]            0.10     79.9    10
+extractor      1.228 [1.016, 1.441]       +0.738 [+0.508, +0.967]            0.20     79.8    10
+always-harsh   1.310 [1.050, 1.570]       +0.819 [+0.661, +0.977]            0.10     79.9    10
+random         1.492 [1.167, 1.818]       +1.001 [+0.870, +1.133]            0.40     79.6    10
+always-giving minus tit-for-tat: -0.135 [-0.382, +0.112]
+  always-giving minus hermit         -0.178 [-0.279, -0.076]
+  tit-for-tat minus hermit           -0.043 [-0.287, +0.202]
+  always-harsh minus hermit          +0.835 [+0.661, +1.008]
+  extractor minus hermit             +0.753 [+0.500, +1.006]
+  hoarder minus hermit               -0.091 [-0.181, -0.002]
+  protector minus hermit             +0.058 [-0.041, +0.156]
+  hermit_ask minus hermit            -0.130 [-0.208, -0.051]
+  hermit_ask minus rules             -0.145 [-0.348, +0.057]
+  feeder minus rules                 -0.142 [-0.342, +0.058]
+  feeder minus hermit                -0.126 [-0.214, -0.039]
+  feeder minus hermit_ask            +0.003 [-0.038, +0.045]
+  always-giving minus always-harsh   -1.012 [-1.177, -0.847]
+  tit-for-tat minus always-harsh     -0.877 [-1.135, -0.620]
+  random minus rules                 +1.001 [+0.870, +1.133]
+
+WORLD noR: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+rules          0.506 [0.229, 0.783]       -                                  0.00     80.0    10
+extractor      1.260 [1.046, 1.474]       +0.753 [+0.509, +0.998]            0.00     80.0    10
+
+WORLD noG: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD none: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD fix: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD fixnoR: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+ORACLE (L2 setting, all2):
+  oracle_avoid   0.119 [0.098, 0.141]   gap vs rules +0.004 [-0.000, +0.009]
+  oracle_both    0.127 [0.108, 0.146]   gap vs rules -0.003 [-0.013, +0.007]
+  oracle_kind    0.123 [0.106, 0.140]   gap vs rules +0.001 [-0.010, +0.012]
+  rules          0.124 [0.102, 0.145]   gap vs rules -
+  ceiling (blind company+standing+safety error) 0.020 [0.012, 0.029]; share recovered -0.162
+
+PASS RULES:
+  oracle gap >= 0.1 with CI above 0: FAIL  (-0.003 [-0.013, +0.007])
+  hermit_loses_to_rules: FAIL  -0.016 [-0.216, +0.184]
+  always-harsh_loses_to_rules: PASS  +0.819 [+0.661, +0.977]
+  hermit_and_always_harsh_lose_to_rules: FAIL  None
+  always_giving_loses_to_tit_for_tat: FAIL  -0.135 [-0.382, +0.112]
+  extractor_wins_only_where_reprisal_is_weak: FAIL  {'all2': {'mean': 0.7375, 'lo': 0.5077, 'hi': 0.9674, 'n': 10}, 'noR': {'mean': 0.7534, 'lo': 0.5087, 'hi': 0.9981, 'n': 10}, 'noG': None, 'none': None, 'fix': None, 'fixnoR': None}
+  b,c,q,w (help, all2): n=116606 b=0.030 c=0.022 q=0.81 q_eff=0.53 w_same=0.99 q*b-c +0.003 [-0.003, +0.008]  q_eff*b-c -0.007 [-0.015, +0.002]
+  b,c,q,w (kind_all, all2): n=302317 b=0.015 c=0.012 q=0.82 q_eff=0.20 w_same=0.99 q*b-c +0.000 [-0.002, +0.002]  q_eff*b-c -0.009 [-0.014, -0.005]
+  b,c,q,w (harsh, all2): n=129893 b=-0.112 c=-0.021 q=0.74 q_eff=0.56 w_same=1.00 q*b-c -0.062 [-0.069, -0.055]  q_eff*b-c -0.041 [-0.048, -0.035]
+
+FLOWS (all2/fix): {"always-giving": {"made_kind": 15.66, "made_harsh": 0.0, "recv_kind": 21.61, "recv_help": 11.55, "recv_harsh": 0.35, "recv_gossip": 10.12, "recv_strike": 0.0, "made_strike": 0.0}, "always-harsh": {"made_kind": 0.0, "made_harsh": 10.38, "recv_kind": 0.18, "recv_help": 0.17, "recv_harsh": 7.76, "recv_gossip": 0.02, "recv_strike": 5.74, "made_strike": 0.0}, "extractor": {"made_kind": 0.0, "made_harsh": 9.85, "recv_kind": 0.14, "recv_help": 0.13, "recv_harsh": 12.1, "recv_gossip": 0.03, "recv_strike": 4.81, "made_strike": 0.0}, "feeder": {"made_kind": 0.0, "made_harsh": 0.0, "recv_kind": 8.63, "recv_help": 5.22, "recv_harsh": 0.6, "recv_gossip": 5.46, "recv_strike": 0.0, "made_strike": 0.0}, "hermit_ask": {"made_kind": 0.0, "made_harsh": 0.0, "recv_kind": 6.13, "recv_help": 3.39, "recv_harsh": 0.41, "recv_gossip": 3.81, "recv_strike": 0.0, "made_strike": 0.0}, "hermit": {"made_kind": 0.0, "made_harsh": 0.0, "recv_kind": 3.7, "recv_help": 1.65, "recv_harsh": 0.43, "recv_gossip": 3.32, "recv_strike": 0.0, "made_strike": 0.0}, "hoarder": {"made_kind": 0.0, "made_harsh": 1.99, "recv_kind": 5.31, "recv_help": 2.99, "recv_harsh": 0.71, "recv_gossip": 3.76, "recv_strike": 0.0, "made_strike": 0.0}, "protector": {"made_kind": 2.36, "made_harsh": 1.98, "recv_kind": 4.61, "recv_help": 2.76, "recv_harsh": 2.24, "recv_gossip": 2.83, "recv_strike": 1.14, "made_strike": 1.01}, "random": {"made_kind": 4.78, "made_harsh": 10.54, "recv_kind": 0.55, "recv_help": 0.46, "recv_harsh": 13.13, "recv_gossip": 0.13, "recv_strike": 5.81, "made_strike": 2.32}, "rules": {"made_kind": 4.57, "made_harsh": 5.94, "recv_kind": 5.07, "recv_help": 2.76, "recv_harsh": 6.01, "recv_gossip": 2.32, "recv_strike": 1.37, "made_strike": 1.36}, "tit-for-tat": {"made_kind": 21.33, "made_harsh": 1.9, "recv_kind": 17.2, "recv_help": 10.75, "recv_harsh": 2.23, "recv_gossip": 8.86, "recv_strike": 0.85, "made_strike": 0.68}}
+
+GOSSIP EFFECT {"good": {"tellings": 32696, "mean_liking_change": 0.0281, "share_that_moved_it": 0.227}, "bad": {"tellings": 44588, "mean_liking_change": -0.0568, "share_that_moved_it": 0.407}}
+
+BY VERB (focal+others) rates, selected
+serve {'n': 22958, 'b': 0.031, 'b_imm': 0.031, 'b_rem': 0.015, 'c': 0.002, 'c_imm': -0.002, 'c_rem': -0.001, 'c_pot': 0.001, 'c_time': 0.003, 'q_seen': 0.803, 'q_told': 0.08, 'q': 0.804, 'q_eff': 0.581, 'present': 1.551, 'w_same': 0.997, 'w_next': 0.998, 'daff': 0.035, 'reply_kind': 0.636, 'reply_help': 0.398, 'reply_harsh': 0.051, 'witness_reply_kind': 0.471, 'witness_reply_help': 0.234, 'witness_reply_harsh': 0.11}
+give {'n': 79286, 'b': 0.033, 'b_imm': 0.032, 'b_rem': 0.017, 'c': 0.033, 'c_imm': 0.029, 'c_rem': 0.016, 'c_pot': 0.0, 'c_time': 0.004, 'q_seen': 0.807, 'q_told': 0.13, 'q': 0.808, 'q_eff': 0.419, 'present': 1.524, 'w_same': 0.993, 'w_next': 0.998, 'daff': 0.025, 'reply_kind': 0.612, 'reply_help': 0.459, 'reply_harsh': 0.033, 'witness_reply_kind': 0.517, 'witness_reply_help': 0.37, 'witness_reply_harsh': 0.061}
+praise {'n': 74662, 'b': 0.004, 'b_imm': 0.004, 'b_rem': 0.002, 'c': 0.002, 'c_imm': 0.0, 'c_rem': 0.0, 'c_pot': 0.0, 'c_time': 0.002, 'q_seen': 0.832, 'q_told': 0.078, 'q': 0.832, 'q_eff': 0.015, 'present': 1.655, 'w_same': 0.994, 'w_next': 0.999, 'daff': 0.0, 'reply_kind': 0.542, 'reply_help': 0.389, 'reply_harsh': 0.037, 'witness_reply_kind': 0.506, 'witness_reply_help': 0.35, 'witness_reply_harsh': 0.064}
+gossip {'n': 77284, 'b': 0.002, 'b_imm': 0.002, 'b_rem': 0.001, 'c': 0.007, 'c_imm': 0.0, 'c_rem': 0.0, 'c_pot': 0.0, 'c_time': 0.007, 'q_seen': 0.843, 'q_told': 0.0, 'q': 0.843, 'q_eff': 0.0, 'present': 1.687, 'w_same': 0.994, 'w_next': 0.998, 'daff': -0.028, 'reply_kind': 0.499, 'reply_help': 0.354, 'reply_harsh': 0.05, 'witness_reply_kind': 0.401, 'witness_reply_help': 0.274, 'witness_reply_harsh': 0.1}
+strike {'n': 26957, 'b': -0.204, 'b_imm': -0.204, 'b_rem': -0.096, 'c': 0.016, 'c_imm': 0.007, 'c_rem': 0.003, 'c_pot': 0.0, 'c_time': 0.009, 'q_seen': 0.724, 'q_told': 0.089, 'q': 0.724, 'q_eff': 0.602, 'present': 1.198, 'w_same': 0.994, 'w_next': 1.0, 'daff': -0.03, 'reply_kind': 0.001, 'reply_help': 0.001, 'reply_harsh': 0.707, 'witness_reply_kind': 0.195, 'witness_reply_help': 0.167, 'witness_reply_harsh': 0.284}
+insult {'n': 7077, 'b': -0.063, 'b_imm': -0.063, 'b_rem': -0.03, 'c': 0.026, 'c_imm': 0.014, 'c_rem': 0.007, 'c_pot': 0.0, 'c_time': 0.012, 'q_seen': 0.726, 'q_told': 0.1, 'q': 0.726, 'q_eff': 0.482, 'present': 1.26, 'w_same': 0.996, 'w_next': 0.999, 'daff': -0.04, 'reply_kind': 0.0, 'reply_help': 0.0, 'reply_harsh': 0.55, 'witness_reply_kind': 0.079, 'witness_reply_help': 0.053, 'witness_reply_harsh': 0.401}
+accuse {'n': 39282, 'b': -0.055, 'b_imm': -0.055, 'b_rem': -0.03, 'c': 0.013, 'c_imm': 0.005, 'c_rem': 0.002, 'c_pot': 0.0, 'c_time': 0.008, 'q_seen': 0.829, 'q_told': 0.174, 'q': 0.829, 'q_eff': 0.782, 'present': 1.508, 'w_same': 0.996, 'w_next': 1.0, 'daff': -0.043, 'reply_kind': 0.005, 'reply_help': 0.004, 'reply_harsh': 0.275, 'witness_reply_kind': 0.226, 'witness_reply_help': 0.154, 'witness_reply_harsh': 0.133}
+search {'n': 15057, 'b': -0.054, 'b_imm': -0.054, 'b_rem': -0.03, 'c': 0.011, 'c_imm': 0.004, 'c_rem': 0.002, 'c_pot': 0.0, 'c_time': 0.007, 'q_seen': 0.827, 'q_told': 0.199, 'q': 0.827, 'q_eff': 0.779, 'present': 1.508, 'w_same': 0.998, 'w_next': 1.0, 'daff': -0.036, 'reply_kind': 0.004, 'reply_help': 0.003, 'reply_harsh': 0.292, 'witness_reply_kind': 0.218, 'witness_reply_help': 0.154, 'witness_reply_harsh': 0.137}
+buy {'n': 17822, 'b': 0.0, 'b_imm': 0.0, 'b_rem': 0.0, 'c': -0.005, 'c_imm': -0.01, 'c_rem': 0.001, 'c_pot': 0.0, 'c_time': 0.005, 'q_seen': 0.83, 'q_told': 0.0, 'q': 0.83, 'q_eff': 0.0, 'present': 1.69, 'w_same': 0.998, 'w_next': 0.997, 'daff': 0.0, 'reply_kind': 0.58, 'reply_help': 0.523, 'reply_harsh': 0.07, 'witness_reply_kind': 0.262, 'witness_reply_help': 0.156, 'witness_reply_harsh': 0.087}
+work {'n': 26298, 'b': 0.001, 'b_imm': 0.001, 'b_rem': 0.0, 'c': -0.004, 'c_imm': -0.024, 'c_rem': -0.014, 'c_pot': 0.0, 'c_time': 0.02, 'q_seen': 0.857, 'q_told': 0.0, 'q': 0.857, 'q_eff': 0.0, 'present': 1.728, 'w_same': 0.998, 'w_next': 0.997, 'daff': 0.0, 'reply_kind': 0.477, 'reply_help': 0.427, 'reply_harsh': 0.079, 'witness_reply_kind': 0.267, 'witness_reply_help': 0.173, 'witness_reply_harsh': 0.086}

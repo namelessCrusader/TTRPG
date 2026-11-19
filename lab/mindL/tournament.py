@@ -84,7 +84,7 @@ from pathlib import Path
 from lab.world2.lifetime import NAMES, Cast, hook, night_seed, night_stats
 from lab.world2.partners import Hard, Kind
 from lab.world2.policy import Random, Rules, T_RULES, softmax, utility
-from lab.world2.world import (DEED, DRIVES, FLAGS, HARMFUL, HARSH_ACTS, KIND_ACTS, NATURE, PHYSICAL, RATE, START_ROOM,
+from lab.world2.world import (ALL3, DEED, DRIVES, FLAGS, HARMFUL, PORTION, HARSH_ACTS, KIND_ACTS, NATURE, PHYSICAL, RATE, START_ROOM,
                               World)
 
 OUT = Path(__file__).resolve().parents[1] / "results" / "mindL3"
@@ -101,7 +101,7 @@ R_PROVOKE = 0.02   # the provokers' chance per choice (about one provocation a n
 THREAT_SPAN = 60   # the extractor takes within this many turns of a threat
 PROVOKE = {"insult", "strike", "shove", "threaten"}
 HARSH_ALL = HARMFUL | HARSH_ACTS      # harsh acts for the logs: the world's harmful ones and refusing
-HELP_ACTS = frozenset({"give", "help up", "bandage", "defend"})     # kind acts that cost the giver more than a word
+HELP_ACTS = frozenset({"give", "help up", "bandage", "defend", "serve"})     # kind acts that cost the giver more than a word
 REPLY_KIND = frozenset(KIND_ACTS) - {"gossip"}                        # telling a deed on is not a favour to the hearer
 KIND, HARSH, HELP = "kind", "harsh", "help"
 REPLY_SPAN = 40    # an act of the receiver / a witness within this many turns is a reply
@@ -113,7 +113,12 @@ WORLDS = {
     "noR": frozenset(FLAGS) - {"reprisal"},                                # R off, G on
     "noG": frozenset(FLAGS) - {"gossip", "watch", "check"},                # R on, G off
     "none": frozenset(FLAGS) - {"reprisal", "gossip", "watch", "check"},   # both off
+    # the inn fix (2026-11-08): all2 plus meals, partner choice, gossip by salience and the calmer rules cast
+    "fix": frozenset(ALL3),
+    "fixnoR": frozenset(ALL3) - {"reprisal"},      # the fixed world with reprisal off (the extractor rule needs a weak-reprisal world)
 }
+SUPPLY = float(os.environ.get("MINDL3_SUPPLY", "1.0"))   # world flag `meals`: the food in the house, as a share of one night's need
+OLD_WORLDS = ("all2", "noR", "noG", "none")      # what step 0a ran; a default sweep runs these
 
 
 class FastRules(Rules):
@@ -128,7 +133,7 @@ class FastRules(Rules):
 # ---------------------------------------------------------------- the archetypes
 def need_request(o):
     """Asking for or offering for food or drink: the cook holds the food, so this is how a hungry one eats."""
-    return o["verb"] in ("ask", "offer") and o["f"].get("need", 0.0) > 0.0
+    return o["verb"] in ("ask", "offer", "buy", "work") and o["f"].get("need", 0.0) > 0.0
 
 
 def verb_uniform(groups):
@@ -226,7 +231,7 @@ class AlwaysHarsh(Archetype):
 
 class AlwaysGiving(Archetype):
     name = "always-giving"
-    allowed = frozenset({"give", "offer", "praise", "help up", "bandage", "accept"})
+    allowed = frozenset({"give", "offer", "praise", "help up", "bandage", "accept", "serve"})   # serve: give of food, world `meals`
 
     def candidates(self, w, p, opts, base, social):
         g = {}
@@ -241,7 +246,7 @@ class TitForTat(Archetype):
     allowed = frozenset({"praise", "give", "help up", "bandage", "defend", "accept", "insult", "threaten", "shove",
                          "strike", "steal", "accuse", "search", "refuse"})
     # what to answer with, first choice first (the same act when the menu has it)
-    KIND_REPLY = {"give": ("give", "praise"), "praise": ("praise",), "help up": ("help up", "praise"),
+    KIND_REPLY = {"give": ("give", "praise"), "serve": ("serve", "praise"), "praise": ("praise",), "help up": ("help up", "praise"),
                   "bandage": ("bandage", "praise"), "defend": ("defend", "praise"), "accept": ("accept", "praise"),
                   "gossip": ("praise",)}
     HARSH_REPLY = {"insult": ("insult",), "threaten": ("threaten", "insult"), "shove": ("shove", "insult"),
@@ -470,8 +475,9 @@ class Oracle:
 
 
 # ---------------------------------------------------------------- measuring: the world, the recorder
-def use_gain(person, th):
-    """The drop in `person`'s drive error if it ate or drank thing `th` now (0 if it is neither)."""
+def use_gain(person, th, ration=0.6):
+    """The drop in `person`'s drive error if it ate or drank thing `th` now (0 if it is neither). `ration`: the hunger
+    a food takes off (0.6 a whole item; PORTION for one portion of a pot, world flag `meals`)."""
     if th is None:
         return 0.0
     props = th["props"]
@@ -479,7 +485,7 @@ def use_gain(person, th):
     wt, s = NATURE[person.kind]["energy"]
     before = wt * max(0.0, max(h, t) - s)
     if "food" in props:
-        h = max(0.0, h - 0.6)
+        h = max(0.0, h - ration)
     elif props & {"ale", "water"}:
         t = max(0.0, t - 0.5)
     else:
@@ -561,10 +567,11 @@ class Recorder:
     def before(self, w, p, d):
         q = w.people[d["target"]]
         thirds = [t for t in w.people.values() if t is not p and t is not q and t.name in NAMES and not t.dead]
-        item = w.things.get(d["obj"]) if d["verb"] == "give" else None
+        item = w.things.get(d["obj"]) if d["verb"] in ("give", "serve") else None
+        ration = PORTION if d["verb"] == "serve" else 0.6       # a serve feeds the receiver at once (b sees it); the giver loses a ration
         return {"ea": w.drive_error(p), "eq": w.drive_error(q), "thirds": thirds,
                 "aff": [t.aff.get(p.name, 0.0) for t in thirds],
-                "pot_a": use_gain(p, item), "pot_q": use_gain(q, item), "ctime": d["dur"] * self.drift(w, p),
+                "pot_a": use_gain(p, item, ration), "pot_q": 0.0 if d["verb"] == "serve" else use_gain(q, item), "ctime": d["dur"] * self.drift(w, p),
                 "present": [t.name for t in thirds if t.room == p.room and t.acts() and not w.asleep(t)],
                 "hear": q.aff.get(d["f"]["deed"]["actor"], 0.0) if d["verb"] == "gossip" else None}
 
@@ -729,7 +736,7 @@ def lifetime_measured(spec, nights=None):
     carry, start = None, None
     stats = []
     for n in range(nights):
-        w = MWorld(seed=night_seed(seed, n), bandit=None, turns=TURNS, flags=flags, carry=carry, night=n, rec=rec)
+        w = MWorld(seed=night_seed(seed, n), bandit=None, turns=TURNS, flags=flags, carry=carry, night=n, rec=rec, supply=SUPPLY)
         if start is None:
             start = {a: {b: v for b, v in w.people[a].aff.items() if b in NAMES} for a in NAMES}
         hook(cast, "night_start", w, n)
@@ -795,14 +802,15 @@ O_CHOOSERS = ("rules", "oracle_avoid", "oracle_kind", "oracle_both")
 def specs(family, nights=100, worlds=None, choosers=None, seeds=SEEDS, rate=None):
     out = []
     if family == "A":
-        for world in worlds or WORLDS:
+        for world in worlds or OLD_WORLDS:
             for c in choosers or A_CHOOSERS:
                 for s in seeds:
                     out.append(dict(kind="A", world=world, chooser=c, seed=s, nights=nights, focal=NAMES[s % 5]))
     elif family == "O":
-        for c in choosers or O_CHOOSERS:
-            for s in seeds:
-                out.append(dict(kind="O", world="all2", chooser=c, seed=s, nights=nights, focal=FOCALS3[s % 3]))
+        for world in worlds or ("all2",):
+            for c in choosers or O_CHOOSERS:
+                for s in seeds:
+                    out.append(dict(kind="O", world=world, chooser=c, seed=s, nights=nights, focal=FOCALS3[s % 3]))
     else:
         raise ValueError(family)
     for x in out:

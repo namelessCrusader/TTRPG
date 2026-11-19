@@ -20,10 +20,10 @@ from lab.mindL.tournament import A_CHOOSERS, HARSH_ALL, HELP_ACTS, OUT, REPLY_KI
 from lab.world2.world import DRIVES, HARMFUL, HARSH_ACTS, KIND_ACTS
 
 FIELDS = Recorder.FIELDS
-HELP = ("give", "bandage", "help up", "defend")          # kind acts that cost the giver something besides a word
+HELP = ("give", "bandage", "help up", "defend", "serve")          # kind acts that cost the giver something besides a word
 KIND_ALL = tuple(sorted(KIND_ACTS))
 HARSH_VERBS = tuple(sorted(HARMFUL | HARSH_ACTS))
-PERSON_VERBS = {"strike", "shove", "threaten", "insult", "praise", "search", "steal", "bandage", "help up", "defend",
+PERSON_VERBS = {"serve", "buy", "work", "strike", "shove", "threaten", "insult", "praise", "search", "steal", "bandage", "help up", "defend",
                 "accuse", "tell", "give", "gossip", "ask", "offer", "accept", "refuse"}
 
 
