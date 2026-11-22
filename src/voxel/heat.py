@@ -112,6 +112,7 @@ FLAME_PAY_MAX = 1.0              # the most of its gas heat a fire may hand to t
                                  # ask for it (CALIBRATION: in the F-T2 crib of
                                  # 5 cm sticks, a share of 0.8 caught 23% of the
                                  # sticks in 2 min, 0.9 36%, 1.0 51%)
+LUMP_M = 0.0125                  # m, a lump of charcoal or a pebble in a bed (u: 1-2 cm, Kunii and Smith 1960)
 FLAME_PASS = 0.4                 # a cell at least this empty (void share) is a way
                                  # through for a flame (the gaps of a crib)
 FLAME_WALL = 0.5                 # a side is a wall when this share of the cells
@@ -199,6 +200,7 @@ def _face_heat(Ts, Tb, Csur, Ccor, k, hl, kind, lit, void, eps, af, bc, eff, qs,
     q = np.empty((nx - di, ny - dj, nz - dl), np.float32)
     two = np.float32(2.0)
     half = np.float32(0.5)
+    quarter = np.float32(0.25)
     tiny = np.float32(1e-12)
     zero = np.float32(0.0)
     one = np.float32(1.0)
@@ -234,16 +236,16 @@ def _face_heat(Ts, Tb, Csur, Ccor, k, hl, kind, lit, void, eps, af, bc, eff, qs,
                     m = tiny
                 g = two * x * y / m * dx
                 if sa and sb:
-                    v = void[i, j, l]
+                    v = void[i, j, l]                # the cavity view of the more open cell
                     w2 = void[i2, j2, l2]
                     if w2 > v:
                         v = w2
                     e = eps[i, j, l]
                     e2 = eps[i2, j2, l2]
-                    if e2 < e:
-                        e = e2
-                    tm = (ta + tc) * half + k0
-                    g = g + v * e * foursig * tm * tm * tm * A
+                    eg = e * e2 / (e + e2 - e * e2)  # two grey surfaces facing each other
+                    tka = ta + k0
+                    tkc = tc + k0
+                    g = g + v * eg * (foursig * quarter * (tka * tka + tkc * tkc) * (tka + tkc)) * A
                 if (sa and kb == 2) or (ka == 2 and sb):
                     if ka == 2:
                         h = hl[i, j, l]
@@ -1056,6 +1058,7 @@ class HeatMixin:
         if geo is not None and geo.mat.shape == mat.shape:
             moved = ((geo.mat != mat) | (geo.smass != smass)
                      | (geo.fl != fl) | (geo.fvol != fvol))
+            moved |= (geo.C != C)            # a capacity that moved with the same matter (a wet world's vapour, mist, ice)
             if sc is not None:               # a changed mix id is changed matter
                 moved |= (geo.sc != sc) | (geo.fc != fc)
             near = moved.copy()                  # and their six neighbours,
@@ -1524,6 +1527,23 @@ class HeatMixin:
         self._rad_landed = getattr(self, "_rad_landed", 0.0) + total
 
     # ── conduction, convection and loss through the faces ──────────────────
+    def _cavity_view(self, void, dx):
+        """THE CAVITY VIEW of a porous cell (wave 14a, H23): the share of a face
+        that looks onto glowing lumps instead of a wall. A bar buried in a bed of
+        coals is not touched by the empty share of the cell (that is 0.2 for a
+        packed bed); it sits in a cavity whose every wall is hot, and a ray from
+        its face crosses `dx / LUMP_M` lumps' worth of gaps before it is stopped.
+        So the view is 1 - fill^N: 0 for a dense cell, 0.59 for the packed bed at
+        5 cm (fill 0.8, N 4), near 1 for a loose heap or a coarse cell. A tiny
+        void (under a percent) stays small: 1 - (1 - v)^4 is about 4 v."""
+        if not void.any():
+            return void
+        n = np.float32(float(dx) / LUMP_M)
+        m = void > 0                                     # only the porous cells pay for the power
+        out = np.zeros(void.shape, np.float32)
+        out[m] = np.float32(1.0) - np.power(np.float32(1.0) - void[m], n)
+        return out
+
     def _law_conduct(self, sl=None):
         """Heat across every face, in SI: W per kelvin of difference, times
         TICK_S. What a face is decides its law:
@@ -1556,7 +1576,7 @@ class HeatMixin:
         k = np.where(solid, _mix_pick(self.mixes, "k", _KSOLID_ARR[mat], sc),
                      _mix_pick(self.mixes, "k", _FLK_ARR[fl], fc))
         ref = self._rest_ref(sl)       # cold (T8): warm against the cell's own rest
-        eddy = f32(1000.0 * AIR_C / EDDY) * np.maximum(
+        eddy = (f32(0.0) if self.gas_momentum else f32(1000.0 * AIR_C / EDDY)) * np.maximum(
             T - AMBIENT if ref is None else T - (AMBIENT + ref), 0.0)
         k = np.where(gas, _KSOLID_ARR[AIR] + eddy, k).astype(np.float32)
         h_liq = _FK_ARR[fl]
@@ -1568,7 +1588,8 @@ class HeatMixin:
         # gas cooler than itself)
         lit = np.where(solid, (Ts >= _IGN_ARR[mat]) & (u.smass > 0),
                        (fl == OIL) & (Ts >= FLUID[OIL][3]))
-        af, void = u.af, u.void
+        af = u.af
+        void = self._cavity_view(u.void, dx)             # what a pore looks onto
         qs = np.zeros(E.shape, np.float32)               # into skins
         qc = np.zeros(E.shape, np.float32)               # into cores
         bc = wet & (fl == WATER)                         # water: the boiling curve
@@ -1608,9 +1629,10 @@ class HeatMixin:
             G = 2.0 * ka * kb / np.maximum(ka + kb, 1e-12) * dx
             ss = sa & sb
             if ss.any():                                 # radiation across the
-                tm = (Ta + Tc) * f32(0.5) + _K0          # gaps of a porous cell
-                rad = (np.maximum(void[a], void[b]) * np.minimum(eps[a], eps[b])
-                       * _FOURSIG * tm * tm * tm * A)
+                tka, tkc = Ta + _K0, Tc + _K0            # gaps of a porous cell
+                ea, ec = eps[a], eps[b]
+                rad = (np.maximum(void[a], void[b]) * (ea * ec / np.maximum(ea + ec - ea * ec, f32(1e-12)))
+                       * (_FOURSIG * f32(0.25) * (tka * tka + tkc * tkc) * (tka + tkc)) * A)
                 G = np.where(ss, G + rad, G)
             sw = (sa & wb) | (wa & sb)
             if sw.any():

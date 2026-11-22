@@ -70,6 +70,10 @@ sys.path.insert(0, REPO)
 import numpy as np                                  # noqa: E402
 
 from src.voxel import sim, scenes, harvest          # noqa: E402
+try:                                                # wave 14a: every scene has humidity
+    from src.voxel.wetworld import HumidWorld as _SceneWorld        # noqa: E402
+except ImportError:                                 # a base tree from before wave 14a
+    _SceneWorld = sim.World
 
 # A sandbox that silently imported some other tree would check nothing.
 if not os.path.realpath(sim.__file__).startswith(REPO + os.sep):
@@ -233,7 +237,7 @@ class _Recorder:
 REC = None
 
 
-class Probe(sim.World):
+class Probe(_SceneWorld):
     """Exactly a World, plus one look at itself after each step. Scenes and the
     harvest build their worlds by the name `World`, so that name is pointed
     here for the duration of a case."""

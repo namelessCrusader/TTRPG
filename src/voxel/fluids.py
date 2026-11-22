@@ -4,6 +4,7 @@ import weakref
 
 import numpy as np
 from .kernels import HAVE_NUMBA, njit
+from .woodwater import WoodWaterMixin
 from .materials import (ACID, AIR, AMBIENT, BLOOD, BOIL, CHAR, FLUID, GRAVITY, MIRON, MLEAD, MTIN, NMAT, NMAT_PAD,
                         NOFLUID, OIL, REACTIONS, ROPE, SOLID, TICK_S, WATER, WEAK_ACID, WOOD, _CSOLID_ARR, _FDENS_ARR,
                         _FLIDS, _MIXHEAT, _RATE_PTS, _REACTIVE, _SKIN_DEPTH_ARR, MISCIBLE)
@@ -651,6 +652,21 @@ def _sorb_tab():
 _SORB = _sorb_tab()
 
 
+def _wood_tab():
+    """WOOD SPECIES rows (wooddata) as arrays indexed by species id: S along the grain, S across,
+    the most water held per gram. Id 0 is generic wood and is never read (a cell with no species
+    takes the SORPTIVITY row)."""
+    from . import wooddata as wd
+    n = len(wd.NAMES)
+    a = np.zeros((3, max(n, 16)))
+    for i, name in enumerate(wd.NAMES[1:], 1):
+        a[:, i] = wd.row(name)
+    return a
+
+
+_WOOD = _wood_tab()
+
+
 @njit(cache=True)
 def _soak_pairs(cells, nx, ny, nz, mat, fl, fvol, sorbs, wick):
     """Every (wet open cell, porous solid beside it) pair, grouped by the
@@ -708,7 +724,54 @@ def _soak_pairs(cells, nx, ny, nz, mat, fl, fvol, sorbs, wick):
     return a, b, start
 
 
-class FluidsMixin:
+class FluidsMixin(WoodWaterMixin):
+
+    wood_sp = None        # lane B: species id per cell, uint8 (0 = generic wood); lazy
+    wood_grain = None     # lane B: grain axis per cell, uint8 (0 = none, 1 x, 2 y, 3 z); lazy
+
+    def set_wood(self, region, species, grain=None, density=True, pools=False, moisture=0.12):
+        """Name the species and the grain of the WOOD cells in `region` (a tuple of slices, or a
+        boolean mask). `grain` is "x", "y" or "z" (the way the fibres run: along it water enters
+        an END face fast, across it a SIDE face slowly) or None: no axis, every face a side face,
+        which is how the old single row read a plank. With `density` the cells take the species'
+        own mass (smass and E scale together, so a cell at rest stays at its temperature).
+        Cells that are not wood are left alone. Returns the number of cells named.
+
+        `pools=True` (lane R3, woodwater.py) gives the named cells a SECOND pool: bound water in the
+        cell walls, starting at `moisture` g per g of dry wood (0.12 is air-dry, Wood Handbook ch.4).
+        The liquid in fvol is then the free pool, and the slow exchange between them runs. A world
+        that never asks keeps one number per cell, bit for bit."""
+        from . import wooddata as wd
+        sid = wd.species_id(species) if species else 0
+        if self.wood_sp is None:
+            self.wood_sp = np.zeros(self.shape, np.uint8)
+            self.wood_grain = np.zeros(self.shape, np.uint8)
+        m = np.zeros(self.shape, bool)
+        m[region] = True
+        m &= self.mat == WOOD
+        self.wood_sp[m] = sid
+        self.wood_grain[m] = {None: 0, "x": 1, "y": 2, "z": 3}[grain]
+        if density and sid:
+            r = np.float32(wd.rho(species) / SOLID[WOOD][0])
+            self.smass[m] *= r
+            self.E[m] *= r
+        if pools and sid:
+            if self.wood_bound is None:
+                self.wood_bound = np.zeros(self.shape, np.float32)
+            self.wood_bound[m] = (np.float32(moisture) * self.smass[m]).astype(np.float32)
+        return int(m.sum())
+
+    def _wood_rows(self, b, ax):
+        """(S, wmax) of the solid cells `b` (flat indices) whose liquid arrives along axis `ax`, or
+        None when no cell of them names a species. S is the water row; the caller scales it by how
+        fast the liquid wicks."""
+        sp = self.wood_sp.reshape(-1)[b]
+        named = (sp > 0) & (self.mat.reshape(-1)[b] == WOOD)
+        if not named.any():
+            return None
+        along = self.wood_grain.reshape(-1)[b] == ax + 1
+        S = np.where(along, _WOOD[0][sp], _WOOD[1][sp])
+        return named, S, _WOOD[2][sp]
 
     _KINDS = ("uint8", "uint8", "float32", "float32", "float32", "float32")
 
@@ -766,7 +829,9 @@ class FluidsMixin:
         if 0 < rest <= np.float32(0.01) and np.float32(self.cap) - self.fvol[dst] - np.float32(ml) >= rest:
             ml = type(ml)(self.fvol[src])
         dens, c_f = FLUID[f][0], FLUID[f][1]
-        c_src = (self.smass[src] * SOLID[int(self.mat[src])][1]        # scalar capacity of
+        ms = int(self.mat[src])
+        cs = SOLID[ms][1] if ms in SOLID else float(_CSOLID_ARR[ms])  # ids past the old twelve: the padded table
+        c_src = (self.smass[src] * cs                                  # scalar capacity of
                  + self.fvol[src] * dens * c_f + self.c_airbase)       # ONE voxel — never
         share = (ml * dens * c_f) / max(float(c_src), 1e-6)            # the whole lattice
         dE = float(self.E[src]) * min(share, 1.0)
@@ -1229,10 +1294,19 @@ class FluidsMixin:
                 nb = np.where(inside, b + o, 0)
                 n_w += inside & (mat[nb] == AIR) & (fvol[nb] > 0) & (fl[nb] == f)
             m_face = fvol[b] * dens / (A * np.maximum(n_w, 1.0))          # g/m² so far
-            S = sw[0][mat[b]] * wick[f]
+            S = sw[0][mat[b]]
+            wmax = sw[1][mat[b]]
+            if self.wood_sp is not None:                 # lane B: a named species, a named grain
+                wr = self._wood_rows(b, d // 2)
+                if wr is not None:
+                    S = np.where(wr[0], wr[1], S)
+                    wmax = np.where(wr[0], wr[2], wmax)
+            S = S * wick[f]
             m_next = np.sqrt(m_face ** 2 + (S * S) * TICK_S)
             ml = (m_next - m_face) * A / dens                             # one face's share
-            room = sw[1][mat[b]] * smass[b] / dens - fvol[b]              # what it can hold
+            room = wmax * smass[b] / dens - fvol[b]              # what it can hold
+            if self.wood_bound is not None:              # lane R3: the walls hold part of the room
+                room = room - self.wood_bound.reshape(-1)[b] / dens
             room = np.minimum(room, self.cap - fvol[b])
             ml = np.minimum(np.minimum(ml, fvol[a]), room)
             rest = fvol[a] - ml                                            # dust goes with it
@@ -1281,8 +1355,17 @@ class FluidsMixin:
         share = np.clip(n_out * _SKIN_DEPTH_ARR[self.mat] / dx, 0.0, 1.0)
         dens = (self._fdens_grid() if self.mixes_live
                 else np.asarray(_FDENS_ARR, np.float32)[self.fl])
-        held = np.where(dens > 0, sw[1][self.mat] * self.smass * share / np.maximum(dens, 1e-9), 0.0)
-        return np.where(S, np.minimum(self.fvol, held), 0.0).astype(np.float32)
+        wm = sw[1][self.mat]
+        if self.wood_sp is not None:
+            wm = np.where((self.wood_sp > 0) & (self.mat == WOOD), _WOOD[2][self.wood_sp], wm)
+        held = np.where(dens > 0, wm * self.smass * share / np.maximum(dens, 1e-9), 0.0)
+        have = self.fvol
+        if self.wood_bound is not None:                  # lane R3: bound water in the skin also
+            dryb = (dens <= 0) & (self.wood_bound > 0)   # a cell with no liquid reads water's density
+            dens = np.where(dryb, np.float32(1.0), dens)
+            held = np.where(dens > 0, wm * self.smass * share / np.maximum(dens, 1e-9), 0.0)
+            have = have + self.wood_bound * share / np.maximum(dens, 1e-9)
+        return np.where(S, np.minimum(have, held), 0.0).astype(np.float32)
 
     def _law_stir(self):
         """Potency evens out WITHIN a standing pool — reaction heat and density

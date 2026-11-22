@@ -255,7 +255,7 @@ def test_codeonly_the_rebuild_equals_the_live_materials_arrays():
         live = getattr(M, name, None)
         if live is None:
             continue
-        n = 9 if name in FLUID_ARRAYS else M.NMAT_ROWS
+        n = 9 if name in FLUID_ARRAYS else M.NMAT_PLANNED_ROWS    # the record now has the registry's planned ids 13..26 too (lane F); soil and grass past them are not in the registry
         assert len(live) == 64 and t[name][:n].tobytes() == live[:n].tobytes(), name
     assert t["BOIL"] == M.BOIL and t["LATENT"] == M.LATENT
 

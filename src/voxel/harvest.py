@@ -29,10 +29,11 @@ import os
 
 import numpy as np
 
-from .sim import (World, ACTS, AIR, WOOD, STONE, IRON, FLESH, LEAD,
+from .sim import (ACTS, AIR, WOOD, STONE, IRON, FLESH, LEAD,
                   GLASS, BODY)
 from .scenes import _person, _room_for, _Wants
 from . import seam
+from .wetworld import HumidWorld as World       # wave 14a: humidity everywhere
 
 
 def _rng(seed):

@@ -50,7 +50,11 @@ NMAT = 12                        # ids the OLD dict tables know (SOLID, EMISS ..
 MATREC = _matrec.ingest_ice()
 if MATREC is None:
     raise ImportError("materials.py needs icephase.ICE_ROW: mat id 12 (ICE) has no row without it")
-NMAT_ROWS = MATREC.nmat          # 13: ids that have a row of the record
+NMAT_ICE_ROWS = MATREC.nmat      # 13: the old twelve and ICE (the ids the species registry also has)
+MATREC = _matrec.ingest_ground(MATREC)     # planned rows 13..26, soil 27, grass 28 (lane F): see matrec.PLANNED_ROWS
+NMAT_PLANNED_ROWS = 27               # ids 0..26: what the species registry and the id pin also name
+SAND, SOIL, GRASS = 15, 27, 28       # sand is the registry's planned id 15; soil and grass are appended
+NMAT_ROWS = MATREC.nmat          # 29: ids that have a row of the record (12 old, ICE, planned 13..26, soil, grass)
 _MOLTEN = (MTIN, MLEAD, MIRON)   # the three molten fluid ids matrec is handed (it imports nothing here)
 # The old dict tables are the record's rows for ids 0..11 only.
 _V = _matrec.legacy_views(_MOLTEN, MATREC, upto=NMAT)
@@ -687,7 +691,16 @@ TRANSMIT = _V["TRANSMIT"]
 # past. So a quarter-full hedge passes about three quarters of the view and a
 # packed wall passes none, from the same one line — no "how opaque is foliage"
 # row to argue about, and it tracks a hedge being cut back or a wall being eaten.
-SEE_TAU = 2.0                    # optical depth a look can still penetrate
+SEE_TAU = 2.0                    # optical depth a look can still penetrate (solids, foliage)
+# SMOKE has its own limit (wave 14a, H1). Jin's visibility in smoke is V = C/K with K the
+# natural-log extinction (1/m): C = 2 to 4 for a reflecting object, 8 for a light-emitting
+# one (Jin, SFPE Handbook "Visibility and human behavior in fire smoke"; (u) from memory).
+# So an object seen by reflected light is lost at a smoke optical depth of C = 3, the middle
+# of that range, and a flame at 8. SEE_TAU 2 sat at the strict edge of Jin's range; it is
+# kept for solids and foliage (a quarter-full hedge is still seen through), and the smoke
+# part of a look is judged against SEE_SMOKE_TAU instead. The flame rule below is Jin's own
+# ratio, 3 / 8, so a flame is now lost at depth 8 exactly.
+SEE_SMOKE_TAU = 3.0
 # A LIGHT SOURCE IS SEEN THROUGH MORE SMOKE than a lit object: Jin's visibility
 # V = K / sigma has K = 8 for a light-emitting sign and K = 3 for a reflecting
 # one (Jin, SFPE Handbook, visibility in smoke; (u) not re-checked). So the smoke
@@ -863,7 +876,11 @@ O2_RATIO = _V["O2_RATIO"]        # g O2/g fuel. ROPE 1.26: 16.5 kJ/g at 13.1 kJ 
 # (CO2 — unaccounted until gas species exist, same ledger-gap as steam).
 # Charcoal's whole reason to exist is burning clean; green leaves billow.
 SOOT = _V["SOOT"]                                         # solids, by mat id (ROPE 0.6: as wood, UNVERIFIED)
-SOOT_OIL = 1.0                                            # (fluid ids are their
+# OIL SOOT (wave 14a refinement, R1): smoke units per gram burned. A unit is 0.025 g of true
+# soot (layer_data.SOOT_TRUE), so wood 0.6 is 0.015 g/g (SFPE flaming wood). Liquid
+# hydrocarbons yield more: heptane 0.037, kerosene 0.042 g/g (Tewarson, SFPE Handbook, u).
+# 1.6 x 0.025 = 0.040, the middle. Was 1.0 (0.025 g/g, about 1.6 times too clear).
+SOOT_OIL = 1.6                                            # (fluid ids are their
                                                           # own numbering)
 O2_RATIO_OIL = 3.0
 del _V                           # the record's views are bound above; the record itself is MATREC

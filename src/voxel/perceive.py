@@ -695,7 +695,7 @@ class PerceiveMixin(BeliefsMixin):
                 sk = np.asarray(skip, np.int64).reshape(-1, 2)[ray]
                 opaque = np.where((own == sk[:, 0]) | (own == sk[:, 1]),
                                   0.0, opaque)
-        smk = np.bincount(ray, self._smoke_ext() * (self.smoke[idx] / self.vox_l)
+        smk = np.bincount(ray, self._smoke_sight_ext() * (self.smoke[idx] / self.vox_l)
                           * vox_m, m)
         if lit is not None:
             smk = np.where(np.broadcast_to(np.asarray(lit, bool), (m,)), smk * SEE_LIT_SMOKE, smk)

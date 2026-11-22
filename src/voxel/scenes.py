@@ -19,7 +19,8 @@ import numpy as np
 from .materials import IGNITER_W
 from .sim import (ACID, AIR, AMBIENT, BODY, CHAR, FLESH, GLASS, IRON, LEAD,
                   LEAF, MIRON, MLEAD, MTIN, O2_PER_L, OIL, STONE, TICK_S, TIN,
-                  WATER, WOOD, World)
+                  WATER, WOOD)
+from .wetworld import HumidWorld as World, in_setting     # wave 14a: humidity everywhere
 
 
 def _save(w, frames_dir, t):
@@ -1583,6 +1584,26 @@ SCENARIOS = {"duel": duel, "workshop": workshop, "arrow_trap": arrow_trap, "resc
              "swing": swing, "ledge": ledge, "crouch": crouch, "arms": arms,
              "tree_hinge": tree_hinge, "acid_bath": acid_bath, "torch_pillar": torch_pillar,
              "vessels": vessels, "pond": pond}
+
+# The setting each scene is in (wetworld.SETTING_RH): the fresh-air humidity its world gets.
+# Wave 14a, lane A. Anything not listed is "temperate" (50 %).
+SCENE_SETTING = {
+    "workshop": "indoor", "forge": "indoor", "acid_bath": "indoor", "alchemist": "indoor",
+    "fire_alarm": "indoor", "house_fire": "indoor", "lamp_shelf": "indoor",
+    "arrow_trap": "damp", "tree_fell": "damp", "tree_hinge": "damp", "burning_tree": "damp",
+    "vessels": "damp", "pond": "damp", "glasshouse": "humid",
+}
+
+
+def _in_setting(name, fn):
+    def run(*a, **k):
+        with in_setting(SCENE_SETTING.get(name, "temperate")):
+            return fn(*a, **k)
+    run.__name__, run.__doc__ = fn.__name__, fn.__doc__
+    return run
+
+
+SCENARIOS = {n: _in_setting(n, f) for n, f in SCENARIOS.items()}
 
 if __name__ == "__main__":
     name, frames_dir = sys.argv[1], sys.argv[2]

@@ -78,7 +78,7 @@ def test_every_array_is_64_long_and_its_old_part_is_the_oracle_byte_for_byte(nam
 
 
 def test_the_sizes_are_pinned_and_NMAT_still_counts_the_ids_of_the_old_dict_tables():
-    assert (M.NMAT, M.NFLUID, M.NMAT_ROWS, M.NMAT_PAD, M.NFLUID_PAD) == (12, 9, 13, 64, 64)
+    assert (M.NMAT, M.NFLUID, M.NMAT_ROWS, M.NMAT_PAD, M.NFLUID_PAD) == (12, 9, 29, 64, 64)    # 12 old, ICE, the registry's planned 13..26, soil and grass (lane F)
     assert M.NFLUID == len(M._FLIDS) + 1 == _json(ORACLE)["fluid_slots"]
     assert M.NMAT_PAD == SEED.NMAT_PAD and M.NFLUID_PAD == SEED.NFLUID_PAD
     assert M.ICE == 12 == MR.ICE == SEED.MAT_ICE
@@ -121,7 +121,7 @@ def test_the_record_route_and_the_species_route_agree_on_every_id_both_list():
     materials pads them with AIR until the row arrives (C2)."""
     t = SP.padded_tables()
     for name in THERMAL_MAT:
-        assert getattr(M, name)[:M.NMAT_ROWS].tobytes() == t[name][:M.NMAT_ROWS].tobytes(), name
+        assert getattr(M, name)[:M.NMAT_PLANNED_ROWS].tobytes() == t[name][:M.NMAT_PLANNED_ROWS].tobytes(), name   # soil and grass (27, 28) are not in the registry
     for name in ("_FDENS_ARR", "_FC_ARR", "_FK_ARR", "_FEMISS_ARR", "_FLK_ARR", "_FALPHA",
                  "_FSKIN_DEPTH_ARR", "_FSKIN_PATH_ARR"):
         assert getattr(M, name)[:M.NFLUID].tobytes() == t[name][:M.NFLUID].tobytes(), name
@@ -165,10 +165,13 @@ def test_the_old_tables_are_views_of_the_record():
                  "SOOT", "GLOW", "BURN_AREA", "TRANSMIT", "MATNAME"):
         assert getattr(M, name) == v[name], name
     assert M.SOUND["ring"] == v["SOUND_RING"]
-    # the record holds the twelve old materials and ICE, and nothing else yet
-    assert [r.key for r in M.MATREC.by_id_list] == [
+    # the record holds the twelve old materials, ICE, the registry's planned 13..26 and the ground rows
+    assert [r.key for r in M.MATREC.by_id_list][:13] == [
         "air", "wood", "stone", "iron", "flesh", "ash", "glass", "leaf", "char", "tin", "lead",
         "rope", "ice"]
+    assert [r.key for r in M.MATREC.by_id_list][13:] == [
+        "copper", "quartz_rock", "sand", "calcite", "clay", "graphite", "magnetite", "iron_oxide", "salt",
+        "tallow", "sugar", "quicklime", "slaked_lime", "humus", "soil", "grass"]
 
 
 def test_a_row_the_old_order_does_not_name_is_refused():
@@ -225,7 +228,8 @@ def test_the_ids_are_pinned_so_a_retired_name_keeps_its_id():
     assert _prefix_problem(pin["fluid"], fluids) is None
     # the record agrees with the pinned names on every id it has a row for
     names = dict((i, n) for i, n in pin["mat"])
-    assert [(r.id, r.key) for r in M.MATREC.by_id_list] == [(i, names[i]) for i in range(M.NMAT_ROWS)]
+    assert [(r.id, r.key) for r in M.MATREC.by_id_list][:M.NMAT_PLANNED_ROWS] == [(i, names[i]) for i in range(M.NMAT_PLANNED_ROWS)]
+    assert [(r.id, r.key) for r in M.MATREC.by_id_list][M.NMAT_PLANNED_ROWS:] == [(27, 'soil'), (28, 'grass')]   # appended past the pin
     # the constants of materials.py are the pinned ids
     for key, mid in (("wood", M.WOOD), ("stone", M.STONE), ("iron", M.IRON), ("flesh", M.FLESH),
                      ("ash", M.ASH), ("glass", M.GLASS), ("leaf", M.LEAF), ("char", M.CHAR),
@@ -538,7 +542,7 @@ def test_materials_is_whole_whichever_module_is_imported_first(first):
     r = _run("import src.voxel.%s\n"
              "from src.voxel import materials as M, species, mixrules, matrec\n"
              "assert M._DENS_ARR.shape == (64,) and M._FDENS_ARR.shape == (64,) and M.MATREC.nmat == M.NMAT_ROWS\n"
-             "n = M.NMAT_ROWS\n"
+             "n = M.NMAT_PLANNED_ROWS\n"
              "assert species.padded_tables()['_DENS_ARR'][:n].tobytes() == M._DENS_ARR[:n].tobytes()\n"
              "assert matrec._mixrules is mixrules and matrec._species is species\n" % first)
     assert r.returncode == 0, r.stderr[-1500:]

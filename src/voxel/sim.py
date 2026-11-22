@@ -156,9 +156,10 @@ from .events import EventsMixin
 from .perceive import PerceiveMixin
 from .mechlaw import MechanismsMixin
 from .layers_world import LayersMixin
+from .wetmix import HumidMixin
 
 
-class World(LayersMixin, MechanismsMixin, FieldsMixin, FluidsMixin, HeatMixin, AirMixin, SupportMixin,
+class World(HumidMixin, LayersMixin, MechanismsMixin, FieldsMixin, FluidsMixin, HeatMixin, AirMixin, SupportMixin,
             BodiesMixin, SkeletonMixin, PoseMixin, PersonsMixin,
             PhysiologyMixin, SensesMixin, MotionMixin, HandsMixin, WillMixin,
             LedgersMixin, ThingsMixin, EventsMixin, PerceiveMixin):
@@ -173,7 +174,6 @@ class World(LayersMixin, MechanismsMixin, FieldsMixin, FluidsMixin, HeatMixin, A
     climate = None         # T8: climate.Climate, None = no outside (every cold path is off)
     t_out = None           # T8: outside air temperature in force, C (None with no climate)
     t_sky = None           # T8: sky temperature in force, C
-    air_rh = None          # T6/T8: relative humidity of fresh outside air (None = the old air)
     mixes = None           # T1: the MixTable (shared rows of what matter is made of)
     mixes_live = False     # T1: True once any cell holds a mix id; guards every gather
     scomp = None           # T1: solid mix id per cell, uint32 (0 = pure)
@@ -330,6 +330,7 @@ class World(LayersMixin, MechanismsMixin, FieldsMixin, FluidsMixin, HeatMixin, A
         self._aircells = self._airblur = None           # and where the air is
         self._init_things()                             # which matter is one thing
         self._init_events()                             # what happened, and why
+        self.humid_default()                            # every world has a humidity (R4)
 
     def step(self):
         self._tick_start()                       # before any law runs

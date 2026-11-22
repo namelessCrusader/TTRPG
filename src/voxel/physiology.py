@@ -464,6 +464,21 @@ class PhysiologyMixin:
         pivot = int(base[:, axis].max() if s > 0 else base[:, axis].min())
         self._tip(p, cells, axis, s, float(pivot), float(z_lo), 0.0, lean=0.2)
 
+    def _ground_under(self, pose, contact):
+        """The landing surface: the material under the lowest cell the body came down
+        on and the depth of that same material below it (`impact.ground_of`)."""
+        low = np.asarray(pose)[np.asarray(contact, bool)]
+        if not len(low):
+            return None
+        x, y, z = (int(v) for v in low[int(np.argmin(low[:, 2]))])
+        if z < 1 or not (0 <= x < self.shape[0] and 0 <= y < self.shape[1]):
+            return None
+        m = int(self.mat[x, y, z - 1])
+        d, zz = 0, z - 1
+        while zz >= 0 and int(self.mat[x, y, zz]) == m:
+            d, zz = d + 1, zz - 1
+        return IJ.IM.ground_of(m, d * 0.1 * self.scale)
+
     def _injure_landing(self, q, joules, pose, contact, shares, box):
         """A landing's real injuries (T10): the closed-form chain of impact.py
         for this person's own sheet. It writes ko_until / organ_dead /
@@ -472,7 +487,8 @@ class PhysiologyMixin:
         later faint or death is blamed on."""
         if q is None or not q["alive"]:
             return
-        got = IJ.landing_effects(q, joules, pose, contact, shares, self.tick)
+        got = IJ.landing_effects(q, joules, pose, contact, shares, self.tick,
+                                 ground=self._ground_under(pose, contact))
         if got is None:
             return
         o = got["out"]

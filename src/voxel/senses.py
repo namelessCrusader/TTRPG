@@ -1,4 +1,5 @@
 """Sight, hearing, sound levels, speech, and noticing things in flight."""
+import math
 import weakref
 
 import numpy as np
@@ -22,6 +23,7 @@ from .policy import (LINES, LINE_VOICE, LOMBARD, VOICE_DB, VOICE_VERB, WILL)
 # nothing changes, which is most ticks: people walking do not change it, as
 # flesh and air both let sound by.
 _ROUND = weakref.WeakKeyDictionary()
+_LIGHT = weakref.WeakKeyDictionary()   # world -> (tick, smoke light ratio)
 _FLOODS_KEPT = 16                # floods kept per world, the oldest dropped,
 _FLOOD_BYTES = 64 << 20          # and no more than this much of them
 _FACES = np.array([(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0),
@@ -427,11 +429,53 @@ class SensesMixin:
     # Per world: set `w.smoke_opacity = False`. Cough and CO (physiology) keep
     # their own numbers; they are data hooks in smokeopt.Hooks, not this lane.
     smoke_opacity = True
+    # AMBIENT LIGHT (wave 14a refinement, R1): in dim light a sign is seen through denser
+    # smoke (Jin reappraisal 2025: K 6-11 under 22 lx against 4.7-9.5 at 180 lx), so the
+    # smoke counts 1/1.2 as much. The light is the sim's own sun (climate: latitude, day,
+    # hour, cloud); a world with no climate has no sun and keeps the reference light, which
+    # is the old number bit for bit. Set `w.smoke_light = False` for the old law everywhere.
+    smoke_light = True
 
     def _smoke_ext(self):
-        """Extinction, 1/m per (g/L) of smoke unit, that sight uses."""
+        """Extinction K, 1/m per (g/L) of smoke unit (the physical number)."""
         return (smokeopt.extinction_from_smoke(1.0)
                 if self.smoke_opacity else SMOKE_EXT)
+
+    def _smoke_sight_ext(self):
+        """What the sight laws add to the optical depth per (g/L) per metre. Sight
+        cuts at SEE_TAU; smoke is lost at Jin's SEE_SMOKE_TAU, so its depth counts
+        SEE_TAU / SEE_SMOKE_TAU as much (wave 14a, H1). The clear-smoke world
+        (smoke_opacity False) keeps the old number bit for bit."""
+        if not self.smoke_opacity:
+            return SMOKE_EXT
+        ext = smokeopt.sight_ext_per_gl()
+        r = self._smoke_light_ratio() if self.smoke_light else 1.0
+        return ext if r == 1.0 else ext / r
+
+    def _ambient_lux(self):
+        """Illuminance, lx, the sight laws read. The sim has no light field (marks.py says
+        300 lx 'until light exists'); the nearest thing it computes is the sun of the
+        climate, read at the world's own clock. No climate: the room reference. Flame and
+        lamp light are not summed in (open item)."""
+        c = getattr(self, "climate", None)
+        if c is None:
+            return smokeopt.LUX_INDOOR
+        from . import climate as K          # here: climate is only for worlds that have one
+        x = float(K.day_coord(c, None, self.tick))
+        hour = 24.0 * (x - math.floor(x))
+        lat = math.radians(c.lat_deg)
+        dec = float(K.declination(x))
+        se = (math.sin(lat) * math.sin(dec)
+              + math.cos(lat) * math.cos(dec) * math.cos(math.radians(15.0 * (hour - 12.0))))
+        return smokeopt.sky_lux(se, c.cloud)
+
+    def _smoke_light_ratio(self):
+        """smokeopt.light_k_ratio at the ambient light, kept for the tick."""
+        t = self.tick
+        k = _LIGHT.get(self)               # kept beside the world, not on it (golden names its state)
+        if k is None or k[0] != t:
+            k = _LIGHT[self] = (t, smokeopt.light_k_ratio(self._ambient_lux()))
+        return k[1]
 
 
     def _look_around(self, p, eye, cells):
@@ -643,7 +687,7 @@ class SensesMixin:
         # plus the f that hits it and comes through anyway if it is glass
         through = (1.0 - packed) + packed * _TRANSMIT_ARR[self.mat[idx]]
         tau = float(-np.log(np.maximum(through, 1e-9)).sum())
-        tau += float((self._smoke_ext() * (self.smoke[idx] / self.vox_l) * vox_m).sum())
+        tau += float((self._smoke_sight_ext() * (self.smoke[idx] / self.vox_l) * vox_m).sum())
         return tau < SEE_TAU
 
     @staticmethod

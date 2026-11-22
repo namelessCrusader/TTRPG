@@ -338,7 +338,8 @@ class FieldsMixin:
             self.smass[sl] = float(self.mixes.prop("rho", np.array([row]))[0]) * frac * self.vox_l
         else:
             self.set_mat(sl, material)
-            self.smass[sl] = SOLID[material][0] * frac * self.vox_l
+            rho = SOLID[material][0] if material in SOLID else float(_DENS_ARR[material])   # ids past the old twelve (ICE, ground) read the padded table
+            self.smass[sl] = rho * frac * self.vox_l
         self.edge[sl] = edge
         self._things_moved(self.eid[sl])
         self.eid[sl] = self._stamping if material != AIR else 0
@@ -658,7 +659,9 @@ class FieldsMixin:
     # cleanly and golden does not see them). The `ensure_*` methods make one,
     # once; `lazy_bytes` says what is held.
     LAZY_ARRAYS = (("scomp", np.uint32), ("fcomp", np.uint32), ("dmg", np.float32),
-                   ("bzone", np.uint16), ("ice_g", np.float32))
+                   ("bzone", np.uint16), ("ice_g", np.float32),
+                   ("wood_sp", np.uint8), ("wood_grain", np.uint8),
+                   ("wood_bound", np.float32))
 
     def _ensure_array(self, name):
         a = getattr(self, name)

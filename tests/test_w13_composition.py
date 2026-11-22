@@ -24,6 +24,7 @@ H2O = SP.BY_NAME["water"]
 def _cup(layers, nx=5, ny=5, nz=8, **kw):
     """A stone cup 3 x 3 inside; `layers` is [(z, 'b' | 'w')] poured full."""
     w = World(nx, ny, nz, voxel_cm=10, **kw)
+    w.wet = None        # kept dry on purpose: these cups count every gram of the LIQUID; open water in a humid world gives a little to vapour (booked in total_water, not in the liquid count)
     w.fill(0, nx, 0, ny, 0, 1, STONE)
     w.fill(0, 1, 0, ny, 1, nz, STONE)
     w.fill(nx - 1, nx, 0, ny, 1, nz, STONE)

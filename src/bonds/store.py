@@ -251,7 +251,9 @@ MEMBER_FIELDS = ("x", "v", "m", "vol0", "vmat", "eid", "batch", "E", "fl",
 # costs nothing. `ensure_opt` makes one (zeros); `add` and `keep` carry every
 # one that exists (`opt_fields`).
 MEMBER_OPT = (("scomp", np.uint32), ("fcomp", np.uint32),
-              ("dscal", np.float32), ("ice_g", np.float32))
+              ("dscal", np.float32), ("ice_g", np.float32),
+              ("wood_sp", np.uint8), ("wood_grain", np.uint8),
+              ("wood_bound", np.float32))
 PIECE_FIELDS = ("px", "pv", "pq", "pell", "pm", "pI", "pIbinv", "pcda",
                 "pkin", "pfext", "pbatch", "pkind", "panchor", "pnsub", "pface")
 BOND_FIELDS = ("bi", "bj", "ai", "aj", "Q0", "kn", "ks", "kb", "kt", "cn",

@@ -67,6 +67,7 @@ def test_a_NAMED_TREE_KEEPS_ITS_NAME_through_BONDS_a_BREAK_and_the_WRITE_BACK():
     "a piece of the oak". At tick 20 the lattice burns half of one drawn
     leaf cell, and that is what the oak family loses."""
     w = World(60, 30, 40, voxel_cm=5)
+    w.wet = None        # kept dry on purpose: this book counts liquid water to 1e-12 and an open humid surface gives the air a little vapour (booked in total_water, not in total_fluid)
     w.fill(0, 60, 0, 30, 0, 1, STONE)
     with thing(w, "the oak", kind="tree") as e:
         _small_tree(w, 12, 15, 1, 22, 4)

@@ -48,12 +48,18 @@ air arriving from outside is fresh.
 WHAT LEAVES THE WORLD is booked: heat into `shed`, smoke into
 `gone["smoke"]`.
 
-WHAT IS NOT IN IT, said so no one thinks it is: no momentum advection (speeds
-are carried by the pressure and the drag, not by themselves; the plume does not
-turn the corner under a ceiling at speed, so a ceiling jet comes out about
-twice as hot and a third as fast as Alpert's, and this is the first thing to
-add), no turbulence model (the only mixing is the scheme's own, and
-GAS_ENTRAIN), and a sealed room's pressure is not tracked (see
+WHAT IS NOT IN IT BY DEFAULT, said so no one thinks it is: no momentum advection
+(speeds are carried by the pressure and the drag, not by themselves; the plume
+does not turn the corner under a ceiling at speed, so a ceiling jet comes out
+about twice as hot and a third as fast as Alpert's). THAT IS NOW A SWITCH
+(`World.gas_momentum`, wave 14a lane D, gasmom.py): on, the face speeds are carried
+by the flow (semi-Lagrangian with the MacCormack correction), mixed with the same
+eddies as the heat, and held back by a much smaller drag (GAS_DRAG_MOM); the same
+10 kW ceiling jet is then within 30 percent of Alpert's temperature and a factor
+of 1.6 of his speed (tests/test_gas_momentum.py). The same switch carries the ONE PUSH
+LAW (push.py): surfaces that move through the gas, and wind at the open edge of the
+world, add their displacement and drag here (`_gf_push`, the wind faces).
+Still not in it: a turbulence model beyond that mixing, and a sealed room's pressure (see
 `_gf_geometry`). A plume thinner than a cell (a few kW below a metre) shows as
 the same heat in twice the gas.
 """
@@ -61,7 +67,9 @@ import weakref
 
 import numpy as np
 from .kernels import HAVE_NUMBA, njit
+from .gasmom import advect_faces, mix_faces
 from .label import regions
+from .push import PushMixin
 from .materials import AIR, AIR_DENS, AMBIENT, GRAVITY, O2_PER_L, TICK_S
 
 # ── numbers (all of them are data a reader can change; none is a flag) ──────
@@ -99,6 +107,13 @@ GAS_DRAG_QUAD = 0.0      # m^0. The drag that grows with speed: du/dt = -GAS_DRA
 GAS_GEO_TICKS = 20       # ticks between looks at the pores (half a second)
 GAS_STILL = 1e-3        # m/s. A flow slower than this is not going anywhere
 GAS_UMAX = 60.0          # m/s, a sanity bound on a face (no real flow is near it)
+GAS_MOMENTUM = False     # THE MOMENTUM SWITCH (wave 14a, lane D): carry the face speeds by the
+                         # flow itself, so pushed air keeps going (gasmom.py). A world's own
+                         # `gas_momentum` is read first; this is what a new world starts with.
+GAS_DRAG_MOM = 0.1       # 1/s. The steady drag while momentum is carried (see the lane report
+                         # for how it was chosen against Alpert, Heskestad and Zukoski)
+GAS_MOM_CORRECT = True   # the MacCormack correction of the momentum step (False: plain back-tracing, cheaper, smears a jet)
+GAS_MIX_MOM = 1.0        # momentum mixes with GAS_ENTRAIN times this (1 = the same eddies as the heat)
 GAS_FVOL = 0.01          # a voxel holding more liquid than this share of its
                          # capacity is not gas, and its heat does not ride
 POR_WALL = 0.01          # a voxel with less pore space than this passes no gas
@@ -483,8 +498,17 @@ def _gf_diffuse_nb(f, Kv, ok, coef, kmax, axis, q):
 
 
 
-class GasFlowMixin:
+class GasFlowMixin(PushMixin):
     """The gas-flow law. Everything here runs only when `gas_flow` is on."""
+
+    @property
+    def gas_momentum(self):
+        """Does the flow carry its own speeds (gasmom.py)? Off: the old flow, bit for bit."""
+        return self.__dict__.get("_gas_momentum", GAS_MOMENTUM)
+
+    @gas_momentum.setter
+    def gas_momentum(self, on):
+        self.__dict__["_gas_momentum"] = bool(on)
 
     # ── the pores of the world, as faces between cells ───────────────────────
     def _gf_geometry(self):
@@ -504,7 +528,11 @@ class GasFlowMixin:
         full push through the leak."""
         key = self.__dict__.get("_gf_geo")
         epoch = self.tick // GAS_GEO_TICKS
-        if key is not None and key[0] == epoch and key[1] == self.open_sky:
+        wkey = (self._wind_vec(), self.wind_alpha, self.wind_ref_h)
+        por = self.porosity() if self.gas_surfaces else None
+        # a moving surface carries its solid with it: look again whenever the pores changed
+        if key is not None and key[0] == epoch and key[1] == self.open_sky and key[3] == wkey \
+                and (por is None or por is key[4]):
             return key[2]
         por = self.porosity()
         cs = self._CS
@@ -512,9 +540,17 @@ class GasFlowMixin:
         H = cs * dx
         F = face_open(por, cs, self.open_sky)
         cond = [H * f for f in F]
+        # the pressure does not hold a windward edge: the wind's speed is told to it
+        nc0 = tuple(f.shape[i] - 1 for i, f in enumerate(F))
+        wind = self.wind_faces(F, nc0, H)
+        pcond = cond
+        if wind:
+            pcond = [c.copy() for c in cond]
+            for ax, side, sp in wind:
+                pcond[ax][_sl(ax, side)] = 0.0
         D = 0.0
         for ax in range(3):
-            D = D + cond[ax][_sl(ax, slice(None, -1))] + cond[ax][_sl(ax, slice(1, None))]
+            D = D + pcond[ax][_sl(ax, slice(None, -1))] + pcond[ax][_sl(ax, slice(1, None))]
         active = D > 0
         shape = D.shape
         # the airspaces: cells and open faces as nodes of a doubled grid
@@ -539,10 +575,10 @@ class GasFlowMixin:
         lab_closed = lab[closed]
         count_closed = np.bincount(lab_closed, minlength=max(count, 1))
         geo = {"F": F, "cond": cond, "cond_int": [c[_sl(ax, slice(1, -1))]
-                                                   for ax, c in enumerate(cond)],
+                                                   for ax, c in enumerate(pcond)],
                "D": D, "active": active, "closed": closed,
-               "lab_closed": lab_closed, "n_closed": count_closed, "H": H}
-        self._gf_geo = (epoch, self.open_sky, geo)
+               "lab_closed": lab_closed, "n_closed": count_closed, "H": H, "wind": wind}
+        self._gf_geo = (epoch, self.open_sky, geo, wkey, por if self.gas_surfaces else None)
         return geo
 
     # ── the state kept from tick to tick ─────────────────────────────────────
@@ -643,7 +679,10 @@ class GasFlowMixin:
         extra = self._gf_extra_there()           # C3: vapour is carried too (None = none)
         if extra is not None:
             there = there | extra
+        push_on = self._push_live()              # a moving surface or a wind: never quiet
         reg, box = self._gf_region(there, GAS_SUBSTEPS_MAX + 1, st["box"])
+        if reg is None and push_on:              # nothing to carry yet, but a push to solve:
+            reg = tuple(slice(0, min(cs, n)) for n in self.shape)   # one cell stands for the region
         st["tick"] = self.tick
         self.p_add[:] = 0.0                      # (the old law's push: not used)
         stats = st["stats"] = {"iters": 0, "res": 0.0, "passes": 0, "box": 0}
@@ -678,15 +717,27 @@ class GasFlowMixin:
         bz = GRAVITY * (th_c - th_out) / (_T0K + th_c) if th_out != 0.0 else GRAVITY * th_c / (_T0K + th_c)
         # the drag: a steady part, and a part that grows with the speed itself
         # (the turbulent drag of a flow through a cell's width of mixing length)
-        us = [a * np.maximum(1.0 - dt * (GAS_DRAG + GAS_DRAG_QUAD * np.abs(a) / H), 0.0
-                             ).astype(np.float32) for a in u]
+        src = u
+        mom = self.gas_momentum
+        if mom:                                  # the flow carries its own speeds (gasmom.py)
+            src = [a.copy() for a in u]
+            stats["courant"] = advect_faces(src, dt, H, GAS_STILL, correct=GAS_MOM_CORRECT)
+            mix_faces(src, dt, H, GAS_ENTRAIN * GAS_MIX_MOM, GAS_STILL)
+        drag = GAS_DRAG_MOM if mom else GAS_DRAG
+        us = [a * np.maximum(1.0 - dt * (drag + GAS_DRAG_QUAD * np.abs(a) / H), 0.0
+                             ).astype(np.float32) for a in src]
         F = geo["F"]
         bface = np.zeros(F[2].shape)
         bface[:, :, 1:-1] = 0.5 * (bz[:, :, :-1] + bz[:, :, 1:])
         bface[:, :, -1] = 0.5 * bz[:, :, -1]
         us[2] = us[2] + (dt * bface).astype(np.float32)
+        if push_on:
+            self._gf_push(us, Q, geo, st, stats, nc, H, dt)
         for ax in range(3):
             us[ax] = us[ax] * (F[ax] > 0)
+        wind = geo["wind"]
+        for ax, side, sp in wind:                # the wind's speed on the windward faces
+            us[ax][_sl(ax, side)] = np.where(F[ax][_sl(ax, side)] > 0, sp, np.float32(0.0))
         # ── the projection ──
         A = H * H
         d = -Q
@@ -712,6 +763,8 @@ class GasFlowMixin:
             un[_sl(ax, -1)] -= phi[_sl(ax, -1)] / H
             un *= F[ax] > 0
             u[ax] = np.clip(un, -GAS_UMAX, GAS_UMAX).astype(np.float32)
+        for ax, side, sp in wind:                # (the pressure does not hold them)
+            u[ax][_sl(ax, side)] = np.where(F[ax][_sl(ax, side)] > 0, sp, np.float32(0.0))
         # ── advection: how fast, and where a pass is not enough ──
         cour = np.zeros(nc)
         for ax in range(3):
@@ -754,6 +807,26 @@ class GasFlowMixin:
                                     np.float32(0.0))
         st["gas"][reg] = gas2
         st["reg"], st["box"] = reg, box
+
+    def _gf_push(self, us, Q, geo, st, stats, nc, H, dt):
+        """The moving surfaces' share of this tick (push.py): their displacement
+        goes into `Q` (volume the gas must make room for), their drag into the
+        face speeds `us`. Nothing here if no surface moved a patch."""
+        if not self.gas_surfaces:
+            return
+        vc = [0.5 * (us[a][_sl(a, slice(None, -1))] + us[a][_sl(a, slice(1, None))])
+              for a in range(3)]
+        Qs, dU, work, _box = self._push_terms(vc, nc, H, dt)
+        Q += Qs
+        for a in range(3):
+            f = dU[a]
+            add = np.zeros(us[a].shape)
+            add[_sl(a, slice(1, -1))] = 0.5 * (f[_sl(a, slice(None, -1))] + f[_sl(a, slice(1, None))])
+            add[_sl(a, 0)] = 0.5 * f[_sl(a, 0)]
+            add[_sl(a, -1)] = 0.5 * f[_sl(a, -1)]
+            us[a] += add.astype(np.float32)
+        st["push_work"] = st.get("push_work", 0.0) + work
+        stats["push_work_J"] = st["push_work"]
 
     # ── carrying heat, smoke and oxygen ──────────────────────────────────────
     def _gf_faces(self, reg, por, u, fastv, actv, nsub, dx, dt):

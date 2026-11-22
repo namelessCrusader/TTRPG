@@ -33,7 +33,8 @@ BASE19_CARRIED = ("mat", "smass", "E", "fl", "fvol", "fpot", "edge", "fallh", "r
 BASE19_AS_BODY = ("mats", "masses", "Es", "fls", "fvols", "fpots", "edges", "fallhs",
                   "rubbles", "eids")
 OPT_DTYPES = {"scomp": np.uint32, "fcomp": np.uint32, "dmg": np.float32,
-              "bzone": np.uint16, "ice_g": np.float32}
+              "bzone": np.uint16, "ice_g": np.float32, "wood_sp": np.uint8, "wood_grain": np.uint8,
+              "wood_bound": np.float32}
 
 
 # ── the base19 functions, verbatim: the REFERENCE ────────────────────────────
@@ -155,8 +156,10 @@ def floor_world(nx=20, ny=12, nz=16, cm=10):
 def test_CARRIED_and_AS_BODY_are_exactly_base19_and_the_optional_list_is_the_plans():
     assert CARRIED == BASE19_CARRIED and AS_BODY == BASE19_AS_BODY
     assert CARRIED_OPT == (("scomp", "scomps"), ("fcomp", "fcomps"), ("dmg", "dmgs"),
-                           ("bzone", "bzones"), ("ice_g", "ice_gs"))
-    assert OPT_BODY == ("scomps", "fcomps", "dmgs", "bzones", "ice_gs")
+                           ("bzone", "bzones"), ("ice_g", "ice_gs"),
+                           ("wood_sp", "wood_sps"), ("wood_grain", "wood_grains"),
+                           ("wood_bound", "wood_bounds"))
+    assert OPT_BODY == ("scomps", "fcomps", "dmgs", "bzones", "ice_gs", "wood_sps", "wood_grains", "wood_bounds")
     assert not set(f for f, _ in CARRIED_OPT) & set(CARRIED), "an optional field is not carried"
     assert not set(OPT_BODY) & set(AS_BODY)
 

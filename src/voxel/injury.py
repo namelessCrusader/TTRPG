@@ -180,31 +180,14 @@ def sheet_of(p):
     return AN.make_sheet(body, pid=p.get("pid", 0), name=p.get("name", ""))
 
 
-def fall_mode(pose, contact, eye):
-    """Which part of the body came down, from the landing's own cells: the
-    principal axis of the cells and the end that touched. A body within 35
-    degrees of vertical lands on its feet if the low end is away from the
-    head (`eye`, where the head was a moment ago) and on its head if it is
-    the head end. A tilted body lands on its side."""
-    pts = np.asarray(pose, float)
-    if len(pts) < 3:
-        return "feet"
-    c = pts.mean(axis=0)
-    _, _, vt = np.linalg.svd(pts - c, full_matrices=False)
-    ax = vt[0]
-    if abs(ax[2]) < math.cos(math.radians(35.0)):
-        return "side"
-    z_lo = pts[:, 2].min()
-    low = pts[(pts[:, 2] <= z_lo + 1.0)]
-    if eye is None:
-        return "feet"
-    d_head = float(np.linalg.norm(low.mean(axis=0) - np.asarray(eye, float)))
-    d_far = float(np.linalg.norm(pts[pts[:, 2] >= pts[:, 2].max() - 1.0].mean(axis=0)
-                                 - np.asarray(eye, float)))
-    return "head" if d_head < d_far else "feet"
+def fall_mode(pose, contact, eye, facing=None):
+    """Which part of the body came down, from the landing's own cells: see
+    `impact.orientation` (feet, head, side, and, with the way the body faced,
+    back or front)."""
+    return IM.orientation(pose, eye, facing)
 
 
-def landing_effects(p, joules, pose, contact, shares, tick):
+def landing_effects(p, joules, pose, contact, shares, tick, ground=None):
     """What a landing of `joules` did to the person `p`: runs the chain and
     writes ko_until, organ_dead, fractures and the pooling blood on the person.
     Returns the result, or None when the landing is too small to matter."""
@@ -213,8 +196,11 @@ def landing_effects(p, joules, pose, contact, shares, tick):
     h = joules / (m * IM.G)
     if h < 0.25:                          # under a knee-high step nothing breaks
         return None
-    mode = fall_mode(pose, contact, p.get("_eye"))
-    res = IM.landing(sheet, mode, h, m_kg=m, aware=bool(p["awake"]), shares=max(int(shares), 1))
+    mode = fall_mode(pose, contact, p.get("_eye"), p.get("facing"))
+    res = IM.landing(sheet, mode, h, m_kg=m, aware=bool(p["awake"]), shares=max(int(shares), 1),
+                     ground=ground, intended=IM.intended(p, tick, TICK_S),
+                     foreseen=IM.intended(p, tick, TICK_S),
+                     react_s=float(sheet.get("react_s", IM.REACT_S)))
     out = IM.outcome(res, sheet)
     if out["ko"]:
         p["ko_until"] = max(p.get("ko_until", 0), tick + int(out["t_ko_s"] / TICK_S))

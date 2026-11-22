@@ -61,6 +61,7 @@ def _vessel(compiled):
     """An open glass box holding water, promoted in mid-air: it falls, lands
     on stone, and its glass is brittle, so whatever it carries is poured."""
     w = World(20, 20, 24, voxel_cm=5)
+    w.wet = None        # kept dry on purpose: this test is about what the solver hands back untouched; the humid surface law (evaporation) writes the energy and volume of water cells the solver holds, a different question from the boil
     w.fill(0, 20, 0, 20, 0, 1, STONE)
     w.fill(7, 12, 7, 12, 10, 15, GLASS)
     w.mat[8:11, 8:11, 11:15] = AIR

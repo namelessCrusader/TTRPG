@@ -40,6 +40,8 @@ Pure functions on plain dicts. No World. Numbers marked (u) are unverified.
 """
 import math
 
+import numpy as _np
+
 try:
     from . import anatomy as _AN
 except ImportError:                    # pragma: no cover
@@ -92,13 +94,13 @@ MODES = {
     # Landing on the hip or side. The contact energy is a share of the drop
     # (f_E: aware, limp) unless the landing code gives the effective-mass energy.
     "side": dict(
-        k_el_70=50e3, ctl=None, f_E=(0.15, 0.35), pairs=False,
+        k_el_70=31e3, ctl=None, f_E=(0.15, 0.35), pairs=False,
         elements=(
             _el("femoral neck", "femoral_neck", ("{S} thigh",), 1.0),
             _el("ribs lateral", "ribs", ("torso",), 1.0),
             _el("pelvis lateral", "pelvis", ("torso",), 1.0, crush=0.020),
             _el("side organs", None, ("torso",), 1.0, kind="organ", crush=0.06,
-                F_N=8000.0, organs=("liver", "spleen", "lung")),
+                F_N=6500.0, organs=("liver", "spleen", "lung")),
         )),
     "back": dict(
         k_el_70=60e3, ctl=None, f_E=(0.20, 0.40), pairs=False,
@@ -155,16 +157,27 @@ V_ML_PER_KG = 70.0
 # weight, mode, aware, one_foot. Weights sum to 1; tuned so survivors of a
 # height-weighted population average 5.2 m and LD50 is 12-15 m.
 ENSEMBLE = (
-    (0.25, "feet", True, False),
-    (0.10, "feet", True, True),
-    (0.10, "feet", False, False),
-    (0.15, "side", True, False),
-    (0.10, "side", False, False),
-    (0.10, "back", True, False),
-    (0.08, "back", False, False),
-    (0.12, "head", False, False),
+    (0.30, "feet", True, False),
+    (0.12, "feet", True, True),
+    (0.07, "feet", False, False),
+    (0.20, "side", True, False),
+    (0.06, "side", False, False),
+    (0.13, "back", True, False),
+    (0.06, "back", False, False),
+    (0.06, "head", False, False),
 )
-FALL_HEIGHT_SCALE_M = 8.3      # fall heights in the population: exponential with this scale (u)
+# Person-to-person spread of bone strength (weight, factor): a normal draw of 13 percent
+# (7 points, cut at 1.5 sd; u; cadaver and DXA studies give a coefficient of variation of
+# 10-20 percent for bone strength in healthy adults). It smooths the cliffs
+# that one body gives, as a real population does.
+def _normal_spread(sd=0.13, zs=(-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5)):
+    w = [math.exp(-0.5 * z * z) for z in zs]
+    t = math.fsum(w)
+    return tuple((wi / t, 1.0 + sd * z) for wi, z in zip(w, zs))
+
+
+BONE_SPREAD = _normal_spread()
+FALL_HEIGHT_SCALE_M = 7.5      # fall heights in the population: exponential with this scale (u)
 FALL_GRID = tuple(0.5 * i for i in range(1, 61))     # 0.5 .. 30 m
 
 
@@ -194,16 +207,20 @@ def chain(W_N, h_m, k_el, elements, E_J=0.0):
     crush_sum = 0.0
     plateau = 0.0                     # sum of (C_i - W) x crush used, over every element
     sinks = {"bone": 0.0, "organ": 0.0, "control": 0.0}
+    has_ground = any(e.get("kind") == "ground" for e in elements)
+    if has_ground:
+        sinks["ground"] = 0.0
     ctl_used = 0.0
     F = None
 
     def book(e, used):
         nonlocal plateau
         kind = e.get("kind", "bone")
-        key = "control" if kind == "ctl" else ("organ" if kind == "organ" else "bone")
+        key = ("control" if kind == "ctl" else "ground" if kind == "ground"
+               else "organ" if kind == "organ" else "bone")
         sinks[key] += e["C"] * used
         plateau += (e["C"] - W) * used
-        if kind == "ctl":
+        if kind in ("ctl", "ground"):
             return
         d = dict(e)
         d["crush_used"] = used
@@ -213,7 +230,7 @@ def chain(W_N, h_m, k_el, elements, E_J=0.0):
     for e in els:
         C, c = e["C"], e["crush"]
         if C <= W:
-            if e.get("kind", "bone") != "ctl":
+            if e.get("kind", "bone") not in ("ctl", "ground"):
                 d = dict(e)
                 d.update(crush_used=0.0, frac=1.0, pre_failed=True)
                 failed.append(d)
@@ -244,6 +261,9 @@ def chain(W_N, h_m, k_el, elements, E_J=0.0):
                 control_J=sinks["control"], X_m=X, ctl_used=ctl_used, plateau_J=plateau)
     work["W_h_X_J"] = W * h_m + E_J + W * X
     work["total_J"] = elastic + sinks["bone"] + sinks["organ"] + sinks["control"]
+    if has_ground:                     # the soil's own yielding: a sink only where there is a ground element
+        work["ground_J"] = sinks["ground"]
+        work["total_J"] += sinks["ground"]
     return F, failed, work
 
 
@@ -254,6 +274,35 @@ def prep_of(t_air_s, aware=True):
     if not aware:
         return 0.0
     return min(max((t_air_s - PREP_T0_S) / PREP_RAMP_S, 0.0), 1.0)
+
+
+# ── preparation from the body's state (wave 14a refinement, lane F) ──────────
+# Preparation is a law of what the person knew and how long they had, never a flag on a scene.
+#   * A fall they CHOSE or foresaw (a jump: the leap stamp, `intended`) is prepared at take-off.
+#   * Any other fall is noticed only once it has begun. The person can start to react after
+#     their own reaction time (a dial on the sheet, `react_s`): human simple reaction time is
+#     0.2 to 0.3 s (Woods 2015, doi:10.3389/fnhum.2015.00131: 0.20 s for vision in healthy
+#     adults; Kosinski's compilation of simple reaction times 0.19 to 0.28 s), so 0.25 s (u: the
+#     middle). The legs then need PREP_RAMP_S to be ready, as before.
+#   * A surprised faller (a trip, a push from behind) does not time a brace to the ground:
+#     the pre-landing muscle activation that softens a drop is timed from knowing the time to
+#     contact (Santello and McDonagh 1998, Santello, McDonagh and Challis 2001, J Appl Physiol:
+#     it is lost or mistimed when the height is unknown), so only a share, BRACE_UNFORESEEN, of
+#     the planned brace is reached, by reflex after contact and by stiffening at the notice (u).
+REACT_S = 0.25                 # s, simple reaction time: the sheet's `react_s` replaces it
+BRACE_UNFORESEEN = 0.3         # share of a prepared landing a faller reaches who did not foresee the fall (u)
+
+
+def prep_from_body(t_air_s, aware=True, foreseen=False, react_s=REACT_S):
+    """Preparation of the legs for a landing, 0..1, from the body's state.
+    Unconscious: 0. Foreseen (chosen): 1. Otherwise BRACE_UNFORESEEN times the ramp that
+    starts at the person's reaction time: clip((t_air - react_s) / PREP_RAMP_S, 0, 1)."""
+    if not aware:
+        return 0.0
+    if foreseen:
+        return 1.0
+    ramp = min(max((t_air_s - react_s) / PREP_RAMP_S, 0.0), 1.0)
+    return BRACE_UNFORESEEN * ramp
 
 
 def contact_energy(m_kg, v_n, r_cross_n=0.0, I_kgm2=None):
@@ -339,13 +388,13 @@ def hic(a_g, T_s):
 
 
 def _stage(sheet, mode, E_or_h, energy, m_kg, legs_N, crouch_m, t_air_s, aware, share_feet,
-           side, prep, E_contact_J, arms_N, recs):
+           side, prep, E_contact_J, arms_N, recs, ground=None):
     spec = MODES[mode]
     if spec["pairs"] and sum(share_feet) <= 0:
         # No foot carries load (both off the ground): a feet or arms contact has
         # no spring, so the body lands on its side instead.
         return _stage(sheet, "side", E_or_h, energy, m_kg, legs_N, crouch_m, t_air_s, aware,
-                      (1, 1), side, prep, E_contact_J, arms_N, recs)
+                      (1, 1), side, prep, E_contact_J, arms_N, recs, ground)
     scale = m_kg / REF_KG
     W = m_kg * G
     ctl = None
@@ -383,6 +432,9 @@ def _stage(sheet, mode, E_or_h, energy, m_kg, legs_N, crouch_m, t_air_s, aware, 
         C = (1.0 - p) * ARM_SOFT_BW * W + p * CTL_CAP_X * an
         S = ARM_SOFT_STROKE_M + p * (ARM_STROKE_X * arm_len - ARM_SOFT_STROKE_M)
         elements.append(dict(name="control", C=C, crush=S, kind="ctl"))
+    g = ground_element(mode, ground, m_kg, W)
+    if g is not None:
+        elements.append(g)
     F, failed, work = chain(W_eff, h_eff, k, elements)
     res = dict(mode=mode, F_peak=F, a_body_g=F / W_eff, failed=failed, work=work, prep=p,
                k_el=k, h_eff=h_eff, W_N=W_eff,
@@ -405,9 +457,147 @@ def _arm_strength(sheet):
         return 400.0
 
 
+# ── orientation, intent, surface (wave 14a refinement, lane R2) ───────────────
+# SOURCE (need5 S2.1, doi:10.1038/s41598-021-95226-w): against a feet-first landing the
+# survival odds ratio was 0.11 for a lateral landing and 0.17 for a dorsal one, and soft
+# ground favoured survival (OR 2.38). Energy absorbed sets severity; the part of the body
+# that comes down (the mode tables above) and what it comes down on multiply it.
+# No odds ratio is typed in: the mode tables give them (`odds_ratios`), and a test checks
+# that they land inside the paper's intervals.
+SIDE_COS = math.cos(math.radians(45.0))   # a fall within 45 degrees of the facing is front or back (u)
+INTENT_WINDOW_S = 4.0                      # a leap chosen this recently is the flight that is landing (u)
+# Contact area of the part that comes down, m2 for the 70 kg adult (u: foot soles, trochanter
+# and flank, the back of the pelvis and ribs, the shoulder, the hands, the vertex), grown
+# as mass^(2/3).
+GROUND_AREA_M2_70 = {"feet": 0.05, "side": 0.06, "back": 0.10, "shoulder": 0.04,
+                     "arms": 0.02, "head": 0.015}
+GROUND_MIN_SC_PA = 1.0e6       # a ground that bears more than this never yields under a body: no element
+
+
+def orientation(pts, eye, facing=None):
+    """Which part of the body came down, from its ACTUAL landing pose (the cells the balance
+    reflex or the flight left it in). The principal axis of the cells: within 35 degrees of
+    vertical the body lands on its feet, or its head if the low end is the head end (the end
+    nearer the head's earlier place `eye`); otherwise it is lying. A lying body is told BACK
+    when its head end lies behind the way it faced, FRONT when ahead, SIDE otherwise. With no
+    `facing` (or no `eye` to tell the head end) a lying body is a side landing, as before. A
+    FRONT landing has no table of its own (the paper gives lateral and dorsal only): it reads
+    the side table (u)."""
+    pts = _np.asarray(pts, float)
+    if len(pts) < 3:
+        return "feet"
+    c = pts.mean(axis=0)
+    _, _, vt = _np.linalg.svd(pts - c, full_matrices=False)
+    ax = vt[0]
+    if abs(ax[2]) < math.cos(math.radians(35.0)):
+        if facing is None or eye is None:
+            return "side"
+        e = _np.asarray(eye, float)
+        # which end is the head: the end FARTHER (in the floor plane) from where the
+        # head was; the feet stay near their place, the head swings out
+        t = (pts - c) @ ax
+        end_a = pts[t >= t.max() - 1.0].mean(axis=0)
+        end_b = pts[t <= t.min() + 1.0].mean(axis=0)
+        da = float(_np.hypot(*(end_a[:2] - e[:2])))
+        db = float(_np.hypot(*(end_b[:2] - e[:2])))
+        head_end, foot_end = (end_a, end_b) if da >= db else (end_b, end_a)
+        d = head_end[:2] - foot_end[:2]
+        n = float(_np.hypot(*d))
+        fx, fy = float(facing[0]), float(facing[1])
+        nf = math.hypot(fx, fy)
+        if n < 1e-9 or nf < 1e-9:
+            return "side"
+        dot = (d[0] * fx + d[1] * fy) / (n * nf)
+        if dot <= -SIDE_COS:
+            return "back"
+        if dot >= SIDE_COS:
+            return "front"
+        return "side"
+    z_lo = pts[:, 2].min()
+    low = pts[(pts[:, 2] <= z_lo + 1.0)]
+    if eye is None:
+        return "feet"
+    e = _np.asarray(eye, float)
+    d_head = float(_np.linalg.norm(low.mean(axis=0) - e))
+    d_far = float(_np.linalg.norm(pts[pts[:, 2] >= pts[:, 2].max() - 1.0].mean(axis=0) - e))
+    return "head" if d_head < d_far else "feet"
+
+
+def intended(p, tick, tick_s):
+    """Was this landing the end of a jump the person CHOSE? Read off the body's own state: the
+    stamp the leap law leaves in `p["_chose"]["leap"]` (the tick its cover ends; the leap
+    was chosen two ticks before). It counts for INTENT_WINDOW_S. An accident (a slip, a
+    push, a walk off an edge) leaves none, so its legs get only the airborne time."""
+    ch = (p.get("_chose") or {}).get("leap")
+    if ch is None:
+        return False
+    return 0 <= tick - (ch - 2) <= INTENT_WINDOW_S / tick_s
+
+
+def ground_of(mat_id, depth_m=None):
+    """The landing surface as the pair `landing` reads: (bearing stress Pa, depth m of that
+    material under the body), from the material record (`matrec`, field sc: what the
+    material bears in compression; for a heap it is the bearing stress of its friction
+    angle). None when the record has no row or the ground is stiff enough never to yield
+    (above GROUND_MIN_SC_PA): the old hard-floor landing, bit for bit. The surface is a
+    property of the material, never a rule per material."""
+    try:
+        from . import materials as _M       # the live table: the old twelve, ICE and the ground rows
+        rec = _M.MATREC.by_id_list[int(mat_id)]
+        sc = float(rec.sc)
+    except Exception:                  # pragma: no cover
+        return None
+    if sc >= GROUND_MIN_SC_PA or sc <= 0.0:     # stiff (never yields), or a row with no bearing figure (ice, air)
+        return None
+    return (sc, depth_m)
+
+
+def ground_element(mode, ground, m_kg, W_N):
+    """The yielding ground as an element in series with the body: it holds the contact force
+    at bearing stress x contact area (the part that came down), and gives that area's width
+    of stroke (sinking in) or the depth of the soft layer, whichever is less. Its work is the
+    ground's own (a sink of its own, `ground_J`), not the body's. None for a hard surface."""
+    if ground is None:
+        return None
+    sc, depth = ground
+    area = GROUND_AREA_M2_70.get(mode, 0.05) * (m_kg / REF_KG) ** (2.0 / 3.0)
+    stroke = math.sqrt(area)
+    if depth is not None:
+        stroke = min(stroke, depth)
+    C = sc * area
+    if stroke <= 0.0 or C <= 0.0:
+        return None
+    return dict(name="ground", C=C, crush=stroke, kind="ground", member=None, bones=(),
+                organs=(), m_above=1.0)
+
+
+def odds_ratios(sheet, scale_m=None, ensemble_modes=("feet", "side", "back"), grid=FALL_GRID):
+    """The model's survival odds ratio of each mode against feet-first (aware, prepared) over a
+    population whose fall heights fall off exponentially (`scale_m`), the bone strength spread
+    of the population lens, no treatment. The data the paper's 0.11 (lateral) and 0.17 (dorsal)
+    is judged against. Returns {mode: OR}."""
+    sc = FALL_HEIGHT_SCALE_M if scale_m is None else scale_m
+    persons = _spread_sheets(sheet, BONE_SPREAD)
+    wts = [math.exp(-h / sc) for h in grid]
+    out = {}
+    for mode in ensemble_modes:
+        alive = 0.0
+        tot = 0.0
+        for wp, sh in persons:
+            for h, wh in zip(grid, wts):
+                r = _case(sh, mode, True, False, h)
+                tot += wp * wh
+                if not outcome(r, sh)["dead"]:
+                    alive += wp * wh
+        out[mode] = alive / tot
+    odds = {m: v / max(1.0 - v, 1e-9) for m, v in out.items()}
+    return {m: odds[m] / odds["feet"] for m in out if m != "feet"}, out
+
+
 def landing(sheet, mode, h_or_E, m_kg=None, legs_N=None, crouch_m=None, t_air_s=None,
             aware=True, share_feet=(1, 1), shares=1, roll_order=ROLL_ORDER, energy=False,
-            side="left", prep=None, E_contact_J=None, arms_N=None, recs=None):
+            side="left", prep=None, E_contact_J=None, arms_N=None, recs=None,
+            ground=None, intended=False, foreseen=None, react_s=REACT_S):
     """One landing. `h_or_E` is the drop height in metres, or contact energy in
     joules with energy=True. Modes: feet, side, back, shoulder, arms, head.
     The feet chain gets the control element (legs flexing) with prep from the
@@ -422,13 +612,20 @@ def landing(sheet, mode, h_or_E, m_kg=None, legs_N=None, crouch_m=None, t_air_s=
     kind, organs, crush_used (m), frac. `residual_J` is the energy this contact
     did not take (the body's motion for the next one). For a roll the failed
     list merges the stages (largest frac per element) and work is summed."""
+    if mode == "front":                # no table of its own (orientation): it reads the side table
+        mode = "side"
     m = float(m_kg if m_kg is not None else sheet["mass_kg"])
+    if intended and aware and prep is None:
+        prep = 1.0                     # a chosen jump: the legs were set at take-off
     tair = t_air_s
     if tair is None:
         tair = math.sqrt(2.0 * max(h_or_E, 0.0) / G) if not energy else 0.0
+    if foreseen is not None and prep is None:
+        # the live path: preparation from what the body knew and its reaction time
+        prep = prep_from_body(tair, aware, bool(foreseen) or bool(intended), react_s)
     if shares <= 1:
         r = _stage(sheet, mode, h_or_E, energy, m, legs_N, crouch_m, tair, aware, share_feet,
-                   side, prep, E_contact_J, arms_N, recs)
+                   side, prep, E_contact_J, arms_N, recs, ground)
         total = (h_or_E if energy else m * G * h_or_E)
         r["residual_J"] = max(total - r["E_contact_J"], 0.0)
         r["stages"] = [r]
@@ -439,7 +636,7 @@ def landing(sheet, mode, h_or_E, m_kg=None, legs_N=None, crouch_m=None, t_air_s=
         part = h_or_E / shares
         stages.append(_stage(sheet, md, part, energy, m, legs_N, crouch_m,
                              tair / shares if i == 0 else 0.0, aware if i == 0 else False,
-                             share_feet, side, prep if i == 0 else None, None, arms_N, recs))
+                             share_feet, side, prep if i == 0 else None, None, arms_N, recs, ground))
     merged = {}
     for s in stages:
         for f in s["failed"]:
@@ -560,29 +757,44 @@ def _case(sheet, mode, aware, one_foot, h):
     return landing(sheet, mode, h, **kw)
 
 
-def survival_curve(sheet, ensemble=None, grid=FALL_GRID):
-    """For each height of the grid: the fraction of the ensemble that survives
-    (no treatment), by the outcome rule. Returns (heights, survival list)."""
+def _spread_sheets(sheet, spread):
+    """The sheet of each person of the population lens: the same body with its
+    bone strength drawn off by a factor. Returns [(weight, sheet)]."""
+    out = []
+    for w, x in spread:
+        sh = dict(sheet)
+        sh["bone_scale"] = sheet.get("bone_scale", 1.0) * x
+        out.append((w, sh))
+    return out
+
+
+def survival_curve(sheet, ensemble=None, grid=FALL_GRID, spread=None):
+    """For each height of the grid: the fraction of the population that survives
+    (no treatment), by the outcome rule: the random-orientation ensemble times
+    the person-to-person spread in bone strength (`BONE_SPREAD` by default;
+    `((1.0, 1.0),)` is one body). Returns (heights, survival list)."""
     ens = ensemble or ENSEMBLE
-    tot = math.fsum(e[0] for e in ens)
+    persons = _spread_sheets(sheet, BONE_SPREAD if spread is None else spread)
+    tot = math.fsum(e[0] for e in ens) * math.fsum(p[0] for p in persons)
     S = []
     for h in grid:
         alive = 0.0
-        for w, mode, aware, one in ens:
-            r = _case(sheet, mode, aware, one, h)
-            if not outcome(r, sheet)["dead"]:
-                alive += w
+        for wp, sh in persons:
+            for w, mode, aware, one in ens:
+                r = _case(sh, mode, aware, one, h)
+                if not outcome(r, sh)["dead"]:
+                    alive += w * wp
         S.append(alive / tot)
     return list(grid), S
 
 
-def fit_numbers(sheet, ensemble=None, scale_m=FALL_HEIGHT_SCALE_M, grid=FALL_GRID):
+def fit_numbers(sheet, ensemble=None, scale_m=FALL_HEIGHT_SCALE_M, grid=FALL_GRID, spread=None):
     """The two numbers the realism map asks of falls: the mean drop of the
     survivors of a population whose heights fall off exponentially with
     `scale_m` (target 5.2 m), and LD50, the height at which half of the
     random orientations die (target 12-15 m, linear between grid points).
     Returns {mean_survivable_m, ld50_m}."""
-    hs, S = survival_curve(sheet, ensemble, grid)
+    hs, S = survival_curve(sheet, ensemble, grid, spread)
     num = math.fsum(math.exp(-h / scale_m) * s * h for h, s in zip(hs, S))
     den = math.fsum(math.exp(-h / scale_m) * s for h, s in zip(hs, S))
     ld50 = None

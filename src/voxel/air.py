@@ -624,7 +624,7 @@ class AirMixin(GasFlowMixin):
         if self._gas_busy() or bool(self.p_add.any()):
             return True
         if self.gas_flow:                       # a flow already going carries on
-            return self._gf_live()
+            return self._gf_live() or self._push_live()   # and a push (wind, a moving surface)
         if self.pcell is None:
             return False
         return bool(self.pcell.any()) or any(bool(v.any()) for v in self.vcell)

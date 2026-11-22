@@ -244,7 +244,7 @@ def face_arrays(w, sl, u=None, T=None, dyn=False):
     A = dx * dx
     k_sol = _KSOLID_ARR[mat].astype(np.float64)
     k_liq = _FLK_ARR[fl].astype(np.float64)
-    eddy = 1000.0 * AIR_C / EDDY * np.maximum(T - AMBIENT, 0.0)
+    eddy = (0.0 if w.gas_momentum else 1000.0 * AIR_C / EDDY) * np.maximum(T - AMBIENT, 0.0)
     k = np.where(solid, k_sol, k_liq)
     k = np.where(gas, float(_KSOLID_ARR[AIR]) + eddy, k)
     h_liq = _FK_ARR[fl].astype(np.float64)
@@ -319,10 +319,10 @@ def _threshold_rows(mat_present, fl_present, has_fuel, has_water):
     return rows
 
 
-def _DYN_CONSTS(dx):
+def _DYN_CONSTS(dx, momentum=False):
     """The constants of the temperature-dependent faces (slowforms.NetDyn.k):
     the heat law's own numbers, none new."""
-    return dict(dx=dx, k_air=float(_KSOLID_ARR[AIR]), eddy=1000.0 * AIR_C / EDDY, t0=AMBIENT,
+    return dict(dx=dx, k_air=float(_KSOLID_ARR[AIR]), eddy=0.0 if momentum else 1000.0 * AIR_C / EDDY, t0=AMBIENT,
                 h_conv=H_CONV, eps_gas=EPS_GAS, sigma=SIGMA, grav=GRAVITY, tick_s=TICK_S,
                 rise_max=RISE_MAX)
 
@@ -470,7 +470,7 @@ def thermal_net(w, region=None, B=None, max_nodes=2000, sources=(), tb=AMBIENT,
         np.concatenate([cat(d_hi, np.int64), np.full(len(cat(e_node, np.int64)), -1, np.int64)]),
         np.concatenate([cat(d_c, float), cat(e_c, float)]),
         np.concatenate([cat(d_side, bool), cat(e_side, bool)]),
-        _DYN_CONSTS(res.dx))
+        _DYN_CONSTS(res.dx, bool(w.gas_momentum)))
     rad = np.bincount(node_of, a_i.ravel(), n)
     q = np.zeros(n)
     for cell, watts in sources:

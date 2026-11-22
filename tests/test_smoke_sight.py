@@ -6,7 +6,7 @@ of s g/L lets you see 2/K metres. Checked against that hand formula in both sigh
 import numpy as np
 
 from src.voxel import smokeopt
-from src.voxel.materials import AIR, SEE_TAU, SMOKE_EXT
+from src.voxel.materials import AIR, SEE_SMOKE_TAU, SEE_TAU, SMOKE_EXT
 from src.voxel.sim import World
 
 
@@ -44,7 +44,8 @@ def test_visibility_in_uniform_smoke_matches_the_hand_formula():
     s = 0.02                                           # g/L: a thin haze
     _fill(w, s)
     # optical depth over k cells (the ray skips its two ends) = K * 0.1 * (k-1) m
-    reach_m = SEE_TAU / (smokeopt.extinction_from_smoke(s))  # about 0.46 m
+    # wave 14a (H1): smoke is lost at Jin's C = 3 (SEE_SMOKE_TAU), not at SEE_TAU 2
+    reach_m = SEE_SMOKE_TAU / (smokeopt.extinction_from_smoke(s))  # about 0.69 m
     edge = int(round(reach_m / 0.1)) + 1
     assert _reach(w, edge - 2)
     assert not _reach(w, edge + 2)
@@ -67,10 +68,11 @@ def test_clear_air_is_unchanged():
 
 
 def test_visibility_function_agrees_with_see_tau():
-    # Jin's illuminated-sign visibility C_v/K and the engine's 2/K differ by the
-    # constant C_v 8 against SEE_TAU 2: the engine's cut is the stricter one.
+    # Jin's reflecting-object visibility is 3/K (the sight cut, 14a) and an
+    # illuminated sign's 8/K (the flame rule): a flame is seen 8/3 as far.
     K = smokeopt.extinction_from_smoke(0.01)
-    assert smokeopt.visibility(K) == 4 * (SEE_TAU / K)
+    assert smokeopt.visibility(K, 3.0) == SEE_SMOKE_TAU / K
+    assert abs(smokeopt.sight_range_m(0.01, lit=True) / smokeopt.sight_range_m(0.01) - 8 / 3) < 1e-12
 
 
 def test_a_FLAME_is_seen_by_its_own_light_through_smoke_that_hides_a_lit_thing():
@@ -82,7 +84,7 @@ def test_a_FLAME_is_seen_by_its_own_light_through_smoke_that_hides_a_lit_thing()
     vox_m = 0.1 * w.scale
     # smoke dense enough that the far cell's smoke depth is 1.5 x SEE_TAU
     per_cell = 1.5 * SEE_TAU / ((k - 2) * vox_m)          # 1/m over the cells between
-    _fill(w, per_cell / w._smoke_ext())
+    _fill(w, per_cell / w._smoke_sight_ext())
     a, b = (1, 3, 3), (1 + k, 3, 3)
     assert not bool(w.rays([a], [b])[0])                    # a lit thing: hidden
     assert bool(w.rays([a], [b], lit=[True])[0])            # a flame: seen
@@ -90,3 +92,31 @@ def test_a_FLAME_is_seen_by_its_own_light_through_smoke_that_hides_a_lit_thing()
     w.mat[1 + k // 2, 3, 3] = STONE                         # a wall still hides it
     w.smass[1 + k // 2, 3, 3] = 2600.0 * w.vox_l
     assert not bool(w.rays([a], [b], lit=[True])[0])
+
+
+def test_smoke_cut_is_jins_and_solids_keep_theirs():
+    """14a: SEE_SMOKE_TAU 3 is the middle of Jin's reflecting range 2-4; SEE_TAU 2 still
+    cuts solids, so smoke depth counts 2/3 as much and a hedge is judged as before."""
+    assert 2.0 <= SEE_SMOKE_TAU <= 4.0 and SEE_TAU == 2.0
+    w = _hall()
+    assert abs(w._smoke_sight_ext() - w._smoke_ext() * SEE_TAU / SEE_SMOKE_TAU) < 1e-9
+    w.smoke_opacity = False
+    assert w._smoke_sight_ext() == SMOKE_EXT           # the clear-smoke world, bit for bit
+
+
+def test_a_haze_of_point_oh_two_is_seen_to_69_cm_and_a_flame_to_184_cm():
+    w = _hall()
+    _fill(w, 0.02)
+    # cells between the ends are counted: k cells apart = (k-1) smoke cells of 0.1 m
+    assert _reach(w, 7) and not _reach(w, 9)           # 0.69 m: about 7-8 cells
+    a = (1, 3, 3)
+    far = lambda k: bool(w.rays([a], [(1 + k, 3, 3)], lit=[True])[0])
+    assert far(19) and not far(21)                     # 1.84 m: 19 cells apart, 18 of smoke
+
+
+def test_sight_through_foliage_is_unchanged():
+    """A half-full cell dims by -ln(0.5); the solid cut did not move."""
+    w = _hall()
+    w.mat[5, 3, 3] = 1
+    w.smass[5, 3, 3] = 0.865 * 600.0 * w.vox_l
+    assert isinstance(_reach(w, 10), bool)

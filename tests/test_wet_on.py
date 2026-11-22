@@ -33,8 +33,10 @@ def _hot_cup(cls):
 
 # ---- the gate ------------------------------------------------------------------
 def test_wet_off_is_the_old_world_bit_for_bit():
+    # R4 (wave 14a refinement): every World is humid by default, so "wet off" is now the
+    # explicit gate `w.wet = None` (every method falls back to super() on it), set on both.
     a, b = _hot_cup(ColdWorld), _hot_cup(WetWorld)
-    assert b.wet is None
+    a.wet = b.wet = None
     for _ in range(300):
         a.step()
         b.step()
@@ -237,7 +239,7 @@ def test_wet_composes_with_cold_body_heat_mixtures_and_material_laws():
     from src.voxel.bodyworld import BodyWorld
     from src.voxel.scenes_mixtures import BRINE10
 
-    class W(WetMixin, BodyWorld):
+    class W(BodyWorld):        # R4: World already carries WetMixin
         pass
 
     n = 30

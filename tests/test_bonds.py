@@ -628,6 +628,7 @@ def test_the_LEDGERS_ARE_EXACT_through_PROMOTE_STEP_BREAK_and_WRITE_BACK():
     are what came in, plus every outside push, less what left with the
     matter (to rounding); the heat is exact to the lattice's float32."""
     w = World(40, 24, 30, voxel_cm=5)
+    w.wet = None        # kept dry on purpose: this book counts liquid water to 1e-12 and an open humid surface gives the air a little vapour (booked in total_water, not in total_fluid)
     w.fill(0, 40, 0, 24, 0, 1, STONE)
     _small_tree(w, 10, 12, 1, 14, 3)
     w.E[w.mat != AIR] += 30.0

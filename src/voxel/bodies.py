@@ -44,7 +44,9 @@ assert AIR == 0 and NOFLUID == 0, "an empty cell is all zeros (`_lift`)"
 # before it did (or is made by hand), the body has no such key and the cells it
 # lands in get 0, as `_of_body` has always done for `fallhs` and `rubbles`.
 CARRIED_OPT = (("scomp", "scomps"), ("fcomp", "fcomps"), ("dmg", "dmgs"),
-               ("bzone", "bzones"), ("ice_g", "ice_gs"))
+               ("bzone", "bzones"), ("ice_g", "ice_gs"),
+               ("wood_sp", "wood_sps"), ("wood_grain", "wood_grains"),
+               ("wood_bound", "wood_bounds"))
 # the body keys of those fields, in order
 OPT_BODY = tuple(k for _, k in CARRIED_OPT)
 

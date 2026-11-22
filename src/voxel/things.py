@@ -698,11 +698,17 @@ class ThingsMixin(RecordsMixin):
         if self.mixes_live:                      # T1: a mix is warmed by its own heat capacity
             cap = self._cap_of(mat, self.smass[idx], fl, self.fvol[idx],
                                self.scomp[idx], self.fcomp[idx])
-            return AMBIENT + self.E[idx] / cap
+            return AMBIENT + self.E[idx] / self._cap_plus(idx, cap)
         fmass = self.fvol[idx] * _FDENS_ARR[fl]
         cap = self.smass[idx] * _CSOLID_ARR[mat] + fmass * _FC_ARR[fl] \
             + self.c_airbase
-        return AMBIENT + self.E[idx] / cap
+        return AMBIENT + self.E[idx] / self._cap_plus(idx, cap)
+
+    def _cap_plus(self, idx, cap):
+        """`cap` (a cell list's own heat capacity) plus what a capability adds that is
+        not in the four matter fields: the wet world's vapour, mist and ice (wetmix).
+        The plain world adds nothing and hands `cap` back untouched."""
+        return cap
 
     def burning_at(self, idx):
         """`burning()` at these cells only (the same index forms as `T_at`)."""

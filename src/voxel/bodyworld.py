@@ -63,7 +63,7 @@ class BodyWorld(BodyHeatMixin, ColdWorld):
         T_air = 20.0
         if h is not None:
             T_air = self._bh_touching_air(h)
-        rh = float(self.air_rh) if self.air_rh is not None else 0.5
+        rh = float(self.air_rh)
         return {"T_air": T_air, "rh": rh, "v": 0.0, "T_rad": T_air}
 
     def _bh_touching_air(self, h):

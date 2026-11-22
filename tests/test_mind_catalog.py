@@ -268,6 +268,10 @@ def _inn():
 
 
 def _skeleton(node):
+    if isinstance(node, ast.IfExp):
+        # A conditional text is a lab-flag variant ("eat a portion of X" under meals);
+        # the else branch is the plain wording the rooms backend shares.
+        return _skeleton(node.orelse)
     if isinstance(node, ast.Constant):
         return node.value
     return "".join(v.value if isinstance(v, ast.Constant) else "{}" for v in node.values)

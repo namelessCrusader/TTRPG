@@ -358,7 +358,11 @@ def test_a_side_landing_takes_a_share_and_leaves_the_rest_as_motion():
 def test_u_a_side_fall_breaks_ribs_and_hip_where_a_prepared_feet_first_fall_breaks_nothing():
     s = adult()
     assert names(fall(s, 2.0, ADULT_KW)) == []
-    side = names(I.landing(s, "side", 2.0))
+    # (wave 14a H2: the side landing is softer, k 31 kN/m; a healthy adult keeps
+    # his ribs from 1 m and breaks them from 2 m, the hip from 3 m)
+    assert names(I.landing(s, "side", 1.0)) == []
+    assert "ribs lateral" in names(I.landing(s, "side", 2.0))
+    side = names(I.landing(s, "side", 3.0))
     assert "ribs lateral" in side and "femoral neck" in side
     assert names(I.landing(s, "side", 0.3)) == []                 # a stumble leaves no fracture
     assert "femoral neck" in names(I.landing(s, "side", 4.0))

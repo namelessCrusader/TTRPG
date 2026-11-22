@@ -241,6 +241,12 @@ def test_live_module_arrays_equal_the_oracle_bit_for_bit(doc):
     assert list(CARRIED) == doc["carried"] and list(AS_BODY) == doc["as_body"]
 
 
+# Declared physics changes since base19: the oracle stays frozen, and the new value is named here.
+# SOOT_OIL 1.0 -> 1.6 (wave 14a refinement, lane R1): liquid hydrocarbons give 0.037-0.042 g/g
+# of soot, the old 1.0 x 0.025 was about 1.5x too clear.
+DECLARED_SCALAR_CHANGES = {"SOOT_OIL": 1.6}
+
+
 def test_every_table_of_the_live_module_equals_the_oracle_row_for_row(doc):
     """All of them, not only SOLID: wave 13 made these names views of the material record, and
     the oracle (frozen from the literal tables of base19) must still read the same."""
@@ -248,6 +254,9 @@ def test_every_table_of_the_live_module_equals_the_oracle_row_for_row(doc):
     for name, rows in doc["tables"].items():
         assert X.enc(getattr(M, name)) == rows, name
     for name, v in doc["scalars"].items():
+        if name in DECLARED_SCALAR_CHANGES:
+            assert X.enc(getattr(M, name)) == DECLARED_SCALAR_CHANGES[name], name
+            continue
         assert X.enc(getattr(M, name)) == v, name
     for name, v in doc["other"].items():
         assert X.enc(getattr(M, name)) == v, name
@@ -258,7 +267,8 @@ def test_the_live_tree_diffed_against_the_oracle_is_empty_on_its_legacy_view(doc
     the tool always does, cut down to what the oracle lists, and diffed. Tables, arrays,
     constants, particle rows, bond rows and pair rows, CARRIED and AS_BODY."""
     live = X.legacy_view(X.extract(ROOT, "live"), doc)
-    assert X.diff_docs(doc, live) == []
+    declared = {f"CHANGED  scalars/{k}: {doc['scalars'][k]} -> {v}" for k, v in DECLARED_SCALAR_CHANGES.items()}
+    assert [l for l in X.diff_docs(doc, live) if l not in declared] == []
 
 
 # ── diff mode ───────────────────────────────────────────────────────────────
@@ -314,7 +324,8 @@ def test_cli_diff_between_a_tree_and_a_file(tmp_path):
     down to what the oracle lists (wave 13 padded its arrays); without it the padding shows."""
     r = subprocess.run([sys.executable, TOOL, "diff", ORACLE, ROOT, "--strict", "--legacy"],
                        capture_output=True, text=True)
-    assert r.returncode == 0 and r.stdout.strip() == "0 changed row(s)", r.stdout[-400:]
+    lines = [l for l in r.stdout.strip().splitlines() if "changed row(s)" not in l]
+    assert lines == ["CHANGED  scalars/SOOT_OIL: 1.0 -> 1.6"], r.stdout[-400:]   # the one declared change (R1)
     r = subprocess.run([sys.executable, TOOL, "diff", ORACLE, ROOT, "--strict"],
                        capture_output=True, text=True)
     assert r.returncode == 1 and "CHANGED  arrays/_DENS_ARR/#layout" in r.stdout

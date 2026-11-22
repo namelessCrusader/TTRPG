@@ -40,10 +40,18 @@ with open(os.path.join(HERE, "data", "world_attrs_base19.json")) as _f:
 # the reason and the way an old snapshot (which lacks it) still works. Empty today: every new name
 # is a class attribute. A lane that really needs an instance attribute made in `__init__` adds it
 # HERE, in the same change, and says how the code copes when `restore` has deleted it.
-ALLOWED_NEW = {}
+# Wave 14a lane A: a humid world (HumidMixin: every scene world, the harvest world) makes its WetState
+# in __init__. "wet" and "air_rh" are those two names. An old snapshot lacks them; restore() only
+# rewrites the names the snapshot holds, so the restored world keeps its own WetState (the
+# vapour store is not snapshotted yet: open problem in the lane A report). The plain demo and
+# fire-room worlds still have neither name (checked below).
+# Wave 14a refinement R4: HumidMixin is in World's bases, so EVERY world makes both in __init__
+# (enable_wet). A snapshot that lacks them restores into a dry world (the world it was saved as).
+ALLOWED_NEW = {"wet": "HumidMixin.humid_default (R4)", "air_rh": "HumidMixin.humid_default (R4)"}
+HUMID_ONLY = {"wet", "air_rh"}
 
 # every name wave 13 puts on a World that base19 does not have, as the class says it
-LAZY = ("slow", "climate", "t_out", "t_sky", "air_rh", "mixes", "mixes_live", "scomp", "fcomp",
+LAZY = ("slow", "climate", "t_out", "t_sky", "mixes", "mixes_live", "scomp", "fcomp",
         "dmg", "bzone", "ice_g", "records", "layers", "face_env")
 
 
@@ -67,6 +75,17 @@ def _poke(w, t):
 
 
 BUILDS = {"demo": build, "harvest 3": lambda: harvest_world(3)[0], "fire room": _fire_room}
+
+
+def _dry(make):
+    """A world as it was saved before humidity was on by default: no wet state, no air_rh.
+    An old-shape snapshot restores into exactly this (restore deletes what it lacks)."""
+    def f():
+        w = make()
+        w.__dict__.pop("wet", None)
+        w.__dict__.pop("air_rh", None)
+        return w
+    return f
 
 
 def _state(w):
@@ -111,11 +130,12 @@ def test_a_world_that_uses_none_of_it_has_exactly_the_attribute_names_base19_had
             _poke(w, t)
             w.step()
         assert set(vars(w)) <= BASE19 | set(ALLOWED_NEW), (name, sorted(set(vars(w)) - BASE19))
+        assert set(vars(w)) & HUMID_ONLY == HUMID_ONLY, name    # R4: every world is humid
 
 
 @pytest.mark.parametrize("name", list(BUILDS))
 def test_a_snapshot_of_the_old_shape_restores_and_the_next_100_ticks_are_the_same(name):
-    make = BUILDS[name]
+    make = _dry(BUILDS[name])
     a = make()
     for t in range(30):
         _poke(a, t)

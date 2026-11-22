@@ -698,6 +698,88 @@ def ingest_row(row, table=None, id=None):
     return (BASE if table is None else table).ingest(row, id)
 
 
+# ── the planned skeleton rows and the ground (wave 14a refinement, lane F) ───
+# THE IDS. tests/data/mat_ids.json pins mat ids 13 to 26 to the species registry's planned
+# materials (species_seed.MAT_SLOTS: copper, quartz rock, SAND at 15, calcite, clay ... humus
+# at 26), and a lattice id table must run 0..n-1 with no gap. So the ground cannot take 13
+# onward without renaming a pinned id. It is done in the pinned order instead: the planned rows
+# 13 to 26 are built here (their thermal numbers are the registry's own, copied exactly; their
+# mechanical numbers are the `MAT_LIKE` stand-in's, as the registry says until a row of their
+# own is sourced), and the ground materials the world lacked, SOIL and GRASS, are appended at
+# 27 and 28 (appending is what the pin allows). The planned sand (15) gets its own bearing data.
+#
+# THE GROUND. Until now nothing in the world was soft enough to give under a falling body: ash
+# bears 10 kPa (a heap, cannot hold a person) and every other row bears over 1 MPa, so
+# impact.ground_of never found a yielding surface. `sc` is the BEARING stress a landing is held
+# to; R2's range for firm ground is 1e5 to 5e5 Pa. Allowable bearing pressures are 70 to 150 kPa
+# for clay and sand in the presumptive tables of building codes (IBC 2018 table 1806.2: clay
+# 1500 psf = 72 kPa, sand 2000 psf = 96 kPa; BS 8004 the same order) and an ultimate value is
+# that times a safety factor of about 3: sand 2.9e5, soil (clay-loam) 2.2e5, turf over soil 1.5e5 (topsoil
+# is the softest layer, u). Density: moist unit weight of clay soil 16 to 19 kN/m3, dry sand
+# 14 to 17 (Das, Principles of Geotechnical Engineering); turf over topsoil 1300 (u). Thermal
+# (soil, grass): moist clay-loam k 1.0 W/mK and cp 1.2 J/gK at 10 to 20 percent water (Abu-Hamdeh
+# 2003, Soil Sci. Soc. Am. J. 67, 1213, u); turf 0.7 W/mK, 1.4 J/gK (u). Sand's thermal numbers
+# are the registry's (dry quartz sand, 1590 g/L, 0.31 W/mK). Emissivity: soil 0.92, grass 0.97
+# (Oke, Boundary Layer Climates, u). E: stiff clay 20 to 50 MPa, sand 10 to 80 MPa (Das, u).
+# Friction: the loose-grain class ("granular", matfric: 0.50 static, u); a foot on soil or sand
+# is 0.5 to 0.8, so the class is the low side. None of them burns or melts.
+PLANNED_ROWS = (        # id, key, rho g/L, cp J/(g K), k W/(m K), emissivity, the row whose mechanics stand in
+    (13, "copper", 8960.0, 0.385, 401.0, 0.3, "iron"),
+    (14, "quartz_rock", 2650.0, 0.74, 7.7, 0.9, "stone"),
+    (15, "sand", 1590.0, 0.74, 0.3122793330414563, 0.9, "ash"),
+    (16, "calcite", 2710.0, 0.82, 3.6, 0.9, "stone"),
+    (17, "clay", 2600.0, 0.95, 1.0, 0.9, "stone"),
+    (18, "graphite", 2260.0, 0.709, 120.0, 0.8, "stone"),
+    (19, "magnetite", 5170.0, 0.6, 5.1, 0.9, "iron"),
+    (20, "iron_oxide", 5240.0, 0.65, 3.0, 0.9, "stone"),
+    (21, "salt", 2165.0, 0.864, 6.5, 0.9, "stone"),
+    (22, "tallow", 900.0, 2.0, 0.2, 0.9, "flesh"),
+    (23, "sugar", 1587.0, 1.24, 0.5, 0.9, "stone"),
+    (24, "quicklime", 3340.0, 0.75, 7.0, 0.9, "stone"),
+    (25, "slaked_lime", 449.99999999999994, 1.18, 0.050339712828688946, 0.9, "ash"),
+    (26, "humus", 700.0, 1.5, 0.2, 0.9, "ash"),
+)
+_GROUND_MECH = {        # own mechanics of the ground rows (see the comment above)
+    "sand": dict(E=2.0e7, nu=0.30, sc=2.9e5, tau=0.0, H=1.0e5),
+    "soil": dict(E=3.0e7, nu=0.35, sc=2.2e5, tau=3.0e4, H=1.0e5),
+    "grass": dict(E=1.0e7, nu=0.40, sc=1.5e5, tau=1.0e4, H=5.0e4),
+}
+GROUND_ROWS = (        # appended after the pinned ids: id, key, rho, cp, k, eps
+    (27, "soil", 1600.0, 1.2, 1.0, 0.92),
+    (28, "grass", 1300.0, 1.4, 0.7, 0.97),
+)
+
+
+def _planned_rec(base, i, key, rho, cp, k, eps, like):
+    r = base.row(like)
+    mech = _GROUND_MECH.get(key)
+    rec = dataclasses.replace(
+        r, key=key, id=i, name=key, family="ground" if key in _GROUND_MECH else "planned",
+        rho=rho, cp=cp * 1000.0, k=k, eps=eps, burn=None, melt=None, menu_name=key if mech else None,
+        alpha=0.0,                      # no expansion figure yet: R_shock is infinite, so a stand-in row never thermal-shocks or spalls (a hot salt crust is not stone)
+        legacy={}, extra={}, successor=None,
+        src="wave 14a refinement F: thermal numbers from the species registry (planned row %d), "
+            "mechanics of the %s row as a stand-in" % (i, like) if i < 27 else
+            "wave 14a refinement F: appended ground row; see the comment above PLANNED_ROWS")
+    if mech:
+        d = dict(mech)
+        rec = dataclasses.replace(rec, st=0.0, sf=0.0, ductility=0.0, alpha=0.0, gimp=30000.0,
+                                  mu_class="granular", derate=_FLAT, ring=1.0e-7, span_ref=1, **d)
+    return rec
+
+
+def ingest_ground(table):
+    """`table` (the old twelve and ICE) with the planned rows 13 to 26 and the ground rows 27, 28
+    added, in id order, never renumbered."""
+    base = BASE
+    for i, key, rho, cp, k, eps, like in PLANNED_ROWS + tuple(
+            (i, key, rho, cp, k, eps, "ash") for i, key, rho, cp, k, eps in GROUND_ROWS):
+        rec = _planned_rec(base, i, key, rho, cp, k, eps, like)
+        check_handover(rec)
+        table = MatTable(table.rows + (rec,))
+    return table
+
+
 def ingest_ice(table=None):
     """Ingest T6's ICE row if icephase can be imported: its ICE_ROW dict, or
     its ice_row() function. Returns the new table, or None when icephase is

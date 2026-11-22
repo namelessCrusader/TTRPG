@@ -285,13 +285,6 @@ def test_WARM_AIR_RISES_AT_ITS_BUOYANT_SPEED_not_at_one_rate():
     assert shares[5.0] < shares[100.0] < shares[980.0]
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="the forge's slowness is in the bed-to-metal face: a packed "
-                   "bed of coals gives a bar 8-13 W/(m²K) at 680 °C, a third to a "
-                   "fifth of what the bar sees of a glowing bed by radiation. The "
-                   "pore term takes the bed's open share (0.2) as its view factor and "
-                   "the dimmer surface's emissivity (tin 0.3). Left for the user to "
-                   "decide (it moves every porous face); expected to fail until then.")
 def test_H23_THE_FORGE_BED_GIVES_A_BAR_WHAT_A_GLOWING_BED_RADIATES():
     """H23 (row H23, the forge diagnosis of 2026-10-29): a packed bed of
     glowing coals (charcoal, 80% full) at 680 °C round a cold iron block hands
@@ -299,7 +292,13 @@ def test_H23_THE_FORGE_BED_GIVES_A_BAR_WHAT_A_GLOWING_BED_RADIATES():
     radiation across a thin gap, e σ (T⁴ - T⁴) with e = 1/(1/e1 + 1/e2 - 1):
     30 kW/m², so at least 15 kW/m² on the bar's face. Measured: 8.0 kW/m²
     (12 W/m²K), for tin 4.4 kW/m² (6.7 W/m²K, whose ideal is 12 kW/m²).
-    One tick of `_law_conduct`, the bar's gain over its face area."""
+    One tick of `_law_conduct`, the bar's gain over its face area.
+
+    Wave 14a (lane C): it passes. The pore term was the bed's open share (0.2)
+    times the DIMMER surface's emissivity; it is now the CAVITY view
+    (`_cavity_view`: 1 - fill^N, N = cell / lump size) times the grey-body
+    exchange of the two surfaces, over the exact T^4 difference. Was 8.0 kW/m2,
+    now about 19 kW/m2 (ideal 30)."""
     from src.voxel.heat import _count_nb
     w = World(16, 12, 10, voxel_cm=5)
     w.fill(0, 16, 0, 12, 0, 1, STONE)

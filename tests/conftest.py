@@ -39,6 +39,7 @@ import pytest
 # quick check must still show the speedups changed nothing (about +43 s).
 # Drop them from the list after a regeneration.
 SLOW = {
+    'test_gas_momentum.py::test_the_CEILING_JET_is_Alpert_s_with_momentum_and_was_not_without',  # 30s
     'test_voxel.py::test_a_torch_lights_a_dry_stick_and_the_fire_CREEPS',      #  16.4s
     'test_voxel.py::test_the_ATTENTION_CAP_never_hides_the_answer',            #  10.8s
     'test_voxel.py::test_burning_opens_a_solid_block_with_nobody_writing_that', #   9.9s
