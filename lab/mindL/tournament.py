@@ -82,10 +82,10 @@ import traceback
 from pathlib import Path
 
 from lab.world2.lifetime import NAMES, Cast, hook, night_seed, night_stats
-from lab.world2.partners import Hard, Kind
+from lab.world2.partners import Hard, Kind, Need
 from lab.world2.policy import Random, Rules, T_RULES, softmax, utility
-from lab.world2.world import (ALL3, DEED, DRIVES, FLAGS, HARMFUL, PORTION, HARSH_ACTS, KIND_ACTS, NATURE, PHYSICAL, RATE, START_ROOM,
-                              World)
+from lab.world2.world import (ALL3, ALL4, ALL5, ALL6, SIGNS_FLAGS, HARD_FLAGS, AIL_P, RAID_P, COOK_MAKES, DEED, DRIVES, FLAGS, HARMFUL, PORTION, HARSH_ACTS, KIND_ACTS, NATURE,
+                              PHYSICAL, RATE, ROOMS, START_ROOM, TEND_MIN, WORK_TIRE, World)
 
 OUT = Path(__file__).resolve().parents[1] / "results" / "mindL3"
 RUNS = Path(os.environ.get("MINDL3_RUNS", OUT / "0a_runs"))
@@ -101,7 +101,7 @@ R_PROVOKE = 0.02   # the provokers' chance per choice (about one provocation a n
 THREAT_SPAN = 60   # the extractor takes within this many turns of a threat
 PROVOKE = {"insult", "strike", "shove", "threaten"}
 HARSH_ALL = HARMFUL | HARSH_ACTS      # harsh acts for the logs: the world's harmful ones and refusing
-HELP_ACTS = frozenset({"give", "help up", "bandage", "defend", "serve"})     # kind acts that cost the giver more than a word
+HELP_ACTS = frozenset({"give", "help up", "bandage", "defend", "serve", "tend"})     # kind acts that cost the giver more than a word
 REPLY_KIND = frozenset(KIND_ACTS) - {"gossip"}                        # telling a deed on is not a favour to the hearer
 KIND, HARSH, HELP = "kind", "harsh", "help"
 REPLY_SPAN = 40    # an act of the receiver / a witness within this many turns is a reply
@@ -115,9 +115,28 @@ WORLDS = {
     "none": frozenset(FLAGS) - {"reprisal", "gossip", "watch", "check"},   # both off
     # the inn fix (2026-11-08): all2 plus meals, partner choice, gossip by salience and the calmer rules cast
     "fix": frozenset(ALL3),
+    "luck": frozenset(ALL4),                       # the fixed world plus uneven luck (2026-11-20); dial MINDL3_LUCK
+    "luckR0": frozenset(ALL4) - {"reprisal"},      # the same with reprisal off (rule 5)
+    # the three needs only another person can meet (2026-11-20): each alone on top of all4, and all three (all5)
+    "tend": frozenset(ALL4) | {"tend"},
+    "allies": frozenset(ALL4) | {"allies"},
+    "labour": frozenset(ALL4) | {"labour"},
+    "all5": frozenset(ALL5),
+    "all5R0": frozenset(ALL5) - {"reprisal"},
+    # the reciprocity-conditions answer (2026-11-20): lumpy perishable catches, a finite counter stock, partner choice on every help act
+    "all6": frozenset(ALL6),
+    "all6R0": frozenset(ALL6) - {"reprisal"},
+    "all6s": frozenset(ALL6) | set(SIGNS_FLAGS),      # all6 plus the sign dials (2026-11-21, SV2): needed by the P-need partner
+    "all6h": frozenset(ALL6) | set(SIGNS_FLAGS) | set(HARD_FLAGS),   # all6s plus the source-rate hardships (2026-11-21, owner decision (A)); ignores LUCK, ILL, RAID
+    "no_lumpy": frozenset(ALL6) - {"lumpy"},
+    "no_stock": frozenset(ALL6) - {"stock"},
+    "no_choosy": frozenset(ALL6) - {"choosy"},
     "fixnoR": frozenset(ALL3) - {"reprisal"},      # the fixed world with reprisal off (the extractor rule needs a weak-reprisal world)
 }
 SUPPLY = float(os.environ.get("MINDL3_SUPPLY", "1.0"))   # world flag `meals`: the food in the house, as a share of one night's need
+LUCK = float(os.environ.get("MINDL3_LUCK", "0.3"))       # world flag `luck`: the chance of an empty night for a person
+ILL = float(os.environ.get("MINDL3_ILL", AIL_P))         # world flag `tend`: the chance of an ailment for a person on a night
+RAID = float(os.environ.get("MINDL3_RAID", RAID_P))      # world flag `allies`: the chance of a raid on a night
 OLD_WORLDS = ("all2", "noR", "noG", "none")      # what step 0a ran; a default sweep runs these
 
 
@@ -231,7 +250,7 @@ class AlwaysHarsh(Archetype):
 
 class AlwaysGiving(Archetype):
     name = "always-giving"
-    allowed = frozenset({"give", "offer", "praise", "help up", "bandage", "accept", "serve"})   # serve: give of food, world `meals`
+    allowed = frozenset({"give", "offer", "praise", "help up", "bandage", "accept", "serve", "tend"})   # serve: give of food, world `meals`
 
     def candidates(self, w, p, opts, base, social):
         g = {}
@@ -243,11 +262,11 @@ class AlwaysGiving(Archetype):
 
 class TitForTat(Archetype):
     name = "tit-for-tat"
-    allowed = frozenset({"praise", "give", "help up", "bandage", "defend", "accept", "insult", "threaten", "shove",
+    allowed = frozenset({"praise", "give", "help up", "bandage", "defend", "accept", "tend", "insult", "threaten", "shove",
                          "strike", "steal", "accuse", "search", "refuse"})
     # what to answer with, first choice first (the same act when the menu has it)
     KIND_REPLY = {"give": ("give", "praise"), "serve": ("serve", "praise"), "praise": ("praise",), "help up": ("help up", "praise"),
-                  "bandage": ("bandage", "praise"), "defend": ("defend", "praise"), "accept": ("accept", "praise"),
+                  "bandage": ("bandage", "praise"), "tend": ("tend", "praise"), "defend": ("defend", "praise"), "accept": ("accept", "praise"),
                   "gossip": ("praise",)}
     HARSH_REPLY = {"insult": ("insult",), "threaten": ("threaten", "insult"), "shove": ("shove", "insult"),
                    "strike": ("strike", "shove", "insult"), "steal": ("steal", "threaten", "insult"),
@@ -450,24 +469,34 @@ class Oracle:
         gain = wc[0] * max(0.0, need["company"] - wc[1]) + sc[0] * max(0.0, need["standing"] - sc[1])
         g = {}
         for name, rule in self.known.items():
-            if rule != "kind" or name not in w.people:
+            if rule not in ("kind", "need") or name not in w.people:
                 continue
+            gain_n = gain
+            if rule == "need":
+                # P-need pays back with what eases the focal's most pressing need as it reads it (hunger, hurt, fear, else company),
+                # so a kind act toward it can win back those needs too: the gain counts the energy and safety error as well
+                we, se = NATURE[p.kind]["energy"], NATURE[p.kind]["safety"]
+                gain_n = gain + we[0] * max(0.0, need["energy"] - we[1]) + se[0] * max(0.0, need["safety"] - se[1])
             x = w.people[name]
             if not x.acts() or x.room != p.room:
                 # lonely and the kind partner is liked: go to where it is
-                if gain > 0 and p.aff.get(name, 0) > 0.1 and not x.dead:
+                if gain_n > 0 and p.aff.get(name, 0) > 0.1 and not x.dead:
                     room = p.seen_at.get(name)
                     idx = [i for i, o in enumerate(opts) if o["verb"] == "walk to" and room and o["target"] == room]
                     if idx:
                         g[("walk", name)] = idx
                 continue
-            if gain <= 0 and p.aff.get(name, 0) >= 0.5:
+            if gain_n <= 0 and p.aff.get(name, 0) >= 0.5:
                 continue
             ask = [i for i, o in enumerate(opts) if o["verb"] == "ask" and o["target"] == name]
             if ask:
                 g[("ask", name)] = ask
             give = [i for i, o in enumerate(opts) if o["verb"] == "give" and o["target"] == name
                     and o["f"].get("gain", 0.0) <= 0.1]                    # small things only (not the sword)
+            if rule == "need":              # a word is on P-need's trigger list too, and costs the giver no thing
+                praise = [i for i, o in enumerate(opts) if o["verb"] == "praise" and o["target"] == name]
+                if praise:
+                    g[("praise", name)] = praise
             if give:
                 low = min(opts[i]["f"].get("gain", 0.0) for i in give)
                 g[("give", name)] = [i for i in give if opts[i]["f"].get("gain", 0.0) == low]
@@ -499,6 +528,15 @@ class MWorld(World):
     def __init__(self, *a, rec=None, **k):
         super().__init__(*a, **k)
         self.rec = rec
+        self.init_portions = dict(self.portions)
+        if rec is not None:
+            rec.start_night(self)
+
+    def _feed(self, person, n, item):
+        got = super()._feed(person, n, item)
+        if self.rec is not None and got:
+            self.rec.fed(self, person, item, got)
+        return got
 
     def step(self, policy):
         super().step(policy)
@@ -542,6 +580,74 @@ class Recorder:
         self.split_sum, self.split_n = [0.0] * len(DRIVES), 0
         self.made, self.recv = {}, {}
         self.made_to, self.recv_from = {}, {}      # "verb>person" / "verb<person": the focal's person-directed acts
+        # the reciprocity-conditions logs (S7), all read-only: every person's error each night, the catches, who ate what, the
+        # counter's stock, how many providers a person had for a need, who tended and defended whom, what spoiled
+        self.all_err, self.catch_log, self.fed_log, self.house_log, self.lump_log, self.cur = [], [], [], [], [], None
+        self.prov = {}
+        self.care = {"by": {}, "to": {}}           # verb -> {person: count}, scored nights only
+        self.by_partner = {}                       # (2026-11-21) partner -> verb -> [done acts at the focal, sum b, sum bpot]
+
+    def start_night(self, w):
+        self.cur = {n: [0, 0, 0] for n in NAMES}                  # rations eaten from one's own catch / another's catch / the counter
+        self.catch_log.append(dict(w.catch))
+        self.house_log.append([w.portions.get(n, 0) for n in COOK_MAKES])
+
+    def fed(self, w, person, item, got):
+        if person.name not in self.cur:
+            return
+        k = 2 if item in COOK_MAKES else 0 if w.things[item]["owner"] == person.name else 1
+        self.cur[person.name][k] += got
+
+    @staticmethod
+    def _dist():
+        out = {}
+        for a in ROOMS:
+            seen, front = {a: 0}, [a]
+            while front:
+                nxt = []
+                for r in front:
+                    for q in ROOMS[r]:
+                        if q not in seen:
+                            seen[q] = seen[r] + 1
+                            nxt.append(q)
+                front = nxt
+            out[a] = seen
+        return out
+
+    def providers(self, w):
+        """Sampled every 10 turns, for every living cast member: how many other providers it could reach for hunger (the counter
+        counts as one, and the other people holding food), and for care and defence (other people awake; the counter sells neither),
+        with the walking cost in turns of the nearest and, for the counter, the price (a chore's tiredness per ration)."""
+        if not hasattr(self, "_d"):
+            self._d = self._dist()
+        for n in NAMES:
+            p = w.people[n]
+            if p.dead:
+                continue
+            here = self._d[p.room]
+            others = [w.people[m] for m in NAMES if m != n and not w.people[m].dead]
+            house = [x for x in COOK_MAKES if w.portions.get(x, 0) > 0 and w.things[x]["at"] in w.people]
+            counter = [here[w.people[w.things[x]["at"]].room] for x in house]
+            holders = {}
+            for it, k in w.portions.items():
+                th = w.things.get(it)
+                if k > 0 and th and it not in COOK_MAKES and th["at"] in NAMES and th["at"] != n and not w.people[th["at"]].dead:
+                    holders[th["at"]] = here[w.people[th["at"]].room]
+            care = [here[q.room] for q in others if not q.down]
+            samples = {"hunger": (p.hunger > 0.3, [("counter", counter), ("people", list(holders.values()))]),
+                       "tend": (p.ail > TEND_MIN, [("counter", []), ("people", care)]),
+                       "defend": (w.threat is not None and w.threat["room"] == p.room, [("counter", []), ("people", care)])}
+            for need, (active, kinds) in samples.items():
+                for tag, ds in (("all", True), ("active", active)):
+                    if not ds:
+                        continue
+                    for kind, dl in kinds:
+                        a = self.prov.setdefault(f"{need}|{kind}|{tag}", [0, 0, 0.0, 0])   # samples, providers, turns to the nearest, samples with any
+                        a[0] += 1
+                        a[1] += len(dl)
+                        if dl:
+                            a[2] += 3.0 * min(dl)
+                            a[3] += 1
 
     # -- inside a night
     def after_step(self, w):
@@ -549,6 +655,7 @@ class Recorder:
             return
         self.rooms.append(tuple(None if w.people[n].dead else w.people[n].room for n in NAMES))
         if w.t % 10 == 0:
+            self.providers(w)
             p = w.people[self.focal]
             need = w.drives(p)
             for k, d in enumerate(DRIVES):
@@ -571,7 +678,7 @@ class Recorder:
         ration = PORTION if d["verb"] == "serve" else 0.6       # a serve feeds the receiver at once (b sees it); the giver loses a ration
         return {"ea": w.drive_error(p), "eq": w.drive_error(q), "thirds": thirds,
                 "aff": [t.aff.get(p.name, 0.0) for t in thirds],
-                "pot_a": use_gain(p, item, ration), "pot_q": 0.0 if d["verb"] == "serve" else use_gain(q, item), "ctime": d["dur"] * self.drift(w, p),
+                "pot_a": use_gain(p, item, ration) * (1.0 - (w.spare(p, d["obj"]) if "lumpy" in w.flags else 0.0)), "pot_q": 0.0 if d["verb"] == "serve" else use_gain(q, item), "ctime": d["dur"] * self.drift(w, p),
                 "present": [t.name for t in thirds if t.room == p.room and t.acts() and not w.asleep(t)],
                 "hear": q.aff.get(d["f"]["deed"]["actor"], 0.0) if d["verb"] == "gossip" else None}
 
@@ -603,8 +710,22 @@ class Recorder:
     def end_night(self, w, n, err):
         p = w.people[self.focal]
         self.nights.append({"err": err, "dead": bool(p.dead), "down": bool(p.down), "hp": round(p.hp, 2)})
+        self.fed_log.append(self.cur)
+        lump = {}                                   # lumpy: what came in, what was eaten by its owner / another, what spoiled, per night
+        for it in w.perish:
+            if it in w.init_portions:
+                lump[it] = {"in": w.init_portions[it], "left": w.portions.get(it, 0)}
+        self.lump_log.append(lump)
+        self.house_log[-1].extend(w.portions.get(x, 0) for x in COOK_MAKES)      # start (2) and end (2) of the night
         if n < WIN0:
             return
+        for e in w.log:                             # who tended and defended whom, from the choices that finished
+            if e["done"] and e["action"] in ("tend", "defend", "fend off", "bandage", "help up", "serve", "give") and "options" in e:
+                v = self.care["by"].setdefault(e["action"], {})
+                v[e["actor"]] = v.get(e["actor"], 0) + 1
+                if e["target"] in NAMES:
+                    u = self.care["to"].setdefault(e["action"], {})
+                    u[e["target"]] = u.get(e["target"], 0) + 1
         by_pair = {}                              # (actor, target) -> [(turn, 'kind' | 'harsh')] of finished choices
         for e in w.log:
             if not e["done"]:
@@ -668,6 +789,11 @@ class Recorder:
         if not r["done"]:
             return
         a["n_done"] += 1
+        if role == "toF" and r["a"] in ("Fenn", "Oren"):
+            v = self.by_partner.setdefault(r["a"], {}).setdefault(r["verb"], [0, 0.0, 0.0])
+            v[0] += 1
+            v[1] += r["b"]
+            v[2] += r["bpot"]
         rem = max(0.0, (TURNS - r["t"]) / TURNS)
         for k in ("b", "c", "bpot", "cpot", "ctime", "daff"):
             a[k] += r[k]
@@ -704,9 +830,12 @@ def make_cast(spec):
     """-> (Cast, the focal's chooser). The default chooser (cast and bandit) is rules."""
     c, seed, focal = spec["chooser"], spec["seed"], spec["focal"]
     by = {}
+    if spec["kind"] == "E":                       # an exploiter among the cast: the extractor sits in one of the other four places
+        by = {NAMES[(seed + 2) % 5]: Extractor(seed=seed + 500)}
     if spec["kind"] == "O":                       # L2 life A: Fenn P-kind(0.9), Oren P-hard(0.9)
-        by = {"Fenn": Kind(0.9, seed * 100), "Oren": Hard(0.9, seed * 100 + 1)}
-    known = {"Fenn": "kind", "Oren": "hard"}
+        fenn = Need if spec.get("fenn") == "need" else Kind        # "fenn": "need" -> the P-need partner (2026-11-21, SV4)
+        by = {"Fenn": fenn(0.9, seed * 100), "Oren": Hard(0.9, seed * 100 + 1)}
+    known = {"Fenn": "need" if spec.get("fenn") == "need" else "kind", "Oren": "hard"}
     if c == "rules":
         pol = FastRules()
     elif c == "random":
@@ -736,7 +865,7 @@ def lifetime_measured(spec, nights=None):
     carry, start = None, None
     stats = []
     for n in range(nights):
-        w = MWorld(seed=night_seed(seed, n), bandit=None, turns=TURNS, flags=flags, carry=carry, night=n, rec=rec, supply=SUPPLY)
+        w = MWorld(seed=night_seed(seed, n), bandit=None, turns=TURNS, flags=flags, carry=carry, night=n, rec=rec, supply=SUPPLY, luck=LUCK, ill=ILL, raid=RAID)
         if start is None:
             start = {a: {b: v for b, v in w.people[a].aff.items() if b in NAMES} for a in NAMES}
         hook(cast, "night_start", w, n)
@@ -759,6 +888,7 @@ def lifetime_measured(spec, nights=None):
         hook(cast, "night_end", w, n)
         s = night_stats(w, err)
         stats.append(s)
+        rec.all_err.append(s["drive_error"])
         rec.end_night(w, n, s["drive_error"][focal])
         carry = w.carry_out(NAMES)
         for name, c in carry.items():
@@ -779,7 +909,8 @@ def run(spec):
            "down": [int(x["down"]) for x in rec.nights], "hp": [x["hp"] for x in rec.nights],
            "split": dict(zip(DRIVES, [round(v / max(1, rec.split_n), 4) for v in rec.split_sum])),
            "made": rec.made, "recv": rec.recv, "made_to": rec.made_to, "recv_from": rec.recv_from, "agg": rec.agg,
-           "gossip_effect": rec.gossip_effect, "cpu_s": round(cpu, 1)}
+           "gossip_effect": rec.gossip_effect, "err_all": rec.all_err, "catch": rec.catch_log, "fed": rec.fed_log,
+           "house": rec.house_log, "lump": rec.lump_log, "prov": rec.prov, "care": rec.care, "by_partner": rec.by_partner, "cpu_s": round(cpu, 1)}
     RUNS.mkdir(parents=True, exist_ok=True)
     tmp = out.with_suffix(".tmp")
     tmp.write_text(json.dumps(res))
@@ -797,9 +928,10 @@ def _work(spec):
 # ---------------------------------------------------------------- the runs
 A_CHOOSERS = SEVEN + ("rules",)
 O_CHOOSERS = ("rules", "oracle_avoid", "oracle_kind", "oracle_both")
+E_CHOOSERS = ("always-giving", "tit-for-tat")
 
 
-def specs(family, nights=100, worlds=None, choosers=None, seeds=SEEDS, rate=None):
+def specs(family, nights=100, worlds=None, choosers=None, seeds=SEEDS, rate=None, fenn=None):
     out = []
     if family == "A":
         for world in worlds or OLD_WORLDS:
@@ -810,14 +942,20 @@ def specs(family, nights=100, worlds=None, choosers=None, seeds=SEEDS, rate=None
         for world in worlds or ("all2",):
             for c in choosers or O_CHOOSERS:
                 for s in seeds:
-                    out.append(dict(kind="O", world=world, chooser=c, seed=s, nights=nights, focal=FOCALS3[s % 3]))
+                    out.append(dict(kind="O", world=world, chooser=c, seed=s, nights=nights, focal=FOCALS3[s % 3],
+                                    **({"fenn": fenn} if fenn else {})))
+    elif family == "E":                         # the always-giving / tit-for-tat pair with an extractor in the cast (rule 3, fixed)
+        for world in worlds or ("all5", "all6"):
+            for c in choosers or E_CHOOSERS:
+                for s in seeds:
+                    out.append(dict(kind="E", world=world, chooser=c, seed=s, nights=nights, focal=NAMES[s % 5]))
     else:
         raise ValueError(family)
     for x in out:
         if rate is not None:                       # a sensitivity run: the spontaneous rate of the stance
             x["rate"] = rate
         x["id"] = f"{x['kind']}_{x['world']}_{x['chooser']}_seed{x['seed']}_n{x['nights']}" + \
-                  (f"_r{rate}" if rate is not None else "")
+                  (f"_r{rate}" if rate is not None else "") + ("_need" if x.get("fenn") == "need" else "")
     return out
 
 
@@ -840,17 +978,18 @@ def sweep(todo, workers):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("what", choices=["run", "one"])
-    ap.add_argument("family", choices=["A", "O"])
+    ap.add_argument("family", choices=["A", "O", "E"])
     ap.add_argument("--nights", type=int, default=100)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--worlds", default="")
     ap.add_argument("--choosers", default="")
     ap.add_argument("--seeds", default="")
+    ap.add_argument("--fenn", default=None, choices=["need"], help="family O: Fenn is P-need (needs a world with signs, e.g. all6s)")
     ap.add_argument("--rate", type=float, default=None, help="sensitivity: the archetypes' spontaneous rate")
     a = ap.parse_args()
     todo = specs(a.family, a.nights, [x for x in a.worlds.split(",") if x] or None,
                  tuple(x for x in a.choosers.split(",") if x) or None,
-                 tuple(int(x) for x in a.seeds.split(",") if x) or SEEDS, a.rate)
+                 tuple(int(x) for x in a.seeds.split(",") if x) or SEEDS, a.rate, a.fenn)
     if a.what == "one":
         print(run(todo[0]))
     else:

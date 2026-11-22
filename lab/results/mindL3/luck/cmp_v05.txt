@@ -1,0 +1,37 @@
+LUCK WORLD AGAINST all3 ('fix'), paired by seed (same focal, same night seeds)
+error = focal drive error nights 20-99 (lower is better); diff = luck minus all3 [95% CI over seeds]
+
+chooser           all3    luck  diff
+always-giving    0.298   0.309  +0.011 [-0.015, +0.037]
+always-harsh     1.310   1.201  -0.109 [-0.163, -0.054]
+extractor        1.229   1.140  -0.088 [-0.140, -0.036]
+hermit           0.475   0.368  -0.107 [-0.188, -0.026]
+hoarder          0.384   0.399  +0.015 [-0.051, +0.080]
+protector        0.533   0.447  -0.086 [-0.204, +0.032]
+rules            0.491   0.433  -0.059 [-0.218, +0.102]
+tit-for-tat      0.433   0.426  -0.007 [-0.112, +0.099]
+
+WHAT THE FOCAL DOES AND RECEIVES, per night, mean over seeds (harsh = world's harmful acts and refusing; kind = praise, give, help up, bandage, defend, accept, serve)
+chooser        world made kind made harsh  got kind  got harsh  served   ate strikes got
+always-giving  all3       15.7        0.0      21.6        0.4    3.26  0.66        0.00
+always-giving  luck       15.3        0.0      20.7        0.3    2.77  0.55        0.00
+always-harsh   all3        0.0       10.4       0.2        7.8    0.00  1.12        5.74
+always-harsh   luck        0.0       10.2       0.2        7.7    0.00  2.45        5.74
+extractor      all3        0.0        9.8       0.1       12.1    0.00  1.22        4.81
+extractor      luck        0.0        9.7       0.1       12.2    0.00  2.59        4.77
+hermit         all3        0.0        0.0       3.7        0.4    0.88  1.16        0.00
+hermit         luck        0.0        0.0       3.7        0.4    0.65  1.83        0.00
+hoarder        all3        0.0        2.0       5.3        0.7    0.84  1.20        0.00
+hoarder        luck        0.0        1.0       2.7        0.8    0.29  2.09        0.00
+protector      all3        2.4        2.0       4.6        2.2    0.90  1.08        1.14
+protector      luck        2.1        1.7       5.2        2.0    0.89  1.66        0.95
+rules          all3        4.6        5.9       5.1        6.0    0.59  1.23        1.37
+rules          luck        7.5        5.7       7.4        6.1    0.77  1.29        1.37
+tit-for-tat    all3       21.3        1.9      17.2        2.2    2.80  0.80        0.84
+tit-for-tat    luck       20.0        2.5      16.7        2.9    3.11  0.81        0.93
+
+ORACLE FAMILY (L2 setting): rules and oracle_both error, luck vs all3
+  rules          all3 0.124  luck 0.130  diff +0.006 [-0.003, +0.015]
+  oracle_avoid   all3 0.119  luck 0.131  diff +0.012 [+0.001, +0.023]
+  oracle_kind    all3 0.123  luck 0.126  diff +0.003 [-0.009, +0.014]
+  oracle_both    all3 0.127  luck 0.126  diff -0.001 [-0.011, +0.009]

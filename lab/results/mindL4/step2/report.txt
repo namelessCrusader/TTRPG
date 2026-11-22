@@ -1,0 +1,74 @@
+STEP 2 OF SV5: ACT MEANINGS LEARNED FROM EFFECTS   2026-11-21
+
+VERDICT
+The mechanism works on its own controls (9 of 9 mechanism tests pass). In the all6s inn it does not yet change behaviour the right way: L1 and L2 fail for
+the effects arm, as they do for the labels arm. The world pays little (bound 0.065), so this is read as information, not as a failure of step 2.
+The effects arm DOES learn the right meaning: Fenn's acts are worth +0.014 to +0.019 to it (ask, give, insult), Oren's -0.004 to -0.015. These are small
+numbers next to the other terms of the choice, so they do not move behaviour.
+
+WHAT WAS BUILT (lab/ only, no src/, no git)
+Mind option "effects" (default False; fx_prior, fx_log are its settings). lab/mindL/effects.py (new): the interface ActMeanings and the default rule DeltaMeanings.
+lab/mindL/mind.py: with the option on, the partner term is sum over their likely answers of (chance * drop of my weighted drive error from the answer's
+effect, in my current state). KIND and HARM lists are not read; the got_kind and got_harm cues are not made; b_trust must be 0 (asserted). Any act at a
+person counts (no SOCIAL list). The labelled mind is untouched and is the control arm.
+lab/mindL/tests_L.py: chooser mind2e (FIXES with b_trust 0 and effects), L12 option --fenn need, flags all6s. lab/mindL/test_effects.py (new, 9 tests), step2_report.py.
+
+THE INTERFACE
+predict(partner, my_act, state) -> {their act: chance within 30 turns}.  effect(partner, their_act, state) -> expected change of my drive needs, clipped so
+a need stays in 0..1.  update(obs), obs is Did, Got, Tick or Flush.  set_prior(act, delta, n0, p, partner).
+Default rule (DeltaMeanings): effect = delta rule on the MEASURED change of my needs over a credit window of 12 turns after the act, minus a learned drift
+(what the needs do when nothing is done to me), overlapping acts share the credit as in Rescorla-Wagner, step 1/(n+1) never below 0.02. Two layers, per
+(partner, act) and pooled over partners; a new pair starts at the pooled value. Answers: logistic per (partner, my act, their act), blended with the pooled
+one; an answer is credited to my latest act at that partner (crediting every open window made a wave look as likely to be served as an ask: found by the
+placebo test). A partner that never answers has no entries.
+Local-rule plug-in points are in the module docstring: the credit entry is the eligibility trace of a three-factor rule; the answer layer would become a
+delta-rule memory or Hebbian outer product; predictive coding would merge the two layers.
+Cultural prior hook: set_prior hands in an initial effect (and chance) with pseudo-count n0; its weight after n observations is n0/(n0+n).
+
+MECHANISM TESTS (the gate; lab/results/mindL4/step2/mechanism_tests.json)
+Test                         Result
+accuracy, synthetic stream   error of learned effect against the known one, 8 seeds: Fenn serve +0.001 [-0.001,+0.003] (true -0.30); Oren serve +0.000
+                             [-0.002,+0.002]; Oren poke -0.001 [-0.003,+0.001]; Fenn nod (none) +0.000 [-0.003,+0.003]. PASS
+accuracy, logged lives       4 seeds x 40 nights in all6s. Learned against the batch least-squares effect of the logged windows (cells of 15+ entries,
+                             27 cells): slope +0.95 [+0.65,+1.24], mean abs error 0.019 [0.008,0.029]. Against the plain mean of windows with no other
+                             act (19 cells, few) slope +0.70 [+0.25,+1.14]. PASS (wide CI, only 4 seeds)
+state dependence             same act, same model: food worth 0.33 hungry, 0.00 fed; coin worth 0.53 poor, 0.00 rich. PASS
+shuffled answers             contingency (spread of worth over my acts), 6 seeds: real +0.042 [+0.036,+0.048], shuffled +0.020 [+0.011,+0.029], real minus
+                             shuffled +0.022 [+0.012,+0.033]. PASS. Caution: the plain difference between the two partners does NOT fall (real +0.076,
+                             shuffled +0.066) because Fenn and Oren really differ in what they do to me whatever I do; so the control is contingency, and
+                             the shuffled spread is lowered, not zero.
+P-deaf                       no effect entry, no expected answer, worth 0, for a deaf Fenn and Oren. PASS
+placebo                      act with no effect: worth +0.001 [-0.002,+0.004]; an act answered by food: +0.237 [+0.221,+0.252]. PASS
+cultural prior               prior (serve eases hunger by 0.5): partner term at Fenn 0 -> 0.5, probability on acts at Fenn +0.063; after 30 contrary
+                             experiences 6 percent of the prior is left in the effect and the worth fell 0.25 -> 0.018. PASS
+flag off                     explicit off equals default (drive error, weight hash, decisions, valences); old suites: test_world 73, test_mind 30
+                             (golden traces check included), test_tournament 17, all pass. PASS
+interface swap               a null model plugged in runs a lifetime. PASS
+
+L1 AND L2, REPORTED NOT GATED (all6s, Fenn P-need(0.9), Oren P-hard(0.9), 300 nights, partners deaf from night 200, seeds 1-10, 95 percent t intervals,
+paired by seed; 90 lifetimes; lab/results/mindL4/step2/results_step2.json, tables.txt)
+                     effects arm             labels control          rules null
+L1 late1 (160-180)   -0.136 [-0.424,+0.152]  +0.235 [+0.013,+0.457]  +0.328 [+0.209,+0.447]
+L1 late2 (180-200)   +0.230 [-0.197,+0.656]  +0.294 [+0.059,+0.528]  +0.332 [+0.216,+0.447]
+L1 shared_early      -0.379 [-0.602,-0.156]  +0.174 [-0.024,+0.372]  +0.344 [+0.192,+0.495]
+L2 effect_kind       -0.021 [-0.254,+0.212]  +0.137 [-0.075,+0.348]  +0.168 [+0.112,+0.224]
+L2 effect_hard       +0.036 [-0.097,+0.170]  -0.103 [-0.278,+0.071]  -0.212 [-0.379,-0.045]
+L2 contrast          -0.058 [-0.377,+0.261]  +0.240 [+0.093,+0.388]  +0.380 [+0.225,+0.535]
+Verdict (plan rule): both fail in both arms (the mind must show it in all blocks). Effects minus labels, paired: L1 late1 -0.371 [-0.744,+0.003], shared_early
+-0.553 [-0.938,-0.168], L2 contrast -0.298 [-0.710,+0.114]. Drive error, last 100 nights (lower is better): rules 0.153-0.154; labels 0.226-0.293; effects
+0.239-0.278; effects minus labels, A -0.054 [-0.130,+0.021], B +0.052 [-0.008,+0.112], deaf +0.029 [-0.070,+0.128].
+What the effects arm believes (night 199, middling state): worth of give at the P-need partner +0.018 [+0.011,+0.024], at the P-hard partner -0.009
+[-0.014,-0.005]; insult +0.019 against -0.015. Right order, tiny size.
+Reading: the labels arm in this world looks better on L1/L2 than in the old all6 (it is a different world and partner, and the rules null is stronger than both).
+The effects arm is worse than labels on L1 shared_early (it keeps treating the formerly kind partner differently less, or the other way; not separated here).
+Likely reasons, not tested: the worth of an answer is about 0.01-0.02 against the actor, habit and valence terms, and b_partner (2.0) was not retuned;
+Fenn pays mostly praise, which moves no need. Do not conclude from L1/L2 here.
+
+WHAT NEEDS MORE WORK
+1. Own acts in the window (eating after a gift) confound the measured effect; a residual against the world model's own-act prediction would remove them.
+2. A gift of food shows its effect only after eating; 12 turns catches the next meal, not tomorrow's. A longer window or a decaying trace.
+3. Overlap sharing is an online approximation; the logged-life calibration CI is wide (4 seeds).
+4. One drift vector for all states; effects are means (a partner who helps and harms with one act is one number).
+5. The drive vector holds injury only through safety, and no concern for another person: step 3.
+6. The weight b_partner of the new term was not tuned; the hard inn (step A) is needed before L1/L2 mean anything.
+7. Speed: an effects lifetime costs about 230 s of 300 nights, against about 150 s for the labels arm (before cap).

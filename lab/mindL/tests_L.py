@@ -81,7 +81,7 @@ DESIGNER = {**{v: 1.0 for v in KINDA}, **{v: -1.0 for v in HARSHA},
 
 
 # ------------------------------------------------------------------ the runs
-def specs(family, nights=None, choosers=CHOOSERS, flags="all"):
+def specs(family, nights=None, choosers=CHOOSERS, flags="all", fenn="kind"):
     out = []
     if family == "L04":
         n = nights or N04
@@ -96,7 +96,7 @@ def specs(family, nights=None, choosers=CHOOSERS, flags="all"):
     elif family == "L12":
         n = nights or N12
         cut = (2 * n) // 3
-        lives = {"A": ("kind", "hard"), "B": ("hard", "kind")}
+        lives = {"A": (fenn, "hard"), "B": ("hard", fenn)}      # fenn="need": the P-need partner (world with signs)
         for c in choosers:
             for s in SEEDS:
                 for v, (f, o) in lives.items():
@@ -126,6 +126,8 @@ def specs(family, nights=None, choosers=CHOOSERS, flags="all"):
         x["id"] = f"{x['family']}_{x['variant']}_{x['chooser']}_seed{x['seed']}_n{x['nights']}"
         if flags != "all":              # the 2026-10-29 fixes: a world with reprisal and wear ("all2")
             x["flags"], x["id"] = flags, x["id"] + "_" + flags
+        if fenn != "kind" and family == "L12":
+            x["fenn"], x["id"] = fenn, x["id"] + "_" + fenn
     return out
 
 
@@ -135,9 +137,9 @@ def NAMES():
 
 
 def make_one(spec, seed):
-    from lab.world2.partners import Deaf, Hard, Kind
+    from lab.world2.partners import Deaf, Hard, Kind, Need
     base, _, tag = spec.partition("~")
-    p = {"kind": lambda: Kind(P, seed), "hard": lambda: Hard(P, seed), "deaf": lambda: Deaf(seed)}[base]()
+    p = {"kind": lambda: Kind(P, seed), "need": lambda: Need(P, seed), "hard": lambda: Hard(P, seed), "deaf": lambda: Deaf(seed)}[base]()
     if tag == "shuf":
         rng = random.Random(seed + 7777)
         inner = p.hear
@@ -184,6 +186,24 @@ class Designer:
                 self.pts[e["actor"]] = self.pts.get(e["actor"], 0.0) + DESIGNER.get(e["action"], 0.0)
         self.ptr = len(w.log)
         return -self.scale * self.pts.get(p.name, 0.0)
+
+
+class PaidError:
+    """Step 3's PAID WORLD (a control for the concerns, not the inn): the drive error minus `pay` for every act of `payer` done at me
+    that I perceived, so each answer from the payer is worth `pay` as a drop of error, on top of what it does to my needs. It is what a
+    world in which kindness meets real needs would give; the real all6s inn pays about 0.001 an answer (step 1)."""
+
+    def __init__(self, payer, pay):
+        self.payer, self.pay, self.w, self.ptr, self.n = payer, pay, None, 0, {}
+
+    def __call__(self, w, p):
+        if w is not self.w:
+            self.w, self.ptr = w, 0
+        for e in w.log[self.ptr:]:
+            if e["done"] and e["actor"] == self.payer and e["target"] == p.name and e["id"] in p.perceived:
+                self.n[p.name] = self.n.get(p.name, 0) + 1
+        self.ptr = len(w.log)
+        return w.drive_error(p) - self.pay * self.n.get(p.name, 0)
 
 
 def make_recorder(default, by, focal):
@@ -249,6 +269,16 @@ def night_row(w, n, rec, focal, agent):
             mi[x] = [round(float(pk), 3), round(float(np.mean(ph)) if ph else 0.5, 3),
                      round(float(agent.val.value(x)), 4)]
         row["mind"] = mi
+        if getattr(agent, "fx", None) is not None:       # what the effects model expects, per partner (a middling state)
+            from lab.mindL.effects import State, error_drop
+            mid = np.full(len(DRIVES), 0.5)
+            row["fx"] = {x: {a: round(sum(pa * error_drop(agent.kind, mid, agent.fx.effect(x, ans, State(None, mid)))
+                                          for ans, pa in agent.fx.predict(x, a, State(x0, mid)).items()), 4)
+                             for a in ("give", "praise", "insult", "ask")} for x in others}
+        row["vkh"] = [round(float(agent.val.value("got_kind")), 5), round(float(agent.val.value("got_harm")), 5)]
+    if agent is not None and getattr(agent, "cn", None) is not None:      # the acquired concerns (step 3): the weights, people only, at the night's end
+        row["cn"] = {k: round(v, 4) for k, v in agent.cn.table().items() if not k.startswith("thing:")}
+        row["cn_things"] = round(sum(v for k, v in agent.cn.table().items() if k.startswith("thing:")), 4)
     return row
 
 
@@ -295,8 +325,15 @@ def run(spec):
         return spec["id"], "kept"
     t0 = time.perf_counter()
     c, seed, focal, nights = spec["chooser"], spec["seed"], spec["focal"], spec["nights"]
+    flags = spec.get("flags", "all")
+    if flags == "all6s":             # the all6 inn with the sign dials (step 1 of SV5): the world's own string forms do not name it
+        from lab.world2.world import ALL6, SIGNS_FLAGS
+        flags = tuple(ALL6) + tuple(SIGNS_FLAGS)
+    elif flags == "all6h":           # all6s plus the source-rate hardships (lane A, owner decision (A))
+        from lab.world2.world import ALL6, HARD_FLAGS, SIGNS_FLAGS
+        flags = tuple(ALL6) + tuple(SIGNS_FLAGS) + tuple(HARD_FLAGS)
     partners = {name: Seq(ph, seed * 100 + i) for i, (name, ph) in enumerate(sorted(spec["partners"].items()))}
-    designer = Designer() if spec["reward"] == "designer" else None
+    designer = Designer() if spec["reward"] == "designer" else (PaidError(spec["payer"], spec["pay"]) if spec["reward"] == "paid" else None)
     rows, box, pol = [], {}, None
 
     def on_night(w, n):
@@ -309,7 +346,7 @@ def run(spec):
 
     info = {}
     if c == "ppo":
-        stats, info = run_ppo(focal, nights, seed, spec.get("flags", "all"), on_night=on_night, threads=1, cast=cast, err=designer,
+        stats, info = run_ppo(focal, nights, seed, flags, on_night=on_night, threads=1, cast=cast, err=designer,
                               fade=spec["fade"], **TUNED.get("ppo", {}))
         info = {k: v for k, v in info.items() if k in ("decisions", "truncated_menus")}
     else:
@@ -318,6 +355,15 @@ def run(spec):
         elif c == "mind2":              # the fixes (mind.FIXES); meant for flags "all2"
             from lab.mindL.mind import FIXES
             pol = make_mind(seed, **{**FIXES, **TUNED.get("mind2", {})})
+        elif c == "mind2e":             # mind2 with ACT MEANINGS FROM EFFECTS instead of the KIND/HARM labels (SV3, step 2)
+            from lab.mindL.mind import FIXES
+            pol = make_mind(seed, **{**FIXES, **TUNED.get("mind2", {}), "b_trust": 0.0, "effects": True})
+        elif c == "mindx":              # step 3 (2026-11-21): the mind with settings given in the spec (diagnoses, concerns arm)
+            from lab.mindL.mind import FIXES
+            pol = make_mind(spec.get("mind_seed", seed), **{**FIXES, "b_trust": 0.0, **spec["cfg"]})     # mind_seed: the mind's own draws, the world keeps `seed`
+        elif c == "mind2t":             # mind2 plus the traces option (mind.DEFAULT traces, lam)
+            from lab.mindL.mind import FIXES
+            pol = make_mind(seed, **{**FIXES, **TUNED.get("mind2", {}), "traces": True})
         elif c == "bandit":
             pol = make_bandit(seed, **TUNED.get("bandit", {}))
         else:
@@ -330,7 +376,7 @@ def run(spec):
                 a.err_fn = designer
                 return a
             pol.make = mk
-        _, stats = lifetime(cast(Rules(), {focal: pol}), nights, seed, flags=spec.get("flags", "all"), on_night=on_night,
+        _, stats = lifetime(cast(Rules(), {focal: pol}), nights, seed, flags=flags, on_night=on_night,
                             fade=spec["fade"])
         a = getattr(pol, "agents", {}).get(focal)
         if a is not None:
@@ -360,13 +406,15 @@ def _work(spec, deadline=None):
 
 
 def sweep(family, workers, nights=None, only=None, ppo_workers=2, choosers=CHOOSERS, flags="all", seeds=None,
-          stop_after=None):
+          stop_after=None, variants=None, fenn="kind"):
     """PPO lifetimes (torch, about 700 MB each) run in their own pool of
     `ppo_workers`; the rest in a pool of `workers` - ppo_workers."""
-    todo = [s for s in specs(family, nights, choosers, flags) if (not seeds or s["seed"] in seeds) and not (RUNS / f"{s['id']}.json").exists()]
+    todo = [s for s in specs(family, nights, choosers, flags, fenn) if (not seeds or s["seed"] in seeds) and not (RUNS / f"{s['id']}.json").exists()]
     if only:
         todo = [s for s in todo if s["chooser"] in only]
-    cost = {"mind2": 4, "mind": 4, "bandit": 3, "ppo": 3, "rules": 1, "random": 1}
+    if variants:
+        todo = [s for s in todo if s["variant"] in variants]
+    cost = {"mindx": 4, "mind2e": 4, "mind2": 4, "mind2t": 4, "mind": 4, "bandit": 3, "ppo": 3, "rules": 1, "random": 1}
     todo.sort(key=lambda s: -cost[s["chooser"]] * s["nights"])
     ppo = [s for s in todo if s["chooser"] == "ppo"]
     rest = [s for s in todo if s["chooser"] != "ppo"]
@@ -399,14 +447,16 @@ def main():
     ap.add_argument("--choosers", default="", help="comma list (default: the five); mind2 = the fixes")
     ap.add_argument("--flags", default="all", help="the world: all (first round) or all2 (reprisal and wear too)")
     ap.add_argument("--seeds", default="", help="comma list (default 1-10)")
+    ap.add_argument("--variants", default="", help="comma list of variants to run (e.g. A,B,deaf); default all")
+    ap.add_argument("--fenn", default="kind", choices=["kind", "need"], help="family L12: Fenn's rule in the lives (need: P-need, needs signs, e.g. --flags all6s)")
     ap.add_argument("--stop-after", type=float, default=None, help="minutes: start no new lifetime after this")
     a = ap.parse_args()
     if a.what == "run":
         sweep(a.family, a.workers, a.nights, [x for x in a.only.split(",") if x], a.ppo_workers,
               tuple(x for x in a.choosers.split(",") if x) or CHOOSERS, a.flags,
-              {int(x) for x in a.seeds.split(",") if x}, a.stop_after)
+              {int(x) for x in a.seeds.split(",") if x}, a.stop_after, {x for x in a.variants.split(",") if x} or None, a.fenn)
     elif a.what == "one":
-        s = next(s for s in specs(a.family, a.nights, tuple(x for x in a.choosers.split(",") if x) or CHOOSERS, a.flags)
+        s = next(s for s in specs(a.family, a.nights, tuple(x for x in a.choosers.split(",") if x) or CHOOSERS, a.flags, a.fenn)
                  if s["id"] == a.id)
         print(run(s))
     else:

@@ -1,0 +1,58 @@
+== fxc (30 lives)
+  L1 late1         +0.030 [-0.210, +0.271]
+  L1 late2         -0.098 [-0.353, +0.157]
+  L1 shared_early  -0.245 [-0.617, +0.126]
+  L2 effect_kind   +0.089 [-0.075, +0.253]
+  L2 effect_hard   +0.143 [-0.049, +0.336]
+  L2 contrast      -0.055 [-0.312, +0.203]
+== fxfix (30 lives)
+  L1 late1         -0.002 [-0.290, +0.285]
+  L1 late2         -0.178 [-0.463, +0.106]
+  L1 shared_early  -0.264 [-0.541, +0.013]
+  L2 effect_kind   -0.091 [-0.289, +0.106]
+  L2 effect_hard   +0.026 [-0.072, +0.125]
+  L2 contrast      -0.118 [-0.384, +0.148]
+== labels (30 lives)
+  L1 late1         +0.357 [-0.002, +0.715]
+  L1 late2         +0.255 [-0.050, +0.560]
+  L1 shared_early  -0.049 [-0.404, +0.307]
+  L2 effect_kind   +0.276 [-0.027, +0.578]
+  L2 effect_hard   -0.062 [-0.147, +0.023]
+  L2 contrast      +0.338 [+0.036, +0.639]
+== rules (30 lives)
+  L1 late1         +0.341 [+0.219, +0.464]
+  L1 late2         +0.396 [+0.242, +0.550]
+  L1 shared_early  +0.361 [+0.215, +0.508]
+  L2 effect_kind   +0.272 [+0.111, +0.432]
+  L2 effect_hard   -0.172 [-0.411, +0.068]
+  L2 contrast      +0.443 [+0.195, +0.692]
+-- fxc minus fxfix (paired by seed)
+  L1 late1         +0.033 [-0.387, +0.453]
+  L1 late2         +0.080 [-0.241, +0.401]
+  L1 shared_early  +0.019 [-0.456, +0.493]
+  L2 contrast   +0.063 [-0.279, +0.405]
+-- fxc minus labels (paired by seed)
+  L1 late1         -0.326 [-0.861, +0.208]
+  L1 late2         -0.353 [-0.747, +0.041]
+  L1 shared_early  -0.197 [-0.766, +0.372]
+  L2 contrast   -0.393 [-0.841, +0.055]
+-- fxc minus rules (paired by seed)
+  L1 late1         -0.310 [-0.583, -0.038]
+  L1 late2         -0.494 [-0.824, -0.165]
+  L1 shared_early  -0.607 [-1.028, -0.186]
+  L2 contrast   -0.498 [-0.871, -0.125]
+-- fxfix minus labels (paired by seed)
+  L1 late1         -0.359 [-0.784, +0.066]
+  L1 late2         -0.433 [-0.680, -0.187]
+  L1 shared_early  -0.216 [-0.631, +0.200]
+  L2 contrast   -0.456 [-0.786, -0.126]
+-- fxfix minus rules (paired by seed)
+  L1 late1         -0.343 [-0.682, -0.005]
+  L1 late2         -0.574 [-0.847, -0.302]
+  L1 shared_early  -0.626 [-0.942, -0.309]
+  L2 contrast   -0.561 [-0.900, -0.222]
+-- labels minus rules (paired by seed)
+  L1 late1         +0.015 [-0.331, +0.362]
+  L1 late2         -0.141 [-0.442, +0.159]
+  L1 shared_early  -0.410 [-0.866, +0.046]
+  L2 contrast   -0.105 [-0.475, +0.264]

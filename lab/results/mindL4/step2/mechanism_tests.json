@@ -1,0 +1,118 @@
+{
+ "accuracy_synthetic": {
+  "Fenn:serve": {
+   "true": -0.3,
+   "error": [
+    0.0012833102649427303,
+    -0.0007483841292246557,
+    0.003315004659110116
+   ]
+  },
+  "Oren:serve": {
+   "true": -0.1,
+   "error": [
+    0.00017507888024829478,
+    -0.0017313498947642645,
+    0.002081507655260854
+   ]
+  },
+  "Oren:poke": {
+   "true": 0.25,
+   "error": [
+    -0.000772519219076475,
+    -0.002782593767956893,
+    0.0012375553298039428
+   ]
+  },
+  "Fenn:nod": {
+   "true": 0.0,
+   "error": [
+    0.0003876324615049722,
+    -0.002637025140073257,
+    0.003412290063083202
+   ]
+  }
+ },
+ "accuracy_logged": {
+  "slope_learned_on_batch_measured": [
+   0.947733432382491,
+   0.6537411024229912,
+   1.2417257623419906
+  ],
+  "mean_abs_error": [
+   0.018580840138061328,
+   0.007879846512440508,
+   0.029281833763682145
+  ],
+  "cells": 27,
+  "seeds": 4,
+  "slope_on_isolated_mean": [
+   0.6950057025820717,
+   0.24750359402410854,
+   1.1425078111400349
+  ],
+  "isolated_cells": 19
+ },
+ "state_dependence": {
+  "food: hungry": 0.33088532651997704,
+  "food: fed": 0.0,
+  "coin: poor": 0.5287294625446699,
+  "coin: rich": 0.0
+ },
+ "shuffled_answers": {
+  "contingency (spread of worth over my acts), real": [
+   0.04199169339177473,
+   0.035894854024760836,
+   0.04808853275878862
+  ],
+  "shuffled": [
+   0.01980528264491863,
+   0.010699474251082032,
+   0.028911091038755228
+  ],
+  "real minus shuffled": [
+   0.022186410746856098,
+   0.011862420464117236,
+   0.03251040102959496
+  ],
+  "(info) partner difference, real": [
+   0.07567159902735276,
+   0.05327308636777972,
+   0.09807011168692581
+  ],
+  "(info) partner difference, shuffled": [
+   0.06588809140231276,
+   0.059433340140103146,
+   0.07234284266452239
+  ]
+ },
+ "deaf": {
+  "effect entries for Fenn/Oren": 0,
+  "answers expected": 0,
+  "worth of an act at them": 0.0
+ },
+ "placebo": {
+  "worth of wave (no effect)": [
+   0.0007859780741962598,
+   -0.00237590572350356,
+   0.003947861871896079
+  ],
+  "worth of ask (food)": [
+   0.23663231585496386,
+   0.22097920436120166,
+   0.25228542734872605
+  ]
+ },
+ "prior": {
+  "partner term at Fenn, no prior": 0.0,
+  "with prior": 0.5,
+  "chance on acts at Fenn, shift": 0.06325474410580795,
+  "worth before experience": 0.25,
+  "after 30 contrary experiences": 0.01784392410980711,
+  "share of the prior left in the effect": 0.06250000000000003
+ },
+ "flag_off": {
+  "same drive error, weights hash, decisions and valences as the explicit-off mind": true,
+  "plus the golden check in test_mind": "run separately"
+ }
+}

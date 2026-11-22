@@ -1,0 +1,148 @@
+{
+ "world": "all5",
+ "seeds": [
+  10,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+ ],
+ "mean": {
+  "acts_per_night": 12.28125,
+  "kind_acts_per_night": 4.53,
+  "b_minus_c_generous": 0.029116532138622957,
+  "b_minus_c_timed": 0.01531777145396675,
+  "harm_from_oren_per_night": 0.00125,
+  "harm_per_act": 0.014522962732697717,
+  "bound_generous": 0.13044905843366256,
+  "bound_timed": 0.06824372223506694,
+  "bound_all_acts_generous": 0.3552964643393005
+ },
+ "rows": [
+  {
+   "seed": 10,
+   "acts_per_night": 12.725,
+   "kind_acts_per_night": 4.7625,
+   "b_minus_c_generous": 0.030916074014282396,
+   "b_minus_c_timed": 0.019262167070414674,
+   "harm_from_oren_per_night": 0.0,
+   "harm_per_act": 0.0,
+   "bound_generous": 0.14723780249301993,
+   "bound_timed": 0.09173607067284989,
+   "bound_all_acts_generous": 0.39340704183174346
+  },
+  {
+   "seed": 1,
+   "acts_per_night": 10.05,
+   "kind_acts_per_night": 3.5375,
+   "b_minus_c_generous": 0.035958665648945336,
+   "b_minus_c_timed": 0.020289705227385244,
+   "harm_from_oren_per_night": 0.0,
+   "harm_per_act": 0.06,
+   "bound_generous": 0.12720377973314412,
+   "bound_timed": 0.07177483224187531,
+   "bound_all_acts_generous": 0.36138458977190063
+  },
+  {
+   "seed": 2,
+   "acts_per_night": 13.35,
+   "kind_acts_per_night": 5.4125,
+   "b_minus_c_generous": 0.024315900405976414,
+   "b_minus_c_timed": 0.01172776929259625,
+   "harm_from_oren_per_night": 0.0,
+   "harm_per_act": 0.0,
+   "bound_generous": 0.13160981094734733,
+   "bound_timed": 0.0634765512961772,
+   "bound_all_acts_generous": 0.3246172704197851
+  },
+  {
+   "seed": 3,
+   "acts_per_night": 12.6625,
+   "kind_acts_per_night": 4.2875,
+   "b_minus_c_generous": 0.02744725747696421,
+   "b_minus_c_timed": 0.013650790605861714,
+   "harm_from_oren_per_night": 0.0,
+   "harm_per_act": 0.0,
+   "bound_generous": 0.11768011643248404,
+   "bound_timed": 0.058527764722632096,
+   "bound_all_acts_generous": 0.3475508978020593
+  },
+  {
+   "seed": 4,
+   "acts_per_night": 12.125,
+   "kind_acts_per_night": 4.2375,
+   "b_minus_c_generous": 0.028399852477656258,
+   "b_minus_c_timed": 0.016571439982240477,
+   "harm_from_oren_per_night": 0.0,
+   "harm_per_act": 0.0,
+   "bound_generous": 0.12034437487406839,
+   "bound_timed": 0.07022147692474402,
+   "bound_all_acts_generous": 0.3443482112915821
+  },
+  {
+   "seed": 5,
+   "acts_per_night": 13.9,
+   "kind_acts_per_night": 6.1125,
+   "b_minus_c_generous": 0.02703175667561441,
+   "b_minus_c_timed": 0.01411863891954811,
+   "harm_from_oren_per_night": 0.0,
+   "harm_per_act": 0.0,
+   "bound_generous": 0.16523161267969308,
+   "bound_timed": 0.08630018039573782,
+   "bound_all_acts_generous": 0.3757414177910403
+  },
+  {
+   "seed": 6,
+   "acts_per_night": 12.9125,
+   "kind_acts_per_night": 4.075,
+   "b_minus_c_generous": 0.032251676309334544,
+   "b_minus_c_timed": 0.014985464055560248,
+   "harm_from_oren_per_night": 0.0,
+   "harm_per_act": 0.0,
+   "bound_generous": 0.13142558096053827,
+   "bound_timed": 0.061065766026408015,
+   "bound_all_acts_generous": 0.41644977034428227
+  },
+  {
+   "seed": 7,
+   "acts_per_night": 10.0875,
+   "kind_acts_per_night": 3.5875,
+   "b_minus_c_generous": 0.029437636788379063,
+   "b_minus_c_timed": 0.01699016202887956,
+   "harm_from_oren_per_night": 0.0,
+   "harm_per_act": 0.0,
+   "bound_generous": 0.10560752197830989,
+   "bound_timed": 0.060952206278605425,
+   "bound_all_acts_generous": 0.2969521611027738
+  },
+  {
+   "seed": 8,
+   "acts_per_night": 12.7375,
+   "kind_acts_per_night": 5.375,
+   "b_minus_c_generous": 0.02756012063532994,
+   "b_minus_c_timed": 0.011780568916294625,
+   "harm_from_oren_per_night": 0.0125,
+   "harm_per_act": 0.08522962732697717,
+   "bound_generous": 0.14920101875648564,
+   "bound_timed": 0.06438592826667082,
+   "bound_all_acts_generous": 0.3510470365925151
+  },
+  {
+   "seed": 9,
+   "acts_per_night": 12.2625,
+   "kind_acts_per_night": 3.9125,
+   "b_minus_c_generous": 0.027846380953747012,
+   "b_minus_c_timed": 0.013801008440886596,
+   "harm_from_oren_per_night": 0.0,
+   "harm_per_act": 0.0,
+   "bound_generous": 0.10894896548153518,
+   "bound_timed": 0.05399644552496881,
+   "bound_all_acts_generous": 0.3414662464453227
+  }
+ ]
+}

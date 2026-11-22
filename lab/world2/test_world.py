@@ -17,6 +17,7 @@ import random
 from pathlib import Path
 
 from lab.world2 import partners as P
+from lab.world2 import world as W
 from lab.world2.lifetime import NAMES, Cast, lifetime
 from lab.world2.policy import Random, Rules, utility
 from lab.world2.world import DRIVES, FLAGS, NATURE, World
@@ -964,6 +965,714 @@ def test_fix_all3_the_food_reaches_people_who_are_not_the_cook():
     others_old = sum(v for k, v in old.items() if k != "Marta")
     others_new = sum(v for k, v in new.items() if k != "Marta")
     assert others_new >= 5 * max(1, others_old), (old, new)
+
+
+# ---------------------------------------------------------------- luck (2026-11-20)
+def test_luck_flag_is_new_and_needs_meals():
+    from lab.world2.world import ALL3, ALL4
+    assert "luck" not in set(World(flags="all3").flags) and set(World(flags="all4").flags) == set(ALL3) | {"luck"} == set(ALL4)
+    w = World(flags="all3")
+    assert w.catch == {} and not any("catch" in n for n in w.things) and w.portions == {"the pot of stew": 12, "the loaf of bread": 8}
+    try:
+        World(flags=("trade", "luck"))
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("luck without meals was accepted")
+
+
+def test_luck_zero_is_an_even_split_and_the_dial_sets_the_empty_nights():
+    from lab.world2.world import LUCK_SHARE, STOCK
+    w = World(seed=3, flags="all4", luck=0.0)
+    cooks = {"Marta"}
+    assert set(w.catch) == {"Tom", "Sir Ada", "Oren", "Fenn"} and len(set(w.catch.values())) == 1
+    total = sum(w.catch.values()) + sum(v for n, v in w.portions.items() if "catch" not in n)
+    assert abs(total - sum(STOCK.values())) <= 2                 # the same expected food as the all3 inn, split
+    assert abs(w.portions["the pot of stew"] - 12 * (1 - LUCK_SHARE)) <= 1
+    empty = 0
+    got = []
+    for seed in range(400):
+        c = World(seed=seed, flags="all4", luck=0.5).catch
+        got += list(c.values())
+        empty += sum(1 for k in c.values() if k == 0)
+    assert 0.45 < empty / len(got) < 0.62                         # ~ v (a little more: small gammas round to 0)
+    assert abs(sum(got) / len(got) - 2.5) < 0.25     # the mean is the even share (0.5 * 20 / 4), whatever v is
+
+
+def test_luck_is_independent_between_people_and_the_same_for_every_chooser():
+    a = World(seed=11, flags="all4", luck=0.5).catch
+    b = World(seed=11, flags="all4", luck=0.5).catch
+    assert a == b                                               # a function of the night seed alone
+    # drawn from a generator of its own: the world's own draws (the cast, the bandit, the first likings) are unchanged
+    x, y = World(seed=11, flags="all4", luck=0.1), World(seed=11, flags="all4", luck=0.9)
+    assert [p.hunger for p in x.people.values()] == [p.hunger for p in y.people.values()]
+    assert x.people["Tom"].aff == y.people["Tom"].aff and x.bandit_at == y.bandit_at
+    # not all equal, and not copies of one draw
+    seen = {tuple(World(seed=s, flags="all4", luck=0.5).catch.values()) for s in range(30)}
+    assert len(seen) > 20
+    pairs = [(World(seed=s, flags="all4", luck=0.5).catch["Tom"] == 0, World(seed=s, flags="all4", luck=0.5).catch["Fenn"] == 0)
+             for s in range(300)]
+    pt, pf = sum(p[0] for p in pairs) / 300, sum(p[1] for p in pairs) / 300
+    both = sum(1 for p in pairs if p[0] and p[1]) / 300
+    assert abs(both - pt * pf) < 0.06
+
+
+def test_luck_a_catch_is_eaten_and_shared_by_the_portion_and_is_not_handed_over():
+    from lab.world2.world import PORTION
+    w = None
+    for seed in range(50):                                      # a night on which Tom has a catch
+        w = _fix(("trade", "meals", "luck"), seed=seed, luck=0.3)
+        if w.catch.get("Tom", 0) >= 2:
+            break
+    k = w.catch["Tom"]
+    tom, oren = w.people["Tom"], w.people["Oren"]
+    assert w.portions["Tom's catch"] == k and w.things["Tom's catch"]["at"] == "Tom"
+    tom.hunger, oren.hunger, oren.room = 0.9, 0.9, tom.room
+    assert "eat a portion of Tom's catch" in _texts(w, "Tom")
+    assert not any(t.startswith("give Tom's catch") for t in _texts(w, "Tom"))
+    _act(w, "Tom", "serve Oren a portion of Tom's catch")
+    assert abs(oren.hunger - (0.9 - PORTION)) < 1e-9 and w.portions["Tom's catch"] == k - 1
+    _act(w, "Tom", "eat a portion of Tom's catch")
+    assert abs(tom.hunger - (0.9 - PORTION)) < 1e-9
+    # someone with nothing to eat may buy a meal from a lucky person, or work for it
+    opts = _texts(w, "Oren")
+    assert "work for Tom for a share of Tom's catch" in opts
+    # an empty catch is gone
+    w.portions["Tom's catch"] = 1
+    _act(w, "Tom", "eat a portion of Tom's catch")
+    assert w.things["Tom's catch"]["at"] is None
+
+
+def test_luck_all4_random_turns_are_valid_and_the_catch_does_not_outlast_the_night():
+    w = World(seed=4, turns=600, bandit=True, flags="all4", luck=0.4)
+    pol = Random()
+    for _ in range(600):
+        w.step(pol)
+        for p in w.people.values():
+            for d, x in w.drives(p).items():
+                assert 0 <= x <= 1, (p.name, d, x)
+    assert all(v >= 0 for v in w.portions.values())
+    nxt = World(seed=5, flags="all4", luck=0.4, carry=w.carry_out(["Tom", "Sir Ada", "Oren", "Fenn", "Marta"]))
+    assert all(nxt.things[f"{n}'s catch"]["owner"] == n for n, k in nxt.catch.items() if k > 0)   # a new night, new catches
+
+
+# ---------------------------------------------------------------- the three needs only another person can meet (2026-11-20)
+CAST5 = ["Tom", "Sir Ada", "Oren", "Fenn", "Marta"]
+
+
+def test_need_flags_are_new_and_all5_has_all_three():
+    from lab.world2.world import ALL4, ALL5, NEED_FLAGS
+    assert not set(NEED_FLAGS) & set(World(flags="all4").flags)
+    assert set(World(flags="all5").flags) == set(ALL4) | set(NEED_FLAGS) == set(ALL5)
+    for f in NEED_FLAGS:
+        World(flags=tuple(ALL4) + (f,))                          # each one alone is a valid world
+    try:
+        World(flags=tuple(set(ALL4) - {"luck"}) + ("labour",))   # labour splits the catch: it needs luck
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("labour without luck was accepted")
+
+
+def test_tend_ailments_come_from_their_own_generator_at_the_dial_rate():
+    a = World(seed=7, flags="all5", ill=1.0)
+    assert all(p.ail >= 0.25 for p in a.people.values())                 # a dial of 1: everyone starts ill
+    b, c = World(seed=7, flags="all5", ill=0.0), World(seed=7, flags="all5", ill=1.0)
+    assert all(p.ail == 0 for p in b.people.values())
+    # the world's own draws are the same whatever the dial
+    assert [p.hunger for p in b.people.values()] == [p.hunger for p in c.people.values()] and b.bandit_at == c.bandit_at
+    assert [x.ail for x in World(seed=9, flags="all5").people.values()] == [x.ail for x in World(seed=9, flags="all5").people.values()]
+    n = sum(1 for sd in range(400) for p in World(seed=sd, flags="all5").people.values() if p.ail > 0)
+    assert abs(n / 2000 - 0.10) < 0.025                                  # AIL_P, by default
+    off = World(seed=7, flags="all4")
+    assert all(p.ail == 0 for p in off.people.values())                  # without the flag no one is ill
+
+
+def test_tend_the_owner_cannot_treat_it_and_another_person_can_at_a_cost():
+    from lab.world2.world import AIL_GROW, TEND_RELIEF, TEND_TIRE
+    w = _fix("all5", seed=2, ill=0.0)
+    tom, ada = w.people["Tom"], w.people["Sir Ada"]
+    tom.ail, ada.ail = 0.5, 0.0
+    assert w.drives(tom)["safety"] >= 0.5                               # it is a need
+    assert not any(t.startswith("tend Tom") for t in _texts(w, "Tom"))   # no one tends itself
+    assert "tend Tom" in _texts(w, "Sir Ada") and "tend Sir Ada" not in _texts(w, "Tom")
+    assert "ask Sir Ada to tend you" in _texts(w, "Tom")
+    w._drift(tom)
+    assert abs(tom.ail - (0.5 + AIL_GROW)) < 1e-9                       # left alone it grows
+    before, fat = tom.ail, ada.fatigue
+    o = next(o for o in w.options(ada) if o["text"] == "tend Tom")
+    assert o["dur"] == 6                                                # the helper's time
+    _act(w, "Sir Ada", "tend Tom")
+    assert abs(tom.ail - (before - TEND_RELIEF)) < 1e-9
+    assert abs(ada.fatigue - (fat + TEND_TIRE)) < 1e-9                  # and effort
+    assert tom.aff["Sir Ada"] > 0.3
+    tom.ail = 0.1
+    assert "tend Tom" not in _texts(w, "Sir Ada")                       # a slight ailment is not worth a visit
+
+
+def test_tend_an_ask_for_care_is_answered_by_a_kind_partner_and_the_same_rule_applies_to_everyone():
+    w = _fix("all5", seed=3, ill=0.0)
+    w.people["Fenn"].ail = 0.6
+    pk = P.Kind(1.0, seed=1)
+    ev = _act(w, "Fenn", "ask Sir Ada to tend you")
+    assert w.people["Sir Ada"].requests["Fenn"]["thing"] == "care"
+    opts = w.options(w.people["Sir Ada"])
+    pc, _ = pk.probs(w, w.people["Sir Ada"], opts)
+    assert opts[pc.index(1.0)]["text"] == "tend Fenn"
+    # one rule: the same facts give the same score to two different people (only their own traits differ)
+    w2 = _fix("all5", seed=4, ill=0.0)
+    w2.people["Tom"].ail = 0.6
+    t = {"bravery": .5, "greed": .5, "pride": .5, "kindness": .5, "temper": .5}
+    for name in ("Sir Ada", "Oren"):
+        for q in w2.people.values():
+            q.fear, q.anger = 0.0, {}
+        o = next(o for o in w2.options(w2.people[name]) if o["text"] == "tend Tom")
+        assert o["f"]["need"] == 0.6 and utility(w2, w2.people[name], o, t) > utility(w2, w2.people[name], {**o, "f": {**o["f"], "need": 0.2}}, t)
+
+
+def _fighters(n, seed, others_away=True):
+    """n people in the yard with a raid in it, all chosen to fend off; the rest wait far away. -> (world, who fights)."""
+    from lab.world2.world import RAID_HP
+    w = World(seed=seed, flags="all5", raid=0.0, ill=0.0)
+    _quiet(w)
+    fighters = CAST5[:n]
+    for name, p in w.people.items():
+        p.room = "the yard" if name in fighters else "the cellar"
+        p.hp = 10.0
+    w.threat = {"name": "the wolf", "room": "the yard", "hp": RAID_HP, "t0": 0}
+
+    class Script:
+        name = "script"
+
+        def probs(self, w_, p, opts):
+            i = next((k for k, o in enumerate(opts) if o["verb"] == "fend off"), None)
+            if i is None:
+                i = next(k for k, o in enumerate(opts) if o["verb"] == "wait")
+            pc = [0.0] * len(opts)
+            pc[i] = 1.0
+            return pc, pc
+    return w, fighters, Script()
+
+
+def test_allies_one_person_loses_and_two_win():
+    res = {}
+    for n in (1, 2, 3):
+        won = lost_hp = down = 0
+        for seed in range(30):
+            w, fighters, pol = _fighters(n, seed)
+            for _ in range(150):
+                w.step(pol)
+            won += w.threat is None
+            lost_hp += sum(10 - w.people[f].hp for f in fighters) / n
+            down += sum(w.people[f].down or w.people[f].dead for f in fighters)
+        res[n] = (won / 30, lost_hp / 30, down / 30)
+    assert res[1][0] <= 0.15, res                       # it beats one person
+    assert res[2][0] >= 0.85 and res[3][0] >= 0.95, res  # and loses to two or more acting together
+    assert res[2][1] > 0.5                              # joining costs the joiner risk: it is hit
+    assert res[1][1] > res[3][1]                        # the more there are, the less each loses (pooled risk)
+    assert res[1][2] > res[3][2]
+
+
+def test_allies_raid_comes_from_its_own_generator_and_no_trait_decides_who_fights():
+    a, b = World(seed=5, flags="all5", raid=1.0), World(seed=5, flags="all5", raid=1.0)
+    assert a._raid_at == b._raid_at is not None and a._raid_kind == b._raid_kind
+    x, y = World(seed=5, flags="all5", raid=0.0), World(seed=5, flags="all5", raid=1.0)
+    assert x._raid_at is None and x.bandit_at == y.bandit_at and [p.hunger for p in x.people.values()] == [p.hunger for p in y.people.values()]
+    n = sum(World(seed=s, flags="all5").threat is None and World(seed=s, flags="all5")._raid_at is not None for s in range(400))
+    assert abs(n / 400 - 0.15) < 0.05                   # RAID_P
+    assert World(seed=5, flags="all4")._raid_at is None
+    # the same facts, the same score: two people with the same dials fend off the same
+    w, fighters, _ = _fighters(2, 1)
+    t = {"bravery": .6, "greed": .5, "pride": .5, "kindness": .5, "temper": .5}
+    for name in fighters:
+        w.people[name].fear = 0.0
+    o1 = next(o for o in w.options(w.people["Tom"]) if o["verb"] == "fend off")
+    o2 = next(o for o in w.options(w.people["Sir Ada"]) if o["verb"] == "fend off")
+    assert o1["f"] == o2["f"] and utility(w, w.people["Tom"], o1, t) == utility(w, w.people["Sir Ada"], o2, t)
+    # allies already in it pull more, a lone newcomer less
+    lone = {**o1, "f": {**o1["f"], "allies": 0.0}}
+    joined = {**o1, "f": {**o1["f"], "allies": 2.0}}
+    assert utility(w, w.people["Tom"], joined, t) > utility(w, w.people["Tom"], lone, t)
+
+
+def test_labour_catch_is_split_by_the_dial_and_a_repeated_kind_relieves_less():
+    from lab.world2.world import ALL4, LABOUR_REPEAT, PORTION
+    flags = tuple(ALL4) + ("labour",)
+    w = None
+    for seed in range(60):
+        w = World(seed=seed, flags=flags, luck=0.3)
+        if w.catch.get("Sir Ada", 0) >= 3:
+            break
+    ada = w.people["Sir Ada"]
+    game, greens = w.portions.get("Sir Ada's game", 0), w.portions.get("Sir Ada's greens", 0)
+    assert game + greens == w.catch["Sir Ada"] and not any(n.endswith("'s catch") for n in w.things)
+    assert game > greens                                                   # Sir Ada's bravery is high: she brings game
+    tot = {"game": 0, "greens": 0}
+    for sd in range(200):
+        x = World(seed=sd, flags=flags, luck=0.3)
+        for pp in x.people.values():
+            if pp.kind == "peasant":
+                tot["game"] += x.portions.get(f"{pp.name}'s game", 0)
+                tot["greens"] += x.portions.get(f"{pp.name}'s greens", 0)
+    assert tot["greens"] > tot["game"]                                     # Tom's bravery is low: he brings greens
+    # sensory-specific satiety
+    w2 = _fix(flags, seed=1, luck=0.0)
+    for p in w2.people.values():
+        p.hunger = 0.9
+    t, o = w2.people["Tom"], w2.people["Oren"]
+    w2.portions["the pot of stew"], w2.kind_of = 12, w2.kind_of
+    w2._feed(t, 1, "the pot of stew")
+    assert abs(t.hunger - (0.9 - PORTION)) < 1e-9 and t.last_kind == "staple"            # the first is full
+    w2._feed(t, 1, "the pot of stew")
+    assert abs(t.hunger - (0.9 - PORTION - PORTION * LABOUR_REPEAT)) < 1e-9              # the same kind again: 60 percent
+    # the menu says what a ration is worth to this person: the kind it just ate is worth less, another kind full
+    t.hunger = 0.9
+    w2.things["the pot of stew"]["at"] = "Tom"
+    eat = next(o_ for o_ in w2.options(t) if o_["verb"] == "eat" and o_["obj"] == "the pot of stew")
+    assert abs(eat["f"]["need"] - 0.9 * LABOUR_REPEAT) < 1e-9
+    t.last_kind = "game"
+    eat = next(o_ for o_ in w2.options(t) if o_["verb"] == "eat" and o_["obj"] == "the pot of stew")
+    assert abs(eat["f"]["need"] - 0.9) < 1e-9
+    t.last_kind = "staple"
+    assert w2._eff(t, "the pot of stew") == LABOUR_REPEAT and w2._eff(o, "the pot of stew") == 1.0
+
+
+def test_all5_random_turns_are_valid():
+    w = World(seed=6, turns=900, bandit=True, flags="all5", luck=0.4, ill=0.5, raid=1.0)
+    pol = Random()
+    for _ in range(900):
+        w.step(pol)
+        for p in w.people.values():
+            for d, x in w.drives(p).items():
+                assert 0 <= x <= 1, (p.name, d, x)
+    assert any(e["action"] == "raid arrives" for e in w.log)
+    assert any(e["action"] == "tend" and e["done"] for e in w.log) or any(e["action"] == "fend off" for e in w.log)
+    for e in w.log:
+        if e.get("options"):
+            assert e["options"][e["chosen"]] == e["text"]
+    nxt = World(seed=7, flags="all5", carry=w.carry_out(CAST5))
+    assert all(p.ail >= 0 for p in nxt.people.values()) and nxt.threat is None
+
+
+# ---------------------------------------------------------------- lumpy, stock, choosy (2026-11-20, the reciprocity-conditions answer)
+def test_lumpy_stock_choosy_are_new_and_all6_has_them_and_each_needs_its_base():
+    from lab.world2.world import ALL5, LUMPY_FLAGS
+    assert not set(LUMPY_FLAGS) & set(World(flags="all5").flags)
+    assert set(World(flags="all6").flags) == set(ALL5) | set(LUMPY_FLAGS)
+    for f in LUMPY_FLAGS:
+        World(flags=tuple(ALL5) + (f,))                          # each one alone is a valid world
+    for drop, add in (("luck", "lumpy"), ("meals", "stock"), ("partner", "choosy")):
+        try:
+            World(flags=tuple(x for x in ALL5 if x not in (drop, "labour")) + (add,))       # (labour needs luck too)
+        except AssertionError:
+            continue
+        raise AssertionError(f"{add} without {drop} was accepted")
+
+
+def test_lumpy_packages_keep_the_expected_catch_and_come_from_their_own_generator():
+    from lab.world2.world import ALL5, LUMP_P
+    fl = tuple(ALL5) + ("lumpy",)
+    sizes, per = [], []
+    for sd in range(300):
+        w = World(seed=sd, flags=fl, luck=0.3)
+        per += list(w.catch.values())
+        sizes += [k for k in w.catch.values() if k]
+        assert set(w.perish) == {n for n in w.things if n in w.portions and n not in ("the pot of stew", "the loaf of bread")}
+    assert abs(sum(per) / len(per) - 2.5) < 0.35                  # the same expected catch as the smooth draw
+    assert abs(len(sizes) / len(per) - LUMP_P) < 0.05             # hits are LUMP_P of the days
+    assert all(7 <= k <= 9 for k in sizes)                       # a package of about 8 rations, more than one can eat
+    a, b = World(seed=11, flags=fl, luck=0.3), World(seed=11, flags=fl, luck=0.9)
+    assert a.catch == b.catch and a.perish == b.perish           # the draw is a function of the night seed only
+    assert [p.hunger for p in a.people.values()] == [p.hunger for p in b.people.values()] and a.bandit_at == b.bandit_at
+    assert a.catch != World(seed=11, flags=tuple(ALL5), luck=0.3).catch or sum(a.catch.values()) == 0
+
+
+def test_lumpy_a_package_comes_in_at_its_turn_and_spoils_but_the_larder_keeps():
+    from lab.world2.world import ALL4, SPOIL_HALF
+    fl = tuple(ALL4) + ("lumpy",)
+    for sd in range(100):
+        w = World(seed=sd, flags=fl, luck=0.3)
+        if any(w.catch.values()):
+            break
+    who = next(n for n, k in w.catch.items() if k)
+    item = next(n for n in w.perish if n.startswith(who))
+    t0, k = w.perish[item], w.portions[item]
+    assert w.things[item]["at"] is None and item not in w.held(w.people[who])        # not in the house yet
+    w.bandit_at = None
+    for p in w.people.values():
+        p.doing = None
+    while w.t < t0 - 1:
+        w.t += 1
+        w._spoil()
+    assert w.things[item]["at"] is None
+    w.t += 1
+    w._spoil()
+    assert w.things[item]["at"] == who and w.portions[item] == k                     # it came in whole
+    stew = w.portions["the pot of stew"]
+    for _ in range(SPOIL_HALF):
+        w.t += 1
+        w._spoil()
+    left = w.portions[item]
+    assert k * 0.35 <= left <= k * 0.65, (k, left)                                  # about half after one half-life
+    assert w.portions["the pot of stew"] == stew                                    # what keeps does not spoil
+    assert abs(w.portions[item] / w.stock[item] - 1.0) < 1e-9                       # `left` (a share of the pot) is unchanged by rot
+
+
+def test_lumpy_giving_a_package_costs_the_holder_little_and_the_rule_is_the_same_for_all():
+    from lab.world2.world import ALL5
+    from lab.world2.policy import MID, utility
+    fl = tuple(ALL5) + ("lumpy",)
+    for sd in range(100):
+        w = _fix(fl, seed=sd, luck=0.3)
+        if any(w.catch.values()):
+            break
+    who = next(n for n, k in w.catch.items() if k)
+    item = next(n for n in w.perish if n.startswith(who))
+    w.things[item]["at"] = who
+    me, other = w.people[who], w.people["Marta"]
+    me.hunger, other.hunger = 0.1, 0.9
+    o = next(o for o in w.options(me) if o["verb"] == "serve" and o["target"] == "Marta" and o["obj"] == item)
+    assert o["f"]["spare"] > 0.5                                    # most of it will rot before the holder can eat it
+    # the staples keep: no spare, and the same fact is read for every person by the same rule
+    stew = next(x for x in w.options(w.people["Marta"]) if x["verb"] == "serve")
+    assert stew["f"]["spare"] == 0.0
+    lo = dict(o, f=dict(o["f"], spare=0.0))
+    for t in (MID, me.traits, other.traits):
+        assert utility(w, me, o, t) >= utility(w, me, lo, t)         # spare only lowers the cost of giving
+    flat = _fix(tuple(ALL5), seed=sd, luck=0.3)                     # without the flag the feature is not there
+    assert all("spare" not in x["f"] for x in flat.options(flat.people[who]))
+
+
+def test_stock_the_counter_carries_over_and_only_work_and_the_cook_refill_it():
+    from lab.world2.world import ALL5, COOK_MAKES, STOCK_CAP, WORK_YIELD
+    fl = tuple(ALL5) + ("stock",)
+    w = _fix(fl, seed=1, luck=0.3)
+    nominal = dict(w.portions)
+    assert nominal["the pot of stew"] == 6 and nominal["the loaf of bread"] == 4
+    for n in COOK_MAKES:
+        w.portions[n] = 0
+    nxt = World(seed=2, flags=fl, luck=0.3, carry=w.carry_out(CAST5))
+    assert {n: nxt.portions[n] for n in COOK_MAKES} == COOK_MAKES      # an empty counter is only what the cook made
+    for n in COOK_MAKES:
+        w.portions[n] = 99
+    nxt = World(seed=2, flags=fl, luck=0.3, carry=w.carry_out(CAST5))
+    assert all(nxt.portions[n] == int(STOCK_CAP * nxt.stock[n]) for n in COOK_MAKES)      # capped
+    plain = World(seed=2, flags=tuple(ALL5), luck=0.3, carry=World(seed=1, flags=tuple(ALL5), luck=0.3).carry_out(CAST5))
+    assert plain.portions["the pot of stew"] == 6                       # without the flag the house is full again every night
+    # work puts WORK_YIELD back after the worker takes a ration
+    w = _fix(fl, seed=1, luck=0.3)
+    tom, marta = w.people["Tom"], w.people["Marta"]
+    tom.room = marta.room = "the main room"
+    tom.hunger = 0.8
+    w.portions["the pot of stew"] = 3
+    _act(w, "Tom", "work for Marta for a share of the pot of stew")
+    assert w.portions["the pot of stew"] == 3 - 1 + WORK_YIELD
+    # a bad run empties the counter: nothing to buy, and the option is not on the menu
+    w.portions["the pot of stew"] = 0
+    w.things["the pot of stew"]["at"] = None
+    assert not any("the pot of stew" in t for t in _texts(w, "Tom") if t.startswith(("work", "pay")))
+
+
+def test_choosy_the_partner_rule_governs_tending_and_defending_with_the_serve_weight():
+    from lab.world2.world import ALL5, CHOOSY_W
+    from lab.world2.policy import MID, utility
+    gaps = {}
+    for fl in (tuple(ALL5) + ("choosy",), tuple(ALL5)):
+        w = _fix(fl, seed=3, ill=0.0)
+        for q in ("Oren", "Fenn"):
+            w.people[q].ail = 0.5
+            w.people[q].room = w.people["Sir Ada"].room = w.people["Tom"].room = "the main room"
+        for actor in ("Sir Ada", "Tom"):
+            a = w.people[actor]
+            a.aff["Oren"], a.aff["Fenn"] = 0.0, -0.8                 # the same history with each of them
+            opts = {o["target"]: o for o in w.options(a) if o["verb"] == "tend"}
+            gaps[(len(fl), actor)] = utility(w, a, opts["Oren"], MID) - utility(w, a, opts["Fenn"], MID)
+    on = {k[1]: v for k, v in gaps.items() if k[0] == len(ALL5) + 1}
+    off = {k[1]: v for k, v in gaps.items() if k[0] == len(ALL5)}
+    for actor in on:
+        assert abs((on[actor] - off[actor]) - CHOOSY_W * 0.8) < 1e-9, (on, off)    # one extra weight on distrust, nothing else
+    assert abs(on["Sir Ada"] - on["Tom"]) < 1e-9 and abs(off["Sir Ada"] - off["Tom"]) < 1e-9    # the same for every person (traits in MID)
+    # defend too
+    w = _fix(tuple(ALL5) + ("choosy",), seed=4)
+    from lab.world2.policy import flag_terms
+    a = w.people["Sir Ada"]
+    a.aff["Oren"], a.aff["Fenn"] = 0.0, -0.8
+    fake = lambda v, q: {"verb": v, "target": q, "f": {"trust": 0.0}, "obj": None}
+    for v in ("defend", "bandage", "help up", "tend"):
+        assert abs(flag_terms(w, a, fake(v, "Oren")) - flag_terms(w, a, fake(v, "Fenn")) - CHOOSY_W * 0.8) < 1e-9
+    assert flag_terms(w, a, fake("praise", "Oren")) == flag_terms(w, a, fake("praise", "Fenn"))     # not a help act
+
+
+def test_tending_and_defending_cannot_be_bought_at_the_counter():
+    """S2.3: what is relation-specific is not for sale. The counter sells portions of food, nothing else."""
+    w = World(seed=9, turns=900, bandit=True, flags="all6", luck=0.4, ill=0.5, raid=1.0)
+    pol = Random()
+    seen = set()
+    for _ in range(900):
+        w.step(pol)
+        for p in w.people.values():
+            if p.dead:
+                continue
+            for o in w.options(p):
+                seen.add(o["verb"])
+                if o["verb"] in ("buy", "work"):
+                    assert o["obj"] in w.portions                    # only food is bought or worked for
+                if o["verb"] in ("tend", "defend", "fend off", "bandage", "help up"):
+                    assert "pay" not in o["f"] and o["obj"] in (None, "the wolf", "a raider")      # no price on it
+    assert {"buy", "work"} <= seen
+    assert not any(e["action"] in ("buy", "work") and e["obj"] not in w.portions for e in w.log if e.get("obj"))
+    assert not any(th["props"] & {"care", "defence"} for th in w.things.values())
+
+
+def test_all6_random_turns_are_valid_across_nights():
+    carry = None
+    for night in range(4):
+        w = World(seed=20 + night, turns=600, bandit=True, flags="all6", luck=0.4, ill=0.5, raid=1.0, carry=carry, night=night)
+        pol = Random()
+        for _ in range(600):
+            w.step(pol)
+            for p in w.people.values():
+                for d, x in w.drives(p).items():
+                    assert 0 <= x <= 1, (p.name, d, x)
+        assert all(v >= 0 for v in w.portions.values())
+        for e in w.log:
+            if e.get("options"):
+                assert e["options"][e["chosen"]] == e["text"]
+        carry = w.carry_out(CAST5)
+    assert "house" in carry["Marta"]
+
+# ---------------------------------------------------------------- signs and P-need (2026-11-21, SV2 and SV4)
+def _signs_world(seed=3, flags="all6s"):
+    from lab.world2.world import ALL6, SIGNS_FLAGS
+    return World(seed=seed, turns=300, flags=tuple(ALL6) + SIGNS_FLAGS if flags == "all6s" else flags)
+
+
+def _readings(w, obs, tgt, key, n=300):
+    out = []
+    for t in range(n):
+        w.t = t
+        out.append(w.perceived_need(obs, tgt)[key])
+    return out
+
+
+def test_signs_stoic_pain_is_under_read():
+    w = _signs_world()
+    tom, fenn = w.people["Tom"], w.people["Fenn"]
+    tom.room = fenn.room
+    tom.hp, tom.ail = 4.0, 0.0                              # true hurt 0.6
+    tom.express = 0.25
+    stoic = sum(_readings(w, "Fenn", "Tom", "hurt")) / 300
+    tom.express = 1.0
+    open_ = sum(_readings(w, "Fenn", "Tom", "hurt")) / 300
+    assert stoic < 0.3 < 0.5 < open_ and abs(open_ - 0.6) < 0.03 and abs(stoic - 0.15) < 0.03, (stoic, open_)
+
+
+def test_signs_acuity_sets_the_noise():
+    import statistics
+    w = _signs_world()
+    tom, fenn = w.people["Tom"], w.people["Fenn"]
+    tom.room = fenn.room
+    tom.hp, tom.express = 5.0, 1.0
+    fenn.acuity = 1.6
+    sharp = statistics.pstdev(_readings(w, "Fenn", "Tom", "hurt"))
+    fenn.acuity = 0.4
+    dull = statistics.pstdev(_readings(w, "Fenn", "Tom", "hurt"))
+    assert sharp < dull / 2 and 0 < sharp, (sharp, dull)
+    w.t = 5
+    assert w.perceived_need("Fenn", "Tom") == w.perceived_need("Fenn", "Tom")      # a reading repeats
+
+
+def test_signs_need_the_same_room_and_an_awake_observer():
+    w = _signs_world()
+    w.people["Tom"].room, w.people["Marta"].room = "the main room", "the kitchen"
+    assert w.perceived_need("Marta", "Tom") is None
+    assert w.perceived_need("Tom", "Tom") is None
+    w.people["Marta"].room = "the main room"
+    assert w.perceived_need("Marta", "Tom") is not None
+    w.people["Tom"].dead = True
+    assert w.perceived_need("Marta", "Tom") is None
+
+
+def test_signs_flag_off_changes_nothing():
+    from lab.world2.world import ALL6, SIGNS_FLAGS
+    off = World(seed=7, turns=200, bandit=True, flags="all6")
+    on = World(seed=7, turns=200, bandit=True, flags=tuple(ALL6) + SIGNS_FLAGS)
+    assert off.perceived_need("Tom", "Fenn") is None and not hasattr(off.people["Tom"], "express")
+    for w in (off, on):
+        pol = Random()
+        for _ in range(200):
+            w.step(pol)
+    dig = lambda w: hashlib.sha256(json.dumps([[e["t"], e["actor"], e["action"], e["target"], e["done"]] for e in w.log]).encode()).hexdigest()
+    assert dig(off) == dig(on)                               # the dials and readings take nothing from the world's generator
+
+
+def test_signs_dials_stay_with_the_person_across_nights():
+    from lab.world2.world import ALL6, SIGNS_FLAGS
+    fl = tuple(ALL6) + SIGNS_FLAGS
+    w0 = World(seed=11, turns=20, flags=fl, night=0)
+    c = w0.carry_out(NAMES)
+    w1 = World(seed=999, turns=20, flags=fl, carry=c, night=1)
+    assert all((w0.people[n].express, w0.people[n].acuity) == (w1.people[n].express, w1.people[n].acuity) for n in NAMES)
+    assert len({round(w0.people[n].express, 6) for n in NAMES}) > 1                # drawn per person
+
+
+def _need_setup(**state):
+    w = _signs_world()
+    tom, fenn = w.people["Tom"], w.people["Fenn"]
+    tom.room = fenn.room
+    for p in (tom, fenn):
+        p.express, p.acuity = 1.0, 1.6
+    tom.hunger, tom.thirst, tom.fear, tom.ail, tom.hp = 0.2, 0.2, 0.0, 0.0, 10.0
+    for k, v in state.items():
+        setattr(tom, k, v)
+    w.things["the loaf of bread"].update(at="Fenn", owner="Fenn")
+    pn = P.Need(1.0, seed=1)
+    pn.night_start(w, 0)
+    pn.todo.append(("pay", "Tom", None))
+    opts = w.options(fenn)
+    return w, pn, opts, fenn
+
+
+def test_pneed_pays_the_perceived_need():
+    for state, verbs in ((dict(hunger=0.95), {"serve", "give"}), (dict(ail=0.6), {"tend"}), (dict(hp=3.0), {"bandage", "tend", "help up"}),
+                         (dict(), {"praise"})):
+        w, pn, opts, fenn = _need_setup(**state)
+        i = pn.answer(w, fenn, opts)
+        assert i is not None and opts[i]["verb"] in verbs and opts[i]["target"] == "Tom", (state, opts[i]["text"] if i is not None else None)
+        assert not pn.todo
+    w, pn, opts, fenn = _need_setup(hunger=0.95)
+    assert opts[pn.answer(w, fenn, opts)] is not None
+
+
+def test_pneed_misreads_a_stoic_and_pays_the_wrong_thing():
+    w, pn, opts, fenn = _need_setup(hunger=0.95)
+    w.people["Tom"].express = 0.2                            # the hunger shows as 0.19: under the threshold
+    assert opts[pn.answer(w, fenn, opts)]["verb"] == "praise"
+
+
+def test_pneed_without_signs_pays_company_and_answers_asks():
+    w = World(seed=3, turns=300, flags="all6")
+    fenn = w.people["Fenn"]
+    w.people["Tom"].room, w.people["Tom"].hunger = fenn.room, 0.95
+    pn = P.Need(1.0, seed=1)
+    pn.night_start(w, 0)
+    pn.todo.append(("pay", "Tom", None))
+    assert pn.answer(w, fenn, w.options(fenn)) is not None
+    assert P.make_partner("P-need:0.5").p == 0.5
+
+
+def test_pneed_hears_the_care_acts_and_never_starts():
+    w, pn, opts, fenn = _need_setup()
+    pn.todo.clear()
+    for a in ("give", "serve", "tend", "bandage", "help up", "defend", "praise"):
+        pn.hear(w, fenn, {"action": a, "actor": "Tom", "parts": {}})
+    assert [t[0] for t in pn.todo] == ["pay"] * 7
+    pn.todo.clear()
+    pn.hear(w, fenn, {"action": "insult", "actor": "Tom", "parts": {}})
+    assert not pn.todo
+    pc, _ = pn.probs(w, fenn, opts)
+    assert abs(sum(pc) - 1) < 1e-9 and all(opts[i]["verb"] in P.BACKGROUND for i, x in enumerate(pc) if x > 0)
+
+
+
+# ------------------------------------------------------------------ hard: the hardships from the source rates (2026-11-21)
+HARD = tuple(sorted(set(W.ALL6) | set(W.SIGNS_FLAGS) | set(W.HARD_FLAGS)))
+
+
+def _hard_chain(nights, seed0=0):
+    """Carry the episodes of the cast through many nights without playing them: (person-nights laid up, person-nights, episode lengths)."""
+    w = World(seed=0, flags=HARD)
+    carry, lay, lens, cur = None, 0, [], {}
+    for n in range(nights):
+        w.laid = {}
+        w._episodes(seed0 + n, carry)
+        for name in w.people:
+            if name in w.laid:
+                lay += 1
+                cur[name] = cur.get(name, 0) + 1
+            elif name in cur:
+                lens.append(cur.pop(name))
+        carry = {name: {"ill": (max(0, w.laid.get(name, 0) - 1), w.people[name].ail)} for name in w.people}
+    return lay, nights * len(w.people), lens
+
+
+def test_hard_episode_length_law_hits_the_source_shares():
+    pm = W.hard_duration_pmf()
+    assert abs(sum(pm) - 1) < 1e-6
+    mean = sum((k + 1) * q for k, q in enumerate(pm))
+    assert abs(mean - 8.7) < 0.01, mean                                   # Gurven 2012: mean 8.7 days
+    assert abs(sum(pm[3:]) - 0.91) < 0.003, sum(pm[3:])                   # 91 percent over 3 days
+    assert abs(sum(pm[29:]) - 0.13) < 0.003, sum(pm[29:])                 # 13 percent a month or more (Sugiyama 2004)
+
+
+def test_hard_prevalence_comes_out_at_ten_percent_and_episodes_follow_the_law():
+    lay, tot, lens = _hard_chain(30000)
+    assert abs(lay / tot - 0.10) < 0.012, lay / tot                       # prevalence ~ 10 percent of days
+    assert 0.011 < W.hard_onset() < 0.014
+    assert abs(sum(lens) / len(lens) - 8.7) < 1.0, sum(lens) / len(lens)  # mean length of the episodes that began and ended
+    assert abs(sum(1 for x in lens if x > 3) / len(lens) - 0.91) < 0.03
+    assert abs(sum(1 for x in lens if x >= 30) / len(lens) - 0.13) < 0.03
+
+
+def test_hard_catch_is_as_lumpy_as_the_field():
+    cs = []
+    for s in range(1200):
+        w = World(seed=s, flags=HARD)
+        cs += [k for n, k in w.catch.items() if n not in w.laid]
+    m = sum(cs) / len(cs)
+    cv = (sum((c - m) ** 2 for c in cs) / len(cs)) ** 0.5 / m
+    empty = sum(1 for c in cs if c == 0) / len(cs)
+    assert 0.45 <= empty <= 0.50, empty                                   # Tsimane 45 percent, Ache about half
+    assert 1.1 <= cv <= 1.6, cv                                           # person-day CV 1.1 (Ache) to 1.6 (Tsimane households)
+    assert abs(m - 2.5) < 0.2, m                                          # the expected catch is unchanged
+
+
+def test_hard_raids_are_rare_from_the_violent_death_rates():
+    assert abs(W.HARD_RAID - 0.01 / (365 * 0.011)) < 1e-12 and W.HARD_RAID < 0.003
+    n = sum(World(seed=s, flags=HARD, raid=1.0)._raid_at is not None for s in range(1500))
+    assert n < 30, n                                                      # the dial given (1.0) is ignored: about 0.25 percent of nights
+
+
+def test_hard_laid_up_cannot_work_move_or_catch_but_can_ask_and_be_fed():
+    w = World(seed=3, flags=HARD)
+    tom, fenn = w.people["Tom"], w.people["Fenn"]
+    tom.room = fenn.room
+    w.laid["Tom"] = 5
+    tom.ail = 0.5
+    verbs = {o["verb"] for o in w.options(tom)}
+    assert not verbs & (set(W.EXERT) | {"work", "buy"}), verbs
+    texts = [o["text"] for o in w.options(tom)]
+    assert any(t.startswith("ask Fenn") for t in texts) and "sleep" in texts
+    assert any(o["text"] == "tend Tom" for o in w.options(fenn))          # the others can tend it
+    assert {"walk to", "tend"} & {o["verb"] for o in w.options(fenn)}      # and the healthy still can move and tend
+    for s in range(300):
+        w = World(seed=s, flags=HARD)
+        assert all(w.catch.get(n, 0) == 0 for n in w.laid)                 # a laid-up person brings no catch
+
+
+def test_hard_an_episode_goes_on_across_nights_with_its_level_and_ends():
+    w = World(seed=5, flags=HARD)
+    w.laid = {"Tom": 3}
+    w.people["Tom"].ail = 0.7
+    c = w.carry_out()
+    assert c["Tom"]["ill"] == (2, 0.7) and c["Fenn"]["ill"][0] == 0
+    w2 = World(seed=6, flags=HARD, carry=c)
+    assert w2.laid["Tom"] == 2 and w2.people["Tom"].ail == 0.7
+    w3 = World(seed=7, flags=HARD, carry={**w2.carry_out(), "Tom": {**w2.carry_out()["Tom"], "ill": (0, 0.9)}})
+    assert "Tom" not in w3.laid or w3.people["Tom"].ail != 0.9              # at 0 nights left it is over (a new onset draws a fresh level)
+
+
+def test_hard_flag_off_changes_nothing():
+    a = World(seed=4, flags=W.ALL6, turns=60)
+    b = World(seed=4, flags=W.ALL6, turns=60)
+    assert a.laid == {} and not a.hard
+    for _ in range(60):
+        a.step(Rules())
+        b.step(Rules())
+    assert [e["text"] for e in a.log] == [e["text"] for e in b.log]
+    assert "ill" not in a.carry_out()["Tom"]
+    assert any(p.ail > 0 for s in range(30) for p in World(seed=s, flags=W.ALL6).people.values())   # the old one-night ailment is still there
+
 
 
 if __name__ == "__main__":

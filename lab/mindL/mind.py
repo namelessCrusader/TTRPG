@@ -49,7 +49,9 @@ import numpy as np
 from lab.mindL import drives as H
 from lab.mindL import reader
 from lab.mindL.actor_critic import ActorCritic
+from lab.mindL.concerns import RWConcerns, StepObs, need_of
 from lab.mindL.curiosity import Curiosity
+from lab.mindL.effects import Did, DeltaMeanings, Flush, Got, State, Tick, error_drop
 from lab.mindL.episodic import Episodic
 from lab.mindL.habit import Habit
 from lab.mindL.partners import HARM, KIND, PartnerModels, features
@@ -64,7 +66,26 @@ DEFAULT = dict(modules="AKVWPEC", tau=0.01, gamma=0.98,
                lr_partner=0.3, k_episodes=5, cap=200, replay=0.3, replay_scale=0.5, hab=30.0,
                b_habit=0.05, b_val=0.5, b_wm=1.0, b_partner=0.5, b_ep=0.5, b_cur=0.5,
                # the 2026-10-29 fixes, all off here so the first round can be redone (see FIXES)
-               b_trust=0.0, pm_forget=0.0, pm_detect=False)
+               b_trust=0.0, pm_forget=0.0, pm_detect=False,
+               # TRACES (2026-11-20, off so every older run reproduces): true online TD(lambda) with dutch
+               # traces on the critic, an eligibility trace on the actor's U[verb, target], and the
+               # critic's value carried across the night's end (V(s') is not zeroed while the life goes on).
+               # lam is per turn, one global value, fixed before any run: (gamma*lam)^30 = 0.22, so the
+               # trace still holds a fifth of its weight at the end of P's 30-turn window.
+               traces=False, lam=0.97,
+               # ACT MEANINGS FROM EFFECTS (2026-11-21, SV3; off so every older run reproduces): the partner term reads
+               # what an act would DO to my needs (lab/mindL/effects.py) instead of the KIND and HARM labels. fx_prior:
+               # cultural beliefs {act: {"delta": {drive: change}, "n0": 3, "p": 0.3}}; fx_log keeps the credit log.
+               effects=False, fx_prior=None, fx_log=False,
+               # fx_fix (step 3, off): the drift of the needs is a per-turn rate (turn-weighted), see effects.DeltaMeanings
+               fx_fix=False,
+               # ACQUIRED CONCERNS (2026-11-21, SV1/SV2, learned-mind-target 9.2; off so every older run reproduces): the mind
+               # starts with none; a person or thing it perceives can become a concern, with a weight learned from contact that
+               # paid (conditioned reinforcement) and cost paid on its behalf (effort justification); the reward adds weight x the
+               # drop of the target's need as perceived through signs. lab/mindL/concerns.py. cn: RWConcerns settings;
+               # cn_things: held and loose things (value >= 1) are targets too; b_concern: its weight in the choice (1: the
+               # same units as the world-model lookahead, a predicted drop of error).
+               concerns=False, cn=None, cn_things=True, b_concern=1.0, cn_fx_prior=None)
 # THE FIXES (user, 2026-10-29), "mind2" in lab/mindL/experiments.py: the partner models weigh in the
 # choice (the one-step lookahead gets four times the weight, and the person's recent treatment of me
 # is part of its valence: kind acts toward one who treats me well pull more, harsh acts toward one
@@ -82,7 +103,7 @@ def softmax(x):
 
 
 class Step:
-    __slots__ = ("menu", "a", "pi", "E", "need", "s", "t", "act", "cue", "room", "opt")
+    __slots__ = ("menu", "a", "pi", "E", "need", "s", "t", "act", "cue", "room", "opt", "cn")
 
     def __init__(self, **kw):
         for k, v in kw.items():
@@ -138,8 +159,13 @@ class Agent:
         self.observe(w, evs)
         if self.step is not None:
             need = H.needs(w, p)
-            self.learn(w, p, evs, need, self.err_fn(w, p), H.state(w, p, need), terminal=True)
+            self.learn(w, p, evs, need, self.err_fn(w, p), H.state(w, p, need), terminal=self.ends_life(p))
             self.step = None
+
+    def ends_life(self, p):
+        """Is the step closed by finish() the last one of this life? Always, for a chooser that
+        treats a night's end like a death (the first rounds); a Mind with traces only if dead."""
+        return True
 
     def night_end(self, w, p):
         self.finish(w, p)
@@ -173,6 +199,22 @@ class Mind(Agent):
         self.ep = Episodic(c["k_episodes"], c["cap"])
         self.cur = Curiosity(c["hab"])
         self.last = None             # the last choice's terms, for inspection
+        self.fx = None
+        if c["effects"]:
+            assert not c["b_trust"], "the effects arm uses no KIND/HARM labels: b_trust must be 0"
+            self.fx = DeltaMeanings(len(DRIVES), nx=len(features({})), keep_log=c["fx_log"], turn_drift=c["fx_fix"])
+            for act, b in (c["fx_prior"] or {}).items():
+                self.fx.set_prior(act, [b["delta"].get(d, 0.0) for d in DRIVES], b.get("n0", 3), b.get("p"))
+        self.ac.lam = c["lam"] if c["traces"] else 0.0
+        self.cn = None
+        self._rd: dict = {}
+        if c["concerns"]:
+            self.cn = RWConcerns(**(c["cn"] or {}))
+            for verb, b in (c["cn_fx_prior"] or {}).items():
+                self.cn.set_prior(verb, b.get("rho", 0.0), b.get("eta", 0.0), b.get("n0", 3))
+
+    def ends_life(self, p):
+        return bool(p.dead) or not self.cfg["traces"]
 
     # ------------------------------------------------------------ choosing
     def terms(self, w, p, opts, menu, need):
@@ -197,7 +239,9 @@ class Mind(Agent):
                 T["valence"] = T["valence"] + c["b_trust"] * tr
         if "W" in m:
             T["world"] = c["b_wm"] * self.wm.lookahead(menu, H.grad(p.kind, need))
-        if "P" in m:
+        if "P" in m and self.fx is not None:
+            T["partner"] = c["b_partner"] * self.fx_term(opts, need, p.kind)
+        elif "P" in m:
             vk, vh = self.val.value("got_kind"), self.val.value("got_harm")
             x = np.zeros(n)
             for i, o in enumerate(opts):
@@ -205,6 +249,10 @@ class Mind(Agent):
                     pk, ph = self.pm.predict(o["target"], o["verb"], features(o["f"]))
                     x[i] = pk * vk + ph * vh
             T["partner"] = c["b_partner"] * x
+        if self.cn is not None:
+            T["concern"] = c["b_concern"] * np.array([
+                self.cn.expected(o["verb"], o["target"], self._rd.get(o["target"], 0.0)) if o["target"] in self._rd else 0.0
+                for o in opts])
         if "E" in m:
             x = np.zeros(n)
             groups: dict = {}
@@ -219,6 +267,22 @@ class Mind(Agent):
                 for o, a in zip(opts, acts)])
         return T
 
+    def fx_term(self, opts, need, kind):
+        """The partner term from effects: for an act at a person, the sum over their likely answers of (chance of the answer
+        times the drop of my weighted drive error that the answer's effect would bring from the state I am in)."""
+        x = np.zeros(len(opts))
+        worth: dict = {}
+        for i, o in enumerate(opts):
+            who = o["target"]
+            if who not in reader.PEOPLE:
+                continue
+            for a, pa in self.fx.predict(who, o["verb"], State(features(o["f"]), need)).items():
+                k = (who, a)
+                if k not in worth:
+                    worth[k] = error_drop(kind, need, self.fx.effect(who, a, State(None, need)))
+                x[i] += pa * worth[k]
+        return x
+
     def pick(self, w, p, opts, menu, need, s):
         T = self.terms(w, p, opts, menu, need)
         score = sum(T.values())
@@ -230,13 +294,48 @@ class Mind(Agent):
     def after_pick(self, w, p, opts, menu, a):
         o = opts[a]
         act = reader.key(o)
+        if self.cn is not None:
+            self.step.cn = dict(self._rd)
+            if o["target"] in reader.PEOPLE:
+                self.cn.did(o["target"], o["verb"], w.t, self._rd.get(o["target"]))
         self.habit.update(p.room, [reader.key(x) for x in opts], act)
         self.cur.visit(act)
-        if o["verb"] in SOCIAL and o["target"] in reader.PEOPLE:
+        if self.fx is not None:
+            if o["target"] in reader.PEOPLE:
+                self.fx.update(Did(o["target"], o["verb"], features(o["f"]), w.t))
+        elif o["verb"] in SOCIAL and o["target"] in reader.PEOPLE:
             self.pm.probe(o["target"], o["verb"], features(o["f"]), w.t)
 
     # ------------------------------------------------------------ learning
+    def _readings(self, w, p):
+        """What I perceive of the needs of those I could care for: people in my room by their signs, things I hold (need 0) or
+        that lie loose in my room (need 1)."""
+        rd = {}
+        for q in w.here(p):
+            sg = w.perceived_need(self.name, q.name)
+            if sg is not None:
+                rd[q.name] = need_of(sg)
+        if self.cfg["cn_things"] and not p.dead:
+            for n in w.held(p):
+                if w.things[n]["value"] >= 1:
+                    rd["thing:" + n] = 0.0
+            for n in w.loose(p.room):
+                if w.things[n]["value"] >= 1 and not w.things[n]["hidden"]:
+                    rd["thing:" + n] = 1.0
+        return rd
+
     def observe(self, w, evs):
+        if self.cn is not None:
+            self._rd = self._readings(w, w.people[self.name])
+            self.cn.observe_read(w.t, self._rd)
+        if self.fx is not None:
+            need = H.needs(w, w.people[self.name])
+            tref, need0 = (self.step.t, self.step.need) if self.step is not None else (w.t, need)
+            for e in evs:
+                self.fx.update(Got(e["actor"], e["action"], e["t"], tref, need0))
+            for partner, err in self.fx.update(Tick(w.t, need)):
+                self.cur.p.observe(partner, err)
+            return
         self.pm.observe(evs)
         for partner, err in self.pm.close_due(w.t):
             self.cur.p.observe(partner, err)
@@ -245,13 +344,15 @@ class Mind(Agent):
         st = self.step
         r = H.reward(st.E, E)
         dt = max(1, w.t - st.t)
+        if self.cn is not None:
+            r += self.cn_learn(st, r, dt)
         # V: the cues present over the step
         cues = {"ctx": 1.0}
         for e in evs:
             cues[e["actor"]] = 1.0
-        if any(e["action"] in KIND for e in evs):
+        if self.fx is None and any(e["action"] in KIND for e in evs):
             cues["got_kind"] = 1.0
-        if any(e["action"] in HARM for e in evs):
+        if self.fx is None and any(e["action"] in HARM for e in evs):
             cues["got_harm"] = 1.0
         for cue in (st.cue, st.room):
             if cue is not None and cue not in cues:
@@ -262,15 +363,35 @@ class Mind(Agent):
         err = self.wm.update(v, z, need - st.need)
         self.cur.w.observe(st.opt["verb"], err)
         # A: critic and actor on the TD error
-        delta = self.ac.delta(r, st.s, s, dt, terminal)
-        self.ac.critic_update(st.s, delta)
-        self.ac.actor_update(st.menu, st.a, st.pi, delta)
+        if self.cfg["traces"]:
+            delta = self.ac.trace_step(st.menu, st.a, st.pi, st.s, s, r, dt, terminal, self.cfg["lam"])
+            self.ac.actor_update(st.menu, st.a, st.pi, delta, tables="W")
+        else:
+            delta = self.ac.delta(r, st.s, s, dt, terminal)
+            self.ac.critic_update(st.s, delta)
+            self.ac.actor_update(st.menu, st.a, st.pi, delta)
         # E: one shot, and tonight's steps for replay
         self.ep.store(st.act, z, delta)
         self.ep.tonight.append((st.menu, st.a, st.pi, st.s, s, r, dt, terminal, st.room, st.act))
 
+    def cn_learn(self, st, r_h, dt):
+        """The concerns learn from the step that closes (st.cn: what I read at its start; self._rd: what I read now) and return the
+        concern reward of the step. r_h is the homeostatic reward only (a concern never teaches itself)."""
+        o = st.opt
+        aimed = o["target"] if o["target"] in reader.PEOPLE else None
+        helped = 0.0
+        if aimed is not None and aimed in st.cn:
+            helped = self.cn.relief(o["verb"], st.cn[aimed])
+        return self.cn.learn(StepObs(r_h, st.cn, self._rd, tuple(st.cn), o["verb"], aimed, helped, dt))
+
     def night_end(self, w, p):
         self.finish(w, p)
+        if self.cn is not None:
+            self.cn.flush()
+            self.cn.night()
+        if self.fx is not None:
+            for partner, err in self.fx.update(Flush(w.t, H.needs(w, p))):
+                self.cur.p.observe(partner, err)
         for partner, err in self.pm.close_all():
             self.cur.p.observe(partner, err)
         if "E" in self.mods and self.ep.tonight:

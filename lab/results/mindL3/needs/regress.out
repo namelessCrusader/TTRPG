@@ -1,0 +1,6 @@
+cap.sh: waited 5 s for the CPU to cool (63 C now)
+4 lifetimes to run, 3 workers
+[1/4 19 s] A_luck_hermit_seed1_n100: 18.7
+[2/4 23 s] A_luck_rules_seed2_n100: 22.6
+[3/4 23 s] A_luck_rules_seed1_n100: 22.9
+[4/4 37 s] A_luck_hermit_seed2_n100: 18.5

@@ -1,0 +1,88 @@
+{
+ "weights at night 199": {
+  "kind partner": {
+   "mean": 0.0413,
+   "lo": 0.0027,
+   "hi": 0.0798,
+   "n": 10
+  },
+  "hard partner": {
+   "mean": 0.038,
+   "lo": 0.0153,
+   "hi": 0.0608,
+   "n": 10
+  },
+  "deaf partners (life deaf)": {
+   "mean": 0.0393,
+   "lo": 0.0067,
+   "hi": 0.072,
+   "n": 10
+  },
+  "others (mean of the rest of the cast)": {
+   "mean": 0.0422,
+   "lo": 0.0207,
+   "hi": 0.0636,
+   "n": 10
+  },
+  "kind minus hard (paired)": {
+   "mean": 0.0032,
+   "lo": -0.0446,
+   "hi": 0.051,
+   "n": 10
+  }
+ },
+ "clones": {
+  "D_life (A vs B)": {
+   "mean": 0.2287,
+   "lo": 0.1203,
+   "hi": 0.337,
+   "n": 10
+  },
+  "D_rng (A vs A, other mind seed)": {
+   "mean": 0.2954,
+   "lo": 0.144,
+   "hi": 0.4467,
+   "n": 10
+  },
+  "ratio of means": 0.7742044685172647,
+  "paired D_life - D_rng": {
+   "mean": -0.0667,
+   "lo": -0.2287,
+   "hi": 0.0954,
+   "n": 10
+  },
+  "seeds": 10
+ },
+ "kind minus hard weight over the life": {
+  "night 39": {
+   "mean": -0.0002,
+   "lo": -0.0434,
+   "hi": 0.0429,
+   "n": 10
+  },
+  "night 79": {
+   "mean": 0.0437,
+   "lo": 0.0064,
+   "hi": 0.0809,
+   "n": 10
+  },
+  "night 119": {
+   "mean": 0.046,
+   "lo": -0.0353,
+   "hi": 0.1273,
+   "n": 10
+  },
+  "night 159": {
+   "mean": -0.0367,
+   "lo": -0.1584,
+   "hi": 0.085,
+   "n": 10
+  },
+  "night 199": {
+   "mean": 0.0032,
+   "lo": -0.0446,
+   "hi": 0.051,
+   "n": 10
+  }
+ }
+}

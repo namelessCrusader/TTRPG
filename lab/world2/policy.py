@@ -31,7 +31,7 @@ import math
 import os
 import time
 
-from lab.world2.world import (BENEFIT_ACTS, LONELY_SET, LONELY_W, PARTNER_W, PHYSICAL, RESTRAINT_ACTS, WARM_ACTS,
+from lab.world2.world import (BENEFIT_ACTS, CHOOSY_ACTS, CHOOSY_W, LONELY_SET, LONELY_W, PARTNER_W, PHYSICAL, RESTRAINT_ACTS, WARM_ACTS,
                               WOUND_W)
 
 MID = {t: 0.5 for t in ("bravery", "greed", "pride", "kindness", "temper")}
@@ -54,7 +54,8 @@ def utility(w, p, o, t):
     return u
 
 
-_NEW = frozenset(("partner", "calm"))
+_NEW = frozenset(("partner", "calm", "tend", "choosy"))
+TEND_WALK = 1.0       # tend: the score of walking to a room with people, for a sick one (times its ailment)
 
 
 def flag_terms(w, p, o):
@@ -71,6 +72,10 @@ def flag_terms(w, p, o):
             u += PARTNER_W * f["trust"]
         elif v in RESTRAINT_ACTS:
             u -= PARTNER_W * max(0.0, f["trust"])
+    if "choosy" in w.flags and v in CHOOSY_ACTS and o["target"] in w.people:     # the partner rule, applied to every help act
+        u -= CHOOSY_W * w.distrust(p, o["target"])                              # (serve has had this weight since the inn fix)
+    if "tend" in w.flags and v == "walk to":      # a sick one goes where there are people (only they can help)
+        u += TEND_WALK * p.ail * f["goal"]["company"]
     if "calm" in w.flags:
         if "drives" in w.flags and v in WARM_ACTS:
             u += LONELY_W * max(0.0, p.lonely - LONELY_SET)
@@ -189,11 +194,19 @@ def _utility(w, p, o, t):
     # ---- world flag `meals`
     if v == "serve":       # sharing costs a fed giver little: only its own hunger and a short pot weigh against it
         return (-1.3 + 2.0 * f["seen_need"] + f["asked"] * (1.4 + 0.6 * k) + 0.8 * k * f["like"]
-                - 2.0 * f["distrust"] - 1.2 * max(0.0, f["own"] - 0.45) - 0.8 * (1 - f["left"]) ** 2)
+                - 2.0 * f["distrust"] - 1.2 * max(0.0, f["own"] - 0.45)
+                - 0.8 * (1 - f["left"]) ** 2 * (1 - f.get("spare", 0.0)))        # world flag `lumpy`: what would rot costs the giver nothing
     if v == "buy":
         return -0.9 + 2.2 * f["need"] - f["cost"] * (0.5 + 2 * g) - f["distrust"]
     if v == "work":
         return -1.1 + 2.2 * f["need"] - 1.2 * f["fatigue"] - 0.5 * f["distrust"]
+    # ---- world flags `tend`, `allies` (2026-11-20; `labour` adds no act, it changes what a ration gives): the same rule for everyone
+    if v == "tend":          # like a bandage: a kind one who is not hurt or afraid; a request or a liked one pulls more
+        return (-0.7 + 2.2 * k * f["need"] + 0.6 * f["like"] - 1.2 * A - 0.8 * F * (1 - b)
+                + f["asked"] * (1.4 + 0.6 * k - 2.4 * f["distrust"]))
+    if v == "fend off":      # a brave one starts it, allies already in it pull more, a hit one has little to lose, the afraid hold back
+        return (-1.2 + 1.5 * b + 1.0 * min(2.0, f["allies"]) + 0.8 * f["hit"] + 0.5 * k * min(2.0, f["here"])
+                - 1.5 * F * (1 - b))
     raise ValueError(v)
 
 

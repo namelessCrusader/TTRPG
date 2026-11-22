@@ -1,0 +1,169 @@
+WHAT MAKES RECIPROCITY PAY: THE LIBRARY'S MEASUREMENTS, THE FIXED PASS RULES AND THREE NEW WORLD LAWS (2026-11-20)
+
+VERDICT IN ONE PARAGRAPH
+No pass rule flipped. Old rules: 1 of 5 in all5 and 1 of 5 in all6 (always-harsh loses to rules; nothing else). The three new laws are built,
+tested and run, but the cast that plays in them (four rules characters) does not use them: its error went UP (rules focal 0.385 -> 0.628),
+while always-giving and tit-for-tat did not move. The fixed rules say: (1) the oracle rule cannot pass, its upper bound is 0.068 (all5) and
+0.095 (all6) of drive error, below 0.1; (2) the hermit ties the cast, as the library expected (hermit minus cast -0.014 in all5, -0.121 in all6,
+both CIs hold 0); (3) with an extractor in the cast, always-giving does not lose to tit-for-tat, it BEATS it (-0.29 and -0.24, CIs below 0).
+The measurements show where the textbook conditions stand: the care acts pass them, the pooled number does not (section 2 below). Nothing was
+tuned: every size was fixed before any run, and the first runs are the reported runs.
+
+Files: lab/results/mindL3/stake/ (analysis.txt has every number below; measures_per_run.json, measures_per_cell.json; bound_all5.json,
+bound_all6.json; runs_all5 (80 A rerun with the new logs + 20 E), runs_all6 (80 A + 40 O + 20 E), runs_no_lumpy, runs_no_stock, runs_no_choosy (80 A
+each), runs_all6R0 (20 A); analyze_stake.py, bound.py, run.sh, run.out; test_world.out, test_tournament.out).
+Code: lab/world2/world.py, policy.py, test_world.py, lab/mindL/tournament.py, test_tournament.py. Nothing in src/, tests/ or tools/ touched, nothing staged.
+
+------------------------------------------------------------------
+1. THE THREE NEW WORLD LAWS (each its own flag; all6 = all5 + the three; the same rule for every person)
+------------------------------------------------------------------
+lumpy   Lumpy, perishable catches (S2.4). With chance 0.30 a person's day is a hit and brings the whole expected catch at once, one package of about
+        8 rations (2 need units; a person needs 0.9 a night), at a turn 1-150; otherwise nothing. The expected catch is unchanged (2.4-2.5 rations).
+        Fresh food spoils: half-life 90 turns (u: warm weather, a night = 300 turns = a day). The house's cooked staples keep. One new fact in the
+        giving rule: "spare", the share of a pot the holder could not eat before it spoils; it takes the cost of a giveaway off by that share.
+        Own random generator (seed only), so every chooser sees the same nights.
+stock   A finite counter stock (S2.5). The house's stew and bread carry from night to night, are capped at twice the nominal pot, and are refilled
+        only by people's work: the cook makes 5 rations a night and every "work" at the counter puts 2 back after the worker takes 1.
+        DESIGN COST (stated before the runs, shown by the ablation): the old counter was refilled to 10 rations by magic each night. Now it
+        starts a night at 5.1 rations on average (10.0 without the flag), so the flag also cuts the counter's supply by half. Both sizes (5, 2, cap 2x) are mine (u).
+choosy  Partner choice extended to help acts (S2.3, S6). The distrust term that already sat in serve (weight 2.0, from the partner rule: liking, deeds heard,
+        lies, robberies) now also weighs on tend, defend, bandage and help up. "Fend off" is left out: it picks no person. Reads no trait.
+(d)     Tending and defending are not buyable. Test: in 900 random turns of all6 only food is ever bought or worked for, no tend/defend/bandage option
+        carries a price. Measured: providers of care or defence through the counter = 0.00 in every cell (section 3).
+Tests: lab.world2.test_world 64 passed (56 before, flags-off included, + 8 new); lab.mindL.test_tournament 17 passed (+2: the recorder changes nothing in
+all6; the ablation worlds drop exactly one flag; family E has an extractor). The all5 re-run with the new logs equals the stored all5 in 80 of 80 runs.
+Added to the lab tournament: worlds all6, all6R0, no_lumpy, no_stock, no_choosy; family E (always-giving or tit-for-tat with an extractor in one of
+the other four seats, all5 and all6, seeds 1-10, 20 each); read-only logs (every person's error each night, catches, who ate what, counter stock,
+providers, who tended whom, spoilage).
+
+------------------------------------------------------------------
+2. S7 MEASUREMENTS  (all5 = the stored world re-run with the new logs; all6 = all5 + the three laws)
+------------------------------------------------------------------
+2.1 b, c, c/b and the implied thresholds w* = q* = c/b (8 choosers pooled, help acts give, serve, tend, bandage, help up, defend; 95% CI over seeds)
+   cell   b       c       c/b    q      q_eff   w_same   q_eff*b-c [CI]
+   all5   0.0319  0.0227  0.712  0.812  0.550   0.993    -0.006 [-0.014,+0.003]
+   all6   0.0336  0.0231  0.688  0.802  0.522   0.993    -0.006 [-0.015,+0.003]
+   Pooled, the library's reading holds: c/b is 0.69-0.71 (it inferred 0.72-0.85), w = 0.99 passes w > c/b, q (seen or told) 0.80 passes, q_eff 0.52-0.55
+   fails q_eff > c/b.
+   But the pool hides two kinds of act:
+   give (63% of help acts)   c/b 1.07 (all5), 1.10 (all6). Giving a valued thing is a transfer: the giver's wealth error rises by about what the
+                             receiver's falls (c_imm 0.0275 against b 0.029). q_eff*b-c = -0.020 [-0.029,-0.011] in all5.
+   care acts (tend, bandage, help up, defend, serve)   b 0.031 -> 0.045, c 0.0037 -> 0.0053, c/b 0.119 -> 0.117 (b/c about 8.5), q 0.85 -> 0.81,
+                             q_eff 0.72 -> 0.64, w 0.995. q_eff*b-c = +0.019 [+0.014,+0.024] (all5), +0.024 [+0.017,+0.031] (all6).
+   So by the textbook conditions the care acts already pass in all5 (b/c 8.5 is above image scoring's 5); the pooled failure comes from the zero-sum "give".
+   By act, all5 -> all6: serve b 0.0123 -> 0.0314, c 0.0026 -> 0.0035, c/b 0.21 -> 0.11 (lumpy at work: no_lumpy 0.27); tend c/b 0.10 -> 0.12; defend 0.08 -> 0.12;
+   bandage 0.15 -> 0.14. The only large change is serve. Per-act tables for all five worlds: analysis.txt section 1; per run: measures_per_run.json.
+2.2 Stake s (change in a person's error per unit change in a partner's, OLS slope across nights 20-99, mean of the 20 ordered pairs)
+   all5: rules +0.137 [+0.092,+0.182], hermit +0.204, always-giving +0.246, tit-for-tat +0.223.  all6: rules +0.121 [+0.080,+0.161], hermit +0.171,
+   always-giving +0.234, tit-for-tat +0.242. All clearly above 0, no significant change all5 -> all6. Not near zero as the library guessed, but the slope mixes
+   a real stake with shared shocks (a raid or the empty counter hurts people together): read it as an upper bound (u). Mean error correlation 0.11-0.19.
+2.3 Alternative providers per need (every 10 turns, every living person; 'active' = while the need is on)
+   hunger, all5: the counter has food 45% of samples (0.76 providers, 0.49 when hungry), people holding food 37% (0.52 providers); nearest 2-3 turns away.
+   hunger, all6: counter 34% (0.49), people 26% (0.30): fewer, because the counter is leaner and packages are rarer and spoil. no_stock: counter 41% (0.67).
+   Cost: the counter wants a 10-turn chore (0.06 tiredness) or a thing worth 1-3 for two rations; people's food costs one ask or nothing.
+   tend and defend: 3.9 people (always at least one, 1.00 of samples), the counter 0.00. Care has about four providers, all free, none for sale.
+2.4 sigma (hermit) against the cooperating cast, error nights 20-99, paired by seed
+   all5: hermit 0.386, cast mean 0.400, hermit minus cast -0.014 [-0.215,+0.186]    all6: 0.447 against 0.568, -0.121 [-0.320,+0.077]
+   no_lumpy -0.106, no_stock -0.092, no_choosy -0.049 (every CI holds 0). In every world the hermit is not worse, and in all6 it is better in the mean.
+2.5 Pooling ratio u/s and luck correlation R (rules cell)
+   all5: s (CV of a person's catch) 1.08, R +0.001 [-0.022,+0.025], predicted u/s 0.50, measured u/s without the counter 0.87, with it 0.60.
+   all6: s 1.53 (lumpy), R -0.007, predicted 0.49, measured without the counter 0.95, with it 0.73.
+   Luck is independent (R near 0), so pooling could halve the variation; the cast realises about a quarter of that in all5 (0.87) and a tenth in all6
+   (0.95). The counter does most of the pooling (0.60, 0.73), as the library said. Packages in all6 (rules cell): of 9,704 rations that came in, 44% were
+   eaten by the owner, 25% by someone else, 31% spoiled or were left. Without choosy (no_choosy) others ate 53% (3,839 against 2,400).
+2.6 Oracle-gap upper bound (computed BEFORE the new tournament: all5 from the stored oracle runs, all6 from a 3-lifetime pilot = 0.0956, final with 10 seeds 0.0952)
+   partner-specific acts a night x (b - c), kind acts only (acts at Fenn or Oren whose worth depends on the partner's rule), plus the harm from Oren the
+   oracle could avoid (about 0):
+   all5: 4.53 kind acts a night (12.3 acts of any kind) x (b-c) 0.0291 undiscounted / 0.0153 averaged over the night's remaining time = 0.130 / 0.068
+   all6: 4.76 kind acts (12.8 any) x 0.0344 / 0.0198 = 0.167 / 0.095     (all acts, undiscounted, overstated: 0.355 and 0.440)
+   The error is a night mean, so the night-averaged figure is the one a night-mean error can see. Observed gaps: -0.002 [-0.017,+0.012] (all5), -0.004 [-0.014,+0.007] (all6),
+   25-40 times under even the generous bound. Rule 1 cannot pass in either world.
+2.7 Learners: none was run (this study is the fixed-cast tournament). What a learner would meet: conditional players in the cast 0.8 (always-giving, hermit,
+   hoarder, extractor, always-harsh focal) or 1.0 (rules, tit-for-tat, protector focal), against the library's about 0.2. A rules character answers a help act with
+   a kind act 0.59 (all5) and 0.585 (all6) of the time, and a harsh act with a harsh one 0.43. Exploiter share 0 in the old cells, 0.2 in always-harsh, extractor and family E.
+   No exploitation or retaliation rates over training exist (no training).
+
+------------------------------------------------------------------
+3. PASS RULES, OLD BESIDE FIXED (95% CI over seeds 1-10; PASS = CI above 0)
+------------------------------------------------------------------
+                                      all5                              all6
+1 oracle gap >= 0.1 (old)             -0.002 [-0.017,+0.012] FAIL       -0.004 [-0.014,+0.007] FAIL
+1 FIXED: against its bound            bound 0.068 (0.130 generous)      bound 0.095 (0.167 generous)
+                                      below 0.1: CANNOT PASS            below 0.1: CANNOT PASS
+2 hermit loses to rules (old)         +0.001 [-0.103,+0.106] FAIL       -0.182 [-0.419,+0.055] FAIL
+2 FIXED: hermit against sigma         -0.014 [-0.215,+0.186] TIE        -0.121 [-0.320,+0.077] TIE
+2 always-harsh loses to rules (old)   +0.818 [+0.715,+0.922] PASS       +0.632 [+0.488,+0.777] PASS
+3 always-giving loses to tft (old,    -0.083 [-0.334,+0.167] FAIL       -0.076 [-0.351,+0.199] FAIL
+  exploiter share 0.00)
+3 FIXED: with an extractor in the cast -0.290 [-0.560,-0.019] FAIL       -0.238 [-0.435,-0.042] FAIL
+  (share 0.20; always-giving 0.358 against tft 0.648)   (always-giving 0.389 against tft 0.627) -- always-giving WINS, the wrong sign
+4 q*b > c (old, pooled help acts)     +0.003 [-0.002,+0.008] FAIL       +0.004 [-0.001,+0.009] FAIL     (q_eff*b-c: -0.006 and -0.006, FAIL)
+5 extractor wins only where reprisal  loses both: +0.756 on, +0.697 off FAIL   loses both: +0.571 on, +0.699 off FAIL
+  is weak
+PASS COUNT (old, rules 1-5)           1 of 5                             1 of 5
+The hermit tie condition (Hauert, Monte, Hofbauer, Sigmund 2002, doi:10.1126/science.1070582, from the library's reading, u): with an opt-out paying sigma the
+time-average payoff of every strategy equals sigma, and cooperation lives only if 0 < sigma < r - 1. Here the hermit's payoff IS sigma. A tie means the counter alone
+pays what company pays: the gain from company, r minus sigma, is zero. "The hermit loses" can pass only where that gain is above zero. It is not: the cast gives a
+hermit the same care (it gets 0.25 care acts a night against 0.11 for a rules person in all6) and the same food.
+Rule 3 fixed: the extractor is in one of the other four seats. Tit-for-tat pays more: 2.3 deaths in 80 nights against 1.5 for always-giving (all5), 2.5 against 1.2 (all6).
+My reading (u, not tested): tit-for-tat answers a theft with a theft and a blow with a blow and is drawn into fights; always-giving takes the loss and keeps out of them.
+Ablations (old forms, A family only; the oracle and reprisal-off cells were not run for them, so rules 1 and 5 are not scored there):
+   world       2 hermit-rules          2 harsh-rules   3 giving-tft            4 q*b-c
+   no_lumpy    -0.081 FAIL             +0.748 PASS     -0.190 FAIL             +0.002 FAIL
+   no_stock    -0.077 FAIL             +0.782 PASS     -0.192 FAIL             +0.002 FAIL
+   no_choosy   -0.064 FAIL             +0.781 PASS     -0.173 FAIL             +0.006 [+0.001,+0.012] PASS (q_eff*b-c -0.004 FAIL)
+   The one PASS in rule 4 (no_choosy) is marginal and does not hold for q_eff; I do not count it as a flip.
+
+------------------------------------------------------------------
+4. THE TOURNAMENT (seeds 1-10, 100 nights, focal error nights 20-99, each world minus all5, paired by seed)
+------------------------------------------------------------------
+   chooser        all5   all6   all6 - all5            no_lumpy - all5       no_stock - all5       no_choosy - all5
+   rules          0.385  0.628  +0.243 [+0.055,+0.432]  +0.077 [-0.004,+0.158] +0.116 [-0.026,+0.258] +0.114 [+0.019,+0.208]
+   hermit         0.386  0.446  +0.060 [+0.039,+0.081]  -0.005 [-0.030,+0.021] +0.037 [+0.009,+0.065] +0.048 [+0.017,+0.080]
+   always-giving  0.322  0.321  -0.000 [-0.024,+0.023]  +0.007                -0.035                -0.011
+   tit-for-tat    0.405  0.398  -0.007 [-0.061,+0.046]  +0.114 (wide)         +0.074 (wide)         +0.079 (wide)
+   extractor      1.141  1.199  +0.058 [+0.018,+0.098]  -0.013                +0.062 [+0.007,+0.116] +0.060 [+0.003,+0.117]
+   always-harsh   1.203  1.261  +0.058 [-0.002,+0.117]  +0.007                +0.080 [+0.016,+0.143] +0.076 [+0.015,+0.138]
+   hoarder        0.386  0.430  +0.043 [+0.002,+0.084]  +0.018                +0.021                 +0.029
+   protector      0.460  0.470  +0.010                  -0.019                +0.001                 +0.019
+What each flag does to the all-rules cast (all6 minus the world without it): lumpy +0.166 [+0.028,+0.304]; stock +0.128 [-0.024,+0.279]; choosy +0.130 [-0.061,+0.320].
+Deaths in 80 nights, rules focal: all5 2.1, all6 2.6.
+
+------------------------------------------------------------------
+5. DID EACH LAW DO WHAT THE LIBRARY SAID  (mechanism checks, not pass rules)
+------------------------------------------------------------------
+lumpy   Yes at the act, no in the cast. Serve got cheap for the holder and valuable for the hungry: c/b 0.21 -> 0.11, b x2.6. But the rules cast hardly serves: a rules
+        focal serves 0.10 a night in all6 (0.36 without lumpy, 0.53 without stock) against 2.2 for always-giving and 2.3 for tit-for-tat. Serve is scored only when the
+        receiver is over 0.6 hungry, and the rules score has no term for the giver's spare food beyond cheaper cost. So the packages rot in the rules cast (31%), and its
+        error rises. The extractor, hermit and hoarder also lose (+0.07, +0.07, +0.03): they cannot reach the packages either.
+stock   Partly. The counter ends the night empty in 97% of nights (92% in no_stock, so it was never an endless faucet inside a night). A focal with no catch on a night the
+        counter ended empty had error 0.810 against 0.548 on other nights in all6 (0.646 against 0.516 in no_stock). People hardly refill it: 0.12 work acts a night for a rules
+        focal in all6 (0.50 without the flag, where the counter was full). So the cast does not "work to refill the counter"; the supply cut is what the flag mostly does.
+choosy  It did the opposite of what was meant. The distrust term reads harm done, not help withheld. The rules cast quarrels, so its members distrust each other and care
+        is held back inside it: a rules focal gives 0.14 care acts a night and gets 0.11 in all6 (0.50 and 0.36 without choosy). The hermit, nobody's enemy, gets 0.25 and
+        gives 0. Packages eaten by someone else fell from 3,839 to 2,400 rations. Nothing in anyone's history records "this person never helps", so a free rider is still
+        tended (S6: unconditional care is what learners exploit).
+(d)     Confirmed: care and defence cannot be bought (0.00 counter providers, menu test).
+
+------------------------------------------------------------------
+6. WHICH CONSEQUENCE IS STILL MISSING, IN S7 TERMS
+------------------------------------------------------------------
+- b/c and the thresholds are not the problem for care: b/c about 8.5, q_eff 0.64-0.72, w 0.99 all pass. The pooled fail is the zero-sum "give" (c/b 1.1, 63% of acts).
+- Stake: s is 0.12-0.25 already and the world changes did not move it. A stake exists; nothing links it to the choice of whom to help.
+- Providers: care has 3.9 free providers for everyone, hermit included, and none at the counter. The partner rule's weight (2.0 x distrust) bites only on someone
+  distrusted for harm. The hermit has no harm history, so it stays served. This is why the hermit ties (sigma = r) and why always-giving is not punished.
+  The missing consequence is a difference between persons in what their history with a partner contains, for a person who gives nothing. Whether that can come
+  from the existing records (liking raised by help received, deeds heard) without a reciprocity rule is the open question; I did not add one.
+- Pooling: R = 0 and predicted u/s 0.50, but the cast realises a tenth to a quarter of it; the food rules (serve only at hunger over 0.6) is what leaves packages to rot.
+- Oracle: with 4.5-4.8 kind acts a night and (b-c) of 0.015-0.020 a night, the world cannot show a 0.1 gap to partner knowledge. To pass, kind acts must be more
+  numerous or each worth more (care b 0.12 per tend act, but tend is 4% of acts).
+
+------------------------------------------------------------------
+7. UNVERIFIED (u) AND LIMITS
+------------------------------------------------------------------
+(u) The library's literature numbers (thresholds, Hauert's sigma, Kaplan and Hill, Winterhalder's Eq. 4) are taken from its response, not re-checked here.
+(u) LUMP_P 0.30, package 8, half-life 90 turns, cook 5 rations, work yield 2, cap 2x: mine, fixed before the runs, one setting each, no second value tried.
+(u) Stake s includes shared shocks; the oracle bound's "kind acts" and "timed" forms are my definitions of the library's formula.
+(u) The reading of why tit-for-tat loses to always-giving (fights) rests on the death counts only.
+Limits: the ablations ran family A only (no oracle, no reprisal-off). Family E has 10 seeds and one extractor seat chosen by seed. CPU: 3.46 hours of lifetimes
+(about 0.4 over the budget: the all5 re-run for logs was 80 of them). No learner runs, so S7.7 has the cast's rates only.

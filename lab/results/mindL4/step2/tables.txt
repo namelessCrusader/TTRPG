@@ -1,0 +1,43 @@
+
+== effects  (60 lives incl. rules, 300 nights, deaf at 200)
+  L1 late1         mind: -0.136 [-0.424, +0.152]  rules: +0.328 [+0.209, +0.447]
+  L1 late2         mind: +0.230 [-0.197, +0.656]  rules: +0.332 [+0.216, +0.447]
+  L1 shared_early  mind: -0.379 [-0.602, -0.156]  rules: +0.344 [+0.192, +0.495]
+  L1 shared_late   mind: -0.385 [-0.617, -0.153]  rules: +0.259 [+0.130, +0.388]
+  L2 effect_kind   mind: -0.021 [-0.254, +0.212]  rules: +0.168 [+0.112, +0.224]
+  L2 effect_hard   mind: +0.036 [-0.097, +0.170]  rules: -0.212 [-0.379, -0.045]
+  L2 contrast      mind: -0.058 [-0.377, +0.261]  rules: +0.380 [+0.225, +0.535]
+  verdicts: FAIL: the mind does not show it | FAIL: the mind does not show it
+  drive error, last 100 nights, rules: {'deaf': '+0.179 [+0.135, +0.223]', 'B': '+0.154 [+0.135, +0.173]', 'A': '+0.153 [+0.127, +0.179]'}
+  drive error, last 100 nights, mind: {'deaf': '+0.255 [+0.192, +0.317]', 'A': '+0.239 [+0.199, +0.279]', 'B': '+0.278 [+0.193, +0.364]'}
+  effects arm, P-hard partner: worth of ask: -0.0036 [-0.0057, -0.0016]
+  effects arm, P-hard partner: worth of give: -0.0091 [-0.0135, -0.0048]
+  effects arm, P-hard partner: worth of insult: -0.0148 [-0.0181, -0.0114]
+  effects arm, P-hard partner: worth of praise: -0.0035 [-0.0059, -0.0010]
+  effects arm, P-need partner: worth of ask: +0.0138 [+0.0099, +0.0178]
+  effects arm, P-need partner: worth of give: +0.0176 [+0.0112, +0.0239]
+  effects arm, P-need partner: worth of insult: +0.0189 [+0.0127, +0.0251]
+  effects arm, P-need partner: worth of praise: +0.0056 [+0.0018, +0.0094]
+
+== labels  (60 lives incl. rules, 300 nights, deaf at 200)
+  L1 late1         mind: +0.235 [+0.013, +0.457]  rules: +0.328 [+0.209, +0.447]
+  L1 late2         mind: +0.294 [+0.059, +0.528]  rules: +0.332 [+0.216, +0.447]
+  L1 shared_early  mind: +0.174 [-0.024, +0.372]  rules: +0.344 [+0.192, +0.495]
+  L1 shared_late   mind: +0.056 [-0.105, +0.216]  rules: +0.259 [+0.130, +0.388]
+  L2 effect_kind   mind: +0.137 [-0.075, +0.348]  rules: +0.168 [+0.112, +0.224]
+  L2 effect_hard   mind: -0.103 [-0.278, +0.071]  rules: -0.212 [-0.379, -0.045]
+  L2 contrast      mind: +0.240 [+0.093, +0.388]  rules: +0.380 [+0.225, +0.535]
+  verdicts: FAIL: the mind does not show it | FAIL: the mind does not show it
+  drive error, last 100 nights, mind: {'deaf': '+0.226 [+0.162, +0.289]', 'A': '+0.293 [+0.226, +0.360]', 'B': '+0.226 [+0.179, +0.273]'}
+  drive error, last 100 nights, rules: {'deaf': '+0.179 [+0.135, +0.223]', 'B': '+0.154 [+0.135, +0.173]', 'A': '+0.153 [+0.127, +0.179]'}
+
+effects minus labels (paired by seed):
+  L1 late1                     -0.371 [-0.744, +0.003]
+  L1 late2                     -0.064 [-0.524, +0.396]
+  L1 shared_early              -0.553 [-0.938, -0.168]
+  L2 effect_kind               -0.158 [-0.421, +0.105]
+  L2 effect_hard               +0.140 [-0.096, +0.376]
+  L2 contrast                  -0.298 [-0.710, +0.114]
+  error last 100, life A       -0.054 [-0.130, +0.021]
+  error last 100, life B       +0.052 [-0.008, +0.112]
+  error last 100, life deaf    +0.029 [-0.070, +0.128]

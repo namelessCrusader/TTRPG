@@ -1,0 +1,154 @@
+THE THREE NEEDS ONLY ANOTHER PERSON CAN MEET (2026-11-20)   user decision 1: luck first, the other three if luck is not enough
+
+VERDICT IN ONE LINE
+Three general mechanisms are built (flags tend, allies, labour), tested, and run alone and together (all5 = all4 + all three).
+They change the world (illness and raids cost, variety costs) but NO pass rule flips: still 1 PASS out of 5 (always-harsh loses to
+rules). The house counter still makes others matter little. Nothing was tuned: every size was fixed before the runs; the first
+runs are the reported runs.
+
+------------------------------------------------------------------
+1. WHAT WAS ADDED (lab/world2/world.py, policy.py, partners.py; each its own flag; same rule for every person, no trait flag)
+------------------------------------------------------------------
+tend    Injuries someone else must treat. 10 percent of nights a person starts with an AILMENT (a fever, a wound on the back),
+        level 0.25-0.60 on the need scale. It feeds the safety need, grows 0.0012 a turn when left alone (+0.36 a night) and is
+        taken down only when ANOTHER person tends it (act "tend", 6 turns of the helper's time, helper tires 0.04, ailment -0.35).
+        No one can tend itself. One may ASK another to tend it ("ask X to tend you", the existing ask path; the scripted P-kind
+        partner answers it). Tending counts as a kind act in the existing tables (gossip, witnesses, trust, tit-for-tat replies).
+        Draws: own generator (seed only), so every chooser gets the same ailments and the world's own draws do not move.
+        Size (u, from memory): forager-horticulturalists are sick or hurt enough to stop work on about 10 percent of days (Hill and
+        Hurtado 1996 Ache; Sugiyama and Chacon 2000 Shiwiar; Gurven et al. Tsimane); the badly hurt live or die by care (Sugiyama 2004).
+allies  Threats that need allies. 15 percent of nights a RAID (a wolf or a raider) comes in from the yard at turn 30-200, hits one
+        person in its room every 5 turns (1.8 hp x 0.5-1.5; down at hp 4, dead at -2) and walks to where the people are. Act
+        "fend off" (5 turns): each finished one takes 1.5 x 0.6-1.4 off its 10 hp. One fighter needs about 6.7 rounds and is down after
+        about 3.4 hits; two need 3.3 rounds and share the hits. Joining costs risk: the joiner is in the room and is hit. Score:
+        bravery, allies already fighting, having been hit, fear (policy.py). Fighters who stand together like each other +0.05.
+        Size (u): 15 percent a night is OUR choice, guided only by violence being about 14 percent of forager deaths (Bowles 2009, u).
+labour  Division of labour (see 4 for why this form). Each person's luck catch is split by that person's own dial: the bold
+        (bravery) bring GAME, the careful bring GREENS, in the share of the dial. The inn's larder is only staples. Eating has
+        sensory-specific satiety: a ration of the kind just eaten relieves 60 percent of the usual (Rolls et al. 1981, variety raises
+        intake by about 60 percent, u). So living on the larder alone eats at 60 percent; other kinds are in other hands.
+        Needs luck. No class, no flag: the split follows the dial.
+Old flags unchanged: lab.world2.test_world 56 passed (48 old, including test_flags_off_is_the_inn_as_before, + 8 new); lab.mindL.
+test_tournament 15 passed. all4 re-run (rules and hermit, seeds 1-2, 100 nights) is identical to the stored luck runs (err, acts,
+deaths: 3 of 3 identical). Files regress.out, test_world0.out, test_tournament.out.
+Tests added (8): flags new / each alone valid / labour needs luck; ailments from own generator at the dial rate; an ailment cannot
+be treated by its owner, grows, and another's tend takes it down at a cost of time and effort; an ask for care is answered by P-kind
+and the score is the same for two different people; one fighter loses and two or three win, the joiner is hit, risk pools; raid
+from own generator and the same facts give the same fend-off score; catch split by the dial and a repeated kind relieves 60
+percent; 900 random turns in all5 stay valid.
+Also in lab: tournament.py (worlds tend, allies, labour, all5, all5R0; env MINDL3_ILL, MINDL3_RAID; tend added to the always-giving
+and tit-for-tat stances and to HELP_ACTS, as serve was in the inn fix), partners.py (P-kind answers an ask for care).
+
+------------------------------------------------------------------
+2. THE TOURNAMENT (step 0a: same archetypes, pass rules and controls; seeds 1-10, 100 nights, nights 20-99 scored, same focal and
+   night seeds; paired against all4 = the luck world v=0.3 stored in lab/results/mindL3/luck/runs_v03)
+------------------------------------------------------------------
+Focal drive error (lower is better). diff = world minus all4, paired, 95% t over 10 seeds (files cmp_*.txt):
+ chooser         all4   tend    allies  labour  all5    all5 minus all4
+ always-giving  0.250  0.272   0.308   0.313   0.322   +0.071 [-0.006,+0.149]
+ hermit         0.355  0.374   0.365   0.361   0.386   +0.032 [+0.005,+0.059]
+ hoarder        0.359  0.352   0.375   0.357   0.386   +0.027 [-0.006,+0.059]
+ tit-for-tat    0.413  0.521   0.431   0.343   0.405   -0.008 [-0.144,+0.128]
+ rules          0.407  0.456   0.455   0.427   0.385   -0.022 [-0.126,+0.082]
+ protector      0.412  0.454   0.417   0.399   0.460   +0.048 [-0.023,+0.119]
+ extractor      1.101  1.120   1.097   1.086   1.141   +0.040 [+0.006,+0.074]
+ always-harsh   1.156  1.202   1.188   1.165   1.203   +0.047 [+0.011,+0.084]
+ Alone, every difference to all4 has a CI that holds 0 except: tend always-harsh +0.046; allies rules +0.048 [+0.001,+0.095]; labour
+ always-giving +0.063 [+0.003,+0.123]. Errors rose a little (the new needs are costs), the opposite of the luck result.
+Deaths in 80 scored nights (all4 had 0.0-0.1): all5 rules 2.1, hermit 2.6, hoarder 1.4, tit-for-tat 1.9, protector 2.1, always-giving
+ 0.2, extractor 6.7, always-harsh 7.5. allies alone: rules 1.5, hermit 2.1. tend and labour alone: about 0. The deaths are raids.
+
+PASS RULES                              all4 (luck report)   tend              allies            labour            all5
+ 1 Oracle gap >= 0.1, CI above 0        FAIL +0.003          FAIL +0.001       FAIL +0.003       FAIL +0.003       FAIL -0.002
+                                        [-0.002,+0.007]      [-0.005,+0.007]   [-0.004,+0.010]   [-0.006,+0.012]   [-0.017,+0.012]
+   (rules error: 0.134 / 0.131 / 0.146 / 0.133 / 0.144. Ceiling a blind partner policy can touch: company + standing + safety error
+    0.016 / 0.018 / 0.029 / 0.017 / 0.026.)
+ 2 Hermit and always-harsh lose to     FAIL hermit -0.052    FAIL hermit -0.081 FAIL hermit -0.090 FAIL hermit -0.067 FAIL hermit +0.001
+   rules                               harsh PASS +0.749     harsh PASS +0.747  harsh PASS +0.733  harsh PASS +0.738  harsh PASS +0.818 [+0.715,+0.922]
+                                        hermit CIs: [-0.215,+0.110] / [-0.266,+0.103] / [-0.277,+0.097] / [-0.201,+0.068] / [-0.103,+0.106]
+   (hermit minus rules: in all5 it is a tie; alone it still beats rules in the mean, not significantly)
+ 3 Always-giving loses to tit-for-tat   FAIL -0.163          FAIL -0.249       FAIL -0.123       FAIL -0.030       FAIL -0.083
+                                        [-0.411,+0.086]      [-0.596,+0.097]   [-0.358,+0.113]   [-0.204,+0.143]   [-0.334,+0.167]
+ 4 q*b > c (help acts)                  FAIL +0.002          FAIL -0.000       FAIL -0.000       FAIL +0.000       FAIL -0.000 [-0.005,+0.004]
+                                        [-0.002,+0.005]      [-0.005,+0.005]   [-0.005,+0.004]   [-0.005,+0.005]
+ 5 Extractor wins only where reprisal   FAIL wins nowhere     FAIL +0.664       FAIL +0.642       FAIL +0.659       FAIL +0.756 reprisal on, +0.697 off
+   is weak                              (+0.694 on, +0.707 off) (off not run)    (off not run)     (off not run)     (extractor loses in both)
+ PASS count                             1 of 5               1 of 5            1 of 5            1 of 5            1 of 5
+
+b, c, q, q_eff, w for the help acts (give, bandage, help up, defend, serve, and now tend; 8 plan choosers pooled):
+              b       c       q     q_eff   w_same  n acts    q*b-c [95% CI]          q_eff*b-c [95% CI]
+ all4        0.025   0.019   0.81   0.58    0.99    120,687   +0.002 [-0.002,+0.005]  -0.005 [-0.012,+0.003]
+ tend        0.028   0.023   0.81   0.56    0.99    128,431   -0.000 [-0.005,+0.005]  -0.008 [-0.016,+0.000]
+ allies      0.025   0.021   0.80   0.54    0.99    134,599   -0.000 [-0.005,+0.004]  -0.008 [-0.016,-0.001]
+ labour      0.028   0.022   0.81   0.54    0.99    124,883   +0.000 [-0.005,+0.005]  -0.008 [-0.016,+0.000]
+ all5        0.029   0.023   0.81   0.54    0.99    133,510   -0.000 [-0.005,+0.004]  -0.008 [-0.017,-0.000]
+ (w_next 0.998 everywhere: the pair meets again, so the future is always there.)
+ The tend act itself (all5): b 0.12 per act (the biggest of any help act; give 0.03, serve 0.01), c -0.003 (the helper's error does not rise:
+ the time costs little), n 5,692. q was not the weak part. b*q is large for tend, but tend is only 4 percent of help acts, so the pooled
+ b barely moves (0.025 -> 0.029).
+
+------------------------------------------------------------------
+3. DID EACH MECHANISM DO ANYTHING (checks of the mechanism, not pass rules; files diag.txt, raid_diag.txt)
+------------------------------------------------------------------
+tend    Yes, small. Focal error on ill nights vs well nights (all4 error on the same nights in brackets), tend world:
+        hermit 0.423 vs 0.369 (0.361); rules 0.555 vs 0.444 (0.440); tit-for-tat 0.611 vs 0.511 (0.420); always-giving 0.289 vs 0.270 (0.249).
+        A sick night costs 0.02-0.11 more than a well one (n=82 ill nights per chooser, noisy). Who gets tended: the HERMIT is tended 0.21 times
+        a night, the same as the helpers (always-giving 0.29, rules 0.13, tit-for-tat 0.24). The rules cast tends anyone sick who is in the room,
+        so a hermit that never helps gets the care for free. That is the missing consequence: the cast's kindness is unconditional enough
+        that care is not withheld from a free rider (the only brake is the trust term, and one night of avoiding people does not lose trust).
+allies  Yes, and strongly. Raids every night, all-rules cast (raid_diag.txt, 120 nights; by the most people fighting at once):
+          1 person  17 nights  driven off 0.00   people killed 2.47 a night
+          2 people  19 nights  driven off 0.32   killed 1.95
+          3 or more 83 nights  driven off 0.80   killed 0.64
+        (one fighter never wins; two sometimes; three or more mostly, and each takes less). Focal error on raid vs quiet nights, allies world:
+        hermit 0.436 vs 0.352; rules 0.536 vs 0.441; always-giving 0.347 vs 0.301 (all4 on the same raid nights 0.351 / 0.438 / 0.238). So a raid
+        costs about 0.09 a night, and the focal dies on about 2 of 80 nights (rules 1.5, hermit 2.1 in allies alone). Why it still does not separate the choosers: the cast
+        (rules) mostly fights, so a hermit is still protected by it, and the raid also reaches a hermit in a room with the cast. The solo fighter
+        dies often (above), but the choosers do not fight alone: rules fights when others are in the room.
+labour  Barely. Focal energy error (all4 in brackets): hermit 0.166 (0.155), rules 0.155 (0.143), always-giving 0.120 (0.096), tit-for-tat 0.119
+        (0.111). It costs everyone a little. Reason: with the luck catch half the night is eaten from one's own mixed game-and-greens catch, which
+        already has both kinds, and the house still sells the stew and the bread and the counter lets a person buy or work for any pot. A person is
+        rarely forced onto repeated staple (eats/night 1.8-2.1 for hermit and rules, the same as all4). The best a trade does is 40 percent more
+        relief per ration, and the house gives a second kind of staple only in name.
+all5    The costs add (hermit +0.032 over all4, with a CI above 0). The rules focal's error fell -0.022 (not significant) because in all5 it fights
+        and is then treated (tend and bandage), which is the only place where the world pays for the social stance: rules tends 0.21 and fends 0.18 a night.
+
+------------------------------------------------------------------
+4. WHY LABOUR TOOK THIS FORM, AND WHAT IS UNVERIFIED
+------------------------------------------------------------------
+First design: a sentinel (one awake in the room so that others sleep soundly; Hadza, Samson et al. 2017 (u)). Dropped before any run: in this
+inn nobody sleeps (a rules person sits down for rest and the rest need is 0.004 of the error), so the mechanism would have had no hold on any
+drive. A mechanism has to bind a drive that has weight. Energy (0.10-0.17) is the biggest; so labour was tied to food. The one-line lesson: a need
+that ONLY another can meet matters only if it carries a large part of the error. Rest, company and standing together are 0.02 to 0.03 of it.
+Unverified (u): every real-data size (10 percent ill, 14 percent violence, Rolls 60 percent, Hadza sleep); the 15 percent raid rate and the
+raid strength are our choice, set from the one-fighter-loses, two-win rule only; the raid is a world event (no mind), not a person; the existing bandit
+(who comes on 60 percent of nights in every world of the tournament, as bandit=None draws) is a separate threat and was left as it is.
+Reprisal-off (rule 5) was run only in all5 (budget); in the single worlds only the reprisal-on extractor was run.
+
+------------------------------------------------------------------
+5. WHICH CONSEQUENCE IS STILL MISSING, AND THE HOUSE COUNTER
+------------------------------------------------------------------
+Did the new needs make others matter despite the house counter? Partly, and not in the way the pass rules measure.
+  - Others DO matter for these needs: the counter sells nothing against a fever or a raid. Ill nights cost +0.02 to +0.11, raid nights about +0.09 and
+    deaths (all5 rules 2.1 per 80 nights, before 0), and the focal that tends and fends is the one whose error falls (rules -0.022 in all5), while
+    hermit gets worse (+0.032, CI above 0). A solo fighter dies; the group wins. The ally mechanism does what it was built to do.
+  - But the pass rules do not move because (a) the cast makes the help nearly free for everyone: the hermit is tended as often as the helpers (0.21 vs
+    0.13-0.29 a night) and is defended by the cast in a raid, so being alone is not punished; this is the same missing consequence as in the luck report,
+    now seen in care and defence: kindness from the cast does not depend on what the receiver gave. (b) the partner-rule oracle's possible gain is still tiny
+    (ceiling 0.017-0.029 of 0.13-0.15 error), since the oracle's scripted partners do not fight or tend by choice, and the need is unpredictable. (c) always-giving
+    still beats tit-for-tat (conditional kindness has no edge when giving costs 0.02 and is answered). (d) the extractor loses anyway (harsh replies).
+  - So the house counter is not the main reason any more. For the three needs the real gap is that no one is ever refused: a mechanism that withholds care from
+    one who never gave it (not a rule about reciprocity, but a cost that rises with the number of times a person has been tended and has not tended, as limited time
+    does for real helpers) was not built and was not asked for. Without it, a free rider survives; with it, hermit and always-giving may separate from rules.
+  - Sizes matter too: if the ailment rate is 10 percent the oracle gap cannot exceed about 0.03; rule 1 (gap 0.1) needs a share of the error that only partners can
+    touch of about 70 percent, and the real data do not give that. This is a threshold the rule may have to change, not a world to tune.
+
+------------------------------------------------------------------
+6. COST, CAVEATS, FILES
+------------------------------------------------------------------
+CPU: 500 lifetimes, 3.06 CPU hours in the lifetimes (all5 0.83, tend 0.74, allies 0.73, labour 0.76), plus tests and diagnostics (a few minutes). About at the 3 h budget.
+One setting per mechanism (no second dial value). Seeds 1-10 only; the CIs are wide (rules spread over seeds 0.2-0.6), so "hermit beats rules by 0.07-0.09" is a tie.
+Code: lab/world2/world.py, policy.py, partners.py, test_world.py (+8 tests), lab/mindL/tournament.py. src/, tests/ and tools/ untouched; nothing staged or committed.
+Results: lab/results/mindL3/needs/ (runs_all5, runs_tend, runs_allies, runs_labour: 500 json; an_*.txt pass rules; cmp_*.txt vs all4; diag.txt; raid_diag.txt;
+analyze.py, compare.py, diag.py, raid_diag.py; test outputs). In an_*.txt the world under study is printed under the label "all2" and all5R0 as "noR".
+Scratch: /home/nisargparikh/.cache/mark1-build/mindL3/needs/.

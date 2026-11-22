@@ -185,6 +185,114 @@ BASE_FLAGS = ("drives", "gossip", "trade", "watch", "check", "known")      # wha
 FLAGS = BASE_FLAGS + ("reprisal", "wear")                                  # "all2" is all of them
 NEW_FLAGS = ("meals", "partner", "news", "calm")                          # the inn fix; "all3" is FLAGS + these
 ALL3 = FLAGS + NEW_FLAGS
+LUCK_FLAGS = ("luck",)                                                    # uneven luck (2026-11-20); "all4" is ALL3 + this
+ALL4 = ALL3 + LUCK_FLAGS
+# luck: half of the night's expected food stops coming from the house pot and comes instead as each person's own CATCH
+# (foraged, hunted, earned), the same expected size for everybody (LUCK_SHARE of the 20 rations, over the 4 who are not the
+# house), but it varies from night to night and independently between people. The dial v is the chance of an empty night.
+# Otherwise the catch is Gamma(shape 2) scaled so the mean stays put (mean catch = mean / (1 - v)), CV^2 = 1.5/(1-v) - 1
+# (v 0.3: CV 1.07; v 0.5: CV 1.41). Grounding (u, from memory, not re-checked): Ache hunters bring home no meat on about 40 percent
+# of days and their daily returns have a CV near 1 or more (Kaplan and Hill 1985, "Food sharing among Ache foragers");
+# Hadza and !Kung daily individual returns are similarly lumpy (Hawkes, O'Connell, Blurton Jones 2001 (u); Cashdan 1985 (u)).
+# Kaplan and Hill read this variance as the reason food is shared. A catch cannot be kept overnight (each night is a new world),
+# so a lucky night's surplus is worth nothing to its holder unless shared: that is the part of the model that matters.
+LUCK_SHARE = 0.5
+LUCK_SHAPE = 2
+NEED_FLAGS = ("tend", "allies", "labour")                                # the three needs only another person can meet (2026-11-20)
+ALL5 = ALL4 + NEED_FLAGS                                                 # "all5" = all4 + these three
+# tend: some harms cannot be treated by the one who has them (a wound on the back, a fever). An AILMENT is a level in 0..1 that
+# feeds the safety need, grows while nobody treats it, and falls only when another person TENDS it. One law for everybody.
+# Sizes (all (u), from memory, not re-checked): forager-horticulturalists are sick or hurt enough to stop work on about 10 percent
+# of days (Hill and Hurtado 1996 on the Ache; Sugiyama and Chacon 2000 on the Shiwiar; Gurven et al. on the Tsimane), and
+# survival of the badly hurt depends on being cared for (Sugiyama 2004). So 10 percent of nights a person starts with an ailment.
+AIL_P = 0.10                  # the chance that a person starts a night with an ailment
+AIL_LO, AIL_HI = 0.25, 0.60   # its starting level (uniform): a fifth to over half of the need scale
+AIL_GROW = 0.0012             # untreated, it grows this much a turn (+0.36 over a 300-turn night: an infection left alone)
+TEND_RELIEF = 0.35            # one tending (TEND_DUR turns of the helper's time) takes this off
+TEND_MIN = 0.15               # below this an ailment is not worth a visit
+TEND_TIRE = 0.04              # the helper tires (as walking tires, drives flag)
+# allies: some dangers beat one person and lose to two or more acting together. A RAID: a beast or a bandit comes in from the
+# road (the yard) at a turn of the night, hits one person in its room every RAID_ROUND turns, and goes for the people if the room
+# is empty. Each "fend off" act that finishes costs it FEND_DMG in expectation (drawn 0.6..1.4 times). One fighter takes about
+# 6.7 rounds to bring it down and is down itself after about 3.4 hits; two take 3.3 rounds, so the hits are shared. Joining costs
+# risk: the joiner is in the room and gets hit. A raid comes on RAID_P of nights (u: chosen from the 14 percent of forager
+# deaths that were violence (Bowles 2009, u) and that a raid is rarer than an ordinary night).
+RAID_P = 0.15
+RAID_T0, RAID_T1 = 30, 200    # the turn it comes in (uniform)
+RAID_ROUND = 5
+RAID_HP, RAID_DMG, FEND_DMG = 10.0, 1.8, 1.5
+FEND_WARM = 0.05              # those who stand together like each other a little more
+# labour: different people bring different food, and a person needs both. The inn's larder is staples (stew, bread). The luck
+# catch of each person is split by that person's own dial: the bold (bravery) bring GAME, the careful bring GREENS, in the
+# share of their bravery. Nobody is a hunter or a gatherer by class; the split is the same rule for everyone and moves with the
+# dial. Eating has sensory-specific satiety: a ration of the same kind as the last one eaten relieves LABOUR_REPEAT of the usual
+# (Rolls et al. 1981, variety raises intake by about 60 percent, u). So a person who lives on the larder alone eats at 60
+# percent, and the other kinds are in other people's hands. Needs `luck` (the catch).
+LABOUR_REPEAT = 0.6
+STAPLE = "staple"
+# 2026-11-20 (the reciprocity-conditions answer, S2.4, S2.5, S2.3): three more general laws, each behind its own flag, the same for every person.
+LUMPY_FLAGS = ("lumpy", "stock", "choosy")
+ALL6 = ALL5 + LUMPY_FLAGS                                                # "all6" = all5 + these three
+# signs (2026-11-21, SV2): what one person PERCEIVES of another's hurt, fear and hunger. A state shows through signs scaled by the
+# target's EXPRESSIVENESS (a dial drawn per person: a stoic shows little of the same pain) and is read with the observer's ACUITY (a
+# dial drawn per person: it sets how noisy the reading is), and only by an observer in the same room who is awake and acts. Told
+# about it (hearsay, the knowledge layer) is a HOOK, not built: World.perceived_need is the one place it would be added. The flag adds
+# the function and the dials and nothing else: it changes no choice and draws nothing from the world's own random generator.
+SIGNS_FLAGS = ("signs",)
+# hard (2026-11-21, the realistically hard inn, owner decision (A)): the hardships set FROM THE SOURCE RATES instead of by taste. Source:
+# the Library answer "responses/2026-11-21-mark1-preindustrial-hardship-rates.md" (S1 to S6). One night is one day. With the flag off nothing
+# here is read. With it on, `ill`, `luck` and `raid` given to World() are ignored: the source rates below are used.
+HARD_FLAGS = ("hard",)
+#  1. LAID UP. An ailment is an EPISODE that lasts across nights. While one lasts the person is laid up: it cannot do what exerts the body
+#     (the EXERT acts: walk, flee, strike, shove, play, search, tend, fend off) or work, and cannot reach the counter (buy), and it brings
+#     no catch. It can still ask and be served and tended, and everything that needs only a word or a hand. Others must feed and tend it.
+#     Prevalence about 10 percent of days; episodes mean 8.7 days, 91 percent over 3 days (Gurven et al. 2012, Tsimane,
+#     doi:10.1016/j.exger.2012.05.006, 508 bedridden adults; 99.4 percent of them were fed by others); 13 percent last a month or more
+#     (Sugiyama 2004, Shiwiar, doi:10.1002/ajpa.10325, a different group). The length is a two-part lognormal (a bulk and a heavy tail)
+#     fitted to these three shares (lab/results/mindL4/hardinn/hardinn_fit_duration.py): mean 8.70, P(n > 3) 0.910, P(n >= 30) 0.130, where
+#     n = whole nights, max(1, round(x)). The paper's own SD (20.9) is NOT matched: this law has SD 11.4. The three shares and the SD do
+#     not fit together in one law with mean 8.7 (the best four-way fit misses the mean by 20 percent).
+HARD_DUR = (0.859922, 1.419916, 0.133144, 3.58703, 0.138655)     # weight of the bulk, then (mu, sigma) of the bulk and of the tail (of ln days)
+HARD_PREVALENCE = 0.10                                          # of person-days laid up (Gurven 2012; "about 10 percent of days")
+#  Onset hazard per HEALTHY person-night, from prevalence = E[n] / (E[n] + (1 - h) / h), so h = 1 / (1 + E[n] (1 - P) / P). The Library's
+#  1.1 percent a day is prevalence / duration, which ignores that the sick cannot fall ill again; h comes out about 1.26 percent.
+#  (hard_duration_mean() and hard_onset() below compute them from HARD_DUR.)
+#  2. FOOD. About half of hunts fail (Tsimane 45 percent, Gurven et al. 2015, doi:10.1007/s10745-015-9764-y; Ache "about every other time",
+#     Codding et al. 2011, doi:10.1098/rspb.2011.1458). The chance of an empty catch is 0.48. A hit is a Gamma(shape 2) size (LUCK_SHAPE) with the
+#     mean kept. Person-day CV^2 = (1 + 1/2) / 0.52 - 1 = 1.885, CV 1.37 (the field: 1.1 for Ache calories, 1.6 for a Tsimane household, S2).
+HARD_EMPTY = 0.48
+#  3. RAIDS. Rare. Violent death is 0.03 percent (late medieval Europe, Eisner 2003) to 1 percent a person-year (precontact Hiwi, Hill et al.
+#     2007, doi:10.1016/j.jhevol.2006.11.003); a force raid kills about 1.1 percent of the warriors it meets (Turkana, Mathew and Boyd 2011,
+#     doi:10.1073/pnas.1105604108). Deaths a night in a five-person inn = 5 r / 365; deaths per raid = 5 x 0.011; so raids a night = r / (365 x
+#     0.011). At r = 1 percent: 0.0025 a night (one raid in 400 nights); at 0.03 percent: 0.000075. The higher end is used (the most danger
+#     the sources support).
+HARD_RAID = 0.01 / (365 * 0.011)
+#  4. COLD: unmeasured in the sources (S5): left as it was.
+EXPR_MEAN, EXPR_SD, EXPR_LO, EXPR_HI = 0.7, 0.2, 0.15, 1.0     # expressiveness: the share of a state's size that shows
+ACU_MEAN, ACU_SD, ACU_LO, ACU_HI = 1.0, 0.3, 0.4, 1.6          # acuity: the reading's noise is SIGN_NOISE / acuity
+SIGN_NOISE = 0.12
+# lumpy: some acquisitions come in packages larger than one person can use before they spoil. A person's catch is no longer a
+# smooth draw: with chance LUMP_P the day's hunt or harvest is a hit and brings the whole day's expected food at once, one package of
+# mean / LUMP_P rations (about 8, which is 2 need units, more than the 0.9 a person needs in a night), at a turn of the night; otherwise
+# nothing. The expected catch is unchanged. Food spoils (a time law on a fresh catch): each ration has a half-life of SPOIL_HALF turns
+# (u: fresh meat or greens left in the warm for a day-night; a night is 300 turns). The house's staples are cooked and kept and do not
+# spoil. So the holder can use only part of a package, the rest is worth nothing to it unless it is shared, and the hungry at the
+# door value it fully: marginal value to the donor low, to the recipient high (Kaplan and Hill; Winterhalder; Gurven 2004, S2.4).
+# The giving rule reads one new fact for everybody: `spare`, the share of the pot the holder could not eat before it spoils.
+LUMP_P = 0.30
+LUMP_T0, LUMP_T1 = 1, 150
+SPOIL_HALF = 90
+SPOIL_RATE = 1.0 - 0.5 ** (1.0 / SPOIL_HALF)
+# stock: the counter (the house's stew and bread) is a finite stock that carries from night to night. Nothing refills it but
+# people's own work: the cook makes COOK_MAKES rations a night, and every `work` done at the counter puts WORK_YIELD back after the
+# worker takes its WORK_PORTIONS. It cannot hold more than STOCK_CAP times the nominal pot. So a run of bad nights can leave it empty.
+STOCK_CAP = 2
+COOK_MAKES = {"the pot of stew": 3, "the loaf of bread": 2}
+WORK_YIELD = 2
+# choosy: the partner rule that already governs whom one serves, gives to and trades with (trust, distrust, liking from one's own
+# history with that person) also governs whom one tends, defends, bandages and helps up. The same weight as serve's.
+CHOOSY_W = 2.0
+CHOOSY_ACTS = frozenset({"tend", "defend", "bandage", "help up"})
 HARM_MIN = 3             # reprisal: the least turns a harmful act aimed at a person takes
 WITNESS_COST = 0.04      # reprisal: a witness's liking of the actor falls by this
 WITNESS_SLIGHT = 0.03    # reprisal (+drives): the actor's standing / company worsen by this per witness
@@ -201,9 +309,9 @@ WORK_TIRE, CHORE_RELIEF = 0.06, 0.04    # work tires the worker, and eases the o
 PAYABLE = (1, 3)                        # the values a house will take for a meal (no change is given)
 # partner: the weight of trust in the score of an act aimed at a person (the same for every actor)
 PARTNER_W = 1.5
-BENEFIT_ACTS = {"give", "praise", "help up", "bandage", "defend", "gossip", "offer", "accept", "serve", "buy", "work"}
+BENEFIT_ACTS = {"give", "praise", "help up", "bandage", "defend", "gossip", "offer", "accept", "serve", "buy", "work", "tend"}
 RESTRAINT_ACTS = {"strike", "shove", "threaten", "insult", "steal", "accuse", "search"}
-HELPED = {"give", "help up", "bandage", "defend", "serve"}   # news: a witness warms to the one who does these
+HELPED = {"give", "help up", "bandage", "defend", "serve", "tend"}   # news: a witness warms to the one who does these
 SURPRISE_BITS = 3.0     # news: a deed 1 in 8 of what the teller has seen is fully surprising
 # calm
 WOUND_W = 2.0           # calm: the rules score reads one's own wounds (the safety drive), as it reads hunger
@@ -214,6 +322,7 @@ LONELY_W, LONELY_SET = 1.5, 0.3      # calm: weight of the company drive (above 
 WARM_ACTS = {"praise", "gossip", "serve", "give"}
 WEAR_VERBS = {"praise", "insult"}
 WEAR, WEAR_SPAN = 0.5, 40   # wear: each repeat within the span halves the effect
+DUR.update({"tend": 6, "fend off": RAID_ROUND})
 DUR.update({"sit down": 4, "sleep": 12, "look around": 2, "gossip": 3, "ask": 1, "offer": 1,
             "accept": 2, "refuse": 1, "serve": 2, "buy": 2, "work": 10})
 DRIVES = ("energy", "safety", "company", "standing", "wealth", "rest", "curiosity")
@@ -236,26 +345,64 @@ NATURE = {
 WANT = {"merchant": 13, "thief": 6, "bandit": 6}      # held value that meets the wealth need
 # drift per turn, when nothing serves the need (hunger and thirst keep their own)
 RATE = {"rest": 0.002, "curiosity": 0.004, "company": 0.004, "company_met": 0.006, "standing_fade": 0.995}
-EXERT = {"walk to": 0.01, "flee to": 0.02, "strike": 0.02, "shove": 0.01, "play": 0.02, "search": 0.01}
+EXERT = {"walk to": 0.01, "flee to": 0.02, "strike": 0.02, "shove": 0.01, "play": 0.02, "search": 0.01,
+         "tend": TEND_TIRE, "fend off": 0.02}
 # how being the TARGET of an act moves standing (slight) and company (lonely)
 SLIGHT = {"insult": .20, "accuse": .25, "search": .20, "threaten": .15, "strike": .10, "shove": .10,
           "refuse": .15, "praise": -.20, "give": -.15, "help up": -.10, "bandage": -.10, "defend": -.10,
-          "accept": -.10, "gossip": -.05, "serve": -.15}
-KIND_ACTS = {"praise", "give", "help up", "bandage", "defend", "accept", "gossip", "serve"}
+          "accept": -.10, "gossip": -.05, "serve": -.15, "tend": -.10}
+KIND_ACTS = {"praise", "give", "help up", "bandage", "defend", "accept", "gossip", "serve", "tend"}
 HARSH_ACTS = {"insult", "refuse", "threaten", "strike", "shove", "accuse", "search"}
 # deeds a witness may tell of (gossip): +1 kind, -1 harm, -1.5 a lie found out
 DEED = {**{a: -1.0 for a in HARMFUL}, "give": 1.0, "help up": 1.0, "bandage": 1.0, "defend": 1.0,
-        "praise": 0.5, "refuse": -0.5, "lie": -1.5, "serve": 1.0}
+        "praise": 0.5, "refuse": -0.5, "lie": -1.5, "serve": 1.0, "tend": 1.0}
 PAST = {"strike": "struck", "shove": "shoved", "threaten": "threatened", "insult": "insulted",
         "steal": "robbed", "accuse": "accused", "search": "searched", "give": "gave a gift to",
         "help up": "helped up", "bandage": "bandaged", "defend": "defended", "praise": "praised",
-        "refuse": "refused", "lie": "lied to", "serve": "fed"}
+        "refuse": "refused", "lie": "lied to", "serve": "fed", "tend": "tended"}
 # known: how much a perceived act aimed at me says about the actor's hostility
 # toward me (a kind act lowers it); it fades as anger fades (0.985 a turn)
 HOSTILE = {"strike": .6, "shove": .5, "threaten": .4, "steal": .4, "insult": .25, "accuse": .25,
            "search": .25, "refuse": .1, "give": -.3, "help up": -.3, "bandage": -.3, "defend": -.2,
-           "praise": -.1, "accept": -.1, "serve": -.3}
+           "praise": -.1, "accept": -.1, "serve": -.3, "tend": -.3}
 START_ROOM = {n: room for n, _, room, _ in CAST}
+
+
+LAID_UP_BARRED = frozenset(EXERT) | {"work", "buy"}
+
+
+def _hard_cdf(x):
+    """P(episode length < x days) under HARD_DUR (x > 0)."""
+    w, m1, s1, m2, s2 = HARD_DUR
+    z = lambda m, sg: 0.5 * (1.0 + math.erf((math.log(x) - m) / (sg * 2 ** 0.5)))
+    return w * z(m1, s1) + (1 - w) * z(m2, s2)
+
+
+def hard_duration_pmf(kmax=4000):
+    """P(n nights) for n = 1..kmax, n = max(1, round(x)) (the discrete law the world draws from)."""
+    out, prev = [], 0.0
+    for k in range(1, kmax + 1):
+        c = _hard_cdf(k + 0.5)
+        out.append(c - prev)
+        prev = c
+    out[0] = _hard_cdf(1.5)
+    return out
+
+
+def hard_duration_mean():
+    return sum((k + 1) * q for k, q in enumerate(hard_duration_pmf()))
+
+
+def hard_onset(prevalence=HARD_PREVALENCE):
+    """The chance a healthy person falls ill on a night so that `prevalence` of nights are spent laid up."""
+    return 1.0 / (1.0 + hard_duration_mean() * (1.0 - prevalence) / prevalence)
+
+
+def hard_duration_draw(u1, u2, z):
+    """One episode length in nights from two uniforms and a standard normal (fixed draws, so a stream does not depend on the branch)."""
+    w, m1, s1, m2, s2 = HARD_DUR
+    m, sg = (m1, s1) if u1 < w else (m2, s2)
+    return max(1, int(math.exp(m + sg * z) + 0.5))
 
 
 class Person:
@@ -296,6 +443,8 @@ class Person:
         self.partial = {}          # reprisal: (verb, target, obj) -> (turns done, turn interrupted)
         self.said = {}             # calm: option text -> turns it was done tonight
         self.said_kind = {}        # calm: (verb, object) -> turns
+        self.ail = 0.0             # tend: the ailment level (0 = none); nothing in the old inn sets it
+        self.last_kind = None      # labour: the kind of the last ration eaten tonight
 
     @property
     def public(self):
@@ -311,10 +460,12 @@ class Person:
 
 
 class World:
-    def __init__(self, seed=0, bandit=None, turns=300, flags=(), carry=None, night=0, supply=1.0):
+    def __init__(self, seed=0, bandit=None, turns=300, flags=(), carry=None, night=0, supply=1.0, luck=0.3,
+                 ill=AIL_P, raid=RAID_P):
         self.flags = frozenset(BASE_FLAGS if flags == "all" else FLAGS if flags == "all2" else
-                               ALL3 if flags == "all3" else flags)
-        bad = self.flags - set(FLAGS) - set(NEW_FLAGS)
+                               ALL3 if flags == "all3" else ALL4 if flags == "all4" else
+                               ALL5 if flags == "all5" else ALL6 if flags == "all6" else flags)
+        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS)
         assert not bad, f"unknown flags {sorted(bad)}"
         self.night = night
         self.rng = random.Random(seed)
@@ -362,9 +513,125 @@ class World:
             self.things["the pot of stew"] = {"at": cook, "props": {"food"}, "value": 0, "owner": cook,
                                               "hidden": False}
             self.portions = {n: max(1, round(k * supply)) for n, k in STOCK.items()}
+        self.stock = dict(STOCK)       # the full size of each pot (what `left` is a share of)
+        self.catch = {}                # luck: person -> rations they brought in tonight
+        self.laid = {}                 # hard: person -> nights of the episode left, counting tonight (the laid-up are the keys)
+        self.hard = "hard" in self.flags
+        if self.hard:                  # the source rates replace the dials given
+            assert "tend" in self.flags and "luck" in self.flags, "hard needs tend (ailments) and luck (the catch)"
+            luck, raid = HARD_EMPTY, HARD_RAID
+            self._episodes(seed, carry)
+        self.perish = {}               # lumpy: fresh item -> the turn it came in (it spoils from then on)
+        self.rot = {}                  # lumpy: item -> the fraction of a ration spoiled and not yet taken off
+        if "lumpy" in self.flags:
+            assert "luck" in self.flags, "lumpy needs luck (the catch is what comes in packages)"
+        self.kind_of = {}              # labour: food item -> its kind (the larder's are STAPLE)
+        if "luck" in self.flags:
+            assert "meals" in self.flags, "luck needs meals (a catch is eaten and shared by the portion)"
+            self._luck(seed, supply, luck)
+        if "stock" in self.flags:
+            assert "meals" in self.flags, "stock needs meals (the counter is the house's pots)"
+            house = next((c["house"] for c in (carry or {}).values() if "house" in c), None)
+            if house is not None:        # the counter keeps what was left last night, and the cook's work adds to it
+                for n, k in COOK_MAKES.items():
+                    self.portions[n] = min(int(STOCK_CAP * self.stock[n]), house[n] + k)
+        if "choosy" in self.flags:
+            assert "partner" in self.flags, "choosy extends the partner rule"
+        self.threat = None             # allies: the raid in the house now (a dict), or None
+        self._raid_at = None
+        if "tend" in self.flags and not self.hard:
+            self._ailments(seed, ill)
+        if "allies" in self.flags:
+            self._raid_plan(seed, raid)
+        if "labour" in self.flags:
+            assert "luck" in self.flags, "labour needs luck (the catch is what is split)"
+        self._sg_seed = seed
+        if "signs" in self.flags:       # the sign dials: from their own generator (never the world's), kept for the lifetime by carry
+            for p in self.people.values():
+                r = random.Random(f"signs/{seed}/{p.name}")
+                p.express = min(EXPR_HI, max(EXPR_LO, r.gauss(EXPR_MEAN, EXPR_SD)))
+                p.acuity = min(ACU_HI, max(ACU_LO, r.gauss(ACU_MEAN, ACU_SD)))
+            for name, c in (carry or {}).items():
+                if "dials" in c:
+                    self.people[name].express, self.people[name].acuity = c["dials"]
         self.start_at = {n: th["at"] for n, th in self.things.items()}   # the inn as each night sets it
         for p in self.people.values():
             self._look(p, "start")
+
+    def _luck(self, seed, supply, v):
+        """luck: the house pot shrinks to (1 - LUCK_SHARE) of its stock, and each person who is not the house brings a catch.
+        The draws come from their own generator (seed only), so they draw nothing from the world's and are the same for every
+        chooser that plays the same night. `v` is the chance of an empty night."""
+        assert 0 <= v < 1
+        for n in self.portions:
+            self.portions[n] = max(1, round(STOCK[n] * supply * (1 - LUCK_SHARE)))
+            self.stock[n] = self.portions[n]
+        people = [p for p in self.people.values() if p.kind != "cook"]
+        lumps = {}
+        mean = LUCK_SHARE * sum(STOCK.values()) * supply / len(people)
+        rng = random.Random(f"luck/{seed}")
+        for p in people:
+            if v == 0:
+                got = mean
+            else:
+                got = 0.0 if rng.random() < v else rng.gammavariate(LUCK_SHAPE, 1 / LUCK_SHAPE) * mean / (1 - v)
+            when = 0
+            if "lumpy" in self.flags:        # a hit brings everything in one package, at a turn of the night (own generator)
+                lr = lumps.setdefault("r", random.Random(f"lump/{seed}"))
+                hit, when = lr.random() < (1 - v if self.hard else LUMP_P), lr.randint(LUMP_T0, LUMP_T1)
+                got = mean / LUMP_P if hit else 0.0
+                if self.hard:                # hard: the package is a Gamma(2) size with the mean kept (CV 1.37 with the 0.48 empty)
+                    got = lr.gammavariate(LUCK_SHAPE, 1 / LUCK_SHAPE) * mean / (1 - v) if hit else 0.0
+            if p.name in self.laid:          # hard: a laid-up person brings nothing (the draws above are still made: same streams)
+                got = 0.0
+            k = int(got + 0.5)
+            self.catch[p.name] = k
+            if "labour" in self.flags:       # the bold bring game, the careful greens, by the share of the dial
+                g = int(k * p.base["bravery"] + 0.5)
+                parts = [(f"{p.name}'s game", "game", g), (f"{p.name}'s greens", "greens", k - g)]
+            else:
+                parts = [(f"{p.name}'s catch", STAPLE, k)]
+            for name, kind, n in parts:
+                if n > 0:
+                    self.things[name] = {"at": p.name, "props": {"food"}, "value": 0, "owner": p.name, "hidden": False}
+                    if when:                 # lumpy: it is not in the house until it comes in
+                        self.things[name]["at"] = None
+                        self.perish[name] = when
+                    self.portions[name] = n
+                    self.stock[name] = n
+                    self.kind_of[name] = kind
+
+    def _ailments(self, seed, p_ill):
+        """tend: each person starts the night with an ailment with chance p_ill, at a level drawn the same way for all.
+        The draws come from their own generator (seed only), in the fixed order of the cast: nothing is taken from the
+        world's own draws, and every chooser playing the same night gets the same ailments."""
+        rng = random.Random(f"ailment/{seed}")
+        for p in self.people.values():
+            if rng.random() < p_ill:
+                p.ail = rng.uniform(AIL_LO, AIL_HI)
+            else:
+                rng.random()
+
+    def _episodes(self, seed, carry):
+        """hard: who is laid up tonight. An episode in the carry goes on (its level of ailment is carried too); a healthy person falls ill
+        with the onset chance, the length drawn from HARD_DUR. The draws come from their own generator per person and night (seed
+        and name only, a fixed number each), so every chooser playing the same night meets the same ailments."""
+        h = hard_onset()
+        for p in self.people.values():
+            r = random.Random(f"hard/{seed}/{p.name}")
+            u0, u1, u2, z, lv = r.random(), r.random(), r.random(), r.gauss(0, 1), r.uniform(AIL_LO, AIL_HI)
+            c = (carry or {}).get(p.name, {}).get("ill")
+            if c and c[0] > 0:
+                self.laid[p.name], p.ail = c[0], c[1]
+            elif u0 < h:
+                self.laid[p.name], p.ail = hard_duration_draw(u1, u2, z), lv
+
+    def _raid_plan(self, seed, p_raid):
+        """allies: whether a raid comes tonight and when (own generator, seed only; the same for every chooser)."""
+        self._rr = random.Random(f"raid/{seed}")
+        if self._rr.random() < p_raid:
+            self._raid_at = self._rr.randint(RAID_T0, RAID_T1)
+        self._raid_kind = self._rr.choice(["the wolf", "a raider"])
 
     # ------------------------------------------------------------ helpers
     def here(self, p):
@@ -387,7 +654,7 @@ class World:
         perceived, a visibly armed bandit, violence p perceived."""
         if "known" in self.flags:
             return self._danger_known(p)
-        d = 0.0
+        d = 0.5 if self.threat and self.threat["room"] == p.room else 0.0     # allies: a raid in the room
         for q in self.here(p):
             if q.acts():
                 d += max(0.0, q.anger.get(p.name, 0) - 0.2) + (0.3 if self.weapon(q) and q.kind == "bandit" else 0)
@@ -412,7 +679,7 @@ class World:
         return h * 0.985 ** (self.t - t0)
 
     def _danger_known(self, p):
-        d = 0.0
+        d = 0.5 if self.threat and self.threat["room"] == p.room else 0.0
         for q in self.here(p):
             if q.acts():
                 armed = any(n in WEAPON for n in self.held(q, visible_only=True))
@@ -443,10 +710,26 @@ class World:
         """Each drive's need, 0..1 (0 = met). Read by a mind; written by no one
         but this file."""
         return {"energy": max(p.hunger, p.thirst),
-                "safety": 1.0 if p.dead else max(p.fear, min(1.0, max(0.0, (10 - p.hp) / 10))),
+                "safety": 1.0 if p.dead else max(p.fear, min(1.0, max(0.0, (10 - p.hp) / 10)), p.ail),
                 "company": p.lonely, "standing": p.slight,
                 "wealth": max(0.0, 1 - self.wealth(p) / WANT.get(p.kind, 10)),
                 "rest": p.fatigue, "curiosity": p.boredom}
+
+    def perceived_need(self, obs, tgt):
+        """signs: what `obs` (a name) perceives of `tgt`'s hurt, fear and hunger, each 0..1, or None (flag off, not in the same room,
+        the observer cannot act or sleeps, the target is dead). reading = expressiveness(tgt) * state + noise(sd = SIGN_NOISE /
+        acuity(obs)), clipped. The noise is a function of (night seed, turn, observer, target), so a reading repeats and the world's
+        own generator is untouched. HOOK (not built): hearsay, a reading from what was TOLD, would be added here."""
+        if "signs" not in self.flags:
+            return None
+        o, t = self.people.get(obs), self.people.get(tgt)
+        if o is None or t is None or t.dead or o is t or o.room != t.room or not o.acts() or self.asleep(o):
+            return None
+        state = {"hurt": max(min(1.0, max(0.0, (10 - t.hp) / 10)), t.ail), "fear": t.fear, "hunger": t.hunger}
+        r = random.Random(f"sign/{self._sg_seed}/{self.t}/{obs}/{tgt}")
+        sd = SIGN_NOISE / getattr(o, "acuity", ACU_MEAN)
+        ex = getattr(t, "express", EXPR_MEAN)
+        return {k: min(1.0, max(0.0, ex * v + r.gauss(0.0, sd))) for k, v in state.items()}
 
     def drive_error(self, p, need=None):
         """The weighted error of p's drives, by its type's NATURE. A drop in it
@@ -473,6 +756,12 @@ class World:
                       "memory": p.memory, "rep": {k: v for k, v in p.rep.items() if k in cast},
                       "liars": {k: v for k, v in p.liars.items() if k in cast}, "deeds": deeds,
                       "told": sorted(t for t in p.told if t[0] in cast and t[1] in keys)}
+            if "signs" in self.flags:                            # the sign dials are the person's own for the whole life
+                out[n]["dials"] = (p.express, p.acuity)
+            if self.hard:                                        # an episode goes on into the next night (nights left after tonight)
+                out[n]["ill"] = (max(0, self.laid.get(n, 0) - 1), p.ail)
+            if "stock" in self.flags and p.kind == "cook":      # the counter's stock goes into the next night with the cook
+                out[n]["house"] = {k: self.portions[k] for k in COOK_MAKES}
         return out
 
     def _rested(self, p, amount):
@@ -524,7 +813,7 @@ class World:
         for n in mine:
             th = W[n]
             if "food" in th["props"] and not (n in self.portions and p.hunger <= FULL):   # a full stomach holds no more
-                add("eat", f"eat a portion of {n}" if n in self.portions else f"eat {n}", obj=n, need=p.hunger)
+                add("eat", f"eat a portion of {n}" if n in self.portions else f"eat {n}", obj=n, need=p.hunger * self._eff(p, n))
             if "ale" in th["props"]:
                 add("drink", f"drink {n}", obj=n, need=p.thirst, ale=1.0)
             if "water" in th["props"]:
@@ -628,7 +917,10 @@ class World:
         last = mine_ev[-1] if mine_ev and mine_ev[-1]["t"] >= self.t - 10 else None
         undo = {"take": ("drop",), "steal": ("drop",), "drop": ("take",)}
         calm = "calm" in self.flags
+        barred = LAID_UP_BARRED if p.name in self.laid else ()
         for o in out:
+            if o["verb"] in barred:          # hard: a laid-up person cannot do what exerts the body, work, or reach the counter
+                continue
             if o["text"] not in seen:
                 seen.add(o["text"])
                 # habit: undoing what one just did (drop right after take) pulls less;
@@ -679,7 +971,7 @@ class World:
                 for n in self.held(q, visible_only=True):
                     props = W[n]["props"]
                     food, drink = float("food" in props), float(bool(props & {"ale", "water"}))
-                    need = max(food * p.hunger, drink * p.thirst)
+                    need = max(food * p.hunger * self._eff(p, n), drink * p.thirst)
                     if n in self.portions:       # meals: one asks for a portion; the counter sells (buy, work)
                         add("ask", f"ask {q.name} for a portion of {n}", target=q.name, obj=n, need=need,
                             gain=0.0, like=like, distrust=dq)
@@ -703,6 +995,22 @@ class World:
 
         if "meals" in self.flags:
             self._meal_options(p, add, awake)
+        if "tend" in self.flags:             # tend the sick; ask to be tended (an ailment cannot be treated by its owner)
+            for q in others:
+                if q.ail > TEND_MIN:
+                    r = p.requests.get(q.name, {})
+                    add("tend", f"tend {q.name}", target=q.name, need=q.ail, asked=float(r.get("thing") == "care"),
+                        like=max(0, p.aff.get(q.name, 0)), anger=p.anger.get(q.name, 0), distrust=self.distrust(p, q.name))
+            if p.ail > TEND_MIN:
+                for q in awake:
+                    add("ask", f"ask {q.name} to tend you", target=q.name, obj="care", need=p.ail, gain=0.0,
+                        like=max(0, p.aff.get(q.name, 0)), distrust=self.distrust(p, q.name))
+        th = self.threat
+        if th and th["room"] == p.room and p.acts():     # allies: fend off the raid in the room, alone or with those who do
+            fighters = [q for q in awake if q.doing and q.doing["verb"] == "fend off"]
+            hit = any(e["action"] == "raid hits" and e["target"] == p.name for e in self.log[-12:])
+            add("fend off", f"fend off {th['name']}", obj=th["name"], allies=float(len(fighters)),
+                here=float(len(awake)), hit=float(hit), hp_left=th["hp"] / RAID_HP)
 
     def _meal_options(self, p, add, awake):
         """meals: serve a portion from a pot p holds; buy a meal or work for one at a pot another holds."""
@@ -710,13 +1018,14 @@ class World:
         for n in self.held(p):
             if n not in self.portions or self.portions[n] <= 0:
                 continue
-            left = self.portions[n] / STOCK[n]
+            left = min(1.0, self.portions[n] / self.stock[n])
+            extra = {"spare": self.spare(p, n)} if "lumpy" in self.flags else {}
             for q in awake:
                 r = p.requests.get(q.name, {})
                 asked = float(r.get("thing") == n and r.get("pay") is None)
                 add("serve", f"serve {q.name} a portion of {n}", target=q.name, obj=n, asked=asked,
                     seen_need=q.hunger if q.hunger > 0.6 else 0.0, own=p.hunger, left=left,
-                    like=max(0, p.aff.get(q.name, 0)), distrust=self.distrust(p, q.name))
+                    like=max(0, p.aff.get(q.name, 0)), distrust=self.distrust(p, q.name), **extra)
         pay = [m for m in self.held(p) if PAYABLE[0] <= W[m]["value"] <= PAYABLE[1] and m not in self.portions]
         for q in awake:
             for n in self.held(q, visible_only=True):
@@ -724,9 +1033,9 @@ class World:
                     continue
                 dq = self.distrust(p, q.name)
                 for m in pay:
-                    add("buy", f"pay {q.name} {m} for a meal from {n}", target=q.name, obj=n, pay=m, need=p.hunger,
+                    add("buy", f"pay {q.name} {m} for a meal from {n}", target=q.name, obj=n, pay=m, need=p.hunger * self._eff(p, n),
                         cost=W[m]["value"] / 10, distrust=dq)
-                add("work", f"work for {q.name} for a share of {n}", target=q.name, obj=n, need=p.hunger,
+                add("work", f"work for {q.name} for a share of {n}", target=q.name, obj=n, need=p.hunger * self._eff(p, n),
                     fatigue=p.fatigue, distrust=dq)
 
     def _goal(self, p, room):
@@ -795,6 +1104,12 @@ class World:
         self.t += 1
         if self.bandit_at == self.t:
             self._bandit_arrives()
+        if self._raid_at == self.t:
+            self._raid_arrives()
+        if self.perish:
+            self._spoil()
+        if self.threat and self.t > self.threat["t0"] and (self.t - self.threat["t0"]) % RAID_ROUND == 0:
+            self._raid_round()
         for p in self.people.values():
             self._drift(p)
         order = list(self.people.values())
@@ -809,6 +1124,33 @@ class World:
                 p.doing["left"] -= 1
                 if p.doing["left"] <= 0:
                     self._finish(p)
+
+    def _spoil(self):
+        """lumpy: a package comes in at its turn, and from then on its rations spoil by a half-life (no random draw)."""
+        for n, t0 in self.perish.items():
+            if t0 > self.t or self.portions.get(n, 0) <= 0:
+                continue
+            th = self.things[n]
+            if t0 == self.t:
+                th["at"] = th["owner"]
+                continue
+            if th["at"] is None:
+                continue
+            self.rot[n] = self.rot.get(n, 0.0) + self.portions[n] * SPOIL_RATE
+            k = min(int(self.rot[n]), self.portions[n])
+            if k >= 1:
+                self.rot[n] -= k
+                self.stock[n] = self.stock[n] * (self.portions[n] - k) / self.portions[n]    # `left` is a share: spoilage does not change it
+                self.portions[n] -= k
+                if self.portions[n] <= 0:
+                    th["at"] = None
+
+    def spare(self, p, item):
+        """lumpy: the share of what is left of `item` that its holder could not eat before it spoils (0 for what keeps)."""
+        if item not in self.perish or self.portions.get(item, 0) <= 0:
+            return 0.0
+        usable = (max(0.0, p.hunger - FULL) + 0.003 * SPOIL_HALF) / PORTION
+        return max(0.0, 1.0 - usable / self.portions[item])
 
     def _drift(self, p):
         p.hunger = min(1.0, p.hunger + 0.003)
@@ -827,6 +1169,8 @@ class World:
             p.lonely = max(0.0, p.lonely - RATE["company_met"] * min(2, liked)) if liked else \
                 min(1.0, p.lonely + RATE["company"])
             p.slight *= RATE["standing_fade"]
+        if p.ail > 0 and not p.dead:     # tend: left alone it grows
+            p.ail = min(1.0, p.ail + AIL_GROW)
         if p.requests:                  # a request not answered in 30 turns lapses
             p.requests = {k: r for k, r in p.requests.items() if r["t"] >= self.t - 30}
 
@@ -1005,6 +1349,26 @@ class World:
         if v == "sleep":
             self._rested(p, 0.6)
             return True, {}
+        if v == "tend":                                      # tend: another person's care takes the ailment down
+            q.ail = max(0.0, q.ail - TEND_RELIEF)
+            q.aff[p.name] = min(1, q.aff.get(p.name, 0) + 0.4)
+            return True, {"relief": TEND_RELIEF}
+        if v == "fend off":                                  # allies: one blow at the raid; the raid is gone when it is spent
+            th = self.threat
+            if th is None or th["room"] != p.room:
+                return False, {"why": "it is gone"}
+            hit = FEND_DMG * self._rr.uniform(0.6, 1.4)
+            th["hp"] -= hit
+            for x in self.here(p):
+                if x.acts() and not self.asleep(x) and x.doing and x.doing["verb"] == "fend off":
+                    x.aff[p.name] = min(1, x.aff.get(p.name, 0) + FEND_WARM)      # those who stand together
+                    p.aff[x.name] = min(1, p.aff.get(x.name, 0) + FEND_WARM)
+            res = {"result": f"hurt {th['name']}", "damage": round(hit, 1)}
+            if th["hp"] <= 0:
+                res["result"] = f"drove off {th['name']}"
+                self._raid_event("drives off", f"{th['name']} is driven off", th["room"], result=res["result"])
+                self.threat = None
+            return True, res
         if v == "look around":
             new = [n for n in self.loose(p.room) if n not in p.examined] + \
                   [x.name for x in self.here(p) if x.name not in p.examined]
@@ -1049,6 +1413,10 @@ class World:
         if v == "work":                                      # meals: chores for a ration
             if W[o]["at"] != q.name or not self._feed(p, WORK_PORTIONS, o):
                 return False, {"why": "none left"}
+            if "stock" in self.flags and o in COOK_MAKES:        # the counter is refilled by work
+                cap = int(STOCK_CAP * self.stock[o])
+                self.portions[o] = min(cap, self.portions[o] + WORK_YIELD)
+                self.things[o]["at"] = q.name
             p.fatigue = min(1.0, p.fatigue + WORK_TIRE)
             self._rested(q, CHORE_RELIEF)
             for a, b in ((p, q), (q, p)):
@@ -1056,13 +1424,25 @@ class World:
             return True, {}
         raise ValueError(v)
 
+    def _eff(self, person, item):
+        """labour: the share of a ration's relief that `item` would give `person` now (1 unless it is the kind it just ate)."""
+        if "labour" not in self.flags or item not in self.portions:
+            return 1.0
+        return LABOUR_REPEAT if person.last_kind == self.kind_of.get(item, STAPLE) else 1.0
+
     def _feed(self, person, n, item):
         """meals: `person` eats up to n rations of `item`. Returns how many it got (0 if the pot is empty)."""
         n = min(n, self.portions.get(item, 0))
         if n <= 0:
             return 0
         self.portions[item] -= n
-        person.hunger = max(0.0, person.hunger - PORTION * n)
+        if "labour" in self.flags:       # sensory-specific satiety: the same kind again relieves less
+            k = self.kind_of.get(item, STAPLE)
+            for _ in range(n):
+                person.hunger = max(0.0, person.hunger - PORTION * (LABOUR_REPEAT if person.last_kind == k else 1.0))
+                person.last_kind = k
+        else:
+            person.hunger = max(0.0, person.hunger - PORTION * n)
         if self.portions[item] <= 0:
             self.things[item]["at"] = None
         return n
@@ -1446,6 +1826,66 @@ class World:
                     p.anger_up(q.name, 0.1)
                 self.note(p, "notice", text=f"notice that {n} is gone", obj=n,
                           facts={"learns": f"{n} is gone"})
+
+    def _raid_event(self, action, text, room, victim=None, loud=True, **info):
+        """allies: an event of the raid (not a person's choice). Those in the room see it and are stopped by it; those next
+        door hear it. It is logged like any event, with the raid as the actor."""
+        th_name = (self.threat or {}).get("name", info.pop("name", "a raider"))
+        ev = {"id": f"e{self.n}", "t": self.t, "actor": th_name, "kind": "raid", "traits": {}, "action": action,
+              "target": victim, "target_kind": "person" if victim else None, "text": text,
+              "parts": {}, "room": room, "done": True, "valid": True}
+        ev.update(info)
+        self.n += 1
+        self.log.append(ev)
+        for q in self.people.values():
+            if q.dead:
+                continue
+            asleep = self.asleep(q)
+            sees = q.room == room and not q.down and not asleep
+            hears = not sees and loud and (room in ROOMS[q.room] or (q.room == room and asleep))
+            if not (sees or hears):
+                continue
+            q.perceived.add(ev["id"])
+            q.pending.append(ev["id"])
+            if "known" in self.flags:
+                q.seen_at[th_name] = room
+            if sees:
+                q.fear = min(1, q.fear + 0.04 * (1.2 - q.traits["bravery"]))
+            else:
+                q.fear = min(1, q.fear + 0.05 * (1 - q.traits["bravery"]))
+            if q.room == room or asleep:
+                self.interrupt(q, ev["id"])
+        return ev
+
+    def _raid_arrives(self):
+        self.threat = {"name": self._raid_kind, "room": "the yard", "hp": RAID_HP, "t0": self.t}
+        self._raid_event("raid arrives", f"{self._raid_kind} comes in from the road", "the yard")
+
+    def _raid_round(self):
+        """allies: the raid hits one person in its room, or goes for the people. It is beaten when its hp is spent
+        (see fend off)."""
+        th = self.threat
+        here = [q for q in self.people.values() if q.room == th["room"] and not q.dead]
+        if not here:
+            rooms = ROOMS[th["room"]]
+            best = max(rooms, key=lambda r: sum(1 for q in self.people.values() if q.room == r and not q.dead))
+            if any(q.room == best and not q.dead for q in self.people.values()):
+                th["room"] = best
+                self._raid_event("raid prowls", f"{th['name']} goes into {best}", best)
+            return
+        v = self._rr.choice(here)
+        dmg = RAID_DMG * self._rr.uniform(0.5, 1.5)
+        v.hp -= dmg
+        v.fear = min(1, v.fear + 0.15 * (1.2 - v.traits["bravery"]))
+        res = f"hit {v.name}"
+        if v.hp <= 4 and not v.down:
+            v.down = True
+            res = f"knocked {v.name} down"
+        if v.hp <= -2:
+            v.dead = v.down = True
+            res = f"killed {v.name}"
+        self._raid_event("raid hits", f"{th['name']} hits {v.name}", th["room"], victim=v.name, result=res,
+                         damage=round(dmg, 1))
 
     def _bandit_arrives(self):
         b = Person("the bandit", "bandit", "the yard", self.rng)

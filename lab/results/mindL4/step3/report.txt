@@ -1,0 +1,176 @@
+STEP 3 OF SV5: THE DIAGNOSIS AND ACQUIRED CONCERNS   2026-11-21   (lane B)
+
+VERDICT
+Part 0: the effects arm's negative L1 shared_early was NOT a sign error. It had one real estimator defect (the drift of the needs was a mean over ticks,
+not over turns) and one cause that is not a defect (the arm has no moral prior and learns to provoke the partner that never hits back). The defect is fixed
+behind the option fx_fix: shared_early goes from -0.379 [-0.602, -0.156] to -0.045 [-0.306, +0.215].
+Part 1 and 2: acquired concerns are built behind the mind option "concerns" (lab/mindL/concerns.py). All 10 control tests pass, and the option off is bit for
+bit the old mind. BUT two of the controls only hold on synthetic streams. In the real inn the concerns that form are at noise level (weight about 0.04 for
+everyone), and the clone test D_life / D_rng is 0.77 to 1.3 there (synthetic: 10.1). So the rule works as a mechanism, and the world (all6s, all6h and a mildly
+paid world) still does not pay enough for it to show in lives. L1 and L2 do not move.
+
+0. DIAGNOSIS OF THE STEP 2 FLAG (L1 shared_early of the effects arm -0.379 [-0.602, -0.156], 0.55 worse than the labels arm)
+What I checked, and what I found.
+(a) Sign. error_drop(kind, need, effect) is errors(need) - errors(need + effect); a falling need is a positive worth. The state tests of step 2 pass
+    (food worth 0.33 hungry, 0.00 fed). The logged windows after Fenn's give and praise show needs FALLING (energy -0.016/-0.025, wealth -0.084/-0.038), so the
+    measured effect has the right sign. No sign error.
+(b) Credit window. Bookkeeping read line by line: need0 and tref are the needs and the turn at the start of the step the act landed in; the window closes 12
+    turns after the act; the overlap shares are the Rescorla-Wagner ones. No error found.
+(c) DRIFT SUBTRACTION: a defect. The drift was updated once per TICK with rate = change / dt, so the many 1-turn ticks (asks, looks) outweighed the few long
+    ones (meals, sleep). Seed 1, 60 nights, 3417 ticks without an open entry, per-turn change of the needs (energy, safety, company, standing, wealth, rest,
+    curiosity), mean over ticks against the true turn-weighted rate:
+      per tick   +0.0021  0.0000 +0.0008 -0.0003 +0.0033 +0.0010 +0.0001
+      per turn   +0.0016 +0.00002 +0.0010 -0.0002 +0.0012 -0.0003 +0.0003
+    Wealth is 2.7 times too high and rest has the wrong sign. Over a 12 to 30 turn window that is 0.01 to 0.04 of need, the size of the real effects
+    (0.01 to 0.08). It is the same for every partner, so it does not make one partner look worse than another, but it moves every act's worth.
+    FIX (option fx_fix, default off; effects.DeltaMeanings turn_drift): the drift is a ratio of decayed sums, change over turns.
+(d) OWN ACTS IN THE WINDOW. Not subtracted, not changed. A meal after a gift is part of what the gift does (the mediator), and the rest of what I do in a window
+    does not depend on who spoke to me, so it largely cancels. I did not test this beyond that argument. Still open.
+(e) The partner term does contribute. Effects arm without the partner term (fxnoP, modules AKVWEC): L1 shared_early -0.011 [-0.356, +0.334]. Effects minus
+    that, paired by seed: -0.368 [-0.771, +0.035].
+BEFORE AND AFTER THE FIX (L1, all6s, seeds 1-10, 95 percent t intervals, same seeds; "before" is the stored step 2 arm)
+                       before (fx)             after (fx_fix)          after minus before (paired)
+  L1 late1             -0.136 [-0.424,+0.152]  -0.115 [-0.305,+0.076]  +0.021 [-0.386,+0.429]
+  L1 late2             +0.230 [-0.197,+0.656]  +0.032 [-0.168,+0.232]  -0.198 [-0.773,+0.377]
+  L1 shared_early      -0.379 [-0.602,-0.156]  -0.045 [-0.306,+0.215]  +0.334 [-0.052,+0.720]
+The change in shared_early is large but its paired interval just includes 0 (10 seeds). Read it as: the fix removes the significant negative value; it does not
+prove the drift was the whole cause.
+WHAT IS LEFT, AND WHY IT IS NOT A DEFECT. L1 is treat = kind share minus provocation share, and provocations are rare (0.2 to 0.8 a night of about 600 acts), so
+a handful of insults decides it. Provocations a night, nights 0-199, A and B lives pooled, paired by seed:
+                          at the kind partner     at the hard partner     kind minus hard
+  effects (step 2)        +0.630 [+0.479,+0.782]  +0.160 [+0.078,+0.241]  +0.471 [+0.285,+0.656]
+  effects, fx_fix         +0.673 [+0.387,+0.960]  +0.186 [+0.093,+0.279]  +0.487 [+0.157,+0.818]
+  labels                  +0.050 [+0.026,+0.075]  +0.031 [+0.017,+0.045]  +0.019 [-0.002,+0.040]
+  rules                    0.000                  +0.005                  -0.005 [-0.011,+0.001]
+The effects arm provokes the KIND partner four times as often as the hard one. The hard partner hits back (harsh acts from it, 0.06 a night), so provoking it
+costs; nobody punishes provoking the kind one. A learner with no moral prior does exactly that. The labels arm provokes almost never because its KIND and HARM
+lists say that insults are bad: the designer's morality that SV3 removed. This is the gap that acquired concerns are meant to close, not a bug of the effects
+arm. In the per-act terms (seed 9, life B, 50 nights) the partner term for an insult is -0.012 at the kind partner and -0.028 at the hard one: a 5 to 1 odds
+in favour of insulting the kind one at tau 0.01. With concerns on (below), provocations fall: at the kind partner -0.344 [-0.684, -0.004] a night and at the
+hard partner -0.092 [-0.155, -0.029], paired against effects with fx_fix.
+Scripts: lab/results/mindL4/step3/diagnosis/ (dbg2 drift, dbg3 and dbg4 terms).
+
+1. WHAT WAS BUILT (lab/ only, no src/, no git)
+Mind option "concerns" (default False). Settings: cn (RWConcerns settings), cn_things (default True), b_concern (1.0: the same units as the world-model lookahead,
+a predicted drop of error), cn_fx_prior (cultural beliefs about what an act does to another's need). Option "fx_fix" (default False) for the drift fix.
+lab/mindL/concerns.py (new): the interface Concerns, the default rule RWConcerns, the estimator OtherEffects, need_of (signs to one number).
+lab/mindL/mind.py: the hooks. The mind reads the needs of people in its room through w.perceived_need (the signs: hurt, fear, hunger with the target's
+expressiveness and the observer's acuity) and things it holds (need 0) or that lie loose in its room (need 1; value 1 or more). The choice gets a term
+"concern" = b_concern x sum over acts at a person of weight x (relief x need read - rise). The reward of a step gets weight x (need before - need after) for each
+target read at both ends. The concerns learn from the homeostatic reward only, never from their own reward.
+lab/mindL/effects.py: turn_drift. lab/mindL/tests_L.py: chooser "mindx" (settings in the spec), PaidError (a control world), night rows hold the weights, world all6h.
+New: test_concerns.py (10 tests), step3_runs.py, step3_report.py, step3_tables.py. Every older suite passes with the option off (below).
+THE RULE, in short (docs/learned-mind-target.md 9.2)
+- Every mind starts with NO concerns. A target appears at first contact (a person or thing perceived). Targets are persons and things, never acts (checked in a
+  lifetime: the keys are cast names or "thing:...").
+- a_T: Rescorla-Wagner association between the target's presence and the step's homeostatic reward minus its running average (conditioned reinforcement; what is
+  always there or there at random predicts nothing; cues share one prediction so a placebo is held at 0).
+- e_T: effort justification. If my act was aimed at T, it relieved T's need (measured, or predicted by the learned effects, at least the noticeable 0.15) and the
+  step cost me (error rose), e_T += cost x the rise.
+- h_T: habituation. Each turn of contact multiplies it by 0.995; it recovers with time constant 300 turns; it scales what a contact teaches.
+- w_T = min(ceiling 1.0, gain 20 x max(a_T, 0) + e_T). It falls by disuse (2 percent a night), disillusion (a_T goes negative when error rises after contact, and e_T
+  shrinks 5 percent a step then) and habituation. Ceiling and gain are the capacities.
+- OtherEffects: what my acts do to the needs of the people I act at, per act: rho (fraction of the need relieved) and rise, from the person's reading at my act
+  and when the window closes (next act at that person, or 12 turns), minus the natural change of the need learned from the stretches with no act aimed at the
+  person. The change goes to the latest act only (sharing it among overlapping acts made rates blow up to the clips in my first version, and made a placebo look
+  as good as the real act in step 2). A cultural prior can be set with set_prior.
+All the numbers (JND 0.15, lr 0.2, baseline rate 0.05, gain 20, ceiling 1, cost 1, fade 0.02, disillusion 0.05, habituation 0.005 a turn, recovery 1/300, n0 5) were
+set before any run and not tuned to pass a test. NONE IS SOURCED YET. They need sources (attachment formation and decay, habituation of social reward).
+THE INTERFACE (Concerns): learn(step) -> concern reward of the step; pull(T); expected(verb, T, need) (the choice term); relief(verb, need); set_prior(verb, rho,
+eta, n0); observe_read(t, readings); did(target, verb, t, need); flush(); night(); table() and set_table(t) (for inspection and the swap control).
+A null Concerns plugged in runs a lifetime (tested). A local rule would replace RWConcerns: a_T is a delta rule on the contact cue (a three-factor rule with the
+contact as the eligibility trace and the error drop minus the prediction as the third factor); h_T is a fast-decaying gain per synapse; OtherEffects is one
+delta-rule row per act. None of that is built.
+
+2. THE CONTROLS (lab/mindL/test_concerns.py, 10 passed in 26 s; lab/results/mindL4/step3/controls.json). Seeds 1-8, 95 percent t intervals.
+Control                          Result                                                                                                        Where
+placebo targets                  payer (reward +0.02 when present) weight 0.313 [0.275,0.350]; 3 random placebos 0.0002 [-0.0003,0.0008];       synthetic stream
+                                 an always-present placebo 0.0. PASS                                                                            (same module)
+swap                             log odds of giving the coin to Fenn rather than Oren, same scene and state: with life A's learned weights       real mind, real options
+                                 +10.8 [+8.2,+13.3]; with life B's -12.0 [-15.1,-8.8]; A minus B +22.7 [+18.7,+26.7]; no concerns 0.0.        and signs; the weights
+                                 The behaviour flips. PASS                                                                                       come from synthetic lives
+clones, different lives          D_life 0.593 [0.562,0.624]; D_rng 0.059 [0.022,0.096]; ratio 10.1; paired D_life - D_rng +0.534 [0.471,0.596].   synthetic stream
+                                 PASS (needs at least 2). NOT SHOWN in real lives, see section 3.
+formed, then extinguished        weight after forming 0.189 [0.151,0.227]; after 8 nights of present-but-paying-nothing (error rises after          synthetic stream
+                                 contact) 0.0; after 30 more nights absent 0.0; disuse alone leaves 0.545 of it after 30 nights. PASS
+habituation                      h 0.22 after 300 turns of contact, 0.71 after 300 turns apart; one paid step teaches a target met all the time    module
+                                 0.044 per unit pay against 0.200 for a fresh one (ratio 0.22). PASS. The "no standing next to the loved one loop":
+                                 with w = 0.9 for Fenn and Oren the chance on acts at them rises +0.015 [+0.009,+0.021] when both look healthy and
+                                 +0.305 [+0.122,+0.488] when one shows a need (35 percent of decisions): a pull when needed, a twentieth of it     real inn, same decisions
+                                 when not (sign noise). PASS
+stoic against expressive         same true hunger 0.8, same weight 0.6: need read 0.667 [0.540,0.793] against 0.128 [0.045,0.211]; the concern     real world signs
+                                 term for feeding the expressive 0.280 [0.227,0.333], the stoic 0.054 [0.019,0.088]; paired +0.226 [0.163,0.289]. PASS
+grief (report only)              nights until the weight is under 0.05 after the target dies: 69 for w 0.2, 114 for 0.5, 144 for 0.9. Heavier lasts   module
+                                 longer, by the exponential disuse fade (ln(w0/0.05) over the fade rate).
+OtherEffects (not a 9.2 control)  rho of "give" (relieves 70 percent of the need when it lands) 0.566 [0.526,0.607]; placebo "praise" 0.007               synthetic person
+                                 [-0.046,+0.059]; rise from "strike" 0.188 [0.180,0.195] (true +0.3 when it lands). PASS. It understates, because
+                                 windows close before the effect lands. The order is right and the placebo is 0.
+option off, interface swap       explicit off equals the default (drive error, weights hash, decisions, valences); a null Concerns runs. PASS        real mind
+Older suites, option off (log copies in lab/results/mindL4/step3/): lab.mindL.test_mind 30 passed (golden traces check included), lab.mindL.test_effects 9 passed,
+lab.mindL.test_tournament 17 passed, lab.world2.test_world 80 passed (lane A's 7 new tests included).
+Mistakes caught while building (all fixed before the numbers above): a constant cue ran away to -1.08 when habituation scaled only the positive steps; the
+Rescorla-Wagner steps of many cues at once overshot; OtherEffects sharing gave rates stuck at the clips. Each was found by a control, not by a result.
+
+3. WHAT FORMS IN REAL LIVES (reported; lab/results/mindL4/step3/tables_cn.json)
+Concern weight at night 199, effects with fx_fix plus concerns, Fenn = P-need(0.9), Oren = P-hard(0.9), 10 seeds, A and B lives.
+                                     all6s                    all6h (hard inn, lane A)
+  kind partner                       +0.041 [+0.003,+0.080]   +0.048 [+0.007,+0.089]
+  hard partner                       +0.038 [+0.015,+0.061]   +0.038 [+0.008,+0.067]
+  deaf partners (the deaf life)      +0.039 [+0.007,+0.072]   +0.044 [+0.017,+0.071]
+  others (rest of the cast)          +0.042 [+0.021,+0.064]   +0.027 [+0.011,+0.043]
+  kind minus hard (paired)           +0.003 [-0.045,+0.051]   +0.010 [-0.028,+0.048]
+No separation of the kind partner from the placebos. D_life over D_rng (clones A and B against A with another mind seed, 10 seeds, nights up to 199): 0.77
+(distance over the six names; paired D_life - D_rng -0.067 [-0.229,+0.095]) or 1.06 (Fenn and Oren only). The step 1 finding applies: an answer is worth about
+0.001 of error, and a meal 0.3 goes to whoever is near; the conditioned weights are noise of about 0.04 (gain 20 x an association of 0.002).
+A PAID WORLD (a control, not the inn): each answer from the kind partner is worth 0.02 as a drop of error (tests_L.PaidError), 6 seeds, 120 nights.
+  kind +0.120 [+0.007,+0.232]; hard +0.034 [0.000,+0.069]; others +0.037 [-0.011,+0.085]; kind minus hard +0.085 [-0.044,+0.215]. D_life 0.406 against D_rng 0.307
+  (ratio 1.32; Fenn and Oren only 1.09). The weight of the payer is three times the placebo level, but the clone distance is not separated from the noise.
+So in lives the controls that need a clean payer (placebo discrimination, clones) do not carry over yet. The mechanism is sound (section 2); the world and the
+noise floor are the limit.
+
+4. L1 AND L2 (REPORTED, NOT GATED; Fenn = P-need(0.9), Oren = P-hard(0.9), partners deaf from night 200; L1 blocks 160-180, 180-200, 200-220; seeds 1-10; paired by
+seed; 95 percent t intervals; lab/results/mindL4/step3/L_all6s.txt, L_all6h.txt)
+WORLD all6s
+                     effects+concerns       effects (fx_fix)       effects (step 2)       labels                 rules null
+L1 late1             -0.085 [-0.292,+0.121] -0.115 [-0.305,+0.076] -0.136 [-0.424,+0.152] +0.235 [+0.013,+0.457] +0.328 [+0.209,+0.447]
+L1 late2             -0.044 [-0.283,+0.196] +0.032 [-0.168,+0.232] +0.230 [-0.197,+0.656] +0.294 [+0.059,+0.528] +0.332 [+0.216,+0.447]
+L1 shared_early      -0.072 [-0.260,+0.116] -0.045 [-0.306,+0.215] -0.379 [-0.602,-0.156] +0.174 [-0.024,+0.372] +0.344 [+0.192,+0.495]
+L2 effect_kind       +0.064 [-0.228,+0.356] +0.073 [-0.117,+0.263] -0.021 [-0.254,+0.212] +0.137 [-0.075,+0.348] +0.168 [+0.112,+0.224]
+L2 effect_hard       +0.120 [-0.070,+0.309] +0.121 [-0.103,+0.344] +0.036 [-0.097,+0.170] -0.103 [-0.278,+0.071] -0.212 [-0.379,-0.045]
+L2 contrast          -0.056 [-0.258,+0.147] -0.048 [-0.231,+0.136] -0.058 [-0.377,+0.261] +0.240 [+0.093,+0.388] +0.380 [+0.225,+0.535]
+Effects+concerns minus effects (fx_fix), paired: L1 late1 +0.029 [-0.170,+0.228]; late2 -0.075 [-0.263,+0.112]; shared_early -0.027 [-0.310,+0.257]; L2 contrast -0.008
+[-0.163,+0.147]. Minus labels: L1 late1 -0.321 [-0.686,+0.045]; late2 -0.337 [-0.666,-0.009]; shared_early -0.246 [-0.426,-0.066]; L2 contrast -0.296 [-0.588,-0.004].
+Minus rules: all four significantly negative.
+WORLD all6h (lane A's hard inn; lane A had finished it; 10 seeds, 220 nights)
+                     effects+concerns       effects (fx_fix)       labels                 rules null
+L1 late1             +0.030 [-0.210,+0.271] -0.002 [-0.290,+0.285] +0.357 [-0.002,+0.715] +0.341 [+0.219,+0.464]
+L1 late2             -0.098 [-0.353,+0.157] -0.178 [-0.463,+0.106] +0.255 [-0.050,+0.560] +0.396 [+0.242,+0.550]
+L1 shared_early      -0.245 [-0.617,+0.126] -0.264 [-0.541,+0.013] -0.049 [-0.404,+0.307] +0.361 [+0.215,+0.508]
+L2 effect_kind       +0.089 [-0.075,+0.253] -0.091 [-0.289,+0.106] +0.276 [-0.027,+0.578] +0.272 [+0.111,+0.432]
+L2 effect_hard       +0.143 [-0.049,+0.336] +0.026 [-0.072,+0.125] -0.062 [-0.147,+0.023] -0.172 [-0.411,+0.068]
+L2 contrast          -0.055 [-0.312,+0.203] -0.118 [-0.384,+0.148] +0.338 [+0.036,+0.639] +0.443 [+0.195,+0.692]
+Effects+concerns minus effects (fx_fix), paired: L1 late1 +0.033 [-0.387,+0.453]; late2 +0.080 [-0.241,+0.401]; shared_early +0.019 [-0.456,+0.493]; L2 contrast +0.063
+[-0.279,+0.405]. Minus labels: L1 late1 -0.326 [-0.861,+0.208]; late2 -0.353 [-0.747,+0.041]; shared_early -0.197 [-0.766,+0.372]; L2 contrast -0.393 [-0.841,+0.055].
+Minus rules: L1 -0.310 [-0.583,-0.038], -0.494 [-0.824,-0.165], -0.607 [-1.028,-0.186]; L2 contrast -0.498 [-0.871,-0.125].
+Reading. Concerns do not change L1 or L2 in either world (differences from the effects arm are all within the noise). Both effects arms stay under the labels arm and the
+rules null, as in step 2. The step 2 explanation holds: the labels carry the designer's morality, the effects arm has to learn it, and the inn does not pay for it.
+Not run: the step 2 stored effects arm in all6h (the fixed arm stands for it).
+
+5. WHAT NEEDS MORE WORK
+1. THE WORLD. Weights form at noise level (0.04) in all6s and all6h. Real kin-style need-based help (the library's next lever, KIN) or a world where a person's
+   standing by changes my needs for days would give the rule something to learn. Ask the owner about KIN, as the hard-inn report says.
+2. NOISE FLOOR OF CONDITIONED REINFORCEMENT. A meal (0.3) goes to whoever is near; the bandit gets a weight when relief follows a raid (relief after a threat is
+   conditioned to the threat: the opponent-process trap). Ideas that keep the design: score contact against what the target's own need change explains, or
+   learn per place and time of day. Not done, not tuned.
+3. UNSOURCED CAPACITIES: gain, ceiling, cost credit, fade, disillusion, habituation, recovery, the just-noticeable 0.15 (see section 1). A library request.
+4. THINGS are targets of formation and reward only. Acts at a thing have no choice term (the menu does not name the thing). Absent targets and hearsay are not read
+   (a concern for someone in another room has no pull; the hook is perceived_need's documented hearsay hook).
+5. OtherEffects understates (windows close before a gift is eaten) and credits the latest act only; a decaying eligibility trace would help.
+6. Own acts in the effects window (step 2 item 1) are still open (section 0d).
+7. Speed: an effects+concerns lifetime of 220 nights costs about 150 to 200 s (effects alone about the same; labels 100 to 120 s in all6h).
+8. fx_fix is a bug fix to a step 2 arm; the stored step 2 numbers stay as they were (option off).
+
+FILES (all in "Mark_1/")
+lab/mindL/concerns.py, test_concerns.py, step3_runs.py, step3_report.py, step3_tables.py (new); lab/mindL/mind.py, effects.py, tests_L.py (edited, options off by default).
+Results: lab/results/mindL4/step3/ (runs, runs_all6h, controls.json, L_all6s.txt, L_all6h.txt, tables_cn.json, diag1.json, diag2.json, diagnosis/, suite logs).
+Needs from the other lane: none.

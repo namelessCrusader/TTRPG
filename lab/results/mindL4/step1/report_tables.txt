@@ -1,0 +1,44 @@
+== P-need in all6 with signs
+error (mean of scored nights; 95% CI over seeds 1-10)
+  rules         +0.146 [+0.123, +0.170]
+  oracle_avoid  +0.148 [+0.122, +0.174]
+  oracle_kind   +0.156 [+0.133, +0.180]
+  oracle_both   +0.157 [+0.131, +0.183]
+oracle gap = rules minus oracle, paired by seed
+  oracle_avoid  -0.002 [-0.009, +0.005]
+  oracle_kind   -0.010 [-0.020, +0.000]
+  oracle_both   -0.011 [-0.021, -0.000]
+gap bound: kind acts at the partners 4.23 a night; (b-c) per act 0.0241 generous, 0.0152 night-averaged; bound 0.103 generous, 0.065 night-averaged
+answers of Fenn at the focal, chooser rules: +5.16 [+4.85, +5.47] a night; drop in the focal's drive error per answer +0.0012 [+0.0008, +0.0015]; by act {'praise': 3.265, 'accept': 1.342, 'give': 0.519, 'tend': 0.025, 'defend': 0.006, 'serve': 0.004}
+answers of Fenn at the focal, chooser oracle_both: +21.27 [+20.11, +22.44] a night; drop in the focal's drive error per answer +0.0009 [+0.0006, +0.0011]; by act {'praise': 13.176, 'give': 6.059, 'accept': 1.8, 'serve': 0.075, 'tend': 0.064, 'defend': 0.056, 'bandage': 0.045}
+answers of Oren at the focal, chooser rules: +0.01 [-0.00, +0.01] a night; drop in the focal's drive error per answer -0.0812 [-1.1131, +0.9507]; by act {'strike': 0.005}
+answers of Oren at the focal, chooser oracle_both: +0.00 [+0.00, +0.00] a night; drop in the focal's drive error per answer n/a; by act {}
+contrast = (kind - harsh acts a night at Fenn) minus the same at Oren
+  rules         +3.43 [+2.80, +4.07]   (kind F 3.71 O 0.51; harsh F 0.00 O 0.24)
+  oracle_both   +15.12 [+14.14, +16.10]   (kind F 15.32 O 0.38; harsh F 0.00 O 0.18)
+  oracle_kind   +15.27 [+14.35, +16.19]   (kind F 15.46 O 0.37; harsh F 0.00 O 0.19)
+  oracle_avoid  +3.43 [+2.81, +4.06]   (kind F 3.72 O 0.51; harsh F 0.00 O 0.23)
+  oracle_both minus rules +11.69 [+10.90, +12.47] 
+
+== P-kind in all6 (old)
+error (mean of scored nights; 95% CI over seeds 1-10)
+  rules         +0.148 [+0.127, +0.170]
+  oracle_avoid  +0.157 [+0.133, +0.181]
+  oracle_kind   +0.153 [+0.125, +0.181]
+  oracle_both   +0.152 [+0.124, +0.180]
+oracle gap = rules minus oracle, paired by seed
+  oracle_avoid  -0.008 [-0.018, +0.001]
+  oracle_kind   -0.005 [-0.016, +0.007]
+  oracle_both   -0.004 [-0.014, +0.007]
+gap bound: kind acts at the partners 4.76 a night; (b-c) per act 0.0344 generous, 0.0198 night-averaged; bound 0.167 generous, 0.095 night-averaged
+answers of Fenn at the focal, chooser rules: +3.81 [+3.41, +4.21] a night; drop in the focal's drive error per answer +0.0016 [+0.0005, +0.0027]; by act {'give': 2.046, 'accept': 1.741, 'tend': 0.011, 'praise': 0.011}
+answers of Fenn at the focal, chooser oracle_both: +4.12 [+3.76, +4.47] a night; drop in the focal's drive error per answer +0.0027 [+0.0011, +0.0044]; by act {'give': 2.279, 'accept': 1.815, 'praise': 0.02, 'tend': 0.004}
+answers of Oren at the focal, chooser rules: +0.00 [+0.00, +0.00] a night; drop in the focal's drive error per answer n/a; by act {}
+answers of Oren at the focal, chooser oracle_both: +0.00 [+0.00, +0.00] a night; drop in the focal's drive error per answer n/a; by act {}
+contrast = (kind - harsh acts a night at Fenn) minus the same at Oren
+  rules         +4.05 [+3.08, +5.02]   (kind F 4.31 O 0.46; harsh F 0.00 O 0.20)
+  oracle_both   +3.92 [+3.26, +4.58]   (kind F 4.26 O 0.55; harsh F 0.00 O 0.21)
+  oracle_kind   +3.96 [+3.26, +4.65]   (kind F 4.29 O 0.53; harsh F 0.00 O 0.20)
+  oracle_avoid  +4.02 [+3.46, +4.59]   (kind F 4.16 O 0.40; harsh F 0.00 O 0.26)
+  oracle_both minus rules -0.13 [-0.67, +0.40] 
+

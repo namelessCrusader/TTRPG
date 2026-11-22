@@ -1,0 +1,171 @@
+{
+ "placebo": {
+  "weight of the payer": [
+   0.31270658498975923,
+   0.27519235913336243,
+   0.350220810846156
+  ],
+  "mean weight of 3 random placebos": [
+   0.0002450502021220104,
+   -0.0003344014486734088,
+   0.0008245018529174297
+  ],
+  "weight of an always-present placebo": [
+   0.0,
+   0.0,
+   0.0
+  ]
+ },
+ "formed_extinguished": {
+  "weight after forming": [
+   0.18888715736612255,
+   0.151014506655219,
+   0.2267598080770261
+  ],
+  "after 8 nights of disillusion": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "after 30 nights of disuse": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "share left after 30 nights of disuse alone": [
+   0.5454843193824369,
+   0.5454843193824367,
+   0.5454843193824371
+  ]
+ },
+ "habituation": {
+  "h after 300 turns of contact": 0.2222921998407476,
+  "h after 300 more turns apart": 0.7138972890827407,
+  "increment of a from one paid step, fresh target (per unit of pay)": [
+   0.2,
+   0.2,
+   0.2
+  ],
+  "after 300 turns of contact": [
+   0.04445843996814952,
+   0.04445843996814952,
+   0.04445843996814952
+  ],
+  "fresh minus habituated (paired)": [
+   0.1555415600318505,
+   0.1555415600318505,
+   0.1555415600318505
+  ],
+  "ratio": 0.2222921998407476
+ },
+ "swap": {
+  "log odds Fenn over Oren with A's weights": [
+   10.768065941419753,
+   8.235586663803034,
+   13.300545219036472
+  ],
+  "with B's weights": [
+   -11.9684559109307,
+   -15.117336284114549,
+   -8.819575537746852
+  ],
+  "A minus B (paired by seed)": [
+   22.73652185235045,
+   18.742745282960946,
+   26.730298421739953
+  ],
+  "no concerns": 0.0
+ },
+ "clones": {
+  "D_life": [
+   0.592766649723859,
+   0.5619926644742227,
+   0.6235406349734952
+  ],
+  "D_rng": [
+   0.05896443714023426,
+   0.022099127243902686,
+   0.09582974703656584
+  ],
+  "D_life / D_rng": 10.052951888849387,
+  "paired D_life - D_rng": [
+   0.5338022125836246,
+   0.4712313034763225,
+   0.5963731216909267
+  ]
+ },
+ "stoic": {
+  "need read, expressive": [
+   0.6664716304817259,
+   0.5397779231577068,
+   0.7931653378057449
+  ],
+  "need read, stoic": [
+   0.1280079297574205,
+   0.0453898372580457,
+   0.21062602225679533
+  ],
+  "concern term for feeding the expressive": [
+   0.27991808480232483,
+   0.22670672772623685,
+   0.3331294418784128
+  ],
+  "for feeding the stoic": [
+   0.0537633304981166,
+   0.019063731648379198,
+   0.088462929347854
+  ],
+  "expressive minus stoic (paired)": [
+   0.22615475430420823,
+   0.16324962899070233,
+   0.2890598796177141
+  ]
+ },
+ "grief": {
+  "nights until the weight is under 0.05": {
+   "weight 0.2": 69,
+   "weight 0.5": 114,
+   "weight 0.9": 144
+  },
+  "rule": "exponential disuse fade: t = ln(w0 / 0.05) / -ln(1 - fade)"
+ },
+ "no_loop": {
+  "rise in the chance on acts at Fenn/Oren from w = 0.9, when both look healthy": [
+   0.014904594592680228,
+   0.009056802240473245,
+   0.02075238694488721
+  ],
+  "when one of them shows a need": [
+   0.30498489170733384,
+   0.12197611897875299,
+   0.4879936644359147
+  ],
+  "share of decisions with a need showing": [
+   0.3487093553480294,
+   0.2624390440976692,
+   0.43497966659838955
+  ]
+ },
+ "other_effects": {
+  "rho give (true 0.7 of the need, minus the episodes that end anyway)": [
+   0.5662279097104979,
+   0.5256280723235952,
+   0.6068277470974005
+  ],
+  "rho praise (true 0)": [
+   0.006589017075707023,
+   -0.045663189790548064,
+   0.058841223941962104
+  ],
+  "eta strike (true +0.3 when it lands: about 0.3 x the chance it lands before the window closes)": [
+   0.187573615451051,
+   0.18001206513714582,
+   0.19513516576495618
+  ]
+ },
+ "off_and_swap": {
+  "explicit off equals default (drive error, weights hash, decisions, valences)": true,
+  "a null Concerns plugged in runs a lifetime": true,
+  "plus the golden check in test_mind": "run separately"
+ }
+}

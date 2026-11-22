@@ -1,0 +1,5 @@
+most people fending at once | nights | driven off | people killed/night | fend acts | hits taken | total hp lost by the cast
+  0      1  0.00  0.00  0.0  0.0  0.0
+  1     17  0.00  2.47  2.6  23.1  31.3
+  2     19  0.32  1.95  5.2  23.5  30.7
+  3+    83  0.80  0.64  6.8  15.5  14.8

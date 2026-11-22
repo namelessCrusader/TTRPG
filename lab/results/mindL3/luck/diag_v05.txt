@@ -1,0 +1,4 @@
+hermit         focal error on nights with a catch 0.299 (n=303), empty-catch nights 0.567 (n=337)
+rules          focal error on nights with a catch 0.402 (n=303), empty-catch nights 0.572 (n=337)
+always-giving  focal error on nights with a catch 0.323 (n=303), empty-catch nights 0.392 (n=337)
+tit-for-tat    focal error on nights with a catch 0.438 (n=303), empty-catch nights 0.557 (n=337)

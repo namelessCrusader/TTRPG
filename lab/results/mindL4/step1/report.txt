@@ -1,0 +1,105 @@
+STEP 1 OF SV5: THE WORLD CHECK FOR THE P-NEED PARTNER   2026-11-21
+
+VERDICT
+The world does NOT pay for treating Fenn and Oren differently, in the all6 inn with signs. The oracle that knows both rules does
+slightly WORSE than the partner-blind rules chooser. Gap -0.011 [-0.021, -0.000], night-averaged error, seeds 1-10, paired by seed.
+The pass rule (gap at least 0.1 with a CI above 0) fails. The gap is below 0.1 because the world's bound is below 0.1: 0.065
+night-averaged, 0.103 generous. The world was not tuned. The old P-kind partner in all6 fails the same way (-0.004 [-0.014, +0.007],
+bound 0.095 / 0.167), and its numbers equal the stored stake runs, so the new flag changed nothing for it.
+So the next steps (act meanings from effects, acquired concerns) would be built on a world that, with this Fenn, does not reward
+the stance they are meant to learn. See "what bounds it" and the open problems.
+
+WHAT WAS BUILT (all in lab/, nothing in src/, no git)
+1. Signs, behind the NEW world flag "signs" (lab/world2/world.py). SIGNS_FLAGS = ("signs",); world "all6s" = all6 + signs in tournament.py.
+   World.perceived_need(obs, tgt) -> {hurt, fear, hunger} each 0..1, or None. reading = expressiveness(tgt) * state + noise, clipped.
+   noise sd = 0.12 / acuity(obs). Expressiveness ~ N(0.7, 0.2) clipped 0.15..1.0. Acuity ~ N(1.0, 0.3) clipped 0.4..1.6. Both drawn per person
+   from their OWN generator (night seed + name), carried across nights in carry_out ("dials"), so a person keeps its dials for the whole life.
+   The noise is a function of (night seed, turn, observer, target): a reading repeats and the world's own generator is untouched.
+   State read: hurt = max(hp loss share, ailment), fear, hunger. Only an observer in the same room who is awake and acts; the target alive.
+   Hearsay (told about it) is a documented HOOK in the docstring of perceived_need, not built.
+2. P-need(p), lab/world2/partners.py (class Need, make_partner "P-need:0.9"; also "need" in tests_L.make_one). Rule is in the module docstring.
+   Trigger set = the P-kind triggers (give owes; ask is served; offer is accepted, each with chance p) plus the all5/all6 care acts and the words:
+   serve, tend, bandage, help up, defend, praise now also owe. (fend off a raid has no target, so nothing is owed for it.)
+   It pays with the menu act that best eases X's most pressing need as read through signs: reading/threshold above 1 (hunger 0.5, hurt 0.2,
+   fear 0.25), largest first: hungry -> serve a portion, else give a food held; hurt -> tend, else bandage, else help up; afraid -> defend,
+   else fend off the raid; nothing pressing -> praise (company). A misread pays the wrong thing. It never harms or starts. Without the flag
+   it perceives nothing and pays praise. One difference from P-kind that is not about needs: P-need serves an ask for a portion (the
+   `serve` verb); P-kind cannot (its ask rule only gives or tends).
+   Oren stays P-hard(0.9), untouched.
+3. Oracle: known["Fenn"] = "need" (tournament.Oracle). Same plan as "kind" (ask, give a small thing, walk to Fenn), except the gain
+   gate also counts the focal's energy and safety error, and it may praise Fenn (a word is on P-need's trigger list and costs no thing).
+   Family O takes --fenn need (spec key "fenn"; ids get a _need suffix; old ids are unchanged).
+4. Recorder.by_partner (read-only): per partner and verb, the done acts at the focal, sum of b and bpot. Written into every run.
+5. lab/mindL/step1_report.py prints the tables below. lab/results/mindL4/step1/diag_payments.py is the payment diagnostic.
+
+TESTS (all pass)
+New in lab/world2/test_world.py (9): stoic pain is under-read (express 0.25 reads 0.15 for a true 0.6; express 1.0 reads 0.6); acuity 1.6 gives
+under half the noise of 0.4, and a reading repeats; same room and awake observer needed; FLAG OFF CHANGES NOTHING (200-turn logs identical
+with and without signs, no dial on a person); dials stay with the person across nights and differ between people; P-need pays food when the
+target looks hungry, tend or bandage when hurt, praise when nothing presses; a stoic's hunger is misread and gets praise; no flag pays praise
+and a ask is served; the care acts owe, an insult does not, and it never starts anything.
+Old suites, flag off: lab.world2.test_world 73 passed (64 old + 9 new), lab.mindL.test_mind 30 passed (includes the golden check
+golden_traces_off.json, which compares drive error, a hash of U/W/c, decision count and vk/vh with values made by the OLD mind code),
+lab.mindL.test_tournament 17 passed. The all6 P-kind runs reproduce the stored stake numbers (gap -0.004, bound 0.167 / 0.095).
+
+THE WORLD CHECK (100 nights, nights 20-99 scored, seeds 1-10, focal Tom / Sir Ada / Marta by seed % 3, Oren P-hard(0.9) in both)
+Error = mean drive error of the focal over the scored nights, 95% t interval over seeds.
+                              P-need, all6 + signs                P-kind, all6 (old)
+rules (partner-blind)         0.146 [0.123, 0.170]                0.148 [0.127, 0.170]
+oracle_both                   0.157 [0.131, 0.183]                0.152 [0.124, 0.180]
+ORACLE GAP (rules - oracle)   -0.011 [-0.021, -0.000]  FAIL       -0.004 [-0.014, +0.007]  FAIL
+  oracle_kind                 -0.010 [-0.020, +0.000]             -0.005 [-0.016, +0.007]
+  oracle_avoid                -0.002 [-0.009, +0.005]             -0.008 [-0.018, +0.001]
+Gap bound, generous           0.103                               0.167
+Gap bound, night-averaged     0.065                               0.095
+  kind acts at the partners a night / (b-c) per act (generous)    4.23 / 0.0241              4.76 / 0.0344
+Fenn's answers at the focal, per night (rules chooser)            5.16 [4.85, 5.47]          3.81 [3.41, 4.21]
+Drop in the focal's drive error per Fenn answer (b + bpot)        +0.0012 [+0.0008, +0.0015] +0.0016 [+0.0005, +0.0027]
+  (oracle_both chooser)       21.27 answers a night, +0.0009 [+0.0006, +0.0011]       4.12 a night, +0.0027 [+0.0011, +0.0044]
+Oren's answers at the focal   0.01 a night (a blow), no usable mean               0.00 a night
+Contrast (kind minus harsh acts a night at Fenn, minus the same at Oren)
+  rules                       +3.43 [+2.80, +4.07]                +4.05 [+3.08, +5.02]
+  oracle_both                 +15.12 [+14.14, +16.10]             +3.92 [+3.26, +4.58]
+  oracle_both minus rules     +11.69 [+10.90, +12.47]             -0.13 [-0.67, +0.40]
+  (kind acts a night at Fenn / Oren, oracle_both: P-need 15.3 / 0.4; P-kind 4.3 / 0.6. Harsh acts at Fenn 0.00, at Oren 0.18-0.21.)
+Fenn's answers by act (a night, rules): P-need praise 3.27, accept 1.34, give 0.52, tend 0.025, defend 0.006, serve 0.004.
+                                        P-kind give 2.05, accept 1.74, tend 0.011, praise 0.011.
+Oren's only answer is a blow, and the P-hard rule fires 0.01 times a night against the rules chooser and never against the oracle, which
+avoids the provocation. Oren's effect on the focal's needs is therefore negative and almost never measured; avoiding him is worth about 0
+(oracle_avoid gap -0.002 [-0.009, +0.005]), as in step 0a.
+
+WHAT BOUNDS IT (measured, not tuned)
+1. Fenn pays almost only praise. In a diagnostic of 1,828 P-need payments (3 seeds x 60 nights, rules chooser), 98% were praise (the
+   "nothing pressing" answer), 15 tend, 7 bandage, 6 fend off, 2 defend, and no food at all. Praise changes only liking, so it drops the
+   focal's drive error by 0.
+2. Pressing needs are rare and the focal can meet most of them itself. At the moment of payment the focal's true hunger was above 0.5 in 16%
+   of payments, hurt above 0.2 in 3%, fear above 0.25 in 3%. Hunger as READ was above 0.5 in only 9%: with mean expressiveness 0.7 a hunger of
+   0.6 reads 0.42. In 285 praise payments the target was truly hungry above 0.5: Fenn either misread it or held no food to serve.
+3. So per answer the drop is 0.0009 to 0.0012, against 0.0016 to 0.0027 for P-kind, and the oracle's 21 answers a night (praise, mostly)
+   buy nothing; the oracle's extra asks, gifts and words cost it time, which is why its gap is slightly negative.
+4. The gap bound is acts x (b - c): 4.23 acts x 0.0152 = 0.065, under 0.1 whatever the chooser. The old world's bound was 0.095.
+
+THE ORACLE DOES TREAT FENN AND OREN DIFFERENTLY: kind acts at Fenn 15.3 a night against 0.4 at Oren, a contrast 11.7 [10.9, 12.5] above
+rules. It is the world, not the chooser, that fails to pay for it. For L2 and L1 (does a MIND learn to treat Fenn better) the pay-off
+signal available to a learner is 0.0009 a answer: too weak for the check to say anything about the mind.
+
+OPEN PROBLEMS
+- With this P-need the world does not pass the 0a lesson. Options for the owner (none done here, because the task says not to tune the world):
+  (i) a Fenn that holds and gives food more (it holds nothing to serve most of the time: the cook and the catches are the food sources);
+  (ii) needs that are larger and rarer-to-self-serve (more ailments, raids), so that being cared for is worth more than 0.02 an answer;
+  (iii) a company act that moves the company need (praise changes only liking; no menu act eases `lonely` directly);
+  (iv) accept that this inn cannot pay, and test acquired concerns with the learned weights by the placebo, swap and clone controls of 9.2
+  instead of by the oracle gap.
+- The signs dials are minimal: three states, one expressiveness and one acuity, no hearsay, no magic bond, no cultural reading.
+- The thresholds of P-need (0.5, 0.2, 0.25) are written values of a scripted partner; the diagnostic shows hunger is mostly misread under
+  them, so the choice matters. Not tuned.
+- P-need also serves asks for portions where P-kind cannot, a difference that is not the need rule. It is small (serve 0.004 a night).
+- Per-answer drop for Oren is not measurable: it answers about once in 100 nights.
+- All runs are 100 nights; the L tests use 300 to 400.
+
+FILES
+Results: /home/nisargparikh/Desktop/Fun Stuff/Mark_1/lab/results/mindL4/step1/ (runs_need/, runs_kind/, results_step1.json with every per-seed
+number, report_tables.txt, tests.out, run.out, diag_payments.py). Scratch: /home/nisargparikh/.cache/mark1-build/mindL4/step1/.
+Code: lab/world2/world.py (signs flag, perceived_need, dials), lab/world2/partners.py (Need), lab/world2/test_world.py (+9 tests),
+lab/mindL/tournament.py (all6s, fenn=need, Oracle need rule, Recorder.by_partner), lab/mindL/tests_L.py (make_one "need"),
+lab/mindL/step1_report.py. Nothing in src/ edited; nothing staged or committed.

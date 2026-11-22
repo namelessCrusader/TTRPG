@@ -1,0 +1,17 @@
+ALL5 AGAINST all4, paired by seed (same focal, same night seeds); error = focal drive error nights 20-99; diff = all5 minus all4 [95% CI]
+
+chooser           all4    all5  diff                          deaths/80n all4 -> all5
+always-giving    0.250   0.322  +0.071 [-0.006, +0.149]      0.00 -> 0.20
+always-harsh     1.156   1.203  +0.047 [+0.011, +0.084]      0.10 -> 7.50
+extractor        1.101   1.141  +0.040 [+0.006, +0.074]      0.00 -> 6.70
+hermit           0.355   0.386  +0.032 [+0.005, +0.059]      0.00 -> 2.60
+hoarder          0.359   0.386  +0.027 [-0.006, +0.059]      0.00 -> 1.40
+protector        0.412   0.460  +0.048 [-0.023, +0.119]      0.00 -> 2.10
+rules            0.407   0.385  -0.022 [-0.126, +0.082]      0.00 -> 2.10
+tit-for-tat      0.413   0.405  -0.008 [-0.144, +0.128]      0.00 -> 1.90
+
+ORACLE FAMILY (L2 setting)
+  rules          all4 0.134  all5 0.144  diff +0.010 [-0.002, +0.022]
+  oracle_avoid   all4 0.133  all5 0.146  diff +0.013 [+0.001, +0.025]
+  oracle_kind    all4 0.132  all5 0.147  diff +0.015 [+0.005, +0.025]
+  oracle_both    all4 0.131  all5 0.146  diff +0.015 [+0.005, +0.025]

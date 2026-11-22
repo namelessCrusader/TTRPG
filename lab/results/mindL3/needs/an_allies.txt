@@ -1,0 +1,86 @@
+
+WORLD all2: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+always-giving  0.308 [0.131, 0.485]       -0.147 [-0.328, +0.034]            0.70     79.3    10
+hermit         0.365 [0.174, 0.557]       -0.090 [-0.277, +0.097]            2.10     77.9    10
+hoarder        0.375 [0.139, 0.612]       -0.080 [-0.238, +0.079]            1.20     78.8    10
+protector      0.417 [0.178, 0.656]       -0.038 [-0.162, +0.085]            1.40     78.6    10
+tit-for-tat    0.431 [0.079, 0.782]       -0.025 [-0.153, +0.104]            1.00     79.0    10
+rules          0.455 [0.159, 0.751]       -                                  1.50     78.5    10
+extractor      1.097 [0.895, 1.299]       +0.642 [+0.446, +0.837]            5.00     75.0    10
+always-harsh   1.188 [0.948, 1.428]       +0.733 [+0.598, +0.868]            6.30     73.7    10
+always-giving minus tit-for-tat: -0.123 [-0.358, +0.113]
+  always-giving minus hermit         -0.057 [-0.098, -0.017]
+  tit-for-tat minus hermit           +0.066 [-0.184, +0.315]
+  always-harsh minus hermit          +0.823 [+0.659, +0.986]
+  extractor minus hermit             +0.732 [+0.493, +0.971]
+  hoarder minus hermit               +0.010 [-0.063, +0.084]
+  protector minus hermit             +0.052 [-0.032, +0.136]
+  always-giving minus always-harsh   -0.880 [-1.028, -0.732]
+  tit-for-tat minus always-harsh     -0.757 [-0.943, -0.571]
+
+WORLD noR: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD noG: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD none: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD fix: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD luck: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD luckR0: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD tend: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD allies: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD labour: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD all5: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD all5R0: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+WORLD fixnoR: focal drive error, nights 20-99 (lower is better). minus rules = paired by seed.
+chooser        error [95% CI]             minus rules                  deaths/80n survived seeds
+
+ORACLE (L2 setting, all2):
+  oracle_avoid   0.146 [0.124, 0.169]   gap vs rules -0.000 [-0.006, +0.006]
+  oracle_both    0.143 [0.119, 0.168]   gap vs rules +0.003 [-0.004, +0.010]
+  oracle_kind    0.147 [0.122, 0.173]   gap vs rules -0.001 [-0.010, +0.008]
+  rules          0.146 [0.125, 0.168]   gap vs rules -
+  ceiling (blind company+standing+safety error) 0.029 [0.020, 0.037]; share recovered 0.116
+
+PASS RULES:
+  oracle gap >= 0.1 with CI above 0: FAIL  (+0.003 [-0.004, +0.010])
+  hermit_loses_to_rules: FAIL  -0.090 [-0.277, +0.097]
+  always-harsh_loses_to_rules: PASS  +0.733 [+0.598, +0.868]
+  hermit_and_always_harsh_lose_to_rules: FAIL  None
+  always_giving_loses_to_tit_for_tat: FAIL  -0.123 [-0.358, +0.113]
+  extractor_wins_only_where_reprisal_is_weak: FAIL  {'all2': {'mean': 0.6418, 'lo': 0.4463, 'hi': 0.8373, 'n': 10}, 'noR': None, 'noG': None, 'none': None, 'fix': None, 'luck': None, 'luckR0': None, 'tend': None, 'allies': None, 'labour': None, 'all5': None, 'all5R0': None, 'fixnoR': None}
+  b,c,q,w (help, all2): n=134599 b=0.025 c=0.021 q=0.80 q_eff=0.54 w_same=0.99 q*b-c -0.000 [-0.005, +0.004]  q_eff*b-c -0.008 [-0.016, -0.001]
+  b,c,q,w (kind_all, all2): n=345216 b=0.013 c=0.012 q=0.82 q_eff=0.21 w_same=0.99 q*b-c -0.001 [-0.003, +0.001]  q_eff*b-c -0.009 [-0.013, -0.005]
+  b,c,q,w (harsh, all2): n=119179 b=-0.112 c=-0.025 q=0.75 q_eff=0.57 w_same=1.00 q*b-c -0.059 [-0.068, -0.049]  q_eff*b-c -0.039 [-0.046, -0.032]
+
+BY VERB (all2 = the world under study), selected
+serve {'n': 23951, 'b': 0.01, 'b_imm': 0.01, 'b_rem': 0.005, 'c': 0.002, 'c_imm': -0.003, 'c_rem': -0.002, 'c_pot': 0.001, 'c_time': 0.004, 'q_seen': 0.854, 'q_told': 0.172, 'q': 0.854, 'q_eff': 0.738, 'present': 1.79, 'w_same': 0.999, 'w_next': 0.999, 'daff': 0.052, 'reply_kind': 0.621, 'reply_help': 0.45, 'reply_harsh': 0.065, 'witness_reply_kind': 0.42, 'witness_reply_help': 0.275, 'witness_reply_harsh': 0.11}
+give {'n': 92456, 'b': 0.03, 'b_imm': 0.029, 'b_rem': 0.016, 'c': 0.032, 'c_imm': 0.028, 'c_rem': 0.015, 'c_pot': 0.0, 'c_time': 0.004, 'q_seen': 0.799, 'q_told': 0.129, 'q': 0.8, 'q_eff': 0.425, 'present': 1.5, 'w_same': 0.993, 'w_next': 0.999, 'daff': 0.026, 'reply_kind': 0.626, 'reply_help': 0.473, 'reply_harsh': 0.038, 'witness_reply_kind': 0.516, 'witness_reply_help': 0.383, 'witness_reply_harsh': 0.069}
+praise {'n': 81207, 'b': 0.003, 'b_imm': 0.003, 'b_rem': 0.001, 'c': 0.002, 'c_imm': 0.0, 'c_rem': 0.0, 'c_pot': 0.0, 'c_time': 0.002, 'q_seen': 0.834, 'q_told': 0.084, 'q': 0.834, 'q_eff': 0.017, 'present': 1.699, 'w_same': 0.995, 'w_next': 0.999, 'daff': 0.0, 'reply_kind': 0.584, 'reply_help': 0.431, 'reply_harsh': 0.038, 'witness_reply_kind': 0.536, 'witness_reply_help': 0.4, 'witness_reply_harsh': 0.08}
+gossip {'n': 87974, 'b': 0.002, 'b_imm': 0.002, 'b_rem': 0.001, 'c': 0.006, 'c_imm': -0.0, 'c_rem': -0.0, 'c_pot': 0.0, 'c_time': 0.007, 'q_seen': 0.847, 'q_told': 0.0, 'q': 0.847, 'q_eff': 0.0, 'present': 1.725, 'w_same': 0.994, 'w_next': 0.999, 'daff': -0.029, 'reply_kind': 0.543, 'reply_help': 0.395, 'reply_harsh': 0.051, 'witness_reply_kind': 0.429, 'witness_reply_help': 0.309, 'witness_reply_harsh': 0.108}
+strike {'n': 24647, 'b': -0.2, 'b_imm': -0.2, 'b_rem': -0.094, 'c': 0.014, 'c_imm': 0.006, 'c_rem': 0.003, 'c_pot': 0.0, 'c_time': 0.007, 'q_seen': 0.742, 'q_told': 0.095, 'q': 0.742, 'q_eff': 0.613, 'present': 1.224, 'w_same': 0.994, 'w_next': 1.0, 'daff': -0.032, 'reply_kind': 0.001, 'reply_help': 0.001, 'reply_harsh': 0.719, 'witness_reply_kind': 0.213, 'witness_reply_help': 0.183, 'witness_reply_harsh': 0.267}
+insult {'n': 6431, 'b': -0.063, 'b_imm': -0.063, 'b_rem': -0.029, 'c': 0.024, 'c_imm': 0.014, 'c_rem': 0.007, 'c_pot': 0.0, 'c_time': 0.01, 'q_seen': 0.732, 'q_told': 0.098, 'q': 0.732, 'q_eff': 0.479, 'present': 1.288, 'w_same': 0.997, 'w_next': 1.0, 'daff': -0.042, 'reply_kind': 0.001, 'reply_help': 0.001, 'reply_harsh': 0.542, 'witness_reply_kind': 0.105, 'witness_reply_help': 0.075, 'witness_reply_harsh': 0.399}
+accuse {'n': 36464, 'b': -0.053, 'b_imm': -0.053, 'b_rem': -0.029, 'c': 0.011, 'c_imm': 0.004, 'c_rem': 0.002, 'c_pot': 0.0, 'c_time': 0.007, 'q_seen': 0.83, 'q_told': 0.194, 'q': 0.831, 'q_eff': 0.785, 'present': 1.549, 'w_same': 0.996, 'w_next': 1.0, 'daff': -0.051, 'reply_kind': 0.012, 'reply_help': 0.009, 'reply_harsh': 0.26, 'witness_reply_kind': 0.271, 'witness_reply_help': 0.188, 'witness_reply_harsh': 0.125}
+buy {'n': 19139, 'b': 0.0, 'b_imm': 0.0, 'b_rem': 0.0, 'c': 0.019, 'c_imm': 0.015, 'c_rem': 0.015, 'c_pot': 0.0, 'c_time': 0.005, 'q_seen': 0.895, 'q_told': 0.0, 'q': 0.895, 'q_eff': 0.0, 'present': 1.941, 'w_same': 0.999, 'w_next': 0.998, 'daff': 0.0, 'reply_kind': 0.635, 'reply_help': 0.495, 'reply_harsh': 0.053, 'witness_reply_kind': 0.454, 'witness_reply_help': 0.299, 'witness_reply_harsh': 0.087}
+work {'n': 17175, 'b': 0.0, 'b_imm': 0.0, 'b_rem': 0.0, 'c': 0.004, 'c_imm': -0.019, 'c_rem': -0.016, 'c_pot': 0.0, 'c_time': 0.024, 'q_seen': 0.896, 'q_told': 0.0, 'q': 0.896, 'q_eff': 0.0, 'present': 1.991, 'w_same': 0.999, 'w_next': 0.998, 'daff': 0.0, 'reply_kind': 0.555, 'reply_help': 0.43, 'reply_harsh': 0.06, 'witness_reply_kind': 0.456, 'witness_reply_help': 0.324, 'witness_reply_harsh': 0.092}
+bandage {'n': 3986, 'b': 0.091, 'b_imm': 0.091, 'b_rem': 0.024, 'c': 0.011, 'c_imm': -0.002, 'c_rem': -0.001, 'c_pot': 0.0, 'c_time': 0.013, 'q_seen': 0.688, 'q_told': 0.08, 'q': 0.691, 'q_eff': 0.438, 'present': 1.109, 'w_same': 0.982, 'w_next': 0.999, 'daff': 0.048, 'reply_kind': 0.441, 'reply_help': 0.338, 'reply_harsh': 0.019, 'witness_reply_kind': 0.302, 'witness_reply_help': 0.201, 'witness_reply_harsh': 0.072}

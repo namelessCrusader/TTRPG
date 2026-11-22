@@ -1,0 +1,258 @@
+0. CHECK: all5 re-run with the new logs against the stored all5 (focal error, per run)
+   80 of 80 runs identical (err, deaths per night)
+
+1. b, c, c/b AND THE IMPLIED THRESHOLDS w* = q* = c/b  (8 plan choosers pooled; help acts = bandage, defend, give, help up, serve, tend)
+   cell             b       c    c/b      q  q_eff  w_same  w_next  q_eff>c/b?  q>c/b?  w>c/b?   q_eff*b-c [95% CI]
+   all5        0.0319  0.0227  0.712  0.812  0.550   0.993   0.998  False       True    True     -0.006 [-0.014, +0.003]   (n=138310)
+   all6        0.0336  0.0231  0.688  0.802  0.522   0.993   0.999  False       True    True     -0.006 [-0.015, +0.003]   (n=116793)
+   no_lumpy    0.0308  0.0226  0.734  0.809  0.547   0.994   0.999  False       True    True     -0.006 [-0.013, +0.001]   (n=113976)
+   no_stock    0.0316  0.0231  0.731  0.799  0.529   0.994   0.998  False       True    True     -0.007 [-0.018, +0.004]   (n=125164)
+   no_choosy   0.0370  0.0235  0.635  0.802  0.539   0.993   0.999  False       True    True     -0.004 [-0.014, +0.006]   (n=128374)
+
+   the pooled help acts split: 'give' (handing a thing over: most of the acts) against the care acts (tend, bandage, help up, defend, serve):
+   all5       give only  b 0.0306 c 0.0327 c/b 1.069  q 0.789 q_eff 0.458 w 0.993   q_eff*b-c -0.020 [-0.029, -0.011]  q*b-c -0.009 [-0.013, -0.004]  (n=89860)
+   all5       care acts  b 0.0311 c 0.0037 c/b 0.119  q 0.851 q_eff 0.723 w 0.995   q_eff*b-c +0.019 [+0.014, +0.024]  q*b-c +0.023 [+0.018, +0.027]  (n=48450)
+   all6       give only  b 0.0271 c 0.0297 c/b 1.096  q 0.797 q_eff 0.477 w 0.993   q_eff*b-c -0.018 [-0.026, -0.010]  q*b-c -0.008 [-0.012, -0.004]  (n=84387)
+   all6       care acts  b 0.0453 c 0.0053 c/b 0.117  q 0.809 q_eff 0.635 w 0.994   q_eff*b-c +0.024 [+0.017, +0.031]  q*b-c +0.031 [+0.026, +0.036]  (n=32406)
+   no_lumpy   give only  b 0.0283 c 0.0306 c/b 1.081  q 0.789 q_eff 0.476 w 0.993   q_eff*b-c -0.018 [-0.024, -0.011]  q*b-c -0.008 [-0.014, -0.003]  (n=79680)
+   no_lumpy   care acts  b 0.0340 c 0.0044 c/b 0.129  q 0.852 q_eff 0.708 w 0.994   q_eff*b-c +0.020 [+0.015, +0.024]  q*b-c +0.024 [+0.021, +0.028]  (n=34296)
+   no_stock   give only  b 0.0266 c 0.0311 c/b 1.169  q 0.794 q_eff 0.476 w 0.993   q_eff*b-c -0.020 [-0.030, -0.010]  q*b-c -0.010 [-0.015, -0.004]  (n=86683)
+   no_stock   care acts  b 0.0375 c 0.0038 c/b 0.101  q 0.806 q_eff 0.649 w 0.994   q_eff*b-c +0.021 [+0.015, +0.027]  q*b-c +0.026 [+0.021, +0.032]  (n=38481)
+   no_choosy  give only  b 0.0300 c 0.0315 c/b 1.050  q 0.800 q_eff 0.487 w 0.993   q_eff*b-c -0.018 [-0.027, -0.010]  q*b-c -0.007 [-0.011, -0.004]  (n=89396)
+   no_choosy  care acts  b 0.0466 c 0.0047 c/b 0.101  q 0.807 q_eff 0.653 w 0.993   q_eff*b-c +0.026 [+0.019, +0.034]  q*b-c +0.033 [+0.028, +0.038]  (n=38978)
+
+   per act (pooled over choosers and seeds; the same, by verb):
+   cell       verb           n       b       c    c/b      q  q_eff  w_same
+   all5       bandage     4006  0.0811  0.0118   0.15  0.715  0.451   0.986
+   all5       defend     13049  0.0157  0.0012   0.08  0.851  0.721   0.989
+   all5       give       89860  0.0323  0.0338   1.05  0.797  0.403   0.993
+   all5       help up     1296  0.0499  0.0002   0.00  0.626  0.430   0.992
+   all5       serve      25299  0.0123  0.0026   0.21  0.868  0.749   0.998
+   all5       tend        4800  0.1172  0.0112   0.10  0.946  0.886   0.999
+   all5       praise     79265  0.0027  0.0022   0.82  0.836  0.018   0.995
+   all5       gossip     89135  0.0020  0.0063   3.14  0.847  0.000   0.994
+   all5       buy        18469  0.0000  0.0220 7328.65  0.902  0.000   0.999
+   all5       work       16458  0.0003  0.0057  17.24  0.907  0.000   0.999
+   all6       bandage     3188  0.0893  0.0121   0.14  0.702  0.422   0.984
+   all6       defend      8583  0.0162  0.0020   0.12  0.846  0.685   0.986
+   all6       give       84387  0.0294  0.0317   1.08  0.803  0.421   0.993
+   all6       help up     1053  0.0419  0.0042   0.10  0.574  0.386   0.985
+   all6       serve      15496  0.0314  0.0035   0.11  0.794  0.588   0.999
+   all6       tend        4086  0.1211  0.0148   0.12  0.936  0.873   1.000
+   all6       praise     74587  0.0037  0.0022   0.60  0.835  0.019   0.994
+   all6       gossip     78934  0.0024  0.0070   2.93  0.849  0.000   0.994
+   all6       buy        13973  0.0000 -0.0014 -199.39  0.837  0.000   0.999
+   all6       work       12303  0.0003 -0.0076 -21.82  0.858  0.000   0.998
+   no_lumpy   bandage     3032  0.0909  0.0121   0.13  0.709  0.448   0.984
+   no_lumpy   defend      8836  0.0167  0.0022   0.13  0.849  0.709   0.989
+   no_lumpy   give       79680  0.0303  0.0316   1.04  0.797  0.432   0.994
+   no_lumpy   help up      983  0.0368  0.0037   0.10  0.554  0.378   0.988
+   no_lumpy   serve      17414  0.0109  0.0029   0.27  0.881  0.728   0.999
+   no_lumpy   tend        4031  0.1239  0.0117   0.09  0.937  0.867   0.999
+   no_lumpy   praise     71563  0.0038  0.0022   0.59  0.834  0.017   0.995
+   no_lumpy   gossip     77604  0.0026  0.0065   2.46  0.846  0.000   0.994
+   no_lumpy   buy        16419  0.0000  0.0210 4736.54  0.902  0.000   0.999
+   no_lumpy   work       15150  0.0002  0.0057  24.30  0.906  0.000   0.998
+   no_stock   bandage     3116  0.0841  0.0113   0.13  0.694  0.418   0.980
+   no_stock   defend      8865  0.0165  0.0010   0.06  0.851  0.703   0.985
+   no_stock   give       86683  0.0301  0.0339   1.13  0.802  0.422   0.993
+   no_stock   help up      925  0.0389  0.0038   0.10  0.551  0.347   0.994
+   no_stock   serve      21407  0.0222  0.0020   0.09  0.793  0.632   0.999
+   no_stock   tend        4168  0.1188  0.0146   0.12  0.934  0.861   0.999
+   no_stock   praise     76085  0.0034  0.0022   0.64  0.830  0.017   0.995
+   no_stock   gossip     82512  0.0022  0.0068   3.01  0.844  0.000   0.994
+   no_stock   buy        16014  0.0000 -0.0016 -221.61  0.832  0.000   1.000
+   no_stock   work       14336  0.0004 -0.0083 -22.44  0.851  0.000   0.999
+   no_choosy  bandage     4154  0.0922  0.0113   0.12  0.702  0.455   0.982
+   no_choosy  defend     12045  0.0175  0.0012   0.07  0.853  0.730   0.987
+   no_choosy  give       89396  0.0346  0.0361   1.04  0.806  0.431   0.994
+   no_choosy  help up     1580  0.0518  0.0018   0.04  0.595  0.415   0.985
+   no_choosy  serve      16221  0.0338  0.0028   0.08  0.786  0.585   0.999
+   no_choosy  tend        4978  0.1166  0.0151   0.13  0.935  0.882   0.999
+   no_choosy  praise     78268  0.0035  0.0022   0.64  0.838  0.018   0.995
+   no_choosy  gossip     85946  0.0024  0.0069   2.84  0.849  0.000   0.994
+   no_choosy  buy        14797  0.0000 -0.0037 -282.74  0.841  0.000   0.999
+   no_choosy  work       13917  0.0004 -0.0085 -19.11  0.848  0.000   0.998
+
+2. STAKE s: the change in a person's drive error per unit change in a partner's (OLS slope across the nights 20-99; mean over the 20 ordered pairs;
+   'focal in others' = the focal's error on the others' errors, 'others in focal' = the others' on the focal's). 95% CI over seeds.
+   all5       rules          s_pairs +0.137 [+0.092, +0.182]  corr +0.112 [+0.066, +0.157]  focal-in-others +0.200 [+0.100, +0.300]  others-in-focal +0.109 [+0.031, +0.188]
+   all5       hermit         s_pairs +0.204 [+0.148, +0.260]  corr +0.144 [+0.105, +0.184]  focal-in-others +0.281 [+0.115, +0.447]  others-in-focal +0.127 [+0.032, +0.221]
+   all5       always-giving  s_pairs +0.246 [+0.203, +0.289]  corr +0.167 [+0.144, +0.191]  focal-in-others +0.200 [+0.085, +0.315]  others-in-focal +0.376 [+0.100, +0.651]
+   all5       tit-for-tat    s_pairs +0.223 [+0.186, +0.260]  corr +0.170 [+0.144, +0.195]  focal-in-others +0.167 [+0.024, +0.310]  others-in-focal +0.260 [+0.097, +0.423]
+   all6       rules          s_pairs +0.121 [+0.080, +0.161]  corr +0.107 [+0.072, +0.143]  focal-in-others +0.118 [+0.034, +0.202]  others-in-focal +0.079 [+0.004, +0.154]
+   all6       hermit         s_pairs +0.171 [+0.106, +0.236]  corr +0.146 [+0.094, +0.198]  focal-in-others +0.163 [+0.044, +0.282]  others-in-focal +0.131 [-0.004, +0.266]
+   all6       always-giving  s_pairs +0.234 [+0.167, +0.301]  corr +0.193 [+0.142, +0.244]  focal-in-others +0.155 [+0.027, +0.282]  others-in-focal +0.236 [+0.062, +0.410]
+   all6       tit-for-tat    s_pairs +0.242 [+0.169, +0.315]  corr +0.194 [+0.143, +0.245]  focal-in-others +0.191 [+0.096, +0.286]  others-in-focal +0.379 [+0.103, +0.654]
+   no_lumpy   rules          s_pairs +0.127 [+0.086, +0.168]  corr +0.116 [+0.083, +0.148]  focal-in-others +0.145 [+0.051, +0.239]  others-in-focal +0.121 [+0.037, +0.206]
+   no_lumpy   hermit         s_pairs +0.187 [+0.114, +0.261]  corr +0.148 [+0.098, +0.198]  focal-in-others +0.240 [+0.066, +0.415]  others-in-focal +0.134 [+0.041, +0.227]
+   no_lumpy   always-giving  s_pairs +0.224 [+0.169, +0.279]  corr +0.182 [+0.135, +0.228]  focal-in-others +0.234 [+0.095, +0.373]  others-in-focal +0.275 [+0.093, +0.458]
+   no_lumpy   tit-for-tat    s_pairs +0.232 [+0.142, +0.322]  corr +0.170 [+0.095, +0.245]  focal-in-others +0.257 [+0.136, +0.378]  others-in-focal +0.327 [+0.106, +0.548]
+   no_stock   rules          s_pairs +0.157 [+0.116, +0.198]  corr +0.127 [+0.091, +0.164]  focal-in-others +0.131 [+0.006, +0.256]  others-in-focal +0.129 [+0.028, +0.229]
+   no_stock   hermit         s_pairs +0.172 [+0.121, +0.223]  corr +0.134 [+0.088, +0.181]  focal-in-others +0.170 [+0.076, +0.263]  others-in-focal +0.209 [+0.042, +0.376]
+   no_stock   always-giving  s_pairs +0.194 [+0.138, +0.250]  corr +0.152 [+0.112, +0.192]  focal-in-others +0.177 [+0.081, +0.273]  others-in-focal +0.245 [+0.071, +0.420]
+   no_stock   tit-for-tat    s_pairs +0.220 [+0.149, +0.291]  corr +0.164 [+0.113, +0.216]  focal-in-others +0.278 [+0.057, +0.499]  others-in-focal +0.255 [+0.096, +0.414]
+   no_choosy  rules          s_pairs +0.184 [+0.120, +0.247]  corr +0.155 [+0.105, +0.204]  focal-in-others +0.234 [+0.091, +0.377]  others-in-focal +0.075 [+0.027, +0.123]
+   no_choosy  hermit         s_pairs +0.223 [+0.165, +0.280]  corr +0.179 [+0.136, +0.223]  focal-in-others +0.193 [+0.115, +0.272]  others-in-focal +0.179 [+0.048, +0.310]
+   no_choosy  always-giving  s_pairs +0.260 [+0.213, +0.307]  corr +0.217 [+0.180, +0.255]  focal-in-others +0.254 [+0.163, +0.345]  others-in-focal +0.345 [+0.125, +0.565]
+   no_choosy  tit-for-tat    s_pairs +0.239 [+0.191, +0.286]  corr +0.187 [+0.156, +0.217]  focal-in-others +0.235 [+0.141, +0.328]  others-in-focal +0.348 [+0.130, +0.567]
+
+3. ALTERNATIVE PROVIDERS per need (sampled every 10 turns, every living cast member, nights 20-99; the counter counted as one provider).
+   'all' = every sample; 'active' = only while the need is on (hunger over 0.3; an ailment over the tending floor; a raid in the room).
+   providers = how many; any = share of samples with at least one; walk = turns to the nearest (3 turns a room)
+   all5       hunger  all     counter: providers 0.76, any 0.45, walk 2.3  (n=951588) | people: providers 0.52, any 0.37, walk 2.3  (n=951588)
+   all5       hunger  active  counter: providers 0.49, any 0.29, walk 3.0  (n=485762) | people: providers 0.29, any 0.23, walk 2.5  (n=485762)
+   all5       tend    all     counter: providers 0.00, any 0.00, walk nan  (n=951588) | people: providers 3.93, any 1.00, walk 0.8  (n=951588)
+   all5       tend    active  counter: providers 0.00, any 0.00, walk nan  (n=40934) | people: providers 3.92, any 1.00, walk 0.7  (n=40934)
+   all5       defend  all     counter: providers 0.00, any 0.00, walk nan  (n=951588) | people: providers 3.93, any 1.00, walk 0.8  (n=951588)
+   all5       defend  active  counter: providers 0.00, any 0.00, walk nan  (n=16742) | people: providers 3.42, any 1.00, walk 1.0  (n=16742)
+   all6       hunger  all     counter: providers 0.49, any 0.34, walk 2.3  (n=951366) | people: providers 0.30, any 0.26, walk 2.8  (n=951366)
+   all6       hunger  active  counter: providers 0.43, any 0.29, walk 3.0  (n=596502) | people: providers 0.25, any 0.22, walk 3.0  (n=596502)
+   all6       tend    all     counter: providers 0.00, any 0.00, walk nan  (n=951366) | people: providers 3.91, any 1.00, walk 0.9  (n=951366)
+   all6       tend    active  counter: providers 0.00, any 0.00, walk nan  (n=50926) | people: providers 3.90, any 1.00, walk 0.7  (n=50926)
+   all6       defend  all     counter: providers 0.00, any 0.00, walk nan  (n=951366) | people: providers 3.91, any 1.00, walk 0.9  (n=951366)
+   all6       defend  active  counter: providers 0.00, any 0.00, walk nan  (n=16575) | people: providers 3.38, any 1.00, walk 1.1  (n=16575)
+   no_lumpy   hunger  all     counter: providers 0.54, any 0.37, walk 2.2  (n=951134) | people: providers 0.54, any 0.38, walk 2.3  (n=951134)
+   no_lumpy   hunger  active  counter: providers 0.29, any 0.21, walk 2.9  (n=500549) | people: providers 0.32, any 0.25, walk 2.5  (n=500549)
+   no_lumpy   tend    all     counter: providers 0.00, any 0.00, walk nan  (n=951134) | people: providers 3.91, any 1.00, walk 0.9  (n=951134)
+   no_lumpy   tend    active  counter: providers 0.00, any 0.00, walk nan  (n=51359) | people: providers 3.90, any 1.00, walk 0.7  (n=51359)
+   no_lumpy   defend  all     counter: providers 0.00, any 0.00, walk nan  (n=951134) | people: providers 3.91, any 1.00, walk 0.9  (n=951134)
+   no_lumpy   defend  active  counter: providers 0.00, any 0.00, walk nan  (n=16771) | people: providers 3.37, any 0.99, walk 1.0  (n=16771)
+   no_stock   hunger  all     counter: providers 0.67, any 0.41, walk 2.3  (n=950720) | people: providers 0.30, any 0.26, walk 2.9  (n=950720)
+   no_stock   hunger  active  counter: providers 0.61, any 0.36, walk 3.0  (n=563728) | people: providers 0.25, any 0.22, walk 3.0  (n=563728)
+   no_stock   tend    all     counter: providers 0.00, any 0.00, walk nan  (n=950720) | people: providers 3.91, any 1.00, walk 0.9  (n=950720)
+   no_stock   tend    active  counter: providers 0.00, any 0.00, walk nan  (n=50733) | people: providers 3.89, any 1.00, walk 0.7  (n=50733)
+   no_stock   defend  all     counter: providers 0.00, any 0.00, walk nan  (n=950720) | people: providers 3.91, any 1.00, walk 0.9  (n=950720)
+   no_stock   defend  active  counter: providers 0.00, any 0.00, walk nan  (n=16719) | people: providers 3.35, any 0.99, walk 1.1  (n=16719)
+   no_choosy  hunger  all     counter: providers 0.51, any 0.35, walk 2.3  (n=952409) | people: providers 0.29, any 0.25, walk 2.9  (n=952409)
+   no_choosy  hunger  active  counter: providers 0.44, any 0.30, walk 3.0  (n=591172) | people: providers 0.24, any 0.21, walk 3.0  (n=591172)
+   no_choosy  tend    all     counter: providers 0.00, any 0.00, walk nan  (n=952409) | people: providers 3.92, any 1.00, walk 0.9  (n=952409)
+   no_choosy  tend    active  counter: providers 0.00, any 0.00, walk nan  (n=40151) | people: providers 3.92, any 1.00, walk 0.7  (n=40151)
+   no_choosy  defend  all     counter: providers 0.00, any 0.00, walk nan  (n=952409) | people: providers 3.92, any 1.00, walk 0.9  (n=952409)
+   no_choosy  defend  active  counter: providers 0.00, any 0.00, walk nan  (n=16970) | people: providers 3.45, any 1.00, walk 1.0  (n=16970)
+   price of the counter: a ration costs one chore (tiredness 0.06, 10 turns) or a thing worth 1-3 for two rations; people's food: free if they serve, one ask.
+   tending and defending: the counter has no provider in any cell (0.00). The menu test (test_tending_and_defending_cannot_be_bought_at_the_counter) passes.
+
+4. SIGMA: the counter-alone (hermit) error against the cooperating cast (rules in every seat). Payoff = minus drive error, nights 20-99, paired by seed.
+   all5       hermit error 0.386  cast mean error 0.400  hermit minus cast -0.014 [-0.215, +0.186]   TIE (CI holds 0)
+   all6       hermit error 0.447  cast mean error 0.568  hermit minus cast -0.121 [-0.320, +0.077]   TIE (CI holds 0)
+   no_lumpy   hermit error 0.382  cast mean error 0.487  hermit minus cast -0.106 [-0.304, +0.092]   TIE (CI holds 0)
+   no_stock   hermit error 0.423  cast mean error 0.515  hermit minus cast -0.092 [-0.315, +0.131]   TIE (CI holds 0)
+   no_choosy  hermit error 0.434  cast mean error 0.483  hermit minus cast -0.049 [-0.252, +0.155]   TIE (CI holds 0)
+
+5. POOLING: u/s and the between-person luck correlation R (Winterhalder 1986, Eq. 4: u = s * sqrt((1 + (N-1) R) / N), N = the 4 who bring a catch).
+   s = the CV of a person's own catch across the 100 nights; R = the mean correlation of catches between two people; predicted u/s from them;
+   measured u/s: the CV across nights of what a person ATE from catches (own + others'), and of all it ate (counter included), over s. Rules cell.
+   all5       s +1.081 [+1.054, +1.108]  R +0.001 [-0.022, +0.025]  predicted u/s +0.500 [+0.483, +0.518]  measured u/s no counter +0.868 [+0.814, +0.923]  with counter +0.600 [+0.537, +0.663]
+   all6       s +1.531 [+1.489, +1.573]  R -0.007 [-0.037, +0.023]  predicted u/s +0.494 [+0.471, +0.517]  measured u/s no counter +0.950 [+0.886, +1.015]  with counter +0.729 [+0.679, +0.779]
+   no_lumpy   s +1.081 [+1.054, +1.108]  R +0.001 [-0.022, +0.025]  predicted u/s +0.500 [+0.483, +0.518]  measured u/s no counter +0.866 [+0.820, +0.911]  with counter +0.728 [+0.690, +0.767]
+   no_stock   s +1.531 [+1.489, +1.573]  R -0.007 [-0.037, +0.023]  predicted u/s +0.494 [+0.471, +0.517]  measured u/s no counter +0.982 [+0.888, +1.076]  with counter +0.593 [+0.517, +0.669]
+   no_choosy  s +1.531 [+1.489, +1.573]  R -0.007 [-0.037, +0.023]  predicted u/s +0.494 [+0.471, +0.517]  measured u/s no counter +0.925 [+0.854, +0.997]  with counter +0.659 [+0.578, +0.740]
+
+6. MECHANISM CHECKS (rules cell and all cells pooled where noted)
+  [all6]
+   packages: rations in 9704; eaten by the owner 4269, by someone else 2400; spoiled or left 3035 (rules cell, 10 lifetimes x 100 nights)
+   counter stock at the start of a night (rations) 5.1; share of nights it ends empty 0.97; focal work acts a night 0.12
+   focal error on an UNCOVERED night (no catch, counter empty at the end) 0.810 (n=432) against 0.548 on the others (n=208)
+   tended per night (focal): always-giving 0.307, always-harsh 0.000, extractor 0.000, hermit 0.198, hoarder 0.165, protector 0.169, rules 0.044, tit-for-tat 0.274
+   defended per night (focal): always-giving 0.006, always-harsh 0.001, extractor 0.000, hermit 0.000, hoarder 0.001, protector 0.232, rules 0.044, tit-for-tat 0.639
+   served per night (focal): always-giving 2.175, always-harsh 0.000, extractor 0.000, hermit 0.449, hoarder 0.344, protector 0.875, rules 0.096, tit-for-tat 2.327
+  [no_lumpy]
+   focal error on an UNCOVERED night (no catch, counter empty at the end) 0.635 (n=199) against 0.482 on the others (n=441)
+   tended per night (focal): always-giving 0.297, always-harsh 0.001, extractor 0.000, hermit 0.200, hoarder 0.159, protector 0.177, rules 0.090, tit-for-tat 0.239
+   defended per night (focal): always-giving 0.003, always-harsh 0.000, extractor 0.001, hermit 0.000, hoarder 0.000, protector 0.254, rules 0.111, tit-for-tat 0.422
+   served per night (focal): always-giving 2.803, always-harsh 0.000, extractor 0.000, hermit 0.594, hoarder 0.360, protector 0.552, rules 0.360, tit-for-tat 2.208
+  [no_stock]
+   packages: rations in 9704; eaten by the owner 3597, by someone else 3317; spoiled or left 2790 (rules cell, 10 lifetimes x 100 nights)
+   counter stock at the start of a night (rations) 10.0; share of nights it ends empty 0.92; focal work acts a night 0.50
+   focal error on an UNCOVERED night (no catch, counter empty at the end) 0.646 (n=396) against 0.516 on the others (n=244)
+   tended per night (focal): always-giving 0.291, always-harsh 0.000, extractor 0.000, hermit 0.186, hoarder 0.179, protector 0.170, rules 0.089, tit-for-tat 0.251
+   defended per night (focal): always-giving 0.000, always-harsh 0.001, extractor 0.000, hermit 0.003, hoarder 0.005, protector 0.202, rules 0.180, tit-for-tat 0.530
+   served per night (focal): always-giving 2.955, always-harsh 0.001, extractor 0.000, hermit 0.677, hoarder 0.430, protector 0.948, rules 0.529, tit-for-tat 2.329
+  [no_choosy]
+   packages: rations in 9704; eaten by the owner 3378, by someone else 3839; spoiled or left 2487 (rules cell, 10 lifetimes x 100 nights)
+   counter stock at the start of a night (rations) 5.6; share of nights it ends empty 0.89; focal work acts a night 0.27
+   focal error on an UNCOVERED night (no catch, counter empty at the end) 0.696 (n=381) against 0.395 on the others (n=259)
+   tended per night (focal): always-giving 0.307, always-harsh 0.001, extractor 0.000, hermit 0.195, hoarder 0.192, protector 0.176, rules 0.149, tit-for-tat 0.250
+   defended per night (focal): always-giving 0.006, always-harsh 0.004, extractor 0.011, hermit 0.003, hoarder 0.003, protector 0.219, rules 0.179, tit-for-tat 0.536
+   served per night (focal): always-giving 2.173, always-harsh 0.000, extractor 0.000, hermit 0.497, hoarder 0.330, protector 0.713, rules 0.166, tit-for-tat 2.024
+
+7. TOURNAMENT: focal drive error (nights 20-99), each world minus all5 (the stored all5 runs), paired by seed, 95% CI over seeds 1-10
+   chooser           all5      all6  no_lumpy  no_stock no_choosy   [diff to all5, CI]
+   hermit           0.386     0.446     0.382     0.423     0.435   all6 +0.060 [+0.039, +0.081]; no_lumpy -0.005 [-0.030, +0.021]; no_stock +0.037 [+0.009, +0.065]; no_choosy +0.048 [+0.017, +0.080]
+   always-harsh     1.203     1.261     1.210     1.283     1.279   all6 +0.058 [-0.002, +0.117]; no_lumpy +0.007 [-0.021, +0.035]; no_stock +0.080 [+0.016, +0.143]; no_choosy +0.076 [+0.015, +0.138]
+   always-giving    0.322     0.321     0.329     0.286     0.311   all6 -0.000 [-0.024, +0.023]; no_lumpy +0.007 [-0.023, +0.038]; no_stock -0.035 [-0.082, +0.012]; no_choosy -0.011 [-0.066, +0.045]
+   tit-for-tat      0.405     0.398     0.519     0.478     0.484   all6 -0.007 [-0.061, +0.046]; no_lumpy +0.114 [-0.174, +0.402]; no_stock +0.074 [-0.120, +0.268]; no_choosy +0.079 [-0.136, +0.294]
+   extractor        1.141     1.199     1.128     1.203     1.201   all6 +0.058 [+0.018, +0.098]; no_lumpy -0.013 [-0.043, +0.017]; no_stock +0.062 [+0.007, +0.116]; no_choosy +0.060 [+0.003, +0.117]
+   hoarder          0.386     0.430     0.404     0.408     0.415   all6 +0.043 [+0.002, +0.084]; no_lumpy +0.018 [-0.017, +0.053]; no_stock +0.021 [-0.029, +0.072]; no_choosy +0.029 [-0.017, +0.074]
+   protector        0.460     0.470     0.441     0.460     0.478   all6 +0.010 [-0.057, +0.077]; no_lumpy -0.019 [-0.079, +0.042]; no_stock +0.001 [-0.044, +0.046]; no_choosy +0.019 [-0.049, +0.087]
+   rules            0.385     0.628     0.462     0.501     0.499   all6 +0.243 [+0.055, +0.432]; no_lumpy +0.077 [-0.004, +0.158]; no_stock +0.116 [-0.026, +0.258]; no_choosy +0.114 [+0.019, +0.208]
+   deaths in 80 scored nights (mean): all5 rules 2.1, hermit 2.6, always-giving 0.2, extractor 6.7; all6 rules 2.6, hermit 2.0, always-giving 0.6, extractor 5.6; no_lumpy rules 1.8, hermit 2.1, always-giving 0.9, extractor 6.2; no_stock rules 2.1, hermit 1.9, always-giving 0.2, extractor 6.8; no_choosy rules 2.4, hermit 1.8, always-giving 0.4, extractor 5.6
+
+8. PASS RULES. OLD (as in the step 0a / needs reports) and FIXED (library S3), per world.
+   Rule 1 oracle gap >= 0.1 with CI above 0 | rule 2 hermit and always-harsh lose to rules | rule 3 always-giving loses to tit-for-tat | rule 4 q*b > c | rule 5 extractor wins only where reprisal is weak
+
+  [all5] OLD
+   1 oracle gap (rules - oracle_both): -0.002 [-0.017, +0.012]   FAIL   (rules error 0.144)
+   2 hermit minus rules: +0.001 [-0.103, +0.106]   FAIL
+   2 always-harsh minus rules: +0.818 [+0.715, +0.922]   PASS
+   3 always-giving minus tit-for-tat (no exploiter in the cast): -0.083 [-0.334, +0.167]   FAIL
+   4 q*b - c (help acts) +0.003 [-0.002, +0.008]   FAIL   (q_eff*b - c -0.006 [-0.014, +0.003])
+   5 extractor minus rules: {'reprisal on': '+0.756 [+0.607, +0.905]', 'reprisal off': '+0.697 [+0.521, +0.872]'}   -> wins nowhere   FAIL
+
+  [all6] OLD
+   1 oracle gap (rules - oracle_both): -0.004 [-0.014, +0.007]   FAIL   (rules error 0.148)
+   2 hermit minus rules: -0.182 [-0.419, +0.055]   FAIL
+   2 always-harsh minus rules: +0.632 [+0.488, +0.777]   PASS
+   3 always-giving minus tit-for-tat (no exploiter in the cast): -0.076 [-0.351, +0.199]   FAIL
+   4 q*b - c (help acts) +0.004 [-0.001, +0.009]   FAIL   (q_eff*b - c -0.006 [-0.015, +0.003])
+   5 extractor minus rules: {'reprisal on': '+0.571 [+0.379, +0.762]', 'reprisal off': '+0.699 [+0.537, +0.860]'}   -> wins nowhere   FAIL
+
+  FIXED
+  [all5] 3 FIXED always-giving minus tit-for-tat, extractor in the cast (1 of 5 seats = exploiter share 0.20; the old cells had 0.00): -0.290 [-0.560, -0.019]   FAIL   (always-giving 0.358, tit-for-tat 0.648)
+       deaths in 80 nights, always-giving: 1.50
+       deaths in 80 nights, tit-for-tat: 2.30
+  [all6] 3 FIXED always-giving minus tit-for-tat, extractor in the cast (1 of 5 seats = exploiter share 0.20; the old cells had 0.00): -0.238 [-0.435, -0.042]   FAIL   (always-giving 0.389, tit-for-tat 0.627)
+       deaths in 80 nights, always-giving: 1.20
+       deaths in 80 nights, tit-for-tat: 2.50
+  [all5] 2 FIXED hermit against sigma: hermit minus cast -0.014 [-0.215, +0.186]   FAIL: tie
+  [all6] 2 FIXED hermit against sigma: hermit minus cast -0.121 [-0.320, +0.077]   FAIL: tie
+      the tie condition (Hauert et al. 2002, doi:10.1126/science.1070582, u): with an opt-out paying sigma the time-average payoff of every strategy equals sigma, and
+      cooperation can only exist if 0 < sigma < r - 1. In our units, hermit = cast exactly when what the counter gives a person alone equals what company gives (the gain from company, r - sigma, is zero).
+      So 'hermit loses' can only pass where r - sigma > 0: the cast must give something the counter does not. The CI above is the test of that gain.
+  [all5] 1 FIXED oracle gap -0.002 [-0.017, +0.012] against its upper bound: partner-specific acts 12.3 a night (kind ones 4.53) x (b - c) 0.0291 undiscounted / 0.0153 night-averaged = bound 0.130 / 0.068 (every act at the two partners, undiscounted: 0.355). The night-averaged bound is BELOW 0.1: the rule cannot pass in this world.
+  [all6] 1 FIXED oracle gap -0.004 [-0.014, +0.007] against its upper bound: partner-specific acts 12.8 a night (kind ones 4.76) x (b - c) 0.0344 undiscounted / 0.0198 night-averaged = bound 0.167 / 0.095 (every act at the two partners, undiscounted: 0.440). The night-averaged bound is BELOW 0.1: the rule cannot pass in this world.
+
+9. FOR LEARNERS (S7.7): no learner was run in this study. What the fixed cast gives: the share of conditional players and the exploitation / retaliation rates (replies per act, nights 20-99).
+   all5: a rules character answers a harsh act with a harsh one 0.434, a help act with a kind one 0.587, a help act with a help 0.438
+   all6: a rules character answers a harsh act with a harsh one 0.432, a help act with a kind one 0.585, a help act with a help 0.431
+   conditional share of the cast = (4 rules + the focal if it is rules, tit-for-tat or protector) / 5: 1.0 for rules, tit-for-tat, protector; 0.8 for the rest. Exploiter share 0.2 in the always-harsh and extractor cells, 0.2 in family E, 0 elsewhere.
+   harsh acts received per night by the focal: all5 always-giving 0.23; all5 tit-for-tat 2.08; all5 rules 4.88; all6 always-giving 0.22; all6 tit-for-tat 2.40; all6 rules 5.65
+
+10. CARE GIVEN AND RECEIVED by the focal, per night (tend + defend + bandage + help up; nights 20-99), by chooser
+   all5       hermit gives 0.00 gets 0.25; always-harsh gives 0.00 gets 0.13; always-giving gives 0.29 gets 0.38; tit-for-tat gives 0.04 gets 0.94; extractor gives 0.00 gets 0.09; hoarder gives 0.00 gets 0.23; protector gives 1.78 gets 0.66; rules gives 0.67 gets 0.52
+   all6       hermit gives 0.00 gets 0.25; always-harsh gives 0.00 gets 0.00; always-giving gives 0.34 gets 0.43; tit-for-tat gives 0.04 gets 0.98; extractor gives 0.00 gets 0.00; hoarder gives 0.00 gets 0.18; protector gives 1.54 gets 0.58; rules gives 0.14 gets 0.11
+   no_lumpy   hermit gives 0.00 gets 0.24; always-harsh gives 0.00 gets 0.00; always-giving gives 0.38 gets 0.40; tit-for-tat gives 0.03 gets 0.73; extractor gives 0.00 gets 0.00; hoarder gives 0.00 gets 0.18; protector gives 1.66 gets 0.53; rules gives 0.41 gets 0.23
+   no_stock   hermit gives 0.00 gets 0.25; always-harsh gives 0.00 gets 0.00; always-giving gives 0.40 gets 0.37; tit-for-tat gives 0.03 gets 0.85; extractor gives 0.00 gets 0.00; hoarder gives 0.00 gets 0.19; protector gives 1.65 gets 0.51; rules gives 0.30 gets 0.30
+   no_choosy  hermit gives 0.00 gets 0.25; always-harsh gives 0.00 gets 0.13; always-giving gives 0.32 gets 0.39; tit-for-tat gives 0.03 gets 0.87; extractor gives 0.00 gets 0.08; hoarder gives 0.00 gets 0.22; protector gives 1.61 gets 0.58; rules gives 0.50 gets 0.36
+   (counts are over all 100 nights, divided by 100)
+
+11. WHAT EACH NEW FLAG DOES: all6 minus the world without it (paired by seed; positive = the flag raises the focal's error)
+   hermit         lumpy: +0.065 [+0.031, +0.098]; stock: +0.023 [-0.005, +0.051]; choosy: +0.012 [-0.019, +0.043]
+   always-harsh   lumpy: +0.051 [+0.003, +0.098]; stock: -0.022 [-0.047, +0.003]; choosy: -0.019 [-0.043, +0.006]
+   always-giving  lumpy: -0.008 [-0.020, +0.005]; stock: +0.035 [-0.004, +0.074]; choosy: +0.011 [-0.031, +0.052]
+   tit-for-tat    lumpy: -0.121 [-0.395, +0.153]; stock: -0.081 [-0.262, +0.101]; choosy: -0.086 [-0.288, +0.116]
+   extractor      lumpy: +0.071 [+0.027, +0.114]; stock: -0.004 [-0.029, +0.022]; choosy: -0.002 [-0.037, +0.033]
+   hoarder        lumpy: +0.025 [-0.007, +0.058]; stock: +0.022 [-0.012, +0.056]; choosy: +0.015 [-0.030, +0.059]
+   protector      lumpy: +0.029 [-0.059, +0.117]; stock: +0.009 [-0.083, +0.102]; choosy: -0.009 [-0.051, +0.034]
+   rules          lumpy: +0.166 [+0.028, +0.304]; stock: +0.128 [-0.024, +0.279]; choosy: +0.130 [-0.061, +0.320]
+
+12. PASS RULES IN EVERY WORLD (old forms; the fixed forms are in 8. family O and the reprisal-off cell were run only in all5 and all6)
+   world                    2 hermit-rules                2 harsh-rules                 3 giving-tft                    4 q*b-c                4 q_eff*b-c
+   all5       +0.001 [-0.103, +0.106] FAIL +0.818 [+0.715, +0.922] PASS -0.083 [-0.334, +0.167] FAIL +0.003 [-0.002, +0.008] FAIL -0.006 [-0.014, +0.003] FAIL
+   all6       -0.182 [-0.419, +0.055] FAIL +0.632 [+0.488, +0.777] PASS -0.076 [-0.351, +0.199] FAIL +0.004 [-0.001, +0.009] FAIL -0.006 [-0.015, +0.003] FAIL
+   no_lumpy   -0.081 [-0.251, +0.090] FAIL +0.748 [+0.637, +0.859] PASS -0.190 [-0.507, +0.127] FAIL +0.002 [-0.002, +0.007] FAIL -0.006 [-0.013, +0.001] FAIL
+   no_stock   -0.077 [-0.264, +0.109] FAIL +0.782 [+0.644, +0.920] PASS -0.192 [-0.479, +0.095] FAIL +0.002 [-0.004, +0.008] FAIL -0.007 [-0.018, +0.004] FAIL
+   no_choosy  -0.064 [-0.213, +0.085] FAIL +0.781 [+0.606, +0.956] PASS -0.173 [-0.461, +0.115] FAIL +0.006 [+0.001, +0.012] PASS -0.004 [-0.014, +0.006] FAIL
+
+CPU spent by the runs in this study (sum of the lifetimes' cpu_s, before double counting the E runs held in runs_all5/runs_all6): 3.46 hours

@@ -343,6 +343,32 @@ def test_a_run_writes_one_reproducible_file(tmp=None):
         T.WIN0, T.RUNS = old, old_runs
 
 
+def test_all6_the_recorder_changes_nothing_and_logs_the_stake_measures():
+    old = T.WIN0
+    T.WIN0 = 1
+    try:
+        spec = dict(kind="A", world="all6", chooser="rules", seed=2, nights=4, focal="Oren", id="x")
+        stats, rec = T.lifetime_measured(spec)
+        flags = tuple(sorted(T.WORLDS["all6"]))
+        _, ref = lifetime(Cast(T.FastRules(), {}), 4, 2, flags=flags, fade=T.FADE)
+        for a, b in zip(stats, ref):
+            assert a["drive_error"] == b["drive_error"] and a["deaths"] == b["deaths"] and a["acts"] == b["acts"]
+        assert len(rec.all_err) == len(rec.catch_log) == len(rec.fed_log) == len(rec.house_log) == 4
+        assert all(len(h) == 4 for h in rec.house_log)
+        assert rec.prov["tend|counter|all"][1] == 0 and rec.prov["hunger|counter|all"][0] > 0       # the counter sells no care
+    finally:
+        T.WIN0 = old
+
+
+def test_the_exploiter_cell_has_an_extractor_in_the_cast_and_the_ablation_worlds_drop_one_flag():
+    for w, f in (("no_lumpy", "lumpy"), ("no_stock", "stock"), ("no_choosy", "choosy")):
+        assert T.WORLDS[w] == T.WORLDS["all6"] - {f}
+    cast, pol = T.make_cast(dict(kind="E", chooser="always-giving", seed=3, focal="Fenn"))
+    kinds = {n: type(c).__name__ for n, c in cast.by.items()} if hasattr(cast, "by") else None
+    assert "Extractor" in str(vars(cast)) and pol.name == "always-giving"
+    assert {s["chooser"] for s in T.specs("E")} == set(T.E_CHOOSERS) and len(T.specs("E")) == 40
+
+
 if __name__ == "__main__":
     n = 0
     t0 = time.perf_counter()

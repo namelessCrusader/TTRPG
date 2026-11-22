@@ -21,7 +21,9 @@ from lab.mindL.actor_critic import ActorCritic
 from lab.mindL.curiosity import Curiosity, Progress
 from lab.mindL.episodic import Episodic
 from lab.mindL.habit import Habit
-from lab.mindL.mind import FIXES, Mind, make_mind, softmax
+from lab.mindL.mind import DEFAULT, FIXES, Mind, make_mind, softmax
+
+DEFAULT_TRACES = DEFAULT["traces"]
 from lab.mindL.nulls import K, make_bandit, make_env, menu_obs, run_ppo
 from lab.mindL.partners import PartnerModels, features
 from lab.mindL.valence import Valence
@@ -500,6 +502,105 @@ def test_designer_reward_pays_finished_acts_the_same_whatever_the_need():
     w.log.append({"actor": "Tom", "action": "eat", "done": True, "options": []})
     w.log.append({"actor": "Oren", "action": "give", "done": True, "options": []})     # someone else's
     assert abs(d(w, p) - (-0.1 * (DESIGNER["praise"] + DESIGNER["eat"]))) < 1e-12
+
+
+# ------------------------------------------------------------ the traces option (2026-11-20)
+def _menus():
+    from types import SimpleNamespace as NS
+    z = np.zeros((2, reader.ZDIM))
+    return (NS(v=np.array([0, 1]), t=np.array([0, 0]), Z=z), NS(v=np.array([2, 3]), t=np.array([1, 1]), Z=z))
+
+
+def test_traces_lambda_zero_is_the_one_step_rule():
+    """With lam = 0 the trace step is exactly TD(0) and the one-step actor (so the trace adds nothing at lam = 0)."""
+    m1, _ = _menus()
+    a = ActorCritic(reader.NV, reader.ZDIM, reader.NT, 3, lr_actor=0.3, lr_critic=0.2, gamma=0.9)
+    b = ActorCritic(reader.NV, reader.ZDIM, reader.NT, 3, lr_actor=0.3, lr_critic=0.2, gamma=0.9)
+    rng = np.random.default_rng(1)
+    s = np.array([1.0, 0.5, 0.0])
+    for i in range(30):
+        s2 = rng.random(3)
+        s2[0] = 1.0
+        r, dt = float(rng.normal()), int(rng.integers(1, 5))
+        pi = np.array([0.4, 0.6])
+        d1 = a.delta(r, s, s2, dt, False)
+        a.critic_update(s, d1)
+        a.actor_update(m1, i % 2, pi, d1)
+        d2 = b.trace_step(m1, i % 2, pi, s, s2, r, dt, False, 0.0)
+        b.actor_update(m1, i % 2, pi, d2, tables="W")
+        assert abs(d1 - d2) < 1e-12
+        s = s2
+    assert np.allclose(a.c, b.c, atol=1e-12) and np.allclose(a.U, b.U, atol=1e-12)
+
+
+def test_a_delayed_reward_reaches_an_earlier_act_with_traces():
+    m1, m2 = _menus()
+    pi = np.array([0.5, 0.5])
+    s = np.array([1.0, 0.0])
+    res = {}
+    for lam in (0.0, 0.9):
+        ac = ActorCritic(reader.NV, reader.ZDIM, reader.NT, 2, lr_actor=0.3, lr_critic=0.2, gamma=0.9)
+        ac.trace_step(m1, 0, pi, s, s, 0.0, 1, False, lam)       # an act with no reward of its own
+        ac.trace_step(m2, 0, pi, s, s, 1.0, 1, False, lam)       # the reply: a reward, one step later
+        res[lam] = ac.U[0, 0]
+        assert ac.U[2, 1] > 0                                    # the rewarded step's own act moves either way
+    assert res[0.0] == 0.0 and res[0.9] > 0.0, res
+
+
+def test_trace_critic_carries_value_back_along_a_chain():
+    """A chain x0 -> x1 -> x2 -> end with the only reward at the end: after one pass TD(0) values only the
+    last state, a trace also values the earlier ones."""
+    xs = [np.eye(3)[i] for i in range(3)]
+    m1, _ = _menus()
+    pi = np.array([0.5, 0.5])
+    out = {}
+    for lam in (0.0, 0.9):
+        ac = ActorCritic(reader.NV, reader.ZDIM, reader.NT, 3, lr_actor=0.1, lr_critic=0.5, gamma=0.9)
+        for i in range(3):
+            last = i == 2
+            ac.trace_step(m1, 0, pi, xs[i], xs[i] if last else xs[i + 1], 1.0 if last else 0.0, 1, last, lam)
+        out[lam] = ac.c.copy()
+        assert not ac.e_c.any() and not ac.e_U.any()             # the end of the life cleared the traces
+    assert out[0.0][0] == 0.0 and out[0.9][0] > 0.0 and out[0.9][1] > out[0.9][0] > 0.0, out
+
+
+def test_traces_off_by_default_and_a_night_end_is_not_a_death_only_with_traces():
+    assert DEFAULT_TRACES is False
+    w = World(seed=0, flags="all")
+    p = w.people["Tom"]
+    off, on = Mind("Tom", "peasant", 0), Mind("Tom", "peasant", 0, traces=True)
+    assert off.ends_life(p) is True and on.ends_life(p) is False     # alive at the night's end
+    p.dead = True
+    assert off.ends_life(p) is True and on.ends_life(p) is True
+
+
+def test_traces_lifetime_carries_the_critic_across_the_night():
+    """Two nights with traces: the focal's critic and trace are finite, the trace survives the night's end,
+    and the same seeds repeat exactly."""
+    runs = []
+    for _ in range(2):
+        m = make_mind(seed=3, **FIXES, traces=True)
+        lifetime(Cast(Rules(), {"Tom": m}), nights=2, seed=2, flags="all2", fade=0.9)
+        runs.append(m.agents["Tom"])
+    a = runs[0]
+    assert np.isfinite(a.ac.c).all() and np.isfinite(a.ac.U).all() and np.abs(a.ac.c).sum() > 0
+    assert a.ac.e_U.any() and a.ac.s_next is not None                # carried, not reset, by the night's end
+    assert np.array_equal(a.ac.c, runs[1].ac.c) and np.array_equal(a.ac.U, runs[1].ac.U)
+
+
+def test_traces_off_reproduces_the_old_mind_exactly():
+    """Golden values made with the code BEFORE the option existed (3 nights, seed 1, Tom, FIXES)."""
+    import json
+    from pathlib import Path
+    gold = json.loads((Path(__file__).with_name("golden_traces_off.json")).read_text())
+    for flags, g in gold.items():
+        pol = make_mind(1, **FIXES)
+        _, stats = lifetime(Cast(Rules(), {"Tom": pol}), 3, 1, flags=flags, fade=0.9)
+        a = pol.agents["Tom"]
+        h = hashlib.sha256(np.concatenate([a.ac.U.ravel(), a.ac.W.ravel(), a.ac.c]).tobytes()).hexdigest()[:16]
+        assert [round(x["drive_error"]["Tom"], 6) for x in stats] == g["err"], flags
+        assert (h, a.decisions) == (g["h"], g["dec"]), flags
+        assert abs(a.val.value("got_kind") - g["vk"]) < 1e-12 and abs(a.val.value("got_harm") - g["vh"]) < 1e-12
 
 
 if __name__ == "__main__":

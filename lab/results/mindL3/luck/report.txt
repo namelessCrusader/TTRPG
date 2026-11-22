@@ -1,0 +1,114 @@
+UNEVEN LUCK for the inn (2026-11-20)   user decision 1: luck first, the other three needs only if luck is not enough
+
+VERDICT IN ONE LINE
+Luck is built, tested, and run in two settings. It changes the inn (empty nights really cost a person) but it does NOT flip
+any pass rule. Same 1 pass out of 5 as all3 (always-harsh loses to rules). Nothing was tuned: both luck settings were
+chosen before the runs, the first runs are the reported runs.
+
+1. WHAT WAS ADDED (one mechanism, one flag "luck", lab/world2/world.py; flags "all4" = all3 + luck)
+Half of the night's expected food stops coming from the house pot and comes as each person's own CATCH instead (foraged,
+hunted or earned). Everybody who is not the house (Tom, Sir Ada, Oren, Fenn; the cook Marta runs the house) gets one, with the
+same expected size (0.5 x 20 rations / 4 = 2.5 rations), but the size varies night to night and independently between people.
+  dial v (World(luck=v), env MINDL3_LUCK) = chance of an empty night. Otherwise the catch is Gamma(shape 2) scaled so the
+  mean does not move (mean when not empty = 2.5/(1-v)). CV of one catch: v=0.3 -> 1.07, v=0.5 -> 1.41, v=0 -> no variance
+  (an even split, control).
+  A catch is a food the person holds, by the portion (the same rules as the pot): eat it, SERVE a portion of it to someone,
+  others can buy from it or work for it. It cannot be handed over whole. It does not survive the night (each night is a new world),
+  so a lucky night's surplus is worth nothing to its holder unless it is shared. That is the Kaplan-Hill logic.
+  The house pot shrinks to 6 + 4 rations. The draws come from a generator of their own (seed only): they take nothing from the
+  world's own draws, are the same for every chooser playing the same night (paired runs stay paired), and are independent
+  between people (tested).
+Real-world grounding of the size (all (u), from memory, not re-checked): Ache hunters bring home no meat on about 40 percent of
+days and daily returns have a CV near or above 1 (Kaplan and Hill 1985, food sharing among Ache foragers); Hadza and !Kung
+returns are similarly lumpy (Hawkes, O'Connell, Blurton Jones 2001; Cashdan 1985). v=0.3 (CV 1.07) and v=0.5 (CV 1.41) bracket it.
+No-trait check: nothing reads a name or trait; every person gets the same draw rule; catches go through the existing portion,
+serve, eat, buy and work paths.
+
+2. TESTS AND REGRESSION
+lab.world2.test_world: 48 passed (43 old, incl. test_flags_off_is_the_inn_as_before, + 5 new luck tests: flag needs meals and
+is not in all3; v=0 even split and mean 2.5 and empty-night rate near v; draws independent between people and chooser-proof
+and do not touch the world's own draws; catch eaten/shared by portion, not handed over, gone when empty; 600 random turns with
+all4 stay valid and catches reset each night).
+lab.mindL.test_tournament: 15 passed (worlds "luck" and "luckR0" added to lab/mindL/tournament.py, env MINDL3_LUCK).
+all3 is unchanged: rules and hermit, seeds 1-2, 100 nights re-run with the new code give errors, acts and deaths identical to
+the stored inn runs (4 of 4 identical).
+
+3. THE TOURNAMENT (step 0a: same archetypes, same pass rules, seeds 1-10, 100 nights, nights 20-99 scored, same focal and night
+seeds; luck vs all3 paired). 8 choosers in the pass rules (always-giving, always-harsh, extractor, hermit, hoarder, protector,
+rules, tit-for-tat) + the oracle family (4) + rules and extractor with reprisal off (luckR0). 140 lifetimes per setting.
+The inn's extra choosers (feeder, hermit_ask, random) were not re-run: no pass rule uses them.
+
+Focal drive error (lower is better), minus rules is paired, 95% t over 10 seeds:
+  chooser         all3   luck v=0.3   luck v=0.5    minus rules (v=0.3)          minus rules (v=0.5)
+  always-giving  0.298     0.250        0.309      -0.157 [-0.301,-0.013]       -0.124 [-0.226,-0.022]
+  hermit         0.475     0.355        0.368      -0.052 [-0.215,+0.110]       -0.065 [-0.170,+0.040]
+  hoarder        0.384     0.359        0.399      -0.048 [-0.157,+0.062]       -0.034 [-0.125,+0.058]
+  tit-for-tat    0.433     0.413        0.426      +0.005 [-0.143,+0.154]       -0.007 [-0.180,+0.167]
+  rules          0.491     0.407        0.432      -                            -
+  protector      0.533     0.412        0.447      +0.005 [-0.118,+0.127]       +0.015 [-0.154,+0.183]
+  extractor      1.229     1.101        1.140      +0.694 [+0.525,+0.862]       +0.708 [+0.560,+0.855]
+  always-harsh   1.310     1.156        1.201      +0.749 [+0.642,+0.856]       +0.769 [+0.644,+0.893]
+Paired luck minus all3 (drive error), v=0.3: hermit -0.121 [-0.189,-0.052], protector -0.121, always-harsh -0.154, extractor -0.128,
+rules -0.084 [-0.182,+0.014], always-giving -0.048, tit-for-tat -0.020. v=0.5: hermit -0.107 [-0.188,-0.026], always-harsh -0.109,
+extractor -0.088, rules -0.059 [-0.218,+0.102], others within +-0.015. (Files cmp_v03.txt, cmp_v05.txt.)
+
+PASS RULES                                      all3 (inn report)           luck v=0.3                   luck v=0.5
+ 1 Oracle gap >= 0.1, CI above 0               FAIL -0.003 [-0.013,+0.007]  FAIL +0.003 [-0.002,+0.007]   FAIL +0.004 [-0.003,+0.010]
+   (rules error 0.124 / 0.134 / 0.130; oracle_both 0.127 / 0.131 / 0.126; share of the ceiling recovered 0.155 / 0.228)
+ 2 Hermit and always-harsh lose to rules       FAIL hermit -0.016 (tie)     FAIL hermit -0.052 [-0.215,+0.110]  FAIL hermit -0.065 [-0.170,+0.040]
+                                                    harsh PASS +0.819           harsh PASS +0.749 [+0.642,+0.856]  harsh PASS +0.769 [+0.644,+0.893]
+   (hermit beats rules in the mean, not significantly)
+ 3 Always-giving loses to tit-for-tat          FAIL -0.135 [-0.382,+0.112]  FAIL -0.163 [-0.411,+0.086]  FAIL -0.117 [-0.337,+0.102]
+ 4 q*b > c  (help acts)                        FAIL +0.003 [-0.003,+0.008]  FAIL +0.002 [-0.002,+0.005]   FAIL +0.001 [-0.006,+0.007]   (CI holds 0)
+ 5 Extractor wins only where reprisal is weak  FAIL wins nowhere (+0.738/+0.753)  FAIL wins nowhere (+0.694 reprisal on, +0.707 off)
+                                                                                 FAIL wins nowhere (+0.708 on, +0.708 off)
+
+b, c, q, q_eff, w (help acts: give, bandage, help up, defend, serve; 8 plan choosers pooled):
+                  b       c       q     q_eff   w_same   n acts       q_eff*b - c
+  all3          0.030   0.022   0.81    0.53    0.99    116,606       -0.007 [-0.015,+0.002]
+  luck v=0.3    0.025   0.019   0.81    0.58    0.99    120,687       -0.005 [-0.012,+0.003]
+  luck v=0.5    0.031   0.025   0.82    0.53    0.99    123,745       -0.009 [-0.021,+0.003]
+  (q is the chance a third party learns of an act; q_eff the part of that which can change a hearer's liking; w_same = pair in one
+   room again the same night, 0.99 everywhere, w_next 1.0.)
+  serve acts alone: b 0.012 (v=0.3), 0.020 (v=0.5); c 0.002 / 0.001; q_eff 0.75 / 0.73.
+
+4. DID LUCK DO ANYTHING (a check of the mechanism, not a pass rule)
+Yes, empty nights cost, and giving buys some of that back. Focal error on nights the focal had a catch vs an empty catch
+(nights 20-99, 10 seeds, files diag_v03.txt, diag_v05.txt):
+  v=0.3   hermit 0.353 vs 0.581 (+0.23)   rules 0.424 vs 0.582 (+0.16)   tit-for-tat 0.470 vs 0.526 (+0.06)   always-giving 0.277 vs 0.316 (+0.04)
+  v=0.5   hermit 0.299 vs 0.567 (+0.27)   rules 0.402 vs 0.572 (+0.17)   tit-for-tat 0.438 vs 0.557 (+0.12)   always-giving 0.323 vs 0.392 (+0.07)
+So a giver is hurt about 4 times less by a bad night than a hermit: a small, real insurance effect, in the right direction.
+It is too small to reach the group totals. Reasons, in order:
+  (a) Everyone's error went DOWN, not up (hermit -0.12): the catch is extra food at hand that a hermit can eat alone, and the
+      house still sells a meal for a thing worth 1-3 or an hour of chores ("buy" and "work", 17,000 acts each). A market substitute
+      for kindness is always open, so hunger is still met without a partner. The share partners can touch stays tiny (oracle
+      ceiling 0.016 of the error, as all3 0.020).
+  (b) Oracle gap: the oracle partner policy still cannot recover more than 0.016 of the error. Rule 1 needs a need that ONLY
+      another person can meet, and food is not it while the house stays open.
+  (c) Always-giving still beats tit-for-tat (-0.12 to -0.16, not significant): giving costs the giver almost nothing (c 0.02) and
+      is answered (reply_kind 0.58-0.63), so conditional kindness has no edge. Luck did not raise the price of giving, only the
+      value of getting.
+  (d) Extractor: still loses everywhere including reprisal-off; the cast's harsh replies, not the reprisal term, defeat it (as in
+      the inn report, (u) not isolated).
+
+5. WHAT IS MISSING (not tuned for)
+The luck variance is real, but the world has a cheaper way out than asking a friend: the house pot and the "work for a ration"
+counter. Luck gives a need but not a need that ONLY a person can meet. The user's other three needs (decision 1 said: only if luck
+is not enough) are now the open question: luck is not enough alone. The closest to what the data points at:
+  - a need the market cannot meet (a danger one cannot survive alone, a good that needs two), or
+  - a house that closes (no counter for the unlucky: the pot is the lucky ones' only food source), or
+  - a cost to giving that is not negligible (c is 0.02 now) so that conditional kindness can beat unconditional.
+Not tried here (outside the one-mechanism brief). Each is one more mechanism, so each is your call.
+
+6. SIZE AND CAVEATS
+CPU: 280 lifetimes, 1.66 CPU hours in the lifetimes (0.86 + 0.81), plus tests; inside the 3 h budget.
+Two v settings only (0.3, 0.5); v=0 control and a scarcer house not run. The catch is rounded to whole rations (v=0 gives 3 each,
+so a v=0 control has 22 rations, not 20). Ache/Hadza numbers are (u). Seeds 1-10 only; intervals are wide (rules error spread
+over seeds is large: 0.23-0.63), so "hermit beats rules by 0.05-0.07" is a tie, not a result.
+
+FILES
+lab/world2/world.py (flag luck, _luck(), LUCK_* constants), lab/world2/test_world.py (5 tests), lab/mindL/tournament.py (worlds luck,
+luckR0; MINDL3_LUCK). Results: lab/results/mindL3/luck/ (runs_v03, runs_v05, an_v03.txt, an_v05.txt, cmp_v03.txt, cmp_v05.txt,
+diag_v03.txt, diag_v05.txt, analyze.py, compare.py, diag.py). Scratch: /home/nisargparikh/.cache/mark1-build/mindL3/luck/.
+In the an_*.txt files the luck world is printed under the label "all2" (the report code's name for the main world) and luckR0 as "noR".
+No git change beyond those three lab files; nothing staged or committed; src/, tests/, tools/ untouched by this task.

@@ -1,0 +1,5 @@
+share of scored nights laid up: {'focal': '+0.092 [+0.011, +0.174]', 'Fenn': '+0.048 [-0.004, +0.099]', 'Oren': '+0.085 [+0.030, +0.140]', 'anyone_else': '+0.286 [+0.151, +0.421]'}
+rules         focal error laid-up nights +0.344 [+0.248, +0.439]  other nights +0.127 [+0.107, +0.148]
+oracle_avoid  focal error laid-up nights +0.349 [+0.248, +0.450]  other nights +0.129 [+0.109, +0.149]   gap (rules - this) laid-up -0.005 [-0.024, +0.013]  other -0.002 [-0.007, +0.003]
+oracle_kind   focal error laid-up nights +0.350 [+0.229, +0.472]  other nights +0.136 [+0.109, +0.162]   gap (rules - this) laid-up -0.007 [-0.054, +0.040]  other -0.008 [-0.020, +0.003]
+oracle_both   focal error laid-up nights +0.335 [+0.244, +0.427]  other nights +0.137 [+0.113, +0.160]   gap (rules - this) laid-up +0.008 [-0.027, +0.043]  other -0.009 [-0.019, +0.001]

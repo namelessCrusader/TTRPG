@@ -1,0 +1,58 @@
+
+== tend: focal error on nights that had the event vs not (nights 20-99, 10 seeds); all4 error on the same nights in brackets
+  hermit         ill night 0.423 (0.361) n=82  well night 0.369 (0.354) n=718
+                 focal tends 0.000/night, is tended 0.214/night; fend off 0.000/night
+  rules          ill night 0.555 (0.440) n=82  well night 0.444 (0.403) n=718
+                 focal tends 0.152/night, is tended 0.133/night; fend off 0.000/night
+  always-giving  ill night 0.289 (0.249) n=82  well night 0.270 (0.250) n=718
+                 focal tends 0.270/night, is tended 0.290/night; fend off 0.000/night
+  tit-for-tat    ill night 0.611 (0.420) n=82  well night 0.511 (0.412) n=718
+                 focal tends 0.006/night, is tended 0.235/night; fend off 0.000/night
+  protector      ill night 0.478 (0.388) n=82  well night 0.451 (0.414) n=718
+                 focal tends 0.000/night, is tended 0.185/night; fend off 0.000/night
+  hoarder        ill night 0.359 (0.358) n=82  well night 0.351 (0.360) n=718
+                 focal tends 0.000/night, is tended 0.196/night; fend off 0.000/night
+
+== allies: focal error on nights that had the event vs not (nights 20-99, 10 seeds); all4 error on the same nights in brackets
+  hermit         raid night 0.436 (0.351) n=122  quiet night 0.352 (0.355) n=678
+  rules          raid night 0.536 (0.438) n=122  quiet night 0.441 (0.402) n=678
+  always-giving  raid night 0.347 (0.238) n=122  quiet night 0.301 (0.252) n=678
+  tit-for-tat    raid night 0.514 (0.448) n=122  quiet night 0.416 (0.406) n=678
+  protector      raid night 0.491 (0.417) n=122  quiet night 0.403 (0.411) n=678
+  hoarder        raid night 0.426 (0.373) n=122  quiet night 0.366 (0.357) n=678
+
+== all5: focal error on nights that had the event vs not (nights 20-99, 10 seeds); all4 error on the same nights in brackets
+  hermit         ill night 0.447 (0.361) n=82  well night 0.379 (0.354) n=718
+  hermit         raid night 0.476 (0.351) n=122  quiet night 0.370 (0.355) n=678
+                 focal tends 0.000/night, is tended 0.201/night; fend off 0.098/night
+  rules          ill night 0.486 (0.440) n=82  well night 0.373 (0.403) n=718
+  rules          raid night 0.471 (0.438) n=122  quiet night 0.369 (0.402) n=678
+                 focal tends 0.210/night, is tended 0.163/night; fend off 0.177/night
+  always-giving  ill night 0.356 (0.249) n=82  well night 0.318 (0.250) n=718
+  always-giving  raid night 0.403 (0.238) n=122  quiet night 0.307 (0.252) n=678
+                 focal tends 0.171/night, is tended 0.291/night; fend off 0.215/night
+  tit-for-tat    ill night 0.390 (0.420) n=82  well night 0.407 (0.412) n=718
+  tit-for-tat    raid night 0.483 (0.448) n=122  quiet night 0.391 (0.406) n=678
+                 focal tends 0.010/night, is tended 0.278/night; fend off 0.204/night
+  protector      ill night 0.530 (0.388) n=82  well night 0.452 (0.414) n=718
+  protector      raid night 0.489 (0.417) n=122  quiet night 0.454 (0.411) n=678
+                 focal tends 0.000/night, is tended 0.179/night; fend off 0.170/night
+  hoarder        ill night 0.426 (0.358) n=82  well night 0.382 (0.360) n=718
+  hoarder        raid night 0.471 (0.373) n=122  quiet night 0.371 (0.357) n=678
+                 focal tends 0.000/night, is tended 0.199/night; fend off 0.203/night
+
+== labour: focal drive-error split (mean over seeds), energy part; all4 in brackets
+  hermit         energy 0.166 (0.155)  safety 0.004 (0.004)  eats/night 2.10 (2.04)
+  rules          energy 0.155 (0.143)  safety 0.034 (0.037)  eats/night 1.77 (1.82)
+  always-giving  energy 0.120 (0.096)  safety 0.012 (0.010)  eats/night 0.48 (0.59)
+  tit-for-tat    energy 0.119 (0.111)  safety 0.028 (0.025)  eats/night 0.75 (0.75)
+  protector      energy 0.095 (0.109)  safety 0.041 (0.036)  eats/night 1.82 (1.93)
+  hoarder        energy 0.110 (0.110)  safety 0.010 (0.010)  eats/night 2.03 (1.86)
+
+== all5: focal drive-error split (mean over seeds), energy part; all4 in brackets
+  hermit         energy 0.168 (0.155)  safety 0.024 (0.004)  eats/night 2.09 (2.04)
+  rules          energy 0.140 (0.143)  safety 0.052 (0.037)  eats/night 1.60 (1.82)
+  always-giving  energy 0.114 (0.096)  safety 0.018 (0.010)  eats/night 0.55 (0.59)
+  tit-for-tat    energy 0.129 (0.111)  safety 0.037 (0.025)  eats/night 0.79 (0.75)
+  protector      energy 0.108 (0.109)  safety 0.055 (0.036)  eats/night 1.82 (1.93)
+  hoarder        energy 0.104 (0.110)  safety 0.022 (0.010)  eats/night 2.06 (1.86)
