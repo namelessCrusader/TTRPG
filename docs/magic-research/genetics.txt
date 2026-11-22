@@ -1,0 +1,372 @@
+MAGIC Q9: HUMAN GENETICS PORTED TO MAGIC TRAITS
+Research and design only. No sim changes. Date 2026-11-20.
+
+Marks: (v) = checked by web search in this run. (k) = from my own knowledge of the literature, believed right. (u) = unverified or my own estimate. "Design default" = a number I chose; it is data, packs may change it. "Arithmetic" = I derived it here from the stated law.
+
+Inputs read: docs/magic-design.md (sections 1-4, Q9 text in decisions.md), decisions Q9, Q13, Q14, Q11 (numbers only, no flags).
+
+======================================================================
+0. THE ANSWER IN ONE PAGE
+======================================================================
+
+Everyone has a genome. The genome is a list of loci. Each locus has small effects on several magic axes at once. Sum the effects and you get a "breeding value" per axis. That vector is roughly normal across a population. A few rare variants have large effects: they shift, delete or duplicate a receptor for one M band, exactly like the colour-opsin genes. The phenotype is genes x development x training x state (Q13). Nothing says "sorcerer". A sorcerer is the pack's word for a region of the axis space (high coupling, low precision, early plasticity).
+
+Population structure is not authored. It comes from four ordinary processes run on allele frequencies per deme: drift, founder events, migration and local selection. High-M regions select for coupling and for the upkeep to carry it, the same way high altitude selected EPAS1 variants in Tibetans.
+
+Cost: genetics runs at world generation and at birth, and as a cheap allele-frequency step offscreen. It costs zero per tick and zero LM calls (latency budget).
+
+Five rules that carry everything:
+ R1. Phenotype axes are sums over loci. No gene "for" a spell, a class or a trait flag.
+ R2. A locus has a vector of effects (pleiotropy). So correlations and trade-offs between axes come from the genome, not from rules.
+ R3. A child's genome is a recombined, mutated copy of the two parents'. Regression to the mean, sibling spread, family clustering of talent and the effect of inbreeding all fall out.
+ R4. The band sensitivity of a person is a sum of receptor curves, each from a gene on a chromosome (some on X). Gain a band, lose a band, or shift a band by changing the genes. Effective "dimension" of M perception = how many independent receptor classes rise above the person's noise floor.
+ R5. Selection acts on fitness = benefit in the local M world minus upkeep. Evolution of beasts is the same machinery with a different pack.
+
+======================================================================
+1. WHAT THE REAL SCIENCE SAYS (AND WHAT WE TAKE FROM IT)
+======================================================================
+
+1.1 THE INFINITESIMAL MODEL AND POLYGENIC TRAITS
+- Fisher 1918 (k): many loci of small effect give a normal trait, and relatives resemble each other in proportion to shared genes. This is the infinitesimal model. Barton, Etheridge and Veber 2017, Theor Popul Biol (k) showed the model holds, with within-family variance staying roughly constant, even when selection and drift act, as long as there are many loci.
+- Human height is the best-measured case. Yengo et al., Nature 610:704-712 (2022): 5.38 million people, 12,111 independent SNPs that "account for nearly all of the common SNP-based heritability"; in people of European ancestry they predict about 40% of height variance (45% in another figure of the paper) but only 10-20% in other ancestries (v). Take: thousands of loci, each tiny, normal outcome.
+- Twin-study heritability across about 17,800 traits averages 49%, mostly additive (Polderman et al., Nat Genet 47:702, 2015) (v, cited in the design doc). So default h2 = 0.5 per axis is justified. Additive variance dominates; dominance and epistasis are small (Hill, Goddard, Visscher 2008, PLoS Genet (k)). So the default genetic model is ADDITIVE.
+- Omnigenic view (Boyle, Li, Pritchard, Cell 2017 (k)): for complex traits almost every expressed gene has some effect, via a few core pathways. This is the justification for pleiotropy being everywhere (section 1.3).
+- "Missing heritability": the gap between twin h2 (height about 0.8) and early SNP h2 (about 0.5; Yang et al. 2010, Nat Genet (k)) closes with rarer variants captured by whole-genome sequencing (Wainschtein et al. 2022, Nat Genet (k)). Take: rare variants carry part of the variance. So rare draws belong in the model beside the common loci.
+- Heritability is not fixed. IQ heritability rises from about 41% in childhood to about 66% in young adulthood (Haworth et al. 2010, Mol Psychiatry (k)); the doc already notes cognitive h2 rising with age. Heritability is a ratio, it depends on the environment's variance (Falconer and Mackay 1996 (k)). We get this for free: VE depends on the pack's environment, so h2 = VA / (VA + VE) is OUTPUT, not input.
+
+Breeder's equation (k): response R = h2 S for one trait. Multivariate (Lande 1979, Evolution 33:402-416; the title is "Quantitative genetic analysis of multivariate evolution, applied to brain:body size allometry") (v): change in the mean vector = G P^-1 S = G beta, where G is the additive genetic variance-covariance matrix, P the phenotypic one, beta the selection gradient (v, from search results).
+
+Worked arithmetic (infinite-loci model):
+ - Child given parents: mean = population mean + h2 x (mid-parent deviation). Spread = sigma x sqrt(1 - h2/2). For h2 = 0.5 and both parents +3 SD (mid-parent +3): child mean +1.5 SD, spread 0.866 SD.
+ - Chance a child is above +4.75 SD (about 1 in a million in the population) = P(Z > (4.75 - 1.5)/0.866 = 3.75) = about 9e-5. That is about 90 times the base rate. So talent clusters in families, but most top-tail children come from ordinary parents, because ordinary parents are far more numerous. (arithmetic; these facts are the tests of 6.)
+ - Tail sizes: top 1% = +2.33 SD, top 0.1% = +3.09 SD, top 0.01% = +3.72 SD, top 1 in a million = +4.75 SD (k, normal tail). Q13's "0.01% mind mages" and "1-in-a-million child" are exactly these.
+
+1.2 RARE LARGE-EFFECT VARIANTS
+- New mutations: about 70 de novo single-base changes per human genome per generation, mutation rate about 1.2e-8 per base (Kong et al. 2012, Nature 488:471) (k).
+- Large effects stay rare because selection removes them. Mutation-selection balance: equilibrium frequency q = mu/(h_d s) for a variant with dominance h_d and selection coefficient s (dominant: q about mu/s; fully recessive: q about sqrt(mu/s)) (k). Eyre-Walker 2010, PNAS (k): traits under selection keep their variance in many rare variants of larger effect, which is why rare variants matter for traits that touch fitness.
+- Founder effects can lift a rare variant to high frequency in a small isolate: Pingelap atoll (Micronesia), typhoon about 1775 left about 20 survivors, one carrying the achromatopsia variant; about 5-10% of the islanders are colour-blind today, with about a third carriers (Hussels and Morton 1972; Sacks 1997, "The Island of the Colorblind") (k, the percentages are (u)). Old Order Amish and Ellis-van Creveld (McKusick 1964) and Finnish disease heritage are the same story (k).
+- Take: a pack that wants a "specialist lineage" sets a founder event, not a flag.
+
+1.3 PLEIOTROPY, GENETIC CORRELATION, TRADE-OFFS
+- G has off-diagonal terms because loci affect several traits (pleiotropy) or sit in linkage (k). Genetic correlation r_G = G_ij / sqrt(G_ii G_jj).
+- Evolution runs fastest along the leading axis of G, "the line of least resistance" (Schluter 1996, Evolution 50:1766 (k)). Selection on a direction with little genetic variance barely moves. So the G matrix is the "what can evolve" constraint. A pack that wants "no one is both a brute and a precise caster" sets a negative r_G, and it will take many generations to break.
+- Trade-offs: Roff and Fairbairn (2007, J Evol Biol (k)). van Noordwijk and de Jong 1986, Am Nat (k): when people differ more in how much resource they ACQUIRE than in how they ALLOCATE, trade-offs vanish from the data and correlations turn positive. This matters for us: if body budget is shared (power, store, heat tolerance, finesse all draw from one energy budget), strong "general fitness" differences make everything look positively correlated, while a hidden allocation trade-off remains. We model both: a positive "acquisition" factor, and negative allocation loadings.
+- The cognitive "positive manifold" (all ability tests correlate positively; Spearman 1904 (k)) is the template for the positive factor.
+
+1.4 COLOUR VISION: THE TEMPLATE FOR BAND SENSITIVITY
+- Normal trichromacy: S cone about 420 nm, M about 530, L about 560 (k). The L and M opsin genes (OPN1LW, OPN1MW) sit side by side on the X chromosome and are about 98% identical; they arose by gene duplication (Nathans, Thomas and Hogness 1986, Science (k)). The 30 nm shift between L and M comes from a handful of amino-acid differences (positions 180, 277, 285 are the main tuning sites; Neitz and Neitz (k)).
+- Unequal crossover between the neighbouring genes makes deletions, duplications and hybrid genes. That gives the common defects: red-green colour blindness in about 8% of European men and about 0.5% of women (k). It is X-linked: a man has one X, so he shows the defect if his only copy is bad; a woman needs both copies bad. Carrier mothers pass it to sons.
+- A defect is a CONTINUUM, not a switch: deletion (dichromacy), hybrid genes with a small shift (anomalous trichromacy, peaks closer together). Anomalous trichromats have 3 cone types but with L and M peaks only a few nm apart.
+- TETRACHROMACY. A woman heterozygous for a shifted opsin (a carrier of anomalous trichromacy) has, by random X-inactivation (Lyon 1961 (k)), a mosaic retina with four cone classes: S, M, L, and the shifted one. Jordan and Mollon 1993 (Vision Res) tested candidates; 8 of 14 refused wide-field Rayleigh matches, "preliminary evidence" of tetrachromacy, but the authors were careful (v, from search). A later behavioural test of about 25 carriers found one woman who answered every question correctly (popular report of Jordan's later work; (v, secondary)). Prevalence claims vary wildly (about 12% of women in one popular estimate; up to 50% in another) (v, secondary, treat as (u)).
+- Key lesson: a fourth receptor is not enough. The brain must wire a new opponent channel and the noise must be low. Evidence it can be done: Jacobs et al., Science 2007 (k) gave mice a human L opsin gene; they gained red-green discrimination. So a gain needs (receptor class) + (neural readout capacity). We mirror this with a separate polygenic axis (readout wiring) and the rank rule in 2.4.
+- Take for M: the "M bands" are like a sensing and coupling spectrum. The human default has a few receptor classes. Mutation can duplicate and shift (gain a band), delete (lose a band), or shift (anomalous). All three come from one operation set on a gene array. X-linked placement gives males the larger variance and the male-female split in rare conditions, and gives tetrachromacy to heterozygous women only. Whether the receptor array lives on X is a pack choice (sex system is a pack parameter).
+
+1.5 GENE BY ENVIRONMENT AND CRITICAL PERIODS
+- Reaction norms: the same genotype gives different phenotypes in different environments; the slope can itself vary by genotype (GxE) (k). Heritability can depend on environment (Turkheimer et al. 2003, Psych Sci: heritability of IQ higher in higher-SES families (k; replication mixed, treat as (u)).
+- Critical periods: a window early in life when experience sets a circuit, then plasticity closes (Hubel and Wiesel 1970, ocular dominance; Hensch 2005, Nat Rev Neurosci (k)). Perfect pitch is mostly seen when music training starts before about age 6-7 (Deutsch; Baharloo et al. 1998 (u)). Second-language grammar is easier before puberty (Johnson and Newport 1989 (u), debated). The design doc already uses these.
+- Training: trainability itself is partly heritable. In the HERITAGE Family Study the response of VO2max to training clusters in families (heritability of the response about 0.47) (Bouchard et al. 1999, J Appl Physiol (k)); baseline VO2max heritability about 0.5 (k). This is the exact port for the "power throughput" axis and "trainability".
+- High-altitude acclimatisation versus adaptation: Andean highlanders respond to altitude with raised haemoglobin (acclimatisation); Tibetans have blunted haemoglobin and different genes (Beall et al. 2010, PNAS (k)). Port: two routes to a high-M environment, one by plastic response (development, practice), one by gene frequency.
+- Maternal effects (the mother's condition shapes the foetus) are real (Dutch Hunger Winter (k)). Optional pack term.
+
+1.6 POPULATION GENETICS: GEOGRAPHY OF TALENT
+- Hardy-Weinberg: genotype frequencies p^2, 2pq, q^2 in a large random-mating population (k).
+- DRIFT: allele frequency in a deme of N diploids changes by a random amount with variance p(1-p)/(2N) per generation (Wright-Fisher) (k). Heterozygosity decays as H_t = H_0 (1 - 1/(2N))^t. A neutral allele fixes with probability equal to its frequency.
+- FOUNDER EFFECT: a founding group of n diploids carries only a sample of the alleles. A variant at 1% is absent from 40 gametes with probability 0.99^40 = 0.67, so a founder group of 20 has a 33% chance of carrying it, and if it does it starts at least at 2.5% (arithmetic). Later growth freezes that frequency.
+- GENE FLOW: with island-model exchange of a fraction m per generation, F_ST about 1/(1 + 4 N m) (k). Between human continental groups F_ST is about 0.1-0.15, and most variation (about 85%) lies within populations (Lewontin 1972; Rosenberg et al. 2002, Science (k)). So the default result is: between-deme differences are small compared with within-deme spread, unless selection has been strong. That is a design goal and a test.
+- LOCAL ADAPTATION: selection s on a variant that pays off only in one habitat, versus migration m. The variant is kept locally if s is bigger than about m, and swamped if m is bigger than s (k, Lenormand 2002 (k)). A cline of width about sigma/sqrt(s) forms across the habitat edge (Haldane 1948; Slatkin 1973 (k); sigma = dispersal distance per generation).
+- Speed of a sweep: with additive selection s, logit(p) rises by about s per generation. From p = 0.01 to 0.9 at s = 0.02 takes ln(891)/0.02 = about 340 generations, about 8,500 years at 25 y per generation (arithmetic). Real Tibetan estimates are faster or slower depending on the study (u).
+- EPAS1: Tibetans carry an EPAS1 haplotype at high frequency that lowers haemoglobin rise at altitude. Huerta-Sanchez et al., Nature 512:194 (2014): sequenced about 129 kb around EPAS1 in 40 Tibetans and 40 Han; a five-SNP haplotype motif is common in Tibetans, nearly absent elsewhere, and the region looks Denisovan-derived (v). Later work found the frequency of the haplotype correlates with altitude in Sherpa and other Himalayan groups (v, secondary), and that it may have been neutral for a long time before selection acted (v, secondary). Earlier scans (Yi et al. 2010, Science; Simonson et al. 2010, Science (k)) found EPAS1 and EGLN1 the strongest selection signals.
+  Take: (i) a locus whose payoff depends on a local environment; (ii) the variant can arrive by ADAPTIVE INTROGRESSION from another lineage (Racimo et al. 2015, Nat Rev Genet (k)), not only by new mutation. For magic: a high-M region's people can gain their adaptive variants from a neighbouring species with a hybrid (elf, half-dragon, whatever the pack calls them) with no special code.
+- Polygenic adaptation: selection on a normal trait shifts many allele frequencies a little (Berg and Coop 2014, PLoS Genet; Sella and Barton 2019, Annu Rev Genomics (k)). So mean coupling of a deme can drift upward in a high-M region through thousands of small shifts, no single big gene. The G-matrix equation gives the size.
+- Comparing trait divergence between demes with neutral divergence (Q_ST versus F_ST; Spitze 1993 (k)) is the standard way to tell selection from drift. We use it as a test of 6.
+
+1.7 ASSORTATIVE MATING
+- Humans mate non-randomly for height, education and more. Robinson et al., Nat Hum Behav 1:0016 (2017): in 24,662 spouse pairs the correlation between partners at height-associated SNPs (0.200) matched the phenotypic spouse correlation (0.201) (v); they also report evidence for education, waist-hip ratio and blood pressure (the education figure 0.654 was cut off in my fetch; (u)). Yengo et al., Nat Hum Behav 2018: a chromosome-split test in about 400,000 genomes found assortment for height (theta 3.2%) and education (theta 2.7%) (v).
+- Effect on variance (Fisher 1918; Crow and Felsenstein 1968 (k)): positive assortment raises genetic variance and makes alleles correlated across loci (gametic phase disequilibrium). Derivation (arithmetic, infinite loci, no selection): offspring breeding-value variance = VA0/2 (segregation) + VA(1 + r_A)/2 (parents' share), with r_A the correlation of mates' breeding values (= rho x h2 for spouse phenotype correlation rho). At equilibrium VA = VA0/(1 - r_A). Example: rho = 0.4, h2 = 0.5, so r_A = 0.2, so VA grows by 25%, which fattens both tails. A pack that has strong casters marrying strong casters gets dynasties.
+- Choosing mates by similarity: P(pair) proportional to exp(-(z_i - z_j)^2 / (2 omega^2)). omega sets rho.
+
+1.8 BEASTS: HOW ORGANS EVOLVE
+- The same machinery. Beast axes are the organ parameters of the design doc (n_series, sync, sensitivity, store, pattern). Each has a G matrix. Fitness = benefit - upkeep (design doc 4.4). Weakly electric fish spend about 11-22% of daily energy on signalling (Salazar and Stoddard 2008 (u)).
+- Gene duplication then divergence is the main source of new organ function (Ohno 1970 (k)); the scn4aa duplication in electric fish is the example, but the doc downgrades it to (u). Electric organs arose independently at least 6 times (Gallant et al., Science 344:1522, 2014 (v, in the design doc)).
+- Selection response in the wild is real and measurable: Darwin's finches after the 1977 drought, beak depth changed by about h2 x S in one generation (Grant and Grant, Science 2002 (k)). Guppies moved their life history in about 11 years after predator change (Reznick et al. 1990 (k)). Rapid evolution is normal when selection is strong (Hendry and Kinnison 1999 (k)).
+- Drift in the trait mean has variance VA/Ne per generation (Lande 1976, Evolution (k)). Small herds of rare beasts drift fast, so isolated lairs differ.
+
+======================================================================
+2. THE DATA MODEL
+======================================================================
+
+2.1 AXES
+Default K = 10 axes (a pack may add or remove; names are labels only). Each is a real, measurable quantity on a scale where the world already uses numbers:
+
+ a1 coupling gain g: overall fraction of M a pattern can use (design doc 4.1 g). Stored on a log scale, so a +1 SD person has about e^(sigma) times as much.
+ a2 control precision (the inverse of neural noise sigma_ctrl).
+ a3 power throughput: rated flow through the coupling, watts (the "VO2max" of casting; Wheel of Time "strength").
+ a4 body M store capacity (joules of M the body can hold).
+ a5 waste-heat tolerance (headroom before damage; the 1.2 MJ cap scales with it).
+ a6 M-sensing acuity (noise floor of reception).
+ a7, a8, a9 medium aptitudes: pitch and music (voice, music), fine dexterity (gesture, carving, sign), fluency and working memory (thought, typed formula). Medium couplings c_m of 3.3 take these as input.
+ a10 learning rate / trainability (the HERITAGE trait).
+Plus the band module (2.4) and the readout-wiring axis w (a11).
+
+Each axis i for person p has:
+ A_i = additive genetic value (sum over loci, plus large variants)
+ D_i(t) = development term (growth to adult, critical-period setting)
+ E_i = environmental noise (non-shared)
+ T_i(n) = training gain (n = practice)
+ phenotype z_i = A_i + D_i + E_i, and capacity C_i = exp(mu_i + sigma_i x z_i) x T_i(n) for the scale axes.
+
+Why log-normal for capacity: strength and aerobic capacity are right-skewed; multiplicative effects of many genes and many environment factors give a log-normal (Galton; Limpert, Stahel, Abbt 2001, BioScience (k)). It keeps the top tail fat and the bottom tail bounded at zero, which matches "ungifted but not negative".
+
+2.2 THE GENOME
+ ploidy 2. Sex system: XY (pack setting). nchr = 10 recombination blocks (a pack setting; a human has 23 with about 36 crossovers per meiosis, about 1.6 per chromosome (k)).
+ L = 300 "effective loci" (default; section 5 explains). Each locus l has:
+   chr(l), position cM, allele frequency p_l in the founding deme, effect vector beta_l in R^K, dominance d_l (default 0), linkage flag (autosome, X, Y, mito).
+ An individual stores two haplotype bit-vectors of length L (x in {0,1} per locus per haplotype), plus a short list of RARE VARIANTS (below), a sex, a parent id pair, an inbreeding coefficient F.
+ Memory: 300 loci x 2 bits = 75 bytes per person if packed. 100,000 people = 7.5 MB. Cheap.
+
+RARE VARIANT RECORD (the large-effect list, per haplotype):
+ { id, kind in {shift, delete, duplicate, effect, regulatory}, target (an opsin gene index or an axis index), size (nm-analog or SD), dominance h_d, chr/linkage, origin tick, deme of origin }
+ Kinds:
+   shift: moves a receptor's peak frequency by delta (Gaussian, sd about 10 nm-analog).
+   delete: zeroes a receptor gene (lose a band).
+   duplicate: copies a receptor gene, then later shifts accumulate (gain a band).
+   effect: adds a large vector (a few SD) to chosen axes (an "effect" variant like a major gene; may be one or many axes).
+   regulatory: changes development timing (critical-period width) or expression (X-inactivation skew).
+
+2.3 EFFECT-SIZE LAW FOR LOCI (INFINITESIMAL PART)
+ Pleiotropic factor model: beta_l = F u_l + s_l, where u_l ~ N(0, I_m) with m = 3 latent pathways, F is K x m loadings (pack data), s_l ~ N(0, diag(psi)) is private variation. Then
+   G = (sum over loci 2 p q) x (F F^T + diag(psi)) / L-scaled.
+ Rescale so that G equals the pack's target G (diag from heritabilities h_i^2 x sigma_i^2; off-diagonals from r_G). That makes the rest of the model hit the pack targets exactly at founding.
+ Default pathways (design defaults; sign conventions in the table of 4):
+   pathway 1, "overall capacity": positive loadings on a1 a3 a4 a5 a6 (acquisition factor, the positive manifold).
+   pathway 2, "speed versus accuracy": positive on a3 (power), negative on a2 (precision). Gives the sorcerer corner of the doc (high power or coupling, low finesse).
+   pathway 3, "specialist versus generalist media": opposes aptitudes a7 a8 a9 against each other, in part.
+ Allele frequencies at founding: p_l from the neutral U-shaped spectrum, but each "effective locus" bundles many real variants, so p_l ~ Uniform(0.05, 0.95) is a good default. (The unbundled version has density proportional to 1/p; bundling makes the sum behave like many rare ones with fewer terms.)
+
+2.4 THE BAND MODULE (COLOUR-VISION PORT)
+ State per person: an array of receptor genes R = {r_1 ... r_n}, each { peak f_r, width w_r, amplitude a_r, chr, expressed flag }. Default human: n = 3 (call them bands S, M, L in M-space; the pack names them) with peaks spaced as the pack says. Default band gene location: one on an autosome, two adjacent on X (to copy the L/M story). The pack can place all on autosomes.
+ Sensitivity curve: S(f) = sum over expressed receptor genes of a_r x template((f / f_r), w_r), template = a bell on the log-frequency axis, width w (Govardovskii et al. 2000, Vis Neurosci (k) pigment templates).
+ Coupling gain to band b = g x sum_r a_r x template_b(f_r). Sensing acuity per band = the same curve divided by the sensing noise floor (a6).
+ X-linked expression: each cell of a female picks one X at random (X-inactivation). The expressed fraction f_X is a draw from a Beta distribution centred on 0.5 (skew is a regulatory variant). Males: one X, no mosaic. Result: a heterozygous woman has mixed receptor classes from both X chromosomes.
+ EFFECTIVE DIMENSION, the one rule (replaces any "is a tetrachromat" flag):
+   Build the matrix S = [S_r(f_b)] for the person's receptor classes r over the world's bands b.
+   D_eff = number of singular values of S above sigma_noise x (1 / w_wire), where sigma_noise = the person's sensing noise (from a6 and development) and w_wire = readout capacity (a11, shaped by critical period and practice).
+   Two receptors whose peaks are closer than the noise gives a nearly parallel pair, so the second singular value is below the line. So anomalous trichromacy (peaks only 6 nm apart) is partly colour weak. A deletion gives rank 2. A duplicate with a large shift gives rank 4 if wiring and noise allow. If the wiring is absent, the fourth singular value is cut off and the woman is a carrier with no behavioural fourth channel, which matches the real data (most carriers are not tetrachromats; Jordan and Mollon (v secondary)).
+ What the dimension does in the sim: D_eff sets how many independent M-signal channels the person can sense and use to shape a pattern (a "speciality": e.g. a person with a gained band can drive and read frequency content others cannot; a person with a lost band is deaf to that band and cannot drive effects that need it, but other bands may cover part). All through coupling g and sensing acuity, so no new law is needed in the magic core.
+
+2.5 HISTORY AND STATE (THE USER'S PRINCIPLE: TRAITS = DIALS + HISTORY + STATE)
+ History: D_i(t) (growth and exposure), training count n per medium and node (already in the practice law x(n) = x1 n^-b), critical-period closure ages, wear D on the coupling, bonds held.
+ State: store, heat, attention fatigue, injury, stress (already in the design doc).
+ Genes never hold the history. They set (a) a ceiling, (b) a rate, (c) a window.
+
+======================================================================
+3. THE INHERITANCE RULE
+======================================================================
+
+3.1 GAMETE (per parent, per birth)
+ for each chromosome block c:
+   n_x ~ Poisson(lambda_c) crossovers (default 1.0 per block; human average about 1.6) at positions drawn from the recombination map;
+   copy alternate stretches of the two parental haplotypes, starting from a random one (Mendel's segregation, k).
+ For sex loci: X is copied the same way in females; a male gives X to daughters, Y to sons; X has no partner to recombine with in males, except in the pseudo-autosomal region (ignore by default).
+ MUTATION (per gamete):
+   each effective locus flips with probability mu_loc (default 1e-4 per generation; because an effective locus bundles many sites). Effects stay with the locus.
+   rare variants: n_new ~ Poisson(lambda_rare); default lambda_rare = 2e-3 per gamete (a design default; it makes about 1 new large-effect variant per 250 births in a pair, about 1 in 500 gametes). Kind is drawn from the pack's mix (default shift 50%, effect 30%, regulatory 10%, delete 7%, duplicate 3%).
+   unequal crossover in the opsin array: probability about 1e-3 per gamete per X (design default (u)); it produces delete, duplicate or hybrid events by the real mechanism.
+ Inbreeding coefficient F of the child = kinship of the two parents (from pedigree, or from shared haplotype segments). F raises the chance both copies of a recessive rare variant are identical; also, pack option: capacity multiplied by exp(-B x F), B a pack number (inbreeding depression; human lethal-equivalent estimates are about 1-6 per gamete (u)).
+
+3.2 FROM GENOTYPE TO BREEDING VALUE
+ A_i = sum over loci l of beta_li x (x_l1 + x_l2) (+ dominance term d_l if set) + sum over rare variants of their effect on axis i (heterozygotes get h_d x effect, homozygotes the full effect).
+ Band genes feed the module of 2.4 directly.
+
+3.3 FROM BREEDING VALUE TO PERSON
+ z_i = A_i + D_i(age, M exposure, nutrition) + E_i
+ D_i: a reaction norm: D_i = r_i(A_i) x W_i(age) x E_dev,
+   where E_dev is the developmental M exposure (ambient density history times body uptake) and W_i(age) is a window function (1 inside the critical period, decaying after). If the pack sets r_i = constant, GxE vanishes. If r_i depends on A_i, GxE appears.
+ Capacity: C_i(n, age) = exp(mu_i + sigma_i z_i) x grow(age) x T_i(n)
+   grow(age): a logistic from childhood to adult (Q13: children are LOW).
+   T_i(n) = 1 + tau_i x (1 - exp(-n / n0)) x lr_a10, with lr from the learning-rate axis. Diminishing returns, like strength and VO2max.
+ This gives Q13 directly: low = children and the truly low-A; moderate = slightly above average adult after years of training; high = the genetic tail or expert.
+
+3.4 MATING
+ Pair choice by a similarity rule, (1.7), with omega a pack number (0 = random mating, small = strong assortment). Also available: a preference for a trait value (sexual selection on a visible tell like M glow). Pairing logic belongs to the mind layer (partner choice) and the genetics only needs the pair.
+ Fertility: pack function of capacity (upkeep) and of age. Offspring count follows the sim's own birth rules.
+
+3.5 WHAT IS NOT MODELLED (stated, so tests can check we stay honest)
+ No epistasis (default; rare variants can have dominance). No gene networks, no imprinting, no epigenetic inheritance (pack option for maternal effect). No mitochondrial effects by default (a pack could place a locus on mito: maternal inheritance only; useful for a "mother-line" family trait).
+
+======================================================================
+4. PARAMETERS AND WHAT PACKS SET
+======================================================================
+(All "design default" unless marked. Packs change them; they never change the laws.)
+
+POPULATION / GENOME
+ L (effective loci) 300; nchr 10; ploidy 2; sex system XY; crossovers per block 1.0; mu_loc 1e-4; lambda_rare 2e-3; mix of kinds above; opsin unequal-crossover 1e-3 (u); inbreeding depression B (default 0 for a first slice; turn on later).
+AXES (h2, sigma on the log scale, default)
+ a1 coupling gain       h2 0.50 (Polderman mean 0.49, v)   sigma 0.5
+ a2 control precision   h2 0.45 (u)                         sigma 0.4
+ a3 power throughput    h2 0.50 (VO2max, k)                 sigma 0.4
+ a4 body M store        h2 0.50 (u)                         sigma 0.4
+ a5 waste-heat tolerance h2 0.40 (u)                        sigma 0.3
+ a6 M-sensing acuity    h2 0.60 (u)                         sigma 0.5
+ a7 pitch/music         h2 0.70 (tone-deafness about 0.8, Drayna 2001, Science, k)  sigma 0.5
+ a8 fine dexterity      h2 0.50 (u)                         sigma 0.4
+ a9 fluency/memory      h2 0.55 (u)                         sigma 0.4
+ a10 learning rate      h2 0.45 (HERITAGE trainability 0.47, k) sigma 0.4
+ a11 readout wiring     h2 0.40 (u)                         sigma 0.4
+GENETIC CORRELATIONS (design defaults; all (u))
+ a1-a6 +0.50 (whatever couples to M can sense it; doc section 1 point 5)
+ a1-a3 +0.40 (overall capacity)
+ a3-a4 +0.40 (body size and fuel)
+ a3-a5 +0.20
+ a1-a2 -0.20 (the sorcerer corner: strong but noisy)
+ a3-a2 -0.30 (speed versus accuracy)
+ a7-a8 -0.10 (specialisation)
+ a10-others +0.10 (small positive acquisition factor)
+ G must be positive semi-definite: build it as F F^T + diag(psi) (2.3), then check eigenvalues.
+ENVIRONMENT
+ VE per axis (so that adult h2 hits its default); critical-period window per axis (default: coupling and sensing 0-12 y; pitch 0-7 y; precision 0-18 y; power and store 10-25 y (puberty and growth)); developmental M exposure map from the M field; a1 plasticity slope r_i default 0.3 sigma per unit exposure SD (u).
+MATING
+ omega per axis (default: coupling 0.0 (random), a3 0.0, appearance 1.0); spouse correlation rho for coupling default 0.15, tunable to 0.4 for dynastic packs.
+GEOGRAPHY AND SELECTION
+ deme size N, migration matrix m (from the world's map and distance), selection gradient beta(x) per axis per habitat: beta_coupling(x) = +b x (M(x) / M_ref - cost), with cost the upkeep of the extra coupling (fraction of daily energy, design doc 4.4). The pack sets b and cost. In M = 0 regions beta is negative (upkeep with no payoff), so mean coupling drifts down; in rich regions it drifts up. That is "local adaptation".
+BANDS
+ number of bands B (default 3 plus 0 extra), peak positions f_r, widths w_r, which genes sit on X, noise floor, readout threshold w_wire_min. Names ("fire band", "life band") live in the pack's naming table.
+RARE VARIANTS
+ lambda_rare, kind mix, effect sizes (default sd 2.5 SD for "effect", about 10 nm-analog for shifts), dominance h_d, selection coefficient per variant (default computed from fitness, not set).
+BEASTS
+ their own G, h2, mutation rate, duplication rate, generation time, upkeep curve, whether convergence between lineages is allowed.
+
+======================================================================
+5. COST: HOW TO SIMULATE CHEAPLY (AND WHY NOT ONLY THE SHORT-CUT)
+======================================================================
+Two options, and the design uses a layered mix.
+
+Option A: loci model (L = 200-500 effective loci, packed bits, numpy-vectorised).
+ + Gives drift, founder effects, LD under assortative mating, real recombination, X-linkage, inbreeding, rare variants by design.
+ + One birth = one random draw per chromosome block for crossover points, one bitwise combine, one Poisson per mutation: microseconds-to-tens-of-microseconds in numpy batches.
+ + A deme of 500 people for 50 generations: 25,000 births, fast (well under a second in vectorised numpy) (u; measure it).
+ - Needs a real genome per person.
+Option B: breeding values directly (multivariate normal, K numbers per person).
+ child A = mid-parent A + N(0, (1/2)(G0 - (1/2)(F-terms)) ) segregation noise (the infinitesimal model of Barton, Etheridge and Veber 2017 (k)); assortative mating handled through the recursion VA = VA0/(1 - r_A) (1.7); rare variants as separate discrete draws.
+ + K numbers per person; no loci.
+ - Drift and founders are not natural: you must track the deme's G as a state and shrink it by (1 - 1/(2N)) per generation. Linkage is ignored. X-linkage needs special parts.
+Option C: deme allele-frequency step only.
+ State: p_l per deme per locus (a vector). Each generation: p' = Binomial(2N, p_s)/(2N), p_s after selection (logit shift by s_l = beta_l . beta_sel) and migration (mix with neighbours). Deme mean of axis i = sum over loci beta_li x 2 p_l. Deme VA from sums of 2 p q beta^2, with the VA/(1 - r_A) correction for assortment. Cost per deme per generation: O(L). A thousand demes x 1000 generations = 3e8 operations in numpy, a few seconds (u). That is the "world history" and offscreen engine.
+
+RECOMMENDATION
+ 1. At WORLD GENERATION: run C (allele frequencies per deme) for the history length the pack asks for (so geography of talent exists on day 1 and has a cause). Rare variants live as list entries with a deme and a frequency.
+ 2. When a person is MATERIALISED (an NPC enters the scene, a child is born): Option A. Founders are drawn from their deme (genotypes sampled by Hardy-Weinberg from p_l, rare variants sampled from their frequencies). Family members are real recombined children of real parents, so family resemblance is real.
+ 3. Offscreen individuals are NOT tracked as genomes. Only their deme counts.
+ 4. Option B is kept as a fast check, not the main path (used to validate A at large size on facts, per "optimise first").
+ 5. Beasts: A for materialised individuals, C for the herd/species state, plus the Lande equation as a one-line macro for long epochs: mean shift = G beta per generation plus drift noise N(0, G/Ne) (Lande 1976 (k)). Check it against A at small scale.
+
+LATENCY: zero per tick. No LM call. Genetics is touched on births, on materialisation, and at the offscreen history step.
+
+Why 300 effective loci is enough: heritability and G need only the sum to be right; thousands of tiny SNPs are the real genome (Yengo, v), but the sum of many tiny effects is well matched by tens to hundreds of loci with larger effects for the target variance, as long as L is bigger than about 100 so segregation variance has a normal enough shape and the child-of-parents spread is right (Barton et al. 2017 says the within-family spread stays nearly constant for large L (k)). Test: increasing L from 100 to 1000 should not change any headline number beyond noise (7.3).
+
+======================================================================
+6. TESTS (facts the model must reproduce; written with the first slice)
+======================================================================
+Genetic law tests (statistics over many simulated families; fixed seeds; tolerance bands):
+ T1  Parent-offspring regression slope per axis = h2 (mid-parent slope) within 0.03 at N = 20,000 pairs.
+ T2  Full-sibling correlation = h2/2 (no AM, no shared env) within 0.03; half-sibling h2/4. MZ twin correlation (clone the genome) = h2, DZ = h2/2.
+ T3  Child spread given mid-parent = sigma x sqrt(1 - h2/2) within 3%.
+ T4  Regression to the mean example: parents at +3 SD give a child mean +1.5 SD at h2 = 0.5.
+ T5  Heritability is output: raising VE lowers h2 as VA/(VA + VE); setting developmental exposure to its mean removes the GxE term.
+ T6  Breeder's equation: apply truncation selection S on one axis; response = h2 S within 10%. Multivariate: response = G P^-1 S on K axes within 10%, and correlated response in a genetically correlated unselected axis matches r_G.
+ T7  Pleiotropy trade-off: selecting for a3 power with r_G(a3,a2) = -0.3 lowers a2 by the predicted amount.
+ T8  Line of least resistance: selection in the direction of g_max moves the mean farther than selection of equal strength in the direction of smallest eigenvalue.
+ T9  G is PSD at founding and after 50 generations of drift with N = 200 (eigenvalues >= -1e-9).
+Rare variants and bands:
+ T10 Mutation-selection balance: a dominant harmful variant with s = 0.1 and mu = 1e-5 equilibrates near q = mu/s = 1e-4 (within a factor of 2, at N large).
+ T11 Founder test: sample 20 founders from a deme with a variant at 1%. Over 2,000 draws, the fraction of founder groups carrying it should be 0.33 +/- 0.03; those that do start at >= 2.5%.
+ T12 Pingelap test: a 20-survivor bottleneck for 5 generations then growth to 1,000 makes a recessive-lost-band variant start at 2-5% and reach at least a few percent homozygote frequency in some runs (matches the pattern of an isolate).
+ T13 X-linkage: with an X-linked deletion at q = 0.08, males affected about 8% and females about 0.64% (q squared), carriers about 15% of women; sons of carrier mothers affected 50%; fathers never pass to sons. (Hardy-Weinberg for X.)
+ T14 Band rank: with three receptors, D_eff = 3 at normal noise; delete one gives 2; a heterozygous woman with a fourth class 25 nm-analog away from the nearest and good wiring gives 4; with a shift of 3 nm-analog gives 3 (anomalous trichromacy, "colour weak"); with wiring at zero gives 3. D_eff is monotone in noise and in wiring.
+ T15 Mosaic: X-inactivation fractions average 0.5 across heterozygous women (skew variant shifts it).
+Population genetics:
+ T16 Drift: heterozygosity decays as (1 - 1/(2N))^t within 5% (average of 500 demes). Variance of allele frequency change = pq/(2N).
+ T17 Neutral fixation probability equals starting frequency (to within sampling error).
+ T18 F_ST between two isolated demes after t generations = 1 - exp(-t/(2N)) (small-t form t/(2N)); with migration m, equilibrium F_ST near 1/(1 + 4Nm) within 20%.
+ T19 Sweep time: logistic prediction ln[(p1/(1-p1)) / (p0/(1-p0))]/s generations within 20% for s = 0.02 at N = 10,000.
+ T20 Local adaptation: in two demes with opposite selection s and migration m < s, the allele is maintained in the favoured deme; with m > s it is swamped.
+ T21 Geography emerges, not authored: with identical parameters in all demes and no selection, between-deme mean coupling differences are within drift expectation (Q_ST about F_ST). With a high-M habitat applied, Q_ST > F_ST there. Most variance (>85% at default m) is within demes, so the default world has no "gifted peoples".
+ T22 Assortative mating: with omega set to give rho = 0.4 and h2 = 0.5, VA grows to 1.25 x its random-mating value within 5%, offspring correlation matches theory (1.7).
+ T23 Inbreeding: F of a full-sib mating child = 0.25, of first cousins = 0.0625; with B > 0, capacity falls by exp(-B F).
+Development:
+ T24 Critical period: the same genotype with developmental exposure outside the window has a strictly smaller (or equal) final value than inside (monotone), and the gap grows with the window closure sharpness.
+ T25 Training: T_i(n) is concave and saturates; a high-lr person approaches the plateau faster; heritability of the training response is non-zero at the default lr h2 0.45.
+ T26 Calibration targets (Q13): at default parameters, the simulated adult population at 10 years of training has the stated percentiles (low = children and bottom 10%, moderate = +0.5 to +1 SD with 10 years, high = top 0.1%, rarest = 1 in a million at +4.75 SD) and the world ambient M density does not make personal capacity trivial (a population-level check on the capacity versus store ratio).
+Faithfulness tests (the user's rule):
+ T27 No flags: a scan of the genetics code and packs finds no boolean "is_sorcerer"/"has_trait". Named classes appear only in pack naming tables. Renaming has no effect.
+ T28 Metamorphic: relabelling axes or reordering loci changes nothing. Scaling beta by c scales all trait values and h2 unchanged. Swapping chromosome numbering leaves outcomes statistically identical.
+ T29 Ledger: genetics writes only to axis values and the genome; it never touches the energy ledger. A test patches the ledger and verifies nothing changes. (The coupling dial g flows into the already-booked magic law.)
+ T30 Model agreement: Option A, Option B and Option C agree on mean and variance of every axis in a deme after 100 generations within 5% (the "validate shortcuts on facts" rule).
+ T31 L-insensitivity: L = 100, 300, 1000 give the same headline numbers within noise.
+ T32 Speed: materialising 1,000 people takes under a second; one deme-generation of Option C under a millisecond (u; set after measuring).
+
+======================================================================
+7. HOW BEASTS EVOLVE MAGIC ORGANS OVER GENERATIONS
+======================================================================
+7.1 STATE
+ Per species-deme: allele frequencies p_l (Option C), G for the organ axes, rare variants list, Ne. Per materialised beast: genome (Option A).
+ Organ axes (design doc 4.4): sensitivity to the M gradient (s), reflex release (r), store size (S), stack count n_series, sync (y), M intake from the environment (u), pattern complexity (c), upkeep (derived).
+7.2 FITNESS
+ w = 1 + benefit(axes, habitat) - upkeep(axes), clipped to >= 0. Benefit rises with each step of the ladder, step by step: sense (find prey and mates), signal, startle, weapon. Each step has its own payoff so the path is climbable (Gallant 2014 (v): independent origins show the path exists). Upkeep = organ metabolic cost as a fraction of the daily budget (the doc cites 11-22% for weakly electric fish signalling (u); strong fish organs can be 20-80% of body mass (u)).
+ Environment sets benefit: M-rich water or soil raises the payoff of sensing and of drawing from it; predators raise the startle payoff; competitors raise the weapon payoff; M-poor habitat makes all of them net negative and the organ shrinks (loss is as lawful as gain; cave fish lose eyes (k)).
+7.3 STEP RULE (per generation, Option C at the herd level)
+ 1. selection: logit shift by s_l = G-projected gradient (each locus's beta dot the gradient);
+ 2. drift: Binomial resample at 2 Ne;
+ 3. migration between neighbouring herds;
+ 4. mutation: per-locus flips; rare variants: duplicate (the neofunctionalisation path of Ohno 1970 (k): a duplicate is free to change while the original keeps working) and regulatory shifts (organ expressed in a new tissue: the electric organ story);
+ 5. new variants that fixed become the baseline.
+ Long epochs: macro-step the trait mean by Delta_z = G beta + noise N(0, G/Ne) (Lande 1976, 1979). Rapid cases follow the finch rule R = h2 S (Grant and Grant 2002 (k)).
+7.4 WHAT THE LADDER NEEDS FROM THE GENETICS
+ - pre-adaptation: axes exist at low values in every beast (a1 and a6 small but nonzero), because the founding G has variance. That gives selection something to act on from the start (no new axis has to appear from nothing).
+ - correlated response: selection for sense also lifts the reflex axis when r_G > 0, so cheap early steps drag later ones along; a trade-off pushes them apart.
+ - big jump: a duplicate of the receptor/organ gene sets a second copy free to evolve; a regulatory variant moves expression; these are the rare large-effect list.
+ - convergence: independent lineages with the same selection reach the same axis region by different loci (a test: two isolated herds, same habitat, final means close but allele sets differ).
+ - speciation: isolation by distance and different habitats raise F_ST and Q_ST; hybrids carry mixed values; adaptive introgression (EPAS1 template) moves a good organ gene across a species boundary when hybrids are fertile.
+ - apex cost: since M intake falls about 90% per trophic level (design doc 4.4), selection at the top of the chain is for few, big, rare animals; Ne is small, so drift is strong and lineages diverge. A dragon lineage with Ne of a few hundred will fix random variants fast; that is the expected "every dragon different" outcome.
+7.5 TESTS FOR BEASTS (add to T1-T32)
+ T33 Ladder climb: in an M-rich habitat with payoffs per step, a population starting with axes at the founding G reaches a "weapon-level" organ in a plausible number of generations; with M = 0 the organ shrinks.
+ T34 Convergence: two isolated demes under the same selection reach similar means by different loci.
+ T35 Drift versus selection: in a tiny herd (Ne = 20) selection of s = 0.02 is mostly lost to drift (fixation probability about 2s Ne-adjusted; Kimura 1962 (k)); in a large herd (Ne = 5,000) it sweeps.
+ T36 Cost: when upkeep exceeds benefit, the mean axis value falls at the rate G beta.
+ T37 No hand-authored species: the species table holds axis targets and G only; no "this beast has electric organ" flag.
+
+======================================================================
+8. HOW THIS CONNECTS TO THE REST OF THE DESIGN
+======================================================================
+ - Section 4.1 of the design doc ("child g = mid-parent value + noise; 1% large jump") is replaced by this model: the large jump is the rare-variant draw, with real inheritance and real founder behaviour. The 1% jump becomes lambda_rare and the effect-variant mix, which is both heritable and measurable.
+ - Q13: the calibration maps to T26.
+ - Q11: every parameter above is a number. A band, a medium or an axis can be removed by setting its coupling or its loadings to zero; a scan test checks no flags.
+ - Q5 (mind-magic depth) uses the tails: the top 0.01% (+3.72 SD) of a1 x readout x precision, no class flag.
+ - Bonds, patrons and spirits: a patron-granted caster has the same genetics; the bond adds a store, not a genome.
+ - Cyborgs: devices bypass the genetics; they add a translator (design doc 4.5), so an implant can give a low-a1 person high effective dimension only up to the 10 bits/s limit. Test: device-based gain does not change heritability.
+ - Latency: zero NPC LM calls.
+ - Trace harvest and world engine: each birth, mutation and variant fixation is logged as a typed delta (engine-redesign target).
+
+======================================================================
+9. OPEN QUESTIONS AND RISKS
+======================================================================
+ 1. Sex system. XY is the default so that X-linked bands work and tetrachromacy appears. A pack may remove sexes; then place bands on autosomes and lose the male-female split. Needs a world decision (is there sex in the sim?).
+ 2. How many bands, and are they on X by default? I set 3, two on X. A pack with 5 bands needs more receptor genes; the matrix rank rule handles any number.
+ 3. Between-group differences. Real human groups differ little (F_ST about 0.1; most variation within groups; Lewontin 1972; Rosenberg 2002 (k)). I made that the default and a test. If a pack makes large between-people differences, they must come from strong, long selection and low migration, and the sim will show how long that takes (about 340 generations for s = 0.02, 1.8). Warning for story design: a world in which a "race" is genetically gifted for magic would need very strong selection over long isolation, and would still have huge overlap. The model makes the cost visible; it does not forbid.
+ 4. Effective loci versus real SNPs. 300 effective loci cannot show rare, tiny-effect variants; we hold rare large variants in a list. If tests (T31) show sensitivity to L, raise L.
+ 5. Whether the readout-wiring axis (a11) is needed or whether practice alone gives the fourth channel. The real data (Jacobs 2007 (k), Jordan 2010 (u in detail)) suggest both a gene and brain plasticity matter. Keep a11; set h2 low in the first slice.
+ 6. Epigenetics and maternal effects are off. Add only if a pack needs them.
+ 7. The numbers in section 4 for genetic correlations are design defaults (u). They should be tuned by playtests, not argued from papers.
+ 8. Verified only partly. I verified by search: Yengo 2022 height figures; Huerta-Sanchez 2014 EPAS1 content; Lande 1979 citation and form; Jordan and Mollon 1993 numbers; Robinson 2017 and Yengo 2018 assortative mating numbers. All other citations are from memory (k) or marked (u). Before any number goes to a data file: Kong 2012 rate, Haworth 2010, Bouchard 1999 (response h2 0.47), Drayna 2001, Beall 2010, Hussels and Morton 1972 percentages, the Tibetan sweep date and selection coefficient, X-inactivation skew, and the Jordan 2010 prevalence.
+
+======================================================================
+10. SOURCES (the ones I verified are marked (v) above)
+======================================================================
+ Huerta-Sanchez et al. 2014, Nature 512(7513):194, doi 10.1038/nature13408 (EPAS1, Denisovan) (v)
+ Yengo et al. 2022, Nature 610:704, "A saturated map of common genetic variants associated with human height" (v)
+ Lande 1979, Evolution 33:402-416 (multivariate breeder's equation, G matrix) (v)
+ Robinson et al. 2017, Nat Hum Behav 1:0016 "Genetic evidence of assortative mating in humans" (v)
+ Yengo et al. 2018, Nat Hum Behav "Imprint of assortative mating on the human genome" (v)
+ Jordan and Mollon 1993, Vision Res (tetrachromacy candidates) (v); Jordan et al. 2010, J Vision 10(12):12 (dimensionality of colour vision in carriers) (k)
+ Polderman et al. 2015, Nat Genet 47:702 (v via the design doc)
+ Fisher 1918; Barton, Etheridge, Veber 2017; Boyle, Li, Pritchard 2017; Hill, Goddard, Visscher 2008; Wainschtein 2022; Yang 2010; Kong 2012; Eyre-Walker 2010; Schluter 1996; van Noordwijk and de Jong 1986; Roff and Fairbairn 2007; Nathans, Thomas, Hogness 1986; Lyon 1961; Jacobs et al. 2007; Govardovskii 2000; Hensch 2005; Hubel and Wiesel 1970; Bouchard et al. 1999; Beall et al. 2010; Yi et al. 2010; Simonson et al. 2010; Racimo et al. 2015; Berg and Coop 2014; Sella and Barton 2019; Spitze 1993; Lewontin 1972; Rosenberg 2002; Crow and Felsenstein 1968; Lande 1976; Ohno 1970; Grant and Grant 2002; Reznick 1990; Hendry and Kinnison 1999; Kimura 1962; Gallant et al. 2014; Limpert et al. 2001 (all (k) or (u) as marked in the text)

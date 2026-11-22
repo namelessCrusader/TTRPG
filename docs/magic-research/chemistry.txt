@@ -1,0 +1,214 @@
+LANE: CHEMISTRY AND MATERIALS, PLUS ALCHEMY
+Mark_1 magic research, 2026-11-19. (u) = unverified or from memory, not checked against the source this run. Web checks this run were thin: two searches gave only qualitative reviews, so most numbers below are textbook values from memory. Check the (u) ones before they go into data files.
+
+0. SUMMARY FOR THE DESIGNER
+- Chemistry already gives the whole "small trigger, big release" toolkit with strict bounds: output energy can never exceed the stored energy, and the trigger only pays for the barrier.
+- Every transducer material has a coupling number (k, ZT, Seebeck, etc). That is one dial per material, which fits "packs set parameters only".
+- Energy density spans 12 orders of magnitude between a spring and a fission fuel. A table of it sizes every crystal, gem and potion.
+- Alchemy = the chemistry of materials that store or transduce M, run with ordinary conservation laws. Its old processes are real unit operations.
+- Lead to gold is lawful but costs about 38 GJ per gram at 100% efficiency (section 6). That is about 40 fireballs per gram. Rare by physics, not by a flag.
+- Interactions between magics have real templates: catalyst poisoning, galvanic corrosion, inhibition, quenching, passivation.
+
+1. CATALYSIS, ACTIVATION ENERGY, AUTOCATALYSIS, CHAINS
+
+1.1 Activation energy and rate (Arrhenius 1889): k = A * exp(-Ea / (R*T)). R = 8.314 J/mol/K.
+- A catalyst lowers Ea and does not change the net energy released (dH) or the equilibrium. It is not consumed.
+- Rate gain from lowering Ea by dEa at T = 300 K: exp(dEa / 2494 J/mol). dEa = 50 kJ/mol gives exp(20) = 5e8.
+- Rule of thumb: rate doubles or triples per +10 K near room temperature (Q10 of 2 to 3).
+- Enzymes: catalase turnover about 4e7 per second; the diffusion limit for kcat/Km is about 1e8 to 1e9 per M per s (u, Fersht, Enzyme Structure and Mechanism).
+- Real example of a small trigger: the Dobereiner lamp (1823): platinum sponge makes hydrogen and air ignite at room temperature, with no flame.
+- Matches: a few kJ of friction heat releases MJ because the fuel is already stored. Trigger gain = E_released / E_trigger. This is the lawful version of the user's "light fuel with kJ, release MJ".
+
+1.2 Thermal runaway (Semenov 1928; Frank-Kamenetskii 1939).
+- Heat made rises like exp(-Ea/RT). Heat lost rises only linearly with T. Past a critical size or temperature, the two curves no longer cross and the system runs away.
+- Criterion (Frank-Kamenetskii): delta = (Ea/(R*T^2)) * (Q * A * r^2 * exp(-Ea/RT) / lambda) must stay under a shape constant (about 0.88 for a slab, 2.0 for a sphere (u)). So big piles of hay or coal self-heat and small ones do not. Size matters.
+- This fits the sim directly: it is a heat ledger with a source term and a loss term. It gives metastable "knife-edge" matter for free.
+
+1.3 Chain reactions.
+- Branching: radicals make more radicals. H2 + O2 has explosion limits that depend on pressure and temperature (Semenov and Hinshelwood, Nobel 1956). Below the lower pressure limit radicals die on walls; above it they branch.
+- Neutron chain: multiplication factor k. k < 1 dies, k = 1 steady, k > 1 grows as exp((k-1)t/tau). Fission: about 200 MeV per U-235 atom, about 82 TJ/kg.
+- Bounds: (a) fuel is finite, so total energy = moles * dH; (b) growth is limited by reagent depletion (logistic) and by heat and pressure feedback; (c) chain breakers (inhibitors, walls, cooling) set the stability.
+
+1.4 Autocatalysis: product makes more product. d[P]/dt = k*[S]*[P] gives an S-curve with a lag phase. Oscillators exist: the Belousov-Zhabotinsky reaction (1950s to 60s, Belousov, Zhabotinsky). Fire is itself autocatalytic through heat. Mana "blooms" or "cascades" can use this exact form with M as the reagent.
+
+PORTABLE: a "trigger" is a switch that lowers a barrier on a stored-energy reservoir. Out = min(stored, rate_law integrated). Never more than stored.
+
+2. TRANSDUCER MATERIALS (real models for magic crystals)
+
+Piezoelectric.
+- Strain makes charge in non-centrosymmetric crystals (Curie brothers 1880). Quartz d ~2.3 pC/N, k ~0.1. PZT ceramic d33 ~300 to 600 pC/N, coupling k33 ~0.7. Cycle energy conversion can reach about k^2 (up to ~50% in the best case; real harvesters get 10 to 30%) (u).
+- Power is small: harvesters make uW to mW. Gas lighters use a spring-hammer to make ~kV spark.
+
+Pyroelectric.
+- A change of temperature makes charge. It needs dT/dt, not just T. LiTaO3 coefficient ~2e-4 C/m^2/K (u). Olsen-cycle lab devices reach about 40% of Carnot (u, Olsen 1980s); common devices a few percent of Carnot.
+- Lesson: response to change, not to level. Good model for a crystal that fires on a sudden hot or cold shock.
+
+Triboelectric.
+- Contact and separation of two materials moves charge (the triboelectric series). Surface charge density 10 to 250 uC/m^2 (u). Nanogenerators (Z.L. Wang, 2012 on) report instantaneous mechanical to electrical efficiency up to 50 to 85% (u) but at low power.
+- Voltages are huge (kV), currents tiny. Model for "static charge" magics (rubbing amber, the origin of the word electricity).
+
+Photovoltaic.
+- Photon above the bandgap makes an electron-hole pair. Shockley-Queisser 1961 limit: 33.7% for a single junction (Eg ~1.34 eV). Silicon cells ~22 to 27%, multijunction ~47% under concentration (u).
+- Light in, electricity out, with fixed minimum photon energy. Model for sun-stones that charge in daylight.
+
+Thermoelectric.
+- Seebeck effect: voltage = S * dT. Bi2Te3 S ~200 uV/K. Efficiency = Carnot * (sqrt(1+ZT) - 1) / (sqrt(1+ZT) + Tc/Th). With ZT ~1: ~5 to 8% real devices (u). Peltier is the reverse (heat pumping).
+- Bounded by Carnot, always. A good hard-limit example.
+
+Magnetostrictive.
+- Magnetic field makes strain and back (Joule 1842). Terfenol-D strain ~1500 to 2000 ppm, k33 ~0.7 (u). Used in sonar. Model for resonant "singing" stones that turn field into motion.
+
+What these give the sim:
+- Each has: input type, output type, coupling or efficiency (0 to 1), a response time, a threshold, and a Carnot-like cap if heat is involved.
+- Efficiency is the "useful / light / waste heat" split the user already wants. Waste heat of a crystal = (1 - eta) * E_in goes into the crystal as heat, so a crystal can crack, glow or melt when pushed. That is real: piezo ceramics depole above the Curie temperature.
+- Charged materials as batteries: a crystal that holds charge q at voltage V stores 0.5*q*V; leakage as exp(-t/tau) with tau as a parameter (self-discharge).
+
+3. ENERGY DENSITY TABLE (MJ per kg unless noted; all (u) to 2 digits, textbook values)
+
+Material | MJ/kg | MJ/L | notes
+Spring steel (elastic) | 0.0003 | 0.002 | sigma^2/(2*E*rho), 1 GPa
+Electrolytic capacitor | 0.001 to 0.01 | | 
+Supercapacitor | 0.01 to 0.05 | | 5 to 10 Wh/kg
+Flywheel, steel | 0.1 to 0.2 | | limited by tensile strength
+Flywheel, carbon composite | 0.5 to 1 | | 
+Lead-acid battery | 0.11 to 0.14 | 0.3 | 
+Compressed air 300 bar (isothermal work) | 0.5 per kg of gas | 0.17 | tank mass adds ~10x
+Li-ion battery | 0.9 to 1.0 | 2 to 2.5 | 250 to 270 Wh/kg
+TNT | 4.6 | 7.6 | 
+Black powder | ~3 | ~3 | 
+Thermite (Al + Fe2O3) | ~4 | ~16 | 
+Sugar (carbohydrate) | 17 | 
+Wood (dry) | 16 to 18 | 
+Coal | 24 to 30 | 
+Fat | 37 | 34 | body: 10 kg fat = 0.37 GJ (matches user's number)
+Gasoline | 46 | 34 | 
+Hydrogen | 120 | 
+U-235 fission | 8.2e7 | | 
+D-T fusion | 3.4e8 | | 
+Matter-antimatter | 9e10 | | E = mc^2
+
+Sizing for the sim (user number: fireball ~0.9 GJ):
+- 0.9 GJ = 25 kg fat, or 20 kg TNT, or 1000 kg of Li-ion cells, or about 11 g of U-235 fission. A fireball from chemistry-class stores needs tens of kg; from body fat the caster would burn 2.4 percent of 100 kg... so body-only magic is weak, as the user decided.
+- A crystal battery at Li-ion density (1 MJ/kg) holding one fireball would weigh 900 kg. So a pocket gem must beat chemistry by 100x to 1e4x. A gem at 1e5 MJ/kg (between chemical and nuclear) holds one fireball in 9 g. That density is the "M-charged material" dial. Put a cap per material class.
+- Potions: a 50 ml potion at fat density holds about 1.8 MJ (0.5 kWh). Healing a wound or boosting metabolism uses calories, a real budget: 1 kg of tissue regrown needs on the order of 5 to 10 MJ (u). So a potion that heals big wounds needs either a high-density store or slow delivery.
+
+4. HISTORICAL ALCHEMY AS REAL CHEMISTRY
+
+People: Jabir ibn Hayyan (Geber, 8th to 9th c; sulfur-mercury theory, mineral acids (u, attribution to the real man is disputed)); al-Razi (c. 900; ethanol, sulfuric acid, early lab classification); Paracelsus (1493 to 1541; iatrochemistry, "the dose makes the poison"); Brandt (1669, phosphorus from urine); Boettger (1708, European porcelain, found while chasing gold); Boyle 1661 (The Sceptical Chymist); Newton (wrote huge alchemy manuscripts, c. 1670 to 1696); Lavoisier 1789 (conservation of mass, ends the old theory). Chinese alchemists found gunpowder (9th c) while hunting immortality elixirs (u).
+
+Processes and what they really do:
+- Distillation (alembic, retort): separate by boiling point. Ethanol 78 C, water 100 C. Energy cost = latent heat (water 2.26 MJ/kg, ethanol 0.84 MJ/kg). Gives spirits, essences, acids.
+- Calcination: heat a solid in air. Metals gain mass as oxides (Jean Rey 1630, mass gain; Lavoisier explained oxygen). CaCO3 -> CaO + CO2 needs ~178 kJ/mol above ~900 C.
+- Sublimation: solid to gas to solid. Sal ammoniac (NH4Cl) ~340 C; cinnabar HgS gives Hg on heating; iodine, camphor.
+- Fermentation: sugar -> ethanol + CO2 (about 90 kJ/mol released as heat, so a brew warms). Yeast is a living catalyst.
+- Coagulation, precipitation, crystallization: solubility drops, solid forms. Solubility vs T is a curve; supersaturation gives sudden crystal growth (autocatalytic).
+- Solution and digestion: slow warm dissolving. Aqua regia (3 HCl : 1 HNO3) dissolves gold because chloride complexes it and nitric acid oxidises it.
+- Putrefaction and amalgamation: Hg dissolves gold and silver (amalgam), used in real gold extraction until modern times.
+Apparatus: athanor (steady furnace), water bath (balneum Mariae, fixed T near 100 C), alembic, crucible, cupel (lead absorbs base metals, leaves silver and gold: real assay, 'cupellation'), mortar.
+
+Philosopher's stone and elixir as real chemistry: as a catalyst (changes rate, not energy) or a reagent that moves M into a material.
+
+How alchemy becomes M-materials chemistry, with real laws underneath:
+- The stone is a catalyst for M-to-matter coupling: it lowers a barrier, is not consumed, and can be poisoned. It does not create energy.
+- M-active materials are made by ordinary reactions. Their coupling dial depends on structure (crystal lattice quality, purity, dopant), exactly like real transducer materials in section 2. Purer, better-grown crystals couple more strongly. So crystal growth, doping and annealing are the craft.
+- Processes (distil, calcine, sublime...) change composition, purity, phase and structure. A recipe is a path through those. The sim already has heat, mass and phases, so an alchemist's skill is running them well and measuring results.
+- Dose, purity, order of steps all matter because rate laws and equilibria are real.
+
+5. PHARMACOLOGY FOR POTIONS
+
+Pharmacokinetics (ADME):
+- Absorption: oral bioavailability F (fraction reaching blood, 0 to 1). Absorption is first-order with rate ka. Skin and lung are different routes with different F and speed (inhaled: seconds; IV: F = 1 and instant; oral: 30 to 120 min to peak).
+- Distribution: volume of distribution Vd = dose / C0. Body water ~42 L for 70 kg. Fat-soluble drugs have large Vd and stay long.
+- Elimination: usually first-order: C(t) = C0 * exp(-k*t), half-life t1/2 = ln2 / k. Caffeine ~5 h; ibuprofen ~2 h; diazepam 20 to 100 h (u). Steady state after about 5 half-lives. Some are zero-order (saturated): ethanol ~7 to 10 g/h in an adult (u).
+- Metabolism in the liver; "first-pass" cuts F for oral doses.
+
+Pharmacodynamics:
+- Effect = Emax * C^n / (EC50^n + C^n) (Hill equation, Hill 1910). EC50 = dose for half effect; n sets steepness.
+- Therapeutic index TI = TD50 / ED50 (or LD50 / ED50). Warfarin, digoxin, lithium have narrow TI (< 3) (u). Wide TI: penicillin.
+- Dose and time: Haber's rule (1924) C x t = constant for gas toxicity; real for some, not all.
+- Tolerance (the response drops with repeated use), dependence, and interactions (see section 7) are real.
+
+Potion as stored pattern or energy in solution:
+- Energy-type potion: a solution of fuel or charged material. Delivered by the same ADME curve. Energy released to the body per hour = dose * k_abs. Bounded by the real calorie and heat limits: a person at rest makes ~100 W; fast heat removal is limited, so a potion that dumps 1 MJ in a minute (17 kW) cooks the drinker. That is a natural toxicity limit.
+- Pattern-type potion (a stored M-pattern): a dissolved or suspended structure that holds the pattern. It decays with a half-life (shelf life), needs a carrier to survive light and heat, and can be contaminated. Dose scales with concentration, with the same Hill curve at the target.
+- A "poison" is a potion with narrow TI. An "antidote" is a competitive inhibitor or a binder (chelators bind metals; Ki sets potency).
+
+6. TRANSMUTATION: THE REAL COST OF LEAD TO GOLD
+
+- Real facts: Seaborg's group (Lawrence Berkeley Lab, 1980) turned a few thousand atoms of bismuth into gold using the Bevalac beam; beam time ~$5,000/hour (Scientific American report, found this run); reported cost claim of over a quadrillion dollars per ounce is second-hand (u, original AP story not found). Gold made this way is mostly radioactive isotopes; only Au-197 is stable. Early in the 20th century Soddy, Rutherford and Aston identified transmutation by decay (Nobel 1908 Rutherford, 1921 Soddy, 1922 Aston).
+- Energy to take Pb-208 to Au-197 plus 1 proton and 10 neutrons: binding energies are about 1636.4 MeV (Pb-208) and 1559.4 MeV (Au-197) (u), so about 77 MeV per atom at the very minimum.
+- Per mole: 77 MeV * 9.65e10 J/mol/MeV = 7.4e12 J/mol. Per gram of gold (197 g/mol): about 3.8e10 J/g = 38 GJ/g (= 10.6 MWh/g). For an ounce (31 g): about 1.2 TJ.
+- That is a lower bound at 100% efficiency with no losses. Real accelerators are 1e-6 or worse per atom made, so 1e6 to 1e9 times more (u).
+- Meaning: in a world with M, a mage that does it is not breaking a law; the cost is about 40 fireball-sizes of energy per gram, from a store or a field. Any such work must also deal with ionising radiation and the leftover neutrons and protons (the energy they carry has to go somewhere). Transmuting lighter and nearer elements (neighbours on the binding curve, like Fe) costs far less per gram because binding energy per nucleon differs little (about 8 MeV per nucleon).
+- Cheap neighbour: chemistry-only "transmutation" (changing compounds, alloys, colouring brass to look like gold) costs kJ to MJ and is real. Fool's gold, gilding, assay tricks were the actual historical results. The sim can distinguish an alloy that looks like gold from gold (density 19.3 g/cm^3 is the check, Archimedes).
+
+7. INTERACTIONS BETWEEN MATERIAL SYSTEMS (templates for magic-to-magic)
+
+- Galvanic corrosion: two metals in an electrolyte; the one lower in the galvanic series corrodes (Fe vs Cu: potential diff ~0.78 V (u)). Template: two M-transducer materials in contact trade "charge" and one degrades. Rate set by potential difference and the medium.
+- Passivation: Al, Cr and Ti form a thin oxide that stops further corrosion. Template: a ward that self-heals and then shuts down more attacks.
+- Catalyst poisoning: S, CO, Pb adsorb on Pt sites and stop it (Pb in petrol killed catalytic converters). Template: a contaminant bonds to the active sites of an M-catalyst and cuts its rate, not its energy. The amount needed is tiny, by site count. This is the real "anti-magic metal": a trace that poisons coupling. Fits "anti-magic is a low-coupling region".
+- Inhibition: competitive (raises apparent Km: v = Vmax*S/(Km*(1 + I/Ki) + S)), noncompetitive (lowers Vmax). Template for rival patterns blocking a receptor.
+- Quenching: a dissolved species takes the excited state's energy without light (Stern-Volmer: I0/I = 1 + Ksv*[Q]). Template for a field absorber that kills glowing and spell light.
+- Contamination and alloys: a few ppm of dopant changes a semiconductor by orders of magnitude; a few percent carbon turns iron to steel. Template: small impurity, large coupling change in either direction.
+- Le Chatelier: equilibria shift against a stress. Template: a spell field in equilibrium with a store pushes back when you drain it.
+- Mixing rules: acid + base release heat (neutralisation, -57 kJ/mol); oxidiser + fuel; hydrates and precipitates. All conserve atoms and energy, so all interactions are ledger-clean.
+- Interference at the wave level is a different template (section from the physics lane), not chemistry.
+
+8. PORTABLE MECHANISMS (general laws, data parameters)
+
+M1. BARRIER-GATED STORE (trigger law)
+ Law: stored energy E_s released at rate r = A * exp(-Ea_eff/(k*T_eff)) * f(E_s), where Ea_eff = Ea - catalyst_lowering - trigger_energy_input.
+ Data: E_s, Ea, A, dH split (work, light, heat; sums to 1).
+ Bound: total released <= E_s. Trigger gain = E_s / E_trigger is reported, not assumed.
+
+M2. THERMAL RUNAWAY CRITERION
+ Law: heat gen exp(-Ea/RT) vs linear loss; runaway if gen slope beats loss slope at the crossing; size-dependent.
+ Data: Ea, Q, loss coefficient, shape factor. Gives metastable matter and self-heating piles with no per-case code.
+
+M3. CHAIN / BRANCHING
+ Law: dn/dt = (k_branch - k_break) * n, limited by fuel and heat. Reproduction factor k decides die, steady, grow.
+ Data: k_branch, k_break, fuel. Explosion and quenching come from the same numbers.
+
+M4. TRANSDUCER (one law for all crystals)
+ Law: out = eta * in for in above threshold, with output type tied to input type; waste (1 - eta) goes to material heat; heat-driven types capped by Carnot (1 - Tc/Th).
+ Data per material: in_type, out_type, eta (or k, ZT), threshold, response time, max temperature before depole or crack (Curie-like).
+ Classes: piezo (strain), pyro (dT/dt), tribo (contact), photo (light > bandgap), thermo (gradient), magnetostrictive (field). A crystal's M-coupling is another row of the same table.
+
+M5. CHARGED STORE WITH LEAK
+ Law: E(t) = E0 * exp(-t/tau); capacity per kg from the density table; max power = capacity * discharge rate; releasing too fast heats the store (waste fraction).
+ Data: density (MJ/kg), tau, max discharge power per kg, trigger Ea. Gems vs chemical vs nuclear classes are just ranges of density.
+
+M6. ENERGY DENSITY TABLE AS DATA
+ Law: every stored thing has MJ/kg and a form (chemical, elastic, electric, nuclear, M-charge). Size any spell, potion or crystal by E needed / density.
+ Check: every effect lists mass of store needed; if absurd, the effect is impractical, not forbidden.
+
+M7. UNIT OPERATIONS (alchemy as recipes)
+ Operations: heat, cool, boil/condense (latent heat), dissolve, precipitate, filter, mix, ferment, burn/oxidise, react. Each acts on the sim's mass, heat and phase ledgers.
+ Law: a recipe is a path of operations. Product composition and structure follow from the laws. No recipe stores a hard-coded result.
+ Data: per material phase constants, solubility curves, latent heats, reaction dH and Ea.
+ Note: M-active structure quality (purity, crystal size, dopant) is a state variable set by the path, which sets coupling for M4.
+
+M8. PHARMACOKINETIC COMPARTMENT
+ Law: dose enters at route rate ka * F; plasma conc dC/dt = ka*F*D/Vd - ke*C; effect = Hill(C; EC50, n); zero-order cap above a saturation level.
+ Data: route, F, ka, Vd, ke (half-life), EC50, n, TI. Works for energy and pattern potions, poisons, antidotes.
+ Bound: energy delivered to the body per second feeds the body-heat and metabolism ledgers, so over-dosing cooks or starves the drinker.
+
+M9. SPECIES BINDING (inhibition and poisoning)
+ Law: active sites fraction free = 1 / (1 + sum(I_j/Ki_j)); rate scales with free fraction; irreversible poisons reduce site count permanently.
+ Data: Ki per inhibitor-site pair, site count. Gives anti-magic traces, antidotes, counter-enchantments, contamination from one table.
+
+M10. GALVANIC AND REDOX POTENTIAL TABLE
+ Law: two materials in contact in a medium: the lower-potential one is consumed at rate ~ (dV / R_medium); energy comes out as electricity or heat.
+ Data: potential per material (a number on one axis), medium conductivity. Template for "magic A eats magic B's material".
+
+M11. TRANSMUTATION BY BINDING ENERGY
+ Law: cost = binding energy difference per nucleus + separated nucleons' energy; delivered by M-field or store at efficiency eta_nuc; leftover radiation from unstable isotopes goes into the radiation and heat ledgers.
+ Data: nuclear mass table (public data), eta_nuc. Lead to gold = 38 GJ/g ideal; neighbours cheap, far ones costly. Rare because of cost, with no flag.
+
+OPEN GAPS (log as missing pieces)
+- There is no chemistry for "pattern-bearing" matter in real science. M-transducing structure is the one added thing; everything else here is real.
+- Real nuclear-level handling may be too heavy for the sim. A tabled cost per element pair may be enough (cheaper estimating law that keeps the facts).
+- Some numbers above (d33, ZT, TENG efficiency, Olsen cycle, binding energies, TI) are from memory and need a check before use.
+
+SOURCES USED OR NAMED
+Arrhenius 1889; Semenov 1928; Frank-Kamenetskii 1939; Hinshelwood and Semenov Nobel 1956; Hill 1910; Haber 1924; Shockley and Queisser 1961; Curie brothers 1880; Joule 1842; Olsen 1980s (u); Z.L. Wang triboelectric nanogenerators 2012 on; Belousov and Zhabotinsky (1950s to 60s); Fersht, Enzyme Structure and Mechanism; Boyle 1661; Lavoisier 1789; Seaborg's Bevalac bismuth to gold, 1980, via Scientific American "Fact or fiction: lead can be turned into gold" (found this run); hybrid and nanogenerator reviews found by search (Nanotechnology Reviews 2025, qualitative only).

@@ -1,0 +1,226 @@
+LANE BIOLOGY: REAL BIOLOGY TO PORT INTO MARK_1 MAGIC
+Date 2026-11-19. Read-only research. (v) = checked in this session by web search. (u) = from memory, unverified; check before building on it.
+
+SHORT VERDICT
+Real life already has "a patterned structure moves energy at a distance, paid from a body store". Electric fish do it. Fireflies do it. Every real case is small, costs a lot of body energy, and has a hard cap. So body-only magic is weak (matches decision 8.1). The strong cases need a stack of cells (a pattern), a fast trigger, and a slow charge. That maps straight onto "pattern + trigger + store".
+
+=====================================================
+1. ORGANISMS THAT MAKE OR SENSE FIELDS AT A DISTANCE
+=====================================================
+
+1.1 Electric eel (Electrophorus). Strongest living bioelectric generator.
+- De Santana et al. 2019, Nature Communications 10:4000 (v): E. voltai gave 860 V in field measurements, the highest known in any animal. Current is about 1 A (v, from the lead author). So peak power is about 860 W for about 1-2 ms bursts (power = V x I; the 860 W figure is my arithmetic).
+- About 5,000-6,000 stacked electroplaques make the 860 V (v, secondary source). So each cell adds about 0.15 V (arithmetic; about the same as one nerve cell's resting-to-peak swing, 0.1-0.15 V (u)).
+- Stacking law: cells in SERIES add voltage; rows in PARALLEL add current. The eel body is mostly electric organ (Main, Hunter's, Sachs organs, about 80% of body length (u)). The cost of "one big zap" is a body plan built around the weapon.
+- Each pulse is short (about 2 ms (u)) and the eel can fire hundreds per second in a volley for hunting (u). Energy per pulse is small: about 860 V x 1 A x 0.002 s = about 1.7 J (my arithmetic). A fireball needs 0.9 GJ. That is a gap of about 5e8. This is the key fact: the best real organ moves joules, not gigajoules.
+- Catania (Vanderbilt) showed eels leap and press the chin on a target to raise current through it (v, secondary; exact year/journal not confirmed; Catania 2014 Science "The shocking predatory strike of the electric eel" (u)). Lesson: aim and contact geometry matter; the same pulse is much stronger when the path is short.
+- Catania also showed the eel's high-voltage volley causes involuntary muscle twitch in prey (remote control of prey nerves) and can find hidden prey by a "pulse then watch the twitch" trick (u). Lesson: low energy can still have big effect if it triggers the TARGET's own stored energy (muscle). That is the "trigger releases a store" rule, done by biology.
+- Recharge: ion gradients across the cell membranes are the battery. Resting at about -90 mV, charged by Na/K pumps. Pumps use ATP. So the store is chemical (ATP, ion gradient) and refills from food on a timescale of seconds to minutes (u).
+
+1.2 Other electric fish.
+- Torpedo rays (electric rays): about 50-200 V, large current, tens of amps (u); sea water gives low-voltage high-current organs, fresh water gives high-voltage ones. Why: water conductivity. Salt water has low resistance so rays use low V, high I (a few hundred W peak (u)). Freshwater eels use high V. Lesson: the medium sets the best pulse shape. Magic version: local M "conductivity" sets the efficient voltage-like parameter.
+- Weakly electric fish (Gymnotiformes, Mormyridae): 0.1-1 V pulses, used for sensing and talking, not attack. Fraction of power for sensing: tiny (milliwatts (u)); the organ may still use a big share of metabolism: Salazar & Stoddard 2008 (J Exp Biol), Gymnotus electric signalling costs about 11-22% of daily energy budget (u). Lesson: constant low-power "sense field" is a real running cost.
+- Electric catfish (Malapterurus): about 350 V (u).
+
+1.3 Electroreception (sensing fields).
+- Sharks, skates (ampullae of Lorenzini; Kalmijn 1971 and 1982 (u)): thresholds about 5 nV/cm (u) or 0.005 microvolt per cm, the most sensitive voltage detectors known in biology. Range for prey bioelectric field: tens of cm, up to about 1 m (u) since field falls with distance (dipole, about 1/r^3).
+- Platypus (Pettigrew 1999 (u)): about 40,000 electroreceptors in the bill, threshold about 20 microvolt/cm (u) range about a few tens of cm. It combines electric and touch signals to get distance: the electric signal arrives with the touch (mechanical) signal later; the delay gives range. Lesson: two channels with different speeds give distance (a "multi-channel sense" law).
+- Rule: sensing range scales with sensor sensitivity and source strength; the field of a muscle twitch (microvolts) is detectable only close in. A caster's body would leak a similar tiny field (a "tell", ties to decision 8.3).
+
+1.4 Magnetoreception.
+- Cryptochrome radical-pair compass (Ritz, Adem, Schulten 2000 Biophys J; Hore & Mouritsen 2016 Annu Rev Biophys (u)). Earth's field is about 25-65 microtesla. The signal is a change in chemical reaction yield, not a force. Energy involved: far below kT per molecule (u), so it works as an information trick, not energy transfer. Sensitivity is about 0.1% of reaction yield per degree of field angle (u).
+- Magnetite chains (magnetotactic bacteria, Blakemore 1975 (u); possibly pigeon beak/trout (u, disputed)): crystals about 50 nm of Fe3O4 (u) act as tiny compass needles that torque the cell.
+- Magic port: a cheap sense needs no gigajoules; it reads a field gradient. Place M gradients can be sensed by small structures at tiny energy cost. Beasts can have this "M-sense" first, long before they can USE M. (Sense before act is the usual order in evolution.)
+
+1.5 Bioluminescence (light at a distance, cold light).
+- Haddock, Moline, Case 2010, Annu Rev Mar Sci 2:443-493 (v for the paper). Roughly 75% of deep-sea animals make light (u). Efficiency: firefly luciferin quantum yield 0.41 (Ando et al. 2008 Nat Photonics (u); a search did not confirm this figure; some old claims of near 90% have been disputed). Bacterial/dinoflagellate light is lower (about 0.1-0.3 (u)). So "light" share of a chemical reaction can be 10-40%, rest is heat: the same "useful / light / waste = 1" split in decision 8.1.
+- Power is tiny: a firefly flash is about 1e-3 to 1e-2 W optical for 100 ms (u); a deep-sea light organ is milliwatts (u). Lesson: lawful "cold" magic light is cheap; use is mostly signalling (lure, counter-illumination, alarm). A "flash" can also be a pattern-carrying channel (visible tell).
+- Cost of light is small compared with the information it carries. This is the best real example of "small energy, big effect through a pattern".
+
+1.6 Echolocation.
+- Bats (Griffin 1958 (u)): emit 100-130 dB SPL at 10 cm (u); call about 1-5 ms, 20-100 kHz. Metabolic cost of call is covered by wingbeat coupling in flight (Speakman & Racey 1991 Nature (u)): nearly free in flight but costly at rest. Range: 5-10 m for insects (u).
+- Dolphins: clicks about 220 dB re 1 microPa (u), range hundreds of metres for large targets.
+- Lesson: active sensing uses a pulse and reads the echo; energy cost ~ pulse power x rate; the range follows inverse-square twice (out and back, 1/r^4 in power (u)). That is a real wave-echo law the sim's M waves could reuse (reflection, shielding).
+
+1.7 Infrared pit organs (pit vipers, boas, pythons).
+- Gracheva et al. 2010 Nature (u): TRPA1 channels in pit membrane act as heat sensors; thermal threshold about 0.003 K (u) or 0.001-0.003 C change; can detect a mouse at about 0.3-1 m (u). The membrane is thin (about 15 micrometre) and isolated by an air chamber so it heats fast (u).
+- Lesson: sensitivity is bought by thermal isolation + thin membrane (a SHAPER, like an engraved lens). It maps to "shaper" engraving role.
+
+=====================================================
+2. EVOLUTION OF SUCH ORGANS (HOW M COULD SELECT NEW ORGANS)
+=====================================================
+- Electric organs evolved independently at least 6 times in fish (Bennett 1971 (u); Gallant et al. 2014 Science 344:1522-1525 (v): "Genomic basis for the convergent evolution of electric organs"; six lineages (v)). Groups: Torpediniformes and Rajiformes (rays and skates), Mormyridae, Gymnotiformes, Malapteruridae (catfish), Uranoscopidae (stargazers) (u).
+- What each lineage did (Gallant 2014; v from secondary sources):
+  * Muscle cells stopped making contractile machinery and kept the ion channels: an organ made from a derived muscle (myogenic origin) in most groups. (Some, like Apteronotus, come from nerve (u).)
+  * The sodium channel gene scn4aa was copied after the teleost whole genome duplication; the second copy was turned DOWN in muscle and UP in the electric organ (v). Rapid sequence evolution of this gene was tied to both origins (v).
+  * Many genes in the electric organ share expression changes across lineages: the same parts list was reused (about 20 genes (u)).
+- Step ladder (a generic, from the literature on weak-to-strong electric fish; Alves-Gomes 2001, Zakon 2012 (u)):
+  Step 0: ordinary muscle makes a small field as a by-product (every muscle contraction leaks microvolts). This is an exaptation base ("pre-adaptation").
+  Step 1: a sense organ appears (electroreception exists in ancestors of most fish (u)), so there is something to receive the weak field.
+  Step 2: a muscle lineage keeps firing but stops contracting: a weak organ, 0.1-1 V total (communication and sensing).
+  Step 3: cells stack in series and get insulating faces (stacking, "electroplates" with one-sided innervation): voltage climbs by adding cells.
+  Step 4: a pulse-timing system (a pacemaker nucleus) gets synchrony, so all cells fire together (otherwise voltages cancel).
+  Step 5: a strong weapon (eels, rays, catfish) only after steps 1-4, and with body plan cost (organ is 20-80% of body mass (u)). Selection pressure: predator defence or prey stunning in low-visibility water.
+- Key lessons for M:
+  * Each step has a payoff on its own (sense, then signal, then weapon). Evolution did not need to "see" the final weapon.
+  * Same part reused (muscle channels) in a new job: M would first be a by-product of nerve/muscle activity, then be kept.
+  * Convergence: six independent starts, so if M exists, many beast lineages will reach "M organs" by different routes. Tuning: the chance per lineage per million generations is a pack data parameter.
+  * Costs shape the outcome. Weak organs are common (hundreds of species); strong ones rare (a few dozen (u)).
+- Related: bioluminescence evolved independently about 94 times (Davis et al. 2016 Proc R Soc B, "Repeated and widespread evolution of bioluminescence in marine fishes" (u): 27 times in fishes; Haddock 2010: at least 40 origins overall (u)). Eyes: about 40 origins (u). So "organ for a physical field" is cheap to evolve if the field has a payoff.
+- Beast M evolution model (my synthesis): M-gradient sense (like cryptochrome) -> reflex release (like a startle zap) -> storing (like ATP/ion gradient) -> pattern (stacked cells that fire together). Each step must pay for itself in food, mates or safety.
+
+=====================================================
+3. HUMAN LIMITS (ground "caster overheats" and fatigue)
+=====================================================
+(Mostly from memory; (u) unless said.)
+- Whole-body resting power: about 80-100 W (BMR about 1,600-2,000 kcal/day (u): 2,000 kcal = 8.4 MJ per day = 97 W).
+- Brain: about 20 W, about 2% of mass, about 20% of resting energy (Raichle & Gusnard 2002 PNAS (u)). One search source gave human brain = 14.6 W for Aiello & Wheeler 1995 (v), so the number is about 15-20 W depending on source and brain size. Task-driven extra cost is small: under 5% above resting (Raichle (u)). So thinking hard costs very little extra energy; casting that is "mental" must get its power elsewhere (M or stores), not from the brain budget. Good: brain cost is the tell/limit on "complexity", not the energy of the effect.
+- Muscle:
+  * Sustained: well-trained athlete about 300-400 W mechanical for 1 hour (cycling; efficiency about 20-25% so metabolic 1,200-1,600 W (u)); untrained about 75-100 W mechanical for an hour (u).
+  * Peak: about 1,000-2,500 W for 1-6 s (elite sprint cyclists; Usain Bolt estimated mechanical peak about 2,600 W (u)). Phosphocreatine system lasts about 10 s (u).
+  * Efficiency about 25% (u), so 75% of burned energy is body heat. For magic with efficiency near this, the caster heats.
+- Energy stores:
+  * Fat: about 37 MJ/kg (9 kcal/g (u)); a lean 70 kg man with 15% fat has about 10 kg = about 390 MJ (consistent with the design note of about 0.37 GJ).
+  * Glycogen: about 400-500 g total (liver 100 g, muscle 300-400 g (u)); at 4 kcal/g that is about 1,600-2,000 kcal = about 7-8 MJ. That is the fast store; fat is the big slow one.
+  * ATP: only about 50-100 g in body, turned over about 1 time per minute or faster; direct stored ATP is about 8 kJ (u) per minute of rest. Phosphocreatine plus ATP is about 30 kJ readily available (u).
+  * Hard fact: fat burns only as fast as the body can mobilize it: max fat oxidation is about 0.5 g/min (u); 0.5 g/min x 37 kJ/g = 18 kJ/min = 300 W chemical. So a human cannot turn 390 MJ into a fireball in a second; the delivery rate caps at hundreds of W chemical, thousands in bursts. A 0.9 GJ fireball would need minutes-to-days of total fat mobilization (0.9e9 / 300 W = 3e6 s = about 35 days). So body-only magic is SLOW AND LIMITED BY RATE, not just by total. Important for design: the limit is power (W), not only energy (J).
+- Heat tolerance and hyperthermia:
+  * Normal core 37 C. Heat exhaustion at about 39-40 C. Heat stroke at core above about 40-41 C: organ damage; above about 42-43 C: protein denaturation, death risk high (u, standard clinical figures).
+  * Body heat capacity: about 3.5 kJ/(kg K) (u). For 70 kg: about 245 kJ per K. A 5 K core rise (37 to 42) is about 1.2 MJ of stored heat.
+  * Heat shedding: sweat about 2.4 MJ/kg evaporation (latent heat of water about 2.43 MJ/kg); max sweat about 1-2 L/hour (u) = 0.7-1.4 kW cooling at best in dry air. Radiation/convection at rest about 100 W.
+  * Consequence: if magic spends X joules of waste heat in the body, a human absorbs only about 1.2 MJ before dangerous. Recoil-to-body (decision 8.2) gives a hard cap of about 1 MJ of waste heat per cast, then fainting or death. At 60% efficiency (40% waste), max delivered effect about 1.8 MJ. A fireball of 0.9 GJ cannot come from the body at any rate. That is lawful and matches the user's number.
+  * Cold: hypothermia below 35 C core; death about 28-30 C (u).
+- Recovery: muscle glycogen resynchesis about 5-7 mmol/kg/h (u), full refill 24 h with carbohydrate; phosphocreatine half-recovery about 30 s (u); sleep needed roughly 8 h; oxygen debt (EPOC) minutes to hours.
+- Fatigue types: metabolic (store), thermal (heat), neural (central fatigue), each recovers at a different speed. The sim should keep three fatigue channels (power-limited, heat-limited, attention-limited).
+
+=====================================================
+4. INNATE VERSUS LEARNED
+=====================================================
+- Heritability: Polderman et al. 2015, Nature Genetics 47:702-709 (v): meta-analysis of 50 years of twin studies, 2,748 publications, about 17,800 traits; average heritability 49% (v); and the data fit a mainly additive genetic model (v). Cognitive traits (IQ) about 50-70% in adulthood (u; Bouchard 2004 (u): heritability of IQ rises from about 20% in infancy to about 60-80% in adulthood, the "Wilson effect"). Motor-skill and sports traits: about 40-70% (u). Lesson: roughly half of a trait comes from genes, half from environment, and genes matter MORE with age. That fits "coupling dial drawn from a distribution, partly heritable".
+- Model for heredity: use an additive model. Child value = mean of parents + noise (regression to mean; Galton) with narrow-sense heritability h2 as pack parameter (0 to 1). Default 0.5 (v: from Polderman).
+- Deliberate practice: Ericsson, Krampe & Tesch-Romer 1993 Psychol Rev (u): expert level takes about 10 years / 10,000 h in some fields. Later critique: Macnamara, Hambrick & Oswald 2014 Psychol Sci meta-analysis (u): practice explains only about 12-26% of variance in performance (games 26%, music 21%, sports 18%, education 4%, professions under 1% (u)). So practice matters much, but is not all. A pack should treat skill = innate + practice, with the innate share a data knob.
+- Power law of practice: Newell & Rosenbloom 1981 (u): time to do a task T = a * N^(-b), with b about 0.2-0.5 (u). Learning curve is fast early, slow later; never reaches zero; improvements in the log-log plot are straight. Heathcote et al. 2000 (u) argue exponential fits individuals better, power law arises from averaging. For the sim: skill(N) with diminishing returns; both fits are cheap (1 line).
+- Prodigies/savants: Ruthsatz & Urbach 2012 (u) child prodigies have high working memory and often a relative with autism; Treffert (u): savant syndrome is rare (about 1 in 10 autistic people; about 1 in a million overall (u)); typically skills in music, calendar, art, memory. Lesson: extreme skill can come from a wiring change (narrow, deep) not general gain, possibly with a cost elsewhere. Tradeoff pattern = "innate sorcerer: strong, narrow, hard to control; wizard: broad, learned".
+- Critical periods: Hensch 2005 Nat Rev Neurosci (u): ocular dominance critical period (mouse about P19-P32; human early childhood). Perfect pitch: mostly if training starts before about age 6-7 (Deutsch (u); Baharloo 1998 (u)). Language: accent and grammar easier before about puberty (Johnson & Newport 1989 (u), debated). Lesson: some channel couplings can be set in a window, and later practice can't fully recover them. For the sim: a per-ability "plasticity window" parameter that closes with age; innate casters pick up their channel early.
+- Mix: skill = innate gain g (drawn from distribution, partly heritable) x practice curve f(N) x state s (fatigue, stress) + noise; an error gives a neighbouring valid pattern (motor noise; decision 8.0). Real motor noise grows with force (signal-dependent noise, Harris & Wolpert 1998 Nature (u): SD about proportional to force, so bigger/faster actions are less accurate = speed-accuracy tradeoff, Fitts' law (u)). Very good fit for "error gives a neighbouring valid spell, more error at higher power".
+
+=====================================================
+5. SYMBIOSIS, MUTUALISM, PARASITISM (patrons, familiars, possession)
+=====================================================
+- Mutualism examples with numbers:
+  * Mitochondria: once a bacterium, now supply about 90% of cell ATP (u); the host gave shelter and food; the deal stabilized by gene transfer to the host (a lock-in). Lesson: a deep bond can become permanent by sharing genes/instruction.
+  * Gut microbiome: about 1-2 kg, about 3.8e13 cells (Sender, Fuchs, Milo 2016 PLoS Biol (u)), supplies about 10% of human energy (short-chain fatty acids; ~6-10% (u)); host feeds them. Stabilized by partner choice and sanctions.
+  * Mycorrhizal fungi: about 80% of land plants (u); plants give about 10-30% of fixed carbon (u; Smith & Read (u)), fungi supply phosphorus and nitrogen; "biological market" shown by Kiers et al. 2011 Science (u): plants send more carbon to fungi that give more phosphorus, and fungi give more P to roots that give more C. Partner choice by reward. Great model for patron-warlock: "pay for power", with trade-rate set by market.
+  * Leafcutter ants and fungus; cleaner fish (Bshary & Grutter 2006 (u)): cleaners cheat (eat mucus, a favoured food) when watchers are absent; clients punish by chasing; so reputation and sanctions keep cheating down. 
+  * Clownfish/anemone, oxpecker (u: debated, may be partly parasitic).
+- Stability law (Axelrod & Hamilton 1981 Science (u); Sachs et al. 2004 Q Rev Biol (u)): mutualism lasts when (a) partner fidelity (the same partners repeat), (b) partner choice, (c) sanctions against cheats, and (d) benefits to each exceed costs. Absent these it slides to parasitism. "Law of the deal" = both payoffs stay positive and cheating is observable and punishable.
+- Parasitism, manipulation and "possession":
+  * Toxoplasma gondii: makes rodents lose fear of cats (Berdoy 2000 (u)).
+  * Ophiocordyceps (zombie-ant fungus): ant climbs to ~25 cm height and bites a leaf at solar noon (Hughes 2011 (u)); the fungus controls muscles but not the brain (de Bekker 2015 (u): fungus mostly in muscle, not brain). Lesson: a real possession model: parasite uses the host body's own energy to run the host's muscles; host's mind is bypassed. Energy paid by host (mass loss, death).
+  * Cordyceps and Leucochloridium (snail eye-stalks), hairworms that cause crickets to drown (u), rabies (aggression and bite).
+  * Cuckoos: brood parasite; hosts evolved egg discrimination: arms race. Lesson: parasites get better; hosts counter. A patron that takes too much faces resistance evolved in the lineage.
+- Virulence tradeoff (Anderson & May 1982 (u)): a parasite that needs a living host evolves moderate harm; one that spreads regardless of host life evolves high harm. For patrons: a patron that needs servants alive offers fair terms; one with many servants is wasteful.
+- Familiars/hosts: endosymbiosis shows the pattern "partner stores, partner supplies"; hermit crab and anemone (u) show portable symbioses; a familiar is a MOBILE partner whose body holds extra store or sensors (cf. M-sense above).
+- Patron as mind with a store and channel: the mycorrhizal market is the best real match: the "patron" (fungus) holds a big network and delivers a scarce resource through a persistent channel (hyphae) in exchange for a steady energy payment (carbon). Parameters: exchange rate, channel capacity, sanction rule, exit cost.
+
+=====================================================
+6. ECOSYSTEM ENERGY FLOW (druids, nature magic, place M from life)
+=====================================================
+- Global net primary production about 105 Pg C/yr (Field et al. 1998 Science (u): 104.9 Pg C/yr: land 56.4, ocean 48.5). Per area, per year (u):
+  * Tropical rainforest: about 2,200 g dry matter/m2/yr (about 900-1,100 g C (u)).
+  * Temperate forest: about 1,200 g dry/m2/yr (u).
+  * Grassland: about 600 g dry/m2/yr (u).
+  * Desert: about 90 g dry/m2/yr (u).
+  * Open ocean: about 125 g dry/m2/yr (u); estuaries/reefs about 2,000.
+  * Energy: plant dry matter about 17-20 MJ/kg (u). So rainforest about 2,200 g x 18 kJ/g = about 40 MJ/m2/yr = about 1.3 W/m2 mean. Solar input about 170 W/m2 mean at ground (u); so NPP is about 0.5-1% of sunlight (u) (photosynthetic efficiency about 1% on land overall (u); theory max about 4.6% for C3 (Zhu et al. 2008 (u))).
+- Trophic levels: ecological efficiency about 10% (Lindeman 1942 (u); range 5-20%, Pauly & Christensen 1995 (u) found about 10% mean in marine systems). So each level up has about 10% of the one below. Warm-blooded animals convert only about 1-3% of ingested energy to new body mass (endotherms are wasteful; Humphreys 1979 (u)), ectotherms 10-40% (u). Food chain length is short (3-5) because of this.
+- Biomass pyramid: producers about 90% of living carbon; top predators very small. 
+- Consequence for M (my synthesis): if M is made by life, then
+  * M source per m2 follows NPP: forests rich, deserts poor. Nature-magic places differ because life differs.
+  * M production is an ENERGY flow: with a coupling efficiency eta (pack parameter, e.g. 1e-3 to 1e-1) M_rate(place) = eta * NPP_power. Rainforest at 1.3 W/m2 and eta = 0.01 gives 13 mW/m2; a hectare gives 130 W; a 100 m radius area (3e4 m2) gives about 400 W. Very small. So even ecological M is a trickle: refills slowly (matches 8.1 "refills slowly").
+  * Druid/harvest: taking M from a living system removes growth (and so food chain mass). Lawful consequence: over-drawing kills the grove (M and biomass fall together). Natural "tragedy of the commons" tuning.
+  * Trophic law: beasts that eat M-rich plants concentrate it up the chain at about 10% per level (bioaccumulation, like DDT or mercury: biomagnification, u). Top predators then are M-rich but rare; matches "dragon-like apex beasts" with big stores.
+  * Decomposers close the loop: dead matter returns M-bearing nutrients; the world needs a recycle path or M leaks.
+
+=====================================================
+7. HEALING BIOLOGY (lawful healing magic)
+=====================================================
+(All (u) unless noted; standard physiology.)
+- Skin wound: closure in about 7-14 days for a clean cut (inflammation days 0-4, proliferation 4-21, remodel up to 1-2 years). Final scar tissue reaches only about 70-80% of original tensile strength (u).
+- Epidermis: re-epithelialization about 0.5 mm/day or up to 1 mm/day edge advance (u).
+- Bone: fracture heals in about 6-12 weeks for adult long bones (u); callus forms by 2-3 weeks; full remodel 1-2 years.
+- Muscle: satellite cells repair strains in about 2-6 weeks; severe loss does not regrow fully (fibrosis).
+- Liver: regenerates to full size from 70% resection in about 1-2 weeks in rodents, about 3-6 months in humans (u). The best real regeneration in mammals.
+- Nerves: grow about 1 mm/day (peripheral; 1-3 mm/day (u)). So a nerve cut 30 cm from a target takes about 300 days. CNS nerves do not regrow in adults.
+- Lizard tail, salamander limb (axolotl): full regrowth in weeks to months (u); needs a blastema; cost is mostly mass and energy. Shows tissue regrowth is possible in vertebrates with a different program; mammals are blocked by scarring and immune trade-offs, not by raw energy.
+- Energy and mass needs: healing raises resting energy about 10-30% (burns can raise it 50-100%; severe burns about 1.5-2x BMR (u)). Protein need about 1.2-2.0 g/kg/day (u) in healing vs 0.8 baseline. Tissue synthesis cost: roughly 5-10 kJ per g of new tissue wet mass in energy cost plus about 5-7 kJ/g stored (u). A mass-conserving sim: new tissue mass must come from food or the body (fat/muscle catabolism); healing magic therefore either needs food/fat, or converts M into assembly work but still cannot make mass from nothing (decision: books balance). Example: regrowing 0.5 kg of muscle (about 2.5 MJ stored (u) at about 5 kJ/g) plus assembly cost about 2.5 MJ = about 5 MJ and 0.5 kg of protein-rich mass (of which about 20% is protein = 100 g protein (u)). So rapid healing = a food bill. This matches the sim's "every joule and gram is booked".
+- Heat: fast healing makes heat (anabolism about 30-50% heat (u)); so rapid-heal magic overheats the patient the same way as casting does: a core limit applies (section 3).
+- Rate limits in life: the controlling steps are blood supply, cell division time (about 12-24 h per cycle (u)), and infection control, not just energy. Magic can speed up each of these, but each speed-up has a price (more cell divisions = more cancer risk (u): Peto's paradox and the link between regeneration and cancer; more divisions give more mutation chances). Good rule: healing speed multiplier k gives risk multiplier about k (u).
+
+=====================================================
+PORTABLE MECHANISMS (general laws, data parameters)
+=====================================================
+Each is a law plus numbers a pack can set. None is a per-spell rule.
+
+P1. Stacked-cell organ (series/parallel)
+ Law: output voltage-like strength V = n_series x v_cell; strength-rate I = n_parallel x i_cell; pulse energy E = V x I x t; power only if all cells fire in sync (sync factor 0-1).
+ Params: v_cell (about 0.15 for biology), i_cell, n_series, n_parallel, pulse length t (about 2 ms eel), sync quality. Real anchor: eel 860 V, 1 A (v). Body cost: organ mass fraction (20-80%).
+ Use: any "patterned structure" (brain, engraving, beast organ) scales by stacking elements; gives a lawful reason a bigger/more organised pattern is stronger.
+
+P2. Charge slowly, release fast (capacitor)
+ Law: store E_store refills at power P_refill (food/M intake); release at P_peak with P_peak >> P_refill. Cap: E per pulse <= stored; refill time = E / P_refill.
+ Real: eel 1.7 J pulses vs refill from ATP; human sprint 2.5 kW peak vs about 100 W rest; glycogen 8 MJ; PCr about 10 s.
+ Params: E_store, P_peak, P_refill, per-individual.
+
+P3. Power (rate) limit separate from energy limit
+ Law: delivered power <= min(mobilisation rate, heat shedding rate, coupling). Human max sustained fat power about 300 W chemical; heat shedding about 1 kW with sweat.
+ Use: casters are limited by watts, not only joules. Three fatigue channels: store, heat, attention.
+
+P4. Body heat budget for recoil (ties to 8.2)
+ Law: dT_core = (E_waste_in_body - E_shed) / (m x c), c about 3.5 kJ/kg/K; thresholds: 39-40 faint, above 41-42 organ damage/death. For 70 kg, 245 kJ per K, dangerous at about 1.2 MJ.
+ Params: body mass, c, shedding rate (sweat, environment), thresholds, species (a dragon with big surface or ectotherm tolerance differs).
+ Use: every cast logs waste heat into the caster; the cap falls out of the existing heat laws, no special rule.
+
+P5. Efficiency split
+ Law: chemical/field input = work + light + heat, sum = 1. Typical: muscle 0.25 work; firefly light 0.4 (u); bacteria 0.1-0.3 (u); electric organ efficiency about 0.2-0.5 (u).
+ Params: per-organ (eta_work, eta_light, eta_heat).
+
+P6. Sense-before-act ladder (evolution of organs)
+ Law: a lineage can gain a sense of field F when F has any payoff; it can gain emission only after the sense exists; strength grows by stacking (P1) only while marginal benefit exceeds marginal upkeep cost.
+ Selection rule: fitness change = benefit(food/safety/mates) - upkeep cost (as fraction of daily energy; e.g., weakly electric fish 11-22% (u)). Mutation = drift in n_series, sensitivity, sync.
+ Params: mutation rate per generation per parameter, upkeep cost curve, convergence allowed (many lineages). Real anchors: 6 electric-organ origins (v), 94 bioluminescence origins (u).
+ Use: beast M evolves; no scripted "magic beasts".
+
+P7. Medium-dependent optimum
+ Law: best pulse shape depends on conductivity/impedance of the medium: low-resistance medium gives low V, high I (sea ray); high resistance gives high V (freshwater eel). Sensing range ~ source/threshold with dipole fall-off.
+ Params: M "conductivity" per place; sensor threshold; range law exponent (1/r^2 to 1/r^3, echo 1/r^4).
+
+P8. Two-speed sensing gives distance (platypus)
+ Law: distance = (delay between a fast channel and a slow channel) x (relative speed). Used in any multi-channel sense (M pulse plus sound).
+
+P9. Trigger on target's own store
+ Law: a small input that releases a store in the TARGET (eel pulse makes muscle fire; a spark ignites fuel) yields effect energy = target's released store, not input. Booked as the target's energy, so conservation holds.
+ This is a real-world form of "knowing physics makes better casters".
+
+P10. Skill = innate gain x practice curve x state, plus signal-dependent noise
+ Law: skill = g x f(N) x s. f(N) = N^b for small b (about 0.2-0.5) or exponential; innate g drawn per individual; heritability h2 (default 0.5 (v)); error SD grows with output strength (Harris-Wolpert (u)), so stronger casts are sloppier and an error lands on a neighbouring valid pattern.
+ Params: g distribution, h2, b, plasticity window (age at which window closes), practice time. A prodigy = a high-g, narrow-channel individual.
+
+P11. Mutualism contract
+ Law: a bond persists while each side's net payoff >= 0, partners are identifiable (fidelity), either can switch (partner choice), and cheating is observable and punishable (sanction). If one side's net payoff < 0 and the other can force it, it is parasitism. Terms: exchange rate (mycorrhizal market: more to partners who give more), channel capacity, exit cost.
+ Params: rate, capacity, sanction strength, observation noise, lock-in (mitochondria-style gene sharing makes it permanent).
+ Use: patron/warlock/cleric/familiar all are one law with different parameters (patron store size, channel width, rate). Possession = a parasite law with host-bypass: the controller runs the host muscle with the host's own energy; the host pays; virulence tradeoff sets how hard it squeezes.
+
+P12. Ecosystem M production
+ Law: M_source(place) = eta_life x NPP(place) (+ geological M background); each trophic step keeps about 10% (range 5-20%; endotherms 1-3% to growth); over-extraction reduces local biomass and so future M (feedback). Decomposers return M-bearing mass.
+ Anchors: rainforest about 2,200 g dry/m2/yr = about 1.3 W/m2 mean; desert about 90 g; NPP about 0.5-1% of sunlight.
+ Params: eta_life, extraction coupling, recycling fraction, trophic efficiency.
+
+P13. Healing as booked tissue assembly
+ Law: new tissue mass must come from body or food mass; energy = stored (about 5 kJ/g muscle (u)) + assembly cost (about the same (u)); waste heat about 30-50%; rate limited by blood supply, cell cycle (12-24 h) and infection; speed multiplier k raises cancer/error risk about k.
+ Params: tissue types (rates: skin 0.5-1 mm/day, nerve 1 mm/day, bone 6-12 weeks, liver weeks-months), k, mass source rule, M share of assembly work. Lawful healing magic = M supplies assembly work and speed, but mass and the heat-load stay booked.
+
+GAPS AND CAUTIONS
+- Most key numbers are (u); the verified ones (v): eel 860 V and about 1 A; about 5-6 thousand electroplaques; six independent electric-organ origins and the scn4aa story; Polderman h2 = 49%; Haddock 2010 exists (efficiency number NOT confirmed). Before building, verify: firefly quantum yield 0.41, brain 20 W vs 15 W, human max fat oxidation, NPP table, mycorrhizal carbon share, wound-healing times.
+- The biggest finding: real bioorgans move joules and watts, never megajoules. Magic of fantasy scale needs M or charged stores (consistent with 8.1), and the human heat budget (about 1.2 MJ) is a hard cap on body-borne recoil.
+- Missing piece found: a POWER-rate cap and a three-channel fatigue (store, heat, attention) probably need to be in the physics, not only energy totals. A pack could still set these to be very large for demigods.

@@ -1,0 +1,103 @@
+LANE: CRITIC (2026-11-19). Read-only. Checked the five lane reports against the design rules.
+(v) = checked by web search this run. (u) = unverified. Fix = what I would change.
+
+VERDICT
+1. The reports are good and mostly consistent. The core law (M is a finite, out-of-equilibrium store; patterns steer; every conversion is booked) holds.
+2. ONE BIG HOLE: decision 8.2 (waste and recoil go to the holder) plus the biology numbers means every field-powered fireball kills its caster (A1).
+3. Three "general" mechanisms hide per-case data: the pattern tag, the hand-made spell-element map, and sympathetic links (B1-B3).
+4. Archetypes marked "OK" that need an extra piece: scrying, links, mind magic, spirits, levitation, shapeshift (D).
+5. Number errors: Frank-Kamenetskii constants swapped in two lanes, three arithmetic slips in chemistry, one eel figure unconfirmed (E).
+
+A. FREE ENERGY AND UNBOOKED JOULES
+A1. Waste heat kills the caster. Physics P9 books heat "at the transducer (caster body or object)". Biology: the body absorbs about 1.2 MJ (5 K x 245 kJ/K) before organ damage. A 0.9 GJ fireball at 99% efficiency still wastes 9 MJ, 7 times the lethal dose. Real devices heat where energy is converted, not where the switch is.
+ Fix: two booked lines. (1) Control overhead (bits x cost, plus the medium's body power in W) goes to the holder. (2) Conversion waste (1 - eta) x E_delivered appears at the SITE where M is absorbed (effect region, or the crystal on release). A pack-set share may go to the holder (8.2 option). Body-only magic keeps the 1.2 MJ cap, because the body is the store.
+A2. Recoil momentum is p = E/c_M. At light speed, 0.9 GJ gives 3 kg m/s (nothing). At c_M = 100 m/s it gives 9e6 (fatal). Fix: state that recoil depends on c_M. With a fast c_M, the holder's pain is A1 heat and control cost, not momentum.
+A3. M refill is booked two ways. Physics: external source S (ley, sun). Biology: M = eta x plant production. Fix: one ledger line "imported_M" with an origin class (planet, sun, life, patron, other world) and a pack rate map. Life-derived M is a real conversion and removes biomass (biology is right). Print daily import in every run so leaks show.
+A4. Interference: physics P16 sums amplitudes "for declared coherent sources". A point sum with no book of the missing energy breaks the ledger. Fix: compute energy per cell over the overlap (I1 + I2 + 2 sqrt(I1 I2) cos) and book the total; charge the canceller's source its work.
+A5. Slots, daily rest-refill, feruchemy (fiction A33): a refill from nothing is free energy. Fix: refill = food intake (glycogen about 7 MJ, 24 h) or local M draw. A "slot" is only a UI block of joules.
+A6. Charging crystals: the lanes cover discharge and leak, not charge. Fix: charging is the transducer law run backwards (eta below 1, heat at the crystal). Density cap per material class (gem at about 1e5 MJ/kg); over-driving cracks or melts the store.
+A7. Luck (A29): lawful only if the sim really has sensitive dependence. Fix: nudge physical metastable things only (a spark, a balance); never bias the RNG.
+
+B. SPECIAL CASES HIDING IN "GENERAL" MECHANISMS
+B1. Physics 6.8: "data tag per structure class giving g and B". A per-class tag is a trait flag. Fix: g from measurable properties. Materials: purity, lattice order, dopant (chemistry s.4). People and beasts: the individual dial with history and state. B from channel count and S/N (Shannon).
+B2. Engineering's element space "fire near light and heat, far from ice" is hand-made per-spell data. Fix: grammar leaves are physical numbers (heat, light, kinetic fractions, radius, duration, strength); distance is distance in that space; a neighbour error is a physical neighbour. "Fire" is only a name for a region in a pack's naming table.
+B3. Sympathetic links, arcane connection, true names as "a number: share of energy reaching the target" is a free nonlocal channel. Fix: the target is a resonator (f0, Q). A caster who has a copy or measurement of its pattern (hair, blood, name) broadcasts at f0 through M at c_M. Only a matched resonator absorbs strongly (physics P5). Fidelity = pattern overlap x path transmission. A true name is a perfect measurement.
+B4. Ars Magica's 5 verbs x 10 forms, Mage's 9 spheres: names only. Verbs are grammar node types (release, sense, transform, disperse, move); forms are regions of the material/field table; Vim = Form is M.
+B5. Allomancy "16 metals, one effect each": effect from the metal's transducer row (chemistry M4), fuelled by metabolism. No 16 code paths.
+B6. Hemalurgy, "moving a trait": move a copied slice of a dial value with loss, held by a physical spike. No flags.
+B7. Possession (biology P11): another mind's act channel writes to the body's motor interface, paid from host metabolism. No new mechanism.
+Rule for packs: numbers only (rates, densities, c_M, g distribution). A pack may omit a medium row, but may not switch on a behaviour.
+
+C. CONTRADICTIONS BETWEEN LANES
+C1. Speed: physics c_M 1 m/s to near-instant (at least one cell per tick); engineering delivery "about zero flight time"; fiction "light-fast". Fix: one parameter, arrival tick = ceil(path / (c_M dt)), minimum 1. Aim lag, homing, scrying, counterspell races all read it.
+C2. Complexity cost has three laws (physics overhead per bit and diffraction; engineering bits/rate; biology skill and fatigue). Fix: keep engineering's: cost = bits, time = bits / medium rate, joules = medium body power x time. Drop physics P10. Keep diffraction only as the aim limit.
+C3. Physics P1 has M as a density AND a fast wave "on top": two stores of one energy. Fix: a pulse draws its energy from M (or crystal) at emission and returns the unabsorbed rest at the end. Book it as a transfer between named stores.
+C4. Heredity: biology says child = mid-parent + noise (h2 = 0.5, Polderman 2015, 49% average (v)); fiction wants born casters. Additive models rarely make extremes. Fix: add a small chance of a large jump in g (still a dial).
+C5. Patron channel: physics "link with bandwidth", engineering "remote server with latency and secret", biology "market with rate and sanctions". They agree. One record: {bandwidth, latency = path/c_M, exchange rate, sanction}.
+C6. Body-only magic: biology gives about 300 W chemical sustained (fat, 0.5 g/min), about 30 kJ burst (ATP + phosphocreatine), 7 MJ glycogen, 1.2 MJ heat cap. Chemistry: a fireball is 25 kg of fat. So body-only is a thrown-rock scale, not an attack spell. Lawful, but the user should see it.
+
+D. LOCALITY AND ARCHETYPES THE PIECES CANNOT YET BUILD
+D1. Scrying (A26, "OK, light-fast"): sensing at range needs something at the far end. Without it, it is a nonlocal read. Fix: M wave out and echo back (1/r^4 like bats, biology 1.6), or a linked resonator at the far end (B3). Shielding then blocks it.
+D2. Spirits, gods, golem wills (A11, A22): a dissipative pattern needs intake, boundary, repair, but a scalar M density holds no information; a mind needs bits. Fix (decision Q4): either minds always have a substrate (body, gem, stored pattern with a bit capacity per volume) or spirits are reflex-only dissipative structures.
+D3. Mind magic (A20) "OK given an M-neuron coupling": the sim has no neurons. Fix: a general "neural bias" effect form moving dials the sim already has (fear, trust, attention, mood); tiny energy, strength from g and S/N, resisted by target noise. Reading minds is the same coupling with about 10 bits/s capacity (Zheng and Meister 2024).
+D4. Levitation, flight, telekinesis: a force needs a reaction. Physics gives M momentum, so the reaction goes to the field or ground. Fix: every force effect names its reaction partner in the ledger. Hover costs only the conversion loss.
+D5. Shapeshift (A23) "70 kg to 70 kg is OK" ignores rearrangement energy (biology: about 5-10 MJ per kg regrown) and the 1.2 MJ heat cap. A full change is hundreds of MJ. Fix: slow (days, heat shed over time) or heat dumped to a store. Size change needs mass (N3).
+D6. Summoning "fetch a real being by fast motion" is a kinetic launch, not a summon. Remove it from the build list.
+D7. Golems and animated objects: need sensor, controller, actuator and a power budget (engineering s.3-4). Not a free will.
+D8. Elemental bending (A19) "local fire as source": a campfire gives little work. Fix: bending steers matter already moving, with M force; the local element supplies mass.
+D9. Teleport and time (N1, N2): flagged correctly. Cheapest honest change: a booked "relocate" with a pack switch and an ordering rule (applies at end of tick).
+D10. Missing archetypes: weather control; plant growth (mass from soil and water); buffs (ATP and heat limits); invisibility (narrow-band transformation optics, physics s.7); life drain (heat engine at body temperature is 3% efficient, so it is chemical transfer); replicating curses and disease (lycanthropy, vampirism = physics P12 + biology parasite law); disenchanting (induced currents burn traces); sound and illusion; long-range comms (Shannon C on an M channel).
+D11. Missing interactions: two casters on one M cell (brown-out); M leak heats and glows the place; engravings sharing f0 (beats, detuning); magic on combustion (a spark is a nucleus); magic on electronics (induced currents); over-harvest of M-rich ecosystems; anti-magic zones and bodies that need coupling; a catalyst-poisoned stone (chemistry s.7); a patron cutting a channel mid-cast. Add an interaction matrix to the synthesis: store x store, wave x wave, wave x material, wave x mind, wave x life, wave x fire.
+
+E. SOURCE SPOT-CHECKS (6 by web search) AND ARITHMETIC
+1. Kurs et al., Science 317:83 (2007): 60 W, about 40% efficiency, over 2+ m (v). Physics lane correct.
+2. Frank-Kamenetskii values (Gray, Boddington, Robinson 1979): slab 0.88, infinite cylinder 2, sphere 3.32 (v). Physics says "sphere 2.0, cylinder 3.32"; chemistry says "sphere 2.0". Swapped. Fix both.
+3. De Santana et al. 2019, Nat Commun 10:4000: 860 V confirmed (v); no ampere figure found. Biology's "1 A" and "1.7 J per pulse" are (u). Only six fish were measured.
+4. Toyabe 2010 (Nat Phys 6:988): 28% is free energy gained over mutual information (v); physics wrote "28% of kT ln2", a loose paraphrase. Koski 2014 (PNAS 111:13786): up to 75% of kT ln2 per cycle (v). Different ratios; do not compare.
+5. Gallant 2014 (Science 344:1522): at least six lineages (v). The "scn4aa second copy down in muscle, up in organ" detail is only in secondary summaries; downgrade biology's (v) to (u).
+6. Coupe 2019 (Sci Adv): 17 languages, about 39 bits/s (v). Zheng and Meister 2024 (10 bits/s) not returned by my search; I know the paper, treat as (k).
+Arithmetic: chemistry "0.9 GJ = 20 kg TNT" should be about 200 kg (4.6 MJ/kg). "About 11 g U-235" should be about 11 mg. "Burn 2.4% of 100 kg" should be 25%. Lead to gold, 38 GJ/g: I recomputed from atomic masses (about 79 MeV per atom, 3.8e10 J/g), correct. Landauer 2.87e-21 J, 3e29 bits per 0.9 GJ, body 245 kJ/K: correct.
+The fiction lane did no web checks (it says so). Its list facts (16 allomantic metals, Ars Magica 5 techniques and 10 forms, 9 Mage spheres) match what I know. "Slippage" and "hemalurgy loss" numbers are (u); keep as hints.
+
+F. CHEAPER ESTIMATING LAWS
+1. M field lazy: unused cells relax as M = S/k + (M0 - S/k) exp(-kt); store (M0, t0), compute on read; diffuse only near recent draws.
+2. Pulses: events with arrival time and a transmission product (P16). Keep.
+3. Metastable release: one time-to-event from the barrier law; check critical size once per heat change, not per tick.
+4. Neighbour error: precomputed discrete kernel; block failure is a binomial tail.
+5. Practice x(n) = x1 n^-b, closed form. Wear: Miner's rule per use.
+6. Body heat: one scalar core temperature ODE per caster.
+7. Spirits: scalar ODE for M_self, wake on intake change. Ecosystem M map: daily refresh.
+8. Potions: one-compartment closed form. Choir: e/sqrt(n), not n casters. Healing: day-scale rate law with mass from food.
+Never estimate: the energy ledger, the heat cap, M conservation.
+
+G. THE STRONGEST 15 PORTABLE MECHANISMS
+1. Metastable store plus barrier gate (physics P7, chemistry M1/M2/M5): small trigger, big booked release, capped at the store.
+2. Transduction ledger (physics P9, chemistry M4, biology P5): out = eta x in, waste at the right site (A1), chain efficiencies multiply, Carnot cap.
+3. Power-and-heat budget (biology P3/P4, engineering M10): fatigue, fever and caster limits from one scalar.
+4. Lazy M field (physics P1, with A3): finite, depleting, place-dependent; M = 0 is low magic.
+5. Pulse ray-march with impedance and absorption (physics P2/P3/P16): range, shields, mirrors, smear.
+6. Resonance and matched filter (physics P5, B3): foci, wards, counterspells, links, true names.
+7. Channel law (engineering M1, Coupe 39 bits/s, Zheng-Meister 10 bits/s): each medium is a row.
+8. Spell cost = description bits over a typed grammar (engineering M2/M11): cast time, macros, menu-built by small models, typed deltas.
+9. Neighbour-error law (engineering M3 with B2): errors land on valid physical neighbours; check bits trade fizzles for wrong spells.
+10. Delivery and aim law (engineering M4/M6): flight time at c_M, homing gain, trigger ROC; counters fall out.
+11. Device law with wear (engineering M5/M9): enchantment, focus, shaper as three settings of one record.
+12. Dissipative pattern (physics P12/P13): spirits, patrons, undead, fading curses.
+13. Mutualism contract (biology P11): patron, familiar, possession as one law.
+14. Skill = dial x practice x state, force-scaled noise (biology P10, engineering M7).
+15. Sense-before-act ladder and stacked cells (biology P1/P6/P7): beasts evolve M organs.
+Close calls: ecosystem M source (eta x NPP), pharmacokinetics, SOC avalanches for mana storms (physics P14).
+
+H. OPEN QUESTIONS FOR THE USER
+Q1. Where does conversion waste heat appear: at the effect site (my fix), at the holder (current 8.2, lethal for big casts), or a pack split? Most important.
+Q2. Origin of M refill: planet and sun, life, or a mix? Is a sealed (zero import) world allowed?
+Q3. Default c_M, and do you want momentum recoil (fast c_M removes it)?
+Q4. Must minds have a substrate? Can a spirit think, and how many bits per volume does an M structure hold?
+Q5. How far does mind magic reach: dials only, or memory and intent too?
+Q6. Which second changes: relocate (N1), mass bank (N3), rewind (N2), other planes (N7)?
+Q7. Must scrying and links have a physical path (echo, resonance)? I say yes; fiction will want exceptions.
+Q8. Is slot-style recharge allowed as a UI over food and M intake?
+Q9. Heredity: smooth only, or rare big jumps in g?
+Q10. Does the sim name spell elements, or does the model pick numbers with a naming table on top?
+Q11. Strictness of "no flags in packs": may a pack switch a medium off?
+Q12. Body-only magic is thrown-rock scale (C6). Weak enough, or a lawful burst ceiling of about 30 kJ?

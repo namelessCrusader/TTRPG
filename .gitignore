@@ -201,3 +201,9 @@ references/*.tar.gz
 
 # stray output
 /python3
+
+# lab result bulk (per-seed lifetime runs and their folders); reports and summaries are kept
+lab/results/**/*_seed[0-9]*_n[0-9]*.json
+lab/results/**/runs*/
+lab/results/**/round2_vkh/
+lab/results/**/diagnosis/

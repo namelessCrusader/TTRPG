@@ -1,0 +1,97 @@
+TWO NEW FAN MAGIC REFERENCES (read in full, 2026-11-20): The Metaphysics of Magic (Blackstaff Academy, 39 pp) and the ToM Issues whitepaper (Gorilla of Destiny, 9 pp). Agent report, condensed by the main session.
+
+A. THE METAPHYSICS OF MAGIC
+What it is: a D&D Forgotten Realms "lecture book" that re-explains the Weave, components, slots, circles, items and every class from one idea, souls. Under the flavour it is a consistent engineering model: stores, links, patterns, a layered amplifier chain and conserved energy. It leans on the Theory of Magic (metastable minima, "tension").
+
+Its model:
+- "SOULS FORM THE WEAVE". A soul is a self-maintaining structure that resonates with other souls; rocks, trees, forests, animals, people, dragons, gods and planes all have one, ordered by complexity. The Weave is the web of all souls and their links.
+  - A soul has THREE DIALS: SIZE (the store's capacity, which fills and drains daily), AGENCY (will, personality and memory; it survives death) and CONNECTEDNESS (links to other souls).
+  - Energy: the total is conserved, "you must get it from somewhere". A caster spends a little of its own soul to redirect a much bigger flow from souls it does not control; afterwards everything relaxes back.
+  - Refill: eating (size), meditation (agency), fellowship (connectedness).
+  - Draining the container itself (memory and personality) is the lich's crime, different from emptying the fill.
+- THE STACK, four layers:
+  - (1) your soul, the visualization;
+  - (2) the components: gesture, material, word;
+  - (3) intermediate power: nearby nature, the audience, the building, the culture;
+  - (4) primary power: the elemental planes, the sun, gods, the target's soul, an item.
+  - Your push is amplified layer by layer, the primary source releases the bulk, and the energy flows back up and is shaped by each layer. How much reaches the intended effect versus LEAKING into other effects depends on resonance and match.
+  - You control layers 1 and 2 only. Scrolls and items supply everything but the visualization, so scrolls need skill and items need attunement.
+- COMPONENTS: material = small souls that resonate with a concept; true-source materials work better, and purity matters. Words are a real language in which similar meanings sound alike, so a slip gives a NEIGHBOURING effect. Gestures: circles link, glyphs are operators (trigger logic). Foci are shapers that save personal energy. Visualization needs wide knowledge.
+- IMPRINTING: a slot is a groove cut into the soul, not a container. Preparing takes time and calm; tired, drunk, panicked or hurt preparation gives flawed imprints and misfires. Casting collapses the groove. An untrained soul is a lump; training flattens it into a tablet that holds more and bigger imprints. There is NO fixed slot count. Experts compress a spell into a finger, breath, step or glance.
+- SOUL CARE: casting drains; recovery is sleep, food, meditation, reading. A "divided heart" (trauma, drink, doubt, conflicting wants) scatters the visualization and causes misfires. Capacity grows slowly by stretching, up to an inborn cap.
+- CIRCLES AND FRIENDSHIP: a circle merges souls into one harmonic structure.
+  - It needs conflicts resolved, a shared detailed visualization, a common purpose and an abort plan.
+  - Failure modes: an OVERLOADED LEADER burns; conflict of purpose releases the energy NEAR THE CASTERS.
+  - Friendship = aligned agency plus connection, a weaker repeatable organic circle; costly acts for another raise both.
+- ITEMS: a permanent item is a stable local MINIMUM: a self-reinforcing design, pure materials, symmetric craft.
+  - A failed item fades, breaks, or falls into a DIFFERENT minimum, usually one that feeds on the wielder: a CURSE.
+  - Crafting pushes over a barrier and must descend SLOWLY, or the energy is released.
+  - Triggers are deliberate instability against one perturbation (Glyph of Warding). Recharging items have a harvest subroutine.
+  - Antimagic: noise, exact cancellation, or raised stability.
+- CLASSES are sorted by WHICH SOURCES THEY DRAW ON:
+  - wizards: materials and intellect;
+  - druids: ecosystems;
+  - monks and fighters: their own body;
+  - paladins: an oath, a contract, shared with others;
+  - bards: the audience, which must agree; a split crowd cancels; long performances exhaust the audience;
+  - sorcerers: a larger own soul (less preparation, more misfires);
+  - warlocks: a patron through a conduit whose quality sets the loss;
+  - clerics: gods as ideas whose power is the number and devotion of worshippers.
+
+New compared with our design: the three soul dials; a primary source TYPE matched to the effect type, with the cheapest nearby gradient preferred; the layered stack with shaping and leakage; imprinting as a metastable groove with state-dependent quality; divided intent as a cause of failure; circle failure modes; items as designed minima with curse minima; classes as source and link topology; gods as a sum over worshippers.
+
+Conflicts: "souls ARE the weave" (our M is a physical field made by natural processes, with life as one source: keep ours); planes, gods and alignment as mechanism (pack or second change only); "rocks have souls" (we use a small material coupling, no animism); spell energy not booked per joule.
+
+PORTABLE IDEAS (general mechanisms with data):
+a) THREE DIALS FOR ANY PATTERNED THING: store capacity (J), pattern bits and persistence (agency), bond list and strengths (connectedness). Gods and patrons as a collective-pattern store whose draw = the sum over bonded holders of devotion x what each can supply, booked from them, so festivals and rituals raise it by data.
+b) THE STACK AS THE CAST CHAIN: holder -> shaper -> local environment -> primary store. Each stage has a gain, an impedance match to the next, and a leak. Delivered = the product of the matches; the unmatched part goes to neighbouring effects (the error kernel) or heat. Scrolls and items are chains whose first stage is a stored macro; attunement is an impedance match.
+c) COST BY GRADIENT DISTANCE: an effect costs less when the matching source is near (shape the nearby earth rather than summon earth). Data: source types, effect types, a conversion table, a distance penalty.
+d) IMPRINTING = writing a pattern into a METASTABLE SUBSTRATE with an energy barrier. Writing costs bits x overhead and time; the error rate rises with holder state; release is triggered relaxation; capacity is a bits and stability budget, not a slot count; skill compresses patterns; optionally pre-charged at write time; the groove decays slowly. This is the lawful version of "recorded magic = implicit slots".
+e) SOUL CARE = HOLDER STATE: energy reserve, mental noise, trauma load and drive conflict set the noise of the thought channel. "Divided heart" = measured conflict between active drives in the learned mind (no flag). Food refills, rest consolidates, fellowship raises bonds. Capacity grows by stretching, with a hereditary cap.
+f) CIRCLES = COUPLED LANES with phases that synchronise (Kuramoto-style) with coupling = bond strength. Aligned lanes add amplitude, but the ENERGY still comes from M and stores, never from extra casters. Misaligned lanes are an impedance mismatch, so the energy REFLECTS back toward the casters. The leader is a collector with an absorption cap and a heat cap ("burns"). Friendship = a persistent bond strength, raised fastest by costly acts.
+g) ITEMS = an energy landscape (barrier, leak time, purity and symmetry). A failed forging settles in another minimum; if that minimum has a coupling path to the holder it is a CURSE (a parasitic bond), with no special rule. Crafting crosses the barrier and must descend slowly or crack. Triggers are a deliberately low barrier to one perturbation class. Recharging is a harvester feeding the store.
+h) LANGUAGE NEIGHBOURHOODS: the naming tables put sound-alike words on concept-neighbours, so a slip yields a nearby valid effect.
+i) CLASSES as (source, link, medium) tuples. Bards draw on the audience, who pay with their bodies; coherence is needed.
+j) MATERIAL PROVENANCE: where a material formed (its M density and temperature history) raises its coupling. A target's hair or blood is a shared-pattern link.
+k) ANTIMAGIC as three knobs: a noise floor, destructive cancellation, a raised barrier.
+
+B. THE TOM ISSUES WHITEPAPER ("To infinity and beyond")
+What it is: a joke-framed but serious note claiming the author's own Theory of Magic needs INFINITE energy. He says he may be wrong.
+
+The claimed flaw: a spell is a Gaussian packet whose width shrinks to ZERO at the range R (that is how range ends); with energy ~ gradient squared, the energy diverges as the width goes to 0 (classical ~1/sigma^3, quantum ~1/sigma^4). The agent's check: the exponent looks off (a normalised Gaussian's kinetic energy goes as 1/sigma^2), but it still diverges, so the qualitative flaw stands for his setup.
+
+Proposed fixes:
+- keep the theory: accept infinity, a maximum field energy, a redefined width, or "no energy to rise";
+- rebuild it: a constant width with the speed falling to 0; an ENERGY THRESHOLD (the field cannot support a wave spread too thin); a POTENTIAL WELL (which also predicts standing-wave enchantments); and an aperture hypothesis.
+
+Portable:
+- RANGE AS A THRESHOLD: add a minimum intensity needed to couple (a noise floor). Range = where the spreading pulse falls under the receiver's threshold; the unabsorbed energy ends as light and heat.
+- The binding well = a resonant cavity with Q, already ours, which confirms the design.
+- DOSE SPREAD: aim error and delivery as a spread around the aim point with the TOTAL energy fixed.
+
+DOES THE FLAW APPLY TO US? Not as written: our packet carries a FIXED energy and only loses it. Five places could diverge if coded carelessly:
+1. focusing to zero area: clamp at the diffraction limit and one voxel, cap per-cell intensity at material breakdown, book any excess as heat or cracking;
+2. 1/r^2 near r = 0: a finite source radius; energy per cell <= the remaining packet energy;
+3. resonance with a huge Q: stored <= input minus loss, capped by store capacity;
+4. feedback loops and circles: gain below 1 per link, saturation at the local store, leader caps;
+5. interference: book energy per cell, so cancellation MOVES energy.
+The real-physics guard: a narrow pulse is wide-band (width >= about 1/bandwidth), so narrowing is never free.
+Cheap tests:
+- sweep the packet width down to one cell and assert max cell energy <= packet energy;
+- a per-tick finite-value check;
+- the closure audit;
+- a stress test with Q = 1e10 and N = 1000 lanes: delivered <= sources;
+- leader overload converts to heat or cracking, never extra effect.
+
+ADDENDUM 2026-11-21: "A Classical Solution to the Ultramagic Catastrophe" (Gorilla of Destiny and "B. Ouncer", 4 pp; references/magic_stuff/ToM_Classical_Solution_Ultramagic.pdf). A reply to the ToM Issues whitepaper. The owner's second link was a byte-identical copy of ToMIssues_Whitepaper.pdf, already read.
+- WHAT IT DOES: it removes the whitepaper's infinite energy at the range. The spell's deformation is rescaled by an amplitude B(t), with B^2 proportional to sigma_x^3, so total energy stays finite and tends to a REMAINING ENERGY U_R > 0 at the range. U_R = 0 would mean no spell at all, and U_R < 0 would make the amplitude complex.
+  - Energy lost in flight: Delta U = U_R * lambda0^2 / sigma_delta^2.
+  - The remaining energy "must go somewhere". Their reading: a spell pushed past its range AUTO-CASTS AT THE RANGE (the energy is expelled from the field there).
+  - Range can be extended by controlling the release better, or by feeding the spell energy after the range.
+  - The authors say the classical theory may be self-contradictory, and that the quantum version needs reformulating.
+- FOR MARK1 (inference):
+  - Our design never had the divergence, since packets carry fixed booked energy and the divergence guards apply.
+  - The one usable idea is the AUTO-CAST AT RANGE choice. Under "range as a coupling threshold", a packet that spreads below what any receiver can couple must release its remaining booked energy somewhere. Two lawful readings:
+    (a) it decays into diffuse light and heat along the path (our current text);
+    (b) it releases at the threshold point as its intended effect (a fireball thrown too far bursts at its range).
+  - Both conserve energy. Which one holds depends on whether the pattern holds together until release, which is a build-time detail under Q22 (adopted as direction, decided at build time).

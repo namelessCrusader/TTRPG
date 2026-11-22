@@ -1,0 +1,150 @@
+LANE: FICTION AND TTRPG MAGIC SYSTEMS -> COVERAGE CATALOGUE (2026-11-19)
+Note: no web fetch was used; this is from the books and rulebooks as I know them. Unsure items are marked (u). Fiction numbers are design hints, not data.
+Key: E = energy source, P = pattern holder, I = interface, D = delivery.
+Verdict: OK = buildable from decisions 8.0-8.4. OK+ = needs a pack parameter or a small general law (not physics). 2nd = needs a second change to physics (section 4).
+
+1. SURVEY
+
+1.1 Kingkiller "sympathy" (Rothfuss 2007, 2011)
+ E: heat from a nearby source (candle, lamp, the caster's own body). Strict conservation. P: the caster's mind, holding "Alar" (belief) and split attention. I: a "link" between alike things (hair to doll, wax to wax); better match = better link. D: energy runs down the link; "slippage" is the loss, bigger for poor links (numbers (u)). Bindings make stores and triggers; sygaldry = engraved rune devices. Limits: mind-splitting skill, source heat. Failures: caster freezes or burns, wrong thing moves. Fit: almost exactly 8.1. Link quality = efficiency; slippage = waste-heat share.
+
+1.2 Fullmetal Alchemist (Arakawa 2001-2010)
+ E: "equivalent exchange" (mass in = mass out); deep source is the Gate or the Philosopher's Stone (many lives). P: the transmutation circle (fixed pattern); clap = body as circuit. I: draw/clap, with understanding of the material. D: instant, touch range, rearranges matter. Limits: nothing from nothing, no human transmutation. Cost: the Gate takes a body part. Fit: engraved pattern plus local conserving change is OK. Reshaping matter costs bond energy, about 1-5 eV per atom (u order), so MJ per kg at most: OK+ as a "change material state or shape" effect paid from the budget. Lead to gold is nuclear: allowed but absurdly costly, not a second change.
+
+1.3 Mistborn (Sanderson 2006-)
+ Allomancy: E = swallowed metal burned in the body (16 metals, one effect each). P = body of a born Mistborn/Misting. I = mental "burning". D = pushes on nearby metal, emotion touch, self boosts. Fuel runs out.
+ Feruchemy: E = your own attribute (weight, speed, memory) stored in a metalmind and taken back later; conserved (store a day of lack, spend a day of surplus). P = body plus metalmind. D = self only.
+ Hemalurgy: a metal spike through a victim, then into another body, steals a power with some loss (fraction (u)). Pure pattern in an object.
+ Fit: allomancy = fuel + innate body dial; feruchemy = conserved store of a body quantity; hemalurgy = moving a trait between bodies (OK+ if traits are sim dials the spike carries as data).
+
+1.4 Stormlight Archive (Sanderson 2010-)
+ E: Stormlight (Investiture) from highstorms, held in gems (spheres are money, light and batteries); it leaks over days to weeks. P: a spren (a mind) bonded by oaths ("Ideals"); the bond is patron-like. I: speak the Ideal, breathe the light; ten orders, two Surges each. D: mostly local (Lashing changes gravity direction on a thing, Soulcasting changes material) and fabrics/fabrials (gem + captured spren device). Limits: stock, oath integrity (break it, lose power). Fit: gems with a decay rate = charged materials; spren = patron; oath = a state condition of the channel. OK. Soulcasting = OK+ as 1.2. Gravity direction = a momentum push, OK.
+
+1.5 Earthsea (Le Guin 1968)
+ E: no explicit energy; the Equilibrium makes every act cost something. P: a mind knowing the True Name (Old Speech). I: speaking the name with intent. D: acts on that one named thing. Limits: must know the name; big changes are dangerous. Fit: a true name = an exact target handle = perfect targeting fidelity (like the Kingkiller link). OK.
+
+1.6 Wheel of Time (Jordan 1990-2013)
+ E: the One Power drawn from the True Source (effectively unlimited field) but each person has an innate "strength" cap on flow. P: channeler's body and mind; innate spark or learned; weaves of five Powers. I: embrace the Source and weave; angreal/sa'angreal amplify (foci); ter'angreal are fixed-effect devices (enchantments). D: weaves, "Circles" combine channelers. Limits: strength dial, burnout/stilling (overdraw destroys the ability), the male half is tainted (long hazard), shielding cuts a person off the Source. Fit: very close. Strength = coupling dial; angreal = focus; ter'angreal = standalone engraving; circle = combinator; burnout = permanent damage to the coupling dial; shielding = low-coupling bubble. OK.
+
+1.7 Avatar: The Last Airbender (2005-2008)
+ E: the bender's chi plus the element at hand (water, earth, flame; moon strengthens waterbending). P: trained body; innate by nation. I: martial forms (four real styles: tai chi, hung gar, northern shaolin, baguazhang). D: pushes existing matter in big shaped motions. Fit: gestures as translator into the grammar; delivery is momentum on matter already there. Moon = an environmental modifier of coupling. OK.
+
+1.8 Dresden Files (Butcher 2000-)
+ E: will and emotion, ambient power, Soulfire, patron Mantles. P: wizard's mind; thaumaturgy = circle plus sympathetic link; evocation = raw burst. I: a word and focus (staff, blasting rod), circles for slow work. Limits: Seven Laws, more power = less control, fatigue, electronics fail near strong wizards. Fit: evocation = power/precision tradeoff; tech clash = an M-electrical interaction pack law; Mantle = patron. OK.
+
+1.9 The Witcher Signs (Sapkowski; CD Projekt)
+ E: inner reserve (game: stamina). P: mutated body. I: hand gesture, five Signs (Aard force, Igni fire, Yrden trap, Quen shield, Axii mind). D: short burst or placed zone. Limits: small power, short range. Fit: low innate dial plus a tiny fixed vocabulary. OK.
+
+1.10 Discworld (Pratchett)
+ E: octarine background magic, belief, "narrativium". P: the mind; books and wizards. Headology = non-magic psychological craft. Limits: strong ambient magic attracts creatures from the Dungeon Dimensions. Fit: octarine = free field M with a hazard; headology is mind-model, no M needed. Story-driven reality = 2nd.
+
+1.11 Harry Potter (Rowling 1997-2007)
+ E: unstated innate core, hereditary. P: body plus wand (wood plus core; the wand "chooses"). I: wand motion, incantation, intent; children's accidental magic needs none. Limits: Gamp's Law (no food from nothing, no raising the dead). Failures: wrong word or wavering intent gives a neighbouring effect. Fit: wand = focus/shaper; incantation = voice medium; accidental magic = reflex magic; Gamp = conservation; resurrection = 2nd. OK.
+
+1.12 Elder Scrolls: magicka (Bethesda)
+ E: per-person magicka pool that regenerates; soul gems (soul size = charge: Petty to Grand and Black) charge items. P: mind plus spell; enchantment = pattern on an item. I: menu by school (Alteration, Conjuration, Destruction, Illusion, Mysticism, Restoration). D: the SPELLMAKING system (Morrowind, Oblivion) builds a spell from EFFECTS with magnitude, duration, area and range; cost scales with them. This is a published compositional grammar. Fit: confirms 8.4; soul gem = charged material; enchant = standalone engraving. OK.
+
+1.13 Ars Magica (Tweet and Rein-Hagen 1987; 5th ed. Atlas Games 2004) - IN DETAIL
+ A verb-noun grammar. A spell = one TECHNIQUE + one FORM.
+ 5 Techniques (verbs): Creo (create), Intellego (perceive/understand), Muto (transform), Perdo (destroy/decay), Rego (control/move).
+ 10 Forms (nouns): Animal, Aquam (water), Auram (air, weather), Corpus (human body), Herbam (plants), Ignem (fire, heat, light), Imaginem (images, sound), Mentem (mind), Terram (earth, stone, metal), Vim (magic itself). Example: Creo Ignem, Rego Aquam, Perdo Herbam, Intellego Mentem.
+ Parameters, each adds "magnitudes" (5 levels each) to spell level:
+  Range: Personal, Touch, Eye, Voice, Sight, Arcane Connection.
+  Duration: Momentary, Concentration, Diameter, Sun, Moon, Year, Ring.
+  Target: Individual, Part, Group, Room, Structure, Boundary.
+ Casting total = Technique + Form + Stamina + local Aura + gesture/voice modifiers + die; succeed if >= spell level; a shortfall costs Fatigue and risks Twilight/Warping. Formulaic spells are learned; spontaneous ones are made on the spot, cost fatigue and are much weaker. Rituals are long, many-person castings for big effects.
+ E: the local AURA (a number per place: Magic, Faerie, Divine, Infernal), the magus's fatigue, and VIS (raw magical substance in crystals, herbs, bones) as consumable fuel for rituals and items. P: the Gifted mind; items hold lab enchantments, with capacity set by material (gold, silver, gems, bones). I: voice and gesture (optional with penalty), foci, lab texts. Limits: Gift (innate), target Magic Resistance (Parma Magica blocks magic including friends'), aura mismatch (divine aura weakens magic). Failures: Botch dice, Twilight, Warping.
+ Fit: this IS our grammar. Verbs = forms of change; nouns = what the region holds; Vim = acts on M itself (dispel, drain, store). Aura = M per place; vis = charged materials; Magic Resistance = anti-magic; Fatigue = body energy debit (8.1). Creo and Perdo are the hard verbs: they must be booked as conversions (Creo Ignem = release stored energy as heat; Perdo = disperse or burn). New mass from nothing = 2nd.
+
+1.14 Mage: the Ascension (White Wolf 1993)
+ E: Quintessence (free energy at nodes) plus the mage's Avatar. P: will shaped by a PARADIGM (Hermetic ritual, Virtual Adept code, Technocracy machines, Dreamspeaker spirit). I: any focus the paradigm accepts; the same spell by circle, gun or laptop. D: nine Spheres: Correspondence (space), Entropy, Forces, Life, Matter, Mind, Prime, Spirit, Time. Limit: Paradox (backlash when vulgar magic is seen by Sleepers). Fit: "one law, many media" = 8.4; paradigm = a pack's allowed translators. Paradox = social belief resisting reality = 2nd unless it is just social reaction. Time and Correspondence = 2nd.
+
+1.15 D&D classes (5e, 2014)
+ Wizard: E spell slots (Vancian, daily refresh); P spellbook; I verbal/somatic/material components (some costly, e.g. a 300 gp diamond); limit: slots, concentration, counterspell, antimagic field.
+ Sorcerer: bloodline body; metamagic changes parameters (Twinned, Quickened, Subtle); Wild Magic = random surge (neighbour-spell failure).
+ Warlock: patron (Archfey, Fiend, Great Old One) holds the pattern; slots return on short rest; pact boon; Eldritch Blast.
+ Cleric: deity-granted; holy symbol; domains; Channel Divinity.
+ Druid: nature; Wild Shape limited to known forms and hours.
+ Bard: song as medium; inspiration; Vicious Mockery.
+ Paladin: oath-based power, break oath lose it; Divine Smite spends a slot.
+ Ranger: nature half-caster, beast companion.
+ Artificer: tools and infusions; the item holds the pattern; technological road.
+ Fit: slots = discretized M budget with a rest-refresh pack rule; components = media plus consumables.
+
+1.16 Cultivation novels (xianxia, e.g. Coiling Dragon, A Record of a Mortal's Journey to Immortality; the user's epubs are in the repo root)
+ E: ambient qi, spirit stones (charged minerals), pills, beast cores, herbs, rich "veins", other people (devouring) . P: the body: meridians (flow channels) and dantian (a literal belly store), later golden core and nascent soul; manuals hold technique patterns. I: meditation, breath cycles, talismans (written charm), array formations (patterns on ground), pills. D: strength, speed, sword flight, elemental strikes, domains. Limits: REALMS (qi condensation, foundation, core, nascent soul...) with bottleneck breakthroughs; "spiritual roots" aptitude; lifespan tied to realm. Costs: qi deviation (damaged meridians), tribulation lightning on breakthrough, inner demons. Fit: dantian = body M store; meridian = flow cap of the coupling dial; stones/pills = charged materials; tribulation = discharge of an overdense store (metastable release, real physics); realms = a continuous dial with thresholds. Longer life = energy-fed repair (OK+). The repo's cultivation.yaml already proves this as data.
+
+1.17 Sanderson's Laws (essays 2007-2013)
+ 1: ability to solve problems with magic is proportional to how well the reader understands it. 2: limitations beat powers. 3: expand what exists before adding something new. Use: every archetype should be a parameter setting, never a new law; the ledger gives limits free.
+
+2. PATTERNS ACROSS ALL SYSTEMS
+ a. Energy source: caster's body or life; a local field (aura, node, ley line, highstorm); consumable material (metals, vis, pills); a stored battery (gem, soul gem, metalmind, slots); a patron or spirit; other lives (sacrifice, hemalurgy, soul trapping).
+ b. Pattern holder: caster's mind; caster's body (bloodline, meridians); an object (wand, rune, spellbook, ter'angreal); a place or array (circle, formation); a patron or spirit; a bonded companion.
+ c. Interface: thought; voice; gesture or martial form; music; writing or formula; carving; diagram; dance; choir or group rite; naming; item activation; trigger conditions.
+ d. Delivery: momentum on matter; heat/light/electric burst; remote link to a similar object; persistent zone; change to a body (heal, harm, shift, enhance); information or perception.
+ e. Limits cluster: energy budget, innate dial, skill, casting time, components, range, knowing the target, counter-magic, overreach hazard, oaths.
+ f. Overreach damages the pattern holder in nearly every system (burnout, deviation, Twilight, fatigue): this matches 8.2.
+ g. The two complete published grammars (Ars Magica, TES spellmaking) both agree with 8.4.
+
+3. ARCHETYPE CATALOGUE (E | P | I | D | verdict)
+A1 Innate sorcery (sorcerer, Witcher mages, WoT born channelers, Mistborn Misting): body + M | body dial | will | burst/zone | OK.
+A2 Learned wizardry (wizard, Ars Magica magus, Hogwarts): M + body | trained mind + book | voice/gesture/components | any | OK.
+A3 Granted/patron (warlock, cleric, paladin, Dresden Mantle): patron's store | patron's pattern lent through a lasting channel | pact/prayer/oath | whatever lent | OK. Breaking the oath closes the channel. A bodiless god needs A22.
+A4 Bonded/familiar (Stormlight spren, ranger companion): shared pool | partner mind | oath | shared senses, boosts | OK (an M-sharing link between two minds).
+A5 Item/enchantment (soul gems, magic items, ter'angreal, sygaldry, Ars Magica lab items): charged material | engraving | trigger | fixed effect | OK.
+A6 Ritual/circle (Ars Magica rituals, thaumaturgy, FMA circles, formations): M + group + vis + time | diagram on a place | long rite | large, persistent | OK (slow cast, big region, combinator).
+A7 Alchemy (FMA, TES, potions, pills, Witcher): chemical energy; for magical alchemy M stored in a substance | the substance's structure | brewing | ingest/apply | OK for real chemistry; OK+ for magical (needs "a material retains a pattern or charge", same law as crystals).
+A8 Technology/artificer/cyborg (artificer, fabrials, Discworld clacks, Technocracy): batteries | engraved circuits | switch/code | any | OK (follow-up in decisions).
+A9 Blood/life-force (hemalurgy, blood mages, Soulfire): bodies' energy | caster or altar | cutting/ritual | any, short range | OK. A body holds about 0.37 GJ of fat energy, so big effects need many bodies: the dark trade-off comes from physics.
+A10 Necromancy (reanimation, ghosts, soul trapping): M or victim remnants | corpse + controller, or stored mind pattern | ritual | motion of a dead body | OK for puppet; true resurrection 2nd (N4).
+A11 Shamanic/spirit (Avatar spirits, spren, animism): place or spirit store | spirits | dance/drum/trance/offering | spirit acts | OK+ (spirit = self-sustaining pattern in M; flag to physics lane).
+A12 Divine/clerical (cleric, paladin, Discworld belief): as A3; belief as energy = OK+ if worship is tribute through minds, else 2nd (N6).
+A13 Wild/chaos (wild magic, Chaos, octarine): high M | none | none | random, mutation | OK (high M plus noise; pattern failure gives neighbours).
+A14 Cultivation: M + stones + pills | dantian and meridians | meditation, manuals | body boost, flight, strikes | OK (proven).
+A15 Rune/sigil: same as A5 with carving as medium (persistent, precise, visible, slow) | OK.
+A16 Song/music (bard, Naming, Tolkien's Ainur): M + body | performer | sound | area effects, waves in M, resonance | OK. A choir stacks amplitude.
+A17 True name/word (Earthsea, Naming, Skyrim shouts): body + skill | knowing mind | voice | exact target | OK (name = exact target handle, perfect link).
+A18 Martial/gesture bending (Avatar, Witcher Signs): body + element | trained body | forms | push nearby matter | OK.
+A19 Elemental/nature (druid, bending): local conditions as source (a fire, a river) | caster | gesture/focus | push or direct | OK (source can be local heat, not only M).
+A20 Mind magic (telepathy, charm, Axii, Legilimency): tiny energy (neural spike about 1e-12 to 1e-10 J (u)) | caster | thought | effect on neural activity | OK given an M-neuron coupling; cheap in energy, strong in information. Illusion is the same plus light shaping.
+A21 Healing/life (Restoration, Corpus): body energy or M | caster | will/touch | faster repair | OK. Heal rate is limited by booked mass and energy; instant big healing breaks the books, which is a feature.
+A22 Self-sustaining pattern/spirit/ghost/golem will/god (elementals, spren): field M feeds it | a pattern in the field | contact with minds | its own acts | OK+ if the physics lane's self-sustaining patterns can hold mind-like computation, else 2nd. FLAG.
+A23 Shapeshift (Wild Shape, Animagus, Muto Corpus): body mass and energy | caster | will | body change | OK at same mass (70 kg human to a 70 kg animal); size change needs a mass store: 2nd (N3).
+A24 Summoning (TES Conjuration, Creo Animal): M + mass | caster | ritual | bring or assemble | OK to assemble from local matter (earth elemental, golem) or fetch a real being by fast motion; create from nothing 2nd (N3); instant fetch 2nd (N1).
+A25 Wards/anti-magic (Quen, Parma Magica, antimagic field): stored M | engraving or caster | trigger | reflection wave or low-coupling zone | OK.
+A26 Divination/scrying (Intellego, seeing stones): small | caster/stone | thought | information at distance | OK present (light-fast, 8.3); future 2nd (N2); past OK if events leave physical traces.
+A27 Time magic (Mage Time, Mirror, Dr Strange): 2nd (N2).
+A28 Teleport/gates (Correspondence, Traveling, portals): 2nd (N1). A fast physical launch is OK but is not a teleport.
+A29 Luck/fate (Entropy, Felix Felicis): OK+ as a tiny push on a metastable chaotic system (real "small push, big release"); biasing the RNG directly 2nd (not recommended).
+A30 Curses/hexes: a pattern lingering in a body that drains M or applies a field | store + link (hair, blood) | ritual | OK.
+A31 Soul magic (soul gems, Stone, hemalurgy): OK for the energy part; a separable immortal soul 2nd (N7).
+A32 Death bargain/sacrifice (FMA Gate, Faustian pacts): payment of limb or life | as A9 and A3 | OK.
+A33 Rest-to-recharge (Vancian slots, meditation): a refill rate of the body store or local M | OK as a pack parameter.
+A34 Rare-material dependence (Mistborn metals, vis, dragon scale): material sets the coupling or store of an engraving | OK.
+A35 Mundane craft (headology, hedge medicine, cold reading): real physics and psychology | OK without M.
+A36 Will/belief reshapes world (Discworld, Mage paradigms, Alar): the mental-state part (Alar as efficiency of one's own link) OK; true reality-editing 2nd (N6).
+
+4. WHAT NEEDS A SECOND CHANGE
+ N1 Teleport, portals, gates, instant summon: nonlocal transport of matter. Minimal law: a "relocate" operation with a booked energy cost.
+ N2 Time manipulation and prophecy: a per-region clock rate or a rewind. Prophecy may be built in the MIND (a fast world-model run ahead, like the world-tick note), not physics. Rewind is a checkpoint feature.
+ N3 Mass creation (Creo Terram, conjure food, new creature, size-changing shapeshift): E = mc^2 makes 1 kg about 9e16 J, so true creation is out. Clean option: a mass bank converting M at a stated pack rate. Decide in synthesis.
+ N4 Resurrection and restoring a destroyed mind: needs the mind pattern to survive somewhere (A22, a soul gem as a data store). With a stored copy it is OK+; without, 2nd.
+ N5 Faster-than-light information: 8.3 already makes information light-fast, so nearly all play is covered; true instant needs 2nd.
+ N6 Belief or story changing reality: route all belief effects through minds (morale, tribute, placebo) and no second change is needed.
+ N7 Other planes, afterlife, separable soul: a second connected world with its own M is a world-level object, not a law. Flag for the user.
+ N8 Probability alteration: see A29.
+ N9 Nuclear transmutation: not a second change; booked at about MeV per nucleus (about 1e11 J per gram (u)), so absurdly costly.
+
+5. LESSONS FOR THE GRAMMAR
+ 1. Verb-noun is real: five verbs (create/release, sense, transform, destroy/disperse, move/control) times a few nouns (body, mind, heat/fire, water, air, earth/metal, plants, light/sound, M itself). Vim = acts on M (dispel, drain, store).
+ 2. Parameters recur: magnitude, duration, range, area/target count, casting time. Fiction prices them with tables; our energy ledger gets the price from physics.
+ 3. A knowledge/link-quality dial recurs (Kingkiller link, Earthsea name, Ars Magica Arcane Connection, Dresden link). Make "targeting fidelity" a number: the share of energy reaching the target.
+ 4. Overreach hurts the pattern holder (8.2).
+ 5. Every system has counters: interference (dispel), reflection (shield), low-coupling zones (Magic Resistance, WoT shielding).
+ 6. Persistence needs a store or a continuous feed: charged material or field draw.
+ 7. Patron structure (energy through a channel, cut if the bond breaks) covers warlock, cleric, paladin, spren, Mantle with one data structure.
+ 8. Sanderson's Second Law: the ledger, body dial and M depletion give limits without per-archetype rules.
+ 9. Packs differ only in numbers: coupling per medium, M level and regen, dial distribution, heritability, materials, hazard thresholds, which media exist.
+
+6. UNVERIFIED (u)
+ Kingkiller slippage numbers; hemalurgy loss fraction; Avatar firebending source wording; Ars Magica base-level tables and fatigue details (the Technique/Form lists and parameters are right to my knowledge); D&D component details (check the SRD); neural-spike and nuclear energy figures are order-of-magnitude (the physics lane should give sourced values). No page-level citations were collected; a verification pass could add them.

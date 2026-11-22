@@ -1,0 +1,199 @@
+LANE: ENGINEERING AND INFORMATION
+Report for Mark_1 magic design. Marks: (v) = checked on the web this run, (k) = from my own knowledge of the literature, believed right, (u) = unverified or my estimate. Plain English.
+
+======================================================================
+0. THE ONE IDEA FROM THIS LANE
+======================================================================
+A spell is a MESSAGE sent into the grammar. Every medium (voice, gesture, writing, carving, thought) is a CHANNEL that carries that message with a limited rate and some noise. Engineering gives us exact, cheap laws for four things the sim needs:
+ - how many bits per second a medium can carry (Shannon),
+ - what happens when noise flips bits (error codes, neighbour spells),
+ - how aiming follows a target (feedback loops, lag, cost),
+ - how fixed hardware (engravings, implants) stores and runs programs, and how it wears out.
+Spell COST can then be the information content plus the energy the grammar says: no per-spell code.
+
+======================================================================
+1. CHANNEL CAPACITY OF THE MEDIA
+======================================================================
+Shannon law (Shannon 1948, k): C = B * log2(1 + S/N) bits/s. B = bandwidth (Hz), S/N = signal to noise power ratio. You can never send reliably above C; below C, good codes make errors as small as you like (at the price of length and delay).
+Useful rule: a symbol set of size A, sent at r symbols/s with error rate e, carries about r * [log2(A) - H(e) - e*log2(A-1)] bits/s, H = binary entropy (k).
+
+Real human numbers:
+ - SPEECH. Coupe, Oh, Dediu, Pellegrino 2019, Science Advances: 17 languages, 170 speakers; all carry about 39.15 bits/s (sd 5.1); speech rate 4.3 to 9.1 syllables/s; 4.8 to 8.0 bits per syllable. Dense languages are slower, light ones faster. (v)
+ - Overall human behaviour. Zheng and Meister 2024 (arXiv Aug 2024, Neuron Dec 2024): about 10 bits/s for most tasks (typing at 120 wpm is about 10 keystrokes/s; memory champions about 5 bits/s; speedcubing inspection about 12 bits/s). Senses take in 1 Gbit/s or more. So the BODY is a bottleneck far below the senses. (v)
+ - READING aloud ~ 30-40 bits/s equals speech; silent reading of text about 250 wpm, but information about 40-50 bits/s (u, my estimate).
+ - TYPING. Skilled typists 40-80 wpm average, English text entropy about 1 to 1.5 bits/char (Shannon 1951 gave 0.6 to 1.3 bits/char, k). So 5 chars/s * 1.2 = 6 bits/s of language information; keystroke-level (choosing among about 50 keys): 5 * log2(50)=28 bits/s raw upper bound. Error rate a few %. (k)
+ - HANDWRITING. About 20-30 wpm = 2-3 chars/s; roughly 2-4 bits/s of text information; shorthand (Gregg) up to 200 wpm in contests (k).
+ - SIGN LANGUAGE. Bellugi and Fischer 1972 (k): signs come about half as fast as spoken words (about 2.3 signs/s vs 4.5 words/s) but sentences carry equal propositions, because hands, face and space are used in parallel. Information rate about the same as speech, 30-40 bits/s (u). Parallel channels (two hands, face, posture) is the lesson: DIMENSIONALITY multiplies capacity.
+ - MUSIC. Pitch just-noticeable difference about 0.2-0.5% (3-8 cents) for trained ears; musicians hold intonation within about 10-20 cents (k). Timing: tapping accuracy about 10-30 ms sd (Repp, k); ensemble sync about 20-40 ms. Fast playing 10-15 notes/s. Information per note: about 7 bits pitch (88 keys) and 3 bits timing, so about 30-100 bits/s peak for virtuosos, 10-20 for normal playing (u). Music is also a good ANALOG channel: continuous values, harmony (several voices at once), and many people can add up (choir).
+ - GESTURE / AIMING. Fitts's law (Fitts 1954; MacKenzie 1992, k): MT = a + b*log2(D/W + 1). Throughput (index of performance) of a mouse or pointing hand is about 4 to 5 bits/s; direct hand pointing up to about 6-10 bits/s; eye saccades more (u). Precision is limited by tremor and motor noise: hand position noise about 1-2 mm at arm's reach (u), hand-held laser about 1 mrad at best. So a gesture spell points to a target of width W within time MT; a smaller target needs more time or luck.
+ - DANCE / WHOLE BODY. Many joints in parallel: raw capacity maybe 20+ bits/s (u), but slow and tiring (energy cost is real: booked in body ledger).
+ - BRAIN-COMPUTER INTERFACES. Willett et al. 2023 Nature (Stanford): 62 words/min, 9.1% word error on 50-word vocabulary, 23.8% on 125,000 words. Metzger et al. 2023 Nature (UCSF): median 78 wpm, 25% word error. Natural speech is about 160 wpm. (v) Cursor BCIs: about 4-8 bits/s best (Pandarinath 2017 eLife, k). Typing by imagined handwriting: Willett 2021 Nature, 90 chars/min, 94 % raw accuracy, 99 % with language model (k). Lesson: a language prior (autocorrect) rescues a noisy channel, which is exactly the "neighbouring valid spell" mechanism.
+ - THOUGHT (the no-implant brain). Taken as the same 10 bits/s bottleneck (Zheng-Meister), but with NO output organ delay and no mouth energy. So thought-casting is slow in bits but silent, invisible, and needs no free limbs.
+ - WRITING/CARVING. Not rate-limited by the body at use time: the cost is paid ONCE at writing time (slow, 1-10 bits/s while carving), then READ at the speed of the trigger. Persistence is the big win.
+
+MEDIUM TABLE (starting data; numbers are bits per second of spell grammar nodes at the caster, p = precision as noise sd, e = raw symbol error):
+ medium      rate    parallel dims  precision p         e (relaxed / stressed)   persist  visible/audible
+ thought     10      1              high (digital)      1% / 15%                 0        none
+ voice       35-40   1 (+pitch)     medium              2% / 10%                 0        loud, 60-90 dB
+ sign        35      3-5 (hands,face) medium            3% / 12%                 0        visible
+ gesture     5       3 (xyz)        1-2 mm / 1 mrad     5% / 20%                 0        visible
+ typing/formula 6-30 1               high (digital)      1% / 5%                  hours    device
+ handwrite   3       2               medium              3% / 10%                 years    writing
+ music       10-50   many (chords)   3-20 cents, 20 ms  2% / 10%                 0        loud, carries far
+ dance       20      many            low                 8% / 25%                 0        very visible
+ carving     1-5     2-3             0.1 mm              0.5% / 1%                centuries none after
+ choir       sum     n voices        average improves    e/sqrt(n) (u)            0        loud
+Data parameters per medium: rate, dims, p, e_relaxed, e_stress, persistence, loudness, energy_cost_per_s, coupling (pack sets). Stress and pain raise e (see section 2). All numbers (u) except the sourced ones above; they are good defaults to tune.
+
+Spell size in bits: bits(spell) = sum over nodes of log2(choices at that node) (see section 6). Cast time = bits / rate. Example: a 60-bit spell takes about 1.5 s by voice, 6 s by thought, 12 s by gesture, 0.0 s from a carving (already paid). That gives the user's "casting is slow with a tell" with no special rule.
+
+======================================================================
+2. ERROR-CORRECTING CODES AND NEIGHBOURING VALID SPELLS
+======================================================================
+Facts (k):
+ - Hamming distance d between code words: a code detects d-1 errors and corrects floor((d-1)/2). Hamming (7,4) corrects 1 error with 3 check bits (75% overhead). Hamming 1950.
+ - Reed-Solomon codes work on symbols: n-k check symbols fix (n-k)/2 wrong symbols. Used in CDs, QR codes (QR levels L,M,Q,H recover about 7, 15, 25, 30 % damage), deep-space links. (k)
+ - LDPC / turbo codes approach the Shannon limit within about 0.1 dB at long length; cost is long blocks and delay.
+ - Natural language is already a redundant code: English is about 50-75% redundant (Shannon 1951, k), so we correct a misheard word by context. Speech is robust because of this.
+ - Trade-off: rate R = k/n. Lower R (more redundancy) gives fewer errors but longer cast. Longer message also means more chances for errors. For a block of n symbols with raw error e, the chance of failure falls sharply if t errors are fixed: P_fail = P(errors > t).
+ - Confusion matrices are not uniform: people mix up similar sounds (b/d/p), nearby keys, adjacent pitches, neighbouring joint angles. Errors go to NEAR symbols (Miller and Nicely 1955 consonant confusions, k).
+
+HOW THE GAME USES IT:
+ 1. Every spell element lives in a SPACE with a distance (a metric): e.g. element 'fire' near 'light' and 'heat', far from 'ice'; radius 3 m near 4 m. Each medium has its own confusion metric (voice: sound-alike; typing: key-near; gesture: angle-near; thought: concept-near or association-near; carving: tool slip size-near).
+ 2. An error is a draw from the confusion distribution of that medium, scaled by e (which rises with stress, injury, fatigue, low skill). The result is the NEAREST VALID element, which gives the user's rule 'an error gives a neighbouring valid spell' with zero special cases.
+ 3. A pack or caster can add REDUNDANCY (repeat, check word, rhyme/verse, redundant carving) by raising length n and lowering e_eff. Formal spells (ritual, long verse, cathedral chant) are literally low-rate codes: slow but safe. A battlefield spell is short: fast but fragile. This explains why rituals exist.
+ 4. Detected-but-uncorrected errors can be a FIZZLE (the check fails, the energy is not delivered, small waste heat). Undetected errors become a wrong-but-valid spell (dangerous). Use a check field so the ratio is a data parameter: more check bits equals more fizzles and fewer wrong spells.
+ 5. Undetected error probability for a checksum of c bits is about 2^-c (k). Wizards' "true names" or passwords are checksums (c large).
+
+======================================================================
+3. CONTROL AND FEEDBACK (AIMING, HOMING, TRACKING)
+======================================================================
+Facts (k):
+ - PID: u = Kp*e + Ki*integral(e) + Kd*de/dt. Stability needs the loop gain to be below one at the frequency where phase lag hits 180 degrees. More delay lowers the allowed gain and bandwidth. Rule: loop bandwidth is below about 1/(4*delay) (u, rule of thumb).
+ - Human visual-motor loop delay about 150-250 ms for visual tracking, 100-130 ms for proprioceptive reflex, 30-50 ms for the spinal stretch reflex. Humans track a target by a predictive model (McRuer's crossover model, 1960s: the human acts like an integrator with delay, crossover about 2-3 rad/s, k). A pilot cannot track a signal above about 1-2 Hz.
+ - Pursuit guidance: proportional navigation (missile): command acceleration a = N * Vc * (dLOS/dt), N about 3-5. It hits manoeuvring targets with small guidance energy; pure pursuit (point at target) loses to a fast crossing target.
+ - Kalman filter (Kalman 1960): the best linear estimate of position from noisy sensors; lets a tracker predict ahead. Lead pursuit equals prediction.
+ - Open loop vs closed loop: a ballistic cast (fire and forget, delivered at light speed) lands at the aim point as seen at casting time; error grows with target speed times (cast time + flight time). A homing effect needs a SENSOR on the effect, a CONTROLLER (a pattern, so information), and an ACTUATOR (the delivered power steers). All three cost something.
+
+GAME RULES (portable):
+ - Delivery has a flight time t_f = range / v_delivery (v is a pack parameter; 'light-like' means about zero). Miss distance = target velocity * (t_cast_lock + t_f) + noise from the aim channel (Fitts precision p).
+ - A tracking spell adds a feedback term: miss shrinks by factor 1/(1+K) where K is the gain the pattern can afford; a feedback pattern costs extra bits (sensor, estimator, controller nodes in the grammar) and an ongoing power draw (information is not free: Landauer, section 7).
+ - The sensor needs M-field or light to see the target: tracking fails in a low-coupling region or fog. Counter-measures follow from engineering: jam the sensor (noise), decoys (a false target with a stronger signal), break line of sight, out-turn (a fast target beyond the loop bandwidth). All come from the laws, not rules.
+ - Feedback lag matters for the CASTER too: sustaining a spell (channelling) by feedback has caster delay about 0.2 s, so fine control of a quickly changing effect is limited; a trained expert uses a forward model (practice lowers the effective delay and noise).
+
+======================================================================
+4. CIRCUITS, LOGIC, PROGRAMMABLE DEVICES (ENGRAVINGS)
+======================================================================
+Facts (k):
+ - Any computation is built from NAND or from a small set of gates (Shannon 1938: Boolean algebra equals switching circuits). A finite state machine = state + transition table. Turing-complete devices need unbounded memory.
+ - Sensors turn a physical quantity into a signal; comparators with hysteresis (Schmitt trigger) make clean triggers. A thermostat = bimetal strip: a threshold on temperature that closes a switch. Fuse, mousetrap, tripwire, pressure plate, photocell, reed switch, radio receiver are all triggers.
+ - Memory classes: ROM (fixed carving), PROM/fuse (write once), flash (rewrite with wear: about 10^4-10^5 write cycles per cell, k), registers (fast, lost on power-off). Macro = stored partial program with parameters (a subroutine with holes).
+ - Programmable logic (PLC, FPGA, microcode): a fixed circuit plus a loaded configuration; a "focus" equals a configuration loaded into a general transducer.
+ - Energy per logic operation: CMOS about 1e-15 to 1e-14 J per gate switch today (u), far above the Landauer floor 2.9e-21 J at 300 K (k).
+ - Resonant circuits: f = 1/(2*pi*sqrt(LC)), Q = f/bandwidth; high Q stores energy and selects frequency, which is the physics of 'resonance' and 'tuning' in M-waves (the user's foci and counterspells).
+ - Waveguide/lens/mirror: geometry sets where the wave goes; antennas have gain G = 4*pi*A/lambda^2 (k), so a larger aperture gives a tighter beam and a longer reach: this is a SHAPER role.
+
+THE THREE ENGRAVING ROLES, AS DEVICES:
+ 1. Standalone enchantment = sensor (trigger) + program (carved expression) + store (charged material or M-tap) + actuator. Like a landmine or a fuse with a battery.
+ 2. Focus/enhancement = a partial program (macro with holes): the caster supplies the missing nodes by their medium. Cost to caster = bits of the remaining nodes only, so a focus lowers cast time and error; the focus fixes part of the choices (less flexible: it is 'ROM'). Good for armies: standard wands.
+ 3. Shaper = passive element: lens, mirror, waveguide, resonant cavity, shield plate. It sets geometry, gain, filtering, not the information. Gain G of aperture, Q of cavity are data.
+ - Logic for the artificer: AND/OR/NOT/delay/counter/latch built as small engravings joined by 'wires' (conductive paths for M or charge). Every gate has a loss; a long chain loses energy and picks up noise (signal regeneration needs a gain stage drawing from a store). This gives a bounded complexity per object: size, fan-out, heat dissipation (section 7).
+ - Triggers as sensors need their own sensitivity and false alarm rate: ROC trade-off (detection theory; Green and Swets 1966, k): a trigger set to catch weak signals also fires on noise. A trap with a hair trigger sets itself off in rain.
+
+======================================================================
+5. NEURAL INTERFACES AND PROSTHETICS (CYBORG MAGIC)
+======================================================================
+Facts:
+ - BCI above: 62 to 78 wpm speech decode, 25% word error, needs an implant with 100s of electrodes (Utah array 96-256 channels, k) (v for rates).
+ - Learning to use a BCI: monkeys and people learn new neural-to-cursor maps in days; within-manifold maps learn quickly, outside-manifold maps slowly (Sadtler et al. 2014 Nature, k). So an implant is easiest when its mapping is close to existing thought patterns: this gives a natural 'neighbour' structure for cyborg casting.
+ - Sensory substitution (Bach-y-Rita 1969 tactile vision; the BrainPort tongue device, k) works after hours to weeks of training; the brain adapts. Cochlear implants (about 12-22 electrodes) give about 1 to 3 weeks to good speech understanding for many users (k).
+ - Prosthetic limbs: myoelectric hands give 1-3 degrees of freedom of control; pattern-recognition control gets 6+ gestures at about 90-95 percent accuracy in lab, lower in real use (k). Targeted muscle reinnervation (Kuiken, k) lets nerves drive an arm. Typical lag 100-300 ms.
+ - Implants wear out: electrode impedance drifts and tissue scars (gliosis) within months to years; signal quality of Utah arrays falls over years (u: roughly 50% of channels usable after about 5 years). Battery or wireless-power heating limit: tissue may not rise more than about 1 degree C (ISO 14708, a 2 degree limit for the implant surface, k). Brain implants therefore have a heat budget of tens of mW per cm^2 (u).
+ - Tool embodiment: the body schema stretches to include tools in monkeys and humans after training (Iriki 1996, k).
+
+GAME USE:
+ - A cyborg is a caster whose channel adds a TRANSLATOR device: bits from the neural channel pass through the implant's table into grammar nodes. Its parameters: channel count (sets rate and dims), decode error (sets e), latency, power draw, heat limit, wear.
+ - The implant adds a medium to the table: 'thought via implant' has the thought rate but a better, learned map; training raises it over game time (a learning curve: error falls as a power law with practice, Newell and Rosenbloom 1981, k: T = a * n^-0.4).
+ - A cyborg is also exposed to hardware failure: jamming noise raises e; heat raises e; fatigue (below) kills channels. Tradeoff gives the genre: power for fragility.
+ - Hard limit: the implant cannot carry more bits than the caster's own brain can supply or accept (the ~10 bits/s floor) unless the device itself holds a macro. So real cyborg power comes from STORED programs (focus/macros) and from the device doing the feedback loop (fast, lag 1 ms, not 200 ms). This is the true engineering advantage: take the human out of the fast loop.
+
+======================================================================
+6. FORMAL GRAMMARS, DSLs, COMPILERS, CONSTRAINED DECODING
+======================================================================
+Facts (k unless marked):
+ - Context-free grammar (Chomsky 1956): rules A -> B C | terminal. Parse tree. A grammar with attributes lets each node carry a value and a cost. Backus-Naur form is the standard way to write it.
+ - Description length (Rissanen 1978, MDL; Kolmogorov): the cost of an object is the length of its shortest description. For a tree: bits = sum over nodes of -log2 P(choice). With a uniform prior, bits = sum log2(options). With a skewed prior (common spells), common spells are SHORT, as in Huffman coding (Huffman 1952): frequent words get short codes (Zipf's law, k).
+ - Compilers: parse, check types, optimise, emit. Type checking = reject malformed spells before running (a validity test cheap enough to run each step).
+ - Grammar-constrained decoding: at each step the model may only choose tokens allowed by the grammar state, by masking logits. Done in llama.cpp GBNF grammars, Outlines (Willard and Louf 2023, k), Synchromesh (Poesia et al. 2022, k), and Geng et al. 2023 'Grammar-constrained decoding for structured NLP tasks' (k). Result: output is always valid; model quality is spent only on choosing among valid options. The cost per step is a mask lookup: fast enough for a 6 GB-VRAM small model.
+ - Typed expression DSL examples: Wolfram-style term rewriting, the Halide image DSL (separates what to compute from schedule), Verilog for circuits (describe structure, compile to gates).
+
+A GRAMMAR SHAPE FOR SPELLS (sketch, matches decision 8.4):
+ Spell    := Effect | Spell ';' Spell(seq) | Spell '&' Spell(par) | Trigger -> Spell | Loop(n,Spell) | Cond(Sensor,Spell,Spell)
+ Effect   := Source ; Region ; Form ; Profile
+ Source   := body | field(M) | store(id) | patron(id)
+ Region   := Shape(point|line|sphere|cone|cube|shell) x Size x Place(rel to caster|target|seen point)
+ Form     := Energy(heat|kinetic|EM|chemical-trigger|...) | Mass(move|create-by-transmute with ledger) | Field(M-wave: freq, phase, amp)
+ Profile  := strength over time (impulse|ramp|pulse train|steady) x Duration
+ Trigger  := Sensor(kind, threshold, hysteresis) | Timer | Event
+ Params at each leaf are quantised numbers (3 to 6 bits each).
+COST LAWS (portable):
+ - bits(spell) = sum of node bits (section 1). This gives CAST TIME = bits / medium rate, ERROR CHANCE = f(bits, e, redundancy), and SKILL COST (a practised spell has lower effective bits: chunking, Miller 1956 'seven plus or minus two', k; compiling a practised tree into one 'word' is a macro).
+ - Cost grows with tree SIZE (nodes) and DEPTH (working memory limit about 4 chunks, Cowan 2001, k). A caster can hold about 4 open sub-spells while building a deep expression: complex spells need foci or writing to offload working memory.
+ - Combinators are the compression: Loop and Cond reuse a subtree (few bits for much effect) but make the effect needs more power per ledger.
+ - Type/validity check = reality check: a spell that asks for energy that the sources cannot supply is VALID but delivers less (scaled to supply). A spell with a dangling reference (target not seen) fizzles. The sim stays authoritative.
+ SMALL MODEL BUILDING NODE BY NODE:
+ - Present the model with the partial tree; the grammar mask gives the next legal choices (like a menu: matches the user's 'menu-select = depth-1' arc). Each pick is logged as a typed delta (the project's rule).
+ - Number leaves: pick a bucket (log-scale) then a refinement; this keeps vocabulary small.
+ - Prefer a few high-level macros (the focus/practised words) at the top of the menu; the model then rarely needs deep trees; expansions are deterministic code. Bi-encoder to rank macros, constrained decoder to fill holes.
+ - Translators from the player's media into the grammar: a text parser with the same grammar, a gesture recogniser (n-best list, then the grammar prior chooses), speech with an n-best list. This is exactly how speech recognition combines an acoustic model with a language model (Bayes: choose the sequence W maximising P(signal|W) P(W); k). The spell grammar IS the language model: it shrinks errors, and it creates the neighbouring-valid-spell effect for free.
+
+======================================================================
+7. ENGINEERING LIMITS (POWER, HEAT, FATIGUE)
+======================================================================
+Facts (k unless marked):
+ - Power density: human body about 100 W at rest, 1-2 kW peak for seconds, sustained about 300 W for fit athletes (u: 200-400). Brain about 20 W (v common knowledge, k). Car engine 100 kW at about 100 kg, about 1 kW/kg; electric motor 3-10 kW/kg; batteries energy 0.25-0.9 MJ/kg (Li-ion 150-250 Wh/kg), power 1-3 kW/kg; supercapacitor about 10 kW/kg but about 5-20 Wh/kg; TNT 4.2 MJ/kg; gasoline 46 MJ/kg; fat 37 MJ/kg; hydrogen 120 MJ/kg. Fusion/fission fuels about 1e8 to 1e11 MJ/kg (u for round numbers).
+ - Heat dissipation: forced air at 1 m/s removes about 10-100 W/m^2/K; a processor die sheds about 100 W/cm^2 with big heat sinks; passive surface radiation at 300 K about 6 W/m^2/K. Human skin dumps about 100 W with sweat up to about 600-800 W max (k). A device with efficiency eta and power P makes waste heat P*(1-eta). If waste heat exceeds what the surface can shed, temperature rises until something fails. That is already in the project's heat laws; the only addition is that magic efficiency must come from the 'useful/light/waste' split (8.1).
+ - Landauer limit (Landauer 1961): erasing one bit costs at least k_B T ln2 = 2.9e-21 J at 300 K (k). Real systems are 1e5 to 1e6 times above that. Information is physical, so a 1e9-bit spell erased costs only 3e-12 J: negligible, so information COST is mostly in TIME (channel rate) and ERROR, not in energy. Good: keeps the energy ledger in the actuators.
+ - Fatigue: Wohler/S-N curve: N cycles to failure = (S/S0)^(-b) (Basquin's law, b about 5 to 15 for metals; k). Endurance limit exists for steel (about 0.4-0.5 of tensile strength) but not for aluminium. Miner's rule (1945): damage D = sum n_i/N_i, fail at D = 1 (k). Fatigue crack growth: Paris law da/dN = C * (dK)^m, m about 2 to 4 (Paris 1961, k). Ceramics and crystals are brittle: thermal shock fails them at a delta-T of about 100-300 K for glass-like solids (u). Flash cells wear 1e4-1e5 writes (k). Electrolytic capacitors dry out; Arrhenius: every 10 K rise halves lifetime (k rule).
+ - Radiation damage, corrosion and creep give the same form: damage is a slowly accumulated state, failure at a threshold.
+
+GAME USE:
+ - Each focus, engraving, crystal and implant has a DAMAGE state D in 0..1 that grows with each use by Miner's rule: dD = (stress/capacity)^b / N0, where stress comes from the power throughput divided by rated power and from temperature swings. At D = 1 it fails (cracks, goes dead, or leaks). Parameters: capacity (rated power), b, N0 (cycles), thermal limit. This gives wear on foci, implants and charged crystals with a single law, no per-item code.
+ - Overdriving a device beyond rated power makes it hot (the waste heat share (1-eta) is booked), speeding failure (Arrhenius); the user's 'recoil goes to whatever holds the pattern' is just this.
+ - Power density sets size: a wand cannot deliver a MW continuously (the heat). A bigger store plus a shaper is more of a staff, cannon or fixed emplacement. Pulse vs continuous: peak power is higher than mean power for the same heat budget (duty cycle): pulse spells are cheap in heat, sustained ones hit the dissipation wall.
+ - Crystal charge: store capacity per kg from the table (battery to explosive range), leakage (self-discharge) as a time constant; trigger as a gate of tiny energy (kJ releasing MJ as in the user's example); the trigger energy is the information, the release energy is in the store.
+
+======================================================================
+8. PORTABLE MECHANISMS (GENERAL LAWS, DATA PARAMETERS)
+======================================================================
+Each is one law for the whole engine; packs only change the numbers.
+
+M1. CHANNEL LAW. Every medium m has: rate R_m (bits/s), dims D_m, precision sigma_m, base error e_m, stress sensitivity k_m, loudness L_m, energy cost E_m (W), persistence tau_m, coupling c_m. Cast time = bits / (R_m * skill_factor). Effective error e = e_m * (1 + k_m * stress) / (1 + practice). Capacity bound: bits sent reliably per s <= R_m * (1 - H(e)). Source numbers: speech 39 (v), thought/behaviour 10 (v), typing 10, gestures 5 (Fitts).
+M2. SPELL COST LAW. bits(spell) = sum over nodes -log2 P(choice | context). Prior P is set by the pack (common spells short). Practised subtrees collapse into macros whose cost is the cost of their name. Working memory depth limit about 4 open chunks.
+M3. NEIGHBOUR-ERROR LAW. A symbol error at a node draws a replacement from a confusion kernel K_m(x -> y) over the node's value space (distance depends on medium). Output is always a valid grammar expression. Redundancy r (check symbols) lowers undetected error to about e^(t+1) and raises length by r; detected failure = fizzle with small waste. Pack parameters: kernel width, check bits, fizzle waste.
+M4. DELIVERY AND AIM LAW. Miss = aim_noise(sigma_m via Fitts: log2(D/W+1) time) + v_target*(t_lock + range/v_delivery). Homing adds a controller with gain K, lag tau_c, sensor range and noise; residual miss = miss / (1+K) while stable (K*tau_c below stability limit). Sensor needs M or light; jamming and decoys add noise to the sensor. Parameters: v_delivery, K, tau_c, sensor SNR.
+M5. DEVICE LAW (engravings, foci, shapers). A device = {store capacity J, rated power W, eta_useful, memory bits, gate count, gain G, Q, leakage tau, trigger threshold and false-alarm rate}. Roles: enchantment (own trigger + program + store), focus (pre-set subtree; lowers caster bits and e; fixes choices), shaper (aperture gain G = 4*pi*A/lambda^2, filter Q). Signal passing through n stages loses energy and picks noise unless a regenerator draws from a store.
+M6. TRIGGER AS DETECTOR LAW. A sensor has threshold, hysteresis, response time, and ROC curve (d' sets the trade between missing and false alarms). Triggers are data: kind of signal (heat, load, light, M, sound, touch, time, count), threshold, and delay. Weak triggers cost less but misfire in noise.
+M7. LEARNING (SKILL) LAW. Error and effective bits follow a power law of practice: x(n) = x1 * n^-0.4 (u fit range -0.2 to -0.5). Plateaus at a floor set by innate finesse and channel noise. Transfer is high within the neighbourhood of known spells (Sadtler: within-manifold maps learn fast), low outside. Rest and sleep consolidate (parameter).
+M8. INTERFACE LAW (cyborgs). Implant adds a translator T: neural features -> grammar nodes, with channel count n_ch (sets rate; about 0.1-1 bit/s per channel at the limit u), decode error, latency, power draw, heat limit, and wear. Human bottleneck of about 10 bits/s binds unless the device holds macros or runs the feedback loop itself. Training on T follows M7.
+M9. WEAR AND FAILURE LAW. Damage state D per item: dD = n_cycles_weighted * (S/S_rated)^b / N_ref * Arrhenius(T). Fail at D = 1; partial D adds error and loss (eta falls, e rises) before failure. Overheat from (1-eta)*P feeds the existing heat laws. Parameters: S_rated, b, N_ref, T_ref and activation energy.
+M10. POWER AND HEAT BUDGET LAW. Peak power <= the minimum of store discharge rate, conductor rating, and heat-removal limit over the pulse duration; mean power <= dissipation. Everything not useful or light is heat in the ledger (sum 1, as in 8.1). Information erase cost is Landauer (negligible), so nothing is free but the energy is in the effector.
+M11. CONSTRAINED GENERATION LAW (for small models). The decision model picks a node from the current legal set returned by the grammar; every pick logged as a typed delta; validity checked by the parser; macro-first menus keep depth small; n-best lists from translators are re-ranked by the grammar prior (acoustic-model times language-model).
+M12. PARALLEL CHANNELS AND ENSEMBLES. n independent casters or lanes (choir, two hands plus voice, multiple implants) add rate (sum of R) and reduce noise (e/sqrt(n) when they cast the same message by voting; u), but need synchronisation (timing sd about 20-30 ms) and cost coordination bits. Group casting is therefore data: lanes, sync error, voting rule.
+
+======================================================================
+9. MISSING PIECES / OPEN QUESTIONS (for the catalogue)
+======================================================================
+ - Analog vs digital messages: music/dance channels are analog; the table treats them as quantised nodes. If the sim wants smooth analog spells (a voice changing pitch as it shapes a wave in M), need continuous leaf values with noise in place of buckets.
+ - Parallel M-field noise: the M-field is itself a noisy channel; ambient fluctuation raises e for all media (pack parameter: field noise floor). Not yet tied to M conservation.
+ - Learned maps over time: whether practice is stored per spell or per node is a design choice (M7).
+ - Real numbers for sign language, music and dance info rates are my estimates (u); good places to calibrate later with a sim experiment.
+ - A patron's lasting channel (warlock, cleric) is a channel with a very large store at the far end and a large LATENCY: engineering says treat it as a remote server (round-trip delay, bandwidth limit, authentication = a checksum/shared secret). Fits M1 and M3 with no new law.
+
+======================================================================
+SOURCES
+======================================================================
+(v) Coupe, Oh, Dediu, Pellegrino 2019, Science Advances 5(9) eaaw2594, speech about 39.15 bits/s, 17 languages, 170 speakers.
+(v) Zheng and Meister 2024, 'The Unbearable Slowness of Being', arXiv 2408.10234; Neuron Dec 2024, about 10 bits/s.
+(v) Willett et al. 2023 Nature, 62 wpm, 9.1% (50 words) and 23.8% (125k words) word error; Metzger et al. 2023 Nature, 78 wpm, 25% error.
+(k) Shannon 1948, 1951; Fitts 1954; MacKenzie 1992; Hamming 1950; Reed and Solomon 1960; Miller and Nicely 1955; Huffman 1952; Kalman 1960; McRuer 1960s; Green and Swets 1966; Landauer 1961; Basquin; Miner 1945; Paris 1961; Rissanen 1978; Cowan 2001; Miller 1956; Newell and Rosenbloom 1981; Sadtler et al. 2014; Bach-y-Rita 1969; Iriki 1996; Willett 2021 handwriting BCI; Pandarinath 2017; Willard and Louf 2023 (Outlines); Poesia et al. 2022 (Synchromesh); Geng et al. 2023; Bellugi and Fischer 1972; Repp timing studies. Details like exact figures should be checked before use in published notes.

@@ -1,0 +1,386 @@
+MARK_1 MAGIC: CASTING INTERFACES (Q4 and Q15)
+Date 2026-11-20. Research and design only. No code, no sim change.
+
+Marks: (v) = checked by web search in this run. (k) = from my knowledge of the literature, believed right. (u) = unverified, my estimate or a design default. Design defaults are DATA, not physics.
+
+------------------------------------------------------------
+0. THE ONE IDEA
+------------------------------------------------------------
+There is ONE grammar (magic-design.md 3.5): a spell is a tree of nodes. Every leaf is a quantised physical number of 3-6 bits (joules, metres, seconds, fractions). Every medium is a learned TRANSLATOR from a human signal to those nodes. Each interface below has the same four-stage shape:
+
+  signal  ->  features  ->  n-best list of node values  ->  grammar prior picks one  ->  node
+
+The player's real performance only decides two things:
+  1. PATTERN QUALITY: how close the decoded node values are to what the player meant (and to each other in the physical number space).
+  2. PRECISION: how wide the noise on each node is.
+The CHARACTER decides the limits (the player cannot exceed them):
+  - which nodes the character KNOWS (memorised grammar chunks, macros);
+  - the noise FLOOR (finesse dial, medium coupling, stress, injury, fatigue);
+  - the CEILING on node values (coupling g, throughput, sources).
+Final noise on a node = sqrt(player_noise^2 + character_floor^2), see section 8. A great player with a clumsy character is limited by the character. A clumsy player with a master character is limited by the player. This is the rule "player performance sets pattern quality, character skill sets the limits".
+
+Why errors land on valid spells (design doc 3.3 and 3.5). Leaves are physical numbers, so the distance between two nodes is a PHYSICAL distance (a bit bigger, a bit hotter, a bit longer). Each medium has a confusion kernel over node values. The decoder always snaps to the nearest VALID value. So an error is "a neighbouring valid spell" with no special code. The kernel is the medium's own geometry: a slipped vertex for glyphs, a sound-alike for speech, a semitone for music, a key-near for typing, an angle-near for gesture.
+
+SHARED GROUNDING (used by every section)
+- Fitts's law (Fitts 1954; MacKenzie 1992): MT = a + b*log2(D/W + 1). ISO 9241-9 mouse throughput is 2.65 bits/s, or 4.32 with the grasp time; ISO-conforming values rarely exceed 5 bits/s (v: yorku.ca/mack, hhci2018). Card et al. gave about 10 bits/s with a different calculation, so always say which one (v). Effective width We = 4.133 * SD of hit points: the player's REAL scatter, not the target size, sets the throughput. This is exactly the hook we want: measure the scatter, feed it in as the node noise.
+- Steering law (Accot and Zhai, CHI 1997): time to steer through a tunnel of length A and width W is MT = a + b*(A/W) for a straight tunnel; the general form integrates ds/W(s) along the path (v: Wikipedia, NN/g). Drawing a stroke inside a tolerance band is a steering task. Narrower tolerance and longer stroke cost linearly more time. This gives the glyph cost law.
+- Hick's law (k): choice time = b*log2(n+1). Menus cost log of the number of options.
+- Speed-accuracy trade-off (Fitts; Schmidt et al. 1979 (k)): faster movement means wider scatter. We keep this: a "cast faster" slider is real, and it widens noise.
+- Handwriting and gesture recognition: the $1 unistroke recogniser (Wobbrock, Wilson and Li, UIST 2007) reaches over 97% with ONE template and 99% with 3 or more templates on 16 gestures (v: depts.washington.edu/acelab/proj/dollar). Template matching improves as the number of templates rises (v). Graffiti error rate: not found in this run (u). Online handwriting with a language model: BCI handwriting 94% raw, 99% with a language model (Willett 2021 (k)). Our grammar is that language model.
+- Sign recognition: pose-based isolated-sign recognition on WLASL100 reached 78.29% top-1 with MediaPipe landmarks versus 63.18% with the other keypoint source (v: arxiv 2510.24887 area result as returned); 80.8% top-1 and 95.2% top-5 for citation-form signs in a Rutgers graph-network study (v). Continuous signing is harder and I found no solid figure (u). MediaPipe latency numbers not found (u). Design consequence: a vocabulary of tens of gestures at 80-95% top-1 is credible; a free continuous language is not. Use n-best lists and the grammar prior.
+- Rhythm-game timing windows (v: osu.ppy.sh wiki): osu! standard: 300-window = 80 - 6*OD ms, 100 = 140 - 8*OD, 50 = 200 - 10*OD (half-widths; OD 0-10). So at OD 5 the top window is +/-50 ms, at OD 10 it is +/-20 ms. osu!mania: top judgement fixed 16 ms, GREAT = 64 - 3*OD ms (v). Taiko: Great 50 - 3*OD (v). Easy mod halves OD, Hard Rock x1.4 cap 10 (v). Hit windows are about +/-16 to +/-80 ms for the best grades; use these as the template for a "timing grade" ladder.
+- Sensorimotor synchronisation: musicians tap with lower asynchrony variability than non-musicians, but only high expertise clearly lowers it; amateurs were not different from non-musicians in one study (Repp 2010 as reported in a review) (v: PMC4737902 area). Typical tap-to-beat SD is about 10-30 ms for trained people and 20-50 ms for untrained (u, matches the 20-40 ms choir sync figure in the design doc).
+- Pitch: trained musicians outperform non-musicians on frequency discrimination (v). Numbers in cents were not returned; I use 3-8 cents for trained ears (design doc, (k)) and 20-50 cents for untrained singing accuracy (u).
+- Working memory: about 4 chunks (Cowan 2001 (k)); chunking (Miller 1956 (k)). Used for the macro and depth limits.
+- Power law of practice: x(n) = x1 * n^-b, b about 0.2-0.5 (Newell and Rosenbloom 1981 (k)). Used for every practice curve.
+- Input accessibility: WCAG 2.2 target size minimum 24x24 CSS px (k, u on exact version); Xbox Adaptive Controller and switch-access conventions (k).
+
+------------------------------------------------------------
+1. DRAWING GLYPHS
+------------------------------------------------------------
+THE REFERENCE FEEL (the Theory of Magic / SpellWritingGuide papers in WORK/magic/txt, summarised in report_structure.txt): attributes are binary strings written on a regular polygon with n = 2A+1 vertices. Each attribute value is a chord skipping k vertices. Strings are chosen to be CYCLICALLY UNIQUE so the glyph reads at any rotation. Capacity about (2^n - 2)/n + 2. A non-polygon base is allowed. We keep the feel (a ring of nodes, chords between them, rotation-free) and drop the fixed attribute list: our glyph is a drawing of grammar nodes.
+
+1.1 THE GLYPH LANGUAGE
+- The page shows a ring of vertices (n vertices, n odd, default 7 to 11) and a centre. A chord vertex-to-vertex is one 'symbol'. A chord's skip step k (1..floor(n/2)) is the value of one numeric leaf; chord order around the ring is the node slot order. Short chords are fine detail (small steps), long chords are coarse. So the number encoded is read from the geometry, not from a name.
+- Node types: ring chord = a leaf number (3-6 bits per chord, a 7-gon with 3 skips and a direction gives 6 values, about 2.6 bits; two chords give a 6 bit leaf). An arc or loop around the ring = Loop or Region shape. A small inner polygon = a Trigger. A line leaving the ring to the edge of the page = a Link or Source (a store id, a bond id). A closed outer ring = Profile duration (the bigger the ring the longer the Profile). Seals are not decoration: they are the Effect delimiters.
+- Rotation invariance means the player never fails by drawing the glyph turned. Reading starts at the unique cycle start.
+- Drawing order carries the grammar: stroke order = tree order (like Chinese character stroke order). A different order of the same strokes is a different valid expression (a Spell ; Spell versus Spell & Spell is the difference between sequential and parallel strokes; parallel is drawn with two hands or two pens in the full version).
+
+1.2 THE PLAYER'S PERFORMANCE MEANS
+- INPUT: mouse, pen, touch or a VR controller. Record the stroke as a time-stamped polyline.
+- FEATURES per chord: start vertex, end vertex (snap radius), the path deviation from the ideal straight chord (steering error), duration, pen pressure (if any), end overshoot.
+- QUALITY SCORE per chord q in 0..1 = steering law fit. The ideal time for a chord of length A in a band of width W is T0 = a + b*A/W. The player's error is deviation sigma_d and endpoint scatter sigma_e (the Fitts effective width We = 4.133*sigma_e). Node noise = a monotone function of sigma_d/W and sigma_e/vertex-spacing. Defaults (u): a quarter of vertex spacing is a clean stroke; half is sloppy; past 0.75 the chord snaps to the neighbouring vertex.
+- SPEED: the player may trade speed for accuracy by drawing slower. Cast time of a glyph is the draw time (the real time, scaled by the game's time-dilation for the cast scene). Slow drawing in a fight means the glyph is not done when the enemy arrives. This is the cast time law "bits / rate" with the rate measured, not assumed.
+- EXPECTED RATE: glyph drawing is the handwriting row in the medium table: 3 bits/s, 2 dims, years of persistence (design doc 3.3). A 40-bit fireball is about 13 s by pen. That is why glyphs are for prepared work, scrolls, floors and doors, not for combat. A practised chunk (section 1.5) is much faster.
+
+1.3 ERROR KERNEL: HOW MISTAKES MAP TO NEIGHBOURING VALID SPELLS
+- Vertex slip: an endpoint snaps to the adjacent vertex: the chord skip step k changes by 1 (a leaf value moves one step). Physical result: a slightly bigger or smaller radius, heat fraction or duration. Always valid.
+- Chord drift past the snap radius onto a vertex that is not the same cycle: the cyclic uniqueness rule means the result is still a valid string or lands in the 'unused' gaps of the code space. Gaps are INVALID and become a FIZZLE with a visible cost (energy booked in the control overhead, a spark, noise), not a random spell. Honest codes: use a Gray-like layout for the chord skips so adjacent values differ by one stroke feature, and a check chord (parity) in the glyph so a single slip is DETECTED. Fizzle versus wrong-but-valid is then tunable: more redundancy chords lowers the wrong-valid rate and lengthens the drawing (Hamming 1950 (k); QR recovers 7, 15, 25, 30% damage at levels L, M, Q, H (k)).
+- Missing stroke or extra stroke: a node deleted or doubled. Deleted leaf falls to the pack default for that node. Doubled node acts as a Loop(2) with a penalty. Still valid grammar.
+- Pen lift mid-chord: counts as two chords; usually invalid, fizzle.
+- Smudge / damaged page (a physical glyph on a floor): the page itself has noise; erase-by-wear is the same wear law (device wear D, design doc 3.5).
+
+1.4 CHARACTER SKILL (limits and added noise)
+- The character knows only glyph symbols it has LEARNED (a set of chord-skip values and node types, each with a practice count). Unknown chord values are drawn but decode as the nearest KNOWN value, or fizzle if the code is not in the character's vocabulary. The player may draw anything; the world reads it through the character.
+- Finesse dial adds scatter: sigma_total^2 = sigma_player^2 + (finesse_noise * stroke_length)^2. Harris and Wolpert 1998 (u): noise grows with force, so large, fast, high-power glyphs get sloppier. Stress, pain, injury (a hurt hand) and fatigue raise it by (1 + k_m*stress).
+- Medium coupling for handwrite is a per-pack number (0 removes glyph magic from a world).
+- Power ceiling: a drawn glyph carries no energy; the SOURCE leaf decides. A fine drawing of 'great gem fireball' by a novice who holds no gem fizzles for lack of source.
+- Skill gates complexity, not access: a novice may attempt a 100-bit diagram, but the working-memory chunk limit (about 4 open sub-spells) means deep nesting in the first pass raises error steeply unless the page itself holds the structure (writing offloads memory, design doc 3.5).
+
+1.5 PRACTICE AND MEMORISED CHUNKS
+- Each distinct symbol and each sub-diagram has a practice count n. Error falls as n^-b, floor set by finesse. Stroke time falls with the same curve. Fitts-style: practice reduces sigma_e, not the target.
+- CHUNK: once a sub-glyph (e.g. the 'sphere 6 m' seal) has been drawn correctly more than N times (design default 20, u) it becomes a MACRO: one fast flourish (a single stroke or a stamp) that expands to the full sub-tree. Its cost is the cost of its name (chunking). The player experiences this as the game offering a shorter stroke for a thing they have drawn a lot. The player may decline and draw the long form for variation.
+- A chunk is character knowledge. It is stored in the character, not the player's account. A new character starts from zero even if the player is an expert (the player's skill still shows in the noise, but not in the macros).
+- Forgetting: chunks decay if not used (spacing effect, Ebbinghaus (k)); cheap closed form.
+
+1.6 FROM A PROVEN GLYPH TO TEXT INVOCATION (PLAN CACHE)
+- A glyph the player has drawn at quality above a threshold and that executed successfully N times (default 3, u) is saved into the character's SPELLBOOK as a named macro: record = {grammar tree, quality at proof, medium, practice, last-used}. The player may name it (free text), or the game proposes a name from the tree's dominant physical region ('sphere of heat').
+- After that the player may type the name as free text. The small model parses the text to a spellbook key (the plan cache of agreement 2026-10-30: cached WITH re-adjudication). Re-adjudication means: when the cached spell is cast from text, the sim re-checks every node against the CURRENT state (sources, knowledge, stress, injury, ambient M) and delivers what the conditions allow; a text cast has the medium's NEXT-BEST route: it is as slow as the medium it was proven in (or the character's thought-channel rate), and carries the character's current noise, not the player's proof-time noise. The player's skill at proof sets the quality ceiling of the cached version (a perfect proof gives a perfect 'template'; the text cast adds character noise on top).
+- Text may only invoke spells the PLAYER HAS PROVEN, on a character who KNOWS them. Free text for an unproven spell is rejected with a reason ("you have never drawn this") or routed to the menu.
+- A text invocation cannot pass parameters outside the spell's proven range without re-drawing the changed leaf (the game asks for a quick partial stroke for the changed number, a 'focus'-like hole).
+
+1.7 ACCESSIBILITY
+- Drawing demands fine motor control. Offer: (a) a 'trace' mode where the ideal chord is shown and the player only chooses the vertex pairs by clicking (menu-like; scores with Fitts target acquisition, not steering); (b) a snap-assist radius slider that widens the snap tolerance (the character's noise stays; the player noise is clamped to the assist level, and the game marks the cast 'assisted', which costs nothing in the sim but is shown in the log so tuning remains honest); (c) switch-access: step through vertices with one or two switches (scanning interface; rate falls to about 0.5-1 bits/s, so these casters rely on macros and scrolls); (d) keyboard: type vertex numbers; (e) high-contrast, large-vertex, non-colour cues; (f) voice navigation. The assist level scales a DIFFICULTY dial, not the character's physics, so a player who needs assist is not nerfed in the world; instead the player noise term is set to a fixed 'assist' value while the character noise term still applies.
+
+------------------------------------------------------------
+2. SAYING SPELLS (SYLLABLE COMPOSITION)
+------------------------------------------------------------
+THE REFERENCE FEEL: one syllable per attribute value in a fixed slot order ("Luire-Sonosin"); about 22 collisions, patched by special cases. We keep syllable-per-value and slot order, and fix collisions by design: a phonotactic code where the sound distance matches the physical distance.
+
+2.1 THE LANGUAGE
+- Each leaf (3-6 bits) = one syllable, built from onset + vowel + coda. Slot order is tree order. A number leaf is split into a CONSONANT class (coarse, high bits) and a VOWEL (fine, low bits), so a sound-alike mistake (a nearby vowel) changes only the low bits: the neighbouring physical value. Gray-code the vowels around the vowel chart so adjacent vowels are adjacent values (formant distance = value distance).
+- Stress and pitch: the Profile leaf (strength over time) is read from the stress and prosody contour: rising = ramp, a short loud = impulse, a drone = steady. Duration leaf from the held length of a final syllable.
+- Combinators are function words: a sequential joiner, a parallel joiner ('and'), a loop marker (repetition itself: say it twice), a conditional ('if'). Cheap and short because they are common (Huffman).
+- Pack naming tables map regions of the number space to names ("fire" syllables). Culture changes the table, so different cultures' spell-words differ (the codes are culture, decision 8.4).
+- Bit budget: 35-40 bits/s of speech information (Coupe et al., Sci Adv 2019 (v)); a syllable here carries 3-6 useful bits, so 7-10 syllables per second is the ceiling, 4-6 comfortable. A 40-bit fireball is about 1 s (design doc).
+
+2.2 THE PLAYER'S PERFORMANCE
+Input options, by phase:
+  (a) TYPED SYLLABLES: the player types or picks syllables; timing is not measured. Rate = typing row (6-30 bits/s). Easy, accessible. Used in the early phases.
+  (b) SPEECH: microphone and a small on-device recogniser. Features: phone posteriors per slot (a phone recogniser output with confidence), pitch contour, loudness, rhythm. The n-best list per slot is re-ranked by the grammar prior (Bayes: argmax P(sound|word) P(word)), as in speech recognition with a language model (k).
+  (c) SPOKEN-FROM-LIST: the player reads aloud the syllables shown on screen (a karaoke style reading prompt); easier for recognisers because the vocabulary is closed (a closed set of a few hundred syllables is far easier than open speech; word error rates for closed small vocabularies are low (k, u); speech BCI figures show how much worse open vocab is: 9.1% word error at 50 words, 23.8% at 125,000 (v: Willett 2023)).
+- QUALITY SCORE per syllable: posterior margin between the top and runner-up phone class, onset timing relative to the slot rhythm, loudness, pitch hit. Higher margin = lower node noise.
+- Slow, clear speech is more accurate but takes longer (speed-accuracy). Shouting is louder (a bigger tell and a bigger noise at the receiver) but coarser.
+
+2.3 ERROR KERNEL
+- Phone confusion matrix: voiced/unvoiced pairs (p/b, t/d, k/g), nasals (m/n), nearby vowels (i/e). Each confusion is a small change in the low bits by the Gray layout. So a mispronounced vowel makes the spell slightly different (a bit more or less), never wildly different. A mistake in a consonant class (the high bits) changes the value class, which is the bigger error; the code puts consonant classes on the coarse bits deliberately and uses a distance between classes that makes confusable classes neighbours.
+- Slot error: a swallowed or doubled syllable shifts the slot order. A check syllable (parity) in longer spells detects this: fizzle with a sound (a 'misfire' bang).
+- Accent: a non-native accent shifts phone distributions. The decoder should adapt to the speaker: a per-player confusion matrix learned during a short calibration (reading ~30 syllables), exactly as dictation software adapts. The CHARACTER layer does NOT use this adapted matrix; it adds its own tongue-skill noise.
+
+2.4 CHARACTER SKILL
+- Voice coupling dial per character (pack data; zero removes voice casting). Tongue skill: vocal dexterity, trained like language (critical period: 'language is easier before puberty (u, debated)', so perfect voice-casting is a plasticity window dial).
+- Vocabulary: a character can pronounce only syllables it has learned. Unknown syllables decode to the nearest known one.
+- Stress: pain, breath loss, fear raise error by (1 + k*stress): a gagged or winded caster can't say it. Silence spells (thought medium) exist for that.
+- Loudness is part of the tell: 60-90 dB, carries far. Whisper-casting reduces power transfer and range (the coupling c_m depends on loudness) but also the tell. This is a lawful trade, no flag.
+- Magic words have no power in themselves; they set nodes. Which means the world's languages are all translations of the same grammar, and a bilingual character can cast in two syllable tables.
+
+2.5 PRACTICE AND CHUNKS
+- Same curves as glyphs. Spoken chunks are the strongest: a practised 'word' compresses a whole subtree to a single word (a macro name, 1-2 syllables), the classic 'incantation'. Cast time falls with it.
+- Rote memory: chunks are memorised verbal strings (rehearsal loops), with the working-memory limit (about 4 open sub-spells) governing how many fresh ones can be strung in a single breath.
+- Whisper and mumble drift: low practice, high stress mispronounce; the macro name still maps to a unique code, so a macro name should be phonetically far from other macros (the game checks distance when the player names a macro, to avoid collisions; this replaces the reference's 22 special cases).
+
+2.6 FROM A PROVEN INCANTATION TO TEXT
+- The player's spoken or typed incantation, once cast successfully at quality above threshold N times, becomes a spellbook macro whose NAME is the incantation's text. Typing that name (or saying it as free speech) invokes it via the plan cache. The decoder only needs to match the text to a key; the grammar tree is stored. The same re-adjudication rule as 1.6 applies.
+- Speech is a medium with a natural text twin, so this is the smoothest route: text-invocation of a spoken spell costs nothing beyond the speech rate.
+
+2.7 ACCESSIBILITY
+- Offer typed syllables or syllable-picker (tap a syllable chip), subtitles with the syllable shown and a rhythm bar, no mic needed. For speech impairments or a different language: the calibration step plus a closed vocabulary; allow the player to define their own phonetic spellings. For deaf or hard of hearing players: visual rhythm cues (slots light up). For players with stutters: the decoder does not penalise repetition at slot start (disfluency tolerant) but the CHARACTER layer applies its own tongue noise, not the player's. Speech input never required.
+
+------------------------------------------------------------
+3. COMPOSING OR PLAYING MUSIC
+------------------------------------------------------------
+MAPPING (a spell's TIME PROFILE is natural for music):
+- Pitch -> a frequency leaf (M-wave f) or a magnitude leaf by register; interval size -> a value step (a semitone is the smallest value step; microtonal bends are fine steps).
+- Rhythm/onset time -> the Profile (impulse, ramp, pulse train, steady). The onset density over time is the Profile curve. A pulse train is a repeated beat.
+- Dynamics (loudness, velocity) -> amplitude / strength over time. Crescendo = ramp.
+- Timbre / instrument choice -> Form (heat versus kinetic versus M-wave): each instrument family is a translator row with its own coupling (a drum couples to kinetic, a flute to wave, strings to resonance). Pack data.
+- Harmony: simultaneous notes = parallel lanes (Spell & Spell). A chord = a conjunction; its consonance sets the interference term (cos dphi). Dissonance = detuning lowers the combined eta (a lawful cost).
+- Repetition and motifs -> Loop and macros. A refrain is a Loop whose cost is the motif's name.
+- Key / mode / tempo -> the Region or Place context (tempo scales the Profile's time axis).
+- Rate 10-50 bits/s with many dimensions (design doc). Music is the highest bandwidth medium except the group ones.
+
+3.1 INTERFACES (early to full)
+  (a) NOTE GRID EDITOR (composition): a piano roll with pitch rows, time columns, velocity; snap to grid. Score is exact; the player's performance is the CHOICE of notes, not motor skill. Good for composition and accessibility. The roll is the structured editor of the grammar: node boundaries are phrases; an inspector shows the decoded tree.
+  (b) TAPPING / RHYTHM MODE (performance): the player taps keys or buttons to a clicking pulse or a displayed note track (a rhythm game). Timing windows set quality. Use osu!-style windows (v): top grade +/-16 to +/-50 ms, next +/-64 ms... Map signed timing error to the Profile node noise; early/late bias to the direction of the error (a rushed ramp is steeper).
+  (c) INSTRUMENT PLAY: MIDI keyboard, microphone singing (pitch tracking), or a gamepad-based instrument. Pitch error in cents against the nearest scale step; onset error in ms; velocity error. This is the full performance interface.
+  (d) HYBRID: the player composes a phrase in the grid, then PLAYS it; performance error is layered onto the composed intention, the game decodes the performed version.
+
+3.2 HOW PERFORMANCE MAPS TO QUALITY
+- Pitch accuracy: the node value of a frequency leaf has a quantum (default a semitone: 100 cents). Player error in cents e_c: if |e_c| < 50 cents the node snaps to the intended note, otherwise it snaps to the neighbour. Fine nodes (microtonal) use a smaller quantum (20 cents) and become hard. Untrained singing about 20-50 cents (u); trained 3-8 cents (k, from design doc). So an untrained caster can reliably hit coarse nodes but not fine ones, as it should.
+- Timing: the Profile has a quantum in ms (default 50 ms for impulses, 200 ms for ramps). Tap SD: 10-30 ms trained, 20-50 ms untrained (u). Musician advantage is real but not for all amateurs (v: Repp as reported). Use the player's measured asynchrony SD as the noise sigma. Mean asynchrony is a bias (people tap 20-50 ms early, negative mean asynchrony (k)) and the game calibrates it out.
+- Dynamics: velocity jitter around the intended level maps to amplitude noise (Harris and Wolpert: noise scales with level).
+- Tempo drift: slow drift shifts the whole Profile time axis; the grammar tolerates a few percent.
+- Memory: the player's remembered piece versus the score: playing from memory adds errors (a drop-out of notes: a deleted node); playing from the written score is slower to start but safer, mirroring writing as offload.
+
+3.3 ERROR KERNEL
+- Wrong note by a semitone: neighbouring value. Wrong octave: a power-of-two class change (a coarse error): the pack's mapping should keep octaves as the high bits, the pitch class as the low bits.
+- Rhythmic slip: neighbouring Profile (a pulse train off by one beat). Dropped beat = a deleted pulse (valid, weaker). Extra beat = valid, stronger.
+- Dissonance by accident: a clash adds a detuning term; the energy of the clash is lost as heat at the site. A wrong chord is a legit different spell: detuned and weaker.
+- Over-long: running over the Profile duration end is valid grammar (a bit longer).
+
+3.4 CHARACTER SKILL
+- Musical aptitude dial (pitch precision, rhythm, ear: perfect pitch mostly learned before age 6-7 (Deutsch; Baharloo 1998 (u))); per-instrument couplings; a character with a tin ear has a high pitch-noise floor which the player cannot fix by skill alone (the game adds the character's noise to the decoded values).
+- Instrument physical limits: a character with a hurt hand cannot play fast; breath-limited singing.
+- Stamina: music has real body power (10-40 W) and a lung budget; dance, drumming more. Booked in the body.
+- Loudness: carries far, a big tell (but it can be an advantage: area effect, rally).
+- Ensembles: see section 6.
+
+3.5 PRACTICE AND CHUNKS
+- Songs are CHUNKS by nature. A practised piece is memorised as a hierarchy: phrase, section, piece. Practice count per piece drives error down as n^-b and speed up. A character with a repertoire pays only the name bit cost to start a piece, then performs its phrases at the playing speed. Improvisation = recombining known phrases (jazz licks): flexible, a little noisy, built from chunks.
+- Fatigue and warm-up: performance improves over the first minutes (warm-up) and degrades with fatigue; booked state, not a flag.
+
+3.6 FROM A PROVEN COMPOSITION TO TEXT
+- Music has the weakest text twin, so the plan cache stores the NOTE SEQUENCE plus the decoded tree. A proven piece (success at or above a quality threshold) gets a title. Typing the title invokes the stored piece: the character performs it AT THE CHARACTER'S skill (a 'recorded performance' by the character, not the player's). Possibility: the player can opt to PLAY it live again to set the quality (a better player gets a better rendition up to the character's cap).
+- A recording (a wax cylinder, a music box, a bard's crystal) is a device with the pattern stored (design doc: implicit slots, Q8). It wears, and playing takes the piece's duration.
+
+3.7 ACCESSIBILITY
+- Grid composition needs no motor skill. Offer a large timing window setting (like Easy mod halves OD (v)); a one-button rhythm mode; a visual metronome and haptics; no-pitch rhythm-only spells; adjustable tempo (slower tempo widens the ms window in beats). Hearing-impaired: visual pitch bars and haptic pulses. The player's assist level sets the player noise to a fixed value; the character noise stays.
+
+------------------------------------------------------------
+4. WRITING FORMULAE (A STRUCTURED EDITOR)
+------------------------------------------------------------
+This is the highest-fidelity and lowest-motor-cost interface; it is the one that shows the grammar itself. Typing 6-30 bits/s, persistence hours (design doc 3.3). Expression: arithmetic-looking, but every term is a physical number.
+
+4.1 THE EDITOR
+- A PROJECTIONAL (structure) editor, not free text: the editing unit is a node, not a character (the Scratch/Blockly/MPS family (k)). You cannot write an ill-formed tree; the editor offers only legal node types at each hole (grammar-constrained, as in Outlines/Synchromesh (k)). Holes show the type (a Region, a Form, a Profile).
+- Syntax view: a text notation, e.g. Effect(source: gem#3, region: sphere(6 m) @ seen_point, form: heat 0.8 / light 0.1 / kinetic 0.1, profile: impulse). Units are shown and checked (J, m, s). Numbers are typed with a slider or digits; the quantiser shows the nearest representable value.
+- LIVE PREVIEW IS CHARACTER-AWARE: the editor shows (1) the bit cost and cast time in this character's medium, (2) which nodes the character does not know (greyed, they will decode to the nearest known value: the editor shows the DECODED result, not the intended), (3) the expected energy request versus the sources the character holds (a spell asking for more than the sources supply is valid but delivers less: shown as a red bar), (4) the expected noise per node.
+- Depth limit: more than about 4 open sub-spells (Cowan) works only in WRITTEN form: the editor lets the player build a deep tree, and the character needs the page in hand when casting (a scroll or a tablet); without it the working-memory limit applies and deep nodes are dropped.
+- Macro library panel: the character's chunks, drag-and-drop.
+
+4.2 THE PLAYER'S PERFORMANCE
+- In a structured editor the motor skill barely matters. The PERFORMANCE is the player's KNOWLEDGE: how well they choose nodes. The measurable quantities: the spell's expected delivered effect versus intent; the simulation of the world is authoritative. So performance feeds back through the world, not noise. Real noise comes from (a) typing errors in numeric entry (typos: digit transposition, adjacent-key) which follow the key-near kernel, and (b) the character's own copying noise (below).
+- TIME PRESSURE MODE (optional, for casting in a fight): write a formula against the clock; the player must fill holes quickly; speed trades off with errors. Typing rate is measured; mistakes are typo kernel.
+- A 'dry run' sandbox: the player may test a formula in a safe test region with a lower stake (a training dummy room, a model of the world at small scale: the scale-down law). This does not break authority: the sandbox is a real sim run with real costs, only in a safe place.
+
+4.3 ERROR KERNEL
+- Typos: key-near substitutions in numeric digits (a '6' becomes '5' or '7'; a decimal shift is rare and large). The editor can warn when a digit entry lands outside the known range (the character does not know this magnitude).
+- Units confusion: ignored by construction (typed units).
+- Transcription from a book: copying a formula from another page has a per-symbol copy error rate from the CHARACTER's literacy and eyesight, so books accumulate scribal errors across copies (a lawful source of corrupted spells and of variants), as copyists did historically (k).
+- Misreading under stress: reading a written formula while casting has the same error model as the reading medium (eyesight, light).
+
+4.4 CHARACTER SKILL
+- Literacy and 'formal training' dials: how many node types the character can parse; mathematics and physics knowledge (knowing the metastable stores, design doc 4.2): a knowledgeable character CAN WRITE a 'small push, big release' formula that names the right store, since the editor only offers node values the character knows.
+- Write speed and neatness for hand-written forms; calligraphy precision. Typing is a device; a formula typed into an artifact (a device with memory: ROM/PROM/flash) persists with its wear (design doc 3.5).
+- Working memory: how deep the character can hold a formula in mind while casting from memory.
+- The character's casting from the formula has its own medium (read it out loud = speech rate; touch the glyph = zero time).
+
+4.5 PRACTICE AND CHUNKS
+- The editor learns the player's recurring subtrees and offers to promote them to macros (a refactor: 'extract as macro') but only the CHARACTER's own practiced chunks count as cheap bits in the sim. The player may save templates (a spellbook of parametrised forms) with holes; to cast one the character fills the holes (a focus-like use; they pay the hole bits).
+- Parametrised macros: lambda holes with default values. This is the 'formula with free variables' and the best vehicle for scientific casters.
+
+4.6 FROM A PROVEN FORMULA TO TEXT
+- Closest to text already. The formula's canonical text form IS the free-text form; the plan cache indexes it by tree hash plus the player's name. Free-text invocation 'cast sphere of heat at the door with 3 m' is parsed by the small model into a macro key plus parameters (holes), then validated: any parameter outside the proven range needs a re-proof (a dry run).
+- Because formulae are exact, they are also the unit of SHARING between players/characters (scroll exchange, teaching): copy with noise as in 4.3.
+
+4.7 ACCESSIBILITY
+- Fully keyboard-navigable, screen-reader friendly (structure tree with ARIA roles; the tree is the accessible form), switch-friendly (menu of legal nodes), voice dictation of node names, adjustable text size, no timing required (unless the player opts into time-pressure mode). This is the reference accessible interface; others should offer a route into it.
+
+------------------------------------------------------------
+5. GESTURES (MOUSE, PEN, HAND TRACKING)
+------------------------------------------------------------
+Rate about 5 bits/s, 3 dims, 1-2 mm and 1 mrad precision, hand tremor about 1-2 mm (design doc 3.3); sign language reaches about 35 bits/s with hands, face and space in parallel (v, design doc). So 'gesture' covers two very different things: single-stroke gestures (fast, small vocabulary) and sign-like languages (a real language).
+
+5.1 THE LANGUAGE
+- STROKE GESTURES (mouse/pen/touch): a vocabulary of unistroke shapes, each = a node type or leaf value: line length/angle = Region size/direction; circle = sphere shell; triangle = a cone; zig-zag = a pulse train; a spiral = a ramp. Quantised parameters from the stroke: size (log scale), speed, direction, curvature. $1/$N style template recognisers (v: 97% with 1 template, 99% with 3+ on 16 gestures) are ample for a vocabulary of 16-30 shapes; use more templates per shape for the player (personalised).
+- 3-D GESTURES (VR controller or hand tracking): a path in space; the steering law applies in 3-D (A/W with a tolerance tube).
+- SIGN-LIKE (hand tracking, camera): handshape + location + movement + orientation (the four parameters in sign linguistics (k)), plus facial expression. Each parameter is a field in a node. A vocabulary of tens of signs at 80-95% top-1 is credible with current pose-based recognisers (v: 78.29% and 80.8%/95.2% top-5 figures on WLASL variants). So use a CLOSED vocabulary with an n-best list and the grammar prior; do not promise free-form signing (u).
+- Combos: two hands = two lanes (parallel), so Spell & Spell is natural.
+
+5.2 THE PLAYER'S PERFORMANCE
+- Pointing precision per Fitts: scatter We = 4.133*SD; the node quantum must be larger than 2*SD or the value is ambiguous. Default quantum is derived from the character's finesse, and the player's scatter on top.
+- Speed-accuracy: faster strokes scatter more (Schmidt (k)). The player's own chosen speed sets a trade-off the game measures.
+- Path fidelity: Steering-law deviation from the template path gives a quality score; deviation beyond tolerance is a different node (neighbour).
+- Sensor noise: the tracking device adds noise (camera tracking jitter, occlusion). Measure and subtract it as a calibration step: the player is not punished for a bad sensor beyond a stated limit. Hand tracking occlusion and lighting failures drop frames: the decoder reports low confidence, the cast 'wavers'.
+- Latency: unobserved player lag (display plus tracking) is compensated by the game's time-dilation window (casting is slow anyway, 5-12 s for a gesture fireball).
+
+5.3 ERROR KERNEL
+- Angle-near: a gesture direction off by one angular quantum maps to the neighbouring angle value (Region direction, aim). Size-near: a stroke length off by one log-step maps to a neighbouring radius. Template confusions (a circle/ellipse mix) map to adjacent node types chosen so confusable shapes are neighbouring nodes (design the vocabulary with a confusion matrix, as in handwriting alphabets: put easily confused shapes at neighbouring values, as Graffiti was designed to avoid confusables (k)).
+- Tremor: hand tremor adds noise, bigger when tired, cold or hurt.
+- Wrong-handed or mirrored gesture: a distinct node (mirror) with a penalty.
+- Unrecognised: below confidence threshold = fizzle with a visible wobble, not a random effect.
+
+5.4 CHARACTER SKILL
+- Dexterity dial (finesse noise), body schema (Iriki tool embodiment (k)), reach and strength; an injured or bound hand lowers it; a caster who lost a hand has fewer lanes (the other is not penalised unfairly: the vocabulary shrinks to one-hand signs).
+- Gesture is VISIBLE: a perfect tell, so counterplay by reading it (design 8.3).
+- Body power 20-50 W for gesture, dance 200-300 W: booked in the body.
+- Unknown gestures decode to the nearest known value, as with glyph vocabulary.
+
+5.5 PRACTICE AND CHUNKS
+- Motor learning: the vocabulary becomes 'muscle memory': a chunked flourish (like a fast sign) with lower sigma_e from the n^-b curve and shorter duration. Chunks = fluent strings of signs, like fingerspelling becoming whole-word signs (k).
+- Transfer: practice within the neighbourhood of known gestures transfers well, outside poorly (Sadtler 2014 (k)), which is built into the 'neighbourhood' distance in the node space.
+
+5.6 FROM A PROVEN GESTURE SEQUENCE TO TEXT
+- A recorded gesture string (the n-best-decoded tree) plus the player's name; later invoked by text. The text cast is 'performed by the character': the character's gesture noise applies, and the cast takes the gesture time (the same as performing it), unless the character has a chunk.
+
+5.7 ACCESSIBILITY
+- Single-switch or mouse-only versions; larger tolerance; dwell clicking; one-handed vocabularies; head/eye tracking as pointing devices (Fitts throughput lower, about 2-3 bits/s for gaze (u)); a 'pose card' menu alternative that enters the same grammar nodes. Sign-language users: using their own signing is an opportunity: the closed vocabulary may include a user-defined set of signs, mapped to nodes in a calibration step. Avoid flashing or rapid motion requirements (photosensitivity).
+
+------------------------------------------------------------
+6. CHOIR AND GROUP CASTING
+------------------------------------------------------------
+Rule from the design doc: lanes with sync error and a voting rule; error e/sqrt(n) when they vote on one message; sync sd about 20-40 ms (u); needs coordination bits. Not n separate casters in the sim (the cheap estimate: one aggregated record).
+
+6.1 THE MODEL
+- A group cast = {n lanes, medium, sync error sigma_t, voting rule, leader, coordination cost}. Each lane is a character performing the SAME expression (a chant, a hymn, a dance). The group result: node value = vote (median or majority of lane decodings), node noise = e_lane / sqrt(n_eff), where n_eff <= n falls with sync spread and with lane quality spread (a few bad singers reduce n_eff).
+- Alternative rule: 'harmony' groups: lanes perform DIFFERENT parts of one tree (parallel combinator), adding rate (sum of rates) instead of cutting noise. A group can do both (some lanes redundant, some parallel).
+- Sync: lane onsets scatter by sigma_t (20-40 ms for a trained group (u); a leader and a click track cut it; untrained crowds 100 ms or more (u)). The group's effective timing noise rises with sigma_t. A conductor lane (a leader) adds a coordination cost (bits) but cuts sigma_t.
+- Energy: the group adds its members' sources (body powers add; M draws from a larger reach volume, since the transducers are spatially spread), booked per lane. Waste heat is at the SITE as for any cast. Coordination overhead is a small control heat to each lane.
+- Cast time is set by the slowest lane or the shared script; the group's time to assemble is a real cost (a ritual, a circle: slow, large, persistent, design doc 4.6).
+- Failure: a lane that fails (faint, killed, misses the beat) drops out; n_eff falls; the cast degrades gracefully. A saboteur lane voting wrong is a lane with bias; with majority voting the group tolerates fewer than half bad lanes; with a leader-only rule the leader's failure kills the cast (a cheaper but fragile rule).
+
+6.2 THE PLAYER'S ROLE IN A GROUP
+- The player performs ONE LANE in real time (the player's own character), while NPC lanes are performed by the sim from their character data (NPC lanes cost zero model calls: latency budget: reactive mode costs zero NPC LM calls). The player's lane quality sets that lane's noise; the other lanes use their characters' data. A weak player lane pulls the group a little, a strong one pulls it a little (1/n weight), so the player is not the whole choir (this is good: it avoids the 'one player carries everything' failure and keeps the character skill the limiter).
+- Player as conductor: the player leads: sets tempo and cues; their performance (a steady beat, a clean cue gesture) sets sigma_t for the group. This is an interesting role: a rhythm interface where the player's tap steadiness sets group sync.
+- Multi-player (if ever): each human is a lane; the same rule.
+
+6.3 ERROR KERNEL AND SKILL
+- Group errors fall on neighbouring valid values with a smaller spread (vote); a split vote gives the median, which is still a valid neighbour. Systematic bias (the whole choir drifting flat) remains (voting does not remove common-mode error): it stays as a real limit, with an ear-training remedy (a tuning fork reference, a drone).
+- Skill: the group's n_eff, leader quality, rehearsal count (group rehearsal practice curve on sigma_t: x(n)=x1*n^-b per group). A group that has rehearsed a piece is a 'chunk' at group level (a choir's anthem). Newcomers lower sync until they rehearse.
+- Magical interference: lane outputs add in M with phase: constructive when in sync, partially cancelling otherwise (booked per cell; the interference law, design doc 2.3): sync error costs real energy as well as precision. Nice: sync error is physically meaningful.
+
+6.4 PRACTICE AND MEMORISED CHUNKS
+- Group repertoire: a piece a group has rehearsed N times. Rehearsal has a cost in time (and fatigue), booked. Newcomers are rated by their own chunk set; a lane that doesn't know the piece follows the leader with delay (adds sigma_t and error).
+
+6.5 FROM A PROVEN GROUP CAST TO TEXT
+- The group performance is a spellbook entry owned by the GROUP (a coven record), listing the lanes required and their roles. Text invocation ('sing the Dawn Hymn') is possible only if the group is assembled; the sim then runs the group cast with the lanes' CURRENT states. The player's contribution at proof time sets nothing beyond their lane. A request with a missing lane degrades or is refused with a reason.
+
+6.6 ACCESSIBILITY
+- Group casting is a good accessibility route: the player can take a low-demand lane (a drone, a simple repeated beat, a single-button lane) and still contribute. Offer a 'delegate' toggle where the player instructs the group (menu) and the group performs from its character data. Avoid timing penalties for the player-lane when the player uses assist; the group's overall sigma_t is set from NPC data.
+
+------------------------------------------------------------
+7. WHAT IS COMMON ACROSS ALL SIX (THE SHARED PIPELINE)
+------------------------------------------------------------
+A. DECODER STACK (one per medium, same API):
+   raw signal -> medium features -> per-slot n-best list (value, confidence) -> grammar prior re-rank -> chosen node + a quality number q and a sigma.
+   The API returns {node, sigma_player, confidence, time_taken, tell}. Everything else is shared sim code.
+B. CHARACTER FILTER (shared): known-vocabulary snap, finesse noise, medium coupling, stress and injury multiplier, power ceiling. sigma_final^2 = sigma_player^2 + sigma_char^2; value sampled around the node; snapped to the nearest valid value; invalid-code results fizzle.
+C. LOG: every cast is logged as typed deltas (decoded tree, per-node sigma, source, bits, time, tell). LM or player output is always a typed delta. Needed for trace harvest: sim-BLESSED casts only go into the datastore.
+D. TELL: each medium has a tell perceivable by others (sound, light, motion, writing). Skilled casters reduce but never remove it (Q1: waste and tell can be steered, never eliminated).
+E. PRACTICE LEDGER: per node, per medium, per chunk counts with power-law curves and forgetting. Closed forms, no per-tick cost.
+F. PLAN CACHE (one mechanism): proven composition (quality at least a threshold, N successes) -> named spellbook entry {tree, medium of proof, quality, practice} -> text invocation with RE-ADJUDICATION against current state; character noise, not the player's, applies; medium cost applies; text may not exceed the proven range. Unproven free text is refused or routed to menu. (Agreement 2026-10-30.)
+G. DIFFICULTY ASSIST: assist settings change ONLY the player-noise term, never the character's, and are logged. Nobody is locked out of magic because of a body or a device.
+H. COST: the decoder runs on the player's device; no NPC LM calls. The small model runs only for text parsing in the plan cache and for the player parse (latency budget).
+
+------------------------------------------------------------
+8. THE NOISE FORMULA (ONE SHARED LAW)
+------------------------------------------------------------
+For node i of a cast in medium m:
+  sigma_i^2 = sigma_player_i^2 + sigma_char_i^2
+  sigma_char_i = finesse_noise_m * level_i * (1 + k_m*stress) / (1 + practice_i)   [Harris-Wolpert: scales with level; practice from the n^-b curve]
+  value_i = quantise( intended_i + Normal(0, sigma_i) ) to the nearest VALID value in the character's vocabulary
+  if no valid value within the confusion radius -> fizzle (booked cost, a tell)
+Cast time T = bits / (R_m * skill_factor), at least the player's own performance time (the player cannot be faster than they perform).
+The cap: delivered energy = min(request, sources). Skill never creates energy.
+Because sigma_player is MEASURED, a good player really does cast better, up to sigma_char. Because sigma_char is data, a master character with a poor player is still good, and a novice character with an expert player is still limited. This is the principle.
+
+------------------------------------------------------------
+9. HOW A PLAYER'S PERFORMANCE MAPS: ONE TABLE
+------------------------------------------------------------
+medium    | what is measured                 | maps to                               | typical player sigma            | neighbour error
+glyph     | endpoint scatter, path deviation | chord skip value, node type           | 1/4 vertex spacing clean        | adjacent vertex = value +/-1 step
+speech    | phone margin, timing, pitch      | syllable = leaf value, prosody=Profile| per-player confusion matrix     | sound-alike vowel = low bit change
+music     | pitch cents, onset ms, velocity  | frequency/amplitude leaf, Profile     | tap SD 10-50 ms; pitch 3-50 c   | semitone / beat off
+formula   | typos, node choices              | nodes directly                        | key-near digit errors           | adjacent digit
+gesture   | scatter We=4.133 SD, path        | direction, size, node type            | 1-2 mm tremor + tracker         | adjacent angle / size step
+choir     | lane votes, sync SD              | same as lane medium                   | e/sqrt(n_eff)                   | median of lanes
+
+------------------------------------------------------------
+10. PHASED PLAN: PLAYTEST MENUS TO FULL INTERFACES
+------------------------------------------------------------
+Rule from decision 8.4 and the user's agreement: menus ONLY in early playtests; free text only for spells the PLAYER has proven; the player's performance sets the pattern quality. The sim stays authoritative; every phase logs typed deltas. Dependencies are noted. No phase needs the GPU. None starts until the magic slices (field and ledger, gem fireball, body spark) exist.
+
+PHASE 0: THE GRAMMAR AND THE MENU (needs the magic grammar and the field slice)
+- Menu-select over legal nodes (depth 1 of grammar-constrained decoding). The player picks from a menu of legal nodes at each hole. sigma_player = 0 (a fixed 'menu' value). Character filter only. This is the agent playtest harness's form (python -m src.core session). Goal: test the sim, the cost law, the ledger, neighbour errors from character noise alone. Deliverable: the decoder API of section 7A with the menu as the first decoder; logs; cast time and energy booked.
+PHASE 1: THE STRUCTURED EDITOR (formula medium) (needs phase 0)
+- Section 4. A projectional editor with character-aware preview. This IS the 'menu' grown into a tree editor, so it is the cheapest route to the full grammar, and the accessible reference. Typo kernel and copying noise added. Exit test: every archetype in the coverage catalogue is buildable from the editor (data coverage test).
+PHASE 2: TYPED SYLLABLES AND PLAN CACHE (needs phase 1)
+- Section 2 (a) typed syllables with the Gray-coded phonotactic code and the collision checker. Practice ledger and chunks. The plan cache (section 7F): proven spells become text-invocable; the small model parses text to a spell key; re-adjudication. This is the first time free text is allowed, and only for proven spells. Exit test: re-adjudication rejects text casts that exceed state; character noise applies.
+PHASE 3: GLYPH DRAWING (needs phase 2)
+- Section 1 with the mouse/pen. Ring and chords, cyclic-unique code, steering-law quality, vertex-slip kernel, check chords, assist modes, snap. $1-style recogniser for node types. Persistent glyph objects (scrolls, floors, doors) as devices with wear. Exit test: measured sigma_player predicts error rates; fizzle versus wrong-valid rates tunable by redundancy.
+PHASE 4: RHYTHM AND MUSIC (needs phase 2; the sound tell needs the perception wave 'seeing and hearing')
+- Section 3. Start with the note-grid editor, then tap/rhythm mode with osu!-style windows, then instrument or voice pitch tracking. Group lane for one player (section 6) with NPC lanes from data. Exit test: timing SD maps to Profile noise; octave/semitone neighbour errors.
+PHASE 5: SPEECH INPUT (needs phase 2)
+- Section 2 (b)(c): closed-vocabulary on-device recogniser with per-player calibration; fallback always typed. Loudness and tell. Exit test: closed-vocab accuracy high enough that errors are mostly the player's pronunciation (measure before shipping; target set by playtest, not by assumption (u)).
+PHASE 6: GESTURE AND HAND TRACKING (needs phase 3)
+- Section 5. Unistroke gestures first (mouse/pen/touch), then 3-D controller gestures, then camera hand tracking with a closed sign vocabulary and n-best plus grammar prior. Sensor calibration and noise subtraction. Exit test: a gesture confusion matrix feeds the vocabulary layout; tracker noise is not blamed on the character.
+PHASE 7: GROUPS, CIRCLES, CONDUCTING (needs phases 4 and the physics of interference)
+- Section 6. The aggregated lane record, voting, sync; player as a lane or conductor; group spellbook entries; per-cell interference booked.
+PHASE 8: CROSS-MEDIUM TRANSLATION AND TEACHING (needs all)
+- Characters learn the same spell in another medium (translation table per culture), scribes copy with noise, teaching by demonstration (an NPC teaches the player's character: the character's chunk set grows, the player must still perform it). The 'trace harvest': sim-blessed casts into the datastore for the small model (the front half of the trained DM plan).
+PHASE 9: ADVANCED ASSISTIVE AND MODALITY SWAP
+- Every spell castable in a different accessible medium; the assist dial calibrations; the 'delegated cast' (player describes, character performs from data, noise from the character).
+
+PRIORITY ORDER IF TIME IS SHORT: 0, 1, 2 (menu, formula editor, typed syllables with plan cache), then 3 (glyphs, the most characteristic feel), then 4 (music), then the rest.
+
+------------------------------------------------------------
+11. COVERAGE AND TEST HOOKS (ties to the coverage rule: every real behaviour POSSIBLE and TUNABLE)
+------------------------------------------------------------
+- Reachability: from the grammar, a search over (medium, character dials, spell) should find settings that give: a perfect cast, a neighbouring-valid miscast, a fizzle, a wild surge, a quiet cast, a loud cast, a choir cast, a half-remembered chunk.
+- Controllability: each dial (finesse, coupling per medium, practice, stress, assist, sync sd, redundancy) must move the matching frequency (fizzle rate, neighbour rate, cast time) monotonically. Test by sweep.
+- Faithfulness test: a player-performance simulator (synthetic players with set sigma) runs each decoder end to end; the measured error rate must match the formula in section 8.
+- Blind test: replace the player by a menu bot and by a noisy bot; results must differ in the predicted direction.
+- Parity test: the same grammar tree cast through six media with sigma_player = 0 and equal character gives the same effect (the media differ only in time, noise and tell). This is the 'same language, different channels' claim (user 2026-11-19).
+
+------------------------------------------------------------
+12. OPEN QUESTIONS AND HONEST LIMITS
+------------------------------------------------------------
+1. Real speech and sign recognisers on consumer hardware: I did not find latency numbers, nor continuous-sign accuracy; closed-vocabulary figures are my estimate (u). Measure in phase 5 and 6 before committing.
+2. Pitch JND and untrained singing accuracy in cents: not returned by search; the 3-8 and 20-50 cent figures are (k)/(u).
+3. Graffiti error rate: not found (u). $1 recogniser accuracy is for 16 gestures (v); larger vocabularies degrade.
+4. The number of successes and quality threshold for the plan cache (3, 20 for chunks) are design defaults (u); tune in playtest.
+5. How much assist is 'too much' for the logs: assist is recorded but does not change the character's physics. Whether to show assisted casts differently in the world (e.g., the world doesn't know): the world does not know; only the log does.
+6. Choir sync SD 20-40 ms for trained groups is (u); untrained crowds 100 ms+ is (u).
+7. The polygon/chord glyph feel comes from the Theory of Magic papers; capacity formula (2^n - 2)/n + 2 is quoted from my earlier summary, not rechecked here (u).
+8. Where a player has a physical disability the design promise is that the character is never penalised for the player's input device, but a character whose own body is impaired is penalised in the world; both are real and separate.
+9. Whether to expose the per-node sigma to the player during casting (feedback). Recommend yes in the glyph and music modes (live quality meter) because it teaches; no in combat to keep tension (u).
+10. Multi-player and shared worlds are out of scope; the choir model already allows them.
+
+SOURCES USED THIS RUN (v)
+- osu! wiki, Overall difficulty and Judgement pages: https://osu.ppy.sh/wiki/en/Beatmap/Overall_difficulty ; https://old.ppy.sh/wiki/Gameplay/Judgement/osu%21mania
+- $1 recogniser (Wobbrock, Wilson, Li, UIST 2007): https://depts.washington.edu/acelab/proj/dollar/index.html
+- Fitts's law and ISO 9241-9 throughput (MacKenzie): https://www.yorku.ca/mack/hhci2018.html
+- Steering law (Accot and Zhai 1997): https://en.wikipedia.org/wiki/Steering_law ; https://www.nngroup.com/articles/steering-law/
+- Sign recognition with MediaPipe landmarks on WLASL: https://arxiv.org/html/2510.24887v2
+- Sensorimotor synchronisation in musicians: https://pmc.ncbi.nlm.nih.gov/articles/PMC4737902
+- Speech rate: Coupe et al., Science Advances 2019 (from the design doc, (v) there). Willett 2023 and Metzger 2023 speech BCI (design doc, (v) there).

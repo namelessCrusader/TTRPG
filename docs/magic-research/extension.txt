@@ -1,0 +1,243 @@
+MAGIC Q6: THE SMALLEST EDIT OF THE EXISTING LAW THAT ALLOWS TELEPORT, MATTER CREATION, REWIND AND OTHER PLANES
+Research pass, 2026-11-20. Research only. No sim changes. Marks: (v) = checked by web search in this run, (k) = my own knowledge, believed right, (u) = unverified or my own arithmetic or estimate. "Design default" = a number I chose, data not physics.
+
+======================================================================
+1. THE ANSWER IN ONE PAGE
+======================================================================
+
+RECOMMENDATION (Option 1 below): ONE NEW LEDGER ROW AND ONE NEW TRANSDUCER CLASS. NO SECOND LAW.
+
+  Row 1 (ledger):  rest mass is one more energy form that M may hold and give back, at E = m c^2, with an efficiency eta_mass. (A mass-bank exchange, one row in the transducer table of design doc 3.1.)
+  Class 2 (transducer): PATTERN-DRIVEN REBUILD. A structure that holds a pattern P (a stored record, at a stated fidelity level) turns M plus nearby matter into a body matching P, and the reverse (disassembly returns bond energy and matter to M, heat, or a store). It pays formation enthalpy plus entropy export, books both, and obeys the existing channel law (rate, noise, latency = path / c_M).
+
+Everything else the user listed is then ONE primitive used four ways:
+
+  REBUILD(pattern, site, fidelity)
+
+  - Conjure     = REBUILD of a stored or imagined pattern, at a site, with matter taken from the local surroundings first and from the mass bank only for what is missing.
+  - Rewind      = REBUILD at the SAME site of a pattern saved EARLIER. Restoration, not time travel. It costs the DIFFERENCE between now and the snapshot.
+  - Teleport    = read the pattern (this destroys the original at high fidelity: see 4), send it through a channel (bits / rate + path / c_M), REBUILD at the far site, return the old matter to M or heat.
+  - Other plane = a second M region (a second world instance with its own M and its own matter table), joined to ours by a BOND (design doc 3.4: a resonant link with bandwidth, latency, fidelity). Patterns cross. Matter does not have to. You are rebuilt out of THAT plane's matter, so "errors alter you" and "you become native" come out of the same kernel.
+
+Why this is the smallest edit:
+  - It adds ONE ledger line (rest mass) and ONE verb (rebuild). The pattern store, the channel law, the bond record, the resonance law, the imported_M[other world] ledger line, the per-site waste rule and the reaction-partner rule ALL already exist in the design.
+  - It adds NO new "special" subsystem. Teleport, conjuring and rewind are not separate laws. Test T8 (section 8) proves it: the same pattern, fidelity and site must give the same result no matter which "spell name" brought it there.
+  - It does not touch what a mind can do. Minds, bodies and stores still obey the same transduction law.
+
+THE HONEST NUMBERS IN ONE BREATH (derivations in section 3):
+  - 70 kg of mass is 6.3e18 J = 1.5 gigatons of TNT = about 1e5 Hiroshima bombs = about 1% of world primary energy use in a year (u). 1 gram is 9e13 J (25 GWh). The 0.9 GJ fireball from the design doc is only 10 micrograms.
+  - Rebuilding a human from raw chemicals needs about 0.4 to 0.5 GJ of formation chemistry (about half a fireball), not mc^2. Mass creation is the very LAST resort and about 1e10 times dearer than assembling from stock.
+  - The information in a body spans 1e10 bits (1 mm voxels) to about 1e30 bits (every atom). At a fast link (1e12 bit/s (u)) a cell-level copy takes hours to a day and an atom-level copy takes about 3e10 years. Fidelity is the dial that makes teleport playable or not.
+  - Reading a body at atomic precision needs photons of about 12 keV (lambda 0.1 nm, Abbe/diffraction (k)): the dose is about 1e11 Gy against a lethal 5 Gy (u). So the sim derives "the transporter destroys the original" from the diffraction limit already in the design. No flag is needed.
+  - Nothing in the laws forbids a duplicate of a classical-level pattern. What stops it is MASS (second body needs 70 kg of atoms), ENERGY (0.5 GJ), READ-OUT DAMAGE, and CHANNEL TIME. All four are numbers.
+
+======================================================================
+2. WHAT EACH REQUEST ASKS OF THE PHYSICS (conservation and causality)
+======================================================================
+
+What must hold, and how the edit keeps it:
+
+  Energy.    Row 1 makes mass an ordinary booked form. Closure rule (design doc 2.3) stays: sum of heat, kinetic, chemical, M, store, light, REST MASS, plus imported_M, minus light leaving, is constant. A bank withdrawal of m kg lowers M by m c^2 / eta_mass and raises rest mass by m c^2. The (1 - eta) share is heat at the SITE (rule of 2.5).
+  Momentum.  A rebuilt body carries the momentum in its pattern (bulk velocity relative to its frame). A mismatch between the pattern's frame and the site's frame is booked to a named reaction partner (ground or planet), exactly as telekinesis already does (design doc 2.5, critic D4). Example from real numbers: a person carried from the equator (465 m/s ground speed) to 60 degrees north (232 m/s) in a fixed inertial frame would arrive 233 m/s out of step: 70 kg x 233^2 / 2 = 1.9 MJ (u, arithmetic). A sim that gives velocity relative to local ground avoids it, but the ledger must say which.
+  Angular momentum, charge: the pattern records them and the rebuilt body carries them. A body in the sim has no net charge, so charge is a check, not a source of cost.
+  Baryon and lepton number: the real world conserves these in every process we see. Creating a net baryon from energy, with no antibaryon, violates baryon-number conservation. The Sakharov conditions for any such process are baryon-number violation, C and CP violation, and departure from equilibrium (v, e.g. arXiv hep-ph/0207323, hep-ph/0205279). The Standard Model does violate B non-perturbatively through electroweak sphalerons but conserves B - L, and is judged too weak to make the cosmic asymmetry (v). So the honest real-physics statement: ENERGY CAN MAKE MATTER-ANTIMATTER PAIRS (threshold 2 m c^2, e.g. 1.022 MeV for an electron pair (k)); it cannot make matter alone. The sim does not track B. So the mass bank is a PACK-ONLY EXTRA that is OFF by default, and it must be logged as "violates B conservation, pack switch". A stricter pack may force pairs: cost doubles to 2 m c^2 and the antimatter must be stored, which is a ready-made hazard.
+  Entropy.   Building order from disorder lowers local entropy. The second-law guard of 2.1 says the entropy leaves as heat at the site. Minimum cost = T dS. The practical cost is the chemical (formation) enthalpy, which is orders of magnitude bigger (see 3.3). Rewind of a macroscopic thermal state is limited by the Loschmidt problem: a "reverse everything" demon needs precision that grows exponentially with the chaos of the system (v, Loschmidt-echo literature, arXiv quant-ph/0410121). So REWIND IS NEVER A THERMAL MICROSTATE REVERSAL. It is a rebuild to a macro or molecular snapshot at a stated fidelity.
+  Causality.  A rebuild at B needs the bits to have arrived. Arrival time = bits / rate + path / c_M, at least one tick. Quantum teleportation (Bennett, Brassard, Crepeau, Jozsa, Peres, Wootters, PRL 70:1895, 1993 (v)) already needs a classical channel as well as entanglement, so it cannot beat light speed (v). No-cloning (Wootters and Zurek, Nature 299:802, 1982; Dieks 1982 (v)) bars copying an UNKNOWN QUANTUM state, and the original is destroyed in teleportation (v). Bits read out at classical (molecular) fidelity are ordinary classical data and CAN be copied. So the sim's rule is: the pattern is classical data of finite fidelity; no-cloning is only invoked if a pack wants a "quantum soul" (flag N7 in the design doc).
+  FTL / instant gates: a zero-delay edge between two places is a pack-only exception (edge with c = infinity). In real relativity, instantaneous nonlocal transport plus relative motion lets signals go backward in time (Tolman 1917 type argument (k)). The sim has ONE frame, so there is no loop, but the exception must be named in the pack: "c_M = infinite on this edge".
+
+======================================================================
+3. THE COSTS IN REAL NUMBERS
+======================================================================
+(All arithmetic below was run by script. c = 2.998e8 m/s, kB = 1.381e-23 J/K.)
+
+3.1 REST MASS (mc^2)
+  1 microgram           9.0e10 J      (25 kWh)
+  1 g                   9.0e13 J      (25 GWh; about a small nuclear-bomb yield of 21 tons TNT)
+  1 kg                  9.0e16 J      (21 Mt TNT)
+  70 kg human           6.3e18 J      (1.5 Gt TNT; about 1e5 Hiroshima (6.3e13 J (k)); about 1% of world primary energy per year, taking about 6e20 J/yr (u))
+  0.9 GJ fireball       1.0e-8 kg     (10 micrograms)
+  Nuclear mass defects (fission, fusion): 0.1 to 0.9% of mc^2 (k): so 1 kg of mass change in a reaction gives about 6e14 J. So nuclear transmutation (N9) is about 1e3 times cheaper per kg than creating the mass.
+  Against the design store densities (design doc 3.2): a great gem holds 1e5 MJ/kg = 1e11 J/kg. To create 1 g (9e13 J) you need 900 kg of great gem, and for 1 kg you need 9e5 kg of it. Even a perfect store can create only micrograms to milligrams of matter. So the sim gives, with NO special rule, "conjuring a gold bar is out, conjuring a pinch of dust is lawful". This is the correct honest scale.
+  Antimatter-pair version doubles it: 2 m c^2.
+
+3.2 ASSEMBLE FROM STOCK (what conjuring really costs)
+  Chemistry only moves atoms. Bread, water, wood, cloth and a body are made of C, H, O, N with a little P, Ca, S. The cost is formation enthalpy plus the entropy work, order 1e6 to 1e8 J per kg, NOT 1e16.
+  - 1 kg of bread: about 10 to 11 MJ of chemical energy (2.6 kcal/g (k)). That is 1e10 times less than mc^2.
+  - Bread needs carbon. Air has about 420 ppm CO2 (k): 0.77 g of CO2 per m^3 of air at 1 atm and 20 C (u, arithmetic). 1 kg of bread holds about 0.4 kg of C = 1.47 kg of CO2 = about 1900 m^3 of air to harvest. So a baker-mage in a forest (leaves, soil) is cheap, and in a sealed room or bare desert the same spell takes much more draw or fails. No rule: the local matter table decides.
+  - Gold, iron and other elements: chemistry cannot change an element. Changing Hg to Au needs nuclear reactions at MeV per nucleus. 1 kg of gold is 5.1 mol = 3e24 atoms; at about 8 MeV each that is about 4e12 J (about 1 GWh) (u, arithmetic). The assembler therefore has a TABLE of which elements it may rearrange (chemical class) and transmutation is the N9 row, with its own booked cost.
+  - A whole human body: about 20 to 25 kg of dry mass (the rest is water) at about 17 to 37 MJ/kg of combustion energy (k; fat 37 MJ/kg in the design doc) gives about 0.4 to 0.5 GJ of formation chemistry (u, arithmetic). That is about half the 0.9 GJ fireball. Water, 50 kg, is nearly free (just collect it).
+  - Dissolving the body gives that chemical energy back to the source: 0.4 to 0.5 GJ is about 100 to 120 kg of TNT. If dissolution goes straight to heat, the origin gets a fire. A caster that wants to teleport "cleanly" must route the bond energy into an M store or a heat sink at efficiency eta. The round trip efficiency is eta_dis x eta_asm, and the difference is booked heat. This is a real, physical reason "you flash with heat" in fiction.
+
+3.3 INFORMATION CONTENT OF A BODY (fidelity ladder, estimates (u) unless noted)
+  Level  what is stored                                       bits (70 kg)           time at 1e9 b/s   at 1e12 b/s    at 1e15 b/s
+  L1     1 mm voxel: species, temp, velocity (about 100 b)    about 1e10 (7e7 voxels)  10 s             0.01 s         1e-5 s
+  L2     per cell: type, state, links (about 1e3 b x 3.7e13 cells (k)) about 4e16     1.3 yr           11 h           40 s
+  L3     per molecule (about 100 bits x 1e27 molecules)       about 1e29             3e12 yr          3e9 yr         3e6 yr
+  L4     per atom: type, position to 0.01 nm, velocity        about 1e30             3e13 yr          3e10 yr        3e7 yr
+  Bound  Bekenstein bound I <= 2 pi R E / (hbar c ln 2) (v). For 70 kg and R = 0.5 m this gives 9e44 bits (script), about 1.8e45 at R = 1 m (v, matches the quoted 2.58e43 x M x R). It is an upper limit, not a count.
+  Check on the low end: whole-brain emulation roadmap (Sandberg and Bostrom 2008) lists brain storage from 5e15 bits to 1.12e28 bits, depending on level of detail (v, via the 2025 State of Brain Emulation report, arXiv 2510.15745: secondary source, check the 2008 PDF). That matches the L2 to L3 span above.
+  A single genome is about 6.2e9 bits (3.1e9 bp x 2 bits (k)). All of a body's cells share it, which is why L2 compresses so well.
+  CONSEQUENCE: at realistic channel rates only L1 and L2 are playable. L3 and L4 teleport takes geological time. So the SIM'S PLAYABLE TELEPORT IS A LOSSY CELL-LEVEL COPY. That is lawful, and "errors alter you" is the fidelity dial, not a bolted-on penalty.
+
+3.4 LANDAUER (cost of handling the bits)
+  kB T ln2 at 300 K = 2.87e-21 J per bit (v, design doc 2.2; Berut et al., Nature 483:187, 2012 (k)).
+  L2 (4e16 bits): 1e-4 J. Nothing.
+  L3 (1e29 bits): 2.9e8 J. Comparable to the chemistry.
+  L4 (1e30 bits): 2.9e9 J, about 3 GJ. Now larger than the 0.5 GJ of chemistry.
+  So at atom level the information bookkeeping is itself a real cost, a nice derived fact. Real hardware is 1e5 to 1e11 times above Landauer (design doc 2.2), so the pack factor makes it worse.
+
+3.5 READ-OUT: SCANNING A BODY (why the original dies)
+  To resolve atoms at 0.1 nm you need probe wavelength of about 0.1 nm: Abbe limit, d about lambda / (2 NA) (k, the same law as M aim in design doc 2.1). A 0.1 nm photon carries E = h c / lambda = 12.4 keV = 2.0e-15 J (script). At least one interaction per atom: 7e27 atoms x 2e-15 J = 1.4e13 J absorbed. Spread over 70 kg that is about 2e11 Gy. A lethal whole-body dose is about 5 Gy (k). Range with generous assumptions (fewer than one absorbed photon per atom, coarse L3): 1e9 to 1e11 Gy (u). Either way the original is gone at L3 or L4.
+  At L2 (1 micron resolution) photon energy is about 1.2 eV (visible/IR) and the deposited energy is small: the scan is non-destructive. So the original SURVIVES an L2 copy, and the copy is the lossy one.
+  So two derived laws replace the "transporter destroys you" flag: (a) a fidelity at or below L2 is non-destructive but lossy, (b) a fidelity at L3 or above destroys the original at the scan. The crossover is a function of c_M and the pack's probe frequency, which are existing dials.
+
+3.6 PATTERN FIDELITY AND ERRORS
+  Use the channel law of design doc 3.3: each pattern node has a confusion kernel over neighbouring valid values, so a transmission or rebuild error lands on the NEAREST VALID state (a slightly different cell, a slightly different tissue), never random garbage. This is the "errors alter you" requirement with no new code.
+  Anchor: biological copying is about 1e-9 to 1e-10 errors per base per division after proofreading (k), so living systems already tolerate error per unit near 1e-9 and repair above that. A pack's default rebuild error per node should be set in that region for a trained rebuilder (design default 1e-6 per cell-level node) and higher under stress, as the channel law already says (e = e_m (1 + k stress) / (1 + practice)). Result: with 3.7e13 cells and 1e-6 error, about 3.7e7 cells are wrong: roughly a few ppm of the body, comparable to ordinary somatic mutation (u, arithmetic). Fine.
+  Redundancy is lawful: a checksum or repeated pattern lowers the error at the price of bits and time (Hamming; Reed-Solomon (k)).
+
+3.7 REBUILD POWER AND TIME
+  The existing draw law (design doc 2.6) P = g M V_reach / tau_draw sets how fast a rebuild may run. A 0.5 GJ body formation at an ordinary M density needs a large reach volume and shows a visible tell. This is why conjuring a big thing is slow and rich-M places differ. A body-only caster, limited to 30 kJ burst and 300 W sustained (decision Q12), cannot rebuild even a thimble of bread's worth quickly: 11 MJ at 300 W is 10 hours.
+
+3.8 REWIND COST
+  Rewind cost is about the DIFFERENCE between current and snapshot, not the whole object.
+  - Cup: a broken 300 g ceramic cup. Fracture surface about 100 cm^2 at about 10 to 100 J/m^2 fracture energy (u) is about 0.1 to 1 J to rejoin. Near free.
+  - Burnt log (1 kg wood, 16 MJ released (design table)): rewind means making wood from CO2 and H2O: back about 16 MJ of chemistry at eta, plus gathering the smoke. Gathering 33 mol of CO2 from a dilute plume (volume ratio 1e6) costs N kB T ln(1e6) = 2e25 x 4.1e-21 x 13.8 = about 1.1e6 J (u, arithmetic). Small next to the 16 MJ. The big cost is chemical, plus whether the atoms are still there. Atoms that blew away must be fetched or drawn from the bank.
+  - A person rewound by 10 minutes: only what changed in 10 minutes (a wound, some metabolism). Memories formed since the snapshot are OVERWRITTEN. That is a derived price, not a rule.
+  - A person rewound by years: cost approaches a full teleport rebuild (L2), about 0.5 GJ of chemistry.
+  - The snapshot itself is a store: it needs bits (Landauer floor, plus a physical medium with mass) and must have been written before. You cannot restore what was never recorded. Pack option: a "world-memory" medium in M is a store with a leak, like any store (design doc 3.2).
+  - Never reversible: the thermal microstate (Loschmidt, see 2). The rewound air in a room comes back at macro state at the snapshot's fidelity, not at molecule positions.
+
+======================================================================
+4. THE CONSEQUENCES: COPIES, DUPLICATION PARADOXES, IDENTITY
+======================================================================
+
+THE HONEST STATEMENT: the laws do NOT forbid two of you. A classical-level pattern can be read (if you accept the scan cost) and written twice. What the laws do is make it expensive and noisy. The four limits, in order of bite:
+
+  1. MASS. The second body needs about 70 kg of atoms in the right proportions. The rebuilder draws them from local matter; if there is not enough, the rebuild is PARTIAL (a smaller or incomplete body), or the pack-only mass bank covers the shortfall at about 6e18 J (not available in a normal run).
+  2. ENERGY AND POWER. About 0.4 to 0.5 GJ of formation chemistry plus waste, at a draw rate limited by M and reach (3.7). A low-M place cannot do it.
+  3. READ-OUT DAMAGE. Atomic-fidelity copies destroy the original (3.5). Cell-level copies leave the original alive.
+  4. CHANNEL TIME AND FIDELITY. Cell-level fidelity is lossy; molecular fidelity takes ages (3.3).
+
+IDENTITY IN THE SIM: there is no soul and no conservation of "person count" in the laws. Two bodies built from one pattern are two entities that share a past up to the snapshot and diverge after it. Their memory pointers are separate objects from then on. The social effects (who owns the house, who inherits) are decided by minds and institutions, not physics. A "separable soul" (design doc N7) stays a separate pack decision.
+
+PARADOXES AND WHY THEY DO NOT APPEAR:
+  - "Teleporter kills and makes a copy" (the Parfit worry): in the sim the original at L3 or L4 is dead (it was destroyed by the scan, booked). The copy is a new entity with continuous memory. Nothing in the laws chooses which is "the" person. The mind-model sees it as a new body with strong memories of the old one, which is the right input for cognition.
+  - Rewind and causal loops: rewind overwrites matter with an earlier state. It does not send information to the past. The only causal rule needed is "the pattern must exist before the rebuild", which the snapshot rule already gives.
+  - Two rewinds from one snapshot, or a snapshot rebuilt in two places: two entities. Fine.
+  - Duplication for profit: you cannot make gold from air by chemistry (3.2). Making two swords needs two swords' worth of iron. Mass bank cost keeps gold unprofitable (3.1). A loop (bank -> mass -> annihilate -> bank) loses (1 - eta)^2 each cycle (test T4).
+  - Time paradox: none, because there is no backward information flow. An instant gate (infinite c) is the only FTL object, and it is a named pack exception.
+
+WHAT TELEPORT OF AN OBJECT WITHOUT A BODY LOOKS LIKE: a stone is L1 (a few thousand bits), so teleporting a stone is cheap in bits. The cost is its formation chemistry again, unless the matter at both ends is already there (swap).
+
+======================================================================
+5. COMPETING MINIMAL EDITS
+======================================================================
+
+A. RECOMMENDED: "REST-MASS ROW + PATTERN REBUILD" (above).
+   Gives teleport, conjure, rewind, planes with one verb and one ledger line.
+   Strong points: no new data structure beyond a pattern record. Costs come from numbers that exist. Faithfulness is testable by equivalence (T8). Duplicates handled by mass, energy, read-out and channel limits.
+   Weak points: teleport is slow at high fidelity (3.3). Needs a "fidelity level" notion (a record type) and a rebuilder transducer (also needed for healing and alchemy, so it is shared work). Needs the B-violation note for the bank.
+
+B. M TOPOLOGY / WORMHOLE EDGE: two regions of the world joined by an EDGE with a throat area, a throughput and a holding cost.
+   Real basis: Morris and Thorne (Am. J. Phys. 56:395, 1988 (v: need exotic matter that violates the null energy condition)). Traversable wormholes without exotic matter are ruled out in GR; with quantum fields a negative-energy source can hold one open (Gao, Jafferis and Wall, JHEP 2017 (v, via Caltech summary: a negative-energy shockwave props it open)). Experimental claim: Jafferis et al., Nature 612:51 (2022), a dual of a traversable wormhole on a 9-qubit processor (v), but it was a quantum simulation of a toy model and a correction was published in 2025 (v). The negative-energy requirement for a human-size throat is huge: the radial tension equals that at the centre of a neutron star (v, survey arXiv 2202.07431). Ford and Roman quantum inequalities confine negative energy to a very thin shell (v, but I did not read the paper).
+   In the sim: a non-local neighbour pointer in the grid (diffusion, flow and light cross it), a holding cost per second, and a size limit.
+   Strong points: objects pass INTACT, with no scan, no copy, no fidelity. Instant gates and planes are natural. One structure gives both.
+   Weak points: a NEW world structure (a graph edge in a regular grid), needs rules for momentum and pressure across it (air rushes through it), does not give conjuring or rewind, and the "holding cost" is a pack number with no engine derivation. It breaks the one-frame causality discipline unless c on the edge is finite. It is the cleanest way to do an instant door but a heavier edit.
+
+C. M CARRYING ENTROPY (M as a thermodynamic reservoir with its own temperature T_M).
+   Real basis: information thermodynamics, Szilard and Bennett, Sagawa and Ueda (v: second-law with feedback adds an information term), and Landauer. If M carries entropy, rewind can be costed as a heat-engine run backward, and entropy export is the explicit cost.
+   Strong point: gives the arrow of time a home. Honest second-law bookkeeping for rewind.
+   Weak point: it does not give teleport or conjure. And a cold M reservoir with T_M near 0 is a free entropy sink, an exploit (Kelvin-Planck, design doc 2.1 guard). The existing rule "waste is booked as heat at the site" already conserves entropy. VERDICT: not needed. Keep as an optional dial (T_M) that a pack may set. Do not build.
+
+D. PER-REGION CLOCK OR CHECKPOINT (time magic by run-time machinery).
+   Real basis: none for rewind; time dilation (k) is real but only through gravity or speed.
+   Weak points: breaks "one connected world", conflicts with the trace and ledger logging (every LM output is a typed delta), makes replay inconsistent. The design doc already recommends leaving it out (N2). Rejected.
+
+E. RELOCATE / SET-STATE OPERATION (the design doc's N1 and N3 as separate switches).
+   One booked operation that swaps the contents of two regions, and one that writes matter.
+   Strong point: smallest code now.
+   Weak points: writes state, which the faithfulness kernel forbids (magic may write energy, momentum, M and ledgers only). Teleport, conjure, rewind and planes would be FOUR separate switches, each with its own ad hoc price: exactly what the user wanted to avoid. Rejected.
+
+F. REALITY-EDIT ("set any voxel").
+   Breaks faithfulness completely. Rejected.
+
+G. JUST LAUNCH IT. A "fetch" is matter moving at speed. This already works with the existing push law. It is not teleport, but it covers "summon the sword from across the room" with zero new law, and should be the first answer to every "instant fetch" use case that does not need to cross a wall.
+
+======================================================================
+6. RECOMMENDATION AND OPTIONS FOR THE USER
+======================================================================
+
+OPTION 1 (RECOMMENDED): "A": rest-mass row (pack-only, off by default) + pattern rebuild + planes as bonds.
+   What it builds: conjure from stock (without the bank), rewind (to a snapshot), teleport at L1/L2 (non-destructive, lossy) and L3/L4 (destroys original), planes as another world with a resonant bond, true creation of micrograms of mass with the bank on.
+   What it needs: a pattern record (fidelity level, nodes, an error kernel), a rebuilder transducer (eta, power, reach), a snapshot store, the rest-mass row, the other-plane origin in imported_M. About 3 new pieces, all reusing the channel, store, bond and ledger machinery.
+   Defaults: bank OFF (eta_mass = 0), rebuilder ON only where a pattern holder and enough M exist, fidelity L1 to L2, c_M finite on every link.
+
+OPTION 2: Option 1 PLUS edge B for intact instant gates.
+   Adds a non-local edge in the grid. Choose this if the user wants "walk through the door" planes and instant gates as a first-class thing. Heavier build; defer until Option 1 works.
+
+OPTION 3: edge B plus the rest-mass row, NO pattern rebuild.
+   Gives gates, planes and creation, but NO rewind and no lossy teleport. Smaller build than Option 1 for gates, but rewind then needs its own law. Not recommended.
+
+OPTION 4: defer all of Q6. Keep everything at strength 0. The design doc already covers 29 of 36 archetypes without this edit (section 9). Teleport, time magic, resurrection beyond a stored copy, and other planes are 4 of the 7 left. Reasonable if the user wants the first magic slices (field, gem fireball, body spark) done first.
+
+KNOBS THE USER CAN TUNE (all numbers, none are flags):
+  eta_mass (0 = no creation); B-violation allowed or paired creation (2 m c^2); fidelity levels in the pack (L1 to L4); channel rate and c_M; scan probe frequency (sets destruction); rebuild error per node; share of dissolution heat to the holder; snapshot store size and leak; allowed element table for the rebuilder (chemical only, or with transmutation); plane link throughput and resonance Q; whether a link edge has finite or infinite speed.
+
+WHAT I RECOMMEND BUILDING FIRST WHEN THE TIME COMES: (1) the pattern record plus the rebuilder at L1, on a small object (rebuild a cup from fragments = rewind; conjure a pinch of salt from a dish = stock). (2) The snapshot store. (3) The channel hop (teleport a cup). (4) The plane link with two M fields. (5) The bank, last, and only as a pack option.
+
+======================================================================
+7. HOW THIS FITS THE DESIGN DOC AND THE ARCHETYPE LIST
+======================================================================
+  A23 shapeshift, size change: rebuild at a different pattern, mass from stock or bank (OK with Option 1).
+  A24 summoning create, instant fetch: conjure and teleport (OK with Option 1; plain "launch" for easy fetches).
+  A27 time magic: rewind only. Prophecy stays a mind feature (N2).
+  A28 teleport, gates: Option 1 gives lossy teleport. Option 2 adds intact gates.
+  A31 soul magic: a separable immortal soul stays a pack decision (N7); a stored pattern gives a copy, not a soul.
+  N3 mass creation: the bank (pack-only, off).
+  N4 resurrection: restore from a stored copy is OK if the copy exists and the matter is there. Without a copy, no.
+  N7 planes: another world with its own M and a bond; matter does not have to cross.
+  Q17(c) outsiders: beings that live in the far M region and reach us through resonant links. This fits, with no new type.
+  Ledger: the rest-mass row, a "snapshot store" and "imported_M[other world]" (already planned). Nothing else.
+
+======================================================================
+8. FAITHFULNESS TESTS (derived from the laws; written with the first slice)
+======================================================================
+  T1  MASS-ENERGY CLOSURE. A bank withdrawal of m kg lowers M by exactly m c^2 / eta_mass and raises rest mass by m c^2; the (1 - eta) share appears as heat at the site. Total ledger drift under 1e-9 relative. The conserved sum includes rest mass.
+  T2  HAND-OFF EQUIVALENCE. A rebuild that makes a stone from the bank must give the SAME downstream physics (heat capacity, fall, melt) as a stone taken from stock. Only the ledger line differs.
+  T3  ROUND TRIP. Dissolve then rebuild at the same site at fidelity L: energy lost = (1 - eta_dis x eta_asm) x E booked as heat; state error follows the node kernel for L. Zero error at the exact-copy limit (high fidelity, no noise) must give identical state.
+  T4  NO FREE LUNCH. 1e6 cycles of (bank -> matter -> bank) lose energy every cycle; no net gain at any eta below 1. Also (bank -> matter -> burn -> heat) returns about 1e-9 of the input.
+  T5  CAUSALITY. No effect at the receiving site before bits / rate + path / c_M. Corrupt the channel: the rebuilt state changes by the error kernel only. A zero-delay edge appears only when the pack sets c = infinity for that edge and prints it.
+  T6  FIDELITY AND DOSE. Lower fidelity gives larger error and a smaller scan dose. Raising the probe photon energy raises the dose and sharpens the resolution (Abbe). L3 and above must kill a 70 kg body at the scan; L2 must not.
+  T7  DUPLICATES. Build from one pattern at two sites with only one body's worth of matter: the second is partial. With plenty of matter both exist as separate entities and total mass, energy and charge are conserved.
+  T8  METAMORPHIC. "Teleport", "conjure", "rewind" and "plane crossing" are names only. The same pattern, fidelity, source matter and site must give the same final state however the pattern arrived (carved, transmitted, remembered, from a snapshot). Renaming the spell changes nothing.
+  T9  ENTROPY. Total entropy production in every rebuild is greater than or equal to zero; rebuilt local order is paid by heat at the site of at least T dS.
+  T10 MOMENTUM. A frame mismatch between pattern and site is booked to a named partner. Sum of momentum is conserved.
+  T11 NARROW KERNEL. The rebuilder may write only energy, momentum, mass (through the row), M and ledgers. It never sets a voxel by name; it cannot name materials or creatures.
+  T12 COVERAGE LOG. A book request that needs an element, a plane or a fidelity the tables lack is logged as a missing law, not hard-coded.
+  T13 EXPLOIT HUNT (adversarial): bank round trips, rewind with an undersized snapshot, pattern transmit over a plane whose M is richer (the gradient rule must cap it: Kelvin-Planck), duplicate-and-sell, rewinding a killed body whose atoms already left.
+
+======================================================================
+9. OPEN QUESTIONS FOR THE USER (short)
+======================================================================
+  Q-a  Option 1, 2, 3 or 4 above?
+  Q-b  Should the mass bank exist at all, even as a pack option? The honest version also violates baryon-number conservation. If yes: unpaired, or forced pairs (cost x2, hazardous antimatter)?
+  Q-c  Default fidelity ceiling for teleport: L2 (playable, lossy, non-destructive) or allow L3 (destroys original, geological time at realistic rates unless the pack sets a high channel rate)?
+  Q-d  Plane crossing: patterns only (you are rebuilt from local matter), or can matter cross too (needs the edge B)?
+  Q-e  Should copies of persons be allowed by default? The laws say yes, at a price. A pack can raise the price (mass, energy) but never forbid it by flag.
+
+======================================================================
+10. SOURCES
+======================================================================
+Verified this run (web search; most results were secondary or abstracts, noted):
+  - Bennett, Brassard, Crepeau, Jozsa, Peres, Wootters, "Teleporting an unknown quantum state via dual classical and EPR channels", Phys. Rev. Lett. 70:1895 (1993): needs a classical channel, original destroyed (PDF seen: people.disim.univaq.it/~serva/teaching/Bennet.1993.pdf).
+  - Wootters and Zurek, "A single quantum cannot be cloned", Nature 299:802 (1982); Dieks 1982 (physicstoday.aip.org quick study on no-cloning). Priority claim for Ghirardi: not verified.
+  - Bekenstein bound I <= 2 pi R E / (hbar c ln 2); 2.577e43 x m x R bits; about 2.58e45 bits for a human at R = 1 m (arXiv gr-qc/0009019 and a secondary source). The 70 kg figures above are my arithmetic.
+  - Sakharov conditions and sphaleron baryon-number violation (arXiv hep-ph/0207323, hep-ph/0205279, hep-ph/9901362).
+  - Morris and Thorne 1988 (needs exotic NEC-violating matter); wormhole tension equal to a neutron star core (arXiv 2202.07431, a survey); Gao, Jafferis, Wall (negative-energy shockwave props open, via Caltech summary); Jafferis et al., Nature 612:51 (2022), correction published April 2025.
+  - Loschmidt echo and demon precision grows exponentially with chaos (arXiv quant-ph/0410121); Sagawa and Ueda reviews (arXiv 1111.5769).
+  - Whole-brain emulation storage range 5e15 to 1.12e28 bits (Sandberg and Bostrom 2008 via arXiv 2510.15745, secondary).
+  - Krauss "Physics of Star Trek": the 1e28 figure in my search was a count of atoms; no bit count was confirmed. I did NOT use a Krauss bit figure.
+From my own knowledge (k): Landauer 1961 and Berut et al. 2012; mc^2; Abbe limit; 12.4 keV for 0.1 nm; lethal dose about 5 Gy; DNA about 3.1e9 bp; DNA error rate about 1e-9 to 1e-10 per base; 3.7e13 cells in a body (Bianconi 2013); bread about 2.6 kcal/g; CO2 about 420 ppm; Hamming and Reed-Solomon codes; Tolman FTL argument.
+Estimates (u): world primary energy about 6e20 J/yr; body formation 0.4 to 0.5 GJ; fidelity-level bit counts; link rates 1e9 to 1e15 bit/s; scan dose 1e9 to 1e11 Gy; fracture energies; transmutation about 8 MeV per nucleus; the design defaults in 3.6.
+Design doc references: docs/magic-design.md sections 2.1 to 2.6, 3.1 to 3.4, 9 (N1 to N9), and decisions Q6, Q12, Q17 in w14/decisions.md.
