@@ -99,6 +99,16 @@ SOCIAL = {"accuse", "tell", "insult", "praise", "threaten", "search", "defend", 
           "gossip", "ask", "offer", "accept", "refuse", "look around"}
 
 
+SELF_CARE_VERBS = frozenset({"ask", "offer", "buy", "work"})
+
+
+def self_care(o):
+    """The one self-care rule (world flag `selfcare`): an act that gets the actor's OWN food or drink, from another person or by work: asking for it,
+    offering something for it, buying a meal, working for a share (a need above 0 and not the ask to be tended). Every chooser's menu already holds
+    these acts; a scripted partner is allowed the same ones and nothing that starts anything else with anyone."""
+    return o["verb"] in SELF_CARE_VERBS and o["f"].get("need", 0.0) > 0.0 and o["obj"] != "care"
+
+
 def _utility(w, p, o, t):
     f, v = o["f"], o["verb"]
     b, g, pr, k, m = (t[x] for x in ("bravery", "greed", "pride", "kindness", "temper"))

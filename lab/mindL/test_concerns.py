@@ -51,7 +51,7 @@ PAY = 0.02          # the mean homeostatic reward of a step with the payer prese
 SD = 0.02
 
 
-def life(seed, pay, present=None, steps=3000, per_night=100, c=None, dt=3, always=(), rng_seed=None):
+def life(seed, pay, present=None, steps=3000, per_night=100, c=None, dt=3, always=(), rng_seed=None, bias=0.0):
     """steps of the mind: each target is present with its chance; the step's reward is noise plus the sum of the pay of the targets
     present. pay: {target: mean reward when present}; present: {target: chance} (default 0.5); always: present every step."""
     rng = np.random.default_rng([seed, 0 if rng_seed is None else rng_seed])
@@ -60,7 +60,7 @@ def life(seed, pay, present=None, steps=3000, per_night=100, c=None, dt=3, alway
     names = sorted(set(pay) | set(present) | set(always))
     for k in range(steps):
         here = [T for T in names if T in always or rng.random() < present.get(T, 0.5)]
-        r = float(rng.normal(0.0, SD) + sum(pay.get(T, 0.0) for T in here))
+        r = float(rng.normal(0.0, SD) + bias + sum(pay.get(T, 0.0) for T in here))
         c.learn(StepObs(r, {T: 0.0 for T in here}, {T: 0.0 for T in here}, tuple(here), "look around", None, 0.0, dt))
         if k % per_night == per_night - 1:
             c.night()
@@ -80,6 +80,25 @@ def test_placebo_targets_keep_weights_near_zero():
     TABLE["placebo"] = {"weight of the payer": p, "mean weight of 3 random placebos": q, "weight of an always-present placebo": a}
     assert p[1] > 0.15, p
     assert q[2] < 0.05 and a[2] < 0.05 and q[2] < 0.25 * p[1], (p, q, a)
+
+
+def test_placebo_needs_the_baseline_taken_off():
+    """Owed from step 3's verifier. When every step pays a little (a good mood: bias > 0), a target that is ALWAYS there predicts nothing
+    ONLY because the running average of the reward is subtracted. With it, the always-present placebo stays near 0 and the payer is
+    still found. Without it (lr_base = 0: the average never moves from 0) the placebo soaks up the mood: the test must FAIL then."""
+    BIAS = 0.05
+    with_b, without_b, payer = [], [], []
+    for s in SEEDS:
+        c = life(s, {"Fenn": PAY}, {"Fenn": 0.5}, always=("Everpresent",), bias=BIAS)
+        with_b.append(c.table().get("Everpresent", 0.0))
+        payer.append(c.table()["Fenn"])
+        m = life(s, {"Fenn": PAY}, {"Fenn": 0.5}, always=("Everpresent",), bias=BIAS, c=RWConcerns(lr_base=0.0))
+        without_b.append(m.table().get("Everpresent", 0.0))
+    A, B, P = ci(with_b), ci(without_b), ci(payer)
+    TABLE["placebo_baseline"] = {"always-present, baseline on": A, "always-present, baseline OFF (the mutation)": B, "payer, baseline on": P}
+    assert A[2] < 0.05, A                      # near 0 only WITH the baseline
+    assert B[1] > 0.3, B                       # the mutation is caught: without it the placebo is loved
+    assert P[1] > 0.1, P
 
 
 def test_formed_then_extinguished():
@@ -191,6 +210,37 @@ def test_swapping_learned_weights_flips_the_choice():
     TABLE["swap"] = {"log odds Fenn over Oren with A's weights": ci(a_tab), "with B's weights": ci(b_tab),
                      "A minus B (paired by seed)": D, "no concerns": 0.0}
     assert ci(a_tab)[1] > 0 and ci(b_tab)[2] < 0 and D[1] > 0, (ci(a_tab), ci(b_tab), D)
+
+
+def test_swap_exercises_the_eta_sign():
+    """Owed from step 3's verifier. The swap test above runs on a prior with eta = 0 (only the help part, rho). Here the prior is a HARM
+    (strike: eta > 0, rho = 0): the concern term of a blow at the cared-for person is NEGATIVE (w * (rho * need - eta)), so A (cares for Fenn)
+    gets a lower term for striking Fenn than for striking Oren, B the opposite, and without concerns the two terms are equal. If the eta
+    sign were dropped (or flipped), A would gain from striking Fenn and this fails."""
+    ds, ta_, tb_ = [], [], []
+    for s in SEEDS:
+        A = life(s, {"Fenn": PAY, "Oren": 0.0}, {"Fenn": 0.5, "Oren": 0.5}).table()
+        B = life(s, {"Fenn": 0.0, "Oren": PAY}, {"Fenn": 0.5, "Oren": 0.5}).table()
+        w, tom = _scene(seed=s)
+        m = Mind("Tom", "peasant", s, concerns=True, cn_fx_prior={"strike": {"rho": 0.0, "eta": 0.5, "n0": 50}})
+
+        def gap(tab):
+            m.cn.set_table({k: v for k, v in tab.items() if k in ("Fenn", "Oren")})
+            m._rd = m._readings(w, tom)
+            opts = w.options(tom)
+            need = H.needs(w, tom)
+            T = m.terms(w, tom, opts, reader.encode(opts, need), need)
+            ix = {o["text"]: i for i, o in enumerate(opts)}
+            a, b = ix["strike Fenn"], ix["strike Oren"]
+            return float(T["concern"][a] - T["concern"][b])
+
+        ga, gb, g0 = gap(A), gap(B), gap({})
+        ta_.append(ga)
+        tb_.append(gb)
+        ds.append(ga - gb)
+        assert abs(g0) < 1e-12
+    TABLE["swap_eta"] = {"concern term, strike Fenn minus strike Oren, A's weights": ci(ta_), "B's weights": ci(tb_), "A minus B": ci(ds)}
+    assert ci(ta_)[2] < 0 and ci(tb_)[1] > 0 and ci(ds)[2] < 0, (ci(ta_), ci(tb_), ci(ds))
 
 
 def test_clones_with_different_lives_come_to_different_concerns():

@@ -84,12 +84,13 @@ from pathlib import Path
 from lab.world2.lifetime import NAMES, Cast, hook, night_seed, night_stats
 from lab.world2.partners import Hard, Kind, Need
 from lab.world2.policy import Random, Rules, T_RULES, softmax, utility
-from lab.world2.world import (ALL3, ALL4, ALL5, ALL6, SIGNS_FLAGS, HARD_FLAGS, AIL_P, RAID_P, COOK_MAKES, DEED, DRIVES, FLAGS, HARMFUL, PORTION, HARSH_ACTS, KIND_ACTS, NATURE,
+from lab.world2.world import (CAST, LETHAL_FLAGS, LETHAL2_FLAGS, ALL3, ALL4, ALL5, ALL6, SIGNS_FLAGS, HARD_FLAGS, AIL_P, RAID_P, COOK_MAKES, DEED, DRIVES, FLAGS, HARMFUL, PORTION, HARSH_ACTS, KIND_ACTS, NATURE,
                               PHYSICAL, RATE, ROOMS, START_ROOM, TEND_MIN, WORK_TIRE, World)
 
 OUT = Path(__file__).resolve().parents[1] / "results" / "mindL3"
 RUNS = Path(os.environ.get("MINDL3_RUNS", OUT / "0a_runs"))
 SEEDS = tuple(range(1, 11))
+KINDS_OF = {n: k for n, k, _, _ in CAST}       # name -> kind (a nature: the weights of the drive error)
 FOCALS3 = ("Tom", "Sir Ada", "Marta")          # the L2 focal rotation (lab/mindL/tests_L.py)
 WIN0 = 20                                      # nights before this are not scored
 FADE = 0.9                                     # overnight liking fade, as in the L tests
@@ -128,6 +129,11 @@ WORLDS = {
     "all6R0": frozenset(ALL6) - {"reprisal"},
     "all6s": frozenset(ALL6) | set(SIGNS_FLAGS),      # all6 plus the sign dials (2026-11-21, SV2): needed by the P-need partner
     "all6h": frozenset(ALL6) | set(SIGNS_FLAGS) | set(HARD_FLAGS),   # all6s plus the source-rate hardships (2026-11-21, owner decision (A)); ignores LUCK, ILL, RAID
+    # lethal (2026-11-21, owner D1 lever (c)): all6h plus the death law (thirst, hunger kill at the source rates) and permanent death
+    "all6hl": frozenset(ALL6) | set(SIGNS_FLAGS) | set(HARD_FLAGS) | set(LETHAL_FLAGS),
+    # lethal2 (2026-11-22): all6hl plus the three general fixes (bring any consumable, the raid law, one self-care for every chooser)
+    "all6hl2": frozenset(ALL6) | set(SIGNS_FLAGS) | set(HARD_FLAGS) | set(LETHAL_FLAGS) | set(LETHAL2_FLAGS),
+    "all6hl_rev": frozenset(ALL6) | set(SIGNS_FLAGS) | set(HARD_FLAGS) | {"lethal"},     # the same with the next-night revival (for learning)
     "no_lumpy": frozenset(ALL6) - {"lumpy"},
     "no_stock": frozenset(ALL6) - {"stock"},
     "no_choosy": frozenset(ALL6) - {"choosy"},
@@ -863,13 +869,13 @@ def lifetime_measured(spec, nights=None):
     focal, seed = spec["focal"], spec["seed"]
     rec = Recorder(focal)
     carry, start = None, None
-    stats = []
+    stats, deaths, laid_n = [], [], {}
     for n in range(nights):
         w = MWorld(seed=night_seed(seed, n), bandit=None, turns=TURNS, flags=flags, carry=carry, night=n, rec=rec, supply=SUPPLY, luck=LUCK, ill=ILL, raid=RAID)
         if start is None:
             start = {a: {b: v for b, v in w.people[a].aff.items() if b in NAMES} for a in NAMES}
         hook(cast, "night_start", w, n)
-        dead, err = set(), {name: [] for name in NAMES}
+        dead, err = set(w.gone), {name: [] for name in NAMES}
         for _ in range(TURNS):
             w.step(cast)
             for p in w.people.values():
@@ -880,12 +886,17 @@ def lifetime_measured(spec, nights=None):
                         p.memory.append({"night": n, "t": w.t, "what": "died",
                                          "by": blow["actor"] if blow else None, "event": blow and blow["id"]})
                     hook(cast, "on_death", w, p, blow)
+                    if p.name in NAMES:
+                        deaths.append({"name": p.name, "night": n, "t": w.t, "cause": p.cause or "violence", "by": blow["actor"] if blow else None, "laid": p.name in w.laid,
+                                       "ail": round(p.ail, 3)})
             if w.t % 10 == 0:
                 for name in NAMES:
                     err[name].append(w.drive_error(w.people[name]))
             if all(p.dead or p.down for p in w.people.values()):
                 break
         hook(cast, "night_end", w, n)
+        for q in w.laid:
+            laid_n[q] = laid_n.get(q, 0) + 1
         s = night_stats(w, err)
         stats.append(s)
         rec.all_err.append(s["drive_error"])
@@ -894,6 +905,7 @@ def lifetime_measured(spec, nights=None):
         for name, c in carry.items():
             c["aff"] = {k: start[name].get(k, 0) + FADE * (v - start[name].get(k, 0)) for k, v in c["aff"].items()}
     rec.close()
+    rec.deaths, rec.laid_n = deaths, laid_n
     return stats, rec
 
 
@@ -910,7 +922,8 @@ def run(spec):
            "split": dict(zip(DRIVES, [round(v / max(1, rec.split_n), 4) for v in rec.split_sum])),
            "made": rec.made, "recv": rec.recv, "made_to": rec.made_to, "recv_from": rec.recv_from, "agg": rec.agg,
            "gossip_effect": rec.gossip_effect, "err_all": rec.all_err, "catch": rec.catch_log, "fed": rec.fed_log,
-           "house": rec.house_log, "lump": rec.lump_log, "prov": rec.prov, "care": rec.care, "by_partner": rec.by_partner, "cpu_s": round(cpu, 1)}
+           "house": rec.house_log, "lump": rec.lump_log, "prov": rec.prov, "care": rec.care, "by_partner": rec.by_partner,
+           "deaths": rec.deaths, "laid_nights": rec.laid_n, "max_err": {k: round(sum(wt * max(0.0, 1.0 - sset) for d, (wt, sset) in NATURE[kd].items()), 4) for k, kd in KINDS_OF.items()}, "cpu_s": round(cpu, 1)}
     RUNS.mkdir(parents=True, exist_ok=True)
     tmp = out.with_suffix(".tmp")
     tmp.write_text(json.dumps(res))

@@ -1,0 +1,26 @@
+== P-need Fenn, all6hl2 (30 seeds)
+rules        focal deaths  1 in   59.3 person-years; survival at 100/200/365/500/730 nights 1.00 1.00 1.00 0.97 0.97; causes {'hunger': 1}
+oracle_both  focal deaths  1 in   59.7 person-years; survival at 100/200/365/500/730 nights 1.00 1.00 1.00 1.00 0.97; causes {'violence': 1}
+Cox stratified by seed: hazard ratio oracle/rules 1.00, 95% profile CI [0.04, 25.26]; Wald [0.06, 15.99]; seed bootstrap n/a; LR p = 1.00; events oracle 1, rules 1
+Mantel-Haenszel rate ratio with person-time (strata = seed): 0.90 [0.08, 9.58]
+PASS RULE: NOT MET: the interval is wide (upper end 25.26), underpowered
+whole cast, both choosers: 41 deaths in 564.9 person-years = 72.6 per 1000 py [52.1, 98.5]; laid up at death 14
+     hunger                          33 deaths =    58.4 per 1000 py [40.2, 82.0]
+     violence: the bandit             8 deaths =    14.2 per 1000 py [6.1, 27.9]
+whole cast, rules arm: 19 deaths in 282.4 person-years = 67.3 per 1000 py [40.5, 105.1]; laid up at death 6
+     hunger                          18 deaths =    63.7 per 1000 py [37.8, 100.7]
+     violence: the bandit             1 deaths =     3.5 per 1000 py [0.1, 19.7]
+
+== P-kind Fenn, all6hl2 (10 seeds)
+rules        focal deaths  2 in   19.0 person-years; survival at 100/200/365/500/730 nights 1.00 1.00 1.00 0.90 0.80; causes {'hunger': 1, 'violence': 1}
+oracle_both  focal deaths  1 in   19.3 person-years; survival at 100/200/365/500/730 nights 1.00 1.00 1.00 0.90 0.90; causes {'hunger': 1}
+Cox stratified by seed: hazard ratio oracle/rules 1.00, 95% profile CI [0.04, 25.26]; Wald [0.06, 15.99]; seed bootstrap n/a; LR p = 1.00; events oracle 1, rules 2
+Mantel-Haenszel rate ratio with person-time (strata = seed): 0.49 [0.05, 5.16]
+PASS RULE: NOT MET: the interval is wide (upper end 25.26), underpowered
+whole cast, both choosers: 20 deaths in 180.5 person-years = 110.8 per 1000 py [67.7, 171.1]; laid up at death 11
+     hunger                          17 deaths =    94.2 per 1000 py [54.9, 150.8]
+     violence: the bandit             3 deaths =    16.6 per 1000 py [3.4, 48.6]
+whole cast, rules arm: 10 deaths in 90.2 person-years = 110.8 per 1000 py [53.2, 203.8]; laid up at death 5
+     hunger                           8 deaths =    88.7 per 1000 py [38.3, 174.7]
+     violence: the bandit             2 deaths =    22.2 per 1000 py [2.7, 80.1]
+

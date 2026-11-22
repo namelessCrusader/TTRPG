@@ -1674,6 +1674,214 @@ def test_hard_flag_off_changes_nothing():
     assert any(p.ail > 0 for s in range(30) for p in World(seed=s, flags=W.ALL6).people.values())   # the old one-night ailment is still there
 
 
+# ------------------------------------------------------------------ lethal: a need held at its extreme kills (2026-11-21, owner D1 (c))
+
+class _Idle:
+    """Chooses 'wait' every time (a person who cannot or does not reach water or food)."""
+    name = "idle"
+
+    def probs(self, w, p, opts):
+        pc = [1.0 if o["verb"] == "wait" else 0.0 for o in opts]
+        return pc, pc
+
+
+def _idle_days(w, who, key, days, cap=None):
+    """Hold `who` at the extreme of need `key` (the person never drinks or eats); step until it dies. Returns the days it took (or None)."""
+    p = w.people[who]
+    for t in range(int(days * W.LETHAL_TURNS)):
+        setattr(p, key, 1.0)
+        setattr(p, "hunger" if key == "thirst" else "thirst", 0.0)      # only this need is at its extreme
+        w.step(_Idle())
+        if p.dead:
+            return (t + 1) / W.LETHAL_TURNS
+    return None
+
+
+def test_lethal_thirst_and_hunger_kill_at_the_source_rates():
+    for key, total in (("thirst", 5.0), ("hunger", 45.0)):
+        w = World(seed=3, flags=("lethal",), turns=10 ** 6)
+        d = _idle_days(w, "Tom", key, total + 2)
+        assert d is not None and abs(d - W.LETHAL_RESERVE[key]) < 0.02, (key, d)
+        assert w.people["Tom"].cause == key
+        # the time from a usual level to the cap plus the reserve is the source figure
+        assert abs(W.LETHAL_RESERVE[key] + (1 - W.LETHAL_START) / (W.LETHAL_DRIFT[key] * W.LETHAL_TURNS) - total) < 1e-9
+    assert 3 <= W.LETHAL_DAYS["thirst"] <= 7 and 30 <= W.LETHAL_DAYS["hunger"] <= 60
+
+
+def test_lethal_off_nothing_dies_and_nothing_carries():
+    w = World(seed=3, flags=(), turns=10 ** 6)
+    assert _idle_days(w, "Tom", "thirst", 8) is None
+    assert "body" not in w.carry_out()["Tom"] and "gone" not in w.carry_out()["Tom"]
+
+
+def test_lethal_the_reserve_comes_back_away_from_the_extreme_and_ill_is_faster():
+    w = World(seed=3, flags=("lethal",), turns=10 ** 6)
+    p = w.people["Tom"]
+    for _ in range(int(2 * W.LETHAL_TURNS)):          # two days at the extreme
+        p.thirst = 1.0
+        w.step(_Idle())
+    used = W.LETHAL_RESERVE["thirst"] - p.reserve["thirst"]
+    assert abs(used - 2.0) < 0.02
+    for _ in range(int(1 * W.LETHAL_TURNS)):          # a day with water in reach: a day back
+        p.thirst = 0.2
+        w.step(_Idle())
+    assert abs((W.LETHAL_RESERVE["thirst"] - p.reserve["thirst"]) - 1.0) < 0.03
+    ill = World(seed=3, flags=("lethal",), turns=10 ** 6)
+    ill.people["Tom"].ail = 1.0
+    d = _idle_days(ill, "Tom", "thirst", 6)
+    assert abs(d - W.LETHAL_RESERVE["thirst"] / 2.0) < 0.1, d      # a full ailment doubles the rate (u)
+
+
+def test_lethal_the_body_carries_and_a_laid_up_person_nobody_feeds_dies():
+    FL = tuple(sorted(W.ALL6)) + ("signs", "hard", "lethal", "perma")
+    w = World(seed=5, flags=FL, turns=300)
+    w.people["Tom"].thirst = 1.0
+    w.people["Tom"].reserve["thirst"] = 1.5
+    c = w.carry_out()
+    assert c["Tom"]["body"]["reserve"]["thirst"] == 1.5 and c["Tom"]["body"]["thirst"] == 1.0
+    w2 = World(seed=6, flags=FL, carry=c)
+    assert w2.people["Tom"].thirst == 1.0 and w2.people["Tom"].reserve["thirst"] == 1.5 and not w2.people["Tom"].dead
+
+
+def test_perma_a_death_is_final_and_without_it_the_dead_come_back():
+    for perma in (True, False):
+        FL = ("lethal", "perma") if perma else ("lethal",)
+        w = World(seed=5, flags=FL, turns=300)
+        w.people["Tom"].dead = w.people["Tom"].down = True
+        w.people["Tom"].thirst, w.people["Tom"].reserve["thirst"] = 1.0, -0.1
+        c = w.carry_out()
+        w2 = World(seed=6, flags=FL, carry=c)
+        assert w2.people["Tom"].dead == perma and ("Tom" in w2.gone) == perma
+        if perma:
+            assert w2.carry_out()["Tom"]["gone"]
+            for _ in range(5):
+                w2.step(Rules())
+            assert w2.people["Tom"].dead and w2.people["Tom"].doing is None
+        else:
+            assert w2.people["Tom"].reserve["thirst"] == W.LETHAL_RESERVE["thirst"]      # back afresh
+
+
+def test_lethal_off_the_old_inn_is_unchanged():
+    a = World(seed=4, flags=W.ALL6, turns=60)
+    assert not a.lethal and a.gone == set()
+    for _ in range(60):
+        a.step(Rules())
+    assert "body" not in a.carry_out()["Tom"]
+
+
+# ------------------------------------------------------------------ lethal2: bring any consumable, the raid law, one self-care (2026-11-22)
+L2 = tuple(sorted(set(W.ALL6) | set(W.SIGNS_FLAGS) | set(W.HARD_FLAGS) | set(W.LETHAL_FLAGS) | set(W.LETHAL2_FLAGS)))
+
+
+def _laid_tom(flags, room="the main room"):
+    w = World(seed=3, flags=flags, turns=300)
+    tom, fenn = w.people["Tom"], w.people["Fenn"]
+    tom.room = fenn.room = room
+    w.laid["Tom"] = 5
+    tom.ail, tom.thirst = 0.5, 1.0
+    for q in w.people.values():
+        q.doing = None
+    return w, tom, fenn
+
+
+def test_bring_a_drink_goes_to_the_laid_up_as_one_act_with_the_trip_paid():
+    w, tom, fenn = _laid_tom(L2)
+    br = [o for o in w.options(fenn) if o["verb"] == "serve" and "drink" in o["text"]]
+    well = [o for o in br if o["obj"] == "the well"]
+    assert well and well[0]["target"] == "Tom" and well[0]["dur"] == W.DUR["serve"] + 2 * 1 * W.DUR["walk to"]   # the well is one room away: there and back
+    bucket = [o for o in br if o["obj"] == "the bucket of water"]
+    assert bucket and bucket[0]["dur"] == W.DUR["serve"] + 2 * 1 * W.DUR["walk to"]                            # the kitchen is one room away
+    assert any(o["obj"] == "the barrel of ale" and o["dur"] == W.DUR["serve"] + 2 * 2 * W.DUR["walk to"] for o in br)   # the cellar is two
+    ok, _ = w._apply(fenn, {**well[0], "left": 0})
+    assert ok and abs(tom.thirst - 0.5) < 1e-9
+    tom.thirst = 1.0
+    assert not [o for o in w.options(tom) if o["verb"] == "serve"]       # the laid up cannot carry from the well (but can ask)
+    assert any(o["text"] == "ask Fenn for a drink from the well" and o["f"]["need"] == 1.0 for o in w.options(tom))
+    w2, tom2, fenn2 = _laid_tom(L2, "the kitchen")                       # the same laid-up person carries what is in the room
+    assert any(o["verb"] == "serve" and o["obj"] == "the bucket of water" for o in w2.options(tom2)) is False   # not to itself
+    w2.laid["Fenn"] = 3
+    assert any(o["verb"] == "serve" and o["obj"] == "the bucket of water" and o["dur"] == W.DUR["serve"] for o in w2.options(fenn2))
+    assert not any(o["obj"] == "the well" for o in w2.options(fenn2) if o["verb"] == "serve")
+
+
+def test_bring_serves_only_a_person_who_cannot_fetch_and_is_thirsty():
+    w, tom, fenn = _laid_tom(L2)
+    tom.thirst = 0.05
+    assert not [o for o in w.options(fenn) if "drink" in o["text"]]       # not thirsty
+    tom.thirst = 1.0
+    del w.laid["Tom"]
+    assert not [o for o in w.options(fenn) if "drink" in o["text"]]       # can fetch it itself
+
+
+def test_bring_off_nothing_is_added_and_a_meal_still_serves():
+    off = tuple(f for f in L2 if f != "bring")
+    w, tom, fenn = _laid_tom(off)
+    assert not [o for o in w.options(fenn) if "drink" in o["text"] and o["verb"] in ("serve", "ask")]
+    assert not [o for o in w.options(tom) if "drink" in o["text"] and o["verb"] == "ask" and o["obj"] in ("the well", "the barrel of ale")]
+    w, tom, fenn = _laid_tom(L2)
+    pot = next(n for n in w.portions if n in W.COOK_MAKES)
+    w.things[pot].update(at="Fenn", owner="Fenn")
+    tom.hunger = 0.9
+    assert any(o["verb"] == "serve" and o["obj"] == pot for o in w.options(fenn))      # the meal path is the same act
+
+
+def test_raidlaw_the_fallen_are_not_struck_again_and_the_raid_goes_when_none_stand():
+    for law in (True, False):
+        fl = L2 if law else tuple(f for f in L2 if f != "raidlaw")
+        w = World(seed=3, flags=fl, turns=300)
+        w._raid_arrives()
+        for q in w.people.values():
+            q.room = "the yard"
+        w.people["Tom"].hp, w.people["Tom"].down = 2.0, True
+        for _ in range(30):
+            if w.threat is None:
+                break
+            w._raid_round()
+        hits = [e for e in w.log if e["action"] == "raid hits"]
+        fallen = [e for e in hits if e["target"] == "Tom" and "knocked" not in e["result"]]
+        assert (not fallen) if law else fallen, (law, len(fallen))
+        w2 = World(seed=3, flags=fl, turns=300)
+        w2._raid_arrives()
+        for q in w2.people.values():
+            q.room, q.down = "the yard", True
+        w2._raid_round()
+        assert (w2.threat is None) == law                                 # nobody left to fight: they go (law) / they stay (before)
+    assert abs(W.RAID_KILL - 0.055) < 1e-12
+
+
+def test_raidlaw_deaths_per_raid_follow_the_source_per_raid():
+    kills, n = 0, 3000
+    for s in range(n):
+        w = World(seed=s, flags=L2, turns=300)
+        w._raid_arrives()
+        kills += bool(w.threat["mortal"])
+    assert abs(kills / n - 0.055) < 0.02, kills / n                      # 0.055 a raid, whatever the blows
+    w = World(seed=1, flags=L2, turns=300)
+    w._raid_arrives()
+    w.threat["mortal"] = True
+    for q in w.people.values():
+        q.room, q.hp = "the yard", 10.0
+    w._raid_round()
+    assert w.log[-1]["result"].startswith("killed") and not w.threat["mortal"]  # the first blow kills, once
+
+
+def test_selfcare_is_one_shared_rule_not_a_lethal_patch():
+    from lab.world2.policy import self_care
+    for fl in (L2, tuple(f for f in L2 if f != "lethal")):                # no lethal needed: the rule is the flag
+        w, tom, fenn = _laid_tom(fl, "the kitchen")
+        fenn.hunger = 0.9
+        opts = w.options(fenn)
+        pc = P.background(w, fenn, opts)
+        care = [i for i, o in enumerate(opts) if self_care(o)]
+        assert care and all(pc[i] > 0 for i in care), "a hungry partner asks, buys or works for its own food"
+        assert not any(pc[i] > 0 for i, o in enumerate(opts) if o["verb"] in ("strike", "insult", "give", "praise"))   # and starts nothing else
+    off = tuple(f for f in L2 if f != "selfcare")
+    w, tom, fenn = _laid_tom(off, "the kitchen")
+    fenn.hunger = 0.9
+    opts = w.options(fenn)
+    pc = P.background(w, fenn, opts)
+    assert not any(pc[i] > 0 for i, o in enumerate(opts) if o["verb"] in ("ask", "buy", "work", "offer"))      # flag off: as before
+
 
 if __name__ == "__main__":
     n = 0

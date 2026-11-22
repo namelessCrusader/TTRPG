@@ -95,6 +95,52 @@ def synth(seed, ticks=2500, noise=0.01, shuffle=False, model=None):
     return m
 
 
+def _drift_after(turn_drift, reps=400):
+    """Tick a model whose need rises 0.01 in a 1-turn stretch and not at all in a 99-turn stretch, over and over (true rise 1e-4 a turn)."""
+    m = DeltaMeanings(len(DRIVES), turn_drift=turn_drift)
+    t, need = 0, np.zeros(len(DRIVES))
+    m.update(Tick(t, need.copy()))
+    for _ in range(reps):
+        for dt, rise in ((1, 0.01), (99, 0.0)):
+            t += dt
+            need = need + rise
+            m.update(Tick(t, need.copy()))
+        t += 1                               # keeps the clock honest: a plain tick pair per 100 turns
+        m.update(Tick(t, need.copy()))
+    return float(m.drift[0])
+
+
+def _drift_shift(reps=400, turns=5):
+    """The fixed drift when the need rises 0.01 a turn for `reps` stretches and then stops for `reps` stretches."""
+    m = DeltaMeanings(len(DRIVES), turn_drift=True)
+    need, t = np.full(len(DRIVES), 0.5), 0
+    m.update(Tick(t, need.copy()))
+    for rate in (0.01, 0.0):
+        for _ in range(reps):
+            t += turns
+            need = need + rate * turns
+            m.update(Tick(t, need.copy()))
+    return float(m.drift[0])
+
+
+def test_fx_fix_drift_is_a_per_turn_rate_not_a_mean_over_ticks():
+    """Owed from step 3's verifier. The fix (option fx_fix, DeltaMeanings(turn_drift=True)) weighs a stretch by its TURNS, so the many
+    short ticks do not outweigh the few long ones. The need rises 0.01 in each 1-turn stretch and 0 in each 99-turn one: the true rate is
+    about 1e-4 a turn. The fixed branch must read that; the old branch (a mean of per-tick rates) reads about 5e-3, fifty times too big.
+    The old formula fails the first assertion. A decay-free sum is invisible on a steady rate, so a second check changes the rate: it
+    rises 0.01 a turn for 400 stretches, then stops. The fixed branch forgets (decay) and reads about 0 at the end; a sum with no decay
+    still reads half the early rate (0.005). That mutation fails the second assertion."""
+    fixed, old = _drift_after(True), _drift_after(False)
+    TABLE["fx_fix_drift"] = {"true per turn": 1.0 / 10000.0, "fixed": fixed, "old": old}
+    assert abs(fixed - 1e-4) < 0.3e-4, fixed
+    assert old > 10 * fixed, (old, fixed)
+    shifted = _drift_shift()
+    TABLE["fx_fix_drift_shift"] = {"rate after the change (true 0)": shifted, "no decay would read": 0.005}
+    assert abs(shifted) < 0.5e-3, shifted                       # the old rate is forgotten
+    assert Mind("Tom", "peasant", 1, effects=True, fx_fix=True).fx.turn_drift is True      # the option reaches the model
+    assert Mind("Tom", "peasant", 1, effects=True).fx.turn_drift is False                  # and it is off by default
+
+
 def test_accuracy_synthetic():
     """The learned effect of each (partner, act) converges to the true effect (known here), with the drift taken off."""
     err, rows = {k: [] for k in E}, {}

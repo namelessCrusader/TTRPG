@@ -42,33 +42,9 @@ OtherEffects: what my acts do to the needs of the people I act at. For each act 
 relieves (a meal for the hungry), and eta, the change it makes in the need as a plain number (a blow raises it); the choice uses the
 positive part of each (the help and the harm). Learned from the target's perceived need at my act and when the window closes (at my next
 act aimed at the same person, or CREDIT turns on), minus the natural change of that need over the same time (a per-turn rate learned
-from the stretches in which I aimed nothing at the person). The change is credited to the latest act only (as in step 2, where sharing
+from the stretches in which I aimed nothing at the person). The change is credited to the LATEST act only (as in step 2, where sharing
 it among overlapping acts made a placebo look as good as the real act). The same delta rule as effects.DeltaMeanings, on the target's
 needs. A cultural prior can be set with set_prior(verb, rho, eta, n0).
-
-WHERE A LOCAL RULE PLUGS IN").
-
-THE DEFAULT RULE (RWConcerns). Per target T it keeps
-    a_T  a Rescorla-Wagner association between the target's presence and the homeostatic reward of the step MINUS ITS RUNNING AVERAGE
-         (the existing valence rule V: "drive-error drops that followed contact"). Taking off the average means a target that is always
-         there, or there at random, predicts nothing; cues present share the prediction, so a placebo is held near 0.
-         CONDITIONED REINFORCEMENT.
-    e_T  the effort justification: when I acted for T (my act aimed at T, and it relieved T's need, measured in the step or predicted by
-         the learned act effects) and the step COST me (drive error rose), e_T += cost * (error rise).   COST PAID ON ITS BEHALF.
-    h_T  the habituation: each turn of contact multiplies it by (1 - hab); it recovers toward 1 with time constant 1/rec. It scales
-         what a contact teaches (the step of a_T and the effort credit), so repeated contact pays less.
-    w_T = min(ceil, gain * max(a_T, 0) + e_T).
-It falls by DISUSE (a_T and e_T fade at night, `fade` a night), DISILLUSION (a_T goes negative when error rises after contact, and the
-effort credit then shrinks by `dis` a step) and HABITUATION (above). `ceil` and `gain` are capacities (the genome); the content is not.
-The numbers (lr, gain, ceil, cost, fade, dis, hab, rec, JND) are set before any run, not tuned, and none is sourced yet: a request for
-sources (attachment formation and decay, habituation of social reward) goes to the library.
-
-OtherEffects: what my acts do to the needs of the people I act at. For each act verb: rho, the fraction of the target's need that it
-relieves (a meal for the hungry), and eta, the change it makes in the need as a plain number (a blow raises it); the choice uses the
-positive part of each: the help and the harm, and eta, the rise it causes (a blow). Learned from the target's perceived need before and CREDIT turns
-after my act, minus the natural change of that need when I did nothing aimed at the person (a turn-weighted rate), overlapping acts
-at the same person share the credit as in Rescorla-Wagner. The same delta rule as effects.DeltaMeanings, on the target's needs.
-A cultural prior can be set with set_prior(verb, rho, eta, n0).
 
 WHERE A LOCAL RULE PLUGS IN. (1) a_T is a delta rule on the contact cue: a three-factor rule with the contact as the eligibility trace
 and the drive-error drop minus the prediction as the third factor; the same one a Hebbian rule with a context baseline would give.

@@ -5,6 +5,9 @@ character its own policy). Its rule is written down here, in full, and is
 reported with every result. The world still decides what happens; a partner
 only chooses from the menu the world lists, like any other policy.
 
+SELF-CARE (world flag `selfcare`, 2026-11-22): every partner's background also holds the same self-care every chooser has (policy.self_care: ask, offer, buy or
+work for its OWN food or drink). It is one shared function, not a script of the partner, so the partner scripts below cover only how they respond to others.
+
 EVERY partner, when no rule below fires, does BACKGROUND acts only: the rules
 policy's scores (policy.utility) over the acts that touch no one else (walk,
 flee, take what is not another's, eat, drink, sit down, sleep, look around,
@@ -49,7 +52,7 @@ from __future__ import annotations
 
 import random
 
-from lab.world2.policy import T_RULES, softmax, utility
+from lab.world2.policy import T_RULES, self_care, softmax, utility
 
 BACKGROUND = {"walk to", "flee to", "take", "eat", "drink", "sit down", "sleep", "look around", "open", "play",
               "wait"}
@@ -59,8 +62,12 @@ NEED_THRESH = {"hunger": 0.5, "hurt": 0.2, "fear": 0.25}
 
 
 def background(w, p, opts):
-    """The rules policy's draw over the acts that touch no one else."""
-    ok = [i for i, o in enumerate(opts) if o["verb"] in BACKGROUND and not o["f"].get("theft")]
+    """The rules policy's draw over the acts that touch no one else, plus (world flag `selfcare`) the one self-care every chooser has."""
+    # selfcare (2026-11-22): a body that can die must be able to feed itself. This is NOT a script of the partner: it is the same shared
+    # function (policy.self_care) every chooser's menu already holds, applied the same way to the partner. The partner still starts nothing
+    # else with anyone. With the flag off this is exactly as before.
+    care = "selfcare" in w.flags
+    ok = [i for i, o in enumerate(opts) if (o["verb"] in BACKGROUND or (care and self_care(o))) and not o["f"].get("theft")]
     z = softmax([utility(w, p, opts[i], p.traits) for i in ok], T_RULES)
     pc = [0.0] * len(opts)
     for i, x in zip(ok, z):

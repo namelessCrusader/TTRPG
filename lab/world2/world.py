@@ -268,6 +268,43 @@ HARD_EMPTY = 0.48
 #     the sources support).
 HARD_RAID = 0.01 / (365 * 0.011)
 #  4. COLD: unmeasured in the sources (S5): left as it was.
+# lethal (2026-11-21, owner D1 lever (c): neglect as deadly as it really is). ONE general law for every need that has a clock: a need held at its
+# EXTREME (the cap, 1.0) draws down a RESERVE of days; a need below the extreme gives the days back at the same pace; a reserve at zero is death.
+# No per-cause script: thirst and hunger are two rows of one table. The laid-up die because they cannot reach water or food unless someone
+# brings it: the death comes from the same law. A person's hunger, thirst and reserves CARRY from night to night (without the flag each night
+# starts fresh). Total time without the thing, from a usual level (0.325) to death, in days (LETHAL_DAYS):
+#   thirst 5 days. Humans die without water in about 3 to 7 days, depending on heat, effort and health (v: the "rule of threes" literature,
+#     Wikipedia "Rule of threes (survival)", Healthline, Live Science, accessed 2026-11-21; popular summaries, no single clinical paper). Mid-range 5.
+#   hunger 45 days. A healthy adult on water alone lasts about 30 to 60 days; the 1981 Irish hunger strikers died at 46 to 73 days (v: Wikipedia
+#     "Hunger strike", "1981 Irish hunger strike"; well-fed young men with water and salt, so the inn's 45 is the lower end). The owner's brief: 30 to 60.
+#   The reserve is that total minus the time the drift takes to carry the need from 0.325 to the cap (RESERVE below).
+# RATE MULTIPLIER while ill: the days are used up 1 + ail times as fast (u: fever raises water loss and metabolic rate, about 13 percent a degree
+#   in the literature (k); ail is 0..1 so a full ailment doubles the rate; not fitted to anything).
+# GIVE-BACK: a day away from the extreme returns a day of reserve (u: refeeding and rehydration take about as long as the deficit did).
+# UNTREATED AILMENTS: no case-fatality datum for untreated common illness or injury was found in the Library or the search; the death is DERIVED
+#   from thirst and hunger while laid up. Sugiyama (2004) ASSUMES that a month or more of disability is fatal without food from others (an
+#   assumption, not a measurement); here a month laid up and unfed kills by the hunger row (45 days, about 22 with the full-ailment rate: 44.25 / 2), and unwatered by the thirst row.
+# lethal2 (2026-11-22): three general fixes found by the first lethal check, each behind its own flag (off: exactly as before).
+#   bring    ONE act brings any consumable to a person who cannot fetch it: `serve` now covers a drink as well as a portion of a pot. A drink comes from
+#            a source (the well, the barrel) or a loose drink, fetched on a trip whose time is the walk there and back (the carer stays put in the model;
+#            only the time is paid). The laid up can ask for a drink as they ask for a portion. A drink and a meal are one act with one effect each.
+#   raidlaw  a raid's blows go to those who can still resist (the standing); a person on the floor is out of the fight and is not struck again; when
+#            nobody is standing the raiders go. Before, a raid struck the fallen until they were dead (about 25 blows a raid, 1.6 deaths a raid). Each blow
+#            a raid is a killing raid with chance RAID_KILL (its first blow is mortal), the one constant, read from the source rate below.
+#   selfcare the partner scripts' background holds the SAME self-care every chooser has (see policy.self_care): they ask, buy and work for their own food and drink.
+LETHAL2_FLAGS = ("bring", "raidlaw", "selfcare")
+RAID_KILL = 5 * 0.011   # a raid kills 5 x 0.011 = 0.055 people (Turkana, 1.1 percent a warrior, see HARD_RAID): the source's own unit is the RAID, so a raid
+#                         is a killing raid with this chance, and its first blow is then mortal. Deaths per raid follow the source by construction, whatever
+#                         the number of blows. Measured cause of the old 1.6 deaths per raid (300 raids): a person on the floor was struck again until dead
+#                         (with the raid law and no mortal blow: 0 deaths in 300 raids, 21.6 blows and 0.8 people knocked down per raid).
+SOURCE_PROPS = frozenset({"water_source", "ale_source"})
+DRINK_PROPS = frozenset({"water", "ale", "water_source", "ale_source"})
+LETHAL_FLAGS = ("lethal", "perma")     # lethal: the law above. perma: a person who dies stays dead (no next-night revival); the lab's PERMANENT-DEATH variant.
+LETHAL_DAYS = {"thirst": 5.0, "hunger": 45.0}
+LETHAL_START, LETHAL_TURNS = 0.325, 300
+LETHAL_DRIFT = {"thirst": 0.004, "hunger": 0.003}
+LETHAL_RESERVE = {k: LETHAL_DAYS[k] - (1.0 - LETHAL_START) / (LETHAL_DRIFT[k] * LETHAL_TURNS) for k in LETHAL_DAYS}
+LETHAL_EXTREME = 0.999
 EXPR_MEAN, EXPR_SD, EXPR_LO, EXPR_HI = 0.7, 0.2, 0.15, 1.0     # expressiveness: the share of a state's size that shows
 ACU_MEAN, ACU_SD, ACU_LO, ACU_HI = 1.0, 0.3, 0.4, 1.6          # acuity: the reading's noise is SIGN_NOISE / acuity
 SIGN_NOISE = 0.12
@@ -445,6 +482,8 @@ class Person:
         self.said_kind = {}        # calm: (verb, object) -> turns
         self.ail = 0.0             # tend: the ailment level (0 = none); nothing in the old inn sets it
         self.last_kind = None      # labour: the kind of the last ration eaten tonight
+        self.reserve = dict(LETHAL_RESERVE)   # lethal: days left before each need kills
+        self.cause = None          # lethal: the need that killed it
 
     @property
     def public(self):
@@ -465,7 +504,7 @@ class World:
         self.flags = frozenset(BASE_FLAGS if flags == "all" else FLAGS if flags == "all2" else
                                ALL3 if flags == "all3" else ALL4 if flags == "all4" else
                                ALL5 if flags == "all5" else ALL6 if flags == "all6" else flags)
-        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS)
+        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS) - set(LETHAL_FLAGS) - set(LETHAL2_FLAGS)
         assert not bad, f"unknown flags {sorted(bad)}"
         self.night = night
         self.rng = random.Random(seed)
@@ -505,6 +544,15 @@ class World:
             cook = next(p.name for p in self.people.values() if p.kind == "cook")
             for n in ("the loaf of bread", "the bowl of stew"):
                 self.things[n].update(at=cook, owner=cook)
+        self.gone = set()              # perma: the dead of earlier nights (they stay dead)
+        self.lethal = "lethal" in self.flags
+        for name, c in (carry or {}).items():
+            if c.get("gone") and "perma" in self.flags:        # perma: a death is final
+                self.gone.add(name)
+                self.people[name].dead = self.people[name].down = True
+            elif self.lethal and "body" in c:                  # lethal: the body's state goes on from night to night (a revived person starts afresh)
+                b = self.people[name]
+                b.hunger, b.thirst, b.reserve = c["body"]["hunger"], c["body"]["thirst"], dict(c["body"]["reserve"])
         self.portions = {}             # meals: thing -> rations left
         if "meals" in self.flags:
             assert "trade" in self.flags, "meals needs trade (the cook holds the food)"
@@ -582,7 +630,7 @@ class World:
                 got = mean / LUMP_P if hit else 0.0
                 if self.hard:                # hard: the package is a Gamma(2) size with the mean kept (CV 1.37 with the 0.48 empty)
                     got = lr.gammavariate(LUCK_SHAPE, 1 / LUCK_SHAPE) * mean / (1 - v) if hit else 0.0
-            if p.name in self.laid:          # hard: a laid-up person brings nothing (the draws above are still made: same streams)
+            if p.name in self.laid or p.name in self.gone:   # hard: a laid-up person brings nothing (nor does a dead one) (the draws above are still made: same streams)
                 got = 0.0
             k = int(got + 0.5)
             self.catch[p.name] = k
@@ -620,6 +668,8 @@ class World:
         for p in self.people.values():
             r = random.Random(f"hard/{seed}/{p.name}")
             u0, u1, u2, z, lv = r.random(), r.random(), r.random(), r.gauss(0, 1), r.uniform(AIL_LO, AIL_HI)
+            if p.name in self.gone:
+                continue
             c = (carry or {}).get(p.name, {}).get("ill")
             if c and c[0] > 0:
                 self.laid[p.name], p.ail = c[0], c[1]
@@ -758,6 +808,10 @@ class World:
                       "told": sorted(t for t in p.told if t[0] in cast and t[1] in keys)}
             if "signs" in self.flags:                            # the sign dials are the person's own for the whole life
                 out[n]["dials"] = (p.express, p.acuity)
+            if self.lethal and not p.dead:                       # the body goes on (a person who died comes back afresh, or not at all under perma)
+                out[n]["body"] = {"hunger": p.hunger, "thirst": p.thirst, "reserve": dict(p.reserve)}
+            if p.dead and "perma" in self.flags:                 # a death is final under perma
+                out[n]["gone"] = True
             if self.hard:                                        # an episode goes on into the next night (nights left after tonight)
                 out[n]["ill"] = (max(0, self.laid.get(n, 0) - 1), p.ail)
             if "stock" in self.flags and p.kind == "cook":      # the counter's stock goes into the next night with the cook
@@ -789,6 +843,7 @@ class World:
                 dur = max(dur, HARM_MIN)
             out.append({"verb": verb, "text": text, "target": target, "obj": obj, "f": f,
                         "dur": dur})
+            return out[-1]
 
         danger = self.danger(p)
         others = self.here(p)
@@ -995,6 +1050,8 @@ class World:
 
         if "meals" in self.flags:
             self._meal_options(p, add, awake)
+        if "bring" in self.flags:
+            self._bring_options(p, add, awake)
         if "tend" in self.flags:             # tend the sick; ask to be tended (an ailment cannot be treated by its owner)
             for q in others:
                 if q.ail > TEND_MIN:
@@ -1011,6 +1068,49 @@ class World:
             hit = any(e["action"] == "raid hits" and e["target"] == p.name for e in self.log[-12:])
             add("fend off", f"fend off {th['name']}", obj=th["name"], allies=float(len(fighters)),
                 here=float(len(awake)), hit=float(hit), hp_left=th["hp"] / RAID_HP)
+
+    def _distance(self, a, b):
+        """Rooms between a and b (breadth first); None if not joined."""
+        seen, edge, d = {a}, [a], 0
+        while edge:
+            if b in edge:
+                return d
+            nxt = []
+            for x in edge:
+                for r in ROOMS[x]:
+                    if r not in seen:
+                        seen.add(r)
+                        nxt.append(r)
+            edge, d = nxt, d + 1
+        return None
+
+    def _bring_options(self, p, add, awake):
+        """bring: ONE act for any consumable a person cannot fetch (a drink; a portion is `serve` in _meal_options). The carer fetches a drink from a
+        source (the well, the barrel) or a loose drink and gives it: it costs the serve act plus the walk there and back. One cannot carry what one
+        cannot walk to (laid up). The cannot-fetch person asks the same way (`ask`)."""
+        src = []
+        for n, th in self.things.items():
+            if th["at"] in ROOMS and th["props"] & DRINK_PROPS:
+                d = self._distance(p.room, th["at"])
+                if d is not None:
+                    src.append((n, d))
+        laid = p.name in self.laid
+        for n, d in src:
+            if d and laid:
+                continue
+            for q in awake:
+                if q.name not in self.laid or q.thirst <= FULL:
+                    continue
+                r = p.requests.get(q.name, {})
+                o = add("serve", f"bring {q.name} a drink from {n}", target=q.name, obj=n,
+                        asked=float(r.get("thing") == n and r.get("pay") is None), seen_need=q.thirst if q.thirst > 0.6 else 0.0,
+                        own=p.thirst, left=1.0, like=max(0, p.aff.get(q.name, 0)), distrust=self.distrust(p, q.name))
+                o["dur"] = DUR["serve"] + 2 * d * DUR["walk to"]
+        if laid and p.thirst > FULL:
+            for n, d in src:
+                for q in awake:
+                    add("ask", f"ask {q.name} for a drink from {n}", target=q.name, obj=n, need=p.thirst, gain=0.0,
+                        like=max(0, p.aff.get(q.name, 0)), distrust=self.distrust(p, q.name))
 
     def _meal_options(self, p, add, awake):
         """meals: serve a portion from a pot p holds; buy a meal or work for one at a pot another holds."""
@@ -1171,6 +1271,17 @@ class World:
             p.slight *= RATE["standing_fade"]
         if p.ail > 0 and not p.dead:     # tend: left alone it grows
             p.ail = min(1.0, p.ail + AIL_GROW)
+        if self.lethal and not p.dead:   # lethal: a need at its extreme draws down its reserve; away from it the reserve comes back
+            dt, m = 1.0 / LETHAL_TURNS, 1.0 + p.ail
+            for k, lvl in (("thirst", p.thirst), ("hunger", p.hunger)):
+                if lvl >= LETHAL_EXTREME:
+                    p.reserve[k] -= m * dt
+                    if p.reserve[k] <= 0:
+                        p.dead = p.down = True
+                        p.doing, p.cause = None, k
+                        break
+                else:
+                    p.reserve[k] = min(LETHAL_RESERVE[k], p.reserve[k] + dt)
         if p.requests:                  # a request not answered in 30 turns lapses
             p.requests = {k: r for k, r in p.requests.items() if r["t"] >= self.t - 30}
 
@@ -1262,11 +1373,7 @@ class World:
             W[o]["at"] = None
             return True, {}
         if v == "drink":
-            p.thirst = max(0, p.thirst - 0.5)
-            if d["f"].get("ale"):
-                p.drunk = min(1, p.drunk + 0.3)
-                if "ale" in W.get(o, {}).get("props", ()):
-                    W[o]["at"] = None
+            self._sip(p, o, d["f"].get("ale"))
             return True, {}
         if v == "strike":
             victim = q
@@ -1396,8 +1503,12 @@ class World:
             p.requests.pop(q.name, None)
             q.aff[p.name] = max(-1, q.aff.get(p.name, 0) - 0.1)
             return True, {}
-        if v == "serve":                                     # meals: a portion from the pot p holds
-            if o not in self.portions or W[o]["at"] != p.name or not self._feed(q, 1, o):
+        if v == "serve":                                     # meals: a portion from the pot p holds; bring: a drink fetched for q
+            if o not in self.portions and "bring" in self.flags and W[o]["props"] & DRINK_PROPS:
+                if W[o]["at"] is None:
+                    return False, {"why": "none left"}
+                self._sip(q, o, bool(W[o]["props"] & {"ale", "ale_source"}))
+            elif o not in self.portions or W[o]["at"] != p.name or not self._feed(q, 1, o):
                 return False, {"why": "none left"}
             q.aff[p.name] = min(1, q.aff.get(p.name, 0) + 0.3)        # as a gift (give)
             q.anger[p.name] = max(0, q.anger.get(p.name, 0) - 0.3)
@@ -1423,6 +1534,14 @@ class World:
                 a.aff[b.name] = min(1, a.aff.get(b.name, 0) + 0.1)
             return True, {}
         raise ValueError(v)
+
+    def _sip(self, person, item, ale):
+        """One drink (the same effect whether it is drunk or brought): thirst down; ale also makes drunk and a mug is used up."""
+        person.thirst = max(0, person.thirst - 0.5)
+        if ale:
+            person.drunk = min(1, person.drunk + 0.3)
+            if "ale" in self.things.get(item, {}).get("props", ()):
+                self.things[item]["at"] = None
 
     def _eff(self, person, item):
         """labour: the share of a ration's relief that `item` would give `person` now (1 unless it is the kind it just ate)."""
@@ -1858,20 +1977,26 @@ class World:
         return ev
 
     def _raid_arrives(self):
-        self.threat = {"name": self._raid_kind, "room": "the yard", "hp": RAID_HP, "t0": self.t}
+        self.threat = {"name": self._raid_kind, "room": "the yard", "hp": RAID_HP, "t0": self.t,
+                       "mortal": "raidlaw" in self.flags and self._rr.random() < RAID_KILL}
         self._raid_event("raid arrives", f"{self._raid_kind} comes in from the road", "the yard")
 
     def _raid_round(self):
         """allies: the raid hits one person in its room, or goes for the people. It is beaten when its hp is spent
         (see fend off)."""
         th = self.threat
-        here = [q for q in self.people.values() if q.room == th["room"] and not q.dead]
+        law = "raidlaw" in self.flags          # the blows go to those who can still resist; the fallen are out of the fight
+        live = [q for q in self.people.values() if not q.dead and (q.acts() or not law)]
+        here = [q for q in live if q.room == th["room"]]
         if not here:
             rooms = ROOMS[th["room"]]
-            best = max(rooms, key=lambda r: sum(1 for q in self.people.values() if q.room == r and not q.dead))
-            if any(q.room == best and not q.dead for q in self.people.values()):
+            best = max(rooms, key=lambda r: sum(1 for q in live if q.room == r))
+            if any(q.room == best for q in live):
                 th["room"] = best
                 self._raid_event("raid prowls", f"{th['name']} goes into {best}", best)
+            elif law and not live:
+                self._raid_event("drives off", f"{th['name']} goes, nobody is left to fight", th["room"], result="left")
+                self.threat = None
             return
         v = self._rr.choice(here)
         dmg = RAID_DMG * self._rr.uniform(0.5, 1.5)
@@ -1881,7 +2006,8 @@ class World:
         if v.hp <= 4 and not v.down:
             v.down = True
             res = f"knocked {v.name} down"
-        if v.hp <= -2:
+        if v.hp <= -2 or th.get("mortal"):
+            th["mortal"] = False
             v.dead = v.down = True
             res = f"killed {v.name}"
         self._raid_event("raid hits", f"{th['name']} hits {v.name}", th["room"], victim=v.name, result=res,

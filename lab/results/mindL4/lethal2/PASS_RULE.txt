@@ -1,0 +1,9 @@
+PASS RULE (written 2026-11-22 BEFORE any lethal2 survival run; the fixes and the statistic are fixed first, nothing is tuned toward it).
+World all6hl2 = all6hl + bring + raidlaw + selfcare. 730 nights a life (a night is a day), seeds 1-30 (more if time allows, never fewer), focals Tom / Sir Ada / Marta by seed,
+Fenn = P-need(0.9), Oren = P-hard(0.9); the old P-kind(0.9) Fenn is run for comparison only.
+Choosers: rules (partner-blind) and oracle_both (knows both partners' rules).
+STATISTIC: a hazard model over every focal death, paired by seed. PRIMARY: a Cox proportional-hazards fit stratified by seed (one binary covariate, oracle = 1), time = nights lived,
+a life that does not die is censored at 730 nights; the hazard ratio is exp(beta), 95% interval by the profile likelihood (Wald and a seed bootstrap are shown too). CHECK: the Mantel-Haenszel
+rate ratio with person-time, strata = seed.
+PASS: the hazard ratio oracle / rules is below 1 and its 95% interval excludes 1. Anything else is NOT MET (and if the interval is wide, UNDERPOWERED, with the width stated).
+Also reported (no pass role): the survival table, the whole cast's death rate by cause against the library's cause-specific figures.

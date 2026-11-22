@@ -1,0 +1,6 @@
+PASS RULE (written before any lethal run, 2026-11-21).
+World all6hl (all6h + lethal + perma), seeds 1-10, 730 nights a life (2 years), the focal rotation Tom / Sir Ada / Marta by seed.
+Fenn = P-need(0.9), Oren = P-hard(0.9). Choosers: rules (partner-blind) and oracle_both (knows both partners' rules). The old P-kind(0.9) Fenn is run too, for comparison.
+PASS: the oracle's focal death rate per person-year is lower than the partner-blind rules chooser's, paired by seed, with the 95 percent t interval
+of the paired per-seed difference (rules minus oracle) excluding 0, and the pooled hazard ratio (oracle over rules) below 1.
+Nothing is tuned toward it. Constants: thirst 5 days, hunger 45 days (sources in world.py), ill factor 1 + ail (u), give-back 1 day a day (u).

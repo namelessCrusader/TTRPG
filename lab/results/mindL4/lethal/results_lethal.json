@@ -1,0 +1,617 @@
+{
+ "P-need Fenn, all6hl": {
+  "label": "P-need Fenn, all6hl",
+  "oracle_both": {
+   "deaths": 6,
+   "person_years": 12.871232876712329,
+   "rate_pooled": 0.4661558109833972,
+   "lives": {
+    "1": [
+     193,
+     true,
+     192,
+     "violence"
+    ],
+    "2": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "3": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "4": [
+     127,
+     true,
+     126,
+     "thirst"
+    ],
+    "5": [
+     540,
+     true,
+     539,
+     "violence"
+    ],
+    "6": [
+     95,
+     true,
+     94,
+     "thirst"
+    ],
+    "7": [
+     629,
+     true,
+     628,
+     "thirst"
+    ],
+    "8": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "9": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "10": [
+     194,
+     true,
+     193,
+     "violence"
+    ]
+   },
+   "km": {
+    "100": 0.9,
+    "200": 0.6,
+    "365": 0.6,
+    "500": 0.6,
+    "730": 0.4
+   },
+   "causes": [
+    [
+     "thirst",
+     126
+    ],
+    [
+     "thirst",
+     628
+    ],
+    [
+     "thirst",
+     94
+    ],
+    [
+     "violence",
+     192
+    ],
+    [
+     "violence",
+     193
+    ],
+    [
+     "violence",
+     539
+    ]
+   ]
+  },
+  "rules": {
+   "deaths": 7,
+   "person_years": 12.145205479452056,
+   "rate_pooled": 0.5763591247462215,
+   "lives": {
+    "1": [
+     174,
+     true,
+     173,
+     "violence"
+    ],
+    "2": [
+     144,
+     true,
+     143,
+     "violence"
+    ],
+    "3": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "4": [
+     126,
+     true,
+     125,
+     "thirst"
+    ],
+    "5": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "6": [
+     105,
+     true,
+     104,
+     "thirst"
+    ],
+    "7": [
+     633,
+     true,
+     632,
+     "thirst"
+    ],
+    "8": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "9": [
+     485,
+     true,
+     484,
+     "hunger"
+    ],
+    "10": [
+     576,
+     true,
+     575,
+     "thirst"
+    ]
+   },
+   "km": {
+    "100": 1.0,
+    "200": 0.6,
+    "365": 0.6,
+    "500": 0.5,
+    "730": 0.30000000000000004
+   },
+   "causes": [
+    [
+     "hunger",
+     484
+    ],
+    [
+     "thirst",
+     104
+    ],
+    [
+     "thirst",
+     125
+    ],
+    [
+     "thirst",
+     575
+    ],
+    [
+     "thirst",
+     632
+    ],
+    [
+     "violence",
+     143
+    ],
+    [
+     "violence",
+     173
+    ]
+   ]
+  },
+  "hr": 0.8087940156905674,
+  "hr_ci": [
+   0.30391202802646944,
+   1.751540860085827,
+   4000
+  ],
+  "rate_diff": [
+   0.12233482786578935,
+   -0.5943082658926286,
+   0.8389779216242073
+  ],
+  "rate_diff_death_free": 8,
+  "err_counted": {
+   "rules": [
+    1.532028112676056,
+    0.801435439045188,
+    2.262620786306924
+   ],
+   "oracle_both": [
+    1.3777363943661969,
+    0.6692874473850893,
+    2.0861853413473046
+   ]
+  },
+  "gap_counted": [
+   0.15429171830985905,
+   -0.5926440171458511,
+   0.9012274537655693
+  ],
+  "gap_alive": [
+   0.03418217867880146,
+   -0.0009092205179087529,
+   0.06927357787551167
+  ],
+  "cast": {
+   "per_person": {
+    "Tom": {
+     "deaths": 11,
+     "py": 25.66027397260274,
+     "causes": {
+      "thirst": 8,
+      "hunger": 2,
+      "violence": 1
+     },
+     "laid_at_death": 10
+    },
+    "Sir Ada": {
+     "deaths": 18,
+     "py": 17.6,
+     "causes": {
+      "thirst": 10,
+      "hunger": 1,
+      "violence": 7
+     },
+     "laid_at_death": 11
+    },
+    "Oren": {
+     "deaths": 11,
+     "py": 28.898630136986306,
+     "causes": {
+      "violence": 1,
+      "hunger": 7,
+      "thirst": 3
+     },
+     "laid_at_death": 8
+    },
+    "Fenn": {
+     "deaths": 17,
+     "py": 17.18904109589041,
+     "causes": {
+      "thirst": 12,
+      "hunger": 2,
+      "violence": 3
+     },
+     "laid_at_death": 12
+    },
+    "Marta": {
+     "deaths": 7,
+     "py": 31.975342465753425,
+     "causes": {
+      "violence": 6,
+      "thirst": 1
+     },
+     "laid_at_death": 2
+    }
+   },
+   "deaths": 64,
+   "person_years": 121.32328767123289,
+   "rate_per_1000": 527.5162026059661,
+   "causes": {
+    "thirst": 34,
+    "hunger": 12,
+    "violence": 18
+   },
+   "laid_at_death": 43
+  },
+  "laid_share_of_person_nights": 0.05584931506849315
+ },
+ "P-kind Fenn, all6hl": {
+  "label": "P-kind Fenn, all6hl",
+  "oracle_both": {
+   "deaths": 8,
+   "person_years": 9.90958904109589,
+   "rate_pooled": 0.8072988664639205,
+   "lives": {
+    "1": [
+     343,
+     true,
+     342,
+     "violence"
+    ],
+    "2": [
+     144,
+     true,
+     143,
+     "violence"
+    ],
+    "3": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "4": [
+     129,
+     true,
+     128,
+     "thirst"
+    ],
+    "5": [
+     540,
+     true,
+     539,
+     "violence"
+    ],
+    "6": [
+     102,
+     true,
+     101,
+     "thirst"
+    ],
+    "7": [
+     331,
+     true,
+     330,
+     "violence"
+    ],
+    "8": [
+     374,
+     true,
+     373,
+     "violence"
+    ],
+    "9": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "10": [
+     194,
+     true,
+     193,
+     "violence"
+    ]
+   },
+   "km": {
+    "100": 1.0,
+    "200": 0.6,
+    "365": 0.4,
+    "500": 0.30000000000000004,
+    "730": 0.20000000000000004
+   },
+   "causes": [
+    [
+     "thirst",
+     101
+    ],
+    [
+     "thirst",
+     128
+    ],
+    [
+     "violence",
+     143
+    ],
+    [
+     "violence",
+     193
+    ],
+    [
+     "violence",
+     330
+    ],
+    [
+     "violence",
+     342
+    ],
+    [
+     "violence",
+     373
+    ],
+    [
+     "violence",
+     539
+    ]
+   ]
+  },
+  "rules": {
+   "deaths": 7,
+   "person_years": 12.873972602739727,
+   "rate_pooled": 0.5437327090870397,
+   "lives": {
+    "1": [
+     193,
+     true,
+     192,
+     "violence"
+    ],
+    "2": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "3": [
+     668,
+     true,
+     667,
+     "thirst"
+    ],
+    "4": [
+     125,
+     true,
+     124,
+     "thirst"
+    ],
+    "5": [
+     540,
+     true,
+     539,
+     "violence"
+    ],
+    "6": [
+     110,
+     true,
+     109,
+     "thirst"
+    ],
+    "7": [
+     370,
+     true,
+     369,
+     "violence"
+    ],
+    "8": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "9": [
+     730,
+     false,
+     null,
+     null
+    ],
+    "10": [
+     503,
+     true,
+     502,
+     "violence"
+    ]
+   },
+   "km": {
+    "100": 1.0,
+    "200": 0.7,
+    "365": 0.7,
+    "500": 0.6,
+    "730": 0.30000000000000004
+   },
+   "causes": [
+    [
+     "thirst",
+     109
+    ],
+    [
+     "thirst",
+     124
+    ],
+    [
+     "thirst",
+     667
+    ],
+    [
+     "violence",
+     192
+    ],
+    [
+     "violence",
+     369
+    ],
+    [
+     "violence",
+     502
+    ],
+    [
+     "violence",
+     539
+    ]
+   ]
+  },
+  "hr": 1.4847347841541927,
+  "hr_ci": [
+   0.7356329461440022,
+   3.5612966649807136,
+   4000
+  ],
+  "rate_diff": [
+   -0.35789357384799503,
+   -1.0532701106986644,
+   0.33748296300267444
+  ],
+  "rate_diff_death_free": 8,
+  "err_counted": {
+   "rules": [
+    1.3491004929577461,
+    0.683484389146912,
+    2.0147165967685803
+   ],
+   "oracle_both": [
+    1.8045039859154925,
+    1.1852500605470553,
+    2.42375791128393
+   ]
+  },
+  "gap_counted": [
+   -0.45540349295774635,
+   -1.1410375189312096,
+   0.2302305330157169
+  ],
+  "gap_alive": [
+   0.00032128278203977104,
+   -0.0183747288957225,
+   0.019017294459802044
+  ],
+  "cast": {
+   "per_person": {
+    "Tom": {
+     "deaths": 13,
+     "py": 23.791780821917808,
+     "causes": {
+      "thirst": 9,
+      "violence": 3,
+      "hunger": 1
+     },
+     "laid_at_death": 11
+    },
+    "Sir Ada": {
+     "deaths": 19,
+     "py": 14.591780821917807,
+     "causes": {
+      "violence": 11,
+      "thirst": 8
+     },
+     "laid_at_death": 9
+    },
+    "Oren": {
+     "deaths": 13,
+     "py": 28.98630136986301,
+     "causes": {
+      "thirst": 5,
+      "hunger": 5,
+      "violence": 3
+     },
+     "laid_at_death": 9
+    },
+    "Fenn": {
+     "deaths": 16,
+     "py": 19.868493150684927,
+     "causes": {
+      "thirst": 12,
+      "violence": 2,
+      "hunger": 2
+     },
+     "laid_at_death": 13
+    },
+    "Marta": {
+     "deaths": 10,
+     "py": 31.180821917808213,
+     "causes": {
+      "violence": 9,
+      "thirst": 1
+     },
+     "laid_at_death": 3
+    }
+   },
+   "deaths": 71,
+   "person_years": 118.41917808219176,
+   "rate_per_1000": 599.5650463873402,
+   "causes": {
+    "thirst": 35,
+    "violence": 28,
+    "hunger": 8
+   },
+   "laid_at_death": 45
+  },
+  "laid_share_of_person_nights": 0.050684931506849315
+ }
+}

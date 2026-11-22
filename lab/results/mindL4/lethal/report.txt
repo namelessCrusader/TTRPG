@@ -1,0 +1,86 @@
+LETHAL WORLD (owner D1, lever (c)): neglect as deadly as it really is, judged by survival.   2026-11-21
+
+VERDICT
+The pass rule is NOT met. In all6hl the oracle's focal death rate is 0.47 per person-year against 0.58 for the partner-blind chooser. The hazard ratio
+is 0.81 [0.30, 1.75] and the paired rate difference (rules minus oracle) is +0.12 [-0.59, +0.84]. Both intervals include no effect. The old P-kind Fenn goes the
+other way (HR 1.48 [0.74, 3.56]). Nothing was tuned.
+The world is also NOT realistically deadly overall. It is about 30 times too deadly (527 deaths per 1,000 person-years in the cast; real foragers lose a few
+per 1,000). So the survival check is not a fair test of kindness yet. Two causes, both of the inn and not of the death law (see "Overall deadliness").
+
+PASS RULE (stated before any lethal run, PASS_RULE.txt)
+Oracle focal death rate per person-year lower than partner-blind, with the 95% t interval of the paired per-seed difference excluding 0, and the pooled hazard
+ratio below 1. 730 nights a life (a night is a day, so 2 years), seeds 1-10, focals Tom / Sir Ada / Marta by seed, Fenn P-need(0.9), Oren P-hard(0.9).
+
+1. THE DEATH LAW (flag "lethal"; lab/world2/world.py, LETHAL_* constants and comments)
+One law, no per-cause script. Every need that has a clock has a RESERVE of days. A need held at its extreme (the cap, 1.0) uses up the reserve at 1 day a day.
+A need below the extreme gives a day back per day. A reserve at zero is death. Thirst and hunger are two rows of one table.
+ - THIRST: 5 days without water in total, from a usual level to death (reserve 4.44 days after the need first reaches the cap). Source range 3 to 7 days (v),
+   "rule of threes" literature: Wikipedia "Rule of threes (survival)", Healthline, Live Science (popular summaries; the 3-day figure is traditional, the one-week
+   figure comes from end-of-life observations). Mid-range 5. No single clinical paper was read: say (v) with that caveat.
+ - HUNGER: 45 days of total starvation on water (reserve 44.25 days). The owner's range 30 to 60. Check (v): the ten 1981 Irish hunger strikers died at 46 to 73 days on water
+   and salt (Wikipedia "Hunger strike", "1981 Irish hunger strike"); they were well-fed young men, so 45 is the low end. Secondary sources only.
+ - ILL OR HOT: the reserve is used 1 + ail times as fast (ail is 0 to 1, so a full ailment doubles it). (u) Fever raises water loss and metabolic rate, about 13 percent a degree (k);
+   the factor is not fitted to anything. There is no heat in the inn, so only the ill part exists.
+ - GIVE-BACK: a day away from the extreme returns a day of reserve. (u) No source.
+ - UNTREATED AILMENTS. No case-fatality datum for untreated common illness or injury was found (Library or search). The death is DERIVED from thirst and hunger while laid up.
+   Sugiyama (2004) ASSUMES that a month or more of disability is fatal without food from others (11 of 17 would have died); that is his assumption, not a measurement.
+   Here a laid-up person who is not fed dies of hunger in about 45 days (about 24 with a full ailment) and who is not watered of thirst in about 3 to 5 days.
+   Tending lowers the ailment as before (the ailment multiplies the rate, so tending also slows the clock).
+ - The body CARRIES from night to night under the flag (hunger, thirst, reserves); without it each night starts fresh as before.
+ - Scale note: in this world thirst reaches its cap 0.56 day after a usual level and hunger 0.75 day, so the reserves above are the source totals minus that time.
+
+2. THE PERMANENT-DEATH VARIANT
+It did not exist (docs/learned-mind-target.md 9.10 only recommends it). Added as world flag "perma" (same family, LETHAL_FLAGS = lethal, perma). A person who dies is
+marked gone in the carry and is born dead every later night (it does nothing, brings no catch, cannot fall ill). Without perma the dead come back next night afresh (the revival
+kept for learning). Worlds: all6hl = all6h + lethal + perma; all6hl_rev = all6h + lethal only. The tournament and lifetime loops no longer re-run the death hook for the long dead.
+Partners (P-need, P-hard) now also do the SELF-CARE of food and drink asking, buying and working when the world is lethal (lab/world2/partners.py background): without it a scripted
+partner starved (Oren died of hunger at night 276 in the first probe). That is an artefact of the script, fixed behind the flag only.
+
+3. THE TESTS
+World: 6 new tests in lab/world2/test_world.py (thirst and hunger kill at the source totals; flag off kills and carries nothing; reserve comes back and ill is faster; the body carries;
+perma final and revival without it; flag-off inn unchanged). test_world: 86 passed.
+Flag-off suites all pass: test_world 86, test_mind 30 (golden traces), test_tournament 17, test_effects 10, test_concerns 12.
+Step 3 test tightening, each shown to FAIL under its mutation (scratchpad mut.py):
+ - fx_fix: test_fx_fix_drift_is_a_per_turn_rate_not_a_mean_over_ticks (need rises 0.01 per 1-turn stretch, 0 per 99-turn stretch; fixed reads 1e-4, old reads about 5e-3). Fails if the fixed branch uses the old formula or has no decay. Also checks the option reaches the model.
+ - placebo: test_placebo_needs_the_baseline_taken_off. With a constant good mood (bias 0.05) the always-present placebo is 0.000 with the baseline and loves it without (lr_base = 0); the test requires both. The mutation is caught.
+ - swap: test_swap_exercises_the_eta_sign. Prior strike with rho 0, eta 0.5; the concern term for striking the cared-for Fenn is -0.119 [-0.147, -0.091], for the other it flips. A flipped eta sign fails it (the old swap test did NOT catch that mutation).
+ - concerns.py docstring: the duplicated block and the contradictory OtherEffects text are gone; the code credits the latest act only, and the text says so.
+
+4. THE SURVIVAL TABLE (P-need Fenn; 10 seeds; 12.1 person-years rules, 12.9 oracle)
+                      rules       oracle      
+focal deaths          7           6
+per person-year       0.58        0.47
+survival 100 nights   1.00        0.90
+survival 200 nights   0.60        0.60
+survival 365 nights   0.60        0.60
+survival 500 nights   0.50        0.60
+survival 730 nights   0.30        0.40
+Causes (focal): rules thirst 4, hunger 1, violence 2; oracle thirst 3, violence 3.
+Hazard ratio oracle/rules 0.81 [0.30, 1.75] (pooled rate ratio, 95% from resampling seeds).
+Paired rate difference rules minus oracle +0.122 [-0.594, +0.839] deaths per person-year (t over 10 seeds).
+Drive error with death counted (the nights after the focal dies count the worst error its nature can score, weights x (1 - set point); the night it dies counts as measured):
+  rules +1.532 [+0.801, +2.263]; oracle +1.378 [+0.669, +2.086]; gap rules - oracle +0.154 [-0.593, +0.901]. Death dominates it.
+Old oracle gap (error only, the nights both alive): +0.034 [-0.001, +0.069] (before: -0.007 [-0.017, +0.003] in all6h, 100 nights).
+OLD P-kind Fenn (comparison): rules 7 deaths, 0.54 per person-year; oracle 8 deaths, 0.81; HR 1.48 [0.74, 3.56]; paired difference -0.358 [-1.053, +0.337]; death-counted error gap -0.455 [-1.141, +0.230]; alive-night gap +0.000 [-0.018, +0.019].
+With 10 lives and 6 to 8 deaths each the test has little power: an effect of the size the hardship allows (a few percent of nights) could not show.
+
+5. OVERALL DEADLINESS (every person of every run, deaths and person-years until death)
+P-need runs: 64 deaths in 121 person-years = 527 per 1,000 person-years. P-kind runs: 71 in 118 = 600. Causes (P-need): thirst 34, violence 18, hunger 12.
+Library figures: Hiwi accidental trauma about 2 per 1,000 adults a year, accident plus violence 8 to 9 per 1,000, violent death 0.03 to 1 percent a year (Hill et al. 2007). The world is far above them.
+Cause 1, THIRST OF THE LAID UP (33 of the 34 thirst deaths were of laid-up people). The inn has no way to bring water to a bedridden person: the well is in the yard, the bucket is
+not a pot, and a portioned meal can be asked for or served but a drink cannot. The sources say the bedridden are fed AND cared for (99.4 percent fed). So the death law works as intended and the
+world is missing the affordance by which others bring water. This is a content gap, not a rate.
+Cause 2, VIOLENCE: 18 deaths in 121 person-years = 148 per 1,000 (Sir Ada 7, Marta 6). The raids are rare now (0.0025 a night); these are the inn's own fights between the cast (rules), about 100 times the
+Hiwi violent-death rate. This was hidden before by the next-night revival. It needs its own source-based calibration.
+Hunger: 12 deaths, half of them not laid up (counter stock and lumpy catches; not studied).
+Laid up at death: 43 of 64. Share of person-nights laid up 5.6 percent (the hard inn says 10; early death thins it).
+
+6. WHAT TO DO NEXT (the owner decides)
+(1) Give the bedridden water: make a drink servable like a meal (a portioned pot that can be asked for, served and bought), then re-run this exact check. This is a content change, the largest cause of death.
+(2) Calibrate the inn's violence to the sources (it is the second cause and unsourced).
+(3) Only then judge kindness by survival with more lives (30 or more seeds) and a smaller expected effect. If it still does not pay, family (a) is next, as agreed.
+
+FILES
+Code: lab/world2/world.py (lethal, perma), lab/world2/partners.py, lab/world2/lifetime.py, lab/mindL/tournament.py (all6hl, all6hl_rev, death log), lab/mindL/lethal_report.py.
+Tests: lab/world2/test_world.py, lab/mindL/test_effects.py, lab/mindL/test_concerns.py; docstring fix lab/mindL/concerns.py.
+Results: lab/results/mindL4/lethal/results_lethal.json, PASS_RULE.txt. Runs: /home/nisargparikh/.cache/mark1-build/mindL4/lethal/runs_need_hl and runs_kind_hl. Tables: tables.txt.

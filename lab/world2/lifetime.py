@@ -104,7 +104,7 @@ def lifetime(policy, nights=1000, seed=0, turns=300, flags="all", bandit=None, o
         if start is None:               # the likings as drawn on night 0 (what `fade` returns to)
             start = {a: {b: v for b, v in w.people[a].aff.items() if b in NAMES} for a in NAMES}
         hook(policy, "night_start", w, n)
-        dead, err = set(), {name: [] for name in NAMES}
+        dead, err = set(w.gone), {name: [] for name in NAMES}
         drives = "drives" in w.flags
         for _ in range(turns):
             w.step(policy)

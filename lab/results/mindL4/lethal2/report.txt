@@ -1,0 +1,35 @@
+LETHAL2 REPORT (2026-11-22). World all6hl2 = all6hl + bring + raidlaw + selfcare. Restart: kept the first attempt's code (valid, suites re-run after its last edit), finished the runs under lab.lock (2 workers, nice 19).
+
+THE THREE FIXES (each behind its own flag; flags off = exactly as before; the five lab suites pass: test_world, test_mind with golden traces, test_tournament, test_effects, test_concerns, plus new test_survival)
+1. bring. ONE act, `serve`, now brings any consumable to a person who cannot fetch it: a portion from a pot, or a drink from a source (well, barrel) or a loose drink. The cost is the walk there and back. The laid-up can ask for a drink as they ask for a meal. No per-item case.
+   Result: no thirst deaths at all in 60 lifetimes (before: 34 thirst deaths, 33 of them laid-up people).
+2. raidlaw. Cause found: a raid kept striking people who were already down until they were dead (about 25 blows a raid, 1.6 deaths a raid). Now blows go only to those still standing, and the raiders leave when nobody stands. With only that change: 0 deaths in 300 raids. The source's unit is the RAID (Turkana, 5 x 0.011 = 0.055 deaths a raid), so a raid is a killing raid with chance 0.055 (its first blow is mortal). This is one explicit constant read from the source, not a hidden cap, but it IS a calibration to the source unit, not an emergent result of blows. Check: forced killing raids kill 49 of 50 (so about 0.054 deaths a raid); 0 of 300 without the killing draw.
+   In the 30-seed set the raid nights are the same for every chooser: 61 raids, expected 3.4 killing, observed 0 (p = 0.035, chance). So raids show no deaths in the sweep below.
+3. selfcare. The lethal-only patch in partners.py is gone. One shared function (policy.self_care: ask, offer, buy, work for your own food or drink) is applied to every character; partner scripts keep only how they answer others. Flag off: partner tests unchanged.
+
+THE STATISTIC (pass rule written first, PASS_RULE.txt)
+Cox proportional hazards, stratified by seed (a seed's two lives share a stratum), covariate oracle = 1, time = nights lived, survivors censored at 730; HR = exp(beta); 95% profile-likelihood CI (Wald and bootstrap shown). Check: Mantel-Haenszel rate ratio with person-time. PASS = HR oracle/rules below 1 with the CI excluding 1.
+
+SURVIVAL TABLE (730 nights, focal = Tom / Sir Ada / Marta by seed)
+P-need Fenn, 30 seeds (60 lives):
+  rules        1 focal death in 59.3 person-years; survival at 365 / 500 / 730 nights 1.00 / 0.97 / 0.97 (hunger)
+  oracle_both  1 focal death in 59.7 person-years; survival 1.00 / 1.00 / 0.97 (violence)
+  HR oracle/rules = 1.00, profile CI [0.04, 25.3], Wald [0.06, 16.0]; MH rate ratio 0.90 [0.08, 9.6]; 1 event per arm.
+P-kind Fenn (comparison, 10 seeds only, for time): rules 2 deaths in 19.0 py, oracle 1 in 19.3 py; HR 1.00 [0.04, 25.3]; MH 0.49 [0.05, 5.2].
+Whole-cast table (all 5 people, both choosers), P-need: 41 deaths in 564.9 person-years = 72.6 per 1000 py [52.1, 98.5].
+  hunger 33 deaths = 58.4 per 1000 py [40.2, 82.0]; violence (the bandit) 8 = 14.2 [6.1, 27.9]; thirst 0; raids 0.
+  All hunger deaths are Oren (18), Tom (8), Sir Ada (7). Fenn and Marta never die. Only 14 of 41 were laid up at death.
+  All 8 violence deaths are Sir Ada, killed by the bandit.
+Library cause-specific figures: Hiwi accidents about 2 per 1,000 a year; accidents plus violence 8-9 per 1,000; violence 0.03-1 percent a year. The library has NO all-cause adult rate, so the 72.6 cannot be checked against a source.
+
+VERDICT
+Survival check: NOT MET and UNDERPOWERED. One focal death per arm; the CI is [0.04, 25.3]. It cannot say anything about partner knowledge. Cause: the focal is rarely the one that dies (Marta the cook never starves), so 30 seeds gave 2 events. Power needs about 30 or more focal events (many more seeds, or a focal who is exposed, or a cast-level outcome); not reached.
+Is the world realistically deadly by cause? Better, not yet right.
+  - Thirst: fixed (0 deaths; was 34).
+  - Raids: follow the source by construction (0.054 a raid), but the sweep drew none.
+  - Violence: 14.2 per 1000 py [6.1, 27.9] = 1.4 percent a year, at or just above the top of the cited 0.03-1 percent. It is all the BANDIT (arrives on about 60 percent of nights, an old unsourced rate; the hard flag only replaced the raid rate) and only Sir Ada dies of it. Not fixed here.
+  - Accidents: the world has no accident cause, so the Hiwi 2 per 1000 is not modelled.
+  - Hunger is now the dominant killer at 58 per 1000 py (5.8 percent a year) and has no source. Cause seen in a trace (seed 22, Oren): the larder is empty on nearly every night, Oren sits at hunger 1.0 and eats a few nights in ten; the catch he brings is eaten by others; he lives on the edge of his 45-day reserve. It is a food-sharing / supply problem (the hard-edged partner is not provisioned), not a self-care bug, and it also kills the rules focal. It is the next thing to fix, before any survival comparison.
+NOT DONE: 10 seeds, not 30, for P-kind; the raid sweep drew no killing raid; hunger deaths not fixed.
+
+Files: scratch /home/nisargparikh/.cache/mark1-build/mindL4/lethal2/ (runs_need, runs_kind, tables.txt, tables.json); results lab/results/mindL4/lethal2/.
