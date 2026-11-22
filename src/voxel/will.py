@@ -4,7 +4,8 @@ from . import seam
 from .beliefs import HARM, view
 from .events import _Pending
 from .materials import (AIR, AMBIENT, BODY, FLESH, GRAVITY, LEAF, MATNAME, SOUND, TICK_S)
-from .policy import (ACTS, ANSWERS, CUES, FLINCH_ON, GAZE_SWEEP, LIMBS, LINES, MEANS, LINE_VOICE, MENU_CAP, ORIENTING, PREMOVE_MIN_S, PREMOVE_ON, REFLEXES, VOICE, WANDER, WILL, rank, sheet)
+from src.mind.tourney import merge
+from .policy import (ACTS, ANSWERS, CUES, FLINCH_ON, GAZE_SWEEP, LIMBS, LINES, MEANS, LINE_VOICE, MENU_BATCH, MENU_CAP, ORIENTING, PREMOVE_MIN_S, PREMOVE_ON, REFLEXES, VOICE, WANDER, WILL, rank, sheet)
 
 
 # HOW LONG A BODY MUST BE WATCHED to be seen to run, in ticks (0.3 s): long
@@ -14,6 +15,13 @@ WILL_TRAIL = 12
 
 
 class WillMixin:
+
+    # BATCHED THEN MERGED (wave 14b, lane F; ON at MENU_BATCH since 14bF). None is
+    # the old law: a menu is cut to MENU_CAP by attention. A number B turns the cut
+    # off for a policy that says it is `batchable` (a pure chooser; a mind or a
+    # script keeps the old cut): a menu of B rows or fewer is picked as before, a
+    # longer one is a tournament (`_merged_pick`).
+    menu_batch = MENU_BATCH
 
     def _menu(self, p, cells, percept, limb, chosen, cap=None):
         """Everything ONE PART of this body could actually do, right now.
@@ -587,7 +595,7 @@ class WillMixin:
         R = max(int(round(self._reach_of(p) / max(0.1 * self.scale, 1e-9))), 1)
         if not self._in_reach(cells, where, R):
             return None
-        if self._effort(where)[1] > p.get("strength_N", BODY["strength_N"]):
+        if self._effort(where)[1] > self._strength(p):
             return None
         cell = tuple(map(int, where[0]))
         m0 = int(self.mat[cell])
@@ -597,6 +605,24 @@ class WillMixin:
                        .max(axis=2).min()) for i in range(0, len(where), 256))
         return {"cell": cell, "mat": m0, "label": MATNAME.get(m0, "thing"),
                 "cells": set(map(tuple, where.tolist())), "away": away}
+
+    def _merged_pick(self, sit, limb, chosen, menu, batch):
+        """The pick of a menu longer than `batch`, as a TOURNAMENT: rows in
+        canonical order (their tag, then their key), batches of `batch` with
+        the null act in each, the policy asked of each batch, the winners
+        asked again. A batch that picks the null act has no winner. Returns
+        an index into `menu`. The null act (index 0) is in every batch, so it
+        counts one of the `batch` places."""
+        head = menu[0]
+        keys = [(o["tag"], o["key"]) for o in menu[1:]]
+
+        def pick(members, _rnd):
+            sub = [head] + [menu[m + 1] for m in members]
+            j = self.policy.pick(dict(sit, limb=limb, chosen=dict(chosen)), sub)
+            return members[j - 1] if isinstance(j, int) and 1 <= j < len(sub) else None
+
+        w = merge(keys, batch - 1, pick)
+        return 0 if w is None else w + 1
 
     def _full_menu(self, p, cells, percept, limb, chosen):
         """The menu WITHOUT the cap — what a body would have to choose from if
@@ -689,10 +715,15 @@ class WillMixin:
                      else ("legs", "hands") if phase == "go" else LIMBS):
             if asked is not None and limb not in asked:
                 continue                      # not asked: it goes on as it was
-            menu = self._menu(p, cells, percept, limb, chosen)
+            batch = self.menu_batch if getattr(self.policy, "batchable", False) else None
+            menu = self._menu(p, cells, percept, limb, chosen,
+                              cap=None if batch is None else 10 ** 6)
             if not menu:
                 continue
-            i = self.policy.pick(dict(sit, limb=limb, chosen=dict(chosen)), menu)
+            if batch is not None and len(menu) > batch:
+                i = self._merged_pick(sit, limb, chosen, menu, batch)
+            else:
+                i = self.policy.pick(dict(sit, limb=limb, chosen=dict(chosen)), menu)
             i = i if isinstance(i, int) and 0 <= i < len(menu) else 0
             opt = menu[i]
             menus[limb] = [o["key"] for o in menu]
@@ -790,6 +821,11 @@ class WillMixin:
             elif hands["verb"] == "hold":  # no subsystem: a grip is REACH, and
                 if "who" in hands:             # what it can then do is force —
                     p["dragging"] = hands["who"]   # the same _effort a shove
+                    if self.body_contact:          # closing on someone and gripping is
+                        held = next((r for r in self.persons     # the contact law
+                                     if r["name"] == hands["who"]), None)
+                        if held is not None:                     # with a grip (grapple)
+                            self.grapple(p, held)
                     mind.hold_ev = self.emit(
                         "holds", actor=p["pid"],
                         text=f"{p['name']} takes hold "

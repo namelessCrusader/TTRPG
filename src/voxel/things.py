@@ -620,7 +620,7 @@ class ThingsMixin(RecordsMixin):
                          for rec in mechs.values()):
             return False                  # a hinge holds it: `operate` is the verb
         return got["mass_g"] / 1000.0 * GRAVITY \
-            <= p.get("strength_N", BODY["strength_N"])
+            <= self._strength(p)
 
     def _adopt(self, x, y, z, label, by=None, within=None):
         """ADOPT-ON-TAKE (E4, D3). A hand has just closed on unnamed matter at
@@ -666,8 +666,8 @@ class ThingsMixin(RecordsMixin):
                 return 0
         if (lump[:, 2] == 0).any():
             return 0                          # the ground
-        if self._effort(lump)[0] > (by or {}).get("strength_N",
-                                               BODY["strength_N"]):
+        if self._effort(lump)[0] > (self._strength(by) if by
+                                    else BODY["strength_N"]):
             return 0                          # too heavy to lift
         # WHAT RESTS ON IT: the cell above each of its cells, when that is
         # matter and not its own. The taker's own flesh does not count (a

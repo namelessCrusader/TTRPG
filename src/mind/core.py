@@ -52,6 +52,7 @@ from . import catalog as _catalog
 from .api import Belief, Menu, Option, Percept, Ref, SelfState
 
 MENU_MAX = 16       # the most options an NPC menu has (design 1.1)
+BATCH = 4           # the options a chooser weighs in one pick when a long menu is MERGED (tourney.py)
 MASS = 0.95         # step 2 of the pre-rank: the share of the rules' probability to keep
 FIRST = 12          # step 2 of the pre-rank: the most options it keeps by score
 T_RULES = 0.2       # the temperature of the rules (the Rules chooser draws with it)

@@ -67,6 +67,8 @@ def test_a_THROWN_HIT_is_FELT_by_the_victim_SEEN_by_a_witness_HEARD_behind_a_scr
     a["name"], a["facing"], a["strength_N"] = "thrower", (1.0, 0.0), 3000.0
     b = _person(w, 40, 17)
     b["name"], b["facing"], b["strength_N"] = "victim", (-1.0, 0.0), 3000.0
+    from tests.test_exertion import stock_arm
+    stock_arm(a), stock_arm(b)        # a load knob of 3000 N, the stock adult's arm
     c = _person(w, 25, 4)
     c["name"], c["facing"] = "witness", (0.0, 1.0)
     d = _person(w, 30, 28)

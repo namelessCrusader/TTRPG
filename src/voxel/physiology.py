@@ -1,6 +1,7 @@
 """Blows and wounds, bleeding, perfusion, breath, burns, faint and death."""
 import numpy as np
 from . import injury as IJ, matedge as ME
+from .faintrates import o2_target
 from .materials import (AIR, BLEED, BLOOD, BODY, FLESH, GRAVITY, O2_PER_L,
                         SMOKE_EXT, TICK_S, WOUND)
 
@@ -298,7 +299,7 @@ class PhysiologyMixin:
             met = max(met, h_["p_total_w"] / (1.22 * h_["sheet"]["mass_kg"]))
         if gas:
             # BREATHING: the blood follows the air at the mouth.
-            p["blood_o2"] += (min(frac, 1.0) - p["blood_o2"]) * dt / BREATH["tau_s"]
+            p["blood_o2"] += (o2_target(frac) - p["blood_o2"]) * dt / BREATH["tau_s"]
             # and takes in its carbon monoxide (Purser), while the old dose
             # leaves through the same lungs with a 320 min half-life
             ppm = smoke_gl * BREATH["co_per_smoke"] / BREATH["co_g_l"] * 1e6

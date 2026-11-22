@@ -126,6 +126,29 @@ def slip_speed(mu_floor, speed_ratio):
     return WALK_MPS * max(speed_ratio, 0.0) * (1.0 - mu_floor / req)
 
 
+# THE RECOVERY STEP ASKS FOR FRICTION TOO (wave 14b, lane H). A body whose
+# extrapolated centre of mass is a distance d past its base is rescued by a step
+# whose foot must push back through the floor. For an inverted pendulum of height
+# h the leg force is along the line from the foot to the centre, so the foot needs
+# a friction coefficient of tan(lean) = d / h: the horizontal force the floor must
+# give for each newton it carries (Hof 2008 on the pendulum; Redfern et al. 2001
+# for the same ratio at a heel strike, the "required coefficient of friction").
+# A floor that gives less lets the foot slide out and the step buys nothing.
+STEP_H_MIN = 0.25         # m: the shortest pendulum the law is asked of (as _xcom)
+
+
+def step_friction_needed(past_m, height_m):
+    """Friction a recovery step needs when the centre is `past_m` metres past the
+    base and `height_m` above the foot: d / h (0.0 for a body that is not past)."""
+    return max(float(past_m), 0.0) / max(float(height_m), STEP_H_MIN)
+
+
+def step_holds(mu_floor, past_m, height_m):
+    """Does the floor give the friction the recovery step needs? A floor that is
+    not there (None) is not asked: the step's own 'foot over nothing' test rules."""
+    return mu_floor is None or mu_floor >= step_friction_needed(past_m, height_m)
+
+
 def touch(w, kind, actor, S, Ds, c_c, pressure, slide, L_p, sub_S=None, sub_D=None,
           weights=None, pattern=None, place=None, cause=None, Ts_S=AMBIENT, Ts_D=AMBIENT):
     """THE CONTACT EVENT: face S meets faces Ds. The layers move (mass exact), the

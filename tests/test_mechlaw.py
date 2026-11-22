@@ -473,10 +473,12 @@ def test_the_kick_act_finds_its_side_from_where_the_kicker_stands():
     scenes._person(w, 20, 32)
     w.step()
     q = w.persons[1]
+    m_k, v_k = w.kick_energy(q)                 # this person's own kick (100.8 J with the gate off)
+    e_k = 0.5 * m_k * v_k * v_k
     r = w.kick(q, mid)
     assert r["side"] == "open"
-    # a kick's joules are the actor's: debited and credited to work_out (100.8 J)
-    assert q["_work_J"] == pytest.approx(100.8, rel=1e-9)
+    # a kick's joules are the actor's: debited and credited to work_out
+    assert q["_work_J"] == pytest.approx(e_k, rel=1e-9)
 
 
 def test_a_kick_closes_its_energy_the_actors_100_J_end_up_as_heat_or_pending_swing():
@@ -485,11 +487,13 @@ def test_a_kick_closes_its_energy_the_actors_100_J_end_up_as_heat_or_pending_swi
     w.step()
     q = w.persons[1]
     e0, wo0 = w.total_energy(), w.work_out
+    m_k, v_k = w.kick_energy(q)                 # this person's own kick (100.8 J with the gate off)
+    e_k = 0.5 * m_k * v_k * v_k
     r = w.kick(q, mid)
     assert r["side"] == "open"
-    assert w.work_out - wo0 == pytest.approx(100.8, rel=1e-9)
+    assert w.work_out - wo0 == pytest.approx(e_k, rel=1e-9)
     # held: everything is heat NOW (the leaf's rebound is dissipated)
-    assert w.total_energy() - e0 == pytest.approx(100.8, rel=1e-3)
+    assert w.total_energy() - e0 == pytest.approx(e_k, rel=1e-3)
     # momentum: foot + leaf angular momentum about the axis (no failure)
     imp = r["impact"]
     assert imp["L_after"] == pytest.approx(imp["L_before"], rel=1e-9)

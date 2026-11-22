@@ -41,6 +41,7 @@ import math
 
 import numpy as np
 
+from .faintrates import o2_target
 from .materials import BODY, TICK_S
 from .physiology import BREATH, PhysiologyMixin
 
@@ -184,7 +185,7 @@ class BreathTwin(Twin):
         dt = TICK_S
         want = BREATH["out_met"] if not p["awake"] else \
             (3.5 + 0.1 * 0.0) / 3.5
-        return {"x": min(frac, 1.0),
+        return {"x": o2_target(frac),
                 "r_b": dt / BREATH["tau_s"],
                 "want": want,
                 "r_m": min(dt / BREATH["met_s"], 1.0),

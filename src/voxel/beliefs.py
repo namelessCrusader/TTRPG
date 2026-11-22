@@ -270,7 +270,7 @@ class BeliefsMixin:
             return bool(self.matter._cavity(xyz, need_fluid=False).any())
         if prop == "liftable":
             kg = float(self.smass[idx].sum()) / 1000.0
-            return kg * GRAVITY <= p.get("strength_N", BODY["strength_N"])
+            return kg * GRAVITY <= self._strength(p)
         raise KeyError(f"no such property: {prop!r}")
 
     # ── MISREAD ────────────────────────────────────────────────────────────

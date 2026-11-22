@@ -56,7 +56,7 @@ class HandsMixin:
         menu."""
         _lift, drag_N = self._effort(cells)
         if q["awake"] and q["alive"] and self._underfoot(cells):
-            drag_N += q.get("strength_N", BODY["strength_N"])
+            drag_N += self._strength(q)
         return drag_N
 
     def _within_reach(self, p, cells):
@@ -176,7 +176,7 @@ class HandsMixin:
             self._bulk, self._bulk_gen = set(), gen   # the world may be a
         bulk = self._bulk                             # different shape now
         out, seen, flooded = [], set(), set()
-        strength = p.get("strength_N", BODY["strength_N"])
+        strength = self._strength(p)
         cap = self.reach_things_cap
         off = np.array([x0, y0, z0])
         for c in map(tuple, cand):
@@ -448,7 +448,7 @@ class HandsMixin:
         if float(cluster[:, 2].min()) >= float(own[:, 2].max()):
             return False
         w_N, _ = self._effort(cluster)
-        if w_N > p.get("strength_N", BODY["strength_N"]):
+        if w_N > self._strength(p):
             return False
         # THE FIST IS AT THE END OF AN ARM, not wherever two bodies happen to
         # press together — measured against the nearest touching cell, a man
@@ -656,7 +656,7 @@ class HandsMixin:
                       to=p, site="haul_held:loses_hold")
             return
         _lift, drag_N = self._effort(obj)
-        if min(_lift, drag_N) > p.get("strength_N", BODY["strength_N"]):
+        if min(_lift, drag_N) > self._strength(p):
             return                            # the grip holds; the pull fails
         dx = float(hcell[:, 0].mean()) - float(obj[:, 0].mean())
         dy = float(hcell[:, 1].mean()) - float(obj[:, 1].mean())
@@ -810,7 +810,7 @@ class HandsMixin:
         # AND HE MAY NOT WANT TO COME. Asked every tick, because the answer
         # changes: the same pull that a braced man shrugs off for twenty ticks
         # succeeds the moment his footing is gone or someone stronger takes over.
-        if self._resist(q, cells) > p.get("strength_N", BODY["strength_N"]):
+        if self._resist(q, cells) > self._strength(p):
             return                                # the grip holds; the pull fails
         dx = float(hcell[:, 0].mean()) - float(cells[:, 0].mean())
         dy = float(hcell[:, 1].mean()) - float(cells[:, 1].mean())

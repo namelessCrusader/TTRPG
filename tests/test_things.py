@@ -1083,6 +1083,8 @@ def test_a_NAMED_AXE_is_held_by_WHICH_THING_it_is_from_the_take_to_the_catch():
     a["name"], a["facing"], a["strength_N"] = "thrower", (1.0, 0.0), 3000.0
     b = _person(w, 44, 7)
     b["name"], b["facing"], b["strength_N"] = "catcher", (-1.0, 0.0), 3000.0
+    from tests.test_exertion import stock_arm
+    stock_arm(a), stock_arm(b)            # a load knob of 3000 N, the stock adult's arm
     b["ready"] = True                     # he stands waiting for it (R3)
     with thing(w, "axe", kind="tool", parts={"head": IRON, "haft": WOOD},
                says={"affords": ["cut", "chop"]}) as axe:

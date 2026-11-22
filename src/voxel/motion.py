@@ -6,6 +6,7 @@ from .policy import (WILL, _DIRS)
 from . import contact, stairs
 from .pathlaw import PathingMixin
 from .reflex import ReflexMixin
+from .bodycontact import BodyContactMixin, ankle_cop_m
 
 # How full of liquid a cell can be and still be waded through: half a cell,
 # the same "flooded" line `physiology.BREATH` draws for a face in water.
@@ -151,7 +152,7 @@ class FlatRoutesMixin:
         return out
 
 
-class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
+class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin, BodyContactMixin):
     # PathingMixin is FIRST: with the step range at 0 (BODY has no step_up_m
     # key) it gives the old fit and the same paths, tie for tie (T11, 13a).
 
@@ -655,7 +656,7 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
         centre past the base, the balance reflex has to step."""
         p["_v"] = (float(vx), float(vy))
 
-    def _overbalanced(self, p, own):
+    def _overbalanced(self, p, own, raw=False):
         """Is this body's OWN weight past its OWN base — and which way.
 
         The plainest statement of balance there is. The base is the convex
@@ -675,7 +676,14 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
         forward without moving their hips back or taking a step.
 
         (Asked of a copy of the person that holds nothing and has no speed,
-        it asks about a PLACE: where the body would stand after a step.)"""
+        it asks about a PLACE: where the body would stand after a step.)
+
+        WAVE 14b (gate `body_contact`): a body that is MOVING (it was pushed)
+        has the three Hof mechanisms besides the step (bodycontact.py): the
+        ankle's torque limits how much of the foot the centre of pressure can
+        use (a tired leg shrinks the base), and what is left past the base can
+        be brought back by the counter-rotating trunk and arms or a hand on
+        something that holds. `raw=True` asks without them. Off: as before."""
         # ONLY A BODY THAT IS STANDING UP CAN BE TAKEN OFF ITS FEET. Said as
         # geometry rather than as a flag: a standing body is TALLER than it is
         # long, and a body lying down is not. That is the whole difference, and
@@ -713,10 +721,21 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
         if com is None:
             return None
         hull = self._hull_of(foot[:, :2].tolist())
+        dyn = bool(self.body_contact and p.get("_v") and not raw)
+        if dyn:
+            hull = self._ankle_hull(p, own, hull, kg)
         x, y = self._xcom(p, com, float(foot[:, 2].min()))
         out = list(self._past_hull(hull, x, y))
         if out == [0.0, 0.0]:
             return None
+        if dyn:
+            axis = 0 if abs(out[0]) >= abs(out[1]) else 1
+            ok, how = self._dynamic_recovery(
+                p, own, com, kg, float(np.hypot(out[0], out[1])),
+                (axis, 1 if out[axis] > 0 else -1), float(foot[:, 2].min()))
+            if ok:
+                p["_cr"] = (self.tick, how)
+                return None
         # NOBODY FALLS INTO WHAT IS HOLDING THEM UP. A man slumped against a
         # wall has his weight past his toes and the wall under his shoulder —
         # that is leaning, and it is stable. Asked only about the floor, the
@@ -741,6 +760,26 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
                     and z > int(own[:, 2].min()):   # beside him, not under him
                 return None
         return tuple(out)
+
+    def _ankle_hull(self, p, own, hull, kg):
+        """The base a MOVING body's ankle can use: the hull, shrunk about its
+        middle to what the ankle's torque can reach (bodycontact.ankle_cop_m)
+        when that is less than half the foot. A healthy leg uses all of it
+        (the same hull); a tired or broken one less."""
+        if len(hull) < 2:
+            return hull
+        st = self._state_of(p, "kick")
+        vox_m = 0.1 * self.scale
+        xs = [q[0] for q in hull]
+        ys = [q[1] for q in hull]
+        half = 0.5 * max(max(xs) - min(xs), max(ys) - min(ys)) * vox_m
+        if half <= 0.0:
+            return hull
+        f = min(1.0, ankle_cop_m(kg, st) / half)
+        if f >= 1.0:
+            return hull
+        cx, cy = sum(xs) / len(xs), sum(ys) / len(ys)
+        return [(cx + (q[0] - cx) * f, cy + (q[1] - cy) * f) for q in hull]
 
     def _pulled_over(self, p, own):
         """Which way what this body is holding drags it off its own feet — or
@@ -904,7 +943,7 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
         mps = WILL["run_mps"] if gait == "run" else WILL["walk_mps"]
         if gait == "creep":
             mps /= SOUND["sneak_slow"]
-        full = p.get("strength_N", BODY["strength_N"])
+        full = self._strength(p)
         return (0.1 * self.scale / (mps * TICK_S)
                 * full / max(full - haul, full * 0.05))
 
@@ -1262,6 +1301,19 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
                         p["_v"] = landed_v
                         over = self._overbalanced(p, cells) or over
                     if over is None:
+                        cr = p.get("_cr")
+                        if cr is not None and cr[0] == self.tick and \
+                                self.body_contact and not p.get("_cr_ev"):
+                            # THE BODY KEPT ITS FEET WITHOUT A STEP (Hof's
+                            # counter-rotation, a hand on a wall): written
+                            # down as the reflex's own act
+                            p["_cr_ev"] = True
+                            self._reflex_fire(
+                                p, "balance", "stands",
+                                f"{p['name']} flings out their arms and keeps their feet"
+                                if len(cr[1]) == 1 else
+                                f"{p['name']} puts a hand on {cr[1][-1][8:]} and keeps their feet",
+                                result="steadied", how="+".join(cr[1]))
                         if p.get("_reflex") or p.get("_v"):
                             self._steadied(p, cells)
                         continue
@@ -1384,10 +1436,15 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
             h = max((float(com[2]) - float(own[:, 2].min()) + 0.5)
                     * 0.1 * self.scale, 0.25) if com is not None else 0.7
             k = float(np.exp(-np.sqrt(GRAVITY / h) * TICK_S))
+            v0 = v
             v = (v[0] * k, v[1] * k)
             if abs(v[0]) + abs(v[1]) < 0.01:
+                self._book_foot_loss(p, own, v0, (0.0, 0.0))
                 p.pop("_v", None)
+                p.pop("_cr_ev", None)
+                p.pop("_v_src", None)
             else:
+                self._book_foot_loss(p, own, v0, v)
                 p["_v"] = v
 
     def _balance_reflex(self, p, own, over):
@@ -1430,7 +1487,43 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
             return False
         if plan[0] == "grab":
             return self._balance_grab(p, own, plan[1])
+        if not self._step_grips(p, own, plan[1], over):
+            # THE FOOT WOULD SLIDE OUT (wave 14b H): the floor under the step
+            # gives less friction than the step needs, so it buys nothing. A
+            # hold within reach can still be taken; else the body goes over.
+            hold = self._hold_target(p, own)
+            if hold is not None:
+                return self._balance_grab(p, own, hold)
+            self._reflex_fire(p, "balance", "touches",
+                              f"{p['name']}'s foot slides out from under them",
+                              result="slip")
+            return False
         return self._balance_step(p, own, plan[1])
+
+    def _step_grips(self, p, own, shift, over):
+        """Does the floor under this recovery step give the friction it needs
+        (`contact.step_holds`)? The pendulum is the body's centre of mass over
+        the soles; `over` is how far (in cells) its extrapolated centre is past
+        the base, the lean the step must undo. Gated by `contact_laws` like
+        the slip law: off, every step grips, as before."""
+        if not self.contact_laws:
+            return True
+        zlo = int(own[:, 2].min())
+        sole = own[own[:, 2] == zlo]
+        dx, dy = int(shift[0]), int(shift[1])
+        vox_m = 0.1 * self.scale
+        mus = [contact.floor_mu(self, int(c[0]) + dx, int(c[1]) + dy, zlo)
+               for c in sole[:: max(len(sole) // 6, 1)]]
+        mus = [m for m in mus if m is not None]
+        if not mus:
+            return True
+        com, _kg = self._com_of(own)
+        cz = float(com[2]) if com is not None else float(own[:, 2].mean())
+        h = (cz - zlo + 0.5) * vox_m
+        # the foot is placed where it can undo the lean AND the step it takes:
+        # the lean is the part past the base, and a step is never shorter
+        past = float(np.hypot(over[0], over[1])) * vox_m
+        return contact.step_holds(min(mus), past, h)
 
     def _balance_plan(self, p, own, over):
         """What the reflex would do for this body now: ("step", (dx, dy)),
@@ -1530,7 +1623,11 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
                 self._carry_own(p, *st)
                 cells = cells + np.array([st[0], st[1], 0], dtype=cells.dtype)
                 moved += 1
-        p.pop("_v", None)
+        v_was = p.pop("_v", None)
+        if v_was and self.body_contact:
+            self._book_foot_loss(p, cells, v_was, (0.0, 0.0))    # the step spends it
+        p.pop("_cr_ev", None)
+        p.pop("_v_src", None)
         if not moved:
             return False
         p["_claim_tick"] = None
@@ -1611,6 +1708,10 @@ class MotionMixin(PathingMixin, FlatRoutesMixin, ReflexMixin):
         edge = foot[:, axis].max() if s > 0 else foot[:, axis].min()
         zb = float(foot[foot[:, axis] == edge][:, 2].min())
         v = p.pop("_v", None) or (0.0, 0.0)
+        if self.body_contact and p.pop("_v_src", None) is not None:
+            com0, kg0 = self._com_of(cells)          # the speed goes into the turn
+            self._cbook()["to_fall_J"] += 0.5 * kg0 * (v[0] ** 2 + v[1] ** 2)
+        p.pop("_cr_ev", None)
         hist = p.get("_xy_hist")
         if hist and len(hist) >= 2 and hist[-1][0] > hist[0][0]:
             # the speed he was hauled at, over the ticks kept: his weight

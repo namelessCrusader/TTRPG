@@ -593,7 +593,7 @@ class SkeletonMixin:
     def _hand_strength(self, p, arm):
         """What that hand can put out. The other one is weaker, which is most
         of what having a dominant hand MEANS."""
-        full = p.get("strength_N", BODY["strength_N"])
+        full = self._strength(p)
         return full if arm == str(p.get("handed", "right")) + " arm" \
             else full * BODY["off_hand"]
 

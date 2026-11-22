@@ -490,6 +490,8 @@ def _first_blow(cells, square, they_square, bare):
     a["name"] = "attacker"
     b = _person(w, 17 + cells, 10)
     b["name"] = "defender"
+    from tests.test_exertion import stock_arm
+    stock_arm(a), stock_arm(b)       # the band is the stock adult's arm (STAND_OFF_M)
     for p, way, turn in ((a, 1.0, square), (b, -1.0, they_square)):
         if turn:
             p["facing"] = (way, 0.0)

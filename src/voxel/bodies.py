@@ -1,4 +1,6 @@
 """Free rigid bodies: launch, ballistics, drag, a person going over (a pendulum), landing, and what a landing costs."""
+import math
+
 import numpy as np
 from .materials import (AIR, AIR_DENS, BODY, DRAG_CD, FLESH, FRICTION, GRAVITY, MATNAME,
                         NOFLUID, TICK_S, _CSOLID_ARR, _TOUGH_ARR)
@@ -660,7 +662,10 @@ class BodiesMixin:
                 # nobody types how long a swing takes.
                 w_s = b["omega"] / TICK_S                # rad/tick -> rad/s
                 fade = max(0.0, 1.0 - w_s / max(BODY["arm_wmax"], 1e-9))
+                w_0 = w_s
                 w_s += (b["Nm"] * fade / b["I"]) * TICK_S
+                if "paid_J" in b:
+                    w_s = self._pay_swing(b, w_0, w_s)
                 b["omega"] = w_s * TICK_S
                 theta_next = min(b["theta"] + b["omega"], np.pi / 2)
                 # LET GO, if that is what this swing was for. Before the block
@@ -670,9 +675,10 @@ class BodiesMixin:
                         and theta_next >= BODY["throw_rad"] \
                         and (b["segof"] == -1).any():
                     b["theta"] = theta_next
-                    self._release(b, b["segof"] == -1,
-                                  np.round(self._body_pose(b, theta_next)))
+                    rel_at = np.round(self._body_pose(b, theta_next))
+                    self._release(b, b["segof"] == -1, rel_at)
                     if not len(b["cells"]):
+                        self._book_swing(b, rel_at)     # the whole limb was the throw
                         continue                  # nothing of it left to swing
                 pose = np.round(self._body_pose(b, theta_next)).astype(np.int64)
                 inb = ((pose[:, 0] >= 0) & (pose[:, 0] < nx) & (pose[:, 1] >= 0)
@@ -784,6 +790,14 @@ class BodiesMixin:
                 blows[k][2] += per
         eplan = edgewear.plan(self, b, struck)    # C8b: the edge as it is, before it strikes
         for q, cell, e in blows.values():
+            # ONE CONTACT LAW (wave 14b, lane E; behind `body_contact`): a blunt body
+            # that strikes a person (a fist or a swung tool, a thrown thing, a body
+            # falling onto them) meets them as two bodies with masses, speeds, a
+            # restitution and a friction, not as joules poured into flesh. An edge
+            # (a blade) cuts: that is the old blow below.
+            if self.body_contact and not len(ed) and self._contact_blow(
+                    b, q, cell, e, joules, a_hit, actor_pid, instrument, fall_cause):
+                continue
             # flesh DEFORMS, it does not fragment — TOUGH[FLESH] said so
             # in words while a big enough blow shattered feet into debris
             # anyway. What a blow does to a body is `_blow`'s business:
@@ -1082,6 +1096,42 @@ class BodiesMixin:
                     return take(t, q)          # in pieces is worse than piled
         return poses[0]
 
+    def _pay_swing(self, b, w_0, w_1):
+        """The muscle's work in one tick of a swing, paid from its owner's books as it
+        is done (mechlaw._pay_strike: stores at the efficiency of muscle, or the limb's
+        reserve). The kinetic energy the arm gained is 1/2 I (w1^2 - w0^2); a body that
+        cannot pay all of it is weaker for it (the speed is the one the paid joules
+        buy). The paid joules wait in b["paid_J"] and are deposited as heat when the
+        swing ends (`_book_swing`). Returns the speed after the tick."""
+        dW = 0.5 * b["I"] * (w_1 * w_1 - w_0 * w_0)
+        if dW <= 0.0:
+            return w_1
+        who = next((q for q in self.persons if q["name"] == b.get("owner")), None)
+        if who is None:
+            return w_1
+        sc = self._pay_strike(who, dW, "swing", kind=b.get("exkind", "punch"))
+        if sc < 1.0:
+            w_1 = math.sqrt(max(w_0 * w_0 + 2.0 * dW * sc / b["I"], 0.0))
+        b["paid_J"] += dW * sc
+        return w_1
+
+    def _book_swing(self, b, at):
+        """The swing is over (the arm landed, or the thing was let go): every joule
+        its muscle was billed for becomes heat where it stopped, credited once to the
+        person who did the work (the one-flow rule: the actor, not mech_in)."""
+        J = float(b.get("paid_J", 0.0))
+        b["paid_J"] = 0.0
+        who = next((q for q in self.persons if q["name"] == b.get("owner")), None)
+        if J <= 0.0 or who is None:
+            return
+        cells = np.round(np.asarray(at, dtype=np.float64)).astype(np.int64).reshape(-1, 3)
+        nx, ny, nz = self.shape
+        ok = ((cells >= 0) & (cells < (nx, ny, nz))).all(axis=1)
+        cells = cells[ok]
+        if not len(cells):                       # off the lattice: where the body is
+            cells = np.round(np.asarray(b.get("body_at", (0, 0, 0)), np.float64)).astype(np.int64).reshape(-1, 3)
+        self.deposit(cells, J, actor=who)
+
     def _land_body(self, b, theta, struck=None):
         """Demote: rasterize the body back onto the grid at its landing pose.
         Blocked cells pile upward as debris; the support law settles the rest.
@@ -1096,6 +1146,8 @@ class BodiesMixin:
         # cost alchemist 862 saved frames instead of 130 and nothing else.
         if theta is not None and theta < 0.7:    # a flying body has no lean to
             self._torque_sleep = max(self._torque_sleep, 20)   # be wedged at
+        if b.get("paid_J"):
+            self._book_swing(b, b["cells"] if struck is None or not len(struck) else struck)
         if b.get("part"):
             # A LIMB IS HELD AT ITS JOINT. Rasterising it wherever the swing
             # stopped leaves the far end nowhere near the body, and a lump of
@@ -1317,7 +1369,7 @@ class BodiesMixin:
                         self._shatter(dx, dy, dz, e_per / thr_i)
                 elif "damage" in self.mat_laws:      # and a landing that did not break it cracked it
                     matlaws.impact_damage(self, (dx, dy, dz), float(e_per), vox_m ** 2)
-        if sore > 0.0 and b.get("owner") is not None and not b.get("part"):
+        if b.get("owner") is not None and not b.get("part"):
             # A FALL HURTS. _land_body always paid 1/2 m v² against what a body
             # STRUCK and nothing against the body — a man dropped onto stone
             # landed whole and entirely unbothered, and "pulled off a cliff"
@@ -1327,7 +1379,8 @@ class BodiesMixin:
                 if q["name"] == b["owner"]:
                     with self.because(lands_box) if lands_box is not None \
                             else self.because(None):
-                        self._wound(q, sore)
+                        if sore > 0.0:
+                            self._wound(q, sore)
                         self._injure_landing(q, joules, pose, contact,
                                              shares, lands_box)
                     if sore / BODY["hurt_J"] >= 0.02:

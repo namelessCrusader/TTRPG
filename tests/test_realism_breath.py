@@ -159,7 +159,12 @@ def test_B_T1_DROWNING_CLOCK_a_held_breath_lasts_minutes():
 
 def test_B_T2_a_ROOM_WITH_LITTLE_OXYGEN():
     """B-T2 (source 193, row B21): in air of 14% O2 nobody faints within
-    10 min; at 10% they faint within 1-10 min; at 5% coma comes in 10-60 s
+    10 min; at 10% they do NOT faint within 10 min (wave 14bF, declared: the
+    row said 1-10 min, from a coarse hazard table; the haemoglobin curve of
+    wave 14b lane H, Severinghaus 1979, and the FAA time of useful
+    consciousness at 18000 ft, which is 10.4% sea-level-equivalent oxygen,
+    20-30 min, agree that 10% is not a faint within 10 min); at 5% coma comes
+    in 10-60 s
     and death not before ~2 min. Before G9: at 5% faint 1.1 s, death 5.3 s.
 
     Reduced: three small sealed rooms at 10 cm in place of 3 x 3 x 2.5 m
@@ -177,8 +182,7 @@ def test_B_T2_a_ROOM_WITH_LITTLE_OXYGEN():
     clock(w)
     f, d = clock.faint, clock.dead
     assert "14%" not in f, f"14% must not faint in 10 min ({f.get('14%')})"
-    assert 1 * MIN <= f.get("10%", -1) <= 10 * MIN, \
-        f"10%: faint at {f.get('10%', -1) / S:.0f} s"
+    assert "10%" not in f, f"10% must not faint in 10 min ({f.get('10%')})"
     assert "10%" not in d
     assert 10 * S <= f["5%"] <= 60 * S, f"5%: coma at {f['5%'] / S:.0f} s"
     assert d.get("5%", 10 * MIN) >= 2 * MIN, \

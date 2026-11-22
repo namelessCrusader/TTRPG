@@ -50,6 +50,14 @@ THE MENU (MindConfig.menu, step M12):
                P(option | scope), the scopes not asked drawn by the rules.
 A player always picks from the full flat menu.
 
+THE BATCH (MindConfig.batch, wave 14b lane F; None keeps the old pre-rank).
+With a number B, the flat menu of an NPC is not cut. A menu of B options or
+fewer is asked as it always was. A longer one is a TOURNAMENT (tourney.py):
+canonical order, batches of B or fewer, a pick in each, the winners picked
+again. The same options in any order give the same pick. Rules cost no model
+call; a model chooser gets about n/(B-1) small questions, each counted by
+the remote counter, so reactive mode stays at 0.
+
 WHAT A BACKEND GIVES. The Backend protocol (api.py), and two more things:
 - `start` takes the keywords `menu`, `probs` and `probs_avg`: the Menu that
   the chooser saw, and the draws of this character and of an average one
@@ -67,6 +75,7 @@ from __future__ import annotations
 from dataclasses import dataclass, fields
 
 from . import core, describe, scope
+from .tourney import Tourney
 from .api import Decision, DecisionRequest, Menu, Why
 from .choosers import Combined, Gate, Player, Random, Rules, one_hot
 
@@ -90,6 +99,8 @@ class MindConfig:
     menu: str = "flat"                      # one of MENUS
     scopes: int = scope.SCOPE_MAX           # two: the most entries of level 1
     acts: int = scope.ACT_MAX               # two: the most options of level 2
+    batch: int | None = None                # flat: None keeps the pre-rank cut; a number MERGES
+                                            # the full menu in batches of this size (tourney.py)
 
     def __post_init__(self):
         if self.mode not in MODES:
@@ -98,6 +109,8 @@ class MindConfig:
             raise ValueError(f"menu {self.menu!r} is not one of {MENUS}")
         if self.npc not in NPC:
             raise ValueError(f"npc chooser {self.npc!r} is not one of {tuple(NPC)}")
+        if self.batch is not None and self.batch < 2:
+            raise ValueError("a batch has room for two options at least")
         object.__setattr__(self, "featured", tuple(self.featured))
 
 
@@ -182,7 +195,13 @@ class Mind:
             return self._two(backend, who, reason, chooser)
         opts = backend.bind(who)
         prior, avg, hab = backend.rule_scores(who, opts)
-        m = core.menu(opts, prior, avg, hab, cat=self.cat, player=player, cap=c.cap)
+        # BATCHED THEN MERGED (tourney.py): nothing is cut, a long menu is picked in
+        # small batches and the winners are picked again. A menu of `batch` or
+        # fewer is asked as it always was.
+        m = core.menu(opts, prior, avg, hab, cat=self.cat, player=player or c.batch is not None,
+                      cap=c.cap)
+        if c.batch is not None and not player and len(m.options) > c.batch:
+            chooser = Tourney(chooser, c.batch)
         state = backend.self_state(who)
         sc = core.scene(state, backend.percepts(who), backend.beliefs(who), m, cat=self.cat,
                         backend=backend.name)

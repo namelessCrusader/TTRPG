@@ -4,6 +4,7 @@ import math
 
 import numpy as np
 from .materials import (AIR, BODY, CHEST0, GRAVITY, TICK_S, _SIX)
+from . import exertion as _EX
 _SWEEP_RAD = 0.08              # how finely a limb's turn is swept for
                                # things in the way. One voxel at the end
                                # of a 9-voxel arm is about 0.11 rad, so
@@ -12,7 +13,7 @@ _SWEEP_RAD = 0.08              # how finely a limb's turn is swept for
 
 class PoseMixin:
 
-    def _swing(self, p, name, toward=None, back=0.0):
+    def _swing(self, p, name, toward=None, back=0.0, kind=None):
         """Put a LIMB in motion about its joint, driven by a muscle.
 
         This is the same rotation a toppling tree does — `_body_pose` has always
@@ -76,6 +77,14 @@ class PoseMixin:
         b["zb"] = float(jz)
         b["theta"], b["omega"] = 0.0, 0.0
         b["Nm"], b["I"] = BODY["arm_Nm"], inertia
+        if self.exertion_from_body:
+            # THE MUSCLE IS THIS PERSON'S (wave 14b): the stock adult's arm torque scaled
+            # by their strike over the stock strike (strength, training, technique, a
+            # spread of their own, fatigue and injury: exertion.strike). The work the
+            # arm does is paid from their books as it is done (`_pay_swing`).
+            b["exkind"] = kind or ("throw" if back else "punch")
+            b["Nm"] = max(BODY["arm_Nm"] * _EX.torque_scale(p, b["exkind"]), 1e-6)
+            b["paid_J"] = 0.0
         b["seg"] = name
         b["segof"], b["bones"] = segof, bones
         # WHERE THE REST OF HIM WAS, so the arm can come back to the body and

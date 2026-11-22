@@ -3,6 +3,7 @@ import zlib
 
 import numpy as np
 
+from src.mind.core import BATCH
 from .materials import SHOUT_DB, TICK_S
 
 # WILL — the reflex layer of a mind, as data: what a body notices and what it
@@ -342,6 +343,15 @@ WANDER = frozenset({"go:frontier", "go:roam", "go:step"})
 # forty places a full legality sweep would list. Modelling the limit is more
 # true than pretending it is absent (Ruling 1: model the cause).
 MENU_CAP = 7
+# MENU_BATCH — the size of ONE pick when a long menu is merged (a world with
+# `menu_batch` set). It is the one the mind uses (mind/core.py BATCH): 4, the
+# size a model reading a menu in one pass is best at (docs/
+# large-action-spaces-review.md: 70% at 4, 57% at 16, 7% at 128). The null act
+# counts one of the 4. The table here is exact at any size (a max merges
+# exactly: tools/menu_batch_measure.py), so the number matters to a model
+# policy, not to the table. Below MENU_CAP, so a menu of this size or fewer
+# was never cut and is picked exactly as before.
+MENU_BATCH = BATCH
 
 
 class TablePolicy:
@@ -362,6 +372,9 @@ class TablePolicy:
     waits on nothing, which is what keeps reactive play at zero model calls."""
 
     name = "table"
+    # A pure chooser: asking it of a batch of the menu changes nothing, so a
+    # long menu can be a tournament of batches (will.py `_merged_pick`).
+    batchable = True
     # With nothing to react to, the table wanders in the room it stands in
     # (`WANDER`): a chooser that is not the table, a mind or a scene's script,
     # has chosen what it picks, and is not held to the room.

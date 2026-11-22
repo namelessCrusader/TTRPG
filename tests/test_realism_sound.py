@@ -759,6 +759,7 @@ def test_the_MOUTH_menu_offers_every_line_at_every_loudness():
 
     class Rec(TablePolicy):
         menus = []
+        batchable = False       # this test reads the whole mouth menu, not a batch of it
 
         def pick(self, sit, menu):
             if sit["limb"] == "mouth":

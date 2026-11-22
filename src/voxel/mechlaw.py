@@ -41,6 +41,7 @@ import numpy as np
 from . import mechanisms as mech
 from .events import hash01
 from .materials import AIR, BODY, FLESH, TICK_S, WOOD
+from . import exertion as _EX
 
 try:                                      # the lock: phase A cross-module import
     from . import locks as _locks
@@ -78,6 +79,12 @@ class MechanismsMixin:
     mech_in = 0.0                 # joules booked for releases with no actor
     work_out = 0.0                # joules actors delivered to mechanisms
     _mech_phase = False           # True while the law runs (events are deferred)
+    # GATE (wave 14b, lane G; ON for every world since 14bF, W15-Q8 (a)): True draws
+    # every strike, throw, lift and haul from the body (exertion.py): muscle force,
+    # segment mass, technique, training, fatigue, injury, and a per person spread
+    # around the ordinary 115 J kick, paid from the body's books. False keeps the old
+    # flat numbers (5.6 kg x 6 m/s = 100 J at strength 400 N), bit for bit.
+    exertion_from_body = True
 
     # ── bookkeeping ─────────────────────────────────────────────────────────
     def _mech_tables(self):
@@ -550,16 +557,65 @@ class MechanismsMixin:
         return "stop" if dot > 0 else "open"
 
     # ── a blow on the leaf ──────────────────────────────────────────────────
+    def _strength(self, p):
+        """The most force this body puts on a load: lifts, hauls, drags, shoves and
+        grips all ask this one question. Gate off: the sheet's or the stock 400 N.
+        Gate on (`exertion_from_body`): the body's own muscle (exertion.force_N:
+        strength, training, a per person spread, fatigue and injury)."""
+        if self.exertion_from_body:
+            return _EX.force_N(p)
+        return p.get("strength_N", BODY["strength_N"])
+
     def kick_energy(self, p):
-        """(m_s, v_s) of this body's kick: 5.6 kg at 6 m/s (100 J) scaled by
-        strength / 400 (u). The seam G10's limb numbers replace."""
+        """(m_s, v_s) of this body's kick. Gate off: 5.6 kg at 6 m/s (100 J)
+        scaled by strength / 400 (u). Gate on (`exertion_from_body`): the
+        person's own kick from exertion.strike (about 115 J for an ordinary
+        adult, a real spread, a trained tail)."""
+        if self.exertion_from_body:
+            k = _EX.strike(p, "kick")
+            return k["m_kg"], k["v_ms"]
         s = float(BODY.get("strength_N", 400.0)) / 400.0
         return KICK_M_KG * s, KICK_V_MPS
+
+    def _pay_strike(self, p, J, tag, kind=None):
+        """Pay a strike's joules from the actor's own books. EVERY strike is paid
+        for, or it is weaker for it:
+          - a body with a heat record pays from its stores at the efficiency of
+            muscle (energetics.spend_J via note_work): the stores give J / eta, the
+            muscle keeps the waste heat, and the work_out credit is handed back
+            (release_work) because `deposit` credits the joules once when the
+            blow lands. Each strike is its own bill (the tag carries the count of
+            this body's strikes), so a second kick in the same tick is
+            billed too. A refused bill pays for nothing (0.0), it never gives
+            the strike for free.
+          - a body with no heat record pays from its limb's reserve above
+            critical power (exertion.pay_reserve), which falls with every
+            strike and comes back with rest.
+        Returns the share that was paid for: 1.0, or less when the stores or the
+        reserve could not pay (the blow is then weaker)."""
+        if J <= 0.0:
+            return 1.0
+        kind = kind or (tag if tag in _EX.KINDS else "shove")
+        if p.get("heat") is None:
+            return _EX.pay_reserve(p, kind, J, self.tick * TICK_S)
+        book = p["heat"]["work"]
+        book["strikes"] = n = book.get("strikes", 0) + 1       # one bill per strike
+        got = self.note_work(p, "%s@%d:%d" % (tag, self.tick, n), J, "swing")
+        if got is None:
+            return 0.0
+        sc = float(got.get("scale", 1.0))
+        self.release_work(J * sc)
+        return sc
 
     def kick(self, p, mid, cell=None, side=None):
         """The kick act: a blow of the body's kick energy on the leaf at `cell`
         (default: the leaf near the latch, at lock height)."""
         m_s, v_s = self.kick_energy(p)
+        if self.exertion_from_body:
+            sc = self._pay_strike(p, 0.5 * m_s * v_s * v_s, "kick")
+            if sc <= 1e-9:          # nothing left to pay a kick with
+                return {"result": "spent", "failed": [], "swing": False}
+            m_s *= sc               # an unpaid part is not delivered (same speed)
         return self.blow(mid, cell=cell, m_s=m_s, v_s=v_s, actor=p, side=side,
                          verb="kicks")
 

@@ -3047,7 +3047,8 @@ def test_the_ATTENTION_CAP_never_hides_the_answer(monkeypatch):
         for n, (x, y) in enumerate(((30, 10), (60, 40), (20, 50), (70, 12))):
             _person(w, x, y)["name"] = f"P{n}"
         w.recall_check = True
-        return w
+        w.menu_batch = None        # the cap is the law under test: it is what a policy that is
+        return w                   # not batchable (a script, a mind) still sees (wave 14bF)
 
     # AND THE FULL MENU REALLY IS FULL. With recall at 100% a cap override
     # that silently stopped working (it rebinds a module global, so it only
@@ -3653,6 +3654,8 @@ def test_a_HAND_ON_THE_RAIL_lets_a_man_lean_out_over_the_LIP():
         # room for the arm and it reads 0.36 against 0.15.
         p = _person(w, 12, 8, z0=30)
         p["name"], p["facing"] = "the leaner", (1.0, 0.0)
+        from tests.test_exertion import stock_arm
+        stock_arm(p)                      # the stock adult: the post is heavy for a weaker one
         want = {"waist": "lean out", "legs": "stay"}
         if rail:
             w.fill(18, 19, 6, 10, 30, 49, IRON)   # a post at the lip
@@ -4098,6 +4101,8 @@ def _thrower(x1, z1, act):
     p = _person(w, 10, 8)
     p["name"], p["facing"] = "thrower", (1.0, 0.0)
     p["strength_N"] = 3000.0
+    from tests.test_exertion import stock_arm
+    stock_arm(p)                      # a load knob of 3000 N, the stock adult's arm
     w.fill(14, x1, 7, 8, 1, z1, IRON)
     w.policy = _Wants(each={"thrower": {"hands": "take hold of the iron",
                                         "legs": "stay", "waist": "stand"}})
@@ -4175,6 +4180,8 @@ def _pitch(catcher_wants):
     a["name"], a["facing"], a["strength_N"] = "thrower", (1.0, 0.0), 3000.0
     b = _person(w, 40, 7)
     b["name"], b["facing"], b["strength_N"] = "catcher", (-1.0, 0.0), 3000.0
+    from tests.test_exertion import stock_arm
+    stock_arm(a), stock_arm(b)          # a load knob of 3000 N, the stock adult's arm
     b["ready"] = True                   # he stands waiting for it (R3)
     w.fill(14, 15, 6, 8, 1, 3, IRON)
     hold = {"thrower": {"hands": "take hold of the iron", "legs": "stay",
@@ -4387,6 +4394,8 @@ def test_a_WIND_UP_THROWS_HARDER_where_there_is_room_for_one():
             p = _person(w, 20, 20)
             p["name"], p["facing"] = "thrower", (0.0, 1.0)   # arms to the sides
             p["strength_N"] = 3000.0
+            from tests.test_exertion import stock_arm
+            stock_arm(p)                  # a load knob of 3000 N, the stock adult's arm
             w.fill(20, 21, 24, 25, 1, 3, IRON)
             w.policy = _Wants(each={"thrower": {"hands": "take hold of the iron",
                                                 "legs": "stay", "waist": "stand"}})
