@@ -822,3 +822,60 @@ By default a mind knows how another person is doing only through VISIBLE SIGNS (
 ## Addendum (2026-11-21): release at range (from "A Classical Solution to the Ultramagic Catastrophe")
 
 A build-time choice under Q22's "range as a threshold". When a packet spreads below what any receiver can couple, its remaining booked energy must go somewhere: either (a) it decays into diffuse light and heat along the path, or (b) it releases at the threshold point as its intended effect, so a spell pushed past its range "auto-casts" there, as the reference proposes. Both conserve energy. Which one happens should follow from whether the pattern holds together until release (pattern persistence, one of the three dials), not from a rule. Notes: docs/magic-research/metaphysics_and_whitepaper.txt (addendum).
+
+## Addendum (2026-11-21): costs, components and interfaces (owner decisions MC1-MC8)
+
+Research: docs/magic-research/costs_{europe,world,theory,fiction,synthesis}.txt (20 real traditions, 16 fiction and game systems, the theorists, and Rozin and Nemeroff's experiments). Most claims are (k); check the primary works before numbers enter data.
+
+**Findings.**
+- The EIGHT COST KINDS hold, and no ninth physical cost was found: energy, waste, information, matter, wear, links, time, being noticed.
+- SPLIT two of them:
+  - TIME into casting duration and WAITING FOR A WINDOW;
+  - MATTER into a REAGENT (physics) and an OFFERING to a being (a price set by a mind, social).
+- FREEHAND = low energy, short reach and no kept object. It can be high information if the time is spent.
+- STACKED MEDIA are mostly REDUNDANCY FOR RELIABILITY (the same message in several channels, plus error-checking helpers), not power. Add redundant stacking and a target end (the link edge) to the casting chain.
+- Purity, taboo, licence, debt, rank, stigma and reputation are SOCIAL, held as beliefs.
+- Candidate small laws:
+  - I-1 a time-varying source;
+  - I-2 idle decay;
+  - I-3 the touch hazard of charged stores;
+  - I-4 non-heat body load;
+  - I-5 the link as a lossy channel;
+  - I-6 a name is information;
+  - I-7 a ward is a standing barrier;
+  - I-8 divination as a cheap noisy information family;
+  - I-9 a waste sink at a chosen site (the burned effigy);
+  - I-10 innate reflex patterns;
+  - I-11 use drives the holder's state;
+  - I-12 the holder is vulnerable while working.
+
+**Decisions.**
+- MC1 NAMES:
+  - every being may have many names (a given name, nicknames, titles);
+  - a name has power only where a BOND exists, formed by the being's own identification with it (attention to one's own name), by collective use (worship), or by ritual;
+  - each name has its own bond strength;
+  - a pack may make names real by bonding.
+- MC2 CULTURAL RULES:
+  - some have a real physical basis found by accident, others are empty, and people learn which through the knowledge layer;
+  - supernatural penalties are a pack option only;
+  - SOME PLACES ENFORCE RULES for real, through something physically there (a being acting on its wants, a charged pattern that discharges, a local field condition), never a flag.
+- MC3 LASTING CHANGE: only through existing laws in the base (training, overload damage, learned craving, patron bonds); pack-level corruption on top; a warning before anything permanent. USE-DEPENDENT PLASTICITY for every capacity:
+  - use raises it with diminishing returns;
+  - disuse decays it toward a floor;
+  - misuse damages or mis-tunes it (like amblyopia);
+  - childhood is more plastic.
+- MC4 DEBTS:
+  - the patron's memory is the record, and the tally shown is the CHARACTER'S OWN BELIEF;
+  - SOME PACTS ARE INTRINSIC ("the world has given observance"): a self-enforcing pattern with a condition and stored energy;
+  - an AGREEMENTS TAXONOMY is to be scoped: memory only, witnessed, written, institutional, intrinsic or magical.
+- MC5 CYCLES: the field's strength follows the NATURAL PROCESSES THAT PRODUCE IT (sun, growth, tides, storms); there is no calendar rule. The owner's principle: "x affects y if x and y depend on the same thing or y depends on x."
+- MC6 SACRIFICE:
+  - lawful at physical yield, with no bonus;
+  - a gifted body's stored M is released at death;
+  - OTHERS' LIFE FORCE can be drawn through a link, and consent and coupling matter;
+  - AUSTERITY strengthens magic through existing mechanisms: accumulation, discipline quieting the divided heart, belief lowering anxiety and noise, and arousal or pain raising power at a cost in precision (trainable).
+- MC7 SHOWING COSTS:
+  - prose by default, numbers on request, a warning before permanent loss;
+  - numbers ONLY TO THE PRECISION THE CHARACTER COULD KNOW (introspective acuity, training, instruments);
+  - a LitRPG "System" is an in-world source that can be wrong.
+- MC8 CULTURES: invented by default, mixing and drawing inspiration from real ones; real traditions named only where public, ancient and well documented; never living sacred practice as mechanics.

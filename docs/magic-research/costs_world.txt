@@ -1,0 +1,528 @@
+MARK1 MAGIC RESEARCH: COSTS AND COMPONENTS, TRADITIONS BEYOND EUROPE
+Lane: costs_world. Date 2026-11-21. Documents only. No web checks were run in this pass.
+Every claim below is (k) from my own knowledge of the literature unless marked (u).
+No claim is marked (v). Nothing here was checked against a source read in this run.
+Check every quote, number and name before it goes into a data file.
+
+THE EIGHT KINDS (from the design):
+ 1 ENERGY   2 WASTE   3 INFORMATION   4 MATTER   5 WEAR   6 LINKS   7 TIME   8 NOTICED
+Short tags used below: [E] [W] [I] [M] [WEAR] [L] [T] [N].
+Extra tags I add for things that do not map: [SOC] social licence or belief, [PUR] purity or
+taboo state, [KIN] debt, bargain or obligation to a being, [CAL] calendar or place condition,
+[BAN] "what is never done". These are the candidate missing laws. Section 12 sums them up.
+
+NOTE ON SOURCES. Main works I rely on (k):
+ Daoism: Schipper "The Taoist Body"; Despeux and Kohn; Robson "Power of Place";
+   Strickmann "Chinese Magical Medicine"; Harper (Mawangdui); Ge Hong "Baopuzi".
+ Vedic: Staal "Agni" (Nambudiri Agnicayana); Kane; Smith; Jamison "Ravenous Hyenas";
+   Padoux "Vac"; Brunner and Tantric studies: Flood "Introduction to Hinduism" and
+   "The Tantric Body"; Khanna "Yantra".
+ Japan: Hayashi Makoto; Bock (Engi-shiki translation); Bender; Kiyoshi Kaneko;
+   Ooms on Shinto; Bernard Faure.
+ Shamanism: Eliade "Shamanism"; Hamayon; Humphrey "Shamans and Elders"; Vitebsky "The Reindeer People";
+   Balzer; Siikala; Hoppal; Pentikainen.
+ Azande: Evans-Pritchard 1937 "Witchcraft, Oracles and Magic Among the Azande".
+ Trobriand: Malinowski 1922 "Argonauts of the Western Pacific", 1935 "Coral Gardens and Their Magic",
+   1925 "Magic, Science and Religion". Tambiah 1968 and 1985 critiques.
+ West Africa and diaspora: Bascom "Ifa Divination" 1969; Abimbola; Maupoil; Verger;
+   Brown "Mama Lola"; Metraux "Voodoo in Haiti"; Johnson "Sacred Spaces"; Matory.
+ Mesoamerica: Sahagun "Florentine Codex"; Ruiz de Alarcon (1629 treatise) ; Lopez Austin "Human Body and Ideology";
+   Landa; Tedlock "Time and the Highland Maya"; Houston and Stuart on k'uhul and "ch'ulel"; Stuart "The Order of Days".
+ North America: Hall; Wissler on Blackfoot bundles; Harrod "Mandan..."; Ridington; Hultkrantz; Fenton.
+ Australia: Elkin "Aboriginal Men of High Degree"; Spencer and Gillen; Strehlow; Stanner; Berndt;
+   Radcliffe-Brown on totemism; Tonkinson.
+ Polynesia: Firth "Primitive Polynesian Economy" and "Tikopia Ritual and Belief";
+   Shore "Samoa"; Keesing 1984 "Rethinking mana"; Handy; Valeri "Kingship and Sacrifice" (Hawaii);
+   Codrington 1891 "The Melanesians" (first mana). Steiner "Taboo".
+ Frazer "The Golden Bough"; Mauss and Hubert "General Theory of Magic".
+
+==========================================================================
+0. HOW TO READ THIS (summary of method)
+==========================================================================
+For each tradition: (a) freehand vs components, (b) what each component is for,
+(c) consumed/worn/kept, (d) stacking, (e) costs and risks, (f) mapping.
+Fiction and games are NOT in my lane. I only use them if one tradition is better known by a game.
+
+Important caution for the designer (k): "tradition" here means a scholarly abstraction.
+Almost all of these are not "magic" to their users. They are medicine, farming, law, worship or politics.
+So component lists are often about social duty and not physics. That is itself a finding.
+
+==========================================================================
+1. DAOIST TALISMANS (FU) AND RITUAL
+==========================================================================
+(a) FREEHAND vs COMPONENTS.
+ Freehand (k): The trained priest (daoshi) can do short acts with hand seals (jue, "mudra-like" finger
+ forms), step patterns (the Step of Yu, yubu, pacing the Dipper), breath, and spoken or silent
+ incantation (zhou). Visualisation (cunsi) of gods in the body is done with the mind alone.
+ Needs components: the fu itself (written on paper, silk, peachwood, or in the air or water with a finger
+ or sword, "writing in the air" is freehand but the pattern is still a fixed written form). Altar (tan),
+ incense burner, lamps, ritual sword, seals, bells, a register (lu) of spirit generals. Big rites (jiao,
+ zhai) need altar, many priests, days, offerings, and memorials (wen, written petitions burned).
+(b) COMPONENTS AND PURPOSE (k).
+ - Paper or cloth with a fu: PATTERN. The fu is a written command or summons with stylised characters,
+   star and cloud forms. It carries an instruction and a name of the issuing authority.
+ - Cinnabar ink (zhusha, mercury sulphide) or blood or ink with a brush: MATTER of a "yang, red, pure" kind.
+   Ink is chosen for POWER and PURITY. Cinnabar is a toxic mercury salt (k).
+ - Peachwood (taomu) and mirrors, sword of coins: PROTECTION. Peach is the demon-expelling wood.
+ - Incense: LINK to the heavens (smoke carries the message), plus PURITY.
+ - Register (lu): a list of spirit officials the priest commands. SOCIAL LICENCE. Ordination gives
+   rank, and rank gives command over a specific roster of spirits (k, Schipper, Robson).
+ - Hour, day, direction (ganzhi): TIMING and place. The fu is written facing a direction at an hour.
+ - Fasting, bathing, abstaining from meat and wine, "purification" (zhai): PURITY. Often days.
+ - Water charged by a fu ("fu water", burn the fu, drink the ash): the fu is used as MEDICINE and carrier.
+ - Personal items (hair, name, birth data) of the patient: LINK for exorcism and healing at a distance.
+(c) CONSUMED, WORN, KEPT.
+ Burned: fu for sending, memorials, paper money. Worn: fu folded into amulet bags or pinned to doors.
+ Kept: swords, seals, bells, registers, mirrors. A fu on a door is a standing inscription, replaced yearly (k).
+(d) STACKING (k). A standard exorcism or healing rite stacks: purified body (fast) + dressed in ritual robe
+ (licence) + altar in right direction (place) + auspicious hour (time) + incense (link) + fu (pattern)
+ + hand seal (gesture) + incantation (word) + step pattern (movement) + a blade or slap-board (force)
+ + sometimes a group of assistants and musicians. Daoist rites are the clearest case of many media at once.
+(e) COSTS AND RISKS (k).
+ Taught risks: the priest's own qi is spent, or his inner spirits (shen) weaken. Overuse of a spirit general
+ may cause backlash if the command is mispronounced, the fu is mis-drawn or the priest is impure.
+ Failing the rite can let the demon turn on the priest. Writing fu without the right ordination is
+ "theft of authority" with punishment from the heavens. Long fasting. Mercury ink is physically poisonous.
+ Pay: offerings to the hosting spirits at the end (food, paper money). The rite is often an official
+ transaction in a heavenly bureaucracy: a petition, a seal, a reply or "release" (k, Schipper, Strickmann).
+(f) MAPPING.
+ Fu as pattern = INFORMATION in a focus. Cinnabar = MATTER, or a catalyst-like quality, or sometimes
+ simply a material with the right "coupling" (design: matched medium). Peachwood = a barrier. OK.
+ Incense and personal items = LINKS. Hour and direction = TIME, and also something new: a calendar gate.
+ Fasting and purity = a body state. It maps weakly to ENERGY (low waste load) but the tradition means
+ ritual cleanness. That is [PUR].
+ Ordination and register = [SOC] plus [KIN]: the spirits obey a rank and a name, as in an office.
+ This is not physics. It could be a LINK with an authority (a "contract" held by the world) as a general object.
+ The cost of misdraw = INFORMATION error landing on a neighbouring valid spell. Good fit with the design.
+ Backlash from impurity = no clean map. Candidate [PUR] (see 12).
+
+==========================================================================
+2. VEDIC RITUAL AND TANTRIC YANTRA AND MANTRA
+==========================================================================
+(a) FREEHAND vs COMPONENTS.
+ Freehand (k): mantra by voice, by whispered recitation (japa), or mental. Hand gestures (mudra).
+ Breath control (pranayama). Visualisation (the deity is built in the mind, "sadhana").
+ Needs components: Vedic srauta rites need a built altar (vedi), 3 fires (garhapatya, ahavaniya, dakshina),
+ a sacrificial post, ladles (sruva, sruc), ghee, soma or substitute, grain cakes (purodasha), animals in some,
+ priests of 4 kinds (hotr, adhvaryu, udgatr, brahman), a patron (yajamana) and his wife, and fees (dakshina). (k, Staal, Smith)
+ The Agnicayana is the large version: a fire altar of 1000 bricks in a bird shape, days to 12 days. (k, Staal)
+ Tantra: a yantra (geometric diagram, drawn or engraved on metal), a mala (rosary of 108 beads), a seat of grass or hide,
+ offerings, an initiation (diksha) from a guru. Mantras need initiation to "work".
+(b) COMPONENTS AND PURPOSE (k).
+ - Fire: the carrier (Agni is the messenger that takes offerings to gods). LINK plus conversion. The fire burns the gift.
+ - Ghee, grain, soma: MATTER given to the gods. The logic is exchange (do ut des). Also energy-dense food.
+ - Altar geometry: PATTERN. The brick altar is built to precise measurements (Sulba-sutras). Errors invalidate it.
+ - Mantra: PATTERN in sound. Exact metre, accent (svara) and pronunciation matter. (k)
+ - Mudra: a second pattern channel (the hand).
+ - Priests, four roles: a distributed holder, shaper and checker. The brahman priest silently watches for errors
+   and repairs them with expiation formulas (prayaschitta). (k) That is an ERROR-CORRECTION role. Notable.
+ - Yantra: PATTERN written once and kept. It is a focus for a deity's presence. Activation (pranapratistha) "breathes life" in.
+ - Mala: COUNT, a timer and counter for repeated mantras (a number goal, such as 100,000 recitations, purascarana).
+ - Initiation: SOCIAL LICENCE and also a TRANSFER of the pattern from a living holder. The guru "gives" the mantra.
+ - Fasting, ritual bath, fixed posture, sacred thread, celibacy or sexual rites in some Tantra: PURITY or a body-state gate.
+(c) CONSUMED, WORN, KEPT.
+ Consumed: ghee, soma, grain, animals. Yantra: kept (and "re-charged"). Mala: kept (worn). Altar bricks: built once, the
+ site is left (and for the Agnicayana, the altar is built again next time). Ladles: kept.
+(d) STACKING (k). The soma sacrifice stacks: word (hymn recited by hotr) + chant (udgatr, sung) + action (adhvaryu)
+ + fire (place) + matter (ghee, soma) + group of 16 priests + the patron + dated season + a built place + days of fasting.
+ Tantric puja stacks mantra + mudra + yantra + visualised deity + offerings + a posture + a day (moon phase) + a guru's licence.
+(e) COSTS AND RISKS (k).
+ Mistakes in a Vedic rite are said to bring harm to the patron or the priest. The famous story: the demon Tvashtri's son Vritra,
+ where an accent error in the mantra (indrasatru, a wrong stress) turned the spell on its own maker. (k, Taittiriya/Shatapatha tradition story.)
+ Rite is paid for: the yajamana gives wealth (dakshina). The fee itself is a cost. Mantra siddhi (success) can take years
+ of repetition: a TIME and INFORMATION cost. Tapas (heat from austerity, ascetic practice) is a CURRENCY: a yogi
+ accumulates "heat" by fasting, standing, silence, and spends it for power (curses, boons). (k, Kaelber "Tapta Marga";
+ O'Flaherty on tapas). This is the clearest "stored life-force" token in my lane.
+ Tantric "left-hand" rites have social and body risks (taboos, corpses, cremation grounds).
+(f) MAPPING.
+ Mantra and mudra = INFORMATION. Altar = PATTERN, a big inscription. Fire = a transducer, and the ghee is MATTER and ENERGY.
+ Tapas = ENERGY store charged slowly by body discipline, not food. A good map to "body energy stored over days".
+ The brahman error-correction role = INFORMATION, with a team of checkers. Matches the design's info cost with redundancy.
+ Misstressed mantra backfiring = INFORMATION error landing on a neighbouring valid spell. Good fit.
+ Guru transfer = [SOC] plus a "pattern copied from a live holder" (imprinting; matches owner Q22 "imprinting").
+ Dakshina and the exchange logic = [KIN]: the gods owe back. Not physics; it is a debt book.
+ Moon phase and season = [CAL]. Purity and diet = [PUR].
+
+==========================================================================
+3. JAPANESE ONMYODO AND SHINTO PURIFICATION
+==========================================================================
+(a) FREEHAND vs COMPONENTS.
+ Freehand (k): hand cuts (kuji-in, nine hand seals "Rin Pyo To Sha Kai Jin Retsu Zai Zen"), breath, chants
+ (norito for Shinto, shingon mantra for esoteric Buddhism), pacing steps (henbai, derived from Yubu), the
+ "five-line" and "nine-line" cut (kuji or "grid of nine" drawn in air). Onmyoji also read calendars, omens and stars.
+ Needs components: shikigami summoned from paper cut-outs (hitogata), fu (ofuda), ritual sword or wand, a gohei
+ (paper streamers on a stick), salt, water, rice, sake, a rope (shimenawa) and paper strips (shide) to mark a sacred boundary.
+(b) COMPONENTS AND PURPOSE (k).
+ - Salt, water (misogi, harae): PURITY. Remove pollution (kegare, tsumi).
+ - Gohei and oonusa wand: a swept brush that carries away pollution: MATTER of a shape (paper) as a carrier.
+ - Shimenawa and shide: a BOUNDARY marker. A barrier. Protection; marks a place as set apart.
+ - Hitogata (human-shaped paper): a LINK and a SCAPEGOAT. The person breathes on it or rubs it, then it is floated away
+   or burned, carrying the pollution (k, Heian practice: Nagoshi no Harae, Oharae).
+ - Ofuda: PATTERN and a kept seal.
+ - Calendar and directions (directional taboos, katatagae, monoimi): TIME and PLACE gating. A person had to avoid a direction
+   on some days. (k, Heian court)
+ - Norito: formal verbal PATTERN. Words are precise and the kotodama belief says words themselves carry power. (k)
+ - Offerings (heihaku, food, sake): payment and KIN with kami.
+(c) CONSUMED, WORN, KEPT.
+ Consumed: paper hitogata (burned or floated), salt, sake. Worn: omamori (amulets) for a year, then returned and burned.
+ Kept: shrines, ropes (renewed), swords, mirrors. Ofuda are replaced yearly.
+(d) STACKING (k). The Great Purification (Oharae) stacks: formal words (norito) + paper effigies + water + a fixed date
+ (end of 6th and 12th months) + a place (the river) + a group (all officials) + offerings. Onmyoji rites for a house stack
+ geomancy (direction), calendar (taboo days), fu and chants.
+(e) COSTS AND RISKS (k).
+ Pollution (kegare) is a state you catch (from death, blood, birth) and carry. It spoils rites. You pay with time of seclusion.
+ Failure in purification invites misfortune. Shikigami are bound spirits, and controlling them demands skill; legends say a rival
+ can steal or cut the shikigami. A practitioner takes on karmic debt in Buddhist-flavoured accounts (u).
+(f) MAPPING.
+ Words and mudra = INFORMATION. Paper effigy = a LINK and a transfer of "waste" into a matter store, which is quite like the design's WASTE
+ being exported into an object (waste booked at a site). That is a nice match: the hitogata is a waste-sink that is then thrown out.
+ Shimenawa = a barrier, a catalyst-like border or a shield inscription.
+ Pollution = [PUR]. It acts like a state on the person that gates rites. Closest map: a "noise" or decoherence field around the body, or a tell.
+ Calendar taboos = [CAL]. Kotodama = INFORMATION is itself an action (words do things). OK as pattern.
+
+==========================================================================
+4. SIBERIAN AND CENTRAL ASIAN SHAMANISM
+==========================================================================
+(a) FREEHAND vs COMPONENTS.
+ Freehand (k): the shaman enters trance by drumming, song, dance, sometimes with no object at all in the later "inner" form.
+ Soul flight, journey to spirit worlds, speaking with spirits, as an act of the mind in trance.
+ Needs components: the drum (usually the key tool: a frame drum of hide), the beater, a costume (many metal pendants, feathers,
+ bells, antlers, a fringe), spirit figures (ongon, ongod, helping spirit images), a mirror (Buryat, Mongol; toli), fire, tea or milk offerings,
+ and sometimes alcohol, tobacco or fly agaric (Amanita muscaria; Koryak, a claim often repeated, k, but contested). Trance sometimes sped
+ by fasting, sleeplessness, or a trained collapse.
+(b) COMPONENTS AND PURPOSE (k).
+ - Drum: TIMING and a vehicle. Called "reindeer" or "horse" the shaman rides to the other world. Rhythm drives trance. Also a PATTERN holder.
+   The drum is cut from a living tree (a tree chosen by spirit) and the hide of a sacrificed animal; its making is itself a rite (Evenki, Sakha).
+ - Costume: PROTECTION and identity. Weight of iron: a shaman can be heavy with 20 kg or more (u).
+ - Spirit helpers (animal spirits, ancestors): POWER and MATTER-like help. They are a KIN relation; the shaman is "married" to a spirit spouse in some groups.
+ - Offerings: payment to spirits. Animals sacrificed so a soul can go with the shaman.
+ - Initiation: a "shaman's sickness" (illness, visions, dismemberment by spirits) is the calling. It is SOCIAL LICENCE and body cost together. (k, Eliade, Siikala)
+ - Mirror: a seeing device and a shield.
+(c) CONSUMED, WORN, KEPT.
+ Kept: drum, costume, ongon. Consumed: offerings (animals, milk, vodka), and the drum may be broken or buried on the shaman's death.
+ The costume and drum are often inherited with the spirit (k, Evenki, Buryat). Worn out: costume parts are added with each rite or year.
+(d) STACKING (k). A healing seance stacks: drum rhythm + song (often improvised with spirit names) + costume + dance + fire + offerings +
+ a fixed place (the tent or yurt, the hearth, the smoke hole as an exit) + audience who respond (often they must answer the chant) + night.
+(e) COSTS AND RISKS (k).
+ The soul may not return from the journey. The shaman can die. The "soul-loss" of the patient is treated by recovering the soul from a spirit.
+ Exhaustion and body exhaustion (physical), "spirit sickness" if the shaman refuses the calling. Dangers: a rival shaman's attack,
+ spirit combat (shamans fight each other in spirit form, one dies later). A shaman who has "eaten" many human souls may be accused.
+ Shamans can lose power by breaking a taboo (sleeping with unclean persons) (u).
+ Payment to the shaman by the family. Fee refusals can anger the spirits (Humphrey, Hamayon: a hunting exchange logic, "a gift to the hunter").
+(f) MAPPING.
+ Drum rhythm = TIME and INFORMATION channel; trance is a body state needing ENERGY and heat budget. Exhaustion = a body cap: WASTE and ENERGY.
+ Costume = WEAR and a protection store. Offerings = MATTER, and KIN debt. Spirit spouse and helper = [KIN], a standing relation to a far-end store (matches the
+ design's patron as "a big store at the far end of a lasting bond"; Q17). Good match.
+ Soul flight = scrying and projecting a viewpoint; needs a LINK (name, belongings of the patient).
+ Shaman's sickness = a cost paid up front to gain a coupling dial. It is like "calibrating a transducer by damage". [SOC] plus body cost.
+ Danger of non-return = a risk with no map (the viewpoint's body is unattended). Candidate: the unattended-body risk is a physical state: fine.
+ Audience participation = group, and part [SOC].
+
+==========================================================================
+5. AZANDE ORACLES AND WITCHCRAFT (EVANS-PRITCHARD)
+==========================================================================
+(a) FREEHAND vs COMPONENTS (k).
+ Witchcraft (mangu) among the Azande is an inherited bodily substance in the belly (a swelling, found at autopsy), that acts by
+ will, even without knowing, and sends a "soul" or "light" at a victim. It is FREEHAND, and it is unconscious in many cases. It needs no component.
+ It is not learned. A witch cannot choose not to be one. (k, E-P 1937)
+ Oracles (to find witches, decide plans) need: poison oracle (benge): a poison fed to chickens; the question is put as a yes-no, and the fowl's death or survival gives the answer. Benge is a forest creeper (strychnine-like, u),
+ and it is prepared and kept in ritual purity. Rubbing-board oracle (iwa): a small wooden board with a moving block, used by lesser people.
+ Termite oracle: sticks in termite mounds, see which are eaten.
+ Magic (ngua): done with "medicines", wood and bark and leaves, spoken to with names, for love, hunting, protection, revenge, and also medicines to counter witchcraft.
+ Needs components: medicines (specific plants, taught by purchase), a spoken spell, sometimes a special condition.
+ Witch-doctors (avure) work in dance, with drums, drinking a medicine, in public, and name the witch through a vision. (k)
+(b) COMPONENTS AND PURPOSE (k).
+ - Benge poison: PATTERN READER. The answer is a stochastic coin the oracle gives, and it is believed to be correct. It is a very noisy channel. It is a DECISION-tool.
+ - The question protocol: the oracle is asked twice (a "test" that reverses the question and expects the opposite result) to check consistency. That is ERROR CHECKING.
+ - Medicines (ngua): MATTER of a kind. A leaf works by what it is, plus a name, not by dose. The "right wood" is a MATCH.
+ - Purity of the poison oracle operator: sexual abstinence, food rules. [PUR].
+ - Kin, a prince's license: the poison oracle of the king (Prince's benge) is the highest and decides cases. [SOC].
+(c) CONSUMED, WORN, KEPT.
+ Benge: consumed (the fowl dies or lives). Medicines: consumed (burned, ground and swallowed) or worn as charms. Oracle boards: kept.
+(d) STACKING.
+ A major consultation stacks: purified operator + specific poison + a chicken + a verbal question + a witness group + a second chicken for a checking trial + a ruling by a prince.
+ Magic for hunting stacks a plant + a spoken word + a taboo condition (don't eat X).
+(e) COSTS AND RISKS (k).
+ Witchcraft does not come from a cost to the witch, other than the shame and risk of being found by oracle. Accusation brings death or compensation.
+ Magic is guarded by taboos. A person who buys a medicine takes on its rules. A broken taboo breaks the medicine.
+ The strongest claim E-P made (k): the system is not falsifiable inside belief: failures are explained away (the oracle was impure, the medicine was weak, another witch interfered).
+ Cost: the fowls, poison, effort, and delay (days to consult).
+(f) MAPPING.
+ Witchcraft = a body-dial coupling (a high "dial" a person is born with) that acts without a trained pattern. It fits the design's "dial in each individual" well.
+ But the idea that it is involuntary and unconscious = a coupling that leaks: a tell, or a cognition-free effect. Candidate: involuntary emission. [N].
+ The belly substance seen at autopsy = a physical organ with the dial. Matches "beasts that evolve M organs."
+ Oracle = INFORMATION READ-OUT with a stochastic channel; the second test is a redundancy bit. Matches the design's "medium rate and noise" and checking.
+ Medicine = MATTER as a catalyst or a match. Taboo with a medicine = a [BAN] rule: a use condition. Candidate missing law: "conditions of use".
+ Social acceptance of oracle = [SOC]. Not physics.
+ NOTE for designers: in Azande thought the main purpose is social (deciding who is to blame). A game version would be a divination system that gives a noisy true/false about hidden state, with a cost.
+
+==========================================================================
+6. TROBRIAND GARDEN AND CANOE MAGIC (MALINOWSKI)
+==========================================================================
+(a) FREEHAND vs COMPONENTS (k).
+ Spoken spells (megwa) are the core. A spell is a fixed formula, often long, owned and inherited (in the maternal line). It is spoken in a certain place and time,
+ often over an object (herbs, a coconut oil, a bundle of leaves, a stone, an axe blade) and then the object is applied to the target (garden plot, canoe hull, a person's body).
+ Needs components: the object over which the spell is spoken (a "vehicle"), a specially prepared medium. Garden magic: the garden magician (towosi) does a cycle of rites by stage: clearing, burning, planting, weeding, growth, harvest,
+ each with a spell and a ritual act, such as pegging magical sticks or tying a stone. Canoe magic: building a canoe (waga) has spells to the tree spirit before felling, to the
+ hull, to make it swift and light, for the launching, for the sailing (Kula). Kula magic includes beauty magic for the person (to make the partner generous).
+(b) COMPONENTS AND PURPOSE (k).
+ - Spell words: PATTERN. Some are long lists naming body parts, ancestors, places. It is an enumeration.
+ - Vehicle (oil, leaves): LINK/CARRIER. The spell is "put into" the medium, which is then carried to the target.
+ - Ritual purity: abstinence for a sailor or builder, and a taboo on some foods. [PUR]
+ - Inheritance: the spell is part of a lineage's property, and passed with its ritual duties (the garden magician is in a family line). [SOC] plus [KIN] with ancestors.
+ - Payment: the magician gets a share of the harvest (the first fruits) or gifts.
+ - Time: the sequence of rites follows the garden cycle. [CAL]
+(c) CONSUMED, WORN, KEPT.
+ Medium (oil, leaves): consumed. Spell: kept in memory, inherited. Magical stones and objects: kept. Canoe: the product is kept, and its spells apply to it for life, so it is "inscribed".
+(d) STACKING.
+ Canoe-building stacks word + medicine + object (ritual axe, ritual cut) + tree-spirit propitiation + a team under taboos + a fixed day + a feast.
+ Garden rites stack the same, and the magician's rites are done in front of all, and are woven into the real work. Malinowski's point (k): they come together with ordinary craft, and the Trobrianders keep them apart in thought: they do real technical work on their own, and use magic on what is uncertain
+ (storms, deep-sea fishing, long voyages) but not on lagoon fishing, which is safe. (k, "Magic, Science and Religion", 1925)
+(e) COSTS AND RISKS (k).
+ Few personal bodily risks. Risks: a spell said wrongly may fail. Evil magic (bwaga'u, black magic) exists and is used in sorcery (a sorcerer may be hired, it needs a payment).
+ The magician's costs: the taboos, the long recitation (hours), the sequence of duties. The big cost is TIME and memory. Practice is done by those who have the right descent.
+ Tambiah (k) argues spell words create a "persuasive analogy" (the garden is like a growing thing); the formula's form is the action.
+(f) MAPPING.
+ Spell = INFORMATION, with a very high bit cost (long formulas) and TIME. Memory of the formula = a skill/INFORMATION store that is inherited (imprinting).
+ Vehicle objects = carrier, a store of a "charged" pattern: close to a one-use inscription. WEAR/MATTER.
+ Selection of what gets magic = "magic is used where uncertainty is high" (k). That is a pattern for NPC cognition: a mind chooses ritual in the face of unpredictable, high-stakes tasks. Useful for the sim's behaviour layer. Not a physical cost.
+ Inheritance = [SOC]. Taboos = [BAN]/[PUR].
+
+==========================================================================
+7. WEST AFRICAN IFA AND THE DIASPORA (VODOU, CANDOMBLE)
+==========================================================================
+(a) FREEHAND vs COMPONENTS (k).
+ Ifa (Yoruba): divination, not casting. The babalawo (priest) uses an opon (tray with sand or powder), an opele (chain with 8 half-seeds) or 16 palm nuts (ikin). The result is a figure (odu) out of 256, 8 bits.
+ Each odu has verses (ese Ifa) to be recited. The verse gives a story and a prescription: an offering (ebo), a medicine, or a taboo (eewo).
+ Freehand: reading the verse is memory and voice, but the oracle cast itself needs the tool, which gives the random bits.
+ Needs components: the ebo (sacrifice: a hen, a pigeon, a goat, food, cloth, money, items in numbers). Medicines (oogun), made with leaves, "ewe" with incantations (ofo, ase). Ase is the power of the spoken word, "so be it". Ofo ase = incantation that makes things happen.
+ Vodou, Santeria, Candomble: the spirits (lwa, orisha, orixa) are invited by drumming, songs (by nation), dance, veve (ground drawings in cornmeal for Vodou, a pattern for each lwa), a pot, a flag, the correct food and drink for each lwa (offerings), and the correct colour. Possession by the lwa (the "horse" is ridden) is the central mode.
+ Fetishes and objects (bocio, in Fon tradition; nkisi in Kongo; "paquet kongo" in Haiti): objects loaded with power by a specialist. Nkisi (Kongo) have a container with medicines, nails driven in to activate a contract (k, MacGaffey).
+(b) COMPONENTS AND PURPOSE (k).
+ - Odu with 8 bits: an INFORMATION source. The cast yields a random, structured message.
+ - Ebo (offerings): payment, KIN, and often also an appeasement of spirits (Eshu, the messenger, must be paid first). Items are specific to the odu. MATTER and [KIN].
+ - Veve: PATTERN drawn on the floor with flour or ash: a call sign for a lwa; it is erased by dancing. A consumed inscription.
+ - Drums and songs: TIMING, a call, and a channel. Each lwa has its rhythm.
+ - Specific food/drink/colour: MATCHED MEDIUM. The lwa likes certain things, so they are cheaper to call. That matches the design's "matched medium = cheaper coupling".
+ - Initiation (kanzo, "making the saint"): SOCIAL LICENCE plus an imprinting: the initiate is "seated" with a spirit; it can take weeks and body marks.
+ - Nkisi nails: a record of a contract. Each nail is a case, the object remembers.
+ - Blood sacrifice: ENERGY in a story sense ("ashe" flows with the blood), and matter.
+(c) CONSUMED, WORN, KEPT.
+ Consumed: offerings (some eaten by the community; the dedicated part is left), veve. Kept: altars, pots (govi, vessels for spirits), beads (elekes, worn colours that indicate the orisha), the oracle tools.
+ Worn: beads and colours, by the initiate for a year or for life.
+(d) STACKING (k).
+ A Vodou ceremony stacks drums + songs + dances + veve + food + libation + candles + flags + a priest + a group + possession; Ifa stack: divination + verses + prescription + sacrifice + herbs + incantation + taboos afterwards.
+(e) COSTS AND RISKS (k).
+ Cost: the offering is costly (livestock, money). Neglecting a lwa can bring misfortune. The "horse" can be exhausted; possessed persons often don't remember. The priest takes a fee. Using the power for harm (to "serve with both hands") invites a debt. Ebo must be the right amount; the orisha can ask more.
+ Taboos (eewo) after the divination, e.g. don't eat a food for life.
+(f) MAPPING.
+ Divination = INFORMATION source (a random 8-bit source plus a lookup of stories). Closer to "the world's state is read" than casting.
+ Veve = erasable inscription (WEAR 1 use). Drums = TIME channel and rate. Food and colour = matched medium.
+ Possession = the holder is another mind: a patron riding a body (design: otherworldly patrons). The body pays the ENERGY and WASTE cost, and the spirit supplies the pattern and perhaps an M store. A very good example of "divided holder": holder = the horse, shaper = the lwa. This is the multiple interface chain in an unusual split.
+ Nkisi nails = a record of a contract in matter; WEAR and a [KIN] registry. Another candidate: the object as a persistent "obligation", with the nail count as state.
+ Offering exchange = [KIN] debt, with a price that is "set by the spirit", and a failure state of "owed". Not physics.
+
+==========================================================================
+8. MESOAMERICAN (AZTEC AND MAYA) RITUAL
+==========================================================================
+(a) FREEHAND vs COMPONENTS (k).
+ Freehand: little. Even divination by the daykeeper (tonalpouhqui for the Aztec 260-day count; ajq'ij among modern K'iche' Maya) needs the calendar, and for lot divination a pile of seeds (tzite, coral tree) and crystals.
+ Incantations (Ruiz de Alarcon, 1629, Nahuatl, k) are spoken. Many are to cure or hunt or farm. They address the objects: "I summon the 'Lord of the Maguey..'"
+ Needs components: copal incense, rubber, paper (amate) cut in shapes, blood, food and drink (tamales, cacao, pulque), animals, flowers, jade, feathers, tobacco, and the whole architecture (temples, ball courts, caves, cenotes).
+ Large rites: human sacrifice, heart removal (Aztec; Maya too, less), bloodletting (Maya kings with stingray spine through tongue, penis; k, Schele and Miller), fire rites at the end of 52-year cycle (New Fire, Aztec; k).
+(b) COMPONENTS AND PURPOSE (k).
+ - Blood: OFFERING and energy. In Aztec thought the sun needs "chalchiuhatl" (precious water, blood) to keep moving (k, Sahagun and common summary). A COST PAID TO THE WORLD, not to a person. It is conservation of the cosmos: "debt payment" (nextlahualli).
+ - Copal smoke: LINK to the sky, and PURITY, a carrier.
+ - Paper figures of spirit-forces: PATTERN and carriers, cut and burned (Otomi, k). Modern Otomi paper cutting: figures of spirits are cut and used in cures.
+ - Jade and quetzal feathers: precious matter, valued items. Payment.
+ - Calendar: TIME. The tonalpohualli (260-day) assigns fates and good or bad days. A birth day gives a fate. [CAL]. Dates for a rite are chosen by the count.
+ - Place: cave, mountain, cenote, temple: gates to the underworld/sky. A place with high "coupling". [CAL]/place. 
+ - Fasting, abstinence before rites, sexual abstinence, bathing, sweat bath (temazcal): PURITY.
+ - Heart, head, skin: sacrificial victims (the priest wore the flayed skin of the victim in Xipe Totec rites, k). Highest cost.
+(c) CONSUMED, WORN, KEPT.
+ Consumed: blood, food, copal, paper. Worn: costumes of gods (teotl impersonator, ixiptla, "image", a person who becomes the god for a time, k, Lopez Austin and Graulich). Kept: jade caches in building dedications, temples.
+(d) STACKING (k).
+ Aztec feast of a month stacks fasting + costumes + processions + dance + song + sacrifices + food + a fixed date + a place + the whole city. A Maya period ending stacks stela dedication + bloodletting + incense + dance + calendar date + a king.
+(e) COSTS AND RISKS (k).
+ A cosmic cost: failing to sacrifice risks the end of the sun (the Fifth Sun is said to end by earthquake). Personal: bloodletting pain; a priest's fasting; the death of the sacrificed. Wrong timing: a day sign gives a bad fate, e.g. born on a bad day (ce acatl etc.). Sorcerers (nahualli) were feared, and could be shape-changers.
+ Debt idea (k): human existence is a debt to the gods who sacrificed themselves to make the sun; the cost is to be repaid in kind.
+(f) MAPPING.
+ Blood sacrifice = ENERGY given as a gift of life: closest to the design's "life force" source but it is really a [KIN]/cosmic ledger. It also hits "waste heat"? No. Candidate missing law: a GLOBAL ledger where the world needs inputs (a conservation story for a divinity; maps to a patron with a big store that wants refilling).
+ Calendar = [CAL]/TIME gate. A day sign changes a result. Candidate: "time-of-day or cycle coupling" can be a modulation of M's source S(x,t). That fits the field (sunlight on a crystal; ley line) in the design without a new law. Good.
+ Place = field density g(x) and S(x). Maps well.
+ Impersonation of a god (ixiptla) = a body as a patterned structure that "becomes" a pattern: INFORMATION held by a body. Costs bodies.
+ Dedication caches (jade under floors) = a standing inscription with MATTER paid once. WEAR/MATTER.
+
+==========================================================================
+9. NATIVE NORTH AMERICAN MEDICINE BUNDLES
+==========================================================================
+(a) FREEHAND vs COMPONENTS (k).
+ A bundle is a wrapped set of objects (skins, pipes, feathers, stones, herbs, bones, paint) that holds power, with songs, rules and a story of a vision or a gift from a spirit. Examples: Blackfoot Beaver Bundle, Thunder Pipe Bundle (Wissler); Pawnee sacred bundles (Dorsey, Murie); Lakota Sacred Pipe (Chanunpa); Hidatsa and Mandan bundles (Bowers); Navajo medicine bundles (jish) of singers, and the sandpaintings of Navajo ceremony (Reichard, k).
+ Freehand: vision quest and personal songs. A person alone can get a spirit helper with fasting and no objects; songs and personal power can be used directly.
+ Needs components: the bundle objects and their opening ritual, with sequences of songs, smoking the pipe, paint, and gestures. Navajo chants need a trained singer (hataalii), a sandpainting made in a day from coloured sands, pollen, corn meal, a sweat, an herbal emetic, and four or nine nights. (k, Reichard, Faris)
+(b) COMPONENTS AND PURPOSE (k).
+ - Bundle: a STORE of power and a kept record of songs. The bundle "has the spirit". It is a focus carrying PATTERN and a bond (KIN) to the giver spirit.
+ - Songs: PATTERN and TIMING. Each item has a song. The sequence is long. Must be exact: error ruins the rite (Navajo: a mistake can mean repeating or fails).
+ - Pipe smoke: LINK and carrier, and a peace oath. Tobacco: payment and carrier.
+ - Sandpainting: a large temporary PATTERN of the holy people. The patient sits on it to take in the power. It is destroyed at day's end (the sand is carried away and returned). The pattern transfers (absorption) to the patient, and the sand is the dumped "waste/impurity". (k, Reichard)
+ - Pollen: PURITY, blessing.
+ - Fasting, sweat lodge, abstinence: PURITY. 
+ - Transfer: a bundle is transferred from owner to a buyer by a long ceremony and a PRICE in horses, blankets, goods, or services: a sale of power. The new owner learns the songs. SOCIAL LICENCE and imprinting. (k, Blackfoot bundle transfers, Wissler).
+(c) CONSUMED, WORN, KEPT.
+ Kept: the bundle, for generations. Worn: some items (feathers, headdress, paint). Consumed: tobacco, sweetgrass, sand (destroyed), pollen. Some bundles are buried with the owner or renewed.
+(d) STACKING.
+ Navajo Night Chant stacks: singer + songs (hundreds) + sandpaintings + prayersticks + herbs + emetic + sweat + dance masks + group + nine nights + a place (hogan) + a season (only after the first frost, when snakes sleep, k).
+ Plains bundle opening stacks songs + pipe + paint + objects + group + price + a season (thunder bundles opened at first thunder in spring, k).
+(e) COSTS AND RISKS (k).
+ Bundles have strict rules of care: a taboo on touching, ritual order of opening, pollution by menstruating women (a widespread rule, k, with the caution that interpretations vary) etc. A bundle's keeper takes on duties (feed, guard, hold ceremonies). Breaking rules can bring illness or death to the keeper or family. The keeper may have to "obey" the bundle's demands and the keeper changes his life.
+ Navajo: a mistake by the singer in a long rite, or the patient, can harm; the singer must be paid and must be exact; sandpaintings must be correct.
+(f) MAPPING.
+ Bundle = a kept FOCUS (an item set with a pattern) that is transferable, with an ownership chain (imprinting). Good fit with "items as stable designs" and "foci". A price in goods maps to nothing in the physics: [SOC] market. 
+ Sandpainting = an erasable large inscription and a waste sink in one: the sand takes the harm. A strong map to WASTE exported to matter, same as the Japanese hitogata.
+ Song sequence = INFORMATION with high exactness and high time cost.
+ The keeper's obligations = [KIN] with an upkeep cost (a maintenance cost on the focus that is not wear by use but by neglect). Candidate missing law: UPKEEP/standing cost, paid with time and duty even when the focus is not used. See Section 12.
+ Season-gated rites = [CAL].
+
+==========================================================================
+10. AUSTRALIAN ABORIGINAL PRACTICE
+==========================================================================
+(a) FREEHAND vs COMPONENTS (k).
+ Cautions first: "Aboriginal" covers hundreds of nations. What follows is a sketch from Elkin, Spencer and Gillen, Strehlow, Berndt, Stanner, and the standard summaries; practice varies, some is secret and is not in the books (u).
+ Freehand: song and thought. Men of high degree ("clever men", karadji, mabarn, etc.) were said to travel by thought, climb ropes to the sky, speak to spirits. (k, Elkin)
+ Needs components: sacred objects (tjurunga or churinga among the Arrernte: carved stones or wooden boards holding the life of an ancestor or a person), ochre, down, blood, songs (songlines), ceremonial grounds, designs painted on the body, sand paintings, rock art, sacred sites. 
+ Sorcery: pointing bones (kurdaitcha, pointing bone; "singing" someone), the pointing stick and the bone are charged by song; the victim, if he knows, sickens and dies. (k, Spencer and Gillen; also Cannon's "voodoo death" note, 1942)
+ Increase rites (intichiuma): a group at a totem site performs a ceremony to increase the species. (k, Spencer and Gillen; Strehlow disputes some points)
+(b) COMPONENTS AND PURPOSE (k).
+ - Songlines: INFORMATION and place. A song encodes a route through country with landmarks, waters. Singing it in order is a map and a ritual. A PATTERN bound to PLACE. A memory system (cf. memory palace).
+ - Sacred object (tjurunga): a LINK to an ancestor and an individual's spirit. Kept hidden; not shown to the uninitiated. WEAR no; kept.
+ - Body paint and designs: PATTERN, and a SOCIAL LICENCE and kin identity. Designs are owned, by clan.
+ - Ochre and blood: MATTER (pigments), the blood of men from their arms for gluing down in some ceremonies.
+ - Place: the site is where the ancestor's power is. The ritual must be at the right site. Law/"country" ownership. [CAL]/place + [SOC].
+ - Initiation: pain and secret knowledge; SOCIAL LICENCE and imprinting.
+ - Pointing bone: LINK (name, body trace, even footprint) and PATTERN (the song). Without a link target one cannot point (k).
+(c) CONSUMED, WORN, KEPT.
+ Kept: tjurunga (stored in caves), songs (memory). Consumed: paint and down (washed or cut). Rock art: repainted by the custodians (maintenance as a duty). Ceremonial ground marks: temporary.
+(d) STACKING.
+ An increase ceremony stacks site + song + dance + designs + objects + a kin group of the right moiety and totem + a season. Initiation stacks all of that plus pain and secrecy and a long period.
+(e) COSTS AND RISKS (k).
+ Revealing secrets to the uninitiated is punishable by death or illness in some groups. Wrongly doing a ceremony at a site (or without right) is dangerous for the performer and for the site. The pointing bone's risk to the sorcerer: retaliation, since the victim's kin seek a sorcerer to kill. Heavy duty on the custodians: ritual upkeep of country, a duty with no end ("looking after country").
+ Time: the cycle of ceremonies takes much of the year in some groups.
+(f) MAPPING.
+ Songline = INFORMATION stored over distance, with place as an index. A neat link to the design's "cheaper near the source" and to M fields at places: a place has a local S(x). Good.
+ Pointing bone = a LINK-based attack, with the cost on the victim's belief. The physical mechanism (belief-induced stress death) is physiological: actually map into the body model (fear, stress) and not into M. Good note: the sim's body has fear and shock; a "curse" that works only if the victim knows is a *cognitive* route and not a field route. Candidate for the mind layer, not for M.
+ Secrecy = [SOC] and a knowledge-control rule. The "right to perform" is a LINK to a place and an identity (a social key). Possibly a LINK with a person's identity: a kin-based access key. Not physics.
+ Duty of upkeep = the same as the bundle upkeep: a standing cost. [KIN]/UPKEEP.
+
+==========================================================================
+11. POLYNESIAN MANA AND TAPU
+==========================================================================
+(a) FREEHAND vs COMPONENTS (k).
+ Mana: efficacy, a quality of persons, places and things: success, effect, authority. Not a substance but a state of success shown in events (k, Keesing 1984: mana is "a stative verb", means "to be effective"). Chiefs have mana from descent (genealogy, rank) and by success. A fisherman's catch or a warrior's victory shows mana.
+ Freehand: spoken karakia (Maori incantations), prayers, chants, and a chief's word can set a tapu on a thing by simple declaration ("it is tapu").
+ Needs components: for a tapu declaration, none other than rank. For rituals: karakia, offerings, ritual objects such as the tiki (carved), kava (Fiji, Tonga, Samoa, Tikopia; a drink, pouring libation), fire, food (first-fruits), bark cloth, feathers (Hawaiian feather cloaks, red feathers rank), a priest (tohunga, kahuna) with training, a marae or heiau (temple) place, and a human body for some offerings (Hawaii, Tahiti; heiau sacrifice, k, Valeri).
+ Navigators and canoe builders have their own karakia and rites. Hawaiian kahuna lapa'au (healing) use herbs and chants, and kahuna anaana (sorcery by praying to death) uses a link (hair, nail, spittle, a clothing piece), and a prayer. (k, Handy, Pukui; and some details from later writers, u)
+(b) COMPONENTS AND PURPOSE (k).
+ - Tapu (tabu): a RESTRICTION. It is a field of prohibitions around something that has too much mana. Touching it is dangerous. Like a high-voltage fence. Applies to chiefs' heads, bones, sacred places, a newborn, the dead, a ritual period. (k, Steiner "Taboo" says: tapu is a danger-protection rule; Firth)
+ - Noa: the opposite, "common": things made safe. Cooked food removes tapu. A rite of "lifting tapu" (whakanoa) is done with water, fire, or food. Women and cooked food are noa among Maori in some uses (u).
+ - Genealogy (whakapapa): a LINK/imprint to ancestors, which is the source of mana. Recited in full for status. INFORMATION and [SOC].
+ - First fruits and offerings: payment to the gods for the right to use a resource (the "rahui" ban on a resource, closed season, put on with a ritual mark so that the fishery recovers). A rahui is a social-ecological rule (k).
+ - Karakia: PATTERN, exact words; a mistake spoils it. "One mis-spoken word cancels" is told for many Maori and Hawaiian chants (k).
+ - Hair, nails, spittle of chiefs: LINK, extremely dangerous. A chief's leavings must be hidden because they might be used on him. (k)
+ - Kava: a drink, an offering and a link with a god; the ritual order of drinking sets rank. 
+(c) CONSUMED, WORN, KEPT.
+ Consumed: food, kava, offerings. Worn: feather cloaks (high rank: they hold mana), tiki pendants (hei-tiki), inherited items that hold the mana of the ancestors (taonga). Kept: sacred stones, meeting houses, the genealogies.
+(d) STACKING.
+ A high rite stacks chanting + genealogy + libation + food + a chief's mana + a sacred place (heiau, marae) + a priest + a group + a tapu period (silence imposed on a village) + a date (the Makahiki season in Hawaii) (k).
+(e) COSTS AND RISKS (k).
+ Breaking tapu brings automatic harm: illness, death, or crop failure, thought to follow without any person acting (a "supernatural sanction") or to be struck by the offended gods, or the community's killing of the offender. Having too much mana is dangerous to those who touch you. Mana is lost by defeat, by failure, by breaking tapu, by poor behaviour: it is conditional and public.
+ Costs of chants: exact memory. Cost of a priest: training for years and fees.
+ Navigators and fishermen: restrictions on diet and sex during voyages.
+(f) MAPPING.
+ Mana as used in the design is already the sim's "M". But the Polynesian mana is something else: it is REPUTATION-LIKE, an observed success. That is an important difference. It does not map to a field. It maps to the social layer: "who is believed to be effective". A good note for the owner: the sim's field M is named "mana" in many games, but the source word means success plus status. So the sim could have a social-prestige score that is separate from M (not physics).
+ Tapu = a restriction on contact with a high-energy thing. There is a real-physics reading: a charged object is dangerous to touch (a high store, g high, a discharge on contact). That is a MAP: "high stored energy, discharges into anyone who touches" = a store with a dial; the tapu rule = the social rule that keeps people away. Excellent hint for item design: a very charged crystal has a *touch hazard*, and a culture builds taboos around it. Possibly an emergent social pattern in the sim.
+ Whakanoa (lift tapu with cooked food, water) = discharge and ground: a way to discharge a store safely (design: store discharge, waste heat at a site).
+ Genealogy = [SOC] and imprint chain. Hair/nail LINK = LINKS, exact match with the design (resonant links: hair, blood, name).
+ Rahui = [SOC] resource ledger, not physics, but ties to a field that refills slowly (S(x)): a ban lets M or fish recover. Good emergent institution.
+
+==========================================================================
+12. CROSS-TRADITION REGULARITIES
+==========================================================================
+R1. Freehand is rare and is almost always (k) the product of long training or a gift/birth. Where it exists (Azande witchcraft, shaman's trance,
+    Aboriginal thought-travel, Polynesian chief's word), it is tied to a body dial, a body organ, a calling or rank, not to skill alone.
+    Matches the design's "dial in each individual".
+R2. Words and gestures are PATTERN, and in every tradition exactness is demanded. Errors are costed: the rite fails, reverses, or the spell hits the maker (Vedic, Daoist, Maori, Navajo).
+    Matches the design's INFORMATION + "errors land on a neighbouring valid spell".
+R3. Error correction by redundancy is found: the Vedic brahman priest; the Azande double oracle test; Navajo singers and helpers; the Daoist team.
+    Suggests: a group cast can cut the error rate by checkers. Use as a mechanism for multi-caster rituals.
+R4. Rites that matter are stacked: 4 to 8 media at once (word, gesture, object, place, time, group, body state, matter). No tradition uses a single medium for a big effect.
+    Matches the design's chain. Big effect = many media because each medium has a low rate and low precision (information view).
+R5. A place and a date gate big rites in almost all traditions (Daoist hour, Navajo frost, Aztec day count, Aboriginal site, Polynesian season).
+    In design terms: S(x,t) and g(x) vary with place and time. Works with no new law. TIME + place modulating M. An emergent calendar.
+R6. Waste is exported to an object and thrown away: Japanese hitogata, Navajo sandpainting, Daoist burned fu, Aztec paper figures, Vodou veve.
+    Matches "waste booked at the site". The thing the rite does with the waste is: it puts it in a cheap matter sink that can be destroyed.
+R7. Purity states before rites: fasting, abstinence, washing (nearly all). Plausible physical reading: low body load, rested, low noise. But mostly social; keep as a tell and a "state" not a law.
+R8. Offerings and debts to beings (KIN) appear in every tradition: Vedic dakshina and gods' exchange; Aztec cosmic debt; Ifa ebo; Siberian hunt exchange.
+    Design: a patron with a big store at the far end of a bond, whose price is in matter and obligations. Good. But the BOOKKEEPING of debts is outside the eight kinds.
+R9. Transfer of power by initiation: from a live holder to a new holder with a price and a ritual (Vedic guru mantra, Blackfoot bundle, Vodou kanzo, Aboriginal initiation).
+    Matches "imprinting" in the design (Q22), and "items as stable designs". The social licence is part of the transfer. An NPC economy of pattern ownership emerges.
+R10. Taboo (a rule of use) comes with every power: Azande medicines, Ifa eewo, Polynesian tapu, Trobriand abstinence, Navajo bundle rules.
+    In the design these are "conditions of use" that may be physical (a store must not touch water) or social. A gap in the eight kinds. See G1.
+R11. The thing magic is used for is the uncertain high-stake task (Malinowski: sea voyage vs lagoon). Useful for the mind layer: NPCs choose ritual where risk is high and control low.
+R12. Divination is more common than casting. Ifa, Azande oracles, Aztec calendars, Navajo diagnosis, Daoist omens, onmyodo. Reading hidden state is the first use of "magic".
+    Suggest the design give a cheap information-gathering spell family (a noisy yes/no or a short code) as a first-class tool. Costs: ENERGY small, INFORMATION, TIME, MATTER (the oracle).
+R13. Contagion links (hair, nail, name, footprint, spittle) are widespread: Aboriginal pointing, Polynesian chief's leavings, Daoist birth data, Azande witch tests (k).
+    Maps to LINKS. The danger of leaving your link around is a theme in all: so a link has a security aspect (hide your hair).
+R14. Similarity (effigies, paper dolls, models) is also widespread: hitogata, paper cutting, bocio, tjurunga, sandpainting, veve.
+    Maps to "pattern overlap" in the design (Frazer's similarity law); the effigy is a structured medium and it acts like a link by pattern match.
+R15. Cost to the practitioner is usually bodily and social, not "mana points": pain (bloodletting, initiation), starvation, exhaustion, shame, debt, exile.
+    Mapped: ENERGY, WASTE; but pain, hunger and stress are body physiology, which the sim has.
+
+==========================================================================
+13. GAPS: WHAT DOES NOT MAP TO THE EIGHT KINDS
+==========================================================================
+G1. CONDITIONS OF USE / TABOO. A rule that a power works only if X is done or not done (don't eat Y; don't touch water; face east).
+    Candidate fix: an extra COUPLING CONDITION on a medium: a list of numbers such as "needs dry", "needs M above t", "needs shielded from light".
+    Some are physical (and then fine). Some are pure culture. Ask the owner whether culture-only conditions should exist. My view: no, keep them as
+    cultural beliefs held by NPC minds, not engine rules (matches Q11 numbers only, no flags).
+G2. PURITY AND POLLUTION. Almost universal. Weak physical reading (clean body, no noise). The belief part is social. Not physics.
+    Candidate: a body "state" variable that the sim already has (fatigue, illness, bleeding) and let culture call some of these "unclean".
+G3. DEBT AND KIN WITH A BEING (KIN). Offerings, dakshina, ebo, the spirit spouse, the cosmic debt. A running balance owed to a patron.
+    Eight kinds have no ledger for obligations. The design's patron is a store at the far end of a bond (Q17), but not a debt book.
+    Candidate missing law: an OBLIGATION ledger between a holder and a patron: owed amount, due date, default consequences.
+    Could be kept in the mind layer (a relationship) with an effect on the patron's willingness to supply M.
+G4. SOCIAL LICENCE AND RANK (SOC). Ordination, initiation, chiefly rank, ownership of songs and designs, the right to perform at a site.
+    Not physics. Only the pattern-transfer inside it is physical (imprinting from a live holder). Keep the rest in the social/mind layer.
+G5. UPKEEP. A focus or bundle needs duty and care when not in use (feeding a bundle, renewing a shimenawa, repainting rock art, replacing ofuda yearly).
+    WEAR in the design is use-based. Ask: add an idle decay (a half-life) on inscriptions and a maintenance action? That is a number, not a flag. Fits.
+G6. CALENDAR AND SITE GATES. Not a missing law: it fits S(x,t) and g(x). But the design should ensure M source and coupling have time cycles, and a pack can set them.
+G7. BELIEF-MEDIATED EFFECTS. Pointing bone, Azande witch accusation, Daoist and Vodou curses that work on a victim who knows. The route is stress physiology, not M.
+    Not a gap in M. It is a cross-layer effect: information about a curse reaches a mind; the body's fear and shock model does the rest. Test it as a mind-layer thing.
+G8. REPUTATION AS "MANA" (Polynesian). A measure of observed success that grants authority. Social. Not the M field. Do not conflate them.
+G9. GLOBAL LEDGER OF THE WORLD (Aztec cosmic debt). If the world's sun needs feeding, that is a world-scale source/sink. Fits as a very large S(x) booked on a divine patron, but note the story is a pack idea.
+G10. INVOLUNTARY EMISSION (Azande witchcraft). A body that emits without a cognitive choice. In the design this is a leak tell [N] plus an effect with no pattern: a coupling with no valve. Needs a model decision: can a body's M release occur without a pattern? The design says no (pattern is a valve). Azande suggests a weak one: low-bit, intention-like, low-energy effects. Maybe allow a "reflex pattern" held in the body.
+G11. POSSESSION AND THE SPLIT HOLDER. Holder = body, shaper = spirit. The design's chain lets different media per stage, but "a second mind drives the body" is not a medium. It is a mind-layer change. Note it: if a patron can ride a host, the host's body pays ENERGY and WASTE and has no say in INFORMATION.
+G12. TRANSFER AND PRICE OF PATTERN OWNERSHIP. Selling a bundle or a mantra. Economic. The physics piece is a copy cost (time) from a live holder.
+
+==========================================================================
+14. DIRECT ANSWERS TO THE OWNER'S QUESTIONS (for the lane)
+==========================================================================
+Q: Does everything cost nothing other than ambient magic or life force?
+A: In these traditions, no. In nearly all, the largest listed costs are matter (offerings, ink, sacrifice), time (hours to days to years), body strain (fasting, pain, exhaustion) and social or kin debts. "Life force" appears (tapas, blood, ashe) but it is one of many. The eight kinds already cover most of this. The ones missing are debt (G3), upkeep (G5), conditions (G1), purity (G2).
+Q: What is cast freehand, what needs components?
+A: Freehand: divination by thought, short words with gesture, trance, a chief's word, or the involuntary witchcraft. Small and personal. Anything aimed at a person at distance needs a link. Anything big needs place, time, group and matter. Anything that lasts needs an object or an inscription.
+Q: Multiple interfaces?
+A: Yes, in every big rite. The usual set is word + gesture + object + place + time + group + body state. The distinct jobs seen: PATTERN holders (word, diagram, object), TIMING (drum, count), PLACE (field source), GROUP (error checking and energy sum), BODY STATE (purity), PAYMENT (matter, debt).
+Suggested design lines (for the owner to decide later; none is final):
+ 1. Add a group-casting rule: N helpers add energy and information capacity and give error checking. (R3)
+ 2. Let places and times modulate M source and coupling (R5).
+ 3. Treat waste export to a cheap destroyable matter sink as lawful and cheap (R6): a spell that "throws away the heat" into a paper or sand carrier.
+ 4. Keep debt, rank, purity and taboo in the mind and social layer, not in the physics (G1 to G4), but give NPCs those beliefs so cultures grow them.
+ 5. Consider an idle decay and upkeep cost on inscriptions (G5).
+ 6. Consider a first-class cheap divination family (R12).
+ 7. A tapu-like emergent rule: highly charged stores have a touch hazard, so cultures wrap them in taboos (Section 11).
+
+CAVEATS.
+ All claims (k) or (u). No web check was done. Several details above are commonly repeated popular claims whose scholarly status I do not know:
+ the fly agaric use in Siberia; the weight of shaman costumes; the Aboriginal "voodoo death" cases; the Maori "mistake cancels the spell" claim;
+ the menstrual taboo on bundles; and the Daoist "theft of authority" punishments. Check with the works named at the top before use.
+ Also, these traditions are living. Some details (Aboriginal ceremony, Vodou initiation, Navajo chants) are sacred or secret. The design should draw only on the public structure and not copy rites.

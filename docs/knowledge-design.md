@@ -239,3 +239,54 @@ From requests/2026-11-21-library-mark1-beliefs-second-pass.md (64 papers) and re
 - **Offscreen and history:** Talk of the Town needed "several hours" per town to simulate knowledge over a whole pre-history. It simulated the last week and implanted the rest, and the K9 plan does the same.
 - **Legibility:** show forgetting on a timeline in the character's knowledge view (Shadows of Doubt). Ryan calls intrigue hidden behind menus "the Tale-Spin effect".
 
+
+## Full-text upgrades from the library (2026-11-21, after the owner's PDFs)
+
+- **Sleeper effect** (Kumkale and Albarracín 2004, full):
+  - delayed change from a discounted message is d = 0.08 overall, the same as no message;
+  - an effect of about 0.25 appears only when the discounting cue comes AFTER the message and the hearer can and will think about it;
+  - relative fading of source against message was never estimated. This backs "start the two fades equal".
+- **Source monitoring** (Johnson, Hashtroudi and Lindsay 1993, full):
+  - the source is INFERRED AT RETRIEVAL from perceptual, contextual, semantic, affective and cognitive-operation cues, with shifting criteria; there are no decay curves;
+  - ASKING FOR THE SOURCE at test removed eyewitness suggestibility. For K12: when the player asks "who told you?", the NPC's answer goes through the same inference, and the asking itself makes them more careful (a testable effect).
+- **Mesoudi and Whiten 2004** (full): along 4-person chains, low-level detail falls linearly while medium- and high-level summary RISES, and event order is kept almost perfectly (4 of 404 retained propositions out of order). This backs the two-level retention of plans and stories.
+- **Bad News** (full): a 140-year town is generated in about 5 MINUTES, which is the cost precedent for a coarse pre-history. Confidence in a fact decays without reinforcement, and characters spread false facts unknowingly or lie. There is no player study of false beliefs.
+- **Open Design Challenges** (full): there is NO knowledge-propagation challenge in it, only the "Tale-Spin effect" (depth the player never sees). An earlier card note was wrong.
+- **Tarn Adams, "Characterization and Emergent Narrative in Dwarf Fortress"** (full, doi:10.1515/9783839453452-007):
+  - about 50 personality facets, about 30 values, needs and stress;
+  - a TWO-LAYER MEMORY in which each season's strongest events per category become PERMANENT and change personality;
+  - summed happiness caused tantrum spirals (a warning for any summed-mood design);
+  - numbers are hidden and personality is shown as text.
+
+## The uncanny: general laws from the library (2026-11-22)
+
+From responses/2026-11-22-mark1-uncanny-coverage.md (88 papers). All are general laws of perception, memory, retelling and fear. None is a "spooky" flag.
+1. **A perceptual criterion.** Seeing a signal in noise is a CRITERION SHIFT: the criterion falls with the expected base rate, darkness, a told expectation, and lost control (a 25 to 75 percent base rate moved false alarms from 0.15 to 0.26; belief added about 9 percent per SD). "Haunted" rooms work this way: dim, featureless rooms plus a hint gave 94 percent an odd sensation, while EMF and infrasound did nothing (French 2009). Reports track local cues (exterior light, room size).
+2. **Memory scaled by SURPRISE in context,** saturating beyond 2 to 3 violations.
+   - The counter-intuitive advantage is small (d 0.19 to 0.57) and shows mainly after a delay and in stories.
+   - Social-schema violations beat physics ones, and agents add.
+   - Counter-intuitive content is remembered but BELIEVED far less (d about 2). Belief follows witnesses who ACT on it.
+   - REFINED after the full texts (2026-11-22, library note pdf-upgrades):
+     - ONE VIOLATION PER ITEM transmits best: in Barrett and Nyhof's 3-generation retelling chains, one-violation items went from 3.98 to 2.72 against bizarre 3.22 to 1.29 and ordinary 2.28 to 0.89 (about 2x survival), and 35 against 17 percent in oral recall at 3 months;
+     - 37.5 percent of kept bizarre items DRIFTED INTO counter-intuitive ones;
+     - COMBINING TWO violations in ONE item lowered recall (Boyer and Ramble, adults);
+     - at STORY level, 2 to 3 anomalous items (successful Grimm tales);
+     - the "small effect" holds only for list recall.
+     So: one change per thing, a few strange things per story, which fits MARK1's one change to physics.
+3. **Lossy, emotion-biased retelling:**
+   - copy error about 0.1 per hop (about 11 percent of online copies mutate);
+   - a credible source dropped in about 37 percent of retellings and invented in about 3 percent;
+   - DISGUST predicts pass-on (low-disgust variants died out within 4 hops);
+   - hazard claims are believed more (d about 0.55), and urban legends are about 3:1 hazard stories;
+   - tale types spread by descent more than by distance.
+   This refines K4 and K5.
+4. **A fear state with separable parts:** unpredictable threat gives a sustained state; imminence switches planning to reflex; dread over a known wait makes people prefer a worse but sooner harm (79 percent took the shorter wait). Enjoyment is an inverted U in PER-SCARE fear (quadratic beta -0.05); the whole-visit relation is flat, so test per event, not per episode. Observers can read fear, not enjoyment. Disgust lowers enjoyment.
+5. **Feature-mismatch aversion:** the uncanny valley (meta g = 1.01, or trimmed g = 0.68 after correcting a strong publication bias; human side 1.34, non-human 0.64) is driven by MISMATCH among features, not by category ambiguity.
+
+Also:
+- a sleep-paralysis "visitor" law: lifetime 7.6 percent in the general population and 28 percent in students; onset rises with sleep debt, stress and trauma; the content follows local belief;
+- delayed self-feedback as a sensed presence.
+
+Catalogues for coverage checks: Thompson's Motif-Index (23 chapters; C Tabu, D Magic, E the Dead, F Marvels, G Ogres) and ATU tales of magic 300 to 749 are free tables (CC BY-SA); Christiansen's migratory legends. An LLM motif tagger (F1 0.85) can measure coverage and drift in logs, offline only.
+- Rumour cascades (Friggeri et al. 2014, full): 62 percent of rumour cascades were false; a correcting link makes a reshare 4.4 times likelier to be deleted, but 45 to 59 percent of reshares come AFTER the correction. Corrections arrive late.
+

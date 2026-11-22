@@ -1,0 +1,238 @@
+MARK_1 MAGIC: COSTS AND COMPONENTS, LANE "THEORY" (theory, anthropology, psychology)
+Date 2026-11-21. Research and writing only. No code, no sim change.
+
+Owner's question: does everything cost nothing but ambient magic or life force? Do things have external costs? What can be cast freehand, what needs components, what needs several interfaces?
+
+Marks: (v) = checked this run against a source I read (search results; only abstracts and citing text, not full papers, so (v) here means "the existence, authorship and gist were confirmed"). (k) = my knowledge of the literature, believed right. (u) = unverified or my own inference.
+Design cost kinds (the eight): 1 ENERGY, 2 WASTE, 3 INFORMATION, 4 MATTER, 5 WEAR, 6 LINKS, 7 TIME, 8 BEING NOTICED.
+Honest limit: this lane studies THEORIES of magic and experiments on people. It is not a survey of rites. Rite details belong to the other lanes. Where I cite a rite it is as the theorists used it.
+
+------------------------------------------------------------
+0. HEADLINE
+------------------------------------------------------------
+1. The theorists agree on a short list of things that recur in magic everywhere: a PRACTITIONER with a licence, an ACT (rite), a REPRESENTATION (the belief that links act to outcome), and a set of TABOOS and PREPARATIONS. Almost none of these are about energy. Most are about INFORMATION (a precise, repeated form), LINKS (contact, similarity, name) and SOCIAL LICENCE (who may do it).
+2. Frazer's two laws are the two ways to pick a target. Contagion = a causal channel that persists after contact. Similarity = pattern overlap. In MARK_1 both are already LINK (kind 6) and INFORMATION (kind 3). They are targeting rules, not power sources. This matches the design.
+3. Real traditions almost never claim magic is free. They claim it is conditional: purity, taboo, correct form, right time, right person. These conditions are mostly the same thing as the design's INFORMATION and TIME costs, plus two things the eight kinds do not hold: SOCIAL LICENCE (who is allowed) and RISK TO THE PRACTITIONER OF ERROR OR COUNTER-MAGIC (kind 8 and a new risk class, see gaps).
+4. Experimental psychology (Rozin, Nemeroff) shows contagion and similarity are real, measurable cognitive rules in modern people who do not "believe in magic". So an NPC mind that holds these rules needs no special flag. It is a learned association with a strength, an asymmetry (negative contagion is stronger than positive) and a decay shape. This gives the MARK_1 NPC mind a way to react to links, tells and tokens.
+5. Outcome uncertainty drives ritual (Malinowski). Where a result is controlled by skill alone, little ritual. Where chance or danger is high, much ritual. In MARK_1 terms: ritual is a costly, slow, high-information procedure that people adopt when the sim's outcome variance is large. It can be real (it lowers noise) or only felt (it lowers anxiety). The sim can tell the two apart. That is a useful design hook: some rites really cut noise (precision), some do nothing (placebo), and an NPC cannot tell which.
+
+------------------------------------------------------------
+1. SOURCES READ OR RECALLED
+------------------------------------------------------------
+Frazer, J.G. The Golden Bough (1890; 3rd ed. 1911-15; abridged 1922). Ch. 3 "Sympathetic Magic". (k)
+Mauss, M. and Hubert, H. "Esquisse d'une theorie generale de la magie" (1902-03), English: A General Theory of Magic (Routledge, 1972, tr. R. Brain). (k)
+Malinowski, B. "Magic, Science and Religion" (1925); Coral Gardens and Their Magic (1935); Argonauts of the Western Pacific (1922). (k)
+Evans-Pritchard, E.E. Witchcraft, Oracles and Magic among the Azande (1937). (k)
+Tambiah, S.J. "The Magical Power of Words", Man 3(2):175-208 (1968); "A Performative Approach to Ritual" (Proc. British Academy 65, 1979); Culture, Thought and Social Action (1985). (k)
+Levi-Strauss, C. "The Sorcerer and His Magic" and "The Effectiveness of Symbols" in Structural Anthropology (1958, Eng. 1963). Also La Pensee sauvage (1962). (k)
+Rozin, P., Millman, L., Nemeroff, C. "Operation of the laws of sympathetic magic in disgust and other domains", J. Personality and Social Psychology 50(4):703-712 (1986). (v: authorship, journal, pages, aim, and that all 50 subjects showed the laws; full text not read)
+Nemeroff, C. and Rozin, P. "The contagion concept in adult thinking in the United States: transmission of germs and of interpersonal influence", Ethos 22(2):158-186 (1994). (k)
+Nemeroff, C. and Rozin, P. "The makings of the magical mind" in Rosengren, Johnson, Harris (eds.), Imagining the Impossible (CUP 2000). (k) It is cited in a review as showing adults deny magic explicitly but act on it implicitly (v, secondhand).
+Rozin, P. and Nemeroff, C. "Sympathetic magical thinking: the contagion and similarity heuristics" in Gilovich, Griffin, Kahneman (eds.), Heuristics and Biases (CUP 2002). (v: exists, listed in the search result)
+Subbotsky, E. Magic and the Mind: Mechanisms, Functions and Development of Magical Thinking and Behavior (OUP 2010). (v: exists; gist from search summaries)
+Subbotsky, E. "Magical thinking in judgments of causation: can anomalous phenomena affect ontological causal beliefs in children and adults?" Brit. J. Developmental Psychology 22:123-152 (2004). (v: gist: only 6-year-olds and older deny magic can occur in real life; most adults, shown an anomalous event not framed as magic, accepted it as real in both words and actions)
+Hood, B. et al. (2010) "Implicit voodoo" (Scribd result, title only). (u: result seen, contents not read)
+Related, not read this run: Tylor (1871) Primitive Culture on the "association of ideas" origin; Skinner (1948) "superstition in the pigeon"; Boyer and Lienard (2006) on ritual precaution (Behavioral and Brain Sciences 29:595); Sorensen (2007) A Cognitive Theory of Magic; Whitehouse (2004) Modes of Religiosity. (k)
+
+------------------------------------------------------------
+2. THE FIVE THEORISTS: WHAT EACH SAYS ABOUT COSTS AND COMPONENTS
+------------------------------------------------------------
+
+2.1 FRAZER (1890/1911): THE TWO LAWS (k)
+Claim: all sympathetic magic runs on two principles.
+  Law of Similarity: like produces like. Effect resembles cause. Called HOMEOPATHIC or IMITATIVE magic. Example he gives: rain-making by sprinkling water, a wax image pierced to harm the person it resembles.
+  Law of Contact or Contagion: things once in contact keep acting on each other after separation. Called CONTAGIOUS magic. Example: hair, nail parings, a footprint, clothes, saliva, a name (extended).
+(a) Freehand vs components. Frazer lists acts, not a freehand/components split. Most of his examples use an OBJECT: image, hair, footprint, rain-water. Words and gestures accompany them. The spell-word alone is rarer in his data, and he treats the word as a helper to the object act. (k)
+(b) Component roles in his scheme: the SIMILAR object is the PATTERN (information). The CONTACT object (hair, nail) is the LINK (targeting). Neither is power. Power is assumed to come from "the laws of nature", i.e. the magic is free, and fails only because it is mistaken. For Frazer magic is bad science: right form of reasoning, wrong premise.
+(c) Consumed, worn or kept: image burned or pierced (consumed or damaged); hair/nails kept by the victim for protection (Frazer's famous point: people hide their cuttings so no sorcerer has them). Taboo on the link is protection by denial of access.
+(d) Stacking: he notes that the two principles combine. A wax figure is made (similarity) and given the victim's hair (contagion) to make it work. That is a stacked rite: pattern + link at once. (k) This is the same stack the owner's note gives for "scrying needs hair and a crystal".
+(e) Costs and risks: Frazer stresses the TABOOS on the magician. The magician is subject to rules (diet, continence, silence, not touching ground, not being seen). Reason he gives: the magician carries a dangerous potency that must be kept from leaking or from being spoiled. (k)
+(f) Mapping: similarity -> INFORMATION (pattern) and the medium's precision. Contagion -> LINK (6). Taboos -> not clearly mapped: partly TIME (preparation), partly INFORMATION (a precise state of the practitioner), partly social. See gap G2.
+Regularity: both laws are about TARGETING and PATTERN, not about ENERGY. That supports the design choice that energy is a separate resource from link and pattern.
+
+2.2 MAUSS AND HUBERT (1902-03): AGENTS, ACTS, REPRESENTATIONS (k)
+They define magic by social features, not by technique. Rites are:
+  - private, secret, furtive, marginal, often forbidden (versus public religion);
+  - done by a magician with a special status (a social position, often by birth, initiation, or exclusion: the old, the foreign, the deformed, women, smiths);
+  - based on belief that is held by the group, not just the magician.
+Three analytic parts:
+  1. AGENTS: the magician (qualities, status, training, initiation, purity), the client, and the assistants.
+  2. ACTS: the rites. Each has a PLACE, a TIME (night, moon phase, season), a PREPARATION (fasting, purification, isolation), the INSTRUMENTS (wand, knife, cord, plant), the WORDS (spells, formulae, names, often "foreign" or archaic), and the GESTURES.
+  3. REPRESENTATIONS: the ideas that make the act mean something. Includes the "mana" idea (Melanesian/Polynesian word they generalise): an impersonal force or quality that the magician has and that things have, that is the "stuff" magic runs on. (k)
+Mauss also says the three laws operate: contiguity, similarity and the law of OPPOSITES (contrariety: reversal, left-handed act, negation). (k) This third law is not in Frazer.
+(a) Freehand vs components: Mauss says magic is made of "rites" that always have a form and rarely are just a thought. Pure will is not enough in the data. The magician must DO an act. The nearest to freehand is the "oral rite" (a spoken formula). (k)
+(b) Component roles. Mauss names the instruments by function: they carry mana (power), they hold the sympathetic link, they mark the act as magic (social licence), and they define the setting (a sacred place, a time). The licence function is large in his scheme.
+(c) Consumed/kept: some instruments are consumed (the offering, the burned thing), some are inherited and kept, some are made once for a rite and thrown away (to avoid contamination). (k)
+(d) Stacking: everything stacked. A typical rite fixes WORD + GESTURE + OBJECT + PLACE + TIME + PREPARATION at once, and a failed element can void the rite. (k)
+(e) Costs and risks: the magician is dangerous and in danger. Mauss describes the magician as part of a world where counter-magic exists, and where contamination can return on the maker. (k)
+(f) Mapping:
+  Mana -> ENERGY (1) at the physics level. Mauss's mana is a social-and-power idea, not a conserved quantity. In MARK_1 it is the field M plus the practitioner's coupling dial. Mapping is loose (u).
+  Place and time -> TIME (7) and environment (the chain's "surroundings" stage). Also INFORMATION: a fixed place or hour narrows the pattern.
+  Preparation (fast, purity) -> partly ENERGY (a fasting body has less), partly INFORMATION (a clean, repeatable state), partly social. Mixed.
+  Status of the magician -> not a physical cost. It is a social LICENCE. See gap G1.
+  Law of opposites -> INFORMATION: a pattern defined by inversion. Mappable if the sim's pattern space has a notion of negation (phase, sign). Candidate small addition: an "inverse" operator in the spell grammar (u).
+Regularity: the form of the act matters as much as its content. Mauss: magic works (is believed to work) by being done correctly, in the right social container.
+
+2.3 MALINOWSKI (1922-1935): MAGIC WHERE OUTCOMES ARE UNCERTAIN (k)
+Key finding (Trobriand fishing): in the lagoon, where fishing is safe and reliable, there is little magic. In the open sea, where it is dangerous and results vary, there is much magic for canoes, voyages and the kula. Also gardens: technical work (clearing, fencing) is done with skill; magic attends the parts the gardener cannot control (blight, rain). Malinowski says magic is a response to uncertainty and fear, bridging the gap between knowledge and what is needed. It sets confidence and organises work. (k) Contested: later authors say the pattern is real but over-tidy (k).
+(a) Freehand vs components: garden magic uses spells (long, spoken, to the plot, tools, seeds, often with an object, a leaf or a stone) and gestures. Canoe magic uses spells over the wood, and special woods. He stresses that the SPELL is the core of Trobriand magic and the objects are accessories (a notable contrast to Frazer's focus on objects). (k) Spoken "owned" formulae, passed down by lineage, are the key asset.
+(b) Component roles: the spell carries the effect; the rite organises timing; the offering pays or placates; taboos protect.
+(c) Consumed/kept: formulae are kept (owned, inherited); leaves, oils, coconut used and discarded.
+(d) Stacking: spell + object (a medicated leaf or oil) + a taboo period + a site. Many rites have a series of ordered stages across a season. (k)
+(e) Costs and risks: the magician takes on taboos (sexual abstinence, food rules) and must know the exact formula in order. Mistakes in the formula are said to void it. The formula is also an owned ASSET and has market value (it can be bought). (k)
+(f) Mapping:
+  Owned formula -> INFORMATION (3), as a stored, learned pattern. Also a KNOWLEDGE ASSET with exclusive rights. Exclusive rights are not physics. See G1.
+  Season-long rite -> TIME (7).
+  Uncertainty-driven ritual -> not a cost in the eight. It is a RESPONSE rule for NPC minds. See section 6 (NPC behaviour) and G5.
+Regularity: ritual is dense exactly where the physical process has high variance and high stakes. For MARK_1 this is testable: ritual density in a community should track the sim's own outcome variance. If the sim has real variance and real danger, NPC cultures will evolve rites. We do not need to author them.
+
+2.4 EVANS-PRITCHARD (1937): AZANDE (k)
+Findings:
+  - Witchcraft (mangu) is an inherited bodily substance in the belly (witchcraft-substance) that acts without rite, by ill will alone. Witchcraft needs NO component. It is unconscious and passive. This is the nearest real-world case to "freehand/innate".
+  - Sorcery uses rite, spells and magical substances (medicines, "ngua"): leaves, roots, wood, bundles. Sorcery is done on purpose with materials and formulae. Magic (benign) uses medicines and spells too.
+  - Oracles (poison oracle benge fed to fowls; rubbing-board, termite oracle) are consulted for decisions. They use a CONSUMED reagent (the poison, the fowl) and require correct procedure, with answers by the fowl's death. The oracle can be tested again for confirmation. (k)
+  - Explanation of failure: the "secondary elaboration" of belief. If a spell fails, the Azande say the medicine was wrongly prepared, a taboo was broken, a counter-witch was at work, or the oracle was spoiled. The system is not falsified by failure. (k)
+  - Witchcraft explains "why this person, now" (the particular misfortune) while natural causes explain "how" (the granary collapsed because termites ate the posts). Azande agree with the physics of the collapse. The witch explains the timing. (k)
+(a) Freehand: witchcraft (innate, no act). Components: sorcery, medicine, oracle.
+(b) Roles: medicine = power and pattern combined; oracle poison = the instrument of reading; fowl = the consumed detector; the leaf and the bundle = matter.
+(c) Mostly consumed (poison, fowl, leaf) or kept (the bundle, the rubbing-board).
+(d) Stacking: oracle consultation stacks a procedure (the poison strength, the exact question phrasing, a repeat test) with a social context.
+(e) Costs/risks: sorcerer is exposed if the oracle names them. Witchcraft is hereditary and is a social danger. Death at the hands of the vengeance magic. (k)
+(f) Mapping:
+  Witchcraft-substance -> the dial "coupling g" and an internal store: kind 1 ENERGY with no rite. Matches the design's "sorcerer = high dial".
+  Medicines -> MATTER (4) reagents, and CATALYST (a barrier lifted), consumed.
+  Oracle -> a SENSING instrument that costs MATTER and TIME; its reading is a noisy channel.
+  "Why this person now" -> not a cost. It is an explanatory belief about misfortune. It maps to NPC attribution (an NPC mind that attributes events to agents). See G4.
+Regularity: where an innate capacity exists (witchcraft), it needs no rite; where a deliberate act exists (sorcery), it always has components. The split "innate and freehand" vs "learned and equipped" recurs, and it matches the design's "sorcerer vs wizard".
+
+2.5 TAMBIAH (1968, 1979): PERFORMATIVE ACTS (k)
+Claims:
+  - Ritual is a PERFORMATIVE act in Austin's sense: it does something by being done, in a conventional form with the right person, words and circumstances ("felicity conditions"). It is not mistaken science (against Frazer). The rite works socially by being performed.
+  - Words and acts are two channels. In Trobriand garden magic words are used to transfer qualities to the object by analogy (e.g. "like the fast bird"). The words are metaphors; acts are metonyms. Both carry the transfer. Tambiah argues the "magical power of words" comes from an analogy in language and from the practitioner's authority. (k)
+  - Rituals are marked by FORMALITY, REPETITION, REDUNDANCY and RIGIDITY: the same elements said and done in several channels. Tambiah argues the redundancy is how the rite gets its force. (k)
+(a) Freehand vs components: he stresses words, but the words operate on a medium (the object, the plot).
+(b) Roles: words = pattern and analogy; objects = target; practitioner authority = licence.
+(c) --
+(d) Stacking: this is the core of his analysis. Words, acts, objects and setting are REDUNDANT with each other. The same message is sent in several channels at once.
+(e) Costs: risk of "infelicity" (rite misfires: wrong person, wrong words, wrong place, wrong order). A misfire costs the rite, not the practitioner physically.
+(f) Mapping: redundancy across channels is exactly ERROR CORRECTION in information theory. The design says media are channels with rate and noise. Stacking channels with redundant content lowers the error rate at the cost of more TIME and INFORMATION (kind 3, 7). So the "several media in one rite" the owner asks about is not extra power. It is a way to buy PRECISION and ROBUSTNESS. That is the best physics reading of Tambiah (u: my inference, but it follows directly from his redundancy point and Shannon). The infelicity conditions -> wrong person = no licence (G1); wrong place = environment mismatch (maps).
+Regularity: rites that matter are redundant. Redundancy has a cost (time, effort) and a gain (reliability).
+
+2.6 LEVI-STRAUSS (1949/1958): THE SORCERER AND HIS MAGIC; THE EFFECTIVENESS OF SYMBOLS (k)
+Claims:
+  - The Zuni/Kwakiutl case of Quesalid: a sceptic who learned shamanic technique (hidden down, "sucking out" the sickness object) to expose it, found it worked on patients, and became a famed healer. Levi-Strauss: magic works through three mutually dependent beliefs: the sorcerer's belief in his technique, the patient's belief in the sorcerer, and the group's confidence. A "collective consensus". (k)
+  - The Cuna birth song (Effectiveness of Symbols): a shaman sings a myth of the birth-goddess's lost soul to a woman in hard labour; the song gives a "language" for her pains and organises them. Cure by symbolic re-ordering of experience. (k)
+  - Magic as a SYSTEM of signs, working by structure, not by supernatural force.
+(a) Components: for Quesalid, a hidden tuft of down (a prop, consumed) is what the patient sees; it is the SIGN. For the Cuna: only the song.
+(b) Role of the prop: a signifier that shows the cure; of the song: an organising frame.
+(e) Costs: for the sorcerer, loss of reputation if exposed. The social risk is the main one.
+(f) Mapping: mostly NOT physics. It is a psychosomatic or social effect: an effect through a mind's belief, which in MARK_1 would run through the BODY and MIND model (stress, pain, expectation) and need no M. Mapping: INFORMATION delivered to a mind (a signal that changes its state), plus the target's BELIEF. The sim can already model this if minds have expectation and the body has a stress response. It is not magic in the "one change". See G3 and G4.
+Regularity: where the target is a MIND or a body under mental control, belief and framing are themselves physical inputs (stress hormones, expectation, placebo). A sorcerer with no real force can still have real effects. That matters for a world where NPC minds are modelled in detail.
+
+------------------------------------------------------------
+3. EXPERIMENTAL PSYCHOLOGY OF SYMPATHETIC MAGIC
+------------------------------------------------------------
+3.1 ROZIN, MILLMAN, NEMEROFF (1986) AND LATER (v for the existence and aim, k for the details)
+They test Frazer and Mauss's two laws in Americans. The key findings I recall (k; not all verified here):
+CONTAGION:
+  - People refuse to drink juice that a sterilised cockroach touched, or to wear a sweater worn by a disliked person (a murderer, Hitler in some versions), even when told it was cleaned. The effect is stronger for NEGATIVE contagion than positive. A neutral contact with a loved person's item raises value but less. (k)
+  - Contagion works by physical CONTACT, and is stronger for items that were intimately in contact (worn clothes against a shield), and is reduced by "purification" only partly. It acts as if "essence" is transferred. (k)
+  - Dose-insensitivity: a tiny amount of a contaminant is enough (a drop of a disliked thing spoils a whole drink). It is "all-or-none" more than proportional. (k) This differs from physics, where dose matters. It is a belief rule, and it affects NPC choices.
+  - Contagion is lessened if the contact is "dissolved" or if the contaminated item is transformed, but only partly. The "essence" is thought to persist through washing. (k)
+  - Positive contagion: items from a loved or admired person (a celebrity's sweater) are valued above the same item from a stranger, but wearing the item after "sterilisation" removes the value if you think the "essence" has been washed out. People are less willing to buy it if it has been cleaned. (k)
+SIMILARITY:
+  - People refuse to eat fudge shaped like dog faeces, or to drink from a sterile bedpan, or throw darts at a photograph of a loved one (they are less accurate). The appearance, not the content, drives the response. (k)
+  - Names and pictures stand for the thing: people refuse to say "I hate (their own) mother" aloud, or to sign a contract to sell their soul, even when they say it is a joke. (k, various Rozin/Nemeroff/Risen papers)
+  - Subjects say they know it is "irrational" and still do it. Explicit disbelief, implicit action.
+Later work (Nemeroff and Rozin 1994; Rozin and Nemeroff 2002 (v: exists)):
+  - The rules appear in children before school age and in adults across cultures. Hindu Indians, with their own purity rules, show strong contagion for food and caste. (k)
+  - Contagion is "evolved" in origin (a germ-avoidance heuristic) and similarity is an association rule. The authors call them "heuristics": they usually work and sometimes mislead. (k)
+3.2 SUBBOTSKY (2004, 2010; v for the gist)
+  - Adults who explicitly deny magic can be led to act as if an anomalous effect is real, if the event is shown without being called magic. For example (k): a box that seems to turn a picture into the real object; adults then avoid putting a valued item in it. When the event is named "magic" they deny. When it is not named, they accept. The conflict is between an EXPLICIT theory and an IMPLICIT (action-guiding) one.
+  - Magical thinking in adults is suppressed more under cognitive load or when the act is only "trivially" costly; it comes back when stakes are non-trivial. (k, u on details)
+3.3 OTHER (k)
+  - Hood et al. "implicit voodoo" (2010) (u: title seen only): people show physiological stress when they harm an item they were told was their own or a loved one's, even in a sham. Contagion of "identity" through an object.
+  - Boyer and Lienard (2006) (k): ritual-like behaviour arises from a "hazard precaution" system: precise, repeated, rigid acts triggered by danger cues, which feel necessary and may be "tuned" to threats like contamination. This supports Malinowski's point from the psychology side.
+  - Skinner 1948 (k): arbitrary reward timing produced "superstitions" in pigeons: repeated fragments of whatever they were doing before the reward. A learner that has chance outcomes will invent rites. This is a mechanism: a LEARNING system with noisy outcomes produces ritual. That is precisely what MARK_1's learned minds (blind rewards, generic learning) will do without being told.
+3.4 WHAT THIS GIVES THE DESIGN
+(1) A BELIEF LAYER for NPCs. Sympathetic rules are cheap, general priors. An NPC mind that expects "a thing that touched X carries X" and "a thing that looks like X acts as X" will react to hair, blood, images and names. These priors need not be true in the sim. In the sim, a link works only if the physics provides it (a resonant link, magic-design.md). The gap between belief and sim is then ordinary: NPCs sometimes guard hair against a sorcerer who could do nothing with it, and sometimes ignore a real link. The sim stays authoritative.
+(2) TELLS. Contagion belief implies that NPCs react to the sight of tells (kind 8) not as data but with disgust, fear or reverence. A fixed set of AVERSION and VALUE weights for contacted items (negative stronger than positive, dose-insensitive) is a ready parameter set for the mind model. (u: parameters not measured here)
+(3) PLACEBO IS A REAL EFFECT. When the target is a mind, belief is itself an input. Levi-Strauss and the experiments agree. A faked rite can change real behaviour. It should be allowed to, through the existing body-mind model, with no magic law.
+(4) The experiments do not show any force. They show that a link, a similarity and a name are things minds are built to track. This is the same as the design's choice that links are resonance and similarity is pattern overlap, but also explains why LOCAL PEOPLE believe in them even without a sim effect.
+
+------------------------------------------------------------
+4. CROSS-CULTURAL REGULARITIES (what recurs, what is local)
+------------------------------------------------------------
+Rated by how many of the six theorists and the experiments agree. "Recurs" means every source here has it. "Local" means one or two.
+
+R1. A FORM WITH PRECISE WORDS (formula, spell, name). Recurs (Frazer, Mauss, Malinowski, Tambiah, Evans-Pritchard). Maps to INFORMATION (3).
+R2. AN OBJECT AS A PROP OR AS A TARGET LINK. Recurs. Maps to LINK (6) when the object is a piece of the target, MATTER (4) when consumed, WEAR (5) when kept.
+R3. PREPARATION AND PURITY OF THE PRACTITIONER (fast, abstinence, washing, isolation). Recurs (Frazer taboos, Mauss preparation, Malinowski taboos, Rozin purity). Partly maps: the body's energy store (fasting lowers it), the mind's clean state (information), and TIME. Mostly it is a SOCIAL and belief element. Mixed. See G2.
+R4. RIGHT TIME AND PLACE. Recurs (Mauss, Malinowski). Maps to TIME (7) and to the "environment" stage in the chain (local M, a fixed site). Some of it is only convention.
+R5. REDUNDANCY ACROSS CHANNELS (word + act + object + place). Recurs (Tambiah, Mauss). Maps to error correction: more INFORMATION and TIME for less noise. This is the mechanism for the owner's "several interfaces".
+R6. A SPECIAL STATUS OR LICENCE FOR THE PRACTITIONER (birth, initiation, ownership of the formula). Recurs (Mauss, Malinowski, Evans-Pritchard). Does NOT map. It is social. See G1.
+R7. TABOO AND RISK TO THE PRACTITIONER. Recurs (Frazer, Malinowski, Mauss). Partly maps to ENERGY/WASTE (body limits) and to BEING NOTICED (8). Mostly a belief-based constraint. See G2, G6.
+R8. INNATE VERSUS LEARNED. Recurs (Azande witchcraft versus sorcery; mana as a quality). Innate = a dial, freehand, passive and unconscious; learned = a procedure with components. Matches the design (coupling dial, skill).
+R9. SIMILARITY AND CONTACT AS THE TWO WAYS TO TARGET. Recurs everywhere in the theory, with the experiments confirming the cognitive side. Maps to INFORMATION (pattern) and LINK (6).
+R10. FAILURE IS EXPLAINED AWAY. Recurs (Evans-Pritchard, Levi-Strauss, Malinowski). This is about the belief system's elasticity, not about a cost. For the sim: NPC explanations of failure (broken taboo, counter-magic) are a free source of behaviour.
+R11. MAGIC CLUSTERS WHERE OUTCOMES ARE UNCERTAIN AND STAKES ARE HIGH (Malinowski; Skinner; Boyer and Lienard). Recurs. A response rule for minds, not a cost.
+R12. THE WORD AS MEANS OF TRANSFER BY ANALOGY ("like the bird"). Recurs in Tambiah's Trobriand data. Maps to pattern overlap (similarity) in a verbal medium.
+LOCAL, NOT UNIVERSAL: the law of opposites (Mauss; many cultures use reversal); the "mana" concept (Oceanic in origin, generalised by Mauss; Chinese qi, Indian prana and Norse megin may fit but are other lanes); secrecy as essential (varies; public healing rites exist); a belly substance (Azande); the poison oracle; the specific taboos.
+
+------------------------------------------------------------
+5. THE DESIGN'S EIGHT KINDS: HOW WELL DOES THEORY SUPPORT THEM
+------------------------------------------------------------
+1 ENERGY. Theory has little on joules. Mana/qi is the folk version. The innate-vs-learned split fits "body vs field". No contradiction. (Theory is weak evidence here.)
+2 WASTE. Theory says nothing directly. Ritual accounts do mention heat, fever, exhaustion, "spirit sickness" after rites (k, shamanic literature, other lanes). Not tested here.
+3 INFORMATION. STRONGLY supported. The recurring features (formula, exact order, repetition, redundancy, owned formulae, training) are all information cost and error control. Tambiah's redundancy = error correction (u inference). Malinowski's owned formulae = stored patterns with value.
+4 MATTER. Supported (reagents, offerings, medicines; Azande oracle poison). Frazer and Evans-Pritchard note that many are consumed.
+5 WEAR. Supported lightly (kept wands, bundles, heirloom formulae; inherited instruments). Less theory, more material culture.
+6 LINKS. STRONGLY supported. It is Frazer's second law and the experiments' contagion. Frazer's observation that people guard hair and nails is the counter: a link is a vulnerability and gets protected.
+7 TIME. Supported (seasonal rites, night, a moon phase, long preparation). Often the TIME is a convention as much as a cost.
+8 BEING NOTICED. Supported in a social form: the magician is marginal, secret and exposed if identified (Mauss; Evans-Pritchard's oracle naming; Levi-Strauss's reputation risk). The physical tell in the design is different (a visible emission) but the SOCIAL consequence is the same: being detected is the main risk of a magician. Good fit.
+
+Freehand versus components, as the design states it:
+  The design says freehand = whatever fits body energy, power, heat, mind capacity, medium precision. Components lift limits: store = energy; focus or inscription = information; catalyst = barrier; link = targeting; matched medium = cheaper coupling; reagent = matter.
+  Theory agrees on the roles: object-as-link (Frazer), object-as-pattern (Frazer), object-as-reagent (Azande), object-as-store (mana-bearing instruments, Mauss). It adds two roles the design list does not have as such: SOCIAL LICENCE and PROTECTION (see G1, G6).
+  Theory agrees that innate practitioners need fewer components (Azande witchcraft). It does not agree that "thought alone" is common for learned magic. Almost every learned rite uses at least a spoken or acted form. In MARK_1 this is natural: the mind's channel rate is limited, so a spoken or gestured form is what keeps the pattern clean, i.e. a freehand cast still uses the voice or hands as the medium. Pure thought is the narrowest channel.
+  Multi-interface stacking: theory says redundancy is the norm in rites that matter (Tambiah, Mauss). The design's chain (holder, shaper, environment, source) gives the stage split. Theory suggests a second dimension: REDUNDANT stacking (the same information in two channels) as well as SERIAL stacking (different jobs in different stages). The design should allow both. Serial stacking buys capacity. Redundant stacking buys reliability.
+
+------------------------------------------------------------
+6. SUGGESTED USES FOR MARK_1 (for the owner to decide; none is binding)
+------------------------------------------------------------
+U1. Keep the eight kinds. Theory does not break any. Add two NON-PHYSICS layers beside them: SOCIAL LICENCE (who may, who knows the formula, who is seen) and BELIEF (what NPCs think a link or a rite does). Both live in the mind and culture models, not the physics.
+U2. Treat TIME and PREPARATION as one thing: the cost of reaching a clean practitioner state and the right setting. The sim already has body and place state. A "ritual" is then a long scripted approach to a state in which the pattern error is low. Some rites can be real (the state does lower noise), some placebo (the NPC does it but the sim state does not change). An NPC cannot tell which. A learner will pick up whichever its rewards support (Skinner).
+U3. Allow REDUNDANT stacking as a distinct option in the spell grammar: send a node in two channels, error rate falls, time rises. This answers "several interfaces" with a clear physical meaning.
+U4. Link protection: if a link is a vulnerability (contagion), then NPCs who know of it will guard hair, blood and name, and burn cuttings. Let the mind learn it from outcomes, or have the culture table carry it as a belief. No special code.
+U5. Give NPC minds the Rozin/Nemeroff priors as a small bias set: contact with a tagged item raises the item's valence by the tag's sign, negative stronger, nearly dose-insensitive; resemblance triggers a weaker version. Parameters are (u) and should be fitted from the literature before use.
+U6. Placebo and nocebo pass through the body-mind model. A sorcerer's rite on a believing target may cause real stress effects with no M at all. Check that the mind model can produce them. This is a test of the mind model, not a magic feature.
+U7. Test ritual density against outcome variance (Malinowski) in the culture sim as a validity check: more variance and higher stakes should give more ritual. If it does not, the mind learners are not producing the behaviour.
+
+------------------------------------------------------------
+7. GAPS: WHAT DOES NOT MAP TO THE EIGHT KINDS
+------------------------------------------------------------
+G1. SOCIAL LICENCE. Who may cast; owned and inherited formulae; initiation. Real and nearly universal (Mauss, Malinowski). Not physics. It sets who learns what and who is punished. Belongs to the culture and knowledge layers (the knowledge design). Not a cost the cast pays. It is a precondition on who has the pattern.
+G2. PURITY AND TABOO OF THE PRACTITIONER. Part maps (fasting lowers energy, isolation reduces noise, a rule-bound routine is a precise state). The rest is belief: a rule whose breach is "believed" to void a rite. Candidate approach: treat taboos as learned beliefs with a possible real basis. If a taboo has no basis in the physics it is simply false, and the sim lets it be.
+G3. EFFECT THROUGH THE TARGET'S BELIEF (Quesalid, Cuna song). Real effects, no M. Needs the body-mind model, not a magic law. Possible missing law: none, provided stress and expectation are modelled.
+G4. ATTRIBUTION AND EXPLANATION OF MISFORTUNE ("why this person now", Azande). A mind behaviour. Not a cost. It generates accusations, counter-magic and scapegoating. Interesting for gameplay. Belongs to the NPC mind.
+G5. UNCERTAINTY-DRIVEN RITUAL (Malinowski, Skinner). A learning rule, not a cost. It should emerge. Test it (U7).
+G6. PROTECTION AS A COMPONENT ROLE. Amulets, circles, taboos on contact. In physics terms it is shielding and path denial (attenuation, impedance, a counter-pattern), and denying a link. It mostly maps to the existing wave machinery (shield, counterspell) and to link denial. Listed here because theory names it as its own role. Not a new cost.
+G7. LAW OF OPPOSITES (Mauss). Needs an inversion operator in the pattern grammar (phase or sign). Small candidate addition. (u)
+G8. CONTAGION BY NAME OR IMAGE WITHOUT PHYSICAL CONTACT. Folk theory treats a name or picture as a link (Frazer, Rozin). In the design a link is a resonant physical trace. A name has no trace unless it was imprinted. So a name link is either (a) not real in the sim (a belief only), or (b) real only as INFORMATION: knowing a true name lets you identify a target in a space where identity is a pattern. The design's "name" in kind 6 should say which. (u: for the owner)
+G9. DOSE-INSENSITIVITY. People act as if a tiny contact carries the whole essence. Physical links are proportional (decay, dilution). Another gap between belief and sim, not a missing law. It gives NPC behaviour that is stronger than the physics warrants.
+G10. THE MAGICIAN'S MARGINAL STATUS AS A COST (kind 8 in social form). Being detected leads to exile or death. The design's BEING NOTICED covers the physical tell. The social consequence should come from the NPC response, not a new cost.
+
+------------------------------------------------------------
+8. WHAT I COULD NOT CHECK
+------------------------------------------------------------
+- Full texts of Rozin et al. 1986, Nemeroff and Rozin 1994, Subbotsky 2004 and 2010: I read only search abstracts. The details in section 3 marked (k) are from memory and should be confirmed before any NPC parameter is set.
+- Page-level claims about Tambiah's redundancy argument, Mauss's list of instruments, and Malinowski's lagoon versus open sea contrast are from memory (k).
+- Hood et al. "implicit voodoo" (2010): title only (u).
+- I did not read the owner's PDFs in references/magic_stuff/ for this lane. They are not theory sources.
+- This lane gives no numbers for the sim. Every parameter suggested (U5) needs a source or an experiment.
+
+Sources seen in search (for the (v) marks):
+  Rozin, Millman and Nemeroff 1986 record: https://bvbvf1.bib-bvb.de/vufind/PrimoRecord/cdi_proquest_journals_614294022
+  Rozin and Nemeroff 2002 chapter listing: https://www.cambridge.org/core/books/abs/heuristics-and-biases/sympathetic-magical-thinking-the-contagion-and-similarity-heuristics/B8C4BD241231D6D348734A41C28FE135
+  Subbotsky 2004 record: https://www.research.lancs.ac.uk/portal/en/publications/magical-thinking-in-judgments-of-causation--can-anomalous-phenomena-affect-ontological-causal-beliefs-in-children-and-adults(e34d4d07-c229-4100-b30f-be67d553a824)/export.html
+  Magic and the Mind (project MUSE): https://muse.jhu.edu/article/489832/pdf

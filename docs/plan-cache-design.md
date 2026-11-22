@@ -859,3 +859,15 @@ numbers, numbers and exact claims are not. Check before quoting.)
     repertoire, invocable by text only with its stored tell, cost and time, within its proven range,
     at the character's current skill.
 ```
+
+## Full-text upgrade from the library (2026-11-21): the utility problem in numbers
+
+Minton, "Quantitative results concerning the utility of explanation-based learning" (read from the 1988 AAAI version; card doi:10.1016/0004-3702(90)90059-9):
+- learned rules cut STRIPS search nodes about 13-fold (52,821 to 4,038), but time per node rose 3 to 4 times (0.098 s to 0.379 s, against 0.274 s hand-coded), so learned rules ran 50 to 100 percent WORSE than hand-coded ones;
+- only about 4 to 6 percent of explained examples became kept rules (588 analysed, 130 estimated useful, 30 kept);
+- without empirical utility checks, performance was about 65 percent worse.
+
+The rule adopted here (section 9, and the library's need-6 note) matches it:
+- keep an entry only if Utility = average savings x application frequency - average match cost is positive, MEASURED, not assumed;
+- match cost is measured separately from savings, with restricted key expressiveness (Tambe et al.).
+

@@ -1,0 +1,37 @@
+FOLKLORE LANE: coverage summary (411 entries, folklore.tsv)
+
+HOW IT WAS BUILT
+- Crawled (raw cached in ~/.cache/mark1-build/coverage/folklore/raw/): Wikipedia "List of legendary creatures by type" (about 1116 links across ~110 sections), "List of legendary creatures from China" (115 links), the Motif-Index of Folk-Literature page (chapter outline A to Z), and the Japan list page (only 1 link; it is a redirect-style stub).
+- Wikipedia API was rate-limited (HTTP 429) after the first burst, so the crawl went through action=raw wikitext at about 1 request per 5 s. Category:Legendary creatures by region does not exist under that name. Many regional list pages (Africa, Philippines, Slavic, Mesoamerica, Korea, Ireland, Scandinavia, Brazil, Greece, Oceania, Persia) returned errors or do not exist, so those regions were filled from my own knowledge, not from the crawl. Entries whose URL was not confirmed in the crawled link sets say "(u: url guessed)" in the mechanism column.
+- The BFS is shallow (depth 1-2 of the by-type list, not a full wiki walk). The Thompson index outline gave chapter and sub-range families, not the 40,000 motifs.
+- Over cap: 411 entries versus the "about 300" cap; the extra is motif families (about 100 rows) which are broad by nature.
+- Only names, links and my own one-line summaries are stored.
+
+COUNTS BY VERDICT
+COVERED 281, PACK 104, LAW 12, SECOND 6, EXCLUDED 8.
+Caution: COVERED is probably optimistic. Many curses, bargains and taboo conditions were marked COVERED on the assumption that "bond with a condition" exists; that condition language is exactly the semantic-trigger law below. Count the six SEM-tagged rows plus every taboo, name and threshold story as dependent on it.
+
+FAMILIES (main ones)
+Regions: Japan 31, Americas 37, China 17, Africa 17, India 12, Oceania 11, Philippines 7, Middle East 7, Mesopotamia 6, Arctic 6, Celtic 6, Persia, Korea, Egypt, Jewish, Malay, Caribbean, Haiti, Thailand, Bali, Sami and others.
+Types: ghosts and omens, undead, house spirits, nature spirits, fae, hybrids, dragons, sea monsters, shapeshifters, dreams, artificial creatures, soul-external.
+Motif chapters: A (creation) 9, B (animals) 6, C (taboo) 6, D (magic) 21, E (dead) 8, F (marvels) 11, G (ogres and witches) 7, H, J, K, M, N, P to Z one or more each, plus 19 cross-cutting motifs (pact with the devil, evil eye, sympathetic magic, three wishes, and so on).
+
+WHAT WAS SAMPLED
+By-type list: one to a few representatives from each section (spiders, birds, canines, felines, serpents, undead, demons, plants and so on), weighted to forms that exercise a different MARK1 layer. Habitat/element lists (cave, desert, volcano and so on) mostly repeat the same creatures, so they were not expanded. All six populated continents are touched, but Latin America, Pacific, Central Asia and Africa are thinner than Europe and East Asia. Not covered: Slavic and Baltic depth, Turkic and Siberian, Mesoamerican codices, Native North American nations individually, Pacific islands one by one, most Indian regional ghost lore.
+
+TOP MISSING LAWS (all 7 are small and general)
+1. Semantic-condition triggers (breach of taboo, invitation, naming, looking, threshold, crossing running water). Used by about 20 rows. Biggest gap.
+2. Pattern infection: a self-replicating pattern passed by bite, blood or meal (vampire, wendigo, lycanthropy). Needs the line between G and M drawn.
+3. Names and likeness as link keys (true names, voodoo doll, hair and nail magic).
+4. Per-plane clock rate (fairy time).
+5. Oracle objects: a pattern that gives true answers must link to a mind or a record.
+6. Acquired sense channel (language of birds, new sense by eating or bathing).
+SECOND (excluded unless a second change is made): true creation from nothing, unbounded wishes (omnipotence), true prophecy (retrocausal information).
+
+SURPRISES
+- Almost no folklore creature needs more than M, X and a pack. The real engineering is in the rules about when a curse or bond fires, which are social and semantic more than physical.
+- The scary part of most entries is K, not the body: misperception, rumour, the neighbour who is secretly the predator (aswang, skin-walker, changeling, kitsune), and rules the victim did not know.
+- Several creatures are best modelled as rumour with no body at all (bogeyman, Kuchisake-onna, Pishtaco, Chupacabra, Popobawa).
+- Many classics reduce to P plus misperception (sea serpent, kraken, will-o-the-wisp, namazu, umibozu).
+- Giants, hybrids and winged animals need square-cube and flight bookkeeping: they are PACK only if M lift or realistic body design is allowed.
+- Beings with vast belief substrates (gods, angels, loa, kami) are the strongest fit to the existing "weakens when faith breaks" design.

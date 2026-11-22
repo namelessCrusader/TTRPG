@@ -1,0 +1,346 @@
+entry	family	source_url	layers	verdict	mechanism	law_or_change	fear_source
+Zeus	Gods: Greek	https://en.wikipedia.org/wiki/Zeus	M,K,S	COVERED	sky-king as a vast believer-linked substrate patron; lightning is M energy moved at distance from a huge store; faith loss weakens him	-	awe and arbitrary wrath; K unpredictability
+Hades	Gods: Greek	https://en.wikipedia.org/wiki/Hades	M,X,K,S	COVERED	ruler of a plane-as-other-world holding ghost memories; wealth under ground is plain P ore	-	death and the unseen below; K
+Apollo	Gods: Greek	https://en.wikipedia.org/wiki/Apollo	M,K,S	PACK	plague-arrows as curse patterns, healing and prophecy as cults; oracle = trained cold reading plus rumour	-	plague as sudden unseen death; P body, K
+Ares	Gods: Greek	https://en.wikipedia.org/wiki/Ares	M,S	PACK	war patron whose substrate is soldiers' linked fervour; battle-rage = driven-host patron effect	-	battle frenzy of friends; K loss of self
+Hypnos	Gods: Greek	https://en.wikipedia.org/wiki/Hypnos	M,P,K	COVERED	sleep induced by a pattern acting on a host's brain state; physiology of sleep is P	-	helpless unconsciousness; body
+Morpheus	Gods: Greek	https://en.wikipedia.org/wiki/Morpheus	M,K	PACK	dream-shaper: a mind-link that writes imagery into a sleeper; dream content is K	-	dreams you cannot wake from; K
+Moros	Gods: Greek	https://en.wikipedia.org/wiki/Moros	K,S	EXCLUDED	personified doomed fate; fate as unavoidable outcome is narrative only	-	inevitability; narrative
+Tychon	Gods: Greek	https://en.wikipedia.org/wiki/Tychon	K,S	EXCLUDED	minor luck deity; luck is statistics plus belief	-	capricious chance; K
+Prometheus	Gods: Greek	https://en.wikipedia.org/wiki/Prometheus	P,M,S	COVERED	fire-stealing: tech transfer and punishment by a patron; liver regrowth is X rewind of parts	-	punishment that never ends; body
+Asclepius	Gods: Greek	https://en.wikipedia.org/wiki/Asclepius	P,M,X,S	COVERED	healing cult plus medicine; revival of the dead is X rewind only if parts still together	-	death reversed with a price; K
+Pan (god)	Gods: Greek	https://en.wikipedia.org/wiki/Pan_(god)	M,K	PACK	nature spirit whose shout causes panic: a sound-borne fear pattern plus herd psychology	-	panic with no seen cause; K
+Dionysus	Gods: Greek	https://en.wikipedia.org/wiki/Dionysus	M,P,G,S	PACK	wine-rite possession: intoxicant chemistry plus a patron driving a host in a crowd	-	loss of self in a mob; K, S
+Cronus	Gods: Greek	https://en.wikipedia.org/wiki/Cronus	M,K	COVERED	titan-patron imprisoned in a plane; swallowed children = beings held inside a store	-	parent devouring child; K
+Aion (deity)	Gods: Greek	https://en.wikipedia.org/wiki/Aion_(deity)	K	EXCLUDED	personified eternity	-	abstract; none
+Chronos	Gods: Greek	https://en.wikipedia.org/wiki/Chronos	K	EXCLUDED	personified time; time as agent is narrative	-	abstract; none
+Kratos (mythology)	Gods: Greek	https://en.wikipedia.org/wiki/Kratos_(mythology)	S	EXCLUDED	personified strength and power; no mechanism	-	none
+Tritopatores	Gods: Greek	https://en.wikipedia.org/wiki/Tritopatores	M,K,S	COVERED	ancestor-wind spirits: ghost memories honoured by a family cult	-	dead kin watching; K
+Zagreus	Gods: Greek	https://en.wikipedia.org/wiki/Zagreus	M,X,K	COVERED	dismembered then reborn god: rewind of parts still together as designed	-	dismemberment; body
+Phobos (mythology)	Gods: Greek	https://en.wikipedia.org/wiki/Phobos_(mythology)	K	COVERED	personified fear; fear is a mind state from unpredictability	-	fear itself; K
+Anemoi	Gods: Greek	https://en.wikipedia.org/wiki/Anemoi	M,P	COVERED	wind spirits: momentum moved at distance on air, weather is P	-	storm that has intent; K
+Heracles	Gods: Greek	https://en.wikipedia.org/wiki/Heracles	G,P,M,S	COVERED	strength from rare graded G variant plus patron; labours are feats of exertion and monsters	-	awe at one man's strength; body
+Harpocrates	Gods: Greek	https://en.wikipedia.org/wiki/Harpocrates	K	EXCLUDED	god of silence; symbolic only	-	none
+Thor	Gods: Norse	https://en.wikipedia.org/wiki/Thor	M,P,K,S	COVERED	thunder from a huge M store moved at distance through a hammer-like charged material that returns	-	storm-bringer; P
+Odin	Gods: Norse	https://en.wikipedia.org/wiki/Odin	M,K,S	COVERED	wisdom by sacrificial pattern trade (eye for knowledge); ravens = noisy senses extended; god = believer substrate	-	bargain of bodily loss for knowledge; K, body
+Loki	Gods: Norse	https://en.wikipedia.org/wiki/Loki	K,S	PACK	trickster with shape change via X and lies as K false beliefs that survive untested	-	betrayal from within the group; K
+Baldr	Gods: Norse	https://en.wikipedia.org/wiki/Baldr	M,K	COVERED	invulnerability by a ward made of oaths; mistletoe is the unwarded gap in the pattern	-	safety broken by one overlooked flaw; K
+Heimdall	Gods: Norse	https://en.wikipedia.org/wiki/Heimdall	P,M,K	PACK	supersense: hearing grass grow = extreme but P-bounded sensor; horn as sound signal	-	being watched always; K
+Hel (being)	Gods: Norse	https://en.wikipedia.org/wiki/Hel_(mythological_being)	M,X,K	COVERED	ruler of a plane of the dead; half-corpse body is P	-	rotting half-living figure; body
+Freyr	Gods: Norse	https://en.wikipedia.org/wiki/Freyr	G,M,S	PACK	fertility cult; sacred boar and ship are artifacts	-	none; low
+Gleipnir	Mythological objects	https://en.wikipedia.org/wiki/Gleipnir	P,M	COVERED	bond made of improbable materials, strength from a pattern not mass	-	inescapable binding; body
+Mjölnir	Mythological objects	https://en.wikipedia.org/wiki/Mj%C3%B6lnir	M	COVERED	charged material store that returns to its owner by a link	-	awe and dread; P
+Draupnir	Mythological objects	https://en.wikipedia.org/wiki/Draupnir	M,X	LAW	ring that drips copies every ninth night: true matter creation; rough copies need a source mass	true creation off by default (X creates only from matter)	wealth from nothing; K
+Gungnir	Mythological objects	https://en.wikipedia.org/wiki/Gungnir	M,K	COVERED	spear whose throw never misses: a guidance link plus oath binding	-	certain death from afar; K
+Huginn and Muninn	Gods: Norse	https://en.wikipedia.org/wiki/Huginn_and_Muninn	K,M	COVERED	thought and memory as scouting minds reporting to a patron	-	spies everywhere; K
+Valknut	Mythological objects	https://en.wikipedia.org/wiki/Valknut	K,S	EXCLUDED	symbol knot; symbolism only	-	none
+Valhalla	Gods: Norse	https://en.wikipedia.org/wiki/Valhalla	X,M,S	COVERED	afterlife hall as a plane; warriors as ghost memories re-fighting daily by rewind	-	endless war; K
+Einherjar	Gods: Norse	https://en.wikipedia.org/wiki/Einherjar	M,X	COVERED	slain warriors preserved as ghost patterns; daily revive is rewind of parts together	-	dead who still fight; K
+Ra	Gods: Egyptian	https://en.wikipedia.org/wiki/Ra	M,K,S	COVERED	sun-god as state-cult substrate; nightly journey through the underworld plane	-	darkness that must be beaten each night; K
+Osiris	Gods: Egyptian	https://en.wikipedia.org/wiki/Osiris	M,X,S	COVERED	dismembered, reassembled by rewind, ruler of the dead; resurrection requires parts together	-	death and reassembly; body
+Isis	Gods: Egyptian	https://en.wikipedia.org/wiki/Isis	M,X,K	PACK	healing magic and name-power: spells as patterns keyed to a true name	-	knowing your name gives power; K
+Set (deity)	Gods: Egyptian	https://en.wikipedia.org/wiki/Set_(deity)	M,S	PACK	chaos storm patron; desert and storm P	-	violent outsider god; K
+Anubis	Gods: Egyptian	https://en.wikipedia.org/wiki/Anubis	P,S	PACK	embalming rites; weighing of the heart as a judgement ritual in S	-	judgement after death; K
+Thoth	Gods: Egyptian	https://en.wikipedia.org/wiki/Thoth	M,K	PACK	writing and knowledge patron: books as patterns holding spells	-	forbidden knowledge; K
+Sekhmet	Gods: Egyptian	https://en.wikipedia.org/wiki/Sekhmet	M,S	PACK	plague and slaughter patron; Eye of Ra rampage until pacified by beer = a driven host calmed by a substitute	-	slaughter that cannot be stopped; K
+Apophis	Gods: Egyptian	https://en.wikipedia.org/wiki/Apophis	M,K	PACK	chaos serpent devouring the sun: an outsider consuming a store; nightly defence ritual	-	darkness swallowing the world; K
+Bes	Gods: Egyptian	https://en.wikipedia.org/wiki/Bes	S,K	PACK	household protector with grotesque face to scare spirits; ward made by cult art	-	ugly guardian; K
+Heka (god)	Gods: Egyptian	https://en.wikipedia.org/wiki/Heka_(god)	M	COVERED	magic itself personified: the M kernel; speech and gesture as pattern triggers	-	power of words; K
+Medjed	Gods: Egyptian	https://en.wikipedia.org/wiki/Medjed	K	PACK	unseen god known only by name, shooting rays: unseen attacker, K fear	-	unseen thing that kills; K
+Khnum	Gods: Egyptian	https://en.wikipedia.org/wiki/Khnum	G,X	PACK	potter god moulding bodies: bodies built from matter by pattern rebuild	-	being shaped by another; K
+Bastet	Gods: Egyptian	https://en.wikipedia.org/wiki/Bastet	S,P	PACK	cat cult; protective deity of home and cats	-	none; low
+Shiva	Gods: Hindu	https://en.wikipedia.org/wiki/Shiva	M,X,S	COVERED	destroyer-and-yoga patron: tapas as stored ascetic energy, third-eye burn as M heat	-	destruction by a gaze; body
+Vishnu	Gods: Hindu	https://en.wikipedia.org/wiki/Vishnu	M,X,S	COVERED	preserver with avatars: a patron incarnating through hosts across ages	-	incarnation of a god in a child; K
+Brahma	Gods: Hindu	https://en.wikipedia.org/wiki/Brahma	M,X	LAW	creator god: true creation of the world; the universe-scale act	true creation off by default	vastness; K
+Kali	Gods: Hindu	https://en.wikipedia.org/wiki/Kali	M,S,K	PACK	blood-lust goddess slaying demons; garland of skulls; patron driving a warrior host	-	female war-god dripping blood; body
+Ganesha	Gods: Hindu	https://en.wikipedia.org/wiki/Ganesha	S,G	PACK	elephant-headed god: head transplant as X rebuild; obstacle-remover cult	-	none; low
+Hanuman	Gods: Hindu	https://en.wikipedia.org/wiki/Hanuman	G,M,P	PACK	flying, size-changing monkey-god: leap as momentum at distance; size change limited by conserved mass	-	awe at strength; body
+Indra	Gods: Hindu	https://en.wikipedia.org/wiki/Indra	M,S	COVERED	thunderbolt king; rain and storm as huge M energy moved; Vritra drought as stolen store	-	storm and drought; P
+Agni	Gods: Hindu	https://en.wikipedia.org/wiki/Agni	M,P	COVERED	fire god: combustion law and sacrificial fire as a ritual transducer	-	fire as messenger; P
+Yama	Gods: Hindu	https://en.wikipedia.org/wiki/Yama	X,K,S	COVERED	judge of the dead in a plane; noose of binding as a bond	-	inescapable death summons; K
+Rudra	Gods: Hindu	https://en.wikipedia.org/wiki/Rudra	M,K	COVERED	storm-hunter archer whose arrows bring disease	-	disease as arrows from unseen; K
+Amaterasu	Gods: Japanese	https://en.wikipedia.org/wiki/Amaterasu	M,S	COVERED	sun goddess: hiding in a cave removes light; sun is P but cult explains	-	loss of the sun; K
+Susanoo-no-Mikoto	Gods: Japanese	https://en.wikipedia.org/wiki/Susanoo-no-Mikoto	M,S	PACK	storm god slaying the eight-headed serpent: creature PACK	-	storm and serpent; P
+Izanagi	Gods: Japanese	https://en.wikipedia.org/wiki/Izanagi	X,K	COVERED	descent to the underworld plane and fleeing the corpse-wife; purity ritual	-	rotting spouse in the dark; body
+Raijin	Gods: Japanese	https://en.wikipedia.org/wiki/Raijin	M	PACK	thunder spirit with drums: sound and lightning as M energy	-	thunder as a being; P
+Hachiman	Gods: Japanese	https://en.wikipedia.org/wiki/Hachiman	S,M	PACK	war and syncretic patron of samurai	-	none; low
+Ryūjin	Gods: Japanese	https://en.wikipedia.org/wiki/Ry%C5%ABjin	M,P	PACK	sea dragon-king controlling tides with jewels: charged materials as tide stores	-	sea with a master; K
+Daikokuten	Gods: Japanese	https://en.wikipedia.org/wiki/Daikokuten	S	PACK	wealth deity of the seven luck gods; benign folk patron	-	none
+Shinigami	Gods: Japanese	https://en.wikipedia.org/wiki/Shinigami	M,K,X	COVERED	death spirit luring the living to die: a patron driving a suicide-prone host	-	being drawn to die; K
+Inari Ōkami	Gods: Japanese	https://en.wikipedia.org/wiki/Inari_%C5%8Ckami	S,G,M	PACK	rice deity with fox messengers; fox shapeshift via X	-	none; low
+Enki	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Enki	M,X,K	PACK	water and craft god, giver of me (rules): me as stored patterns of civilisation	-	knowledge as divine theft; K
+Marduk	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Marduk	M,S	COVERED	state patron whose strength tracks Babylon's faith substrate	-	fall when worshippers fall; K
+Nergal	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Nergal	M,K	PACK	plague and war underworld king; plague as curse spreading	-	plague bringer; P
+Ereshkigal	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Ereshkigal	X,K	COVERED	queen of the underworld plane; descent strips power at each gate = stored M drained at doors	-	gates that strip you; K
+Lamashtu	Hybrids	https://en.wikipedia.org/wiki/Lamashtu	M,P,K	PACK	child-stealing demon: miscarriage and infant death blamed on a hybrid being; charm amulet wards	-	infant death as an agent; K
+Dumuzid	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Dumuzid	M,X	COVERED	shepherd-god alternating in the underworld plane by season: a bond swap	-	seasonal death; K
+Gilgamesh	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Gilgamesh	G,P,K	COVERED	king seeking immortality: loses plant to a snake; mortality is a biological fact	-	death as unavoidable; K
+Lugus	Gods: Celtic	https://en.wikipedia.org/wiki/Lugus	S,M	PACK	many-skilled god whose roman gloss; patron of crafts	-	none; low
+Taranis	Gods: Celtic	https://en.wikipedia.org/wiki/Taranis	M,S	PACK	thunder god with wheel; human sacrifice by burning (reported by Romans) (u)	-	ritual killing; K, S
+Cernunnos	Gods: Celtic	https://en.wikipedia.org/wiki/Cernunnos	G,S	PACK	horned forest god; horned figure on art	-	forest being; K
+The Morrígan	Gods: Celtic	https://en.wikipedia.org/wiki/The_Morr%C3%ADgan	M,K,S	PACK	battle goddess appearing as crow; prophesy of death as omens, K	-	omen of death before battle; K
+Brigid	Gods: Celtic	https://en.wikipedia.org/wiki/Brigid	M,S	PACK	hearth, healing and smithing goddess syncretised with a saint	-	none; low
+Esus	Gods: Celtic	https://en.wikipedia.org/wiki/Esus	S	PACK	god linked to hanging sacrifice; ritual killing	-	ritual hanging; body
+Quetzalcōātl	Gods: Aztec	https://en.wikipedia.org/wiki/Quetzalc%C5%8D%C4%81tl	M,S	PACK	feathered serpent civilizer; prophecy of return changes how Spaniards were received (belief)	-	returning god; K
+Tezcatlipoca	Gods: Aztec	https://en.wikipedia.org/wiki/Tezcatlipoca	M,K,S	PACK	smoking mirror: scrying obsidian, night sorcery, shapeshift via X	-	being watched in the mirror; K
+Huītzilōpōchtli	Gods: Aztec	https://en.wikipedia.org/wiki/Hu%C4%ABtzil%C5%8Dp%C5%8Dchtli	M,S	COVERED	sun-war god demanding hearts: belief substrate needs feeding, so sacrifice as an upkeep drain	-	ritual heart sacrifice; body, K
+Xipe Totec	Gods: Aztec	https://en.wikipedia.org/wiki/Xipe_Totec	S,P	PACK	flayed-skin spring rite; wearing skins	-	flayed body; body
+Mictlāntēcutli	Gods: Aztec	https://en.wikipedia.org/wiki/Mictl%C4%81nt%C4%93cutli	X,K	PACK	lord of the nine-layered underworld plane; bone-and-skull imagery	-	dead lord; K
+Tláloc	Gods: Aztec	https://en.wikipedia.org/wiki/Tl%C3%A1loc	M,S	PACK	rain god with child sacrifices to the mountains; storm as M energy	-	child sacrifice for rain; K
+Xolotl	Gods: Aztec	https://en.wikipedia.org/wiki/Xolotl	M,K	PACK	dog-headed psychopomp guiding dead through the underworld	-	guide of the dead; K
+Eucharistic miracle	Miracles	https://en.wikipedia.org/wiki/Eucharistic_miracle	P,K,S	COVERED	host turning to flesh or bleeding is misread mould or bacteria (Serratia marcescens) plus faith; rumour spreads	-	meat from bread; body, K
+Eucharistic miracle of Lanciano	Miracles	https://en.wikipedia.org/wiki/Eucharistic_miracle_of_Lanciano	P,K,S	COVERED	flesh-like relic claimed from the host; belief K, relic as an object	-	flesh relic; body
+Miracle of the Sun	Miracles	https://en.wikipedia.org/wiki/Miracle_of_the_Sun	P,K,S	COVERED	crowd sees the sun dance: eye damage plus suggestion in a crowd; senses noisy	-	shared hallucination; K
+Marian apparition	Miracles	https://en.wikipedia.org/wiki/Marian_apparition	K,M,S	COVERED	vision seen by few; a ghost-memory or a being via a resonant link or only misperception; narrator shows what is perceived	-	a presence only some can see; K
+Moving statues	Miracles	https://en.wikipedia.org/wiki/Moving_statues	P,K	COVERED	apparent motion by fluid, vibration, or a posed M mover; mostly misperception	-	statue that moves; K
+Stigmata	Miracles	https://en.wikipedia.org/wiki/Stigmata	P,K	COVERED	psychosomatic bleeding plus self-injury; blood from the hands as body response	-	wounds that open by themselves; body
+Incorruptibility	Miracles	https://en.wikipedia.org/wiki/Incorruptibility	P,K	COVERED	bodies preserved by soil, adipocere, embalming; belief turns it into a sign	-	undecayed corpse; body
+Levitation of saints	Miracles	https://en.wikipedia.org/wiki/Levitation_of_saints	M,K	COVERED	momentum applied to a body at distance from a trained mind; or a story	-	a body hanging in the air; K
+Holy Fire	Miracles	https://en.wikipedia.org/wiki/Holy_Fire	P,K,S	COVERED	self-lit flame at a tomb: chemistry or trick, mass belief in the crowd	-	fire from nowhere; K
+Gift of miracles	Miracles	https://en.wikipedia.org/wiki/Gift_of_miracles	M,S	PACK	saint as a channel for a patron: healing pattern drawn from a believer substrate	-	healer with unclear source; K
+Harrowing of Hell	Miracles	https://en.wikipedia.org/wiki/Harrowing_of_Hell	X,M,S	COVERED	descent to the underworld plane and rescue of dead souls: ghost memories relocated	-	journey to the realm of the dead; K
+Virgin birth of Jesus	Miracles	https://en.wikipedia.org/wiki/Virgin_birth_of_Jesus	G,M	LAW	conception without a mate: asexual reproduction law or a pattern seeding an egg; a genetics rule	parthenogenesis in mammals as a G/M seeding pattern	violated body norms; K
+Transfiguration of Jesus	Miracles	https://en.wikipedia.org/wiki/Transfiguration_of_Jesus	M,P	COVERED	body shining with M light as a visible store release	-	a person made of light; K
+Crucifixion darkness	Miracles	https://en.wikipedia.org/wiki/Crucifixion_darkness	P,M	COVERED	midday dark as eclipse or smoke or a large M absorption; reports are rumour	-	daylight vanishing; K
+Pentecost	Miracles	https://en.wikipedia.org/wiki/Pentecost	M,K,S	COVERED	many suddenly speak other languages: a mind-link transfer of language patterns; or mass hysteria	-	tongues as flame; K
+Joseph of Cupertino	Miracles	https://en.wikipedia.org/wiki/Joseph_of_Cupertino	M,K	COVERED	flying friar: levitation with a body store and trance; rumours	-	ecstasy lifting a body; K
+Padre Pio	Miracles	https://en.wikipedia.org/wiki/Padre_Pio	P,K,S	COVERED	stigmata and bilocation reports: bilocation is a mind-link projected image or rumour	-	being in two places; K
+Anthony of Padua	Miracles	https://en.wikipedia.org/wiki/Anthony_of_Padua	S,K	COVERED	lost-things patron; fish sermon story; rumour	-	none
+Gregory Thaumaturgus	Miracles	https://en.wikipedia.org/wiki/Gregory_Thaumaturgus	M,S	COVERED	wonder-worker moving a mountain or drying a lake: very large M displacement or legend	-	moving the land; K
+Kateri Tekakwitha	Miracles	https://en.wikipedia.org/wiki/Kateri_Tekakwitha	P,K	COVERED	smallpox scars vanishing after death: tissue pattern restore by rewind or legend	-	disfigurement gone; body
+Miracle of the roses	Miracles	https://en.wikipedia.org/wiki/Miracle_of_the_roses	P,X	COVERED	food turned into roses: matter transform by pattern rebuild	-	bread to flowers; K
+Miracle of Calanda	Miracles	https://en.wikipedia.org/wiki/Miracle_of_Calanda	X,K	COVERED	leg restored: pattern rebuild of lost tissue only if parts together; else rumour	-	regrown limb; body
+Annunciation	Miracles	https://en.wikipedia.org/wiki/Annunciation	M,K	COVERED	angel messenger delivering a message to one person: a link-based voice	-	unseen visitor; K
+Seraph	Angels and demons	https://en.wikipedia.org/wiki/Seraph	M,K	PACK	six-winged fire being: beings of vast store; read as outsiders from a resonant link	-	burning being; K
+Cherub	Angels and demons	https://en.wikipedia.org/wiki/Cherub	M,G	PACK	guardian creature with many faces; chimeric watcher	-	multi-faced guard; K
+Ophanim	Angels and demons	https://en.wikipedia.org/wiki/Ophanim	M,K	PACK	wheels covered in eyes: a many-sensed rotating being (u)	-	eyes everywhere; K
+Metatron	Angels and demons	https://en.wikipedia.org/wiki/Metatron	M,K	PACK	scribe-angel of a transformed human	-	none
+Michael (archangel)	Angels and demons	https://en.wikipedia.org/wiki/Michael_(archangel)	M,S	PACK	war angel and patron; faith substrate	-	none
+Guardian angel	Angels and demons	https://en.wikipedia.org/wiki/Guardian_angel	M,K	COVERED	protective patron linked to one person: a bond with a drain	-	unseen watcher; K
+Recording angel	Angels and demons	https://en.wikipedia.org/wiki/Recording_angel	K,S	COVERED	unseen scribe of deeds: an observing patron mind; K fear of judgement	-	being watched and judged; K
+Fallen angel	Angels and demons	https://en.wikipedia.org/wiki/Fallen_angel	M,K,S	COVERED	patron that broke from a substrate; outsiders with a grudge	-	corrupted ally; K
+Lucifer	Angels and demons	https://en.wikipedia.org/wiki/Lucifer	M,K,S	COVERED	proud rebel patron: deals as bonds	-	tempter; K
+Azazel	Angels and demons	https://en.wikipedia.org/wiki/Azazel	M,K	PACK	angel teaching weapons and cosmetics: tech transfer as taboo knowledge	-	forbidden knowledge; K
+Samael	Angels and demons	https://en.wikipedia.org/wiki/Samael	M,K	PACK	angel of death or accuser; poison and plague	-	death angel; K
+Abaddon	Angels and demons	https://en.wikipedia.org/wiki/Abaddon	M,K	PACK	destroyer angel of an abyss plane	-	pit of destruction; K
+Wormwood (Bible)	Angels and demons	https://en.wikipedia.org/wiki/Wormwood_(Bible)	P,M	PACK	falling star poisoning waters: impact event plus toxin; P disaster	-	water turns bitter; body
+Book of Enoch	Angels and demons	https://en.wikipedia.org/wiki/Book_of_Enoch	K,S	PACK	writing on watchers and giants: a document that spreads taboo knowledge	-	forbidden knowledge; K
+Nephilim in popular culture	Angels and demons	https://en.wikipedia.org/wiki/Nephilim_in_popular_culture	G,K	PACK	giants as a human-outsider hybrid line; G rare sharp-jump variants	-	giants among us; K
+Angel Moroni	Angels and demons	https://en.wikipedia.org/wiki/Angel_Moroni	K,S	COVERED	angel guiding to buried plates; visionary experience; K	-	none
+Iblis	Jinn	https://en.wikipedia.org/wiki/Iblis	M,K,S	COVERED	jinn patron who refuses submission and tempts: a driving patron	-	whispering tempter; K
+Ghoul	Jinn	https://en.wikipedia.org/wiki/Ghoul	P,M,K	COVERED	shape-changing desert predator that preys on travellers and graves: corpse-eater as P plus rumour	-	being eaten after death; body
+Qutrub	Jinn	https://en.wikipedia.org/wiki/Qutrub	P,K	PACK	werewolf-like jinn-type; graveyard haunter	-	night predator; K
+Nasnas	Jinn	https://en.wikipedia.org/wiki/Nasnas	G,K	PACK	half-human half-body creature; hybrid	-	half-person; body
+Hantu Raya	Jinn	https://en.wikipedia.org/wiki/Hantu_Raya	M,K	PACK	servant spirit bound by a pact to a sorcerer: bond with a drain	-	bound servant turning on you; K
+Pelesit	Jinn	https://en.wikipedia.org/wiki/Pelesit	M,K	PACK	familiar spirit kept in a bottle by a sorcerer: store-bound being	-	servant that bites the target; K
+Polong	Jinn	https://en.wikipedia.org/wiki/Polong	M,K	PACK	bottled spirit fed with blood to attack victims: a bond with a blood drain	-	curse in a bottle; K
+Zār	Jinn	https://en.wikipedia.org/wiki/Z%C4%81r	M,K,S	COVERED	spirit possession with a cult cure: patron driving a host, ritual as pacify	-	possession by an unseen; K
+Hatif	Jinn	https://en.wikipedia.org/wiki/Hatif	K,M	PACK	disembodied voice giving news: an unseen link voice	-	voice from nowhere; K
+Al-Jinn	Jinn	https://en.wikipedia.org/wiki/Al-Jinn	M,K	COVERED	beings of smokeless fire: M-store-bodied outsiders of another plane	-	non-human minds beside ours; K
+Shedim	Jinn	https://en.wikipedia.org/wiki/Shedim	M,K	PACK	demonic spirits of Jewish lore	-	none
+Succubus	Jinn	https://en.wikipedia.org/wiki/Succubus	M,K,P	COVERED	night visitor draining vitality: sleep paralysis plus a driven drain	-	assault in bed; body, K
+Asmodeus	Angels and demons	https://en.wikipedia.org/wiki/Asmodeus	M,K	PACK	demon of lust and wrath guarding treasure	-	tempter; K
+Exorcism in Islam	Jinn	https://en.wikipedia.org/wiki/Exorcism_in_Islam	M,K,S	COVERED	recitation as a pattern to dislodge a patron from a host	-	possession cure; K
+Mount Qaf	Jinn	https://en.wikipedia.org/wiki/Mount_Qaf	X,K	PACK	cosmic mountain ring as a plane boundary	-	none
+Sleep paralysis in folklore	Jinn	https://en.wikipedia.org/wiki/Sleep_paralysis_in_folklore	P,K	COVERED	sleep physiology misread as a pressing spirit	-	pinned by an unseen; body, K
+Chimera (mythology)	Hybrids	https://en.wikipedia.org/wiki/Chimera_(mythology)	G,P	PACK	lion-goat-serpent fire-breather: composite creature plus fire gland	-	fire from a mixed beast; body
+Sphinx	Hybrids	https://en.wikipedia.org/wiki/Sphinx	G,K	PACK	riddling guardian that kills failures: riddle test with a creature	-	a deadly quiz; K
+Typhon	Hybrids	https://en.wikipedia.org/wiki/Typhon	P,M,G	PACK	hundred-headed storm monster; scale PACK	-	storm monster; P
+Scylla	Hybrids	https://en.wikipedia.org/wiki/Scylla	G,P	PACK	multi-headed predator at a strait: creature in a hazard	-	snatched from a ship; body
+Tarasque	Hybrids	https://en.wikipedia.org/wiki/Tarasque	G,P	PACK	armoured dragon of Provence tamed by a saint	-	great beast; body
+Makara	Hybrids	https://en.wikipedia.org/wiki/Makara	G	PACK	crocodile-elephant sea beast of Hindu art	-	none
+Jackalope	Hybrids	https://en.wikipedia.org/wiki/Jackalope	G,K	COVERED	rabbit with horns: papillomavirus-grown horns, a real P effect	-	none; low
+Cetus (mythology)	Hybrids	https://en.wikipedia.org/wiki/Cetus_(mythology)	G,P	PACK	sea monster sent against a coast	-	sea beast; body
+Questing Beast	Hybrids	https://en.wikipedia.org/wiki/Questing_Beast	G,K	PACK	beast with a baying belly: sound as lure	-	unceasing noise; K
+Longma	Hybrids	https://en.wikipedia.org/wiki/Longma	G,S	PACK	dragon-horse omen of a sage	-	none
+Hippocampus (mythology)	Hybrids	https://en.wikipedia.org/wiki/Hippocampus_(mythology)	G	PACK	horse-fish sea steed	-	none
+Winged horse	Hybrids	https://en.wikipedia.org/wiki/Winged_horse	G,M	PACK	flight needs M lift on a heavy mass; P wings insufficient	-	none
+Gorgons	Hybrids	https://en.wikipedia.org/wiki/Gorgons	G,M,P	COVERED	petrifying gaze: venom or a transforming pattern via X; looking requires sight so blindfold counters	-	turn to stone by a look; body
+Cambion	Hybrids	https://en.wikipedia.org/wiki/Cambion	G,M	COVERED	child of human and demon: hybrid host with a patron link	-	born of a devil; K
+Dhampir	Hybrids	https://en.wikipedia.org/wiki/Dhampir	G,M	COVERED	child of a vampire and human: G graded effects of a parasitic hybrid	-	hybrid born of the undead; K
+Orthrus	Hybrids	https://en.wikipedia.org/wiki/Orthrus	G	PACK	two-headed hound guarding cattle	-	guard dog; body
+Garmr	Hybrids	https://en.wikipedia.org/wiki/Garmr	G,X	PACK	hell-hound at an underworld gate	-	gate guard; body
+Sharabha	Hybrids	https://en.wikipedia.org/wiki/Sharabha	G,M	PACK	lion-bird hybrid taming a man-lion	-	none
+Mušḫuššu	Hybrids	https://en.wikipedia.org/wiki/Mu%C5%A1%E1%B8%ABu%C5%A1%C5%A1u	G	PACK	serpent-dragon emblem of Marduk	-	none
+Skvader	Hybrids	https://en.wikipedia.org/wiki/Skvader	G	COVERED	hare and bird taxidermy hoax; hoax lore only	-	none
+Fur-bearing trout	Hybrids	https://en.wikipedia.org/wiki/Fur-bearing_trout	K	COVERED	joke creature in a tall tale; rumour only	-	none
+Hellmouth	Hybrids	https://en.wikipedia.org/wiki/Hellmouth	X	PACK	gate to hell as a plane portal	-	door to the pit; K
+Bulgasari (creature)	Hybrids	https://en.wikipedia.org/wiki/Bulgasari_(creature)	G,M	PACK	iron-eating monster growing by metal: material consumption law	-	growing eater; body
+Baku (mythology)	Hybrids	https://en.wikipedia.org/wiki/Baku_(mythology)	G,M,K	PACK	dream-eater chimera: eats nightmares, a mind-link pattern	-	nightmares consumed; K
+Tianma	Hybrids	https://en.wikipedia.org/wiki/Tianma	G	PACK	celestial horse	-	none
+Winged genie	Hybrids	https://en.wikipedia.org/wiki/Winged_genie	G,M	PACK	winged guardian figure of Mesopotamian art	-	none
+Magic ring	Mythological objects	https://en.wikipedia.org/wiki/Magic_ring	M,S	COVERED	charged material worn: invisibility, wishes, or binding as stored designs	-	power in a trinket; K
+Cap of invisibility	Mythological objects	https://en.wikipedia.org/wiki/Cap_of_invisibility	M,P	LAW	bends light by an M pattern; needs a rule for light redirection around a body	light-redirect pattern as a primitive	unseen watcher; K
+Talaria	Mythological objects	https://en.wikipedia.org/wiki/Talaria	M	COVERED	winged sandals: momentum at distance from a store in charged material	-	flight by shoes; K
+Seven-league boots	Mythological objects	https://en.wikipedia.org/wiki/Seven-league_boots	M	COVERED	long strides: momentum pulse per step from a store	-	none
+Aegis	Mythological objects	https://en.wikipedia.org/wiki/Aegis	M,K	COVERED	shield with a gorgon image: ward plus fear display	-	face that terrifies; K
+Shirt of Nessus	Mythological objects	https://en.wikipedia.org/wiki/Shirt_of_Nessus	P,M	COVERED	poisoned garment: contact toxin plus a bond that cannot be removed	-	burning clothes; body
+Tarnhelm	Mythological objects	https://en.wikipedia.org/wiki/Tarnhelm	M,X	PACK	helm changing the wearer's shape: pattern rebuild with mass limits	-	shapeshift; K
+Pandora's box	Mythological objects	https://en.wikipedia.org/wiki/Pandora's_box	K,M	COVERED	released evils: a sealed store opened; spread as rumour	-	release of troubles; K
+Golden Fleece	Mythological objects	https://en.wikipedia.org/wiki/Golden_Fleece	M,S	PACK	treasure guarded by a sleepless dragon	-	none
+Ichor	Mythological objects	https://en.wikipedia.org/wiki/Ichor	M,G	PACK	blood of the gods: fluid with M content	-	none
+Orichalcum	Mythological objects	https://en.wikipedia.org/wiki/Orichalcum	P,M	PACK	lost alloy; charged material PACK	-	none
+Caduceus	Mythological objects	https://en.wikipedia.org/wiki/Caduceus	K,S	EXCLUDED	symbol staff	-	none
+Holy Grail	Mythological objects	https://en.wikipedia.org/wiki/Holy_Grail	M,S	PACK	chalice that heals or feeds: a charged-store vessel and quest culture	-	a quest object; K
+Ark of the Covenant	Mythological objects	https://en.wikipedia.org/wiki/Ark_of_the_Covenant	M,S	COVERED	killing power when touched wrongly: a huge charged store with a ward; death by discharge	-	touch and die; body
+Tablet of Destinies	Mythological objects	https://en.wikipedia.org/wiki/Tablet_of_Destinies	M,K	PACK	stone granting rule of the cosmos: a pattern of authority on a store	-	ownership of fate; K
+Staff of Moses	Mythological objects	https://en.wikipedia.org/wiki/Staff_of_Moses	M,X	COVERED	turns into a serpent: matter transform by pattern rebuild; parts the sea by pushing water	-	snake from wood; K
+Golden calf	Mythological objects	https://en.wikipedia.org/wiki/Golden_calf	S,K	COVERED	idol as a faith focus; wrath as a social event	-	false god; K
+Nehushtan	Mythological objects	https://en.wikipedia.org/wiki/Nehushtan	M,P	PACK	bronze serpent healing snakebites: a charged cure or placebo	-	none
+Cornucopia	Mythological objects	https://en.wikipedia.org/wiki/Cornucopia	X,M	LAW	horn that never empties: source of matter; only X conjure by transformation of other matter	true creation off by default	none; low
+Ambrosia	Mythological objects	https://en.wikipedia.org/wiki/Ambrosia	G,M	PACK	food of the gods bestowing immortality: slow ageing pattern	-	none
+Amrita	Mythological objects	https://en.wikipedia.org/wiki/Amrita	G,M,X	LAW	elixir of immortality: a body-maintenance pattern sustained by M store	undying body needs a repair-forever pattern with a drain	ageless ruler; K
+Peaches of Immortality	Mythological objects	https://en.wikipedia.org/wiki/Peaches_of_Immortality	G,M	PACK	fruit extending life	-	none
+Fountain of Youth	Mythological objects	https://en.wikipedia.org/wiki/Fountain_of_Youth	G,M,X	LAW	restores a youthful body: pattern rebuild of ageing; needs a stored template	age-reset with template	hunger for life; K
+Cintamani	Mythological objects	https://en.wikipedia.org/wiki/Cintamani	M	PACK	wish-fulfilling jewel: store with intent link	-	none
+Akshaya Patra	Mythological objects	https://en.wikipedia.org/wiki/Akshaya_Patra	X	LAW	inexhaustible vessel: food creation	true creation off by default	none
+Vimana	Mythological objects	https://en.wikipedia.org/wiki/Vimana	M,P	PACK	flying chariot: lift via M momentum from a store	-	none
+Kykeon	Mythological objects	https://en.wikipedia.org/wiki/Kykeon	P,K	COVERED	ergot-containing drink: hallucinogen chemistry in initiation	-	altered mind; K, body
+Soma (drink)	Mythological objects	https://en.wikipedia.org/wiki/Soma_(drink)	P,K	COVERED	ritual drink possibly entheogen: drug effect	-	visions; K
+Love potion	Mythological objects	https://en.wikipedia.org/wiki/Love_potion	P,M	COVERED	drug or bond pattern making a person attached: a charm pattern in a host	-	taking away consent; K
+Magnum opus (alchemy)	Alchemy	https://en.wikipedia.org/wiki/Magnum_opus_(alchemy)	P,M,K	COVERED	multi-stage process ending in a stable pattern: refine matter and the mind of the adept	-	obsession; K
+Nigredo	Alchemy	https://en.wikipedia.org/wiki/Nigredo	P	COVERED	blackening: putrefaction stage in chemistry	-	decay; body
+Albedo (alchemy)	Alchemy	https://en.wikipedia.org/wiki/Albedo_(alchemy)	P	COVERED	whitening: purification stage	-	none
+Rubedo	Alchemy	https://en.wikipedia.org/wiki/Rubedo	P,M	COVERED	reddening: final stage; M pattern on matter	-	none
+Calcination	Alchemy	https://en.wikipedia.org/wiki/Calcination	P	COVERED	heating to ash: plain thermochemistry	-	none
+Sublimation	Alchemy	https://en.wikipedia.org/wiki/Sublimation	P	COVERED	solid to vapour: phase change	-	none
+Projection (alchemy)	Alchemy	https://en.wikipedia.org/wiki/Projection_(alchemy)	X,M	LAW	powder turning lead into gold: element transmutation; needs nuclear-scale pattern rule	transmutation of elements at M cost (nuclear binding energy)	greed; K
+Alkahest	Alchemy	https://en.wikipedia.org/wiki/Alkahest	P,M	PACK	universal solvent: a fluid dissolving anything	-	dissolving all; body
+Prima materia	Alchemy	https://en.wikipedia.org/wiki/Prima_materia	P,M,X	PACK	base stuff of all matter: the M-pattern-free substrate in X	-	none
+Hermeticism	Occult	https://en.wikipedia.org/wiki/Hermeticism	K,S	COVERED	esoteric tradition as a culture/pack of beliefs and texts	-	secret teachings; K
+As above, so below	Occult	https://en.wikipedia.org/wiki/As_above,_so_below	K,M	COVERED	correspondence principle: patterns at scales; a design rule	-	none
+Oneiromancy	Divination	https://en.wikipedia.org/wiki/Oneiromancy	K	COVERED	dream interpretation is cold reading and K	-	a dream as a message; K
+Scrying	Divination	https://en.wikipedia.org/wiki/Scrying	K,M	COVERED	staring at a reflective surface: hallucination, or a link view by an adept	-	seeing far and wrong; K
+Haruspex	Divination	https://en.wikipedia.org/wiki/Haruspex	K,P,S	COVERED	reading animal organs: misread anatomy, S authority	-	omen in viscera; body, K
+Ornithomancy	Divination	https://en.wikipedia.org/wiki/Ornithomancy	K,S	COVERED	bird-flight omens; K	-	none
+Rhabdomancy	Divination	https://en.wikipedia.org/wiki/Rhabdomancy	P,K	COVERED	dowsing rods: ideomotor effect	-	none
+Bibliomancy	Divination	https://en.wikipedia.org/wiki/Bibliomancy	K	COVERED	random verse as advice; K	-	none
+I Ching divination	Divination	https://en.wikipedia.org/wiki/I_Ching_divination	K,S	COVERED	chance plus text interpretation	-	none
+Numerology	Divination	https://en.wikipedia.org/wiki/Numerology	K	COVERED	number meanings; K	-	none
+Cold reading	Divination	https://en.wikipedia.org/wiki/Cold_reading	K	COVERED	reading a client by cues; K	-	none
+Oracle	Divination	https://en.wikipedia.org/wiki/Oracle	K,S,M	COVERED	priestess in trance giving riddles: gas or trance plus institution	-	riddle that fulfills itself; K
+Omen	Divination	https://en.wikipedia.org/wiki/Omen	K,S	COVERED	sign read as fate: K false belief that survives	-	dread; K
+Feng shui	Divination	https://en.wikipedia.org/wiki/Feng_shui	K,P,S	COVERED	placement lore; partly airflow and light; K	-	none
+Fortune-telling	Divination	https://en.wikipedia.org/wiki/Fortune-telling	K,S	COVERED	cold reading plus self-fulfilling expectation	-	none
+Anthropomancy	Divination	https://en.wikipedia.org/wiki/Anthropomancy	K,P	COVERED	divination by human entrails: ritual killing; K	-	murder for omens; body
+Hyperstition	Occult	https://en.wikipedia.org/wiki/Hyperstition	K,S,M	COVERED	ideas that make themselves real through belief: faith substrate feedback	-	belief that builds its own entity; K
+Spiritualism (movement)	Occult	https://en.wikipedia.org/wiki/Spiritualism_(movement)	K,M,S	COVERED	mediums contacting ghost memories; mostly fraud, sometimes real links	-	messages from the dead; K
+Demonology	Occult	https://en.wikipedia.org/wiki/Demonology	K,M	COVERED	catalogue of patron beings and their names; K	-	none
+Deal with the Devil	Occult	https://en.wikipedia.org/wiki/Deal_with_the_Devil	M,K,S	COVERED	pact as a bond giving power in return for the soul: patron claims on a host	-	price paid later; K
+Seal of Solomon	Occult	https://en.wikipedia.org/wiki/Seal_of_Solomon	M,K	COVERED	ring or sigil binding spirits: a bond pattern	-	none
+Testament of Solomon	Occult	https://en.wikipedia.org/wiki/Testament_of_Solomon	M,K	COVERED	king binds demons with a ring and lists their names	-	none
+Child sacrifice	Occult practice	https://en.wikipedia.org/wiki/Child_sacrifice	S,M,K	COVERED	ritual killing to feed a patron or appease: drain paid in lives; S horror	-	killing the innocent; K, body
+Host desecration	Occult practice	https://en.wikipedia.org/wiki/Host_desecration	S,K	COVERED	taboo act against a sacred object; S fear	-	sacrilege; K
+Witchcraft accusations against children in Africa	Occult practice	https://en.wikipedia.org/wiki/Witchcraft_accusations_against_children_in_Africa	S,K	COVERED	scapegoating by belief; S harm	-	real-world persecution; K, S
+Persecution of people with albinism	Occult practice	https://en.wikipedia.org/wiki/Persecution_of_people_with_albinism	S,K	COVERED	body parts sought for charms by belief; S harm	-	human parts as charms; body
+Sigil	Ceremonial magic	https://en.wikipedia.org/wiki/Sigil	M,K	COVERED	compact drawn pattern holding intent: pattern trigger	-	none
+Magic circle	Ceremonial magic	https://en.wikipedia.org/wiki/Magic_circle	M	COVERED	drawn ward: boundary pattern that blocks a patron	-	protection with a flaw; K
+Evocation	Ceremonial magic	https://en.wikipedia.org/wiki/Evocation	M,K	COVERED	calling a patron into a bound space via resonance link	-	summoning something; K
+Banishing	Ceremonial magic	https://en.wikipedia.org/wiki/Banishing	M	COVERED	pattern to sever a link or send away an outsider	-	none
+Barbarous name	Ceremonial magic	https://en.wikipedia.org/wiki/Barbarous_name	M,K	COVERED	nonsense names as keyed triggers: voice patterns	-	none
+Bornless Ritual	Ceremonial magic	https://en.wikipedia.org/wiki/Bornless_Ritual	M,K	COVERED	invocation linking the adept to a higher patron	-	none
+Body of light	Ceremonial magic	https://en.wikipedia.org/wiki/Body_of_light	M,K	PACK	astral projection: mind-link body image; senses at distance	-	out-of-body; K
+Astral plane	Ceremonial magic	https://en.wikipedia.org/wiki/Astral_plane	X,K	PACK	dream-like plane as another world; plane of ghost memories	-	place where you can be lost; K
+Elemental	Ceremonial magic	https://en.wikipedia.org/wiki/Elemental	M,K	PACK	spirit of an element: a pattern bound to fire, water, air, or earth	-	none
+Cone of power	Ceremonial magic	https://en.wikipedia.org/wiki/Cone_of_power	M,S	COVERED	group raising shared M store focus	-	none
+Enochian	Ceremonial magic	https://en.wikipedia.org/wiki/Enochian	M,K	COVERED	angelic language as trigger patterns; K	-	none
+Ley line	Ceremonial magic	https://en.wikipedia.org/wiki/Ley_line	M,P	PACK	earth-energy lines: M field gradient channels	-	none
+Choronzon	Ceremonial magic	https://en.wikipedia.org/wiki/Choronzon	M,K	PACK	dweller of the abyss tearing minds apart: an outsider destroying the self	-	loss of mind; K
+Babalon	Ceremonial magic	https://en.wikipedia.org/wiki/Babalon	M,K	PACK	archetypal feminine patron of the Thelemites	-	none
+Aiwass	Ceremonial magic	https://en.wikipedia.org/wiki/Aiwass	M,K	COVERED	being dictating a book: a patron speaking through a host	-	voice that dictates; K
+Aeon of Horus	Ceremonial magic	https://en.wikipedia.org/wiki/Aeon_of_Horus	K,S	EXCLUDED	era claim in a religion; narrative	-	none
+True Will	Ceremonial magic	https://en.wikipedia.org/wiki/True_Will	K	COVERED	each mind's drive; K	-	none
+Great Work (Thelema)	Ceremonial magic	https://en.wikipedia.org/wiki/Great_Work_(Thelema)	M,K	COVERED	the adept's life aim through practice	-	none
+Magical formula	Ceremonial magic	https://en.wikipedia.org/wiki/Magical_formula	M,K	COVERED	compact keyed pattern	-	none
+Athame	Ceremonial magic	https://en.wikipedia.org/wiki/Athame	M	PACK	ritual knife: a tool with a stored pattern	-	none
+Tree of life (Kabbalah)	Ceremonial magic	https://en.wikipedia.org/wiki/Tree_of_life_(Kabbalah)	K,M	COVERED	map of aspects used as a classification	-	none
+Unicursal hexagram	Ceremonial magic	https://en.wikipedia.org/wiki/Unicursal_hexagram	K	EXCLUDED	symbol	-	none
+Key of Solomon	Grimoires	https://en.wikipedia.org/wiki/Key_of_Solomon	M,K	COVERED	book of pattern recipes for binding spirits; document spreads	-	forbidden book; K
+Ars Goetia	Grimoires	https://en.wikipedia.org/wiki/The_Lesser_Key_of_Solomon	M,K	COVERED	list of demon names and seals: catalogue of patrons	-	none
+Picatrix	Grimoires	https://en.wikipedia.org/wiki/Picatrix	M,K	COVERED	astral magic manual; K	-	none
+Greek Magical Papyri	Grimoires	https://en.wikipedia.org/wiki/Greek_Magical_Papyri	M,K	COVERED	real spell collection: patterns and curses	-	none
+Grand Grimoire	Grimoires	https://en.wikipedia.org/wiki/Grand_Grimoire	M,K,S	COVERED	red dragon book for pacts; deal bonds	-	pact book; K
+The Book of Abramelin	Grimoires	https://en.wikipedia.org/wiki/The_Book_of_Abramelin	M,K	COVERED	six-month rite to get a guardian: a bond with a patron	-	none
+Sixth and Seventh Books of Moses	Grimoires	https://en.wikipedia.org/wiki/Sixth_and_Seventh_Books_of_Moses	M,K,S	COVERED	folk grimoire of seals; spreads as rumour	-	none
+Galdrabók	Grimoires	https://en.wikipedia.org/wiki/Galdrab%C3%B3k	M,K	COVERED	Icelandic spell book with runes	-	none
+Rauðskinna	Grimoires	https://en.wikipedia.org/wiki/Rau%C3%B0skinna	M,K	PACK	legendary red-skin book giving power over the dead; hidden in a church wall	-	book that gives power over ghosts; K
+Shams al-Ma'arif	Grimoires	https://en.wikipedia.org/wiki/Shams_al-Ma'arif	M,K,S	COVERED	Arabic occult manual of squares and names	-	none
+Hermetica	Grimoires	https://en.wikipedia.org/wiki/Hermetica	K	COVERED	texts of the tradition	-	none
+Ars Notoria	Grimoires	https://en.wikipedia.org/wiki/Ars_Notoria	M,K	PACK	rites for learning by angelic aid: knowledge transfer through a link	-	none
+Simon Necronomicon	Grimoires	https://en.wikipedia.org/wiki/Simon_Necronomicon	K,S	COVERED	invented grimoire real as a hoax book; K	-	none
+Darkhold	Grimoires	https://en.wikipedia.org/wiki/Features_of_the_Marvel_Universe	M,K	PACK	fictional book of dark magic corrupting readers: a pattern that drives its host	-	book that changes the reader; K
+Book of Shadows	Grimoires	https://en.wikipedia.org/wiki/Book_of_Shadows	K	COVERED	a practitioner's private notebook	-	none
+Sefer HaRazim	Grimoires	https://en.wikipedia.org/wiki/Sefer_HaRazim	M,K	COVERED	book of angelic names and heavens	-	none
+Petit Albert	Grimoires	https://en.wikipedia.org/wiki/Petit_Albert	M,K	COVERED	French grimoire of folk remedies and charms	-	none
+The Sword of Moses	Grimoires	https://en.wikipedia.org/wiki/The_Sword_of_Moses	M,K	COVERED	Jewish spell manual	-	none
+Perseus	Heroes	https://en.wikipedia.org/wiki/Perseus	G,M,K	COVERED	hero using borrowed charged tools (reflecting shield, winged sandals, cap) to kill a gaze-monster	-	monster that kills by sight; body
+Orpheus	Heroes	https://en.wikipedia.org/wiki/Orpheus	X,K,M	COVERED	descent to the underworld plane for a dead spouse; loses her by looking back (a rule of the plane)	-	loss at the last step; K
+Odysseus	Heroes	https://en.wikipedia.org/wiki/Odysseus	P,K,S	COVERED	cunning traveler meeting sorcerous hosts; Circe's drug-transform is chemistry or X	-	crew turned into beasts; body
+Achilles	Heroes	https://en.wikipedia.org/wiki/Achilles	M,G,K	COVERED	invulnerability except one heel: ward with an unwarded gap	-	a single hidden weak point; K
+Theseus	Heroes	https://en.wikipedia.org/wiki/Theseus	P,K	COVERED	labyrinth and a bull-man; maze navigation by thread	-	being lost in a maze; K
+Beowulf	Heroes	https://en.wikipedia.org/wiki/Beowulf	G,P,K	PACK	monster-hunting hero: Grendel as a bloodlust outsider, mere-hag lair	-	night attacker in the hall; body
+Sigurd	Heroes	https://en.wikipedia.org/wiki/Sigurd	P,M,K	PACK	dragon-blood tasting lets him understand birds: a body-borne pattern giving a sense	-	treasure with a curse; K
+Cú Chulainn	Heroes	https://en.wikipedia.org/wiki/C%C3%BA_Chulainn	G,M,P	PACK	battle frenzy that warps the body (riastrad): driven body with graded G effects	-	berserker deformed by rage; body
+Rama	Heroes	https://en.wikipedia.org/wiki/Rama	S,M	PACK	hero-king of an epic; divine weapons as stored M	-	none
+Arjuna	Heroes	https://en.wikipedia.org/wiki/Arjuna	M,K	PACK	archer with divine missile spells (astras) learned by rite	-	weapons that raze armies; body
+Medea	Heroes	https://en.wikipedia.org/wiki/Medea	P,M,K	PACK	sorceress with poisons and rejuvenation; killing her children is a K horror	-	poison by a gift; body
+Circe	Heroes	https://en.wikipedia.org/wiki/Circe	P,M,X	PACK	drug-sorceress turning men into pigs: drug or X transform	-	men turned into animals; body
+Siren (mythology)	Hybrids	https://en.wikipedia.org/wiki/Siren_(mythology)	M,K,P	COVERED	luring song: a sound pattern driving listeners, countered by wax in ears	-	being drawn to your death; K
+Echidna	Hybrids	https://en.wikipedia.org/wiki/Echidna	G	PACK	mother of monsters: a breeding line of creatures	-	none
+Imhotep	Gods: Egyptian	https://en.wikipedia.org/wiki/Imhotep	S,P	COVERED	deified architect-healer: a real person made into a patron	-	none
+Hermes Trismegistus	Gods: Egyptian	https://en.wikipedia.org/wiki/Hermes_Trismegistus	K,S	COVERED	syncretic author-figure of the Hermetica	-	none
+Eye of Ra	Gods: Egyptian	https://en.wikipedia.org/wiki/Eye_of_Ra	M,K	PACK	fierce goddess aspect sent to punish: a hunting pattern and rampage	-	vengeful hunter; K
+Meretseger	Gods: Egyptian	https://en.wikipedia.org/wiki/Meretseger	M,P	PACK	cobra goddess of a necropolis who strikes tomb robbers blind or dead: curse over a site	-	curse of the tomb; K
+Taweret	Gods: Egyptian	https://en.wikipedia.org/wiki/Taweret	S,K	PACK	hippo protector of childbirth: amulet ward	-	none
+Ba-Pef	Gods: Egyptian	https://en.wikipedia.org/wiki/Ba-Pef	K	PACK	obscure underworld deity	-	none
+Dakini	Gods: Hindu	https://en.wikipedia.org/wiki/Dakini	M,K,S	PACK	flying female spirits tied to tantric rites: patron beings of a cult	-	none
+Mahakala	Gods: Hindu	https://en.wikipedia.org/wiki/Mahakala	M,K	PACK	wrathful time-destroyer guardian	-	none
+Matrikas	Gods: Hindu	https://en.wikipedia.org/wiki/Matrikas	M,S	PACK	group of mother goddesses of war	-	none
+Shitala	Gods: Hindu	https://en.wikipedia.org/wiki/Shitala	P,S	COVERED	smallpox goddess: a disease personified; vaccine knowledge changes cult	-	plague as a goddess; body
+Manasa	Gods: Hindu	https://en.wikipedia.org/wiki/Manasa	P,S	PACK	snake goddess guarding against venom	-	none
+Karni Mata	Gods: Hindu	https://en.wikipedia.org/wiki/Karni_Mata	S,M	PACK	goddess whose worshippers believe they are reborn as rats: afterlife belief	-	rat temple; K
+Iravan	Gods: Hindu	https://en.wikipedia.org/wiki/Iravan	M,S	PACK	prince who sacrificed himself; hijra cult	-	none
+Namtar	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Namtar	M,P	PACK	plague demon of the underworld	-	disease as an agent; K
+Udug	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Udug	M,K	PACK	evil spirit class driving illness	-	none
+Qingu	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Qingu	M	PACK	champion whose blood forms humans: bodies from divine blood	-	none
+Gallu	Jinn	https://en.wikipedia.org/wiki/Gallu	M,K	PACK	underworld demons dragging the dead: bailiffs of a plane	-	dragged down by demons; K
+Kumarbi	Gods: Mesopotamian	https://en.wikipedia.org/wiki/Kumarbi	M,G	PACK	Hurrian father god of monstrous births	-	none
+Yatagarasu	Gods: Japanese	https://en.wikipedia.org/wiki/Yatagarasu	G,K	PACK	three-legged crow guide	-	none
+Tenjin (kami)	Gods: Japanese	https://en.wikipedia.org/wiki/Tenjin_(kami)	M,S,K	COVERED	scholar deified as thunder after a wrongful death: vengeful ghost plus storms; rumour	-	vengeful dead with storms; K
+Abe no Seimei	Gods: Japanese	https://en.wikipedia.org/wiki/Abe_no_Seimei	M,K,S	COVERED	court diviner-exorcist: institutional occult specialist	-	none
+Onmyōdō	Divination	https://en.wikipedia.org/wiki/Onmy%C5%8Dd%C5%8D	K,S,M	COVERED	state occult bureau: divination, taboo directions, wards as S institution	-	taboo days; K, S
+Chalchiuhtotolin	Gods: Aztec	https://en.wikipedia.org/wiki/Chalchiuhtotolin	M,P	PACK	plague-god in turkey form	-	none
+Itztlacoliuhqui	Gods: Aztec	https://en.wikipedia.org/wiki/Itztlacoliuhqui	M,K	PACK	obsidian-curved god of cold and punishment	-	none
+Marian apparition of La Corona	Miracles	https://en.wikipedia.org/wiki/Marian_apparition_of_La_Corona	K,S	COVERED	modern Marian visions; rumour spread	-	none
+Our Lady of Akita	Miracles	https://en.wikipedia.org/wiki/Our_Lady_of_Akita	K,P	COVERED	weeping statue and stigmata claims: fluid or hoax; belief	-	statue weeping blood; body, K
+Miracle of the gulls	Miracles	https://en.wikipedia.org/wiki/Miracle_of_the_gulls	K,S	COVERED	birds saving crops: a natural event read as miracle	-	none
+Pieter De Rudder	Miracles	https://en.wikipedia.org/wiki/Pieter_De_Rudder	X,K	COVERED	leg healed after fracture claim; rewind only if parts together	-	none
+Cosmas and Damian	Miracles	https://en.wikipedia.org/wiki/Cosmas_and_Damian	P,S,X	COVERED	transplant of a leg from a dead man claimed: X rebuild or legend	-	none
+Cuthbert	Miracles	https://en.wikipedia.org/wiki/Cuthbert	P,K	COVERED	incorrupt body claim; sea otters as caretakers	-	none
+Anthony the Hermit	Miracles	https://en.wikipedia.org/wiki/Anthony_the_Hermit	K,P,M	COVERED	desert temptations: hallucination from isolation, or demon attacks as patrons	-	visions of beast demons; K
+Eucharistic miracle of Tixtla	Miracles	https://en.wikipedia.org/wiki/Eucharistic_miracle_of_Tixtla	P,K	COVERED	host bleeding claim; Serratia style bacteria or deceit	-	none
+Mass of Saint Gregory	Miracles	https://en.wikipedia.org/wiki/Mass_of_Saint_Gregory	K,S	COVERED	vision of Christ's wounds at an altar	-	none
+Signs and wonders	Miracles	https://en.wikipedia.org/wiki/Signs_and_wonders	K,S	COVERED	public marvels as proof; rumour	-	none
+Number of the beast	Occult	https://en.wikipedia.org/wiki/Number_of_the_beast	K,S	EXCLUDED	numerical prophecy text	-	none
+Heavenly host	Angels and demons	https://en.wikipedia.org/wiki/Heavenly_host	M,K,S	COVERED	armies of patrons: massed believer-linked beings	-	vast host; K
+Sandalphon	Angels and demons	https://en.wikipedia.org/wiki/Sandalphon	M,K	PACK	giant angel in rabbinic lore	-	none
+Mastema	Angels and demons	https://en.wikipedia.org/wiki/Mastema	M,K	PACK	accuser angel in apocrypha	-	none
+Belial	Angels and demons	https://en.wikipedia.org/wiki/Belial	M,K	PACK	demon of lawlessness and worthlessness	-	none
+Moirai	Gods: Greek	https://en.wikipedia.org/wiki/Moirai	K,S	SECOND	fate that binds even gods: a fixed future needs information flowing from the future	fixed future / retrocausal information	inevitability; narrative K
+Norns	Gods: Norse	https://en.wikipedia.org/wiki/Norns	K,M	SECOND	weavers of fate: predetermined destiny is a second change; ordinary prediction is only K guesses	fixed future / retrocausal information	doom that cannot be dodged; K
+Cassandra	Heroes	https://en.wikipedia.org/wiki/Cassandra	K,M	SECOND	true prophecy never believed: real foresight needs future information; the unbelieved-warning social part is COVERED	true foresight (information from the future)	being right and ignored; K, S
+Creatio ex nihilo	Theology	https://en.wikipedia.org/wiki/Creatio_ex_nihilo	X,M	SECOND	making a world from nothing: true creation is off by default	true creation of matter and energy	vastness; K
+Karma	Theology	https://en.wikipedia.org/wiki/Karma	S,K	EXCLUDED	cosmic moral accounting; in MARK1 only social reputation and belief	-	none
+Resurrection of Jesus	Miracles	https://en.wikipedia.org/wiki/Resurrection_of_Jesus	X,M,K	LAW	dead body restored after days: X rewind works only for parts still together and soon; long death needs a decay-reversal rule	decay reversal over days with template	the dead walking again; K, body
+Ragnarök	Gods: Norse	https://en.wikipedia.org/wiki/Ragnar%C3%B6k	M,X,K	COVERED	world-ending battle: collapse of binds and a believer-substrate crash; world remade as planes shift (u)	-	end of everything; K
+Ancestor worship	Religion	https://en.wikipedia.org/wiki/Ancestor_worship	M,K,S	COVERED	ghost memories fed by family rites; faith as upkeep	-	dead kin who judge; K
+Theophany	Religion	https://en.wikipedia.org/wiki/Theophany	M,K	COVERED	appearance of a god to people: an outsider or patron perceived through a link	-	presence of something huge; K
+Possession of the Pythia	Divination	https://en.wikipedia.org/wiki/Pythia	M,K,S	COVERED	priestess in trance voicing a patron; vapours or a link; riddling answers	-	voice of a god in a woman; K
+Taboo	Religion	https://en.wikipedia.org/wiki/Taboo	S,K	COVERED	prohibitions enforced by institution and fear of an unseen penalty	-	breaking a rule you do not understand; K
+Pilgrimage	Religion	https://en.wikipedia.org/wiki/Pilgrimage	S,P	COVERED	journey to a site: travel plus faith, a place as a store	-	none
+Religious relic	Religion	https://en.wikipedia.org/wiki/Relic	M,S,K	COVERED	bones or objects as foci for faith substrates, charged by veneration	-	body part as a power object; body
+Martyrdom	Religion	https://en.wikipedia.org/wiki/Martyr	S,K	COVERED	death for belief feeds a cult; saint-making via rumour	-	torture as testimony; body
+Prayer	Religion	https://en.wikipedia.org/wiki/Prayer	M,K,S	COVERED	petition as a link to a patron; works only if a patron exists	-	none
+Idolatry	Religion	https://en.wikipedia.org/wiki/Idolatry	S,K	COVERED	image as a faith focus; iconoclasm destroying foci	-	none
+Apotheosis	Religion	https://en.wikipedia.org/wiki/Apotheosis	M,S	COVERED	a mortal becoming a patron through a growing believer substrate after death	-	a man made a god; K
+Syncretism	Religion	https://en.wikipedia.org/wiki/Syncretism	S,K	COVERED	merging of cult and belief; rumour mixes	-	none

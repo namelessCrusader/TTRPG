@@ -1,0 +1,31 @@
+HORROR LANE: coverage of MARK1 layers (P, M, X, G, K, S). 298 entries.
+
+COUNTS (after fixes): COVERED 221, PACK 42, LAW 22, SECOND 8, EXCLUDED 5.
+
+HOW THIS WAS BUILT, AND LIMITS (read first)
+- Crawled via the Wikipedia MediaWiki API, about 1 request per 3 s, User-Agent naming a research crawl. Raw JSON cached in ~/.cache/mark1-build/coverage/horror/raw (about 100 category listings: Horror genres, Fictional monsters, undead, demons, werewolves, zombies, ghosts, cryptids, Cthulhu Mythos deities and species, spirit possession, yokai, bogeymen, shapeshifters, clowns, AIs, serial killers, cannibals, vampires and others).
+- Depth: seed categories plus one level of subcategory listings for the first batch. Later seeds were listed at depth 0 only, because the shared IP hit HTTP 429 (other lanes crawl in parallel) and the crawler had to back off. So this is a BFS of depth 1, not a full BFS to depth 3.
+- TV Tropes returned 403 to curl and to WebFetch, so no TV Tropes index was used. The trope families (jump scare, final girl, gaslighting, unreliable narrator, and so on) come from Wikipedia article titles and my own knowledge. Mark: those rows are (u) in provenance.
+- Many entry rows are my own curated picks from the crawled lists, written from knowledge, not from reading each page. Category sizes seen: Fictional monsters 239 pages, Fictional demons 175, Fictional serial killers 208, Fictional ghosts 242, Yokai 179, Female legendary creatures 221. Each of those was SAMPLED: I took every family and 1 to 5 representatives per family, not every page. Named individual characters (for example the hundreds of werewolf or serial-killer characters) were NOT listed one by one, because they map to the same archetype.
+- Only names, links and my own one-line summaries are stored. No article text copied. The SCP lane is separate; only SCP-173 style is mentioned here as a name.
+- Rows marked (u) in mechanism are unverified design guesses.
+
+FAMILIES (entries): Undead 28, Ghosts 21, Possession 7, Demons 13, Cosmic 21, Shapeshift 16, Cryptid 17, Folk 17, Yokai 10, Creepypasta 14, Body 18, Slasher 11, Subgenre 22, Object 13, Place 9, Space 9, Tech 11, Kaiju 9, Occult 14, Psych 14, Structure 4.
+
+TOP MISSING GENERAL LAWS
+1. Sleep and dream state as a body mode in which perception intrudes (sleep paralysis, shadow people, Freddy, dream demons, abduction memories). 6 rows.
+2. Crowd panic, flight and mass-movement dynamics across many agents (zombie apocalypse, hysteria, Popobawa, collapse). 4+ rows. Also needs cheap many-agent simulation.
+3. Face and agent anomaly detector in perception: uncanny valley, black-eyed children, evil clowns, liminal spaces (an "agent should be here" expectation). 4 rows.
+4. Perceptual infohazard channel: a pattern that biases a mind through ordinary senses and sets a link or timer (Ring tape, Slender Man, Smile Dog, chain curses, forbidden books). 6 rows. Closest existing piece is neural-bias mind magic (A20) plus links, but with the senses as the carrier.
+5. Observer-dependent physics (SCP-173, Weeping Angel): SECOND, since motion that only happens unobserved is not a physics law.
+6. Conditioned fear (phobia) as a learned persistent dial, and multi-self (several concern-sets in one brain): both K-layer extensions.
+7. Assimilation or organism-copy with conserved mass (The Thing): one general law of rough copy at cell level.
+
+SECOND (needs a second change): time loops, hounds that arrive through time (Tindalos), Yog-Sothoth, teleport-fusion (The Fly), FTL drive crossing planes (Event Horizon), continuous-self mind upload, observer-dependent motion.
+EXCLUDED: final girl, genre-savvy characters, metafiction monster, comedy horror, Roko's basilisk (needs backward causation).
+
+WHAT IS SURPRISING
+- About three quarters of horror is COVERED already, because most fear comes from K (unknown, misperception, rumour, false beliefs that survive) and S (institutions, taboo, neighbours), not from new physics. Ghosts, possession, curses, hauntings, cults and cryptids map onto stores, links, patrons and the rumour system.
+- The real gaps are in the mind's senses (sleep, agent detection, perceptual hazards) and crowds, not in the energy law.
+- Cenobite style planes and backrooms are covered by the X extension (planes as worlds, doorways), so only time and FTL stay out.
+- Rule horror and analog horror are cheap: written rules are institutions or taboo, degraded media are noisy senses.

@@ -1,0 +1,263 @@
+MARK_1 MAGIC: COSTS AND COMPONENTS, SYNTHESIS AND CRITIC
+Date 2026-11-21. Role: mapper and critic. Documents only. No code, no sim change.
+Inputs: costs_europe.txt (9 traditions), costs_world.txt (11 traditions), costs_theory.txt (6 theorists plus experiments), costs_fiction.txt (16 entries).
+Question: does anything cost more than ambient M or life force? What is freehand, what needs components, what needs several interfaces?
+
+HOW TO READ THE MARKS
+(v) checked against a source I read. (k) from knowledge, believed right. (u) unverified, or my own inference.
+HONEST NOTE. I ran no new web checks in this pass. I read the four lane files only. So every count below is a tally of what the lanes said, and it inherits their marks. The lanes had almost no (v): europe a few snippets, theory a few abstracts, world and fiction none. Treat every count as (k) at best. The counts are rough: "N of 20" means "the lane text says or clearly implies it". Where a lane was vague I wrote "about". My own inferences are marked (u).
+Before any number or name goes into a data file, check it against the primary works the lanes name (Betz 1986, Mathers 1889, Kieckhefer 1998, Strömbäck/Price, Ritner 1993, Evans-Pritchard 1937, Staal, Schipper, Reichard, Keesing 1984, the D&D SRD 5.1).
+
+=====================================================================
+0. HEADLINE
+=====================================================================
+1. The eight kinds survive. No tradition and no game needed a ninth PHYSICAL cost. What the lanes found that the eight do not hold falls into three piles: a few missing general laws (small), a large social and belief layer (not physics), and a few fiction conveniences to leave out.
+2. Evidence is uneven. INFORMATION, MATTER, LINKS and TIME are strongly supported by real traditions. ENERGY is weak in the ethnography (it is hidden inside the agent that supplies it) and strong in fiction. WASTE is almost absent from the ethnography and mostly appears as "pollution sent into a sink". WEAR is thin. BEING NOTICED is mostly social in the sources.
+3. Two kinds in the design bundle two things that the traditions keep apart. TIME means both casting duration (from information) and waiting for a window (planetary hour, season). MATTER means both a physical reagent and an offering paid to a being. Split each. The split removes the biggest "does not map" piles.
+4. Freehand holds, but not as "small, fast, low-information". The data say: freehand is LOW ENERGY, SHORT REACH and NO KEPT OBJECT. It can be high information if you spend the time (Trobriand spells run for hours, Vedic mantra for years). The voice is a slow channel, so that is exactly what the design predicts.
+5. Several media: the chain (holder, shaper, environment, source) explains most stacks. Two things it does not yet have: a TARGET end (the link edge) and REDUNDANT stacking (same information in two channels, or a checker that repairs). Add both.
+6. Social licence, purity, taboo, debt, rank, stigma and reputation are real and nearly universal. They belong to the social world and knowledge layer. The engine should not carry them. NPC minds should be able to hold them as beliefs.
+
+=====================================================================
+1. THE TABLE
+=====================================================================
+Traditions counted (20): Europe 9 = Greek magical papyri with curse tablets, Egyptian heka, Neoplatonic theurgy, medieval grimoires (Key of Solomon, Picatrix, Munich manual), Jewish practical Kabbalah, Western alchemy, Norse galdr and seiðr, Anglo-Saxon and Celtic charms, early modern cunning folk. World 11 = Daoist, Vedic and Tantric, Japanese onmyodo and Shinto, Siberian shamanism, Azande, Trobriand, Ifa and Vodou, Mesoamerican, North American bundles and Navajo chant, Australian Aboriginal, Polynesian.
+Fiction entries counted (16): D&D 5e, Pathfinder, Ars Magica, Mistborn, Kingkiller, Fullmetal Alchemist, Earthsea, Dresden, cultivation, Dungeon Crawler Carl, Elder Scrolls, Witcher, Magic the Gathering, Noita and Magicka, Wheel of Time and Stormlight, the Potter and Discworld sweep.
+Theory (6): Frazer, Mauss and Hubert, Malinowski, Evans-Pritchard, Tambiah, Levi-Strauss, plus Rozin and Nemeroff experiments.
+
+TABLE 1. COMPONENT ROLES
+Columns: ROLE | design kind or role | traditions of 20 | fiction of 16 | note
+---------------------------------------------------------------------
+Fixed spoken or sung formula, exactness demanded | INFORMATION (3) | 18 | 12 | Only alchemy (recipe, not a formula) and Siberian improvised song lack it. Errors reverse, fail or hit the maker in Vedic, Daoist, Jewish, Maori, Navajo (k).
+Written or drawn pattern carrier (lamella, fu, yantra, veve, sandpainting, rune, pentacle) | inscription (I plus WEAR) | 15 | 10 | Often left standing with no operator (curse tablet, incantation bowl, door fu). Often one-use and erased (veve, sandpainting).
+Link from a person's body or belongings (hair, nails, blood, spit, footprint, birth data) | LINKS (6) | 8 explicit, 10 with partial | 6 | PGM, heka, cunning folk, Daoist, Japanese, Siberian, Australian, Polynesian. Norse (blood on runes) and Azande are partial. Critic note: Europe lane said "universal". It is universal only among rites that aim at a distant named individual. Trobriand and Vedic rites do not aim at a person at all.
+Name as a handle | filed under LINKS in the design | about 8 | 4 (Earthsea, Kingkiller, Dresden, Witcher) | A name leaves no physical trace. See gap I-6. Move to INFORMATION.
+Similarity figure (wax doll, hitogata, effigy, poppet) | pattern overlap (INFORMATION) plus link | 9 | 3 | Frazer's second law. Often paired with a contact link (Frazer's stacked rite).
+Matched medium (material chosen for affinity: lead for cold, silver for the Moon, cinnabar for yang, the lwa's food and colour, peachwood) | cheaper coupling | about 8 | 5 | Strongest in PGM, theurgy, grimoires, Daoist, Vodou. Neoplatonic sympatheia is an explicit "better match, less force" statement (k). Supports the design rule.
+Reagent with a real physical effect (herb, ink, mercury, acid, fuel) | MATTER (4) | about 10 | 9 | Real chemistry or pharmacology is wrapped in the rite. Let the real part work in the sim.
+Offering or payment to a being (food, animal, incense, paper money, blood) | NOT physics. Social or debt. See II-5 | about 13 | 5 | The design's MATTER kind should count reagents only. The offering is a price set by a patron mind.
+Energy store or fuel carried as a component (talisman made at the right hour, ensouled statue, tapas, vis, spirit stone, soul gem, metals, spheres) | store = ENERGY (1) | 4 weak | 9 | Weak in ethnography. Strong in fiction. Ethnography puts the store in the agent (god, spirit, patron).
+Agent as energy source (god, daimon, spirit, ancestor, lwa, spren) | patron (Q17) | about 16 | 6 | The usual ethnographic energy source. The design's patron (store at the far end of a bond) fits.
+Body as energy source (fasting, blood, bloodletting, tapas, exhaustion, Odin's ordeal) | ENERGY, body | about 10 | 8 | Body costs are real and frequent: pain, hunger, exhaustion. The sim already has a body.
+Protection (circle, amulet, peachwood, shimenawa, costume, bowl, witch bottle) | NOT in the eight. Standing barrier inscription | about 10 | 5 | A ward is a barrier pattern. Its setup costs I, M and T. No new kind. See I-7.
+Timing aid and counter (drum, mala, calendar, planetary table) | memory aid, clock | about 6 | 2 | Offloads working memory or keeps rhythm. Counter for repeated mantras (mala).
+Memory aid or notation (songline, spell book, psalter, ese Ifa verses) | INFORMATION store outside the mind | about 7 | 4 | Lowers the skill needed, costs reading time.
+Time window (planetary hour, lunar day, dawn, season, hour of night) | NOT casting time. A source that varies with the clock | 13 explicit, 15 with partial | 2 | See I-1.
+Place gate (grave, crossroads, altar direction, cave, heiau, songline site, ley line) | environment stage, S(x) and g(x) | about 16 | 6 | Fits the design with no new law.
+Practitioner purity (fast, abstinence, bath, virgin tools) | body state, or social | about 16 | 2 | Practitioner purity does not map. Material purity does (purity sets coupling, design 5.1). See II-2.
+Group or second person (choir, priests, circle, assistant, child medium, audience) | parallel holders | about 15 | 6 | Roles: pooled capacity, pooled energy, error check, a second brain as sensor.
+Error-checking helper (brahman priest, Azande double oracle, Navajo singer, Daoist team) | redundancy or feedback repair | 4 | 1 | See test 3.
+Licence, rank, ordination, ownership of formula or design | NOT physics (social) | about 16 | 3 | See II-1.
+Initiation, transfer of a pattern from a live holder with a price | imprinting (Q22), plus social | 8 | 2 | Pattern copy is physical (imprinting). The rite and price are social.
+Debt, offering ledger, favour owed to a being | NOT in the eight. Mind layer | about 11 | 4 | See II-5.
+Upkeep when idle (feed the bundle, renew the shimenawa, repaint rock art, replace the fu) | WEAR has use-wear only | 4 | 2 | Idle decay of inscriptions is physical. Upkeep as a duty is social. See I-2.
+Taboo or condition of use | physical conditions: fine. Culture-only: social | about 6 | 3 | See II-3.
+Divination instrument (oracle, lots, bowl, mirror) | noisy INFORMATION sensing | about 9 | 3 | See catalogue note I-8.
+Waste export to a destroyable carrier (hitogata, sandpainting, burned fu, paper figures) | WASTE booked at a chosen site | 5 | 0 | See I-9. Best fit of the whole survey to the design's waste rule.
+
+TABLE 2. THE EIGHT KINDS: HOW WELL EACH IS SUPPORTED
+KIND | traditions state it | fiction states it | verdict
+1 ENERGY | about 10 of 20 (body cost, tapas, blood, fuel, the agent) | 11 of 16 | Keep. The ethnography rarely says "energy", but body strain and an agent supplying power are everywhere. Fiction strongly supports stores.
+2 WASTE | 6 of 20 (5 waste-export rites, alchemy fumes) | 4 of 16 (Kingkiller cold, Stormlight leak, Witcher toxicity, Dresden fatigue) | Keep. Add a name for the non-heat body load (I-4). Fiction undersells waste, so waste is a novel and visible cost for players.
+3 INFORMATION | 19 of 20 (exact forms, training, initiation) | 12 of 16 | Strongest. Keep. Add redundant stacking (test 3).
+4 MATTER | 20 of 20 (but only about 10 are real reagents; the rest are offerings) | 10 of 16 | Keep as reagents. Offerings move to the social layer.
+5 WEAR | about 14 of 20 (kept tools, one-use patterns erased) | 5 of 16 | Keep, but add idle decay (I-2). Fiction mostly wears the BODY and the STORES, not the focus.
+6 LINKS | 8 of 20 explicit | 6 of 16 | Keep for traces. Names move out (I-6). Add slip by match (I-5).
+7 TIME | 20 of 20 for duration. 13 of 20 for a window | 6 of 16 | Split. Duration stays a cost. A window is a source varying in time (I-1).
+8 BEING NOTICED | 9 of 20 as social danger (prosecution, stigma, heresy, secrecy). 0 as a stated physical-tell risk | 8 of 16 (V and S tells, WoT sensing, tech failure, Paradox, the Gift) | Keep the physical tell. The social half comes from NPC reaction, not from a cost.
+
+THE ROLE LIST THE DESIGN SHOULD USE (technical decision, mine)
+Old: store=energy, focus or inscription=information, catalyst=barrier, link=targeting, matched medium=cheaper coupling, reagent=matter.
+New, eight roles:
+ 1 store (energy, charged material), consumed in energy, container kept and leaks.
+ 2 inscription or focus (information), kept, wears, may decay idle.
+ 3 amplifier (raises the throughput cap, kept, wears): angreal, wand, staff.
+ 4 protection (lowers backlash or denies a path, kept): circle, amulet, ward. It is a standing barrier inscription.
+ 5 link (aim at a target, with slip set by match): hair, blood, a sensed signature.
+ 6 matched medium (cheaper coupling).
+ 7 reagent (matter, consumed): real chemistry.
+ 8 memory aid (information held outside the mind).
+ Catalyst: keep the word only for real chemistry. The fiction lane found almost no "needed but not consumed, lowers a barrier" case that is not really an amplifier or a protection. The ethnography has none that is not a matched medium. (k, u)
+
+=====================================================================
+2. TEST: IS FREEHAND "WHAT FITS THE BODY, MIND AND MEDIUM"?
+=====================================================================
+The design says: freehand is whatever fits the body's energy, power and heat caps, the mind's capacity and the medium's precision. Components lift specific limits.
+
+WHAT PRACTITIONERS ACTUALLY DO FREEHAND (word, gesture or thought, no kept or consumed object)
+Europe:
+ - Short spoken or sung charms for small, local, known targets: stop blood, burns, warts, a stitch, a wen (Anglo-Saxon, cunning folk) (k).
+ - Hávamál spell songs (blunt a weapon, free from bonds, still a storm) sung with no object named (k).
+ - Divine-name recitation in practical Kabbalah (k). Picatrix says imagination alone can work in some operations (k).
+ - The evil eye: a glance, involuntary, folk belief (k).
+World:
+ - Daoist hand seals, steps, breath, visualisation (k). Vedic japa, mudra, pranayama, visualisation (k). Japanese kuji cuts and norito (k).
+ - Shaman's trance and soul flight, in the "inner" form with no object (k).
+ - Azande witchcraft: an innate belly substance, acts by ill will, no rite, unconscious (k).
+ - Aboriginal clever men: thought travel (k, Elkin). Polynesian chief: a word declares tapu (k).
+ - Trobriand: the spoken spell is the core, but it is spoken OVER a vehicle (oil, leaves) (k). So it is not freehand.
+Fiction: cantrips, Signs, evocation, spontaneous magic, thought-weaving by a strong channeler, Noita shots. A two-tier split (small near freehand, big slow prepared) appears in every system (fiction R1).
+
+FINDINGS
+F1. HOLDS: freehand means low energy and short reach. Every freehand case above is small in energy, local, and aimed at a known or present target, or it works on the body or mind of the practitioner (visualisation, trance, healing a wound). That matches body caps (about 30 kJ burst, about 300 W sustained, per decision Q12).
+F2. CORRECTION: freehand is NOT low-information. Trobriand spells run for hours. Vedic mantra success takes years of repetition. Navajo chant runs nine nights. Ljóðatal songs, kuji, japa: all long and exact. Freehand is slow and exact when the information is large. The design already says this (the voice is a medium with a rate, so casting time comes from information). So the summary "small, fast, low-information" is wrong, and the design's wording is right. Do not shorten freehand to "cheap and quick" anywhere in the docs.
+F3. CORRECTION: "freehand" needs a definition. Even the barest cast uses the voice, hands or breath, and the lanes agree that pure thought is rare for learned magic (theory R3, fiction B1). In the design the voice and hands are media. So define: FREEHAND = no external kept or consumed object; the body and its voice, gesture and thought are the only media. Pure thought is the narrowest and noisiest channel.
+F4. WHERE FREEHAND IS BIG, THE ENERGY COMES FROM AN AGENT. Daoist seals, Vedic mantra, shaman trance, Hávamál songs invoked to a power: the freehand act is a command or request to a being or a spirit register, and the being supplies the energy. In the design this is the patron store at the far end of a bond (Q17). So "big freehand" is lawful only with a patron. This is also why the Daoist priest needs a licence (a register of spirit generals): it is the bond. (u: my reading)
+F5. THE INFORMATION IS PAID BEFORE THE CAST. Freehand practitioners own their formula (Trobriand inheritance, Vedic guru gift, Odin's ordeal, Norse song knowledge). The per-cast cost is small because the learning cost was large. The design's skill-as-information-held-in-the-practitioner covers this. It does not by itself say that learning can be bought in one costly event (see II-4).
+F6. INNATE FREEHAND IS A BODY DIAL. Azande witchcraft, the evil eye, the Polynesian chief's word (rank, not body), Aboriginal clever men: freehand where it needs no training is tied to a body trait. That matches "dial in each individual" and "sorcerer = high dial". Azande adds a new case: it is involuntary. Design decision: see I-10.
+F7. WHAT NEEDS COMPONENTS, AND WHY (the lanes agree):
+ - Distance to a named individual: a link. 8 of 20 explicitly, and all rites that aim at a distant person use one. (k)
+ - Lasting beyond your presence: an inscription or object (curse tablet, bowl, fu, yantra, bundle).
+ - Matter change: a reagent.
+ - Energy beyond the body: a store, a place, or a patron.
+ - Danger from the source: protection.
+ - Larger information than one mind or one channel can hold: group, notation, redundant channels.
+VERDICT: the design's claim stands, with F2 and F3 as clarifications.
+
+=====================================================================
+3. TEST: MULTIPLE INTERFACES, THE STACKED PATTERNS
+=====================================================================
+The chain: holder, shaper, environment, source. Each stage may use a different medium.
+
+PATTERNS FOUND (with traditions, and whether the chain explains each)
+P1 Folk stack: word plus one object, a time, a place, the patient. (Anglo-Saxon charms, cunning folk, Trobriand garden spells.) CHAIN EXPLAINS: holder = mind and voice. Object = reagent or link parameter. Yes.
+P2 Standing pattern with no operator: curse tablet at a grave, incantation bowl under a threshold, door fu, Sator square, yantra, Navajo sandpainting. Holder = the inscription itself, shaper = the pattern, environment = the place, source = the field or an agent. CHAIN EXPLAINS if the holder may be an object and the cast may stand and wait. The design has inscriptions and triggered patterns. Yes. These are best evidence for "inscription is information; place is an environment interface" (europe).
+P3 Pattern plus link in one rite: wax figure plus the victim's hair (Frazer's stacked rite), hitogata with breath, pointing bone with song plus a trace. The figure is the shaper. The hair is NOT a stage of the source-to-effect path. It is the edge from the shaper to the TARGET. CHAIN DOES NOT YET HOLD IT. Add a target-coupling edge (decision T5).
+P4 Second brain as holder or sensor: the lamp or bowl child (PGM, Munich manual), the possessed "horse" (Vodou), the shaman's audience. Holder = another mind. The holder pays the body costs, and carries risk, and has no say in the information. CHAIN EXPLAINS: holder and shaper can be different minds. Vodou possession is holder = horse, shaper = lwa, source = lwa's store. It is just a divided holder. Needs: the holder's body pays energy and waste, and the holder-mind may refuse (mind layer).
+P5 Place as environment and source: cave, crossroads, heiau, songline site, ley line, temple. CHAIN EXPLAINS via S(x) and g(x). Yes.
+P6 Time-gated rite: planetary hour, Navajo first frost, Aztec day count, Daoist hour. CHAIN DOES NOT HOLD TIME. Needs S(x,t) and g(x,t) (I-1).
+P7 Group rite: Vedic sixteen priests, Norse choir, golem circle, Daoist team, Wheel of Time circle, Pathfinder secondary casters, Ars Magica group ritual. Parallel holders that pool energy, pool working-memory capacity, and check each other. CHAIN EXPLAINS partly: the circle idea (Q22 circles as coupled lanes) covers pooling. It does not cover the checking role. See below.
+P8 Pattern carried in matter and delivered to a body: a written spell dissolved and drunk (heka), fu ash in water, the cippus water, the sand a patient sits on. The shaper's output is stored in a consumable medium. CHAIN EXPLAINS if a "tuned solution" or a stored pattern in a consumable is allowed (the design has tuned solutions and potions). Yes.
+P9 Learned ritual, full stack: purity period, time, place, circle, object, word, gesture, incense, helper. (Key of Solomon, PGM, Daoist jiao, Vodou ceremony, Navajo chant.) CHAIN EXPLAINS the stages. The purity, the setup of protection, and the waiting window are preparation steps outside the chain: they are costs in T and I and M for setup, plus a state of the holder. See II-2 and I-7.
+P10 Waste sent to a sink: hitogata, sandpainting, burned fu, paper figures. The effect's conversion waste is booked at the site where M is absorbed (design 2.5). If the absorption site is a cheap object, the waste lands there and the object is destroyed or discarded. CHAIN EXPLAINS: choose the absorption site. See I-9.
+
+TWO KINDS OF STACKING (the theory lane's point, which I accept)
+ SERIAL stacking: different media do different jobs at different stages. This buys capacity and reach. The chain covers it.
+ REDUNDANT stacking: the same information is sent in two channels at once (word and gesture and drawn figure say the same thing). This buys reliability at the cost of time and effort. Tambiah's redundancy and rigidity point; the information-theory reading is (u) but follows from the design's own rule that each medium has a rate and a noise.
+ CHECKING with repair: a witness reads back the cast and fixes errors (Vedic brahman priest and prayaschitta formulas, Azande second oracle test, Navajo helpers, Daoist team). This is feedback, not redundancy. It needs a readback channel and a repair action. It costs time and a second mind.
+ The design should allow both. For the build it means a spell node can be assigned two channels (error rate falls, time rises), and a group cast can assign a checker role (error rate falls, capacity of the checker is spent). No new kind, only a grammar option. (technical decision T3)
+
+WHY STACKING GROWS WITH STAKES (the best physical reading, (u))
+Each medium is a low-rate, noisy channel. A big effect needs a large pattern, large energy, and low error at the same time. No one channel gives all three. So the stakes push the practitioner to stack. Malinowski's claim that ritual clusters where outcomes are uncertain says the same from the other side: the more variance in the outcome, the more people will pay for redundancy. This gives a validity test for the culture sim (theory U7): ritual density should rise with outcome variance and stakes. If it does not, the learners are broken.
+
+=====================================================================
+4. GAPS: WHAT DOES NOT MAP, AND WHAT TO DO
+=====================================================================
+Classes: (i) a missing general LAW worth adding, stated as physics in one line. (ii) a social or belief element for the social world and knowledge layer. (iii) a fiction convenience to leave out.
+
+---------------------------------------------------------------------
+CLASS (i): GENERAL LAWS OR SMALL ADDITIONS (physics)
+---------------------------------------------------------------------
+I-1 TIME-VARYING SOURCE AND COUPLING.
+ Law: the M source and the coupling vary with the clock and the sky, S(x,t) and g(x,t), so "the right hour" means "M is high now".
+ Evidence: Picatrix, PGM, Daoist hour, Aztec count, Navajo frost, Aboriginal season, Polynesian season, Trobriand garden cycle, Vedic season: 13 of 20 explicit. Source lanes: europe G3, world R5 and G6, theory R4. (k)
+ Notes: the design already has S(x) and sunlight. Day and night follow from sunlight. Lunar and seasonal terms are a pack parameter (a, period). Set a = 0 for no cycles. This also splits TIME in the eight kinds: casting duration is a cost. Waiting for a window is not a cost, it is a source being low. The right-hour belief may be partly pure convention in a given culture, and an NPC mind cannot tell which. See owner question 5.
+I-2 IDLE DECAY (UPKEEP).
+ Law: every patterned structure and every store has a half-life set by its material, even when unused (weathering, leakage, fading); renewal is re-engraving or recharging.
+ Evidence: Daoist fu replaced yearly, ofuda renewed yearly, rock art repainted, bundles kept and fed (4 of 20). (k)
+ Notes: the design already has LEAKAGE for stores (8.1). Extend to inscriptions. WEAR then has two parts: use wear and idle decay. The duty to keep a bundle is social. The physics is a half-life number.
+I-3 TOUCH HAZARD OF CHARGED STORES (tapu).
+ No new law. The design's store discharge already means a high-charge object hurts whoever touches it. A culture's tapu around such objects should EMERGE from NPC learning. Whakanoa (lifting tapu with water or cooked food) reads as safe discharge to ground. Use as an emergence test, not as a rule. Source: world section 11. (u: my reading, the lane's reading)
+I-4 NON-HEAT BODY LOAD.
+ Law: a body carries a cumulative non-heat burden with a clearance rate (toxins, impurities, M residue); potions, alchemical doses and overuse add to it.
+ Evidence: Witcher toxicity, cultivation pill impurity, Daoist cinnabar and alchemical mercury (real poisons, k), fly agaric (contested, k). Source: fiction G6 and Q-D.
+ Notes: the design says "other waste". Name it "load" and give it one gauge, shared by all sources. Uses the existing pharmacology curves (design 5.3).
+I-5 LINK AS A LOSSY CHANNEL.
+ Law: a link is a channel with a loss that falls as the match between link and target rises.
+ Evidence: Frazer and Neoplatonic "better match, less force" (europe R3); Kingkiller slip; Earthsea (fiction D9). The link in fiction also carries the energy, not only the aim. (k)
+ Notes: in the design, links are resonant traces. Add slip by match as a parameter. Let the chain allow the link edge to be the energy path as well as the aim.
+I-6 NAME IS INFORMATION, NOT A LINK.
+ Law: a trace (hair, blood, spit, footprint, birth data) is a physical channel. A name is information that identifies a signature, and it has no physical trace.
+ Evidence: names as handles appear in about 8 of 20 and in several fiction systems (Earthsea, Kingkiller, Dresden), and Rozin shows minds treat names as stand-ins (v: existence only). But no lane found a physical mechanism (theory G8). (u)
+ Decision (mine, technical): move "name" from LINKS to INFORMATION in the eight kinds. A name helps aim only if you also hold a sensed signature of the target or a bond (see the bonds addendum). Whether a world has TRUE names is a lore choice: owner question 1.
+I-7 PROTECTION IS A STANDING BARRIER, NOT A COST KIND.
+ Law: none new. A circle, amulet or ward is a barrier inscription (impedance, absorption, path denial) built before the working. Its setup costs I, M and T like any inscription. The backlash it prevents is the called thing or the overreach hazard.
+ Evidence: PGM phylactery, Solomonic circle, Jewish bowls, Daoist peach and mirrors, Japanese shimenawa, Dresden circle (about 10 of 20, 5 of 16). Sources: europe G2, theory G6, fiction G8.
+ Decision: list protection as a component role (role list above). Do not add a ninth kind.
+I-8 DIVINATION AS A FIRST-CLASS CHEAP INFORMATION FAMILY.
+ Not a law. A catalogue addition. About 9 of 20 traditions use divination before or instead of casting (Ifa, Azande, Mesoamerican, Navajo, Daoist, Japanese, PGM lamp and bowl, grimoire scrying). In the sim: a noisy sensing spell (a yes or no, or a short code) with small energy, some information, time and a consumed medium. Two kinds can coexist: a REAL oracle that senses state through M (design Q7 scrying path), and a PLACEBO oracle (a randomiser believed by its users). An NPC cannot tell which is which. That is a good emergent source of error and belief. Source: world R12.
+I-9 WASTE SINK AT A CHOSEN SITE.
+ Not a new law. The design books conversion waste at the site where M is absorbed. A caster can choose a cheap absorbing site (paper, sand, a figure) and let the waste destroy it. Five rites do this (Japanese, Navajo, Daoist, Mesoamerican, Vodou veve). It follows from existing rules. Add it to the catalogue as a technique. Source: world R6. (u: that the traditions' "pollution" is physically waste; this is my reading)
+I-10 INNATE REFLEX PATTERNS (INVOLUNTARY EMISSION).
+ Law: a creature may carry a pattern in its tissue from birth (genetic, quantitative per Q9), so a low-bit effect can fire without a deliberate cast.
+ Evidence: Azande witchcraft (innate, unconscious), the evil eye (folk), beasts with M organs (design 7). Source: world G10, europe 9(f).
+ Decision: yes for beasts and for rare individuals, as data. The evil eye in ordinary humans is belief only. Low energy, low bit, with a tell.
+I-11 USE DRIVES THE HOLDER'S STATE (feedback on the mind).
+ Law (tentative): a field strong enough to couple a tissue transducer also drives the neural tissue near it, so heavy use shifts the holder's state in a lasting way.
+ Evidence: fiction only for the lasting shift (Warping and Twilight, the Taint, black-magic corruption, heart demons). Ethnography has trance exhaustion, shaman's sickness, and soul-loss risk, which are weaker analogues. (k)
+ Notes: this is the lane's most debated item (fiction G2, Q-B). It is a flavour decision with physics clothes. Owner question 3.
+I-12 VULNERABLE HOLDER WHILE WORKING.
+ No new law. A large working occupies the ~4 working-memory slots, so the body is open: slower reaction, no guard. Soul flight and trance risk (Norse, Siberian, PGM child) follow. Make sure the mind layer ties open working memory to perception and reaction. Source: europe G7.
+
+---------------------------------------------------------------------
+CLASS (ii): SOCIAL OR BELIEF ELEMENTS (social world and knowledge layer)
+---------------------------------------------------------------------
+II-1 SOCIAL LICENCE AND RANK: ordination, initiation rank, ownership of songs and designs, the right to perform at a site, a register of spirit generals as an office. Nearly universal (about 16 of 20). The physical part is only imprinting: copying a pattern from a live holder (Q22). The rite and price are social. Keep in the culture and knowledge layers.
+II-2 PURITY AND POLLUTION.
+ Split in two. MATERIAL purity (virgin parchment, clean ink, pure metal) maps: purity sets coupling (design 5.1). PRACTITIONER purity (fasting, abstinence, bath) does not map cleanly. Fasting lowers body energy, so it works against an energy reading. Readings, all (u): a clean, rested, low-noise holder state; a costly signal of seriousness (theory, Mauss, in spirit); pure belief. Keep practitioner purity as body state plus belief. Let NPC cultures call some body states "unclean". Some real bases will exist (rested, sober, no fever lowers error) and the sim will tell which. See owner question 2.
+II-3 TABOO AND CONDITIONS OF USE. Physical conditions (keep it dry, away from light, below a charge) are normal engine rules and need nothing new. Culture-only conditions (don't eat X, face east) live in NPC beliefs. This follows the standing rule: numbers only, no flags (Q11). Azande show that failure of a taboo medicine is explained away by belief (theory R10). That is free NPC behaviour.
+II-4 ONE-OFF INITIATION COST AND LINEAGE TRANSFER (Odin's ordeal, the shaman's sickness, the cunning person's power passing at death, the bundle sale, the diksha). Capability bought once. The physical pieces: (a) training time (information, already in the design); (b) imprinting from a live holder (adopted, Q22); (c) possibly a use-driven RISE in the coupling dial from strain, the mirror of burnout (a pack option, (u)). The ordeal, price, and rank are social. No new engine piece beyond (c). Note that "pain buys power" has weak physical support. Keep it a belief.
+II-5 DEBT, OFFERING AND OBLIGATION TO A BEING (dakshina, ebo, the Aztec cosmic debt, hunting exchange with spirits, Fae bargains, Gate toll). About 11 of 20. The design's patron is a store at the far end of a lasting bond (Q17). The price is whatever the patron's MIND wants. A debt book needs no new physics: the patron's memory is the ledger and its willingness to supply M follows. Offerings are matter given to a mind, not reagents. Owner question 4.
+II-6 REPUTATION AS "MANA" (Polynesian mana, Keesing 1984: effectiveness, authority, public and conditional). Not the field M. A prestige score from observed success belongs to the social layer. The name clash is a trap: keep the field named M, and keep prestige separate.
+II-7 BELIEF-MEDIATED EFFECTS (pointing bone, Azande accusation, curses on a victim who knows, Quesalid, the Cuna birth song, placebo and nocebo). The route is the target's stress, fear and expectation through the body and mind model, with no M. These are real effects. Test that the mind model can produce them. Not a magic law. (Rozin and Nemeroff v for existence; the Cannon voodoo-death claim is (u).)
+II-8 STIGMA, PROSECUTION, HERESY, WITCH TRIALS (seiðr and ergi, Roman law, witch trials, the Gift, a hostile show's ratings). The social half of BEING NOTICED. It comes from NPC reactions to a tell. Not a cost the cast pays. 9 of 20.
+II-9 FEES, PRICES, FORMULA MARKETS. Market layer. The physical form is the matter in M and the copy time.
+II-10 ATTRIBUTION OF MISFORTUNE ("why this person, now"), failure explained away, secrecy norms, name-power as compulsion between agents, correct belief and the right rite (Iamblichus), the Seven Laws, karma. Belief and culture. NPC minds will produce these if they hold the priors in theory section 3.4: contagion and similarity as cheap, general associations, negative stronger than positive, nearly dose-insensitive (parameters (u), fit before use).
+II-11 RITUAL WHERE STAKES ARE HIGH AND CONTROL IS LOW (Malinowski, Skinner, Boyer and Lienard). A response rule of minds. Emerges from blind-reward learners. Use as a validity test (theory U7).
+II-12 DOSE-INSENSITIVE CONTAGION. NPC belief is stronger than the physics of a proportional link. Another gap between belief and sim, and fine.
+II-13 BELIEF OR CERTAINTY AS STRENGTH (Alar, faith). A mind dial. Fit it as a quality of the information step: error rate falls with certainty. A mind variable, not physics.
+II-14 SACRIFICE. Physically a body is an energy store of about 0.37 GJ of fat (design 1), a fraction of a 0.9 GJ fireball, and the conversion is lossy. So sacrifice is lawful with no special bonus. The moral weight, the witness reaction and the law are social. A cosmic debt story (the Aztec sun) is a pack idea: a very large source booked on a divine patron. Owner question 6.
+
+---------------------------------------------------------------------
+CLASS (iii): FICTION CONVENIENCES TO LEAVE OUT
+---------------------------------------------------------------------
+III-1 Cooldowns not tied to any quantity (DCC, MMOs). Let recovery (heat, store, attention) set the pacing and show that gauge.
+III-2 Static spell slots (D&D). Already rejected by decision Q8.
+III-3 The free component pouch and the free focus. Keep as a waiver: a pack number in joules and grams below which a component is not tracked (technical decision T10). Not "free forever".
+III-4 The Equilibrium (Earthsea), Paradox (Mage), karma. Non-local moral cost. Conserved physics already gives real non-local consequences (heat dumped, mass moved, a storm sent elsewhere). Anything more is narrative. Leave out.
+III-5 Unbounded multiplication (the philosopher's stone that multiplies; an angreal that never breaks). The design's stores are bounded by what they hold.
+III-6 Currency equals power (Stormlight spheres) follows for free if charged materials trade. Not a rule to add.
+III-7 Typed mana colours (MTG). A lesson (costs are different currencies), not a mechanism. The eight kinds already give that variety.
+III-8 Store of a body quantity (Feruchemy: weight, speed). Defer. Cheap once the body model exposes such variables. (fiction Q-C)
+III-9 Law of opposites (Mauss). Interference in the design already gives inversion (counterspells), so no operator is needed. Local and not universal in the lanes.
+
+=====================================================================
+5. WHERE THE LANES DISAGREE OR OVERREACH (CRITIC NOTES)
+=====================================================================
+C1. Europe says links are "nearly universal" and "best supported". Across all 20 the explicit count is 8. They are universal only for rites that aim at a distant named person. Fine, but do not present links as a requirement of all magic.
+C2. World says freehand is rare. Fiction says a freehand tier is universal. Both are right for different reasons. In ethnography most acts are not "casting" and are wrapped in context. Fiction's two tiers are a game convention. The design's two tiers are supported by the SHORT CHARM tier in Europe (S4) and the trained hand-seal tier in Asia. Keep two tiers, and keep the definition in F3.
+C3. Theory says redundancy equals error correction and marks it (u). The traditions show two mechanisms, redundancy and checking with repair (Vedic, Azande). Treat both.
+C4. Fiction says "catalyst = barrier" is rarely seen. Agreed. Replace with amplifier and protection.
+C5. Fiction says the design's TIME and WEAR are lightly supported. TIME is strongly supported as duration (all 20) but the window use is a different thing. WEAR is thin in the sources, thicker in practice for one-use patterns and for stores. Keep.
+C6. Europe notes the "right hour" as precondition, not cost. World agrees and maps it to S(x,t). Fine. But note the risk that calendars are partly convention. A pack with a = 0 should still run. The sim should let an NPC culture believe in hours that do nothing.
+C7. The design's current text puts "name" under LINKS. See I-6.
+C8. The fiction lane suggested a link can carry energy and aim. Accept (I-5).
+C9. Double counting: fuel items (Mistborn metals, pills, vis) are both matter and energy. Book both from one consumption event, once. (fiction D10, technical decision T9.)
+C10. Uncertain items inside the lanes that must be checked before any data use: the Maori "one wrong word cancels" claim; the 20 kg shaman costume; fly agaric use in Siberia; the Cannon "voodoo death" cases; the menstrual taboo on bundles; Daoist "theft of authority" punishments; Pathfinder ritual details; the SRD component prices. All (k) or (u).
+C11. Sacred and secret material. Aboriginal ceremony, Vodou initiation, Navajo chant are living and partly secret. Draw on structure only. Owner question 8.
+
+=====================================================================
+6. TECHNICAL DECISIONS (MINE, NOT OWNER-LEVEL)
+=====================================================================
+T1 Keep the eight kinds. Refine: split TIME (duration vs window), split MATTER (reagent vs offering), split WEAR (use vs idle decay), move name from LINKS to INFORMATION, give LINKS a slip.
+T2 Use the eight-role component list in section 1.
+T3 Allow redundant stacking (two channels, lower error, more time) and checker roles in group casts (a grammar option, no new kind).
+T4 Group casting: N helpers pool energy and working-memory capacity, and one may check and repair.
+T5 Add a target-coupling edge to the chain (the link edge), which may also carry energy.
+T6 S(x,t) and g(x,t) with a pack amplitude. Default off or small.
+T7 One "load" gauge for non-heat body burden.
+T8 Innate patterns allowed as data for beasts and rare individuals.
+T9 One consumption event books matter and energy together.
+T10 Waiver threshold for trivial components, as a pack number.
+T11 Waste may be booked at a chosen cheap absorbing site.
+T12 Divination family in the coverage catalogue, with a real oracle and a believed placebo oracle both possible.
+T13 Define freehand as "no external kept or consumed object".
+T14 Tests to write with the build: (a) fuel counted once; (b) a=0 world runs with no calendar effects; (c) a charged store hurts on touch; (d) ritual density tracks outcome variance in the culture sim; (e) nocebo works through the body model with no M.
+
+=====================================================================
+7. ANSWER TO THE OWNER'S QUESTION, IN SHORT
+=====================================================================
+Does everything cost nothing but ambient magic or life force? No. In the traditions the biggest costs are information (exact forms, years of learning), matter (reagents and offerings), time (preparation and waiting), body strain, and social or debt costs. Energy appears, but as one cost among many, often supplied by an agent.
+What is freehand? Small, near, low-energy acts using only the body, voice and hands. They may still be long and exact. Big freehand needs a patron.
+What needs components? Distance to a named person (link), lasting effects (inscription), matter change (reagent), energy beyond the body (store, place, patron), safety (protection), and information beyond one mind (group, notation, redundancy).
+Multiple interfaces? Yes. The chain explains most stacks. Add a target edge, redundant stacking and a time-varying source.

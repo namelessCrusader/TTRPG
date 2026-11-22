@@ -1,0 +1,312 @@
+entry	family	source_url	layers	verdict	mechanism	law_or_change	fear_source
+SCP-545 Liquid Life/Totenkinder	alive/liquid	https://scp-wiki.wikidot.com/scp-545	P,G,M	PACK	liquid-bodied colony organism with a pattern holder that keeps shape; slime-mould style body (u)		body: disgust, uncanny non-human life
+SCP-2386 Pink Ladies	parasitic	https://scp-wiki.wikidot.com/scp-2386	P,G	COVERED	behaviour-altering parasite (real analogues: toxoplasma, cordyceps) on a human host (u)		body: loss of bodily control, disgust
+SCP-4376 Have you tried just smiling more?	humanoid person	https://scp-wiki.wikidot.com/scp-4376	P,K	PACK	euclid humanoid whose threat is a mind with odd dials; a person pack (u)		K: unpredictability of another mind
+SCP-5233 Mr. Wiggy, Earwig Teacher	animal/serpents-hand	https://scp-wiki.wikidot.com/scp-5233	P,M,S	PACK	insect-form teacher with a mind, tied to a faction culture (u)		K: uncanny speech from a small body; S: cult
+SCP-6792 I Promise I Won't Say I Miss You	ghost/temporal	https://scp-wiki.wikidot.com/scp-6792	M,K,X	COVERED	ghost memory (spirit as dissipative pattern) producing hallucination and sleep disturbance; time part is felt, not real (u)		K: grief plus misperception
+SCP-8553 Wunderkind	toy/humanoid	https://scp-wiki.wikidot.com/scp-8553	M,P	PACK	animate toy: pattern-driven puppet with a small store (u)		K: uncanny valley, movement of the inanimate
+SCP-554 The Perfect Murder	cognitohazard/structure	https://scp-wiki.wikidot.com/scp-554	K,P	PACK	a built structure whose design stages a deception on perception (mechanical trap with a killer visual) (u)		K: misperception plus engineered death
+SCP-2358 I've seen this somewhere before…	antimemetic/cognito	https://scp-wiki.wikidot.com/scp-2358	K,M	LAW	self-hiding hazard: a percept that blocks its own encoding in memory (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: you cannot remember the threat, so cannot defend
+SCP-4133 The Pinup That Doesn't Exist	cognitohazard/visual	https://scp-wiki.wikidot.com/scp-4133	K	LAW	an image whose decoding triggers a neural effect in any viewer (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: seeing is infection
+SCP-5167 When The Impostor Is Sus	cognitohazard/meme	https://scp-wiki.wikidot.com/scp-5167	K,S	COVERED	uncontained social-deduction meme; rumours spread through a cast with mutated belief (meme-as-rumour) (u)		K: paranoia, who is a copy
+SCP-7241 The Slain Ribs of Savagery	cognitohazard/multi	https://scp-wiki.wikidot.com/scp-7241	P,G,K	PACK	many-sense parasitic fungus-insect biology with hallucinogenic spores (real psychoactive pathways) (u)		body: disgust plus hallucination
+SCP-469 Many-Winged Angel	ectoentropic/humanoid	https://scp-wiki.wikidot.com/scp-469	M,P	PACK	winged being built as a pattern with a store; a creature pack (u)		K: awe of a body that breaks anatomy
+SCP-1571 Keeper of Treasures	ectoentropic artifact	https://scp-wiki.wikidot.com/scp-1571	M,K	COVERED	object with a store and a mental link to its holder (bond); keeper of items (u)		K: someone else wants what you hold
+SCP-3506 The Reading of the Will	ectoentropic/spatial	https://scp-wiki.wikidot.com/scp-3506	M,X	COVERED	a ritual or will-reading that triggers a spatial pattern (door/plane); fixed effect on trigger (u)		K: dread of a fixed trigger
+SCP-4949 Dr. Wondertainment's dr playtime kit for the kiddos	ectoentropic toy	https://scp-wiki.wikidot.com/scp-4949	M,P	PACK	toy kit with charged material and fixed effect (A5) (u)		K: innocence made lethal
+SCP-6094 How To Spell Lorem Ipsum	cognito/electronic	https://scp-wiki.wikidot.com/scp-6094	K,M,P	LAW	text/pattern that copies itself across devices and triggers fire; a digital replicator with a physical effect (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: invisible spread through screens
+SCP-2603 Its Maiden Voyage	dream/reality	https://scp-wiki.wikidot.com/scp-2603	K,X,M	COVERED	dream plane as an X plane with a vessel; leaks by a bond (u)		K: unsafe sleep
+SCP-4575 Seemingly Unconnected Events	dream/reality	https://scp-wiki.wikidot.com/scp-4575	K,X	COVERED	dreamers linked through a shared pattern; dream events with physical echoes via a link (u)		K: cannot rule out the dream
+SCP-5335 The Freudian Split	reality/memetic	https://scp-wiki.wikidot.com/scp-5335	K,M,G	LAW	self-replicating mutating meme that changes the body of hosts (meme to genotype channel) (u)	concept or meme as an entity: self-propagating pattern living only in minds, with no physical substrate	K plus body: loss of self
+SCP-6575 SMOKE AND MIRRORS	reality/infohazard	https://scp-wiki.wikidot.com/scp-6575	K,M	PACK	aquatic pattern-hazard that hides objects from perception (illusion by noisy sense forging) (u)		K: senses cannot be trusted
+SCP-7859 The Death Dealing	reality/cognito	https://scp-wiki.wikidot.com/scp-7859	K,M	LAW	indestructible entity killing by percept; infinite-binding material plus percept payload (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: death by learning
+SCP-8590 Dale	reality/teleport	https://scp-wiki.wikidot.com/scp-8590	X,K	COVERED	person-shaped anomaly that relocates by doorway and edits others' memory of him (u)		K: nobody remembers you
+SCP-2571 Cragglewood Park	antimemetic/transfig	https://scp-wiki.wikidot.com/scp-2571	K,X	LAW	place where people forget they were there while matter is transformed (rebuild) (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: memory loss plus body change
+SCP-5194 Resurfaced Memortics	memory/vehicle	https://scp-wiki.wikidot.com/scp-5194	K,P,M	PACK	vehicle with memory-bias device; neutralized (u)		K: lost time
+SCP-6600 Spidercon	reality/portal	https://scp-wiki.wikidot.com/scp-6600	X,K	COVERED	event with portal travel; memory loss on return (u)		K: wrongness at a crowd gathering
+SCP-664 The Floor to Nowhere	temporal/rewrite	https://scp-wiki.wikidot.com/scp-664	X,M	LAW	a floor that rewrites with time; only local rewind of intact parts (X); beyond that is SECOND (u)	local time-rate change or time loops beyond X rewind (SECOND if general)	K: space not matching its past
+SCP-3230 Intergalactic Isolation	temporal/extraterr	https://scp-wiki.wikidot.com/scp-3230	M,P	COVERED	radioactive god-sized being with a vast belief substrate in a far place (u)		K: awe, cosmic scale
+SCP-4055 Three Split Seconds	temporal k-class	https://scp-wiki.wikidot.com/scp-4055	X,K	SECOND	k-class event with split seconds; fast rewind of parts together is X, but repeating moments needs a clock change (u)	SECOND: affecting or rewinding the past / whole-world rewind	K: no time to act
+SCP-6177 Overgrown	temporal cadaver	https://scp-wiki.wikidot.com/scp-6177	X,P	COVERED	overgrowth of a corpse by fast biology; time is accelerated growth via stored M (u)		body: decay, time-lapse
+SCP-8317 Nothing of Value	temporal travel	https://scp-wiki.wikidot.com/scp-8317	K	SECOND	time travel to the past (u)	SECOND: affecting or rewinding the past / whole-world rewind	K: consequence unknown
+SCP-2105 Programmable Occult	broken-god/ritual	https://scp-wiki.wikidot.com/scp-2105	M,S	COVERED	programmable ritual device: engraved pattern plus store; machine-god pack (u)		K: faith engines
+SCP-6217 The Emergence	apollyon/contagion	https://scp-wiki.wikidot.com/scp-6217	P,G,M	PACK	a world-ending liquid contagion; pack of high replication plus M store (u)		body: slow loss, scale
+SCP-1088 The Eternity Ward	ghost/auditory	https://scp-wiki.wikidot.com/scp-1088	M,K	COVERED	ghost ward that sounds a warning; sound-based pattern (u)		K: dread of what is heard
+SCP-2678 A City All of Blood	auditory/biological	https://scp-wiki.wikidot.com/scp-2678	M,P,S	COVERED	city of flesh singing a hymn; musical pattern (A16) plus religion (u)		K: awe and disgust
+SCP-7281 Ocean αγαπώ	aquatic/cognito	https://scp-wiki.wikidot.com/scp-7281	K,P,M	COVERED	sea song that disturbs minds; a sound pattern (A16) driving neural bias (u)		K: call of the deep
+SCP-3326 The Threads of Fate	teleport/temporal	https://scp-wiki.wikidot.com/scp-3326	X,M	PACK	mechanical device moving things by doorway; fate seen as a prediction store (u)		K: fated
+SCP-4888 The Sunrise Collective	teleport	https://scp-wiki.wikidot.com/scp-4888	X	COVERED	collective that moves by doorways (u)		K: loss of place
+SCP-7698 AMONICE	vehicle/teleport	https://scp-wiki.wikidot.com/scp-7698	X,P	COVERED	self-repairing vehicle with a doorway drive (u)		K: arrival where you should not be
+SCP-1765 Sisters	spatial/temporal	https://scp-wiki.wikidot.com/scp-1765	X,M	LAW	sisters linking planes and times; place folds (u)	local time-rate change or time loops beyond X rewind (SECOND if general)	K: sisters as a pair of links
+SCP-2745 Linda Perhacs	portal/spatial	https://scp-wiki.wikidot.com/scp-2745	X	COVERED	portal door to elsewhere (u)		K: what is on the other side
+SCP-4863 Sol	extraterr/sun	https://scp-wiki.wikidot.com/scp-4863	P,M,K	PACK	sun-sized sensing object, visual hazard from intense light (u)		K: scale, being looked at
+SCP-7179 E is for Eternity	noosphere/temporal	https://scp-wiki.wikidot.com/scp-7179	M,K,X	LAW	a being living in minds that edits long timelines; concept as entity (u)	concept or meme as an entity: self-propagating pattern living only in minds, with no physical substrate	K: eternity
+SCP-8468 …I drive a Chevrolet movie theater.	spatial/reptile	https://scp-wiki.wikidot.com/scp-8468	X,P	COVERED	pocket space with a reptile; movie theater plane (u)		K: absurd made hostile
+SCP-4352 Storytime	noosphere/hostile	https://scp-wiki.wikidot.com/scp-4352	K,M	COVERED	a story entity that feeds on listeners; belief substrate (u)		K: being narrated
+SCP-7827 Push Back	hostile	https://scp-wiki.wikidot.com/scp-7827	P	PACK	hostile mobile pusher; creature pack (u)		body: being driven
+SCP-1480 Bus #64	vehicle/extraterr	https://scp-wiki.wikidot.com/scp-1480	P,X	PACK	a bus carrying light that crosses between places (u)		K: the route is wrong
+SCP-4066 The Byzantine Empire Was Secretly Aliens	extraterrestrial	https://scp-wiki.wikidot.com/scp-4066	P,K,S	PACK	alien civilization; a culture claim over history (u)		K: history is false
+SCP-6663 A Lost Gallop for the Sun	cognito/vehicle	https://scp-wiki.wikidot.com/scp-6663	K,P	PACK	vehicle emitting cognitive effects on riders; neutralized (u)		K: unfamiliar loved thing
+SCP-7917 The Worst Distance Between Two People	extraterr/planet	https://scp-wiki.wikidot.com/scp-7917	P,X	PACK	planet-scale object with doorway links (u)		K: loneliness at scale
+SCP-2432 Room Service	memetic/transfig	https://scp-wiki.wikidot.com/scp-2432	K,X	LAW	room that transforms what is in it, spreading as a meme (u)	concept or meme as an entity: self-propagating pattern living only in minds, with no physical substrate	K: rooms that change you
+SCP-4381 Moccus Meme	memetic/visual	https://scp-wiki.wikidot.com/scp-4381	K	LAW	image meme that spreads; decoded pattern payload (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: contagion by sight
+SCP-5340 The Backyard Memeticist 😎	memetic/antimemetic	https://scp-wiki.wikidot.com/scp-5340	K	LAW	meme study lab; forgetting and spreading in tandem (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: meaning loss
+SCP-7261 Interview with a Tlahuelpuchi	vampire/memetic	https://scp-wiki.wikidot.com/scp-7261	M,P,G,S	COVERED	blood-store vampire (A9), light weakness, ritual; memetic part as rumour (u)		K: legend meets predator
+SCP-1302 Loss Chaser	probability/electronic	https://scp-wiki.wikidot.com/scp-1302	M,K	LAW	device that biases outcomes; luck as M steering of chaos (u)	bias of chaotic or quantum outcomes (luck) as a tiny M effect with a ledger	K: bad luck made real
+SCP-3122 You Have Reached Your Destination	vehicle/religious	https://scp-wiki.wikidot.com/scp-3122	P,K,S	PACK	GPS-like AI guide with religious dial (u)		K: trust in a voice
+SCP-7528 EPITOMEDIA: The Projection	AI/cognito	https://scp-wiki.wikidot.com/scp-7528	P,K	COVERED	projection AI with percept payload; AI minds exist (P) (u)		K: machine that persuades
+SCP-3280 After the Storm	k-class/liquid	https://scp-wiki.wikidot.com/scp-3280	P,M,K	PACK	hostile fluid mass with hallucination (u)		body: engulfment
+SCP-5619 A Couple of Cuppas	liquid/teleport	https://scp-wiki.wikidot.com/scp-5619	X,K	COVERED	cup that sends the drinker elsewhere (u)		K: ordinary object breaks
+SCP-847 The Mannequin	biological/predictive	https://scp-wiki.wikidot.com/scp-847	P,G,K	PACK	mannequin-like predator that rewrites its form (u)		K: uncanny valley
+SCP-2378 Tissue Dome	biological/structure	https://scp-wiki.wikidot.com/scp-2378	P,G	PACK	tissue dome: grown living architecture (u)		body: living walls
+SCP-2847 Yu the Great, and the Immortal	broken-god/biological	https://scp-wiki.wikidot.com/scp-2847	M,P,G	PACK	sarkic AI-bio hybrid with legend of immortality (u)		K: ancient cult
+SCP-8550 Microbial Murder	virus/k-class	https://scp-wiki.wikidot.com/scp-8550	P,G	COVERED	microbe that wipes out life; real pathogen engineering (u)		body: unseen contagion
+SCP-3884 Gunmetal Gary Puts the Peddle to the Metal	reanimation/vehicle	https://scp-wiki.wikidot.com/scp-3884	M,P	COVERED	dead driver puppeted by a pattern (A10); vehicle (u)		body: dead man driving
+SCP-7040 Confusion and Delay	vehicle	https://scp-wiki.wikidot.com/scp-7040	P	PACK	vehicle delay anomaly; neutralized (u)		K: mild unease (u)
+SCP-2121 Gods' Noose	artifact/ritual	https://scp-wiki.wikidot.com/scp-2121	M,P,K	COVERED	noose that binds a god; bond plus indestructible material (u)		K: godhood caught
+SCP-5563 A Free Trial of Knowledge Hoard	electronic/memory	https://scp-wiki.wikidot.com/scp-5563	K,P	LAW	knowledge product that rewrites its user's mind (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: you stop being you
+SCP-7882 Cargo Cult Capsule	religious/robotic	https://scp-wiki.wikidot.com/scp-7882	M,P,S	COVERED	cargo cult capsule; belief to AI (u)		K: faith without meaning
+SCP-2682 The Blind Idiot	plant/telepathic	https://scp-wiki.wikidot.com/scp-2682	P,M	COVERED	plant with telepathic links; reality bending is M (u)		K: being known by a plant
+SCP-6081 花見	cognito/plant	https://scp-wiki.wikidot.com/scp-6081	P,K	COVERED	cherry-blossom spores affecting memory; neurological hazard (u)		body: beauty that kills
+SCP-7464 They're chewing through my skin and they won't	plant/immobile	https://scp-wiki.wikidot.com/scp-7464	P	COVERED	body-eating plant (u)		body: eaten alive
+SCP-3828 A Powerful Seal	aquatic/telekinetic	https://scp-wiki.wikidot.com/scp-3828	M,P	COVERED	seal with M at range pushing water (u)		K: sea moves
+SCP-7870 Goddess at the Bottom of a River	deity/aquatic	https://scp-wiki.wikidot.com/scp-7870	M,K,S	COVERED	river goddess with a worshipper substrate (u)		K: reverent fear
+SCP-3323 R35urr3c710n	electronic/mimetic	https://scp-wiki.wikidot.com/scp-3323	P,K	COVERED	autonomous machine imitating a loved one (u)		K: grief exploited
+SCP-7675 An Instigator	empathic	https://scp-wiki.wikidot.com/scp-7675	K,M	COVERED	empathic instigator; neural bias on emotions (u)		K: your feelings are not yours
+SCP-3321 Edge of the Universe	portal/extraterr	https://scp-wiki.wikidot.com/scp-3321	X	COVERED	portal to the universe's edge (u)		K: the void
+SCP-5322 And The Road Stretches On…	portal	https://scp-wiki.wikidot.com/scp-5322	X	COVERED	endless road through a doorway (u)		K: going on forever
+SCP-1234 An Abandoned Bakery	food/keter	https://scp-wiki.wikidot.com/scp-1234	P,M	PACK	autonomous bakery that makes and consumes (u)		K: homey made hostile
+SCP-5401 Thing	antimemetic/dream	https://scp-wiki.wikidot.com/scp-5401	K,M	LAW	thing eaten that is forgotten and invades sleep (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: unknown threat in sleep
+SCP-7271 Microbes on Strike	bacteria/food	https://scp-wiki.wikidot.com/scp-7271	P,G	COVERED	bacteria colony with a social behaviour (u)		K: comic
+SCP-1300 Liquid Surgeon	artifact/transfig	https://scp-wiki.wikidot.com/scp-1300	M,X	COVERED	surgery by pattern rebuild (u)		body: being operated on
+SCP-2589 Don't Leave Me This Way	biological/transfig	https://scp-wiki.wikidot.com/scp-2589	G,X	PACK	body transformation, neutralized (u)		body: bodily change
+SCP-4938 Sweat of the Sun	reality/radioactive	https://scp-wiki.wikidot.com/scp-4938	X,M	PACK	sun-sourced liquid transforming matter (u)		K: awe, wrongness
+SCP-3952 Flying Ace	reality/temporal	https://scp-wiki.wikidot.com/scp-3952	X,P	LAW	dog-plane craft sliding through time (u)	local time-rate change or time loops beyond X rewind (SECOND if general)	K: loss of place
+SCP-7769 Your First Murdered Monster	ghost	https://scp-wiki.wikidot.com/scp-7769	M	COVERED	ghost of a killed monster (u)		K: guilt
+SCP-1052 Ana	artifact	https://scp-wiki.wikidot.com/scp-1052	M,K	PACK	artifact with a minor effect on minds (u)		K: mild unease (u)
+SCP-4422 O Tempestas, O Mores	artifact/temporal	https://scp-wiki.wikidot.com/scp-4422	M,X	PACK	artifact with a temporal flavour, safe (u)		K: mild
+SCP-1838 Bob	autonomous/vehicle	https://scp-wiki.wikidot.com/scp-1838	P,M,X	PACK	food truck with spatial misbehaviour (u)		K: absurd made hostile
+SCP-3428 Buried Hummingbirds	bird/hostile	https://scp-wiki.wikidot.com/scp-3428	P	PACK	hostile birds with a purpose (u)		body: swarms
+SCP-4041 Impostors of the Tyrant Lizard King	bird/ritual	https://scp-wiki.wikidot.com/scp-4041	M,P	COVERED	ritual-bound intangible swarm of dino-birds (u)		K: ancient
+SCP-6611 The Elephant's God	dream/reanimation	https://scp-wiki.wikidot.com/scp-6611	M,K,S	COVERED	moon-fed ritual and a dead elephant (u)		K: ritual horror
+SCP-8318 A Flesh Rejoined, Four Departed	biological/reanimation	https://scp-wiki.wikidot.com/scp-8318	M,P	COVERED	reanimated body parts via ritual (u)		body: stitched dead
+SCP-1889 Calculus Trap	cognito/mathematical	https://scp-wiki.wikidot.com/scp-1889	K,X	LAW	visual calculus puzzle that transforms the solver (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: seeing equals teleport
+SCP-1181 Interactive Kaleidoscope	ectoentropic/location	https://scp-wiki.wikidot.com/scp-1181	X,M	PACK	room that copies itself (u)		K: mild unease (u)
+SCP-1673 Friendly Graveyard	location/biological	https://scp-wiki.wikidot.com/scp-1673	P,M	PACK	graveyard with living plants (u)		K: gentle uncanny
+SCP-4305 No Lifeguard On Duty	location/cadaver	https://scp-wiki.wikidot.com/scp-4305	P,M	PACK	pool with an unkillable dead lifeguard (u)		body: drowning
+SCP-1134 Lead Paint	ectoentropic/liquid	https://scp-wiki.wikidot.com/scp-1134	M,P	PACK	paint that carries a store and a pattern (u)		K: object with a rule
+SCP-4119 Miss Dynamite	liquid/visual	https://scp-wiki.wikidot.com/scp-4119	P,M	PACK	liquid with explosive property (u)		body: burn
+SCP-800 An Eastern History	metamorphic	https://scp-wiki.wikidot.com/scp-800	G,P	COVERED	self-repairing metamorph (u)		body: form shift
+SCP-5659 Deus Sex Machina	deity/religious	https://scp-wiki.wikidot.com/scp-5659	M,S	COVERED	neutralized god of belief; wire of love (u)		K: sacred and sexual
+SCP-8066 Phobophobia: The Only Thing to Fear	reality/indestructible	https://scp-wiki.wikidot.com/scp-8066	K,M	LAW	a thing that is the fear of fear; indestructible entity (u)	concept or meme as an entity: self-propagating pattern living only in minds, with no physical substrate	K: fear of fear
+SCP-1191 Criminal Past	mind-affecting	https://scp-wiki.wikidot.com/scp-1191	K,M	COVERED	neural bias device; safe (u)		K: mild
+SCP-5746 The Time Stitcher	temporal/mechanical	https://scp-wiki.wikidot.com/scp-5746	M,X	PACK	time-stitching machine with sleep effect (u)		K: being edited
+SCP-512 There's no rain above the clouds	extradimensional/gravity	https://scp-wiki.wikidot.com/scp-512	X,M	COVERED	sky-ring with gravity effects; thaumaturgy (u)		K: gravity gone wrong
+SCP-2062 Kronecker	extradimensional/esoteric	https://scp-wiki.wikidot.com/scp-2062	X,M	COVERED	extradimensional plane via X (u)		K: unseen math
+SCP-4615 Supper Memories '06	extradimensional/mimetic	https://scp-wiki.wikidot.com/scp-4615	X,P	COVERED	plane visited via supper memories (u)		K: false memory
+SCP-5061 A Toast To Elizabeth Connors, A Brilliant Actress	extradimensional/portal	https://scp-wiki.wikidot.com/scp-5061	X	COVERED	portal to actor (u)		K: invitation
+SCP-4933 We Interrupt This Broadcast	ectoentropic/radioactive	https://scp-wiki.wikidot.com/scp-4933	M,P	PACK	broadcast structure with radiation (u)		body: sickness
+SCP-2510 Got A Secret, Can You Keep It?	antimemetic	https://scp-wiki.wikidot.com/scp-2510	K	LAW	you cannot keep a secret about it; forgets (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: hidden in plain sight
+SCP-3393 For Your Eyes Only	antimemetic	https://scp-wiki.wikidot.com/scp-3393	K	LAW	visible but not retained (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: nobody remembers
+SCP-4668 Since I Left Me	antimemetic	https://scp-wiki.wikidot.com/scp-4668	K,M	LAW	identity loss through memory edits (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: erased self
+SCP-6182 The Dear Repose	antimemetic	https://scp-wiki.wikidot.com/scp-6182	K,M	LAW	memory sedation (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: gentle absence
+SCP-6766 To Know All Stones	antimemetic/ghost	https://scp-wiki.wikidot.com/scp-6766	K,M	LAW	stone ghost with memory loss (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: lost knowledge
+SCP-8407 Lonely White Fog	antimemetic/hostile	https://scp-wiki.wikidot.com/scp-8407	K,P	LAW	fog that wipes memory and kills (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: invisible, forgotten
+SCP-5409 Unpacified	alive/toy	https://scp-wiki.wikidot.com/scp-5409	P,M	PACK	living plant toy (u)		K: mild unease (u)
+SCP-1466 A Canary	keter/infohazard	https://scp-wiki.wikidot.com/scp-1466	K,M	LAW	a math hazard that kills the viewer (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: knowledge lethal
+SCP-4921 Please STOP Reading!	infohazard	https://scp-wiki.wikidot.com/scp-4921	K	LAW	neurological hazard from reading (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: reading is the trigger
+SCP-8031 Teat	cognito/parasitic	https://scp-wiki.wikidot.com/scp-8031	K,P	LAW	parasite plus infohazard plus hallucination (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: cannot trust perception
+SCP-1991 Cybernetically Enhanced Mammalian	weapon/mechanical	https://scp-wiki.wikidot.com/scp-1991	P	PACK	cybernetic mammal; engineering (u)		body: made weapon
+SCP-7871 Cracked at Fortnite	weapon/tactile	https://scp-wiki.wikidot.com/scp-7871	P,K	PACK	gaming-related weapon with touch effect (u)		K: mild unease (u)
+SCP-600 "That Guy"	rewrite	https://scp-wiki.wikidot.com/scp-600	K,M	LAW	"that guy" a retcon person (u)	SECOND: global history or rule rewrite (retcon)	K: someone not remembered
+SCP-1195 Child's Storybook	language/rewrite	https://scp-wiki.wikidot.com/scp-1195	K,M	PACK	book whose text changes; safe (u)		K: mild unease (u)
+SCP-1384 Taker of Turns	reality/temporal	https://scp-wiki.wikidot.com/scp-1384	X,M	LAW	taker of turns affects ordering (u)	SECOND: affecting or rewinding the past / whole-world rewind	K: lost turn
+SCP-7351 Keep On Living	clothing/indestructible	https://scp-wiki.wikidot.com/scp-7351	M,P	PACK	clothing of binding material (u)		K: mild unease (u)
+SCP-1498 DIAL TONE DREAMER	dream/hivemind	https://scp-wiki.wikidot.com/scp-1498	K,M	COVERED	telephonic dream hive; link network (u)		K: shared dream
+SCP-5770 To Parade 'Pendas'	ghost/sleep	https://scp-wiki.wikidot.com/scp-5770	M,K	COVERED	ghost parade in dreams (u)		K: dream dread
+SCP-531 Paired Brass Guard Cats	feline/transfig	https://scp-wiki.wikidot.com/scp-531	M,P	PACK	self-copying brass cats (u)		K: mild unease (u)
+SCP-1883 Gamification	self-replicating	https://scp-wiki.wikidot.com/scp-1883	X,P	PACK	game replicator; copy (u)		K: mild unease (u)
+SCP-7390 Grimsley Trudge	antimemetic/gravity	https://scp-wiki.wikidot.com/scp-7390	K,M,P	LAW	gravity and memory effect combined (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: unknown
+SCP-4029 Too Many Legs to be Going Nowhere	mechanical/electrical	https://scp-wiki.wikidot.com/scp-4029	P	PACK	machine, liquid, self-repair (u)		body: unease
+SCP-6606 Spectrum Says	extraterr/k-class	https://scp-wiki.wikidot.com/scp-6606	P,K	PACK	extraterrestrial mechanical controller (u)		K: instruction
+SCP-4755 When We Are Omnipotent	memetic/religious	https://scp-wiki.wikidot.com/scp-4755	K,S	LAW	omnipotence meme (u)	concept or meme as an entity: self-propagating pattern living only in minds, with no physical substrate	K: beyond
+SCP-2187 Juĝo Nova	electronic/neurological	https://scp-wiki.wikidot.com/scp-2187	P,K	PACK	translator device messes language (u)		K: language
+SCP-4966 Tubbioca: Devourer of Souls, Consumer of Secrets, Lord of Munchies	cadaver/indestructible	https://scp-wiki.wikidot.com/scp-4966	M,K	COVERED	soul-eater entity; secret-eating being (u)		K: being known by a thing
+SCP-616 The Vessel and the Gate	language/reanimation	https://scp-wiki.wikidot.com/scp-616	M,K,S	COVERED	word opens a gate; vessel as host (u)		K: possessed by a word
+SCP-5138 Bog Bodies	cadaver/reanimation	https://scp-wiki.wikidot.com/scp-5138	M,P	COVERED	bog bodies move (u)		body: dead return
+SCP-6578 American Gothic	cadaver/plant	https://scp-wiki.wikidot.com/scp-6578	M,P	COVERED	plant-held dead figures (u)		K: American gothic
+SCP-737 Hungry Train	toy/vehicle	https://scp-wiki.wikidot.com/scp-737	P	PACK	hungry toy train; creature (u)		K: innocence
+SCP-6959 A Very Strange Fumo	extraterr/toy	https://scp-wiki.wikidot.com/scp-6959	P	PACK	alien fumo; creature (u)		K: absurd
+SCP-2782 The Flock	bird/ectoentropic	https://scp-wiki.wikidot.com/scp-2782	M,P	COVERED	dead flock puppeted (u)		body: dead birds
+SCP-1256 Bees Are Smarter Than You Think	insect/cognito	https://scp-wiki.wikidot.com/scp-1256	P,K	COVERED	bees with a visual hazard (u)		K: sting
+SCP-6776 Reclamation	fungus/thaumiel	https://scp-wiki.wikidot.com/scp-6776	P,G	COVERED	reclamation mycelium (u)		body: spreading growth
+SCP-1712 An Unusual Occurrence On August 11th, 1959	keter/feline	https://scp-wiki.wikidot.com/scp-1712	M,X,G	LAW	cat that rewrites; retcon (u)	SECOND: global history or rule rewrite (retcon)	K: wrong reality
+SCP-841 Reverse Mirror Voodoo Doll Stick Puppet	rewrite/toy	https://scp-wiki.wikidot.com/scp-841	M,K	COVERED	voodoo toy: link and pattern (A3) (u)		K: harm at distance
+SCP-3331 With Apologies To John Cena	ectoentropic/toy	https://scp-wiki.wikidot.com/scp-3331	M	PACK	pop-culture toy with fixed effects (u)		K: absurd
+SCP-4272 The Proper Way to Appreciate Art	telekinetic/telepathic	https://scp-wiki.wikidot.com/scp-4272	M,K	COVERED	art that moves minds and objects (u)		K: art as weapon
+SCP-1949 Jonathan Harris	probability	https://scp-wiki.wikidot.com/scp-1949	M,K	LAW	probability manipulation on a person (u)	bias of chaotic or quantum outcomes (luck) as a tiny M effect with a ledger	K: bad luck
+SCP-6913 A Mug Only a Mother Could Love	memetic/probability	https://scp-wiki.wikidot.com/scp-6913	K,M	LAW	mug meme biasing odds (u)	bias of chaotic or quantum outcomes (luck) as a tiny M effect with a ledger	K: touch is risk
+SCP-7350 Kancra Bodas	probability	https://scp-wiki.wikidot.com/scp-7350	M,K	LAW	probability aquatic (u)	bias of chaotic or quantum outcomes (luck) as a tiny M effect with a ledger	K: unsafe
+SCP-1860 Its Bleeding Song	musical/biological	https://scp-wiki.wikidot.com/scp-1860	M,P	COVERED	bleeding song; resonance (u)		body: song moves matter
+SCP-6700 A Mithers' Love Underneath an Orkney Sky	deity/musical	https://scp-wiki.wikidot.com/scp-6700	M,S	COVERED	sea god of song (u)		K: awe
+SCP-633 Ghost In The Machine	contagion/rewrite	https://scp-wiki.wikidot.com/scp-633	K,P	PACK	a computer ghost; self-replicating program (u)		K: cyber
+SCP-4266 The Thing That Makes You Kill People	contagion/empathic	https://scp-wiki.wikidot.com/scp-4266	K,P	COVERED	planet-wide rage infection; neural bias (u)		K: others turn
+SCP-751 Organ Eater	amorphous/parasitic	https://scp-wiki.wikidot.com/scp-751	P,G	PACK	organ-eating amorphous organism (u)		body: consumption
+SCP-2327 Gastroesophageal Squirrels	parasitic	https://scp-wiki.wikidot.com/scp-2327	P,G	COVERED	parasite in squirrels (u)		body: absurd
+SCP-6318 The Fungible Fungus	fungus/parasitic	https://scp-wiki.wikidot.com/scp-6318	P,G,K	COVERED	cordyceps-like fungus controlling electronics (u)		body: spore
+SCP-652 Meteorological Dog	canine/predictive	https://scp-wiki.wikidot.com/scp-652	P,K	LAW	dog that predicts weather (u)	SECOND: information from the future (precognition, prophecy)	K: future
+SCP-3324 Getting kidney stones in the past is more useful than you'd think	memory/temporal	https://scp-wiki.wikidot.com/scp-3324	K,X	SECOND	go to past (u)	SECOND: affecting or rewinding the past / whole-world rewind	K: mild unease (u)
+SCP-7924 The Goat that Kept on Gifting	antimemetic/hostile	https://scp-wiki.wikidot.com/scp-7924	K,M,P	LAW	goat that replicates and erases (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: unknown
+SCP-4161 METEMPSYCHOSIS.	cadaver/electronic	https://scp-wiki.wikidot.com/scp-4161	M,P	COVERED	reincarnation machine; puppet (u)		K: souls
+SCP-7683 電気によって…… | denki ni yotte…	electrical/esoteric	https://scp-wiki.wikidot.com/scp-7683	M,P	PACK	electric pattern device (u)		K: mild unease (u)
+SCP-4959 Teotihuacan Pterodactylactery	kaiju/reanimation	https://scp-wiki.wikidot.com/scp-4959	P,M	PACK	reanimated giant bird; scale limited by square-cube with M assist (u)		body: being hunted from above
+SCP-1237 The Epsilon Wave	dream/telekinetic	https://scp-wiki.wikidot.com/scp-1237	M,K,X	COVERED	wave that drives dream force (u)		K: sleep unsafe
+SCP-3400 Rorqual Infection	biological/dream	https://scp-wiki.wikidot.com/scp-3400	P,K	COVERED	whale infection with memory effect (u)		body: infection
+SCP-6963 It’s All Been Wasted Time	dream/parasitic	https://scp-wiki.wikidot.com/scp-6963	P,K	COVERED	parasite in sleep (u)		K: lost time
+SCP-2113 Haunted Liopleurodon Skull	ghost/reptile	https://scp-wiki.wikidot.com/scp-2113	M	COVERED	haunted skull; ghost memory (u)		K: haunt
+SCP-4518 Retroactive Reaper	ghost/structure	https://scp-wiki.wikidot.com/scp-4518	M	COVERED	ghost reaper; safe (u)		K: death
+SCP-7267 Echoes of the Regime	ghost/memory	https://scp-wiki.wikidot.com/scp-7267	M,K	COVERED	echoes of a regime; ghost memory (u)		K: history haunts
+SCP-1246 Stone Spiral	radioactive/structure	https://scp-wiki.wikidot.com/scp-1246	M,P	PACK	stone spiral with sun focus (u)		body: radiation
+SCP-2834 The Blood of MEKHANE	broken-god/sarkic	https://scp-wiki.wikidot.com/scp-2834	M,G,P	PACK	machine-god blood; self-repair (u)		K: cult
+SCP-2303 Inkblot	amorphous	https://scp-wiki.wikidot.com/scp-2303	P,M	PACK	inkblot creature; metamorph (u)		K: unknown shape
+SCP-7605 Exhausting All Options	amorphous	https://scp-wiki.wikidot.com/scp-7605	P	PACK	amorphous; pending (u)		K: mild unease (u)
+SCP-2474 Irnini Mons	artifact/location	https://scp-wiki.wikidot.com/scp-2474	M,K	COVERED	planetary place with a broken-god memory effect (u)		K: forgotten sacred
+SCP-7996 Losing Interest 🍀	reality/broken	https://scp-wiki.wikidot.com/scp-7996	M,K	COVERED	machine-god luck effect (u)		K: chance
+SCP-6784 The Family Gone Too Soon	cadaver/hallucination	https://scp-wiki.wikidot.com/scp-6784	M,K	COVERED	family corpses as hallucination (u)		K: grief
+SCP-2430 Immortal Hitler Clone	sarkic/autonomous	https://scp-wiki.wikidot.com/scp-2430	G,M,P	COVERED	clone with a sarkic body; immortal (u)		K: legacy evil
+SCP-4786 The Mouth that Hungers	sarkic	https://scp-wiki.wikidot.com/scp-4786	G,M	PACK	hunger mouth (u)		body: eaten
+SCP-8331 Giving Tree	plant/sarkic	https://scp-wiki.wikidot.com/scp-8331	G,P	PACK	tree of flesh (u)		body: flesh in wood
+SCP-828 ᖃᓪᓗᐱᓪᓗᐃᑦ	aquatic/clothing	https://scp-wiki.wikidot.com/scp-828	P,M	PACK	clothing from sea (u)		K: mild unease (u)
+SCP-7325 A Testament To My Failures	weapon/clothing	https://scp-wiki.wikidot.com/scp-7325	P,K	PACK	weapon garment with smell (u)		K: sensory
+SCP-3777 Jewish Mekhanite Golem Robot	broken-god/robotic	https://scp-wiki.wikidot.com/scp-3777	M,P,S	PACK	golem robot; machine-god (u)		K: cult golem
+SCP-7222 Pool Boy	robotic	https://scp-wiki.wikidot.com/scp-7222	P	COVERED	robot pool boy (u)		K: absurd
+SCP-3854 Belly of the Playwright	language/spatial	https://scp-wiki.wikidot.com/scp-3854	X,K	COVERED	belly place of playwright; plane (u)		K: inside a story
+SCP-2455 Possibilities Girl	mimetic	https://scp-wiki.wikidot.com/scp-2455	P,K	COVERED	mimic girl; possibility (u)		K: copy
+SCP-6970 foundation that tortures you	mimetic/auditory	https://scp-wiki.wikidot.com/scp-6970	P,K	PACK	torture sound (u)		K: pain
+SCP-6880 Boiling Blood	vampire/liquid	https://scp-wiki.wikidot.com/scp-6880	M,P,G	COVERED	blood boils; vampire (u)		body: blood
+SCP-8711 In the House of the Rising Sun	reality/spatial	https://scp-wiki.wikidot.com/scp-8711	X,K	COVERED	house plane (u)		K: inside a song
+SCP-851 Lullabugs	auditory/hivemind	https://scp-wiki.wikidot.com/scp-851	P,K	COVERED	lullabugs; insects sing (u)		K: sleep sound
+SCP-5993 We want you to come visit Heaven, just don't fuck with those bees	hive/insect	https://scp-wiki.wikidot.com/scp-5993	P,M	COVERED	insect heaven; religion (u)		K: faith swarm
+SCP-2974 Dried and Salted Lizard	reptile/cadaver	https://scp-wiki.wikidot.com/scp-2974	P,M	COVERED	salted lizard; reanimation (u)		body: dry dead
+SCP-7189 To Die, Perhaps to Live Again	bird/plant	https://scp-wiki.wikidot.com/scp-7189	P,M,X	COVERED	reanimated recombined life (u)		body: transformation
+SCP-6844 Hestia	fire/noosphere	https://scp-wiki.wikidot.com/scp-6844	M,K	COVERED	fire god; belief store (u)		K: sacred fire
+SCP-4823 The Whole World Has Gone Bananas!	portal/extradimensional	https://scp-wiki.wikidot.com/scp-4823	X	COVERED	banana world; doorway (u)		K: absurd
+SCP-7789 Agent Vidal in upside down Barcelona	gravity/pending	https://scp-wiki.wikidot.com/scp-7789	X,P	COVERED	upside-down city; plane (u)		K: disorientation
+SCP-6300 Prophecies	toxic/prophecy	https://scp-wiki.wikidot.com/scp-6300	P,K	LAW	prophecy gas (u)	SECOND: information from the future (precognition, prophecy)	K: future
+SCP-7549 C A C H E	electronic/infohazard	https://scp-wiki.wikidot.com/scp-7549	K,P	LAW	cache; planet-scale copy (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: data
+SCP-2688 Enammu	deity/sarkic	https://scp-wiki.wikidot.com/scp-2688	M,S	COVERED	broken god; belief (u)		K: awe
+SCP-7997 Corporate Apotheosis	deity/probability	https://scp-wiki.wikidot.com/scp-7997	M,S,K	COVERED	corporate god; belief (u)		K: satire
+SCP-3259 Verminous Ark	swarm/mimetic	https://scp-wiki.wikidot.com/scp-3259	P,M	COVERED	vermin ark; swarm (u)		body: swarm
+SCP-6668 Infestation	swarm	https://scp-wiki.wikidot.com/scp-6668	P	COVERED	infestation (u)		body: swarm
+SCP-4096 The Ol' Switcheroo	esoteric/intangible	https://scp-wiki.wikidot.com/scp-4096	M,K	LAW	switcheroo entity, indestructible, swaps (u)	concept or meme as an entity: self-propagating pattern living only in minds, with no physical substrate	K: swap
+SCP-4830 Head Like a Hole	noosphere/memetic	https://scp-wiki.wikidot.com/scp-4830	K,M	LAW	hole in head; noosphere (u)	concept or meme as an entity: self-propagating pattern living only in minds, with no physical substrate	K: loss of mind
+SCP-6699 The Rhizome of our Minds	noosphere/telepathic	https://scp-wiki.wikidot.com/scp-6699	K,M	COVERED	rhizome of minds; telepathy (u)		K: merged
+SCP-1392 Functioning Scarificator	artifact/mythological	https://scp-wiki.wikidot.com/scp-1392	M,P	PACK	scarificator (u)		body: carving
+SCP-8660 The Empty Birdcage	mythological/probability	https://scp-wiki.wikidot.com/scp-8660	M,K	COVERED	birdcage (u)		K: trap
+SCP-925 The Mushroom Cultist	fungus	https://scp-wiki.wikidot.com/scp-925	P,G	COVERED	mushroom cultist (u)		K: cult
+SCP-7925 Buzzing Through the Prophets	fungus/religious	https://scp-wiki.wikidot.com/scp-7925	P,K,S	COVERED	prophets of spores (u)		K: faith
+SCP-3974 Such Sweet Sorrow	virus/food	https://scp-wiki.wikidot.com/scp-3974	P,G	COVERED	food virus (u)		body: sweet death
+SCP-6834 Johanna's Disease	virus/broken	https://scp-wiki.wikidot.com/scp-6834	G,M	PACK	disease (u)		body: sick
+SCP-5802 Pollution and Industry	reality/toxic	https://scp-wiki.wikidot.com/scp-5802	X,P	LAW	time/space toxic (u)	local time-rate change or time loops beyond X rewind (SECOND if general)	K: dread
+SCP-5321 The Spoiler	AI/neurological	https://scp-wiki.wikidot.com/scp-5321	P,K	COVERED	spoiler AI (u)		K: ending
+SCP-6713 Boltzmann's Folly	AI/probability	https://scp-wiki.wikidot.com/scp-6713	P,K,M	LAW	thermal fluke AI (u)	bias of chaotic or quantum outcomes (luck) as a tiny M effect with a ledger	K: chance
+SCP-2499 Harmony of the Spheres	extraterr/sun	https://scp-wiki.wikidot.com/scp-2499	P,M	PACK	sphere harmony (u)		K: awe
+SCP-1842 Dr. Wondertainment's Magic Microwave Set!	toy/food	https://scp-wiki.wikidot.com/scp-1842	M,X	COVERED	microwave toy; transfig (u)		K: kid danger
+SCP-7097 The Gossip Fly	insect	https://scp-wiki.wikidot.com/scp-7097	P	COVERED	gossip fly (u)		K: gossip
+SCP-5832 Stained	scarlet-king	https://scp-wiki.wikidot.com/scp-5832	M,K	COVERED	cosmic outsider; resonance link (u)		K: cosmic
+SCP-2237 "There is always a cost…"	satellite/thaumiel	https://scp-wiki.wikidot.com/scp-2237	M,P	PACK	satellite (u)		K: cost
+SCP-5635 Hello, this is space speaking	satellite	https://scp-wiki.wikidot.com/scp-5635	P	COVERED	space robot (u)		K: space
+SCP-6159 Primrose Fatish Von Trevil, Formerly the Book-Bound Devil	demon/canine	https://scp-wiki.wikidot.com/scp-6159	M,K	COVERED	demon book (u)		K: rewrite
+SCP-675 Shadows Through the Window	shadow/portal	https://scp-wiki.wikidot.com/scp-675	X,P	COVERED	shadows window (u)		K: dark
+SCP-3544 Home is Where the Heart Was	shadow/telekinetic	https://scp-wiki.wikidot.com/scp-3544	M	COVERED	home shadow (u)		K: home
+SCP-2952 Conveyance Of Regional Gwerin Internationally	faerie/vehicle	https://scp-wiki.wikidot.com/scp-2952	M,P,S	COVERED	folk transport; fae bargains (u)		K: folk
+SCP-7440 Nameless Bunker	faerie/spatial	https://scp-wiki.wikidot.com/scp-7440	X	COVERED	bunker plane (u)		K: hidden
+SCP-3539 So That Others May Live	time-travel/vehicle	https://scp-wiki.wikidot.com/scp-3539	X	SECOND	time vehicle (u)	SECOND: affecting or rewinding the past / whole-world rewind	K: temporal
+SCP-5541 Occultation	time-travel/k	https://scp-wiki.wikidot.com/scp-5541	X	SECOND	temporal occult (u)	SECOND: affecting or rewinding the past / whole-world rewind	K: temporal
+SCP-2376 Crow's Revenge	bacteria/sensory	https://scp-wiki.wikidot.com/scp-2376	P	COVERED	bacteria senses (u)		K: mild unease (u)
+SCP-6826 Apologetic Carrier	bacteria/teleport	https://scp-wiki.wikidot.com/scp-6826	X	COVERED	bacteria carrier (u)		K: mild unease (u)
+SCP-7714 Fortunate Souls	folklore/gas	https://scp-wiki.wikidot.com/scp-7714	M,S	COVERED	souls (u)		K: folk
+SCP-7254 The Trouble With Trepanning	folklore	https://scp-wiki.wikidot.com/scp-7254	S	COVERED	trepanning (u)		K: folk
+SCP-3335 The Hole in My Head Where My Mind Used to Be	vampire	https://scp-wiki.wikidot.com/scp-3335	M,G	COVERED	sarkic mind loss (u)		K: loss
+SCP-8841 Vampire Fuck	vampire/structure	https://scp-wiki.wikidot.com/scp-8841	M	PACK	vampire structure (u)		K: mild unease (u)
+SCP-5391 Anastasis	kaiju/apollyon	https://scp-wiki.wikidot.com/scp-5391	P,G	PACK	giant (u)		K: scale
+SCP-6004 The Rainbow Serpent	deity/kaiju	https://scp-wiki.wikidot.com/scp-6004	M,P	PACK	rainbow serpent (u)		K: awe
+SCP-7346 To You, 2,000 Years From Now	simulacrum/temporal	https://scp-wiki.wikidot.com/scp-7346	K	SECOND	message to future (u)	SECOND: information from the future (precognition, prophecy)	K: mild unease (u)
+SCP-7419 Marianne Simmons Will Buy A Bagel At Wynnsbury's	predictive	https://scp-wiki.wikidot.com/scp-7419	K	SECOND	prediction of a mundane (u)	SECOND: information from the future (precognition, prophecy)	K: mild unease (u)
+SCP-7783 Dissolve Your Body Today!	cognito/semiotics	https://scp-wiki.wikidot.com/scp-7783	K,M	LAW	body dissolving on semantic trigger (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: language
+SCP-2987 Invictus	AI/resurrection	https://scp-wiki.wikidot.com/scp-2987	P,K	COVERED	resurrecting AI (u)		K: mild unease (u)
+SCP-7851 The Telekill Ally	resurrection	https://scp-wiki.wikidot.com/scp-7851	X,M	PACK	telekill ally (u)		K: mild unease (u)
+SCP-8814 The Racist's Hammer	resurrection/ritual	https://scp-wiki.wikidot.com/scp-8814	M	COVERED	hammer ritual (u)		K: ritual
+SCP-5462 Misery is the State of Every Soul Burdened by Mortality.	antimemetic/mythological	https://scp-wiki.wikidot.com/scp-5462	K,M	LAW	misery; mixed (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: sadness
+SCP-3769 Evolutionary Rescission Device	electronic/k	https://scp-wiki.wikidot.com/scp-3769	P,X	COVERED	device rescinding (u)		K: evolution
+SCP-5519 A Dark Timeline	reality/fungus	https://scp-wiki.wikidot.com/scp-5519	X,P	COVERED	dark timeline; fungal (u)		K: end
+SCP-4780 Shrunk	apollyon/weapon	https://scp-wiki.wikidot.com/scp-4780	P,M	PACK	shrink weapon (u)		K: mild unease (u)
+SCP-8249 Of Agents, Archons, and Adam of the Transient	apollyon/memetic	https://scp-wiki.wikidot.com/scp-8249	K,M	COVERED	archon (u)		K: unknown
+SCP-4751 Bed Angel	archon/teleport	https://scp-wiki.wikidot.com/scp-4751	X	COVERED	bed angel (u)		K: mild unease (u)
+SCP-3801 Based on a True Story	memory/thaumiel	https://scp-wiki.wikidot.com/scp-3801	K,M	LAW	based on true; memory (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: story
+SCP-7945 Let there be me	reality/religious	https://scp-wiki.wikidot.com/scp-7945	K,M	COVERED	religious reptile (u)		K: mild unease (u)
+SCP-5218 Preconceptions II	explained	https://scp-wiki.wikidot.com/scp-5218	P	COVERED	explained mechanical (u)		K: relief
+SCP-2762 Moon Snakes	extraterr/moon	https://scp-wiki.wikidot.com/scp-2762	P,X	COVERED	moon snakes (u)		K: space
+SCP-5000 Why?	broken-god	https://scp-wiki.wikidot.com/scp-5000	M,P	PACK	why? machine (u)		K: mild unease (u)
+SCP-2213 Cat People	extradimensional	https://scp-wiki.wikidot.com/scp-2213	X,P	COVERED	cat people (u)		K: other
+SCP-5525 The United States Government Loots Atlantis	aquatic/immobile	https://scp-wiki.wikidot.com/scp-5525	P	COVERED	atlantis (u)		K: sea
+SCP-2838 Stellar Reincarnation Column	extraterr/cadaver	https://scp-wiki.wikidot.com/scp-2838	M,P	COVERED	stellar reincarnation (u)		K: space
+SCP-5537 For the Seafood Lover in You	aquatic/cadaver	https://scp-wiki.wikidot.com/scp-5537	P	COVERED	seafood (u)		body: eaten
+SCP-1917 Industrial Revelation	broken-god/robotic	https://scp-wiki.wikidot.com/scp-1917	P,M	PACK	industrial (u)		K: machine
+SCP-4660 The Cat Came Back	feline/teleport	https://scp-wiki.wikidot.com/scp-4660	X	COVERED	cat came back (u)		K: loop
+SCP-173 The Sculpture -	ectoentropic/hostile	https://scp-wiki.wikidot.com/scp-173	P,K,M	COVERED	statue that moves only when unobserved: a pattern-driven body whose motion is gated on a viewer's sight link (sense-gated trigger)		K: you must blink; fear of unobserved gaps
+SCP-096 The "Shy Guy"	cognito/visual	https://scp-wiki.wikidot.com/scp-096	K,P,M	LAW	a being whose face triggers rage and pursuit in any viewer; viewing as the trigger	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: the look itself dooms you
+SCP-682 Hard-to-Destroy Reptile	indestructible reptile	https://scp-wiki.wikidot.com/scp-682	P,G,M	PACK	reptile with a huge repair store and adaptive tissue; any damage is learned against		body: unkillable predator
+SCP-055	antimemetic/infohazard	https://scp-wiki.wikidot.com/scp-055	K,M	LAW	object that no one can retain knowledge about; memory write blocked for its properties	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: cannot even describe the threat
+SCP-087 The Stairwell	spatial/location	https://scp-wiki.wikidot.com/scp-087	X,K	COVERED	endless stair into a dark plane with a following presence; plane as another world		K: dark, unknown, descent
+SCP-106 The Old Man	extradimensional/hostile	https://scp-wiki.wikidot.com/scp-106	X,P,M	COVERED	pocket plane of rot that pulls a victim in through a touch; plane plus corrosion pattern		body: slow decay; K: inescapable
+SCP-049 Plague Doctor	plague doctor/contagion	https://scp-wiki.wikidot.com/scp-049	P,G,M	COVERED	disease-like contagion that kills quietly and reanimates the dead as puppets (A10)		body: infection; K: they walk
+SCP-3008 A Perfectly Normal, Regular Old IKEA	portal/hostile	https://scp-wiki.wikidot.com/scp-3008	X,P,S	COVERED	endless retail space as a plane that traps staff; guards as hostile minds		K: familiar made endless
+SCP-2000 Deus Ex Machina	temporal/thaumiel	https://scp-wiki.wikidot.com/scp-2000	X,M	SECOND	machine that rewinds the entire world after a catastrophe	SECOND: affecting or rewinding the past / whole-world rewind	K: the safety net itself is the horror
+SCP-231 Special Personnel Requirements	ritual/scarlet-king	https://scp-wiki.wikidot.com/scp-231	M,G,K	COVERED	ritual pregnancy that seeds an outsider via a resonant link		body: violation; K: cosmic
+SCP-914 The Clockworks	transfiguration	https://scp-wiki.wikidot.com/scp-914	X,M	COVERED	machine that transforms matter by a setting; pattern rebuild		K: input unknown
+SCP-500 Panacea	artifact	https://scp-wiki.wikidot.com/scp-500	M,P	COVERED	pills that heal any disease; pattern-store compounds, healing is faster repair (A21)		K: hope
+SCP-140 An Incomplete Chronicle	autonomous/keter	https://scp-wiki.wikidot.com/scp-140	M,K	PACK	unusual escaped autonomous object (u)		K: escaped
+SCP-2521 ●●|●●●●●|●●|●	infohazard/keter	https://scp-wiki.wikidot.com/scp-2521	K,M	LAW	text that cannot be read without being killed; digitally censored; payload on decode (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: knowing kills
+SCP-1983 Doorway to Nowhere	portal/hostile	https://scp-wiki.wikidot.com/scp-1983	X,M	COVERED	doorway into a hostile plane with a shadow thing		K: stairwell dread
+SCP-3000 Anantashesha	deity/kaiju	https://scp-wiki.wikidot.com/scp-3000	M,P,S	COVERED	sea-sized being whose dream is a world; vast belief and pattern substrate		K: cosmic scale
+SCP-001 Awaiting De-classification [Blocked]	proposal	https://scp-wiki.wikidot.com/scp-001	S,K	EXCLUDED	the deliberately hidden or joke proposals; narrative-only (u)		K: unknown, meta
+SCP-007 Abdominal Planet	planet/alive	https://scp-wiki.wikidot.com/scp-007	P,G,X	PACK	planet-size organism; mass bank problem; size is a pack		K: cosmic mass
+SCP-999 The Tickle Monster	amorphous/tickle	https://scp-wiki.wikidot.com/scp-999	P	PACK	friendly amorphous mass that gives joy; tactile pleasure; drug-like pathway		K: benign made dangerous in thought
+SCP-1000 Bigfoot	cryptid	https://scp-wiki.wikidot.com/scp-1000	P,G,S	COVERED	hidden hominid society; real animal biology and a taboo culture		K: unknown in the forest
+SCP-008 Zombie Plague	zombie plague	https://scp-wiki.wikidot.com/scp-008	P,G,M	COVERED	infection that kills and reanimates; puppet by nerve disease		body: infection
+SCP-354 The Red Pool	portal/liquid	https://scp-wiki.wikidot.com/scp-354	X,P	COVERED	red pool that opens onto a plane of predators		K: hole under the surface
+SCP-3125 The Escapee	antimemetic/escapee	https://scp-wiki.wikidot.com/scp-3125	K,P,M	LAW	entity whose escape is a retcon of the reader (u)	targeted memory-record edit/erase effect on K minds (memories as editable records; antimemetic = write blocked)	K: it is already out and you forgot
+SCP-2317 A Door to Another World	extradimensional/scarlet	https://scp-wiki.wikidot.com/scp-2317	X,M,K	COVERED	door to another world with a sleeping outsider; resonance link		K: cosmic, the door must stay shut
+SCP-4999 Someone to Watch Over Us	keter/teleport	https://scp-wiki.wikidot.com/scp-4999	X,K	COVERED	a figure that appears at deaths and is not recalled (u)		K: comfort turned to sorrow
+SCP-1730 What Happened to Site-13?	extradimensional/spatial	https://scp-wiki.wikidot.com/scp-1730	X	COVERED	abandoned site with an altered plane (u)		K: cannot go back
+SCP-1471 MalO ver1.0.0	visual/uncontained	https://scp-wiki.wikidot.com/scp-1471	K,P	COVERED	AI-like virtual entity that spreads and impersonates via displays (u)		K: mirror watch
+SCP-3001 Red Reality	neurological/spatial	https://scp-wiki.wikidot.com/scp-3001	K,X	COVERED	a red reality plane perceived through altered senses (u)		K: misperception
+SCP-035 Possessive Mask	possessive mask	https://scp-wiki.wikidot.com/scp-035	M,K,S	COVERED	possession as a patron driving a host: the mask pattern uses the wearer's body		body: loss of the self
+SCP-076 "Able"	extradimensional/hostile	https://scp-wiki.wikidot.com/scp-076	X,M,G	COVERED	fallen-brother being living in a plane, emerging from an artifact (u)		K: myth
+SCP-105 "Iris"	alive/safe	https://scp-wiki.wikidot.com/scp-105	M,P	COVERED	girl with telekinesis: body store and will drive (u)		K: mild
+SCP-169 The Leviathan	aquatic/kaiju	https://scp-wiki.wikidot.com/scp-169	P,G	PACK	giant sea animal (u)		K: scale
+SCP-239 The Witch Child	reality/telekinetic	https://scp-wiki.wikidot.com/scp-239	M,X	COVERED	child who wills matter into forms: store plus will; limit by body energy (u)		K: unpredictable child with a god's reach
+SCP-1128 Aquatic Horror	cognito/aquatic	https://scp-wiki.wikidot.com/scp-1128	K,P	LAW	image of a thing that unmans the viewer (u)	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect in any mind that senses it, with no sender energy per victim	K: the sight
+SCP-1504 Joe Schmo	memetic/keter	https://scp-wiki.wikidot.com/scp-1504	K,S	COVERED	everyman who spreads the meme that he is normal; rumour mutations (u)		K: no tell
+SCP-2399 A Malfunctioning Destroyer	ectoentropic/planet	https://scp-wiki.wikidot.com/scp-2399	P,X,M	PACK	planet-scale wrongness (u)		K: cosmic
+SCP-2718 What Happens After	infohazard/esoteric	https://scp-wiki.wikidot.com/scp-2718	K	EXCLUDED	an essay-like entry about knowledge; meta (u)		K: meta
+SCP-3301 THE FOUNDATION	reality/spatial	https://scp-wiki.wikidot.com/scp-3301	X,K	COVERED	city plane (u)		K: wrongness
+SCP-4231 The Montauk House	reality/scarlet	https://scp-wiki.wikidot.com/scp-4231	X,M	COVERED	house on a ritual with scarlet link (u)		K: cosmic
+SCP-4444 Bush v. Gore	extradimensional/intangible	https://scp-wiki.wikidot.com/scp-4444	X	COVERED	political oddity in a plane (u)		K: absurd
+SCP-5031 Yet Another Murder Monster	keter/mobile	https://scp-wiki.wikidot.com/scp-5031	P	PACK	murder monster (u)		body: predator
+SCP-3999 I Am At The Center of Everything That Happens To Me	apollyon/neutralized	https://scp-wiki.wikidot.com/scp-3999	K,P	EXCLUDED	narrative cover of a joke (u)		K: meta
+SCP-2662 cthulhu f'	cognito/deity	https://scp-wiki.wikidot.com/scp-2662	K,M,S	COVERED	a cosmic outsider seen as a cult (u)		K: cosmic
+SCP-1762 Where The Dragons Went	dragon/reptile	https://scp-wiki.wikidot.com/scp-1762	P,G,M	COVERED	dragons as magical reptiles with an M store (u)		K: legend
+SCP-2935 O, Death	portal/possessive	https://scp-wiki.wikidot.com/scp-2935	X,M,K	COVERED	door plus mask (u)		K: dread
+SCP-2030 LA U GH IS F UN	joke	https://scp-wiki.wikidot.com/scp-2030	-	EXCLUDED	joke article (u)		K: meta
+Safe (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	containment label: a social judgment, not an anomaly; MARK1 uses danger estimates in K		K: false sense of safety
+Euclid (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	label for unpredictable cases; equals unpredictability in K (fear from unpredictability)		K: unpredictability
+Keter (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	label for hard containment; equals strong danger plus weak response		K: helplessness
+Thaumiel (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	label for containment tools; anomalous tools used against anomalies		K: power tools
+Apollyon (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	label for uncontainable end of world		K: dread
+Archon (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	label for cases not to be contained		K: dread
+Cernunnos (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	label for lifeless cases		K: n/a
+Ticonderoga (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	label for the not understood		K: unknown
+Neutralized (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	label for no longer anomalous		K: relief
+Esoteric (object class)	object-class	https://scp-wiki.wikidot.com/object-classes	S	EXCLUDED	label for non-physical classes: narrative		K: meta

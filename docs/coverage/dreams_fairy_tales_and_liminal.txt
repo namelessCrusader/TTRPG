@@ -1,0 +1,27 @@
+Lane: dreams_fairy_tales_and_liminal (completeness round)
+Entries: 390 new rows (those already in merged.tsv were dropped by exact name).
+Verdicts: PACK 200, COVERED 161, LAW 18, EXCLUDED 11, SECOND 0.
+
+Families (rows): Backrooms entities 83, Grimm 60, Backrooms levels 37, Dream fiction 33, Fairy tale 30, Andersen 25, Dream phenomena 24, Backrooms objects 19, Liminal aesthetics 19, Fairy-tale elements 18, Fairies 12, AT index 10, Analog horror 10, Dark fantasy 5, Backrooms groups 4, Goblins 1.
+
+What was crawled and what was sampled (no silent caps)
+- Wikipedia API (rate-limited hard, so many retries): read Category:Fairy_tales, Fairies, Characters_in_fairy_tales, Recurrent_elements_in_fairy_tales, Grimms' Fairy Tales (183 members, ~100 used), Short stories by Hans Christian Andersen (37, ~25 used), Analog_horror (33), Goblins. Raw lists cached in ~/.cache/mark1-build/coverage/dreams_fairy_tales_and_liminal/raw/ and in the scratchpad.
+- Empty or missing on Wikipedia: Category:Dreams_in_fiction, Dream_creatures, Liminal_spaces, Dream deities returned no members, so the dream and liminal families come from my own knowledge of the seed articles, not a crawl (u).
+- Backrooms fandom API: Levels (first 500 of more), Entities (195), Objects (88), plus entity class subcategories. I took a sample by name only; I did NOT read those pages, so their mechanisms and fear sources are family defaults marked (u). Only the numbered names are real; per-entry content is unverified.
+- Not reached: liminal-spaces.fandom (API returned nothing), TV Tropes DreamLand/FairyTale pages, the Dreamlands fandom, Weird_fiction and Dark_fantasy category crawls (covered by other lanes; only 5 dark fantasy rows added). Aarne-Thompson-Uther: only 10 type headings from memory, not the full index.
+- Most fairy and goblin members were already in merged.tsv from the folklore lane, so this lane adds the tales, not the creatures.
+
+Top missing laws (18 LAW rows)
+1. Mind-rendered shared plane with persistence (about 10 rows): sleepers' links render one X plane whose contents are driven by their predictors, which others can enter and which can write back to the body (Dreamlands, Inception, Freddy, Silent Hill, shared dream, dream invasion, Sandman).
+2. Lazy unbounded plane generator and plane topology that changes (Backrooms infinite levels, Fragmentation).
+3. Plane clock offset: a plane whose time runs at its own rate (fairyland, nested dreams).
+4. Plane-wide scheduled events (Backrooms phenomena).
+5. Wish interpretation by a patron mind with a bounded cost (monkey's paw).
+6. Scale-changing doors (Wonderland).
+
+Surprising
+- Almost all fairy-tale content is PACK or COVERED: bargains, curses with release clauses (shapechange, sleep), name-power, helpers and impossible tasks are exactly pacts, wards and rumour. The Grimm corpus needs no new law.
+- The dream and liminal material converges on ONE missing law (plane rendered from minds) rather than many. Everything else is K: fear from a place with unknown rules.
+- Sleep phenomena (paralysis, terrors, hypnagogia, sleepwalking, false awakening) are COVERED by body plus noisy perception with no M; the Old Hag is a culture's explanation, which is S.
+- Dreamtime is EXCLUDED as living sacred cosmology of real peoples, not as nonsense.
+- No SECOND rows: nothing here needs past-changing or FTL.

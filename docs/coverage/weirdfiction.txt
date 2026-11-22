@@ -1,0 +1,27 @@
+weirdfiction lane summary (public-domain weird and Gothic fiction)
+Entries: 235. Counts by verdict: COVERED 140, PACK 65, LAW 16, EXCLUDED 8, SECOND 6.
+Families: Gothic tropes (49), Lovecraft concepts (36), Great Old Ones (26), Poe (20), Lovecraft races (18), M. R. James (14), Outer Gods (11), Mythos concepts (11), Mythos places (9), Blackwood (7), Mythos tomes (6), Hodgson (6), Machen (5), Stoker (5), Chambers (5), Dunsany (4), Shelley (3).
+
+Crawl actually done (BFS, depth 2, Wikipedia API, cached raw in /home/nisargparikh/.cache/mark1-build/coverage/weirdfiction/raw/): 20 seed categories (Cthulhu Mythos deities, species, books, locations; Gothic fiction; Weird fiction; Poe and Lovecraft story categories; M. R. James; Blackwood; Machen; Chambers; Hodgson; Dunsany; fictional vampires; Cosmic horror) expanded to about 950 member pages; plus link lists of the Wikipedia pages "List of Cthulhu Mythos deities", "Cthulhu Mythos species" and "Gothic fiction"; plus 5 Lovecraft Fandom categories (Great Old Ones, Outer Gods, Books, Locations; Races returned empty). The wiki returned HTTP 429 several times, so the crawl was throttled to about 1 request per 2 seconds with backoff; some seed categories (Cthulhu Mythos books/locations on Wikipedia) came back empty and Fandom only gave names.
+Sampled, not exhaustive: the Wikipedia deity list has about 340 linked names and the Fandom Great Old One category more than 100; only the best-known 40 or so are rows, and the rest are folded into the row "Lovecraft deity set (list)" (all would be PACK: a patron plus a believer substrate). Fandom Books (hundreds, mostly tabletop-RPG products) was skipped as out of scope. Gothic fiction (about 500 linked names, mostly composers, painters, authors) was sampled for works and tropes only. Authors named in the seeds (Poe, James, Blackwood, Machen, Stoker, Shelley, Chambers, Hodgson, Dunsany) each have their major works. I did not read article text; the mechanisms and fear sources are my own summaries, from prior knowledge, not checked against the pages (u).
+No SCP text was used. Lovecraft-wiki and Wikipedia entries are names and links only. Entity details for the deities and races from the later Derleth/Lumley/Campbell circle are marked as pack and may differ from Lovecraft's own (u).
+Number of rows is under the 300 cap, so nothing was cut for the cap; the sampling above is the only limit.
+
+Surprises:
+- Most of the Gothic canon is COVERED already: ghosts, curses, pacts, possession, doubles and vampires are the existing M designs (stores, bonds, patrons, drain) plus K (misperception and rumour). Lovecraft's lesser beings are PACK.
+- What does not fit is a short list: time travel (Hounds of Tindalos, Yith, Silver Key sequels, Azathoth and Yog-Sothoth as all-time presence), which is a real SECOND, and a cluster of mind-level laws that K lacks today.
+- The horror of the Mythos is mostly K (knowledge, scale, indifference). The sim cannot make that frightening by adding monsters; it needs minds that lose coherence when they learn things that do not fit.
+- Gothic ambiguity (Turn of the Screw, Usher, Owl Creek, Udolpho) is nearly free, because K already separates what happens from what a character perceives.
+- Excluded for content: Wandering Jew trope (bigotry), and Red Hook is kept only as a neutral culture pack.
+
+Top missing laws (each one line):
+1. Content-triggered mind transformation (forbidden knowledge, the King in Yellow, Y'golonac): a concept that cannot fit a mind's model destabilises it.
+2. Persistent stress-trauma state for minds (sanity): a lasting store that changes later choices.
+3. Perception-rewriting field or sense-extension (Daoloth, From Beyond, flying polyps): percept-level edits, not only noise.
+4. Body-frozen mind-conscious state (Ghatanothoa, Valdemar): a body stopped while the mind keeps running.
+5. Reversibility window of death and restart of a dead brain (Herbert West, Frankenstein).
+6. Alien-matter contamination field (Colour Out of Space): a mutagenic, draining zone from foreign matter.
+7. Mind-state-gated plane access (Dreamlands, Kadath): sleep or trance opens a link to a plane.
+8. Spatially localised planar leak (The Willows): a place where the barrier thins.
+9. Drug-shifted personality dials with body change (Jekyll and Hyde).
+SECOND (true second change): chronal travel and all-time presence (Hounds of Tindalos, Yith, Azathoth, Yog-Sothoth); omnipotent source (Azathoth).

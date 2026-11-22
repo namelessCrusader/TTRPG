@@ -1,0 +1,36 @@
+Bestiaries coverage lane (2026-11-22)
+
+Sources crawled (raw JSON cached in ~/.cache/mark1-build/coverage/bestiaries/raw/):
+- D&D 5e SRD 5.1 via the open5e API: 322 statblocks in 14 creature types (all fetched, 4 pages).
+- Pathfinder 2e Archives of Nethys public search index: 5087 creature records in 471 creature families (family list with counts fetched; individual articles not copied).
+Only names, links and my own one-line summaries are stored. No article text copied.
+
+Method note: BFS depth was 2 (type -> creature/family), not 3. The wikis' own page links were not followed; the open APIs give the full type and family indexes, which made a crawl of pages unnecessary. About 15 requests total.
+
+Entries: 260 rows in docs/coverage/bestiaries.tsv. A row is a creature CONCEPT, not a statblock. Variants that differ only by size, age or colour are merged (for example 43 SRD dragon statblocks become 5 rows; 97 SRD beasts become 30 rows).
+
+SAMPLED (no silent caps):
+- 5e SRD: every creature type is represented; all non-beast types are covered nearly one-to-one; beasts (97) and humanoid role NPCs (40) were grouped into families. Chromatic and metallic dragons share one row each.
+- Pathfinder: all 471 families listed; I chose about 120 concepts: every family with 7 or more entries that adds a new mechanism, plus any with a distinctive mechanism (aeon, protean, sahkil, velstrac, formian, ethereal wildlife, bogeyman, etc.). Dragon sub-families (about 50 themed dragons) are merged into 8 rows by mechanism. Family-name-only roles (laborer, explorer, healer) are merged into 3 rows. Roughly 300 PF families (most are species or NPC-role packs, or single-family variants of an animal) are NOT individually listed; they map to the same verdicts as their nearest row (PACK for species and cultures, COVERED for animals).
+- Not in the SRD 5.1: beholder and mind flayer (placed by analogy, marked as such).
+- Extra rows added for cross-cutting monster abilities (breath, gaze, regen, frightful presence, curse, charm, soul-eating, resurrection) and 3 meta rows (excluded).
+
+Counts by verdict: COVERED 132, PACK 109, LAW 11, SECOND 5, EXCLUDED 3 (some LAW rows are marked (u), unverified, for the scaling).
+Families (by creature type): monstrosity 42, beast 30, undead 28, humanoid 28, fey 18, dragon 17, aberration 15, construct 15, elemental 12, outsider 10, celestial 9, fiend 9, plant 8, giant 7, ooze 5, spirit 4, meta 3.
+
+TOP MISSING LAWS
+1. LAW-B amorphous deformable body and swarm aggregation: oozes, gibbering mouthers, swarms of rats/bats/insects (an LOD plus a soft-body organism law).
+2. LAW-A allometry/square-cube for oversized animals: giants, dragons, giant insects, roc, kraken (needs a check, u).
+3. LAW-C partial-coupling incorporeal body: ghosts passing through walls, ethereal wildlife, shadows (selective phase).
+4. LAW-K influence on a mind below conscious choice: charm gaze, harpy song, siren, pollen lures (supernormal stimulus).
+5. LAW-R distributed or hive cognition: formians, thrall networks, ant queens.
+6. LAW-D soul as storable pattern with identity continuity (soul-eaters, phylactery edge cases).
+7. SECOND change: LAW-H probability/fate and wish (aeons, proteans, genies, wish and fortune dragons), LAW-T time travel to the past (time dragon).
+8. LAW-E alignment as physical substance: EXCLUDED; fiends and celestials are modelled as believer-substrate patterns and contracts instead.
+
+SURPRISING
+- Almost no creature type needs a new law. Of 260 rows, 241 (93 percent) are COVERED or PACK. The bestiary is mostly body data (pack) plus the M and X layers.
+- The undead are almost entirely one idea: a pattern that outlives or drives a body, with a drain. Skeleton, zombie, ghost, wight, lich, vampire are the same law with different hosts and stores.
+- Fiends and celestials as ontological "alignment" is the main excluded idea; the physical replacement (believer-linked patterns plus contract curses) covers their powers.
+- Fear mostly comes from K (unseen, mimicry, rumour, no fix) and from the body (disease, being eaten); size comes from scale.
+- Dragon-families in PF with an abstract theme (time, wish, fortune, omen) are the only strong SECOND cases.

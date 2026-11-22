@@ -1,0 +1,34 @@
+SCP lane: coverage of SCP Wiki anomaly types in MARK1 (2026-11-22)
+
+Entries: 311 rows in scp.tsv (301 SCP items + 10 object-class labels).
+Counts by verdict: COVERED 155, PACK 83, LAW 51, SECOND 8, EXCLUDED 14.
+Item number, title and link only; mechanisms are my own one-liners. MARK1 should invent its own entities.
+
+HOW IT WAS CRAWLED
+- Fetched the full tag index (system:page-tags: 1011 distinct tags), the Object Classes guide, series hubs I to IX (about 8900 titles), and tag pages for about 150 anomaly-type, class and creature tags (cached in ~/.cache/mark1-build/coverage/scp/raw/; 1 request per second, UA naming a research crawl).
+- BFS: index -> tag -> tag page numbers (up to 100 per page) -> joined to series-hub titles. Tag membership of every cached item gave multi-tag cross-references (about 8500 main-series items).
+- SAMPLING (no silent caps): tags with up to 6 pages were read in full; larger tags (humanoid 29 pages was full; others) were read as pages 1, middle and last. From the pool, 3 to 10 items per anomaly tag were taken evenly spaced across the number range (so all series I to IX are hit), then deduplicated; 60 percent of the sample was kept to fit the 300 cap, and about 46 well-known items were added by hand (173, 096, 682, 055, 087, 106, 049, 3008, 2000, 231, 914, 500, 1000, 008, 354, 3000 and so on).
+- NOT crawled: Tales, GoI formats, JP/KO/etc. branches (they appear only as tags), foundation personnel hubs. Joke, Archived and Explained pages only lightly sampled.
+- Reliability: every mechanism not hand-checked against the article text is marked (u). Only the added famous items are mostly known from memory; the sampled items were classified from title plus tag set, so treat the verdicts as family-level, not article-level.
+
+FAMILIES (my grouping, by anomaly tag): antimemetic, cognitohazard / infohazard / memetic, memory-affecting, reality-bending, temporal and time-travel, spatial / portal / extradimensional / teleportation, ectoentropic objects, ghost and spirit, reanimation and resurrection, sarkic flesh cult, broken-god machines, deities and noosphere, Scarlet King outsiders, humanoid persons, biological / parasitic / contagion / fungus / plant / swarm animals, kaiju and aquatic, vehicles and locations, toys / clothing / artifacts, electronic and AI, extraterrestrial, probability and predictive, dream and sleep, transfiguration, telekinetic and telepathic, weapons and K-class scenarios, object-class labels.
+
+TAG SIZE SIGNAL (cached main-series counts, rough): humanoid 2391, cognitohazard 812, ectoentropic 696, reality-bending 540, memory-affecting 484, temporal 470, teleportation 452, spatial 423, memetic 411, antimemetic 255. So most of SCP is "a person or object with one odd rule", which is PACK or COVERED.
+
+TOP MISSING LAWS (count of LAW/SECOND rows)
+1. ME (17): memory-record edit/erase effect. Antimemetics are the biggest single family. A candidate: K memories as editable records, with an M neural-bias effect that blocks encoding or recall. This is likely one law, not 17.
+2. IH (13): percept-as-payload. A sensory pattern that triggers an effect in any mind that decodes it (096, memetic images, killer text). Needs a rule that delivery costs the sender nothing per victim, bounded by a ledger, otherwise it breaks the energy budget.
+3. CONC (7): concept or meme as an entity living only in minds. Partly covered by beings with believer-substrates; the gap is a being with no physical pattern at all.
+4. PAST (7, SECOND): affecting or rewinding the past, whole-world rewind (2000), time travel. Matches the stated second change.
+5. PROB (5): luck, bias of chaotic outcomes. A small M effect on chaos with a ledger may do it; otherwise SECOND.
+6. FUT (4, SECOND): precognition and prophecy.
+7. TIMEDIL (4): local time rate or loops beyond X rewind.
+8. RETCON (2, SECOND): global history rewrite.
+9. SCALE: giants, planet-size organisms and shrinking need a mass bank and square-cube rule; recorded under PACK rows with the SCALE note.
+
+SURPRISING
+- The big lump is not "magic" but information: ME and IH together are 30 of 59 LAW/SECOND rows. MARK1's K and M layers mostly cover SCP; what is missing is a typed way for a pattern to be harmful by being perceived or remembered.
+- Only 8 rows need a true second change. Most SCP time-and-space oddities map to X (doorways, planes, rewind of parts together).
+- Object classes are social labels (S layer), not anomalies; they match MARK1's fear from unpredictability (Euclid) and danger estimates in K.
+- Antimemetic horror is almost free in MARK1's narrator rule (it shows only what a character perceives) if memory records can be edited; the fear source is that the player and character both forget.
+- Licensing: SCP is CC BY-SA; this lane stores only item numbers, titles and links. MARK1 should model the mechanisms and invent entities.

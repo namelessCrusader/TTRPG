@@ -1,0 +1,299 @@
+entry	family	source_url	layers	verdict	mechanism	law_or_change	fear_source
+Vampire (folk)	Undead	https://en.wikipedia.org/wiki/Vampire	M,P,K,S	PACK	host with an M-drain pattern that feeds on blood (chemical store transfer); sun/garlic/silver are material coupling data		pack-hunter in disguise; contagion by bite; body disgust and unknowable rules (K)
+Dracula-style aristocrat vampire	Undead	https://en.wikipedia.org/wiki/Dracula	M,K,S	PACK	vampire pack plus patron-style charm via neural-bias link and social standing		predator wearing a trusted social role (S,K)
+Vampire invitation threshold	Undead	https://en.wikipedia.org/wiki/Vampire	M,S	COVERED	ward keyed to a consent pattern (oath/ward of A25); invitation = key		safety of home betrayed by a social rule (S)
+Vampire sunlight weakness	Undead	https://en.wikipedia.org/wiki/Vampire	M,P	PACK	pattern destabilised by a band of radiation; pack data on spectral absorption of the drain pattern		a clock on the monster makes dawn the plot (K)
+Vampire bite contagion	Undead	https://en.wikipedia.org/wiki/Vampire	M,G,K	COVERED	replicating pattern (P12) passed by blood contact; pack sets rate		the victim becomes the threat (K, body)
+Revenant	Undead	https://en.wikipedia.org/wiki/Revenant	M,K	COVERED	stored mind pattern drives a dead body (A10 plus A22)		the dead know things and want things (K)
+Draugr	Undead	https://en.wikipedia.org/wiki/Draugr	M,P	PACK	grave-guard puppet with stored will, strong by body mass; cold-climate pack		the burial place becomes hostile; body disgust
+Wiedergaenger	Undead	https://en.wikipedia.org/wiki/Wiederg%C3%A4nger	M,K,S	COVERED	stored mind returns to haunt kin through a bond to a former place/person		grief turned into threat (K,S)
+Jiangshi	Undead	https://en.wikipedia.org/wiki/Jiangshi_fiction	M,P,S	PACK	corpse puppet moved by residual M, rigid rigor-mortis motion, breath-sense targeting (sight-blind); talismans = wards		inhuman gait and a target that follows breath (P,K)
+Jikininki	Undead	https://en.wikipedia.org/wiki/Jikininki	M,K	PACK	stored-mind puppet with a hunger drive for corpses (cursed priest as curse pattern)		greed punished by monstrous drive (K)
+Vetala	Undead	https://en.wikipedia.org/wiki/Vetala	M,K	PACK	spirit pattern inhabiting a corpse; riddle-asking = pattern speaking through a body		a corpse that talks and tests you (K)
+Zuvembie	Undead	https://en.wikipedia.org/wiki/Zuvembie	M,K	PACK	corpse puppet driven by a cursed pattern, contagion by touch		the dead acting like the living (K)
+Zombie (voodoo/bokor)	Undead	https://en.wikipedia.org/wiki/Zombie	P,M,S	COVERED	real pharmacology (tetrodotoxin-like paralysis, deep-sedation) plus social control, or a bokor puppet via M bond		loss of will, being buried alive (body, K)
+Zombie (infection)	Undead	https://en.wikipedia.org/wiki/Zombie	P,G,K,S	COVERED	parasite/pathogen that changes behaviour (real biology); no M needed		neighbours become predators; overwhelming numbers (K,S)
+Zombie (reanimated corpse)	Undead	https://en.wikipedia.org/wiki/Zombie	M	COVERED	A10 necromancy puppet; energy from M store; decays by real chemistry		body disgust, mindless pursuit (K)
+Zombie apocalypse	Undead	https://en.wikipedia.org/wiki/Apocalyptic_and_post-apocalyptic_fiction	P,S,K	LAW	infection plus population collapse (u)	crowd panic, flight and mass-movement dynamics across many agents	scarcity, loss of trust, numbers (S,K)
+Fast vs slow zombies	Undead	https://en.wikipedia.org/wiki/Zombie	P,G	PACK	metabolism and muscle pack numbers; rage-virus as a behaviour-changing parasite		speed removes escape options (P)
+Zombie animal	Undead	https://en.wikipedia.org/wiki/Zombie_animal	P,M	COVERED	same puppet/parasite on animal bodies		the familiar turned hostile (K)
+Mummy (curse)	Undead	https://en.wikipedia.org/wiki/Kharis	M,S	COVERED	embalmed body plus a lasting curse pattern with drain; tomb ward		sacrilege returns as retribution (S,K)
+Lich	Undead	https://en.wikipedia.org/wiki/Lich	M,K	PACK	mind pattern stored in a phylactery (store plus link), body maintained by drain		the unkillable planner (K)
+Ghoul (Lovecraft)	Undead	https://en.wikipedia.org/wiki/Ghoul_(Cthulhu_Mythos)	G,P	COVERED	scavenger-species with graded mutation, dog-like traits		corpse-eaters tunnelling below the familiar (body)
+Ghoul (Arabic folklore)	Undead	https://en.wikipedia.org/wiki/Ghoul	P,K	PACK	shapeshifting predator (mimicry) luring travellers		the hospitable stranger is a predator (K)
+Frankenstein's monster	Undead	https://en.wikipedia.org/wiki/Frankenstein's_monster	P,X,K	PACK	surgical assembly plus an M or electrical start-up; mind learns from scratch		creation rejected, strength with no guidance (K,S)
+Re-Animator (serum)	Undead	https://en.wikipedia.org/wiki/Gloria_(Re-Animator)	P,M	PACK	chemistry that revives dead tissue (alchemy A7) but corrupts the brain		death undone, wrongly (body)
+Deadites	Undead	https://en.wikipedia.org/wiki/Deadite	M,K	COVERED	possession by a spirit pattern via a book (cosmic outsider link)		friend becomes jeering enemy (K)
+Black Lantern / necro-plague	Undead	https://en.wikipedia.org/wiki/Black_Lantern_Corps	M	COVERED	spreading puppet pattern sourced from one M store		everyone you lost comes back
+Jason-style unkillable slasher	Undead	https://en.wikipedia.org/wiki/Jason_Voorhees	P,M,K	PACK	body rebuilt from an M store, or simply a huge pain tolerance and regeneration dial		relentlessness; never a reason to stop (K)
+Wight / barrow-wight	Undead	https://en.wikipedia.org/wiki/Barrow-wight	M,S	COVERED	grave guard puppet with place store		burial ground defended (S)
+Poltergeist	Ghosts	https://en.wikipedia.org/wiki/Poltergeist	M,K	COVERED	spirit pattern pushes objects with M; focus often an adolescent (high dial, low finesse)		home becomes unsafe; unknown cause (K)
+Vengeful ghost	Ghosts	https://en.wikipedia.org/wiki/Vengeful_ghost	M,K	COVERED	dissipative pattern of a dead mind, kept alive by place store and grievance (A22)		the dead have grievance and reach (K)
+Ghost (residual haunting)	Ghosts	https://en.wikipedia.org/wiki/Ghost	M,K	COVERED	playback of a stored event in a place (ghost memory, M store in stone)		uncanny repetition without a mind (K)
+Stone Tape theory	Ghosts	https://en.wikipedia.org/wiki/Stone_Tape_theory	M	COVERED	patterned crystal lattice stores the event; trigger replays it		the walls remember (K)
+Haunted house	Ghosts	https://en.wikipedia.org/wiki/Haunted_house	M,K,S	COVERED	place with an M store and a pattern; effects as perceptible tells		the safe place is the threat (K)
+Ghost train	Ghosts	https://en.wikipedia.org/wiki/Ghost_train	M	COVERED	replay of a stored moving event		route you cannot leave (K)
+Vanishing hitchhiker	Ghosts	https://en.wikipedia.org/wiki/Vanishing_hitchhiker	K,S,M	COVERED	rumour that mutates plus a spirit pattern bound to a road		a kind act reveals the dead (K)
+Phantom coach / Death coach	Ghosts	https://en.wikipedia.org/wiki/Death_coach	M,S	COVERED	omen pattern tied to a bond with a house; rumour spreads belief		omen of death; fatalism (K)
+Santa Compana	Ghosts	https://en.wikipedia.org/wiki/Santa_Compa%C3%B1a	M,S	COVERED	procession of dead patterns drawing a living member; spirit link pulls a victim		a funeral procession that takes you
+Shade	Ghosts	https://en.wikipedia.org/wiki/Shade_(mythology)	M,K	COVERED	weak dissipative pattern with little store		faint remembering presence
+Dybbuk	Ghosts	https://en.wikipedia.org/wiki/Dybbuk	M,K	COVERED	possession by a patron-like spirit driving a host (A3 inverted)		your own body speaks another voice (K)
+Ghost sickness	Ghosts	https://en.wikipedia.org/wiki/Ghost_sickness	K,S,P	COVERED	real illness plus belief that spirits cause it (nocebo effect); social taboo around the dead		illness blamed on the dead (K,S)
+Shadow person	Ghosts	https://en.wikipedia.org/wiki/Shadow_person	K,P	LAW	hypnagogic hallucination (sleep state), noisy senses (u)	sleep/dream state as a body mode in which perception intrudes	figure at the edge of sight; sleep paralysis (K)
+Sleep paralysis hag	Ghosts	https://en.wikipedia.org/wiki/Sleep_paralysis_in_folklore	K,P	LAW	body mode with atonia plus waking dream imagery (u)	sleep/dream state as a body mode in which perception intrudes	helpless and watched; real body mechanism (K)
+Electronic voice phenomenon	Ghosts	https://en.wikipedia.org/wiki/Electronic_voice_phenomenon	K,P	COVERED	noise plus pareidolia in the listener's perception dial; (rarely real M speech)		voice in noise; ambiguity (K)
+Spirit photography	Ghosts	https://en.wikipedia.org/wiki/Spirit_photography	K,P	COVERED	photographic artefacts and a believer's misperception; or real M light imprint		ambiguity; proof that never proves (K)
+Ghost hunting	Ghosts	https://en.wikipedia.org/wiki/Ghost_hunting	K,S	COVERED	investigators measure M tells with sensors; confirmation bias in minds		the hunter is hunted (K)
+Spectrophilia / ghost lover	Ghosts	https://en.wikipedia.org/wiki/Spectrophilia	K,M	COVERED	bond with a spirit pattern; drain		desire for the dead (K)
+Banshee	Ghosts	https://en.wikipedia.org/wiki/Banshee	M,S	COVERED	omen pattern tied to a lineage by bond; wail as sound		death foretold (K)
+Hungry ghost	Ghosts	https://en.wikipedia.org/wiki/Preta	M,K	COVERED	spirit with an unfilled drive, drain on a store		insatiable want (K)
+Ghost as residual love	Ghosts	https://en.wikipedia.org/wiki/Ghost_story	M,K	COVERED	bond pattern persisting by an attachment		grief (K)
+Possession (demonic)	Possession	https://en.wikipedia.org/wiki/Spirit_possession	M,K	COVERED	patron or outsider pattern drives host body via link; host's mind overwritten partly		loss of self; body used against kin (K)
+Exorcism	Possession	https://en.wikipedia.org/wiki/Exorcism	M,S,K	COVERED	dissolve a bond by counter-pattern or social ritual breaking belief		ritual as last resort; uncertain outcome
+Zar / Zebola spirit possession	Possession	https://en.wikipedia.org/wiki/Z%C4%81r	M,S	COVERED	ritual possession as a controlled bond; social function		ambiguity of healing vs harm
+Amafufunyana	Possession	https://en.wikipedia.org/wiki/Amafufunyana	K,S	COVERED	culture-bound syndrome: belief-mediated dial changes (real psychology)		distress seen as spirits (K,S)
+Kitsunetsuki	Possession	https://en.wikipedia.org/wiki/Kitsunetsuki	M,K	COVERED	fox-spirit pattern inhabits host		behaviour change attributed to a spirit
+Nympholepsy	Possession	https://en.wikipedia.org/wiki/Nympholepsy	M,K	COVERED	bond with a place spirit that overtakes a mind		obsession by the wild
+Poltergeist child (Carol Anne)	Possession	https://en.wikipedia.org/wiki/Poltergeist_(1982_film)	M,K	COVERED	spirits using a child as a high-dial channel		innocent used as a door
+Demon (Abrahamic)	Demons	https://en.wikipedia.org/wiki/Demon	M,K	COVERED	patron-like outsider pattern with large substrate and bond to summoner; pact = bond		bargain with something smarter (K)
+Devil's pact	Demons	https://en.wikipedia.org/wiki/Deal_with_the_Devil	M,S,K	COVERED	A32 death bargain: payment for lent power; contract as an oath		loophole terror (K)
+Cenobites (Hellraiser)	Demons	https://en.wikipedia.org/wiki/Cenobite_(Hellraiser)	M,X,P	COVERED	summoned by a puzzle box (pattern trigger) from another plane; pain as a currency		pleasure/pain bound; trapped by your desire (body,K)
+Pinhead	Demons	https://en.wikipedia.org/wiki/Pinhead_(Hellraiser)	M,X	COVERED	as Cenobites: outsider with a rule-bound contract		calm cruelty bound by rules (K)
+Succubus / incubus	Demons	https://en.wikipedia.org/wiki/Succubus	M,K	COVERED	drain pattern that feeds on a body store through a dream bond		intimacy as predation (K)
+Balrog	Demons	https://en.wikipedia.org/wiki/Balrog	P,M	PACK	fire-body beast: heat and M store; sized creature		ancient force beneath
+Hell / Underworld place	Demons	https://en.wikipedia.org/wiki/Hell	X	COVERED	a plane as another world (X) with its own M field		punishment space (K)
+Djinn / Jinn	Demons	https://en.wikipedia.org/wiki/Jinn	M,K,S	COVERED	spirit patterns with their own societies; bonds by oaths		neighbours you cannot see (K,S)
+Ifrit	Demons	https://en.wikipedia.org/wiki/Ifrit	M,P	COVERED	fire-aligned spirit pattern with heat source		rage as fire
+Imp / familiar devil	Demons	https://en.wikipedia.org/wiki/Imp	M	COVERED	small bonded pattern		petty malice
+Babadook	Demons	https://en.wikipedia.org/wiki/The_Babadook	K,M	COVERED	grief-linked outsider pattern or the mind's own externalised dread		grief personified; cannot be killed, only kept (K)
+Bill Cipher (dream demon)	Demons	https://en.wikipedia.org/wiki/Bill_Cipher	M,K	LAW	dream-bond outsider; sleep state law (u)	sleep/dream state as a body mode in which perception intrudes	dreams as the attack surface
+Leland Gaunt (shop devil)	Demons	https://en.wikipedia.org/wiki/Leland_Gaunt	S,K,M	COVERED	pact-trader exploiting a community's grudges		neighbours turned on each other (S)
+Cthulhu	Cosmic	https://en.wikipedia.org/wiki/Cthulhu	M,K	COVERED	sleeping outsider with a vast substrate reached by resonant links; dream resonance to sensitives		scale makes you irrelevant (K)
+Azathoth	Cosmic	https://en.wikipedia.org/wiki/Azathoth	M	COVERED	blind giant pattern; energy source is the point		meaningless power
+Nyarlathotep	Cosmic	https://en.wikipedia.org/wiki/Nyarlathotep	M,K,S	COVERED	outsider messenger, cult network		a charming guide to doom (K,S)
+Shub-Niggurath	Cosmic	https://en.wikipedia.org/wiki/Shub-Niggurath	M,G	COVERED	fertile outsider seeding mutations by link		unholy fertility (body)
+Hastur	Cosmic	https://en.wikipedia.org/wiki/Hastur	M,K	COVERED	outsider tied to a text (information hazard)		the king in yellow: reading makes it real (K)
+Dagon	Cosmic	https://en.wikipedia.org/wiki/Dagon_(Cthulhu_Mythos)	M,G,S	COVERED	outsider with a cult of hybrids		the town's secret (S)
+Tsathoggua	Cosmic	https://en.wikipedia.org/wiki/Tsathoggua	M	COVERED	sleeping outsider		abyssal torpor
+Nodens	Cosmic	https://en.wikipedia.org/wiki/Nodens_(Cthulhu_Mythos)	M,K	COVERED	outsider with a benign streak		ally of uncertain intent
+Shoggoth	Cosmic	https://en.wikipedia.org/wiki/Shoggoth	P,G	PACK	protoplasmic mass creature: giant amoeboid with plasticity; mass in kg is real		formless mass, mimicry (body)
+Deep Ones	Cosmic	https://en.wikipedia.org/wiki/Deep_One	G,S	COVERED	hybridisation by gene transfer, cult society		your lineage is not yours (G)
+Elder Things	Cosmic	https://en.wikipedia.org/wiki/Elder_Thing	P,G	PACK	alien-biology species pack		ancient advanced predecessors
+Mi-Go	Cosmic	https://en.wikipedia.org/wiki/Mi-Go	P,X	PACK	fungoid species doing brain-in-jar transfer (A22 puppet)		your mind taken in a canister
+Hounds of Tindalos	Cosmic	https://en.wikipedia.org/wiki/Hounds_of_Tindalos	X,K	SECOND	enter via angles of time (u)	time travel to the past / non-local pursuit through time	you cannot hide anywhere in time
+Night-gaunts	Cosmic	https://en.wikipedia.org/wiki/Night-gaunt	P,G	PACK	faceless flyers snatching victims		faceless; carried away silently
+Colour Out of Space	Cosmic	https://en.wikipedia.org/wiki/The_Colour_Out_of_Space	M,P,G	COVERED	resonant outsider contaminating soil, plants, life		slow wrongness of nature (P,K)
+Yog-Sothoth	Cosmic	https://en.wikipedia.org/wiki/Yog-Sothoth	X,M	SECOND	gate and key to all time and space (u)	FTL/time key (second change)	everything at once
+Great Old One cult	Cosmic	https://en.wikipedia.org/wiki/Cthulhu_Mythos	S,M	COVERED	cults as social institutions with a link to an outsider		neighbours devoted to something awful (S)
+Necronomicon (forbidden text)	Cosmic	https://en.wikipedia.org/wiki/Necronomicon	K,M	LAW	text acting on a mind through reading; knowledge hazard (u)	perceptual infohazard channel: patterns that bias minds via ordinary senses	learning is the harm (K)
+Madness from cosmic knowledge	Cosmic	https://en.wikipedia.org/wiki/Cosmic_horror	K	COVERED	learned facts shift dials; stress and belief change; sanity as dial		insight that destroys (K)
+Cosmic indifference	Cosmic	https://en.wikipedia.org/wiki/Cosmic_horror	K	COVERED	scale of an outsider vs human: energy ratios		insignificance (K)
+Lovecraft Country (racism as horror)	Cosmic	https://en.wikipedia.org/wiki/Lovecraft_Country	S	COVERED	S institutions as threat		human cruelty
+Werewolf (folk)	Shapeshift	https://en.wikipedia.org/wiki/Werewolf	G,M,K	COVERED	shape-change at the same mass (A23) slow; or a lycanthropy replicating pattern		the beast within; loss of control (K)
+Werewolf contagion	Shapeshift	https://en.wikipedia.org/wiki/Werewolf	G	COVERED	replicating pattern by bite, pack-set rate		infection by an attacker (body)
+Full-moon trigger	Shapeshift	https://en.wikipedia.org/wiki/Werewolf	M,P	COVERED	M tide tied to lunar tide or circadian trigger as a pack parameter		a schedule for the dread
+Clinical lycanthropy	Shapeshift	https://en.wikipedia.org/wiki/Clinical_lycanthropy	K	COVERED	real delusion of transformation: perception and self-model dials		self you cannot trust (K)
+Beast of Gevaudan	Shapeshift	https://en.wikipedia.org/wiki/Beast_of_G%C3%A9vaudan	P,S	COVERED	real predator events plus rumour mutation		state failing to protect (S,K)
+Skinwalker	Shapeshift	https://en.wikipedia.org/wiki/Skin-walker	M,K,S	COVERED	shape-change by a cursed pattern, mimicking voices (P mimicry)		voice of your kin from outside (K)
+Rougarou / Loogaroo	Shapeshift	https://en.wikipedia.org/wiki/Rougarou	M,S	COVERED	cursed shifter with a social rule trigger		curse as obligation
+Aswang	Shapeshift	https://en.wikipedia.org/wiki/Aswang	M,P,S	COVERED	day-human/night-predator, organ-taking: mimic plus M		neighbour is a predator (S)
+Selkie	Shapeshift	https://en.wikipedia.org/wiki/Selkie	M	COVERED	shape-change tied to skin (a material store)		lover who can leave
+Mimic / doppelganger	Shapeshift	https://en.wikipedia.org/wiki/Doppelg%C3%A4nger	P,X,K	COVERED	rough copy (X) or biological mimicry; cue-based identity		who is real (K)
+Changeling	Shapeshift	https://en.wikipedia.org/wiki/Changeling	X,M,K	COVERED	swapped by rough copy or fae pattern		your child replaced (K)
+Kitsune	Shapeshift	https://en.wikipedia.org/wiki/Kitsune	M,K	COVERED	fox with illusion and shapeshift		trusting a face (K)
+Mujina (faceless)	Shapeshift	https://en.wikipedia.org/wiki/Mujina	K,P	COVERED	illusion of a face removed by M light or masking; perception noise		faceless face (K)
+The Thing	Shapeshift	https://en.wikipedia.org/wiki/Thing_(The_Thing)	P,G,K	LAW	assimilating organism that copies bodies at cell level (mimic plus X rough copy) (u)	assimilation: general organism-copy law with a conserved mass	who among us is it? paranoia (K)
+Invasion of the Body Snatchers pods	Shapeshift	https://en.wikipedia.org/wiki/Pod_People_(Invasion_of_the_Body_Snatchers)	X,P,K	COVERED	replacement bodies grown and copied by a rough copy (X)		loved ones replaced silently (K)
+Fantasy shape-changing dragon	Shapeshift	https://en.wikipedia.org/wiki/Fictional_dragons	M	COVERED	body change within mass budget		(u) ambiguity and the unknown (K)
+Bigfoot	Cryptid	https://en.wikipedia.org/wiki/Bigfoot	P,S	COVERED	large primate species with ecology; rumour and hoax		presence in woods; unknown (K)
+Mothman	Cryptid	https://en.wikipedia.org/wiki/Mothman	K,S,P	COVERED	misperception plus omen rumour		omen of disaster (K)
+Jersey Devil	Cryptid	https://en.wikipedia.org/wiki/Jersey_Devil	K,S	COVERED	rumour of a hybrid beast; sightings mutate		a local legend turned real (K,S)
+Chupacabra	Cryptid	https://en.wikipedia.org/wiki/Chupacabra	P,S	COVERED	livestock predator and mange-ridden canids misread		bloodless livestock (K)
+Loch Ness Monster	Cryptid	https://en.wikipedia.org/wiki/Loch_Ness_Monster	P,K	COVERED	rare large aquatic animals and misperception		depth conceals (K)
+Mongolian death worm	Cryptid	https://en.wikipedia.org/wiki/Mongolian_death_worm	P	COVERED	burrowing predator with acid and electricity pack		death from the sand
+Dover Demon	Cryptid	https://en.wikipedia.org/wiki/Dover_Demon	K,P	COVERED	single odd sighting; misperception		a glimpse with no follow-up
+Black-eyed children	Cryptid	https://en.wikipedia.org/wiki/Black-eyed_children	K,M	LAW	rumour plus uncanny-agent cues; request for invitation (u)	face and agent anomaly detector in perception	children at the door who are wrong (K)
+Michigan Dogman	Cryptid	https://en.wikipedia.org/wiki/Michigan_Dogman	K,S	COVERED	rumour and hybrid canid		bipedal predator in familiar woods
+Popobawa	Cryptid	https://en.wikipedia.org/wiki/Popobawa	K,S,M	LAW	rumour spirit with panic spread (u)	crowd panic, flight and mass-movement dynamics across many agents	mass fear of an invisible attacker (S,K)
+Beast of Bray Road	Cryptid	https://en.wikipedia.org/wiki/Beast_of_Bray_Road	K	COVERED	rumour-mutating sightings		ambiguity
+Fresno Nightcrawler	Cryptid	https://en.wikipedia.org/wiki/Fresno_nightcrawler	K	COVERED	misperceived walking pants; pareidolia		incongruity
+Flatwoods monster	Cryptid	https://en.wikipedia.org/wiki/Flatwoods_monster	K,P	COVERED	misperception of owl or meteor		ambiguity
+Siren Head	Cryptid	https://en.wikipedia.org/wiki/Siren_Head	P,K	PACK	tall mimicking structure that lures with sound; sound in the sim		sounds you recognise from nowhere (K,P)
+Long Horse	Cryptid	https://en.wikipedia.org/wiki/Long_Horse_(Trevor_Henderson)	K,P	PACK	long-bodied creature pack; unsettling proportion		proportion wrongness (K)
+Ozark Howler	Cryptid	https://en.wikipedia.org/wiki/Ozark_Howler	K	COVERED	rumour and call sounds		a howl with no source
+Lusca / sea serpent	Cryptid	https://en.wikipedia.org/wiki/Lusca	P	COVERED	large cephalopod or eel pack		beneath your boat
+Wendigo	Folk	https://en.wikipedia.org/wiki/Wendigo	P,M,S,K	COVERED	cannibal curse pattern raising hunger drive; famine ecology		hunger turns you (body,K)
+Boggart / bugbear	Folk	https://en.wikipedia.org/wiki/Boggart	M,K	COVERED	household spirit pattern with place store		household turned bad
+Bogeyman	Folk	https://en.wikipedia.org/wiki/Bogeyman	K,S	COVERED	social threat told to children; rumour		unknown threat in the dark (K)
+Krampus	Folk	https://en.wikipedia.org/wiki/Krampus	S,M	COVERED	festival-attached spirit; cultural role		punishment at season's turn (S)
+Pishtaco	Folk	https://en.wikipedia.org/wiki/Pishtaco	S,K	COVERED	rumour about fat-stealing outsiders; real exploitation		social suspicion of strangers (S)
+Black Annis	Folk	https://en.wikipedia.org/wiki/Black_Annis	P,K	COVERED	hag predator pack		child-snatching
+Baba Yaga	Folk	https://en.wikipedia.org/wiki/Baba_Yaga	M,S	COVERED	witch with a hut (mobile structure with a pattern)		ambivalent power (K)
+Wicker Man cult	Folk	https://en.wikipedia.org/wiki/Folk_horror	S,K	COVERED	institutional sacrifice by a community; pack culture		outsider among believers (S)
+Pied Piper	Folk	https://en.wikipedia.org/wiki/Pied_Piper_of_Hamelin	M,S	COVERED	music-driven neural bias (A16/A20) at range		children walked away (K)
+Pooka	Folk	https://en.wikipedia.org/wiki/P%C3%BAca	M,K	COVERED	shifting trickster spirit		capricious
+La Llorona	Folk	https://en.wikipedia.org/wiki/La_Llorona	M,S	COVERED	ghost pattern bound to water, grief rumour		child-theft by the dead
+Krasue	Folk	https://en.wikipedia.org/wiki/Krasue	P,M	COVERED	detached head with viscera: body horror + curse		gore + hunger
+Penanggalan	Folk	https://en.wikipedia.org/wiki/Penanggalan	P,M	COVERED	same family as Krasue		detached organs
+Toyol	Folk	https://en.wikipedia.org/wiki/Toyol	M,S	COVERED	bonded child-spirit servant, with a price		servitude with a price
+Nuckelavee	Folk	https://en.wikipedia.org/wiki/Nuckelavee	P,K	COVERED	skinless horse-rider beast with disease-bringing		flayed body; plague
+Kelpie	Folk	https://en.wikipedia.org/wiki/Each-uisge	P,M	COVERED	water predator with lure shape (mimicry)		lure at the water
+Selkies/Mermaid lure	Folk	https://en.wikipedia.org/wiki/Siren_(mythology)	P,M	COVERED	singing lure by A16 and neural bias		voice that draws you
+Hone-onna	Yokai	https://en.wikipedia.org/wiki/Hone-onna	M,K	COVERED	skeleton-woman spirit disguised		loved one's face over bones
+Kuchisake-onna	Yokai	https://en.wikipedia.org/wiki/Kuchisake-onna	K,S	COVERED	urban legend rumour plus ghost pattern		a question you cannot answer well (K)
+Rokurokubi	Yokai	https://en.wikipedia.org/wiki/Rokurokubi	P,M	COVERED	neck extension: body change		ordinary woman with a wrong neck
+Nopperabo	Yokai	https://en.wikipedia.org/wiki/Nopperab%C5%8D	K,P	COVERED	faceless face illusion		the second face is gone (K)
+Yurei (onryo)	Yokai	https://en.wikipedia.org/wiki/Onry%C5%8D	M,K	COVERED	grudge pattern attached to a place, spreading to anyone who perceives it		curse spreads by contact (K)
+Sadako (Ring)	Yokai	https://en.wikipedia.org/wiki/Ring_(franchise)	M,K	LAW	videotape as a perception-triggered curse: viewing sets a link and timer (u)	perceptual infohazard channel: patterns that bias minds via ordinary senses	a deadline after a harmless act (K)
+Kayako (Ju-On)	Yokai	https://en.wikipedia.org/wiki/Ju-On	M,K	COVERED	place-bound curse pattern that spreads to entrants		the house kills everyone who enters
+Tsukumogami	Yokai	https://en.wikipedia.org/wiki/Tsukumogami	M	COVERED	old objects acquiring a pattern after 100 years (stores accrue)		ordinary things alive
+Jorogumo	Yokai	https://en.wikipedia.org/wiki/Jor%C5%8Dgumo	P,M	COVERED	giant spider with illusions		beautiful trap
+Gashadokuro	Yokai	https://en.wikipedia.org/wiki/Gashadokuro	M	COVERED	aggregated bone-giant of dead		mass of the unburied
+Slender Man	Creepypasta	https://en.wikipedia.org/wiki/Slender_Man	K,M	LAW	stalker whose approach is felt before seen (u)	perceptual infohazard channel: patterns that bias minds via ordinary senses; agent anomaly detector	being watched by something wrong (K)
+SCP-173 style statue	Creepypasta	https://en.wikipedia.org/wiki/SCP-173	X,K	SECOND	moves when unobserved: needs observer-dependent motion (u)	observer-dependent physics (state changes only unwatched)	blinking becomes mortal (K)
+Weeping Angels	Creepypasta	https://en.wikipedia.org/wiki/Weeping_Angel	X,K	SECOND	same observer-dependent rule (u)	observer-dependent physics	do not blink (K)
+Smile Dog	Creepypasta	https://en.wikipedia.org/wiki/Smile_Entity	M,K	LAW	image whose viewing links the viewer to a stalker (u)	perceptual infohazard channel	share-or-suffer chain (K,S)
+Jeff the Killer	Creepypasta	https://en.wikipedia.org/wiki/Jeff_the_Killer	K,S	COVERED	human killer with disfigurement; rumour		face-distortion; child-killer
+Ben Drowned (haunted cartridge)	Creepypasta	https://en.wikipedia.org/wiki/Ben_Drowned	M,P	PACK	spirit pattern in a machine with a store		dead boy in your console
+Candle Cove	Creepypasta	https://en.wikipedia.org/wiki/Candle_Cove	K	COVERED	shared false memories (beliefs that survive untested)		childhood memories rewritten (K)
+Backrooms	Creepypasta	https://en.wikipedia.org/wiki/The_Backrooms	X,K	COVERED	a plane as another world (X) with repeating interior spaces; wormhole door; isolation		endless sameness; being lost (K)
+Liminal space	Creepypasta	https://en.wikipedia.org/wiki/Liminal_space	K	LAW	place cues lacking people trigger dread via pattern expectations (u)	agent-presence expectation violation in perception	empty places that should be busy (K)
+Analog horror	Creepypasta	https://en.wikipedia.org/wiki/Analog_horror	K,S	COVERED	degraded media as noisy senses in the narrator		official broadcasts hiding a threat (K,S)
+Rule horror	Creepypasta	https://en.wikipedia.org/wiki/Rule_Horror	K,S	COVERED	written rules as institutional taboo; entity enforces conditions		rules you cannot verify (K,S)
+Ritual-gone-wrong creepypasta	Creepypasta	https://en.wikipedia.org/wiki/Creepypasta	M,K	COVERED	ritual as A6; failure by noise		doing it anyway
+Skinwalker Ranch	Creepypasta	https://en.wikipedia.org/wiki/Skinwalker_Ranch	K,S	COVERED	compound rumours; misperception		an ordinary place with a long list
+SCP-style containment foundation	Creepypasta	https://en.wikipedia.org/wiki/SCP_Foundation	S	COVERED	institution suppressing knowledge		secret governance (S)
+Body horror (general)	Body	https://en.wikipedia.org/wiki/Body_horror	P,G	COVERED	graded mutation, tissue failure, pain and disgust from the body model		own body betrays you (body)
+The Fly (teleport fusion)	Body	https://en.wikipedia.org/wiki/Seth_Brundle	X,P,G	SECOND	teleporter fusing two bodies: relocation is a second change; slow gene-mix mutation is G (u)	teleport / relocate (second change)	gradual transformation (body)
+Cordyceps-style behaviour parasite	Body	https://en.wikipedia.org/wiki/Cordyceps	P,K	COVERED	real parasite that changes behaviour (P)		will hijacked by a body part (body,K)
+Xenomorph (chestburster)	Body	https://en.wikipedia.org/wiki/Xenomorph	P,G	PACK	parasitoid life cycle; acid blood = chemistry; predator with high agility		violation of the body from within (body)
+Facehugger parasitism	Body	https://en.wikipedia.org/wiki/Xenomorph	P	PACK	real parasitoid analogue, host impregnation		invasive reproduction
+Flood (Halo)	Body	https://en.wikipedia.org/wiki/Flood_(Halo)	P,G	LAW	spreading infection assimilating bodies; swarm drive (u)	crowd panic, flight and mass-movement dynamics across many agents	numbers and assimilation
+Necromorphs	Body	https://en.wikipedia.org/wiki/Necromorphs	P,G	PACK	contagion that rebuilds bodies as aggressive limbs (rough rebuild)		dismemberment and reshaping
+Headcrab	Body	https://en.wikipedia.org/wiki/Headcrab	P	PACK	parasite taking over a host nervous system		puppeted victim (body,K)
+Triffids	Body	https://en.wikipedia.org/wiki/Triffid	P,G	PACK	mobile carnivorous plants with venom and sensory design		plants that hunt
+Killer plant (Audrey II)	Body	https://en.wikipedia.org/wiki/Audrey_II	P,M	PACK	plant with an animal-style diet; mind via bond		feeding the monster
+Giant spider	Body	https://en.wikipedia.org/wiki/Mommy_Long_Legs	P	PACK	arachnid scaled up: square-cube bounds check size		arachnophobia; web traps (body)
+Insect swarm	Body	https://en.wikipedia.org/wiki/Swarm_behaviour	P,K	COVERED	many-agent swarm drive; sting damage		numbers, no face
+Plague / medieval pestilence	Body	https://en.wikipedia.org/wiki/Plague_(disease)	P,S	COVERED	epidemiology plus social response		invisible killer; blame (S,K)
+Fanged plague carrier (rat king)	Body	https://en.wikipedia.org/wiki/Rat_king	P	COVERED	aggregated rodents; real phenomenon		tangled mass
+Mutant (radiation)	Body	https://en.wikipedia.org/wiki/Fictional_mutants	G,P	COVERED	graded genetics with rare sharp-jump variants		body altered; social exile (S)
+Super Mutants (Fallout)	Body	https://en.wikipedia.org/wiki/Super_Mutant	G,P	PACK	engineered virus plus mass gain: pack		monstrous kin
+Ghoul (Fallout)	Body	https://en.wikipedia.org/wiki/Ghoul_(Fallout)	G,P	PACK	radiation tissue change with long lifespan		aged, ruined body
+Mutant child (Hills Have Eyes style)	Body	https://en.wikipedia.org/wiki/Mutant	G,S	COVERED	isolated inbred community; real genetics		backwoods cruelty (S)
+Cannibal family	Slasher	https://en.wikipedia.org/wiki/Fictional_cannibals	S,K	COVERED	human agents with a taboo-breaking culture (pack)		the hospitable are predators (S)
+Sweeney Todd	Slasher	https://en.wikipedia.org/wiki/Sweeney_Todd	S,K	COVERED	human killers plus institutional collusion		everyday trades used for killing
+Freddy Krueger	Slasher	https://en.wikipedia.org/wiki/Freddy_Krueger	M,K	LAW	dream-intruding killer via a link (neural bias in sleep) (u)	sleep/dream state as a body mode in which perception intrudes	sleep, a necessity, becomes the weakness (body,K)
+Michael Myers	Slasher	https://en.wikipedia.org/wiki/Michael_Myers	P,K	COVERED	human killer with high pain tolerance and a drive; unreadable behaviour		unpredictability and no motive (K)
+Ghostface	Slasher	https://en.wikipedia.org/wiki/Ghostface_(Scream)	K,S	COVERED	mask as anonymised identity; phone as a channel		anyone could be the killer (K)
+Leatherface	Slasher	https://en.wikipedia.org/wiki/Leatherface	S,P	COVERED	human with a mask of skin; family culture		body as material (body)
+Jigsaw (game traps)	Slasher	https://en.wikipedia.org/wiki/Jigsaw_(Saw)	P,K	COVERED	engineered traps with real mechanics; moral tests		forced choice under pain
+Pyramid Head	Slasher	https://en.wikipedia.org/wiki/Pyramid_Head	K,M	COVERED	guilt-projection entity by a place's mind link		personal punishment
+Candyman	Slasher	https://en.wikipedia.org/wiki/Candyman_(character)	M,S,K	COVERED	summoning by name and mirror: belief substrate; urban rumour		name chant summons; social trauma (S)
+Bloody Mary (mirror ritual)	Slasher	https://en.wikipedia.org/wiki/Bloody_Mary_(folklore)	M,K	COVERED	mirror ritual with a spirit link; mirror as an interface		dark room game
+The Final Girl trope	Slasher	https://en.wikipedia.org/wiki/Final_girl	K,S	EXCLUDED	narrative structure		genre convention, not a world law
+Jump scare	Subgenre	https://en.wikipedia.org/wiki/Jump_scare	K	COVERED	sudden perception event vs an expectation dial		surprise and startle response (body)
+Slasher film structure	Subgenre	https://en.wikipedia.org/wiki/Slasher_film	S,K	COVERED	stalker agent with approach/avoid chases		pursuit
+Home invasion	Subgenre	https://en.wikipedia.org/wiki/Home_invasion	K,S	COVERED	intruders and an unlocked world		safe space breached
+Chucky (killer doll)	Object	https://en.wikipedia.org/wiki/Chucky_(Child's_Play)	M,K	COVERED	soul transferred into a body (stored mind pattern into a puppet)		toys are safe (K)
+Annabelle (haunted doll)	Object	https://en.wikipedia.org/wiki/Haunted_doll	M	COVERED	object with a pattern and a place store		innocent toy moves
+Slappy the Dummy	Object	https://en.wikipedia.org/wiki/Slappy_the_Dummy	M	COVERED	puppet driven by a stored mind		ventriloquist's dummy
+Evil clown (Pennywise)	Object	https://en.wikipedia.org/wiki/Pennywise	M,K,G	COVERED	cosmic outsider feeding on fear via a link and mimicry		fear as food; child fears (K)
+Evil clown (human)	Object	https://en.wikipedia.org/wiki/Evil_clown	K,S	LAW	uncanny face cues plus agent anomaly (u)	face and agent anomaly detector in perception	friendly face with wrong intent (K)
+Haunted painting	Object	https://en.wikipedia.org/wiki/List_of_reportedly_haunted_paintings	M	COVERED	pattern stored in pigment; place link		image that changes
+Cursed object (monkey's paw)	Object	https://en.wikipedia.org/wiki/The_Monkey's_Paw	M,K	COVERED	pattern granting wishes by transduction and cost; loophole trade		wish granted wrongly (K)
+Cursed video / chain-letter curse	Object	https://en.wikipedia.org/wiki/Chain_letter	K,M,S	LAW	perception-triggered curse spreading socially (u)	perceptual infohazard channel	share-or-die chain
+Cursed tomb	Object	https://en.wikipedia.org/wiki/Curse_of_the_pharaohs	M,S	COVERED	ward and curse with a drain; ancient engineering		violated grave
+Possessed car (Christine)	Object	https://en.wikipedia.org/wiki/Christine_(novel)	M,K	COVERED	stored mind pattern in a machine		machine with a will
+Haunted mirror	Object	https://en.wikipedia.org/wiki/Haunted_mirror	M	COVERED	ward-like reflection pattern with a store		reflection acts alone
+Mannequins coming alive	Object	https://en.wikipedia.org/wiki/Living_mannequin	M,P	COVERED	puppeting with pattern		stillness is the lie
+Wax figures (House of Wax)	Object	https://en.wikipedia.org/wiki/House_of_Wax	P,S	COVERED	human killer preserving bodies in wax		bodies as exhibits
+Haunted hotel (The Shining)	Place	https://en.wikipedia.org/wiki/The_Shining_(novel)	M,K,S	COVERED	place with a store and a pattern amplifying a mind's dials (isolation)		isolation drives madness (K)
+Silent Hill fog town	Place	https://en.wikipedia.org/wiki/Silent_Hill	X,K	COVERED	a plane as another world with a mind-linked reality (guilt projection)		personal horror manifested
+House of Leaves (larger inside)	Place	https://en.wikipedia.org/wiki/House_of_Leaves	X	COVERED	a plane or pocket space by wormhole door; interior > exterior		space itself lies (K)
+Hill House	Place	https://en.wikipedia.org/wiki/The_Haunting_of_Hill_House	M,K	COVERED	place pattern working on a susceptible mind		house wants you
+Overlook-type cursed ground	Place	https://en.wikipedia.org/wiki/Indian_burial_ground	M,S	COVERED	ground with a ward/curse pattern		ancient claim
+Hospital/asylum horror	Place	https://en.wikipedia.org/wiki/Asylum_(horror)	S,K	COVERED	institution control; stigma		authority as threat (S)
+Cabin in the woods	Place	https://en.wikipedia.org/wiki/Cabin_in_the_woods	S,K	COVERED	isolation as a lack of aid		nowhere to go
+Abandoned mine / subterranean	Place	https://en.wikipedia.org/wiki/Subterranean_horror	P,K	COVERED	dark, narrow, resource-limited exploration; sense limits		no light; trapped (K,body)
+Sunken ship / deep ocean	Place	https://en.wikipedia.org/wiki/Deep_sea_horror	P,K	COVERED	pressure, light and sound limits; fauna pack		dark depth (body,K)
+Space horror	Space	https://en.wikipedia.org/wiki/Space_horror	P,K,S	COVERED	vacuum, isolation, limited air budget (P)		no air, no help (body)
+Alien (hostile organism)	Space	https://en.wikipedia.org/wiki/Alien_(film)	P,G	PACK	predator species pack and ship ecology		ambush in a cramped ship
+Predator	Space	https://en.wikipedia.org/wiki/Predator_(fictional_species)	P,S	PACK	technology (cloak = transformation optics) and hunting culture		invisible hunter (K)
+Dead Space style asteroid mining	Space	https://en.wikipedia.org/wiki/Dead_Space	P,M,K	COVERED	artifact-induced mutation and hallucination		resource extraction opens the door
+Event Horizon (hell dimension drive)	Space	https://en.wikipedia.org/wiki/Event_Horizon_(film)	X,M,K	SECOND	FTL drive crossing a plane (u)	FTL / plane transit (second change)	machine returns with something
+Alien body-snatcher (Invasion)	Space	https://en.wikipedia.org/wiki/Invasion_of_the_Body_Snatchers	P,K	COVERED	replacement and rumours; no one believes		paranoia (K)
+Hive-mind aliens	Space	https://en.wikipedia.org/wiki/Hive_mind	K,M	COVERED	many minds linked through M bonds		loss of individual
+Gray alien abduction	Space	https://en.wikipedia.org/wiki/Grey_alien	K,P	LAW	sleep-state misperception plus experiments (u)	sleep/dream state as a body mode in which perception intrudes	helpless, stolen time (K)
+Black-eyed alien child	Space	https://en.wikipedia.org/wiki/Black-eyed_children	K	COVERED	as above		(u) ambiguity and the unknown (K)
+Mimic ship AI	Tech	https://en.wikipedia.org/wiki/HAL_9000	K,P	COVERED	AI mind with a goal conflict; engineering		trusted system turns (K)
+GLaDOS	Tech	https://en.wikipedia.org/wiki/GLaDOS	K,P	COVERED	AI mind with a test-room economy		polite cruelty
+Skynet / killer robots	Tech	https://en.wikipedia.org/wiki/Skynet_(Terminator)	P,K,S	COVERED	robots and AI as engineering plus a war		relentless machine (K)
+Ultron	Tech	https://en.wikipedia.org/wiki/Ultron	P,K	COVERED	distributed AI via networks		self-replicating mind
+Roko's basilisk	Tech	https://en.wikipedia.org/wiki/Roko's_basilisk	K	EXCLUDED	decision-theory thought experiment about a future AI punishing non-helpers		blackmail from the future (E: needs backward causation)
+Replicants / androids	Tech	https://en.wikipedia.org/wiki/Android_(robot)	P,K	COVERED	engineered bodies with learned minds		who is human (K)
+Haunted machine / cursed cartridge	Tech	https://en.wikipedia.org/wiki/Ben_Drowned	M	COVERED	M pattern in a computing store		ghost in the machine
+Techno-horror (cell-phone signal)	Tech	https://en.wikipedia.org/wiki/Techno-horror	M,K	COVERED	a signal driving neurons (A20 via device)		device controls minds
+Uploaded mind horror	Tech	https://en.wikipedia.org/wiki/Mind_uploading	P,K	SECOND	copy of a mind is a rough copy (X) but a true continuous self is unresolved (u)	(u) transfer of continuous self across a copy	copy-or-self question (K)
+Surveillance dystopia	Tech	https://en.wikipedia.org/wiki/Mass_surveillance	S,P	COVERED	institution with sensors		watched at all times
+Nanite/grey goo	Tech	https://en.wikipedia.org/wiki/Gray_goo	P	COVERED	self-replicating assemblers limited by mass and energy conservation		consuming everything
+Kaiju (Godzilla)	Kaiju	https://en.wikipedia.org/wiki/Godzilla	P,G	PACK	giant organism: square-cube law bounds, energy budget (radiative breath as a store)		scale of a city-walker
+King Kong	Kaiju	https://en.wikipedia.org/wiki/King_Kong	P	PACK	giant primate pack		beast and beauty
+Mothra	Kaiju	https://en.wikipedia.org/wiki/Mothra	P,M	PACK	large insect with scales; M or biology flight		(u) ambiguity and the unknown (K)
+Sandworm (Dune)	Kaiju	https://en.wikipedia.org/wiki/Sandworm_(Dune)	P,G	PACK	huge burrower with desert ecology		ground beneath you
+Sarlacc	Kaiju	https://en.wikipedia.org/wiki/Sarlacc	P	PACK	ambush pit predator		digested over millennia
+Cloverfield creature	Kaiju	https://en.wikipedia.org/wiki/Clover_(creature)	P,K	PACK	giant creature seen at street level with parasites		chaos at scale (K)
+Leviathan / sea monster	Kaiju	https://en.wikipedia.org/wiki/Fictional_sea_monsters	P	PACK	deep sea giant pack		beneath the ship
+Tentacled monster	Kaiju	https://en.wikipedia.org/wiki/Fictional_tentacled_monsters	P,G	PACK	cephalopod-like physiology		grabbing, suffocation (body)
+Dragon (hostile)	Kaiju	https://en.wikipedia.org/wiki/Fictional_dragons	P,M	PACK	flier with a fire store and an M organ		apex predator
+Witch	Occult	https://en.wikipedia.org/wiki/Witch	M,S	COVERED	learned practitioner (A2) with a social label		neighbour accusations (S)
+Salem witch hunt	Occult	https://en.wikipedia.org/wiki/Salem_witch_trials	S,K	COVERED	rumour, accusation and mass belief		rumour kills (S,K)
+Hex / curse	Occult	https://en.wikipedia.org/wiki/Curse	M	COVERED	A30 pattern in a body with drain; link by hair or blood		slow decline attributed
+Voodoo doll	Occult	https://en.wikipedia.org/wiki/Voodoo_doll	M	COVERED	link plus pattern at distance		harm at a distance
+Evil eye	Occult	https://en.wikipedia.org/wiki/Evil_eye	K,S	COVERED	belief and social envy; tiny real effects via stress		being envied
+Satanic cult	Occult	https://en.wikipedia.org/wiki/Satanic_ritual_abuse	S,K	COVERED	institutional cult or moral panic (rumour mutation)		rumour panic (S)
+Cult leader	Occult	https://en.wikipedia.org/wiki/Cult	S,K	COVERED	charisma, social control		persuasion removing choice
+Black mass / summoning circle	Occult	https://en.wikipedia.org/wiki/Summoning	M	COVERED	A24/A6 ritual		doing it wrong
+Occult detective	Occult	https://en.wikipedia.org/wiki/Occult_detective_fiction	K,S	COVERED	investigator narrates what he perceives		deduction limited by noisy senses (K)
+Witch hunter	Occult	https://en.wikipedia.org/wiki/Witchfinder	S	COVERED	institutions; false belief survives untested		authority as abuser
+Tarot / fortune-telling	Occult	https://en.wikipedia.org/wiki/Tarot	K	COVERED	cold reading, headology (A35)		prediction lands
+Ouija board	Occult	https://en.wikipedia.org/wiki/Ouija	K,M	COVERED	ideomotor effect (P) plus possible spirit link		your own hands move
+Cursed bloodline	Occult	https://en.wikipedia.org/wiki/Curse	G,M	COVERED	a pattern carried in lineage, M bonds		inherited doom
+Wishing well/ fae bargain	Occult	https://en.wikipedia.org/wiki/Fairy	M,S	COVERED	oath-bound bargains (MC4)		trade with wording
+Psychological horror	Psych	https://en.wikipedia.org/wiki/Psychological_horror	K	COVERED	perception noise plus beliefs that survive untested		unreliable perception (K)
+Gaslighting	Psych	https://en.wikipedia.org/wiki/Gaslighting	K,S	COVERED	false beliefs implanted by another agent; the narrator shows only perceived		can't trust your own memory (K)
+Paranoia	Psych	https://en.wikipedia.org/wiki/Paranoia	K	COVERED	belief dials; no verification		everyone is suspect
+Madness / insanity	Psych	https://en.wikipedia.org/wiki/Insanity	K	COVERED	dials, history and state shift; traumas		self unreliable
+Dissociative identity / split	Psych	https://en.wikipedia.org/wiki/Dissociative_identity_disorder	K	LAW	several concern-sets in one brain switching control (u)	multi-self: several concern-sets inhabit one brain (switch law)	who is driving (K)
+Folie a deux	Psych	https://en.wikipedia.org/wiki/Folie_%C3%A0_deux	K,S	COVERED	shared belief propagation between two minds		madness shared
+Phobias	Psych	https://en.wikipedia.org/wiki/Phobia	K	LAW	conditioned fear to a stimulus class as a persistent dial (u)	conditioned fear / phobia dial learned from experience	trigger you cannot avoid
+Trauma / PTSD	Psych	https://en.wikipedia.org/wiki/Post-traumatic_stress_disorder	K	COVERED	history changes dials; flashbacks as noisy senses		past intrudes
+Hallucinations	Psych	https://en.wikipedia.org/wiki/Hallucination	K,P	COVERED	senses modeled with dials that can break		you can't verify
+Unreliable narrator	Psych	https://en.wikipedia.org/wiki/Unreliable_narrator	K	COVERED	narrator shows only what the character perceives		distrust of the account
+Stockholm / captivity	Psych	https://en.wikipedia.org/wiki/Captivity_narrative	K,S	COVERED	dependence dials		captor as only contact
+Isolation / solitary	Psych	https://en.wikipedia.org/wiki/Isolation_(psychology)	K,P	COVERED	sensory deprivation changes perception		self frays
+Fear of the dark	Psych	https://en.wikipedia.org/wiki/Nyctophobia	K,P	COVERED	sight limits and vigilance dials		unknown threats in the dark
+Uncanny valley	Psych	https://en.wikipedia.org/wiki/Uncanny_valley	K	LAW	almost-human cue mismatch feeds a dread response (u)	face and agent anomaly detector in perception	almost human, wrong
+Time loop horror	Structure	https://en.wikipedia.org/wiki/Time_loop	X	SECOND	repeated time requires past change (u)	time travel to the past (second change)	no escape
+Dream within dream	Structure	https://en.wikipedia.org/wiki/Dream	K	LAW	dream state as a mind mode (u)	sleep/dream state as a body mode in which perception intrudes	can't tell waking
+Meta-horror (breaking the fourth wall)	Structure	https://en.wikipedia.org/wiki/Metafiction	-	EXCLUDED	the narrative itself is the monster		(u) ambiguity and the unknown (K)
+Genre-savvy characters	Structure	https://en.wikipedia.org/wiki/Genre_savvy	-	EXCLUDED	narrative-only		(u) ambiguity and the unknown (K)
+Gothic fiction	Subgenre	https://en.wikipedia.org/wiki/Gothic_fiction	S,K,M	COVERED	decaying houses, secrets, inherited curses; place stores		the past owns the present
+Southern Gothic	Subgenre	https://en.wikipedia.org/wiki/Southern_Gothic	S,K	COVERED	social decay and secrets		community hypocrisy
+Folk horror	Subgenre	https://en.wikipedia.org/wiki/Folk_horror	S,M,K	COVERED	isolated community with a rite; old M places		tradition as horror (S)
+Weird fiction	Subgenre	https://en.wikipedia.org/wiki/Weird_fiction	K,M	COVERED	encounters that defy categories		unclassifiable
+Cosmic horror	Subgenre	https://en.wikipedia.org/wiki/Cosmic_horror	K,M	COVERED	scale and outsider		insignificance
+Survival horror	Subgenre	https://en.wikipedia.org/wiki/Survival_horror	P,K	COVERED	scarcity of ammo, health, light		limited resources
+Splatter / gore	Subgenre	https://en.wikipedia.org/wiki/Splatter_film	P	COVERED	damage model with blood and tissue		visceral disgust (body)
+Apocalyptic fiction	Subgenre	https://en.wikipedia.org/wiki/Apocalyptic_and_post-apocalyptic_fiction	P,S	LAW	collapse of institutions and supply (u)	crowd panic, flight and mass-movement dynamics across many agents	everything gone (S)
+Religious horror	Subgenre	https://en.wikipedia.org/wiki/Religious_horror	S,M,K	COVERED	belief substrates and patrons		faith as threat
+Occult-detective	Subgenre	https://en.wikipedia.org/wiki/Occult_detective_fiction	K,S	COVERED	as above		(u) ambiguity and the unknown (K)
+Monster literature	Subgenre	https://en.wikipedia.org/wiki/Monster_literature	P	COVERED	species packs		(u) ambiguity and the unknown (K)
+Elevated horror	Subgenre	https://en.wikipedia.org/wiki/Elevated_horror	K,S	COVERED	metaphor-driven slow dread		dread of ordinary
+Giallo	Subgenre	https://en.wikipedia.org/wiki/Giallo	K,S	COVERED	killer in a stylised social setting		(u) ambiguity and the unknown (K)
+Penny dreadful	Subgenre	https://en.wikipedia.org/wiki/Penny_dreadful	S	COVERED	serial sensationalism: rumour channel		(u) ambiguity and the unknown (K)
+Hauntology / analog	Subgenre	https://en.wikipedia.org/wiki/Analog_horror	K	COVERED	dated media as noisy senses		(u) ambiguity and the unknown (K)
+Comedy horror	Subgenre	https://en.wikipedia.org/wiki/Comedy_horror	K	EXCLUDED	tone, not physics		(u) ambiguity and the unknown (K)
+Christmas horror	Subgenre	https://en.wikipedia.org/wiki/Christmas_horror	S	COVERED	seasonal rites; pack culture		(u) ambiguity and the unknown (K)
+Surreal body (Cronenberg)	Subgenre	https://en.wikipedia.org/wiki/David_Cronenberg	P,G	COVERED	body-modification plus technology		(u) ambiguity and the unknown (K)
+Torture porn	Subgenre	https://en.wikipedia.org/wiki/Torture_porn	P,K	COVERED	damage and pain model		pain and powerlessness (body)

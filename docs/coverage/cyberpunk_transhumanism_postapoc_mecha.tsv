@@ -1,0 +1,453 @@
+entry	family	source_url	layers	verdict	mechanism	law_or_change	fear_source
+Burner anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Burner	P	PACK	heat plume cell with a fire/heat-flux law and a trigger on mass entering; boils nearby water, ignites wood	-	heat in a place that looks empty; K misperception, then body pain
+Electro anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Electro	P,M	PACK	standing charge cell discharging to conductors; electrical effect via M-less charge law or an M store tuned as arc source	-	invisible hazard, arc and shock; body
+Tesla anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Tesla	P,M	PACK	chain-arc pattern with a refractory timer; M store releasing momentum/energy as sparks	-	audible crackle warns, then a flash; K cues then pain
+Whirligig anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Whirligig	M	COVERED	stationary M pattern applying a rotating momentum field to anything inside; lifts and crushes bodies and objects	-	invisible force that tears a body; K unknown
+Vortex anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Vortex	M	COVERED	momentum-sink pattern pulling bodies in then releasing as shear; stores drain from M field	-	looks like a gust of dust until it kills; K
+Springboard anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Springboard	M	COVERED	an upward momentum transfer cell triggered by weight; launches objects into the air	-	sudden launch then a fall; body
+Lift anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Lift	M	COVERED	vertical momentum column; carries a body up then drops it when the store empties	-	silent rise followed by a fatal fall
+Fruit Punch anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Fruit_Punch	P,M	PACK	acid or caustic spray cell, a chemical hazard with a trigger pattern	-	pain and disgust; hazard looks like nothing
+Burnt Fuzz anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Burnt_Fuzz	P	PACK	zone of cling-and-burn vegetation-like hazard; a material with a combustion law reacting to touch	-	the surface itself is dangerous; K
+Comet anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Comet	M	PACK	moving heat/momentum bolt pattern that wanders on a path; a roaming store	-	a moving hazard with its own path
+Gas anomaly (Gas Cloud)	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Gas_Cloud	P	COVERED	toxic gas cell using gas momentum and diffusion; breathing law supplies harm	-	invisible poison; body, K
+Teleport anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Teleport	X,M	COVERED	wormhole doorway with a fixed far end and a trigger; maps to X wormhole pairs	-	arrive somewhere you did not choose; K disorientation
+Space anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Space_Anomaly	X,M	COVERED	distortion where doorway ends scatter; a doorway graph with many unstable ends	-	spatial wrongness; K
+Fault anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Fault	M	COVERED	a sustained momentum field that tears floor and wall material; voxel structure failure under M push	-	the ground itself breaks; K surprise
+Psy-emission	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Psy-emission	M,K	COVERED	periodic M field pulse that couples to minds; causes hallucination or zombification as a neural-bias effect	-	a wave that rewrites minds; K
+Emission (Blowout)	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Emission	M,S	PACK	scheduled global M surge scripted as a world event; forces shelter-seeking behaviour	-	a clock you cannot stop; S shelter pressure, K dread
+Radiation field	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Radiation	P	LAW	dose accumulation and tissue damage over time from a source	nuclear energy release and radiation dose law	slow invisible death; K, body
+Mine (gravitational anomaly)	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Mine	M	COVERED	compressed M pattern that crushes an area on trigger by momentum inward	-	a click then a crush; body
+Witches Jelly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Witches_Jelly	P,M	PACK	clinging viscous hazard with strange material properties; pack material	-	gross and sticky; body disgust
+Soap Bubble anomaly	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Soap_Bubble	M	PACK	floating spherical field that pops with a momentum burst	-	something harmless-looking that kills; K
+Zone (area of anomalies)	Zone anomalies (STALKER)	https://en.wikipedia.org/wiki/S.T.A.L.K.E.R.	M,K,S	COVERED	a region with elevated M concentration that grows patterned structures, artifacts and mutated life; one world-scale pack	-	dread of the unknown place with rules; K, S rumours
+Wish granter (Monolith)	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Wish_Granter	M,K	SECOND	a thing that gives a wish; unbounded wish is omnipotence, bounded wish is a pact pack	true wish execution (omnipotence)	temptation and bad outcome; K
+Monolith (faction cult)	Zone anomalies (STALKER)	https://stalker.fandom.com/wiki/Monolith	S,K,M	COVERED	a cult of minds under a patron-driven control pattern at a site; faction pack plus patron host	-	fanatics who do not fear death; S, K
+Stone Flower	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Stone_Flower	M	PACK	a charged material that holds an M store with a mild side effect; a loot item	-	loot with an unknown cost; K
+Moonlight	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Moonlight	M	PACK	charged material that glows and emits a field; store with slow drain	-	unknown benefit and cost
+Night Star	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Night_Star	M	PACK	material whose store grants a bonus but emits radiation (u)	-	bargain with hidden harm
+Soul (artifact)	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Soul	M	PACK	charged material that boosts regeneration by feeding a healing pattern	-	loot with cost; K
+Jellyfish	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Jellyfish	M	PACK	a store that radiates; carry cost in dose	-	trade-off
+Goldfish	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Goldfish	M	PACK	a store that damps harm; carry cost elsewhere	-	trade-off
+Fireball (artifact)	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Fireball	M	PACK	store that emits heat; a hot charged material	-	burn risk
+Flash (artifact)	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Flash	M	PACK	store releasing electric discharge; charged material	-	shock risk
+Gravi (artifact)	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Gravi	M	PACK	store that offsets weight via M momentum; carrying capacity	-	loot
+Battery (artifact)	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Battery_(artifact)	M	COVERED	pure charged material: an M store that powers devices	-	loot
+Kolobok	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Kolobok_(artifact)	M	PACK	store that shields from impact; ward material	-	loot
+Mama's Beads	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Mama's_Beads	M	PACK	charged beads with a mild passive effect	-	loot
+Meat Chunk	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Meat_Chunk	M,G	PACK	biological charged material that regenerates; flesh store	-	disgust
+Compass (artifact)	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Compass	M,K	PACK	store that senses other artifacts; a detector pattern	-	find loot
+Heart of the Oasis	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Heart_of_the_Oasis	M	PACK	powerful store with large regeneration; rare item	-	prize
+Thorn (artifact)	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Thorn	M	PACK	sharp charged material with a bleed cost	-	loot with pain
+Crystal Thorn	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Crystal_Thorn	M	PACK	crystal store; regrown in anomaly cells	-	loot
+Slug (artifact)	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Slug	M	PACK	store that boosts one trait while costing another	-	trade-off
+Pellicle	Zone artifacts (STALKER)	https://stalker.fandom.com/wiki/Pellicle	M	PACK	store that slows damage; ward material	-	loot
+Blind dog	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Blind_dog	G,P	COVERED	a pack animal with poor sight and strong smell/hearing; senses with dials	-	pack ambush at night; body
+Pseudodog	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Pseudodog	G,P,M	COVERED	pack hunter with a psi-howl trick; K nuisance effect via M	-	howls in the dark; K
+Psy dog	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Psy_dog	M,K	COVERED	creates illusory copies of itself by M sensory bias on observers; misperception attack	-	you cannot tell which is real; K
+Bloodsucker (STALKER)	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Bloodsucker	G,P	PACK	optical cloak by refracting material or skin, tentacle jaws; stealth creature with a visibility dial	-	invisible attacker in the dark; K, body
+Controller	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Controller	M,K	COVERED	M link that drives other minds as hosts, patron-and-host; mind-control psychic mutant	-	losing your will; K horror
+Burer	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Burer	M	COVERED	M user that throws objects and pushes with momentum from a body store; telekinetic mutant	-	objects fly at you from nowhere
+Pyrogeist	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Pyrogeist	M	COVERED	M being that ignites things at a distance; energy moved as heat	-	fire from an unseen source
+Electrogeist	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Electrogeist	M	COVERED	M being that discharges electric arcs	-	shock from nothing
+Gasgeist	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Gasgeist	M,P	PACK	M being that gathers toxic gas; combines gas law with a being	-	poison from a ghost
+Snork	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Snork	G	PACK	human mutant with a gas mask and long jumps; fast hunting pack	-	pack ambush; human-shaped monster
+Chimera (STALKER)	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Chimera	G	PACK	large fast predator with long leaps	-	big predator
+Pseudogiant	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Pseudogiant	G,P	PACK	huge mutant, ground-stomp shock wave via momentum	-	size and shockwave; body
+Tushkano (Rodent)	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Rodent	G	PACK	swarm of rodents; ordinary animal with a damage dial	-	swarm nuisance
+Flesh (STALKER)	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Flesh	G	PACK	mutated pig; ordinary animal with a hardness dial	-	loud and cheap threat
+Marsh creature	Zone mutants (STALKER)	https://stalker.fandom.com/wiki/Marsh_Creature	G	PACK	swamp ambusher; pack creature	-	ambush in water
+Roadside Picnic	Zone literature	https://en.wikipedia.org/wiki/Roadside_Picnic	M,K,S	COVERED	Strugatsky novel: the Zone left by visitors that nobody understands; model the region and stalkers' rumours; no explanation required	-	the unexplained and inhuman indifference; K
+Stalker (1979 film)	Zone literature	https://en.wikipedia.org/wiki/Stalker_(1979_film)	K,M	COVERED	a Zone and a room that grants the deepest desire; K mind tests plus an M room	-	dread that the room reveals who you are
+Area X (Annihilation)	Zone literature	https://en.wikipedia.org/wiki/Annihilation_(VanderMeer_novel)	G,M,K	COVERED	region that refracts DNA and copies bodies; X copy plus G mutation field	-	bodies that blend with plants; mimic voices; body horror
+Hell slime	Zone literature	https://en.wikipedia.org/wiki/Roadside_Picnic	P,M	PACK	heavy substance from the Zone that changes the density of what it touches; pack material	-	slow weird death
+Witch (Roadside Picnic mosquito mange)	Zone literature	https://en.wikipedia.org/wiki/Roadside_Picnic	M,S	PACK	a place-localised curse pattern with a drain that spreads by presence; ward-curse pack	-	dread of cumulative luck
+Mosquito mange	Zone literature	https://en.wikipedia.org/wiki/Roadside_Picnic	M	PACK	local gravity-like field that flattens bodies; momentum pattern	-	a body flattened
+Super mutant (Fallout)	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Super_mutant	G,P	COVERED	FEV-induced size and strength; graded G effect with sharp-jump; plus infertility ledger	-	strong brutish thing; body
+Nightkin	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Nightkin	G,P	PACK	super mutant with stealth boy and madness cost; ability item plus mental drift	-	invisible giant; K madness
+Feral ghoul	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Feral_ghoul	G,P	COVERED	radiation-altered mind collapse; body and mind dials degrade	-	mindless attackers; body, disgust
+Glowing One	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Glowing_one	G,P	PACK	feral ghoul that emits radiation and heals others; irradiating source with an aura	-	radiation cloud with swarm
+Deathclaw	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Deathclaw	G,P	PACK	engineered apex predator with armour hide and large dials	-	fast and unstoppable; body
+Radscorpion	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Radscorpion	G,P	PACK	large arthropod with venom; animal pack	-	burrowing ambush
+Mirelurk	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Mirelurk	G,P	PACK	armoured crustacean; animal pack with shell plate	-	shell hides the weak point
+Yao guai	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Yao_guai	G,P	PACK	mutated bear; animal pack	-	big angry predator
+Bloatfly	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Bloatfly	G,P	PACK	flying larva-spitting insect; swarm pack	-	nuisance swarm
+Radroach	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Radroach	G,P	PACK	large cockroach; vermin pack	-	disgust at scale
+Centaur (Fallout)	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Centaur_(Fallout)	G,P	PACK	failed FEV hybrid with a ranged vomit; body horror creature	-	body horror and pitiful sounds
+Floater	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Floater	G,P	PACK	failed FEV creature that throws bile; body horror creature	-	screaming blob
+Cazador	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Cazador	G,P	PACK	giant venomous wasp; flying hunter with venom dial	-	fast flier with lethal venom
+Spore carrier	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Spore_carrier	G,P	PACK	plant creature that bursts with spores; parasitic plant	-	disgust and spreading infestation
+Mole rat	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Mole_rat	G	PACK	burrowing rodent pack; animal	-	ambush from below
+Radstag	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Radstag	G	PACK	two-headed deer; mutant animal	-	oddity
+Brahmin	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Brahmin	G	PACK	two-headed cattle; domestic animal	-	livestock economy
+Bighorner	Wasteland creatures (Fallout)	https://fallout.fandom.com/wiki/Bighorner	G	PACK	mutated bison; herd animal	-	stampede
+Mothman (Fallout)	Wasteland cryptids (Fallout)	https://fallout.fandom.com/wiki/Mothman	K,G	COVERED	rumour-seeded creature that is seen before disaster; K rumour and omens pack	-	omens and glimpses; K
+Sheepsquatch	Wasteland cryptids (Fallout)	https://fallout.fandom.com/wiki/Sheepsquatch	G,K	PACK	big bipedal beast tied to local legend; animal pack plus rumour seed	-	big beast in woods
+Snallygaster	Wasteland cryptids (Fallout)	https://fallout.fandom.com/wiki/Snallygaster	G,K	PACK	giant flying beast with acid spit; animal pack	-	boss encounter
+Grafton Monster	Wasteland cryptids (Fallout)	https://fallout.fandom.com/wiki/Grafton_Monster	G,K	PACK	bridge-lurking beast tied to a local rumour; animal pack	-	ambush at a chokepoint
+Jersey Devil (Fallout)	Wasteland cryptids (Fallout)	https://fallout.fandom.com/wiki/Jersey_Devil	G,K	PACK	winged beast tied to a regional legend; cryptid pack	-	omens
+Zetan (alien)	Wasteland cryptids (Fallout)	https://fallout.fandom.com/wiki/Zetan	P,K	PACK	alien abductor with advanced energy weapons; tech pack plus abduction rumour	-	helpless abduction; K
+Mothership Zeta	Wasteland cryptids (Fallout)	https://fallout.fandom.com/wiki/Mothership_Zeta	P,X	PACK	crashed or orbiting ship as a dungeon; tech setting	-	being taken
+Forced Evolutionary Virus (FEV)	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Forced_Evolutionary_Virus	G,P	LAW	a replicating agent that rewrites tissue with graded change; needs self-replication with conserved mass	pattern infection / self-replication law with conserved mass	lose your body shape; body horror
+Radiation sickness	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Radiation	P	LAW	dose with delayed onset and graded damage	nuclear energy release and radiation dose law	slow invisible death
+Vault-Tec Vault experiments	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Vault-Tec	S,K	COVERED	institution running social experiments on sealed populations; S institution pack plus K isolation	-	cruelty of the design and being a subject; S
+Brotherhood of Steel	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Brotherhood_of_Steel	S	PACK	tech-hoarding military cult; culture pack	-	armoured zealots
+Enclave	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Enclave	S	PACK	remnant government with advanced tech; faction pack	-	bureaucratic menace
+Liberty Prime	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Liberty_Prime	P	PACK	giant robot with a beam weapon and a propaganda voice; machine pack	-	size and ideology
+Protectron	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Protectron	P	PACK	domestic robot with a rigid script; machine with a rule-bound agent	-	polite menace
+Assaultron	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Assaultron	P	PACK	fast robot with a laser head; machine pack	-	fast and unnerving
+Sentry bot	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Sentry_bot	P	PACK	heavy armoured robot with a minigun; machine pack	-	armour that you cannot bypass
+Eyebot	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Eyebot	P	PACK	floating scout robot broadcasting a signal; machine pack	-	surveillance
+Synths (Institute)	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Synth	P,K,S	COVERED	artificial replica people who may not know they are replicas; machine bodies with memory implants and doubt	-	you cannot trust who is human; K paranoia
+Chems (Jet, Psycho, Buffout)	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Chem	P,G	PACK	drugs with graded effect and addiction state; a pharmacology pack	-	addiction and withdrawal
+Stimpak	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Stimpak	P	PACK	injectable healing item; material pack	-	relief
+Nuka-Cola	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Nuka-Cola	S,P	PACK	culture-defining drink; also bottle caps as currency; S pack	-	nostalgia in ruin
+Pip-Boy	Wasteland systems (Fallout)	https://fallout.fandom.com/wiki/Pip-Boy	P,K	PACK	wearable computer that shows body and map data; interface device pack	-	dependence on the device
+Perk: Nerd Rage	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Nerd_Rage!	P,G	PACK	damage bonus at low health, a stress state dial	-	desperate strength
+Perk: Ghoulish	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Ghoulish	G	PACK	radiation heals; a graded G effect	-	body change
+Perk: Rad Absorption	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Rad_Absorption	G	PACK	radiation tolerance dial	-	body change
+Perk: Wasteland Whisperer	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Wasteland_Whisperer	K,M	PACK	befriend or pacify animals by a trained signal; an animal mind-bias pack	-	calm in the face of beasts
+Perk: Terrifying Presence	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Terrifying_Presence	K,S	PACK	intimidation by presence; a social dial	-	being feared
+Perk: Cannibal	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Cannibal	P,S	PACK	heals by eating the dead; a taboo-breaking diet	-	taboo and disgust
+Perk: Mysterious Stranger	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Mysterious_Stranger	K	EXCLUDED	an unseen helper that appears at random; narrative-only luck	-	-
+Perk: Lifegiver	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Lifegiver	G	PACK	extra health from genes	-	body change
+Perk: Adamantium Skeleton	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Adamantium_Skeleton	G	PACK	bone strength dial	-	body change
+Perk: Solar Powered	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Solar_Powered	G,P	PACK	photosynthesis-like energy gain; a body energy source pack	-	body change
+Perk: Paralyzing Palm	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Paralyzing_Palm	P	COVERED	nerve strike that stuns; contact effect	-	helplessness
+Perk: Bloody Mess	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Bloody_Mess_(perk)	P	PACK	kills produce gore; cosmetic gore dial	-	gore
+Perk: Lead Belly	Wasteland perks (Fallout)	https://fallout.fandom.com/wiki/Lead_Belly	P	PACK	reduced radiation from food and water	-	resilience
+Nosalis	Metro mutants	https://metrovideogame.fandom.com/wiki/Nosalis	G	PACK	pack burrowing predator with night vision; animal pack with a sense dial	-	pack in dark tunnels
+Watcher (Metro)	Metro mutants	https://metrovideogame.fandom.com/wiki/Watcher	G,K	PACK	bat-like creature that lights up and lures; animal with a lure signal	-	glowing eyes in the dark
+Librarian	Metro mutants	https://metrovideogame.fandom.com/wiki/Librarian	G,K	PACK	big ape-like tunnel dweller that throws rocks; territorial animal pack	-	presence in the library dark
+Lurker	Metro mutants	https://metrovideogame.fandom.com/wiki/Lurker	G,K	PACK	big aquatic ambusher; ambush animal	-	ambush from water
+Demon (Metro)	Metro mutants	https://metrovideogame.fandom.com/wiki/Demon	G	PACK	winged predator of the surface; flier pack	-	attack from the sky
+Shrimp	Metro mutants	https://metrovideogame.fandom.com/wiki/Shrimp	G	PACK	giant crustacean of flooded surface; animal pack	-	pinned in water
+Spiderbug	Metro mutants	https://metrovideogame.fandom.com/wiki/Spiderbug	G	PACK	swarming spider-like bug; swarm pack	-	swarm and disgust
+Tsar Fish	Metro mutants	https://metrovideogame.fandom.com/wiki/Tsar_Fish	G,S	PACK	giant fish worshipped as a god by a cult; creature pack plus belief substrate	-	a cult that feeds a beast
+Dark Ones	Metro mutants	https://metrovideogame.fandom.com/wiki/Dark_Ones	G,K,M	COVERED	telepathic mutants who communicate by images that induce visions; M link and K perception effects, misread as hostile	-	misunderstood visions; K
+Blind Ones	Metro mutants	https://metrovideogame.fandom.com/wiki/Blind_Ones	G,K	PACK	sightless pack creatures with sound sense; animal with echolocation-like dial	-	sound-tracked hunters
+Biomass (Metro)	Metro mutants	https://metrovideogame.fandom.com/wiki/Biomass_(Mutant)	G,K	PACK	living mass that engulfs; amorphous creature pack	-	engulfment
+Great Worm	Metro mutants	https://metrovideogame.fandom.com/wiki/Worm	G,S	PACK	huge worm worshipped by cannibals; creature pack plus cult	-	cult of the worm
+Radioactive Luminescent Mushroom	Metro mutants	https://metrovideogame.fandom.com/wiki/Radioactive_Luminescent_Mushroom	G	PACK	glowing fungus that is light source and hazard; plant pack	-	calm glow with dose
+Nagornaya Phantoms	Metro phenomena	https://metrovideogame.fandom.com/wiki/Nagornaya_Phantoms	K,M	COVERED	ghost memories of the dead seen at a location; spirits as stored patterns	-	haunting; K
+Metro anomalies	Metro phenomena	https://metrovideogame.fandom.com/wiki/Anomaly_(Phenomenon)	M	COVERED	zones with M fields that kill or distort; shared with the Zone pack	-	unknown hazard
+Metro ghosts	Metro phenomena	https://metrovideogame.fandom.com/wiki/Ghosts_(Phenomenon)	K,M	COVERED	spirits as ghost memories bound to a place; M store pattern	-	dread in empty tunnels
+Great Door (Metro)	Metro phenomena	https://metrovideogame.fandom.com/wiki/Great_Door	X,K	PACK	a sealed door with a strange story; a doorway pack with a rumour	-	what is behind it
+Gas mask filter timer	Metro systems	https://en.wikipedia.org/wiki/Metro_2033	P,K	COVERED	filter store depleting over time; breathing law plus a timer and cough; supply-anxiety mechanic	-	breath running out; body, K
+Metro station city-states	Metro systems	https://en.wikipedia.org/wiki/Metro_2033	S	COVERED	isolated communities with different ideologies in a network; S culture packs with trade	-	each station a different rule set
+Fourth Reich (Metro)	Metro systems	https://metrovideogame.fandom.com/wiki/Fourth_Reich	S	PACK	extremist faction pack	-	ideological menace
+Red Line (Metro)	Metro systems	https://metrovideogame.fandom.com/wiki/Red_Line	S	PACK	communist faction pack	-	ideological menace
+Spartan Rangers	Metro systems	https://metrovideogame.fandom.com/wiki/The_Rangers	S	PACK	elite order pack	-	trust in an elite
+Great Worm cult	Metro systems	https://metrovideogame.fandom.com/wiki/Savage_Cannibals_of_the_Great_Worm_Cult	S	PACK	cult of cannibals around a beast; culture and belief substrate	-	ritual and eating
+Aurora (Exodus train)	Metro systems	https://en.wikipedia.org/wiki/Metro_Exodus	P,S	PACK	a train as a mobile home; vehicle plus small society	-	home in danger
+Awakened (Shadowrun)	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Awakening	M,G,K	COVERED	sudden rise of ambient M field rearranging life; M field ramp plus G variants	-	world-scale shift; K
+Goblinization	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Goblinization	G,M	COVERED	sharp-jump G variants triggered by M rise; humans transform to orks and trolls	-	body changes against will; body
+Metahumans (elf, dwarf, ork, troll)	Magic (Shadowrun)	https://en.wikipedia.org/wiki/Shadowrun	G,S	PACK	G variants with dials and social stigma; culture pack with racism	-	body and prejudice
+Astral space	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Astral_Space	X,M,K	COVERED	overlaid plane seen by those who perceive M patterns; plane with its own perception layer	-	seeing the unseen; K
+Mana surge	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Mana_surge	M	COVERED	local M field spike increasing spell power	-	unpredictable power
+Mana ebb	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Mana_ebb	M	COVERED	local M field dip; spells weaker; a dial	-	power failing
+Mana storm	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Mana_storm	M	COVERED	M field storm with erratic spell behaviour; field noise	-	loss of control
+Mana void	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Mana_void	M	COVERED	region of near-zero M; wards and spells fail; field floor	-	helplessness
+Background count	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Background_count	M,K	COVERED	persistent ambient M pollution from ritual events that spoils spells; field residual stored as pattern	-	a place scarred by trauma; K
+Dweller on the Threshold	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Dweller_on_the_Threshold	M,K	COVERED	entity that guards a metaplanar gate; a ward being	-	the guard of a gate
+Metaplanes	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Metaplane	X	COVERED	planes as other worlds with wormhole doorways	-	stranger places
+Free spirit	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Free_Spirit	M,K	COVERED	spirit unbound from a conjurer with its own will and drive; M being with a mind	-	an independent power
+Nature spirit	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Nature_Spirits	M	COVERED	spirits tied to elements or places; place-bound patterns	-	respect for the place
+Toxic spirit	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Toxic_Spirits	M,P	COVERED	spirit formed from pollution; pattern from polluted place	-	rage of a polluted place
+Insect spirit	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Insect_spirits	M,K,S	COVERED	hive of spirits that possess hosts to build a nest; patron-host and hive network	-	possession in service of a hive
+Blood magic	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Blood_magic	M	COVERED	a cost of life energy for greater M transfer; body as a store	-	cost in blood
+Totem (mentor spirit)	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Totem	M,S	COVERED	patron being that guides a shaman and shapes their drives; patron-host link	-	shaped by a patron
+Hermetic mage	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Hermetic_Magic	M,S	COVERED	tradition as a stable way to design spell patterns; pack of spell records	-	learning discipline
+Adept (physical adept)	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Adept	M	COVERED	body-internal M use for reflexes and strength; body as a store	-	body as weapon
+Cybermancy	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Cybermancy	M,P	LAW	cyberware and magic interact: implants cost magical capacity (Essence)	capacity ledger shared between body integrity and M channel	loss of self for power
+Essence (Shadowrun)	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Cyberware	M,P	LAW	a capacity of the body for M that falls as the body is replaced; ledger of M capacity versus implants	capacity ledger shared between body integrity and M channel	loss of self for power
+Spell (Shadowrun Fireball)	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Magic	M	COVERED	spells as records of physical quantities with drain; matches the M model	-	power with a cost
+Dragons (Shadowrun)	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Great_Dragons	G,M,S	COVERED	ancient awakened beings with big M stores and political power; powerful entity pack	-	something old and in charge
+Dragonheart (artifact)	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Dragonheart	M	PACK	a large M store taken from a dragon; charged material	-	price of a great power
+Excalibur (Shadowrun artifact)	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Excalibur_(Artifact)	M	PACK	named weapon with a store and a binding; artifact	-	sacred weapon
+Weeping Stone of Ta'bel	Magic (Shadowrun)	https://shadowrun.fandom.com/wiki/Weeping_Stone_of_Ta%E2%80%99bel	M	PACK	artifact with a curse-like effect on a place; ward material	-	hidden cost
+Shadowhound	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Shadowhound	G,M	PACK	paranormal animal that fades from sight; an animal with a visibility dial	-	disappearing predator; K
+Devil rat	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Devil_Rat	G	PACK	vicious swarm of rats; animal pack	-	swarm
+Warform	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Warform	G,P	PACK	technocritter or armoured mutation (u); creature pack	-	combat creature
+Technocritters	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Technocritters	G,P,M	PACK	creatures merging machine and flesh (u); body-machine hybrid pack	-	machine-flesh horror
+Biodrone	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Biodrone	G,P	PACK	engineered animal remote-driven as a drone; body controlled by a link	-	animal as a tool
+Embracer	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Embracer	G	PACK	tentacle clutching creature (u); ambusher animal	-	being gripped
+Ghede fly	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Ghede_Fly	G,M	PACK	spirit-linked insect (u); animal tied to a being	-	swarm of omens
+Tachypus	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Tachypus	G	PACK	extremely fast animal (u); speed dial	-	speed
+Sangre del Diablo	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Sangre_del_Diablo	G	PACK	blood-feeding creature (u); parasite or predator	-	blood loss
+Wild Hunt (Shadowrun)	Critters (Shadowrun)	https://shadowrun.fandom.com/wiki/Wild_Hunt	M,S	PACK	spirit host hunting at night; spirit pack and cultural myth	-	inescapable hunt
+Cyberzombie	Cyberware (Shadowrun)	https://shadowrun.fandom.com/wiki/Cyberzombie	P,K	PACK	a dead body kept going by implants and a control link; machine-driven corpse	-	dead thing walking; body
+Wired reflexes	Cyberware (Shadowrun)	https://shadowrun.fandom.com/wiki/Wired_reflexes	P	COVERED	implant that speeds nerve response; a body speed dial with power cost	-	speed with a wear cost
+Smartlink	Cyberware (Shadowrun)	https://shadowrun.fandom.com/wiki/Smartlink	P,K	COVERED	sensor-sight link between weapon and eye; sensor channel	-	cold precision
+Datajack	Cyberware (Shadowrun)	https://shadowrun.fandom.com/wiki/Datajack	P,K	COVERED	a wired interface into a machine mind; machine-state interface	-	violation of the head
+Skillwires	Cyberware (Shadowrun)	https://shadowrun.fandom.com/wiki/Skill-wires	P,K	PACK	implant driving muscles through downloaded skill programs; chip skills	-	control of the body by software
+Cortex bomb	Cyberware (Shadowrun)	https://shadowrun.fandom.com/wiki/Cortex_bomb	P,S	PACK	implanted explosive for control; device with a trigger	-	a leash in the skull
+Cybereyes	Cyberware (Shadowrun)	https://shadowrun.fandom.com/wiki/Cybereyes	P,K	COVERED	artificial sensors with thermal and zoom channels; sense dials and breakable	-	sight that can be hacked
+Technomancer	Matrix (Shadowrun)	https://en.wikipedia.org/wiki/Shadowrun	K,M	LAW	a person who interacts with machine networks directly through resonance	machine-state interface from M to circuits	surrender to the net
+Matrix (Shadowrun deck)	Matrix (Shadowrun)	https://en.wikipedia.org/wiki/Shadowrun	K	LAW	a virtual network space with ICE and decker avatars	in-world computation substrate that can host entities	death inside a network
+Chaos (Khorne Nurgle Tzeentch Slaanesh)	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Chaos_Gods	M,K,S	COVERED	beings with vast substrates of believers' emotion-linked patterns; power rises with worship and fear	-	gods fed by emotion; K, S
+Khorne	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Khorne	M,S	COVERED	god fed by rage and slaughter; belief substrate of warriors	-	violence unbound
+Nurgle	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Nurgle	M,G	COVERED	god of disease and decay; patron with plague-like host change	-	disgust and decay; body
+Tzeentch	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Tzeentch	M,K	COVERED	god of change and scheming; patron of mutation and conspiracy	-	plans within plans; K
+Slaanesh	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Slaanesh	M,K	COVERED	god of excess and sensation; sense-overload pattern	-	temptation
+The Warp (Immaterium)	Chaos (Warhammer 40,000)	https://en.wikipedia.org/wiki/Warhammer_40,000	X,M,K	COVERED	plane fed by minds' emotions where entities form; plane with doorways and a link from every mind	-	it feeds on you
+Warp storm	Chaos (Warhammer 40,000)	https://en.wikipedia.org/wiki/Warhammer_40,000	M,X	COVERED	violent M storm that cuts ship routes and opens gates; a field event on a plane	-	isolation
+Daemon (Warhammer 40,000)	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Daemons	M,K	COVERED	entity born from a feeling that possesses a host or manifests; patron plus host	-	the idea given a body
+Daemon Prince	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Daemon_Prince	M,G	COVERED	ascended mortal merged with a patron; host with a bonded patron	-	a person turned thing
+Daemonic possession	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Daemonic_Possession	M,K	COVERED	a patron driving a host; matches possession	-	loss of self; K
+Possessed (Chaos)	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Possessed	M,G	COVERED	hosts mutated by daemon within; patron-host with body change	-	body horror
+Chaos Spawn	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Chaos_Spawn	G,M	PACK	uncontrolled mutation; sharp-jump G variants run wild	-	body horror
+Chaos corruption	Chaos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Chaos	G,M,K	COVERED	exposure to M field mutates bodies and minds; G variants plus drift	-	gradual loss of self
+Psyker	Psykers (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Psyker	M	COVERED	a person with strong M channel who risks the warp; human M user	-	cost of power
+Perils of the Warp	Psykers (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Psyker	M,K	COVERED	M channel opening to a patron hazard; a casting failure state	-	losing control
+Navigator	Psykers (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Navigator	G,M	PACK	bloodline with an organ that sees the warp; special sense via G	-	hidden face, hidden sight
+Astronomican	Psykers (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Astronomican	M	COVERED	beacon of M that guides ships across planes; a huge M source	-	a single point of failure
+Golden Throne	Psykers (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Golden_Throne	M,P	COVERED	machine feeding a mind with psyker lives and keeping it alive; battery of linked minds	-	sacrifice at scale
+Sanctioned psykers (soul binding)	Psykers (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Psyker	M,S	COVERED	institution that binds and sacrifices psykers; S institution with M use	-	fear of your own gift
+Gellar field	Psykers (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Gellar_Field	M	COVERED	a ward that keeps the plane out of a ship; ward pattern with drain	-	protection that can fail
+Hexagrammic ward	Psykers (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Daemons	M	COVERED	a pattern ward that blocks daemons; ward	-	protection
+Genestealer	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Genestealer	G,K,S	COVERED	infecting predator that implants offspring, producing hybrid cults loyal to the hive mind; parasite that changes behaviour	-	infiltration of society
+Genestealer cult	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Genestealer_Cult	G,S,K	COVERED	slow hybrid infiltration across generations; parasite plus S institution	-	cultists look normal; K paranoia
+Hive mind (Tyranids)	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Tyranids	K,M	COVERED	synapse creatures that linked patterns coordinate; hive network where kill the node and the swarm falls	-	swarm intelligence
+Tyranid hive fleet	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Hive_Fleet_Kraken	G,P	COVERED	ecological strip-mining swarm using matter conversion; consume mass and rebuild	-	inevitable consumption
+Carnifex	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Carnifex	G	PACK	big bio-engineered siege creature; animal pack	-	size
+Mawloc	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Mawloc	G	PACK	burrowing ambusher; animal with a trigger	-	attack from below
+Kroot	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Kroot	G,S	PACK	mercenary race that gains traits by eating foes; genome-eating culture	-	eating to become
+Orks (WAAAGH!)	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Orks	M,S,G	COVERED	belief-powered reality: crude machines work because they believe; faith substrate with M	-	chaos that works because it believes
+WAAAGH! (psychic field)	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Orks	M,S	COVERED	a mass-linked field strengthened by crowd belief; belief substrate	-	crowd as weapon
+Necrons	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Necrons	P,M,X	COVERED	bodies with reanimation protocol that rebuilds parts; X rewind of parts together	-	they get up again
+C'tan	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/C'tan	M,K	COVERED	star-gods that eat energy; big M beings	-	something that eats suns
+Eldar soulstone	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Eldar	M,K	COVERED	stone that holds a soul pattern to protect it from the warp; ghost memory store	-	stored dead minds
+Webway	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Webway	X	COVERED	network of wormhole doorways outside space; doorway graph with cycles	-	a path that is not yours
+Drukhari (pain feeding)	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Drukhari	M,S	COVERED	beings who feed on others' pain to avoid a patron; M source from suffering	-	cruelty as nourishment
+Tau drones	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Tau_Drones	P	PACK	autonomous machines with simple AI; machine pack	-	polite machines
+Ogryn and Ratling (abhumans)	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Ogryn	G,S	PACK	G variants with social stigma; abhuman cultures	-	useful but despised
+Astartes (Space Marine)	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Space_Marine	G,P,S	PACK	engineered soldiers with organ implants and a gene seed; graded G effect and an order	-	inhuman devotion
+Geneseed	Xenos (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Space_Marine	G	PACK	genetic organ that passes enhancement; G variants	-	bodily inheritance
+Adeptus Mechanicus	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Adeptus_Mechanicus	S,P,K	COVERED	institution that venerates machines and replaces flesh; S institution with taboo on innovation	-	religion of machines
+Servitor	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Servitor	P,K	PACK	lobotomised human with tools; body driven by simple script	-	person turned into tool
+Machine spirit	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Machine_spirit	K,S	COVERED	belief that machines have spirits and need appeasement; K belief that survives untested; ritual culture	-	ritual with real stakes
+Titan (Warhammer 40,000)	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Titan	P	COVERED	giant war machine with a linked pilot crew; mecha	-	scale
+Dreadnought (Warhammer 40,000)	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Dreadnought	P,K	PACK	a dying hero's body kept alive in a war machine; machine with a living mind inside	-	entombed
+Defiler (Daemon engine)	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Defiler	P,M	PACK	machine bound with a daemon driving it; patron-host in a machine	-	the machine is alive and hates
+Forgefiend	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Forgefiend	P,M	PACK	bound daemon in a cannon-beast; patron-host in a machine	-	a machine that wants to kill
+Soul Grinder	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Soul_Grinder	P,M	PACK	daemon-engine that harvests souls; patron-host in a machine	-	a walker that eats minds
+Heldrake	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Heldrake	P,M	PACK	bound daemon in a flying machine	-	a screaming flier
+Tomb World	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Necrons	P	PACK	sleeping city of machines waking over time; dungeon with a timer	-	a thing awakens
+Men of Iron	Technology (Warhammer 40,000)	https://warhammer40k.fandom.com/wiki/Men_of_Iron	P,K	COVERED	AI revolt in lore; machine minds as part of the world	-	taboo of thinking machines
+Neuromancer (cyberspace jacking)	Cyberpunk	https://en.wikipedia.org/wiki/Neuromancer	K,P	LAW	consensual hallucination of a computer network entered by jacking in; avatars in a machine-hosted space	in-world computation substrate that can host entities	ice that kills the jacked mind; K, body
+Wintermute and Neuromancer (split AI)	Cyberpunk	https://en.wikipedia.org/wiki/Neuromancer	K,P	LAW	an AI pursuing its own merge goal by manipulating humans; machine mind with goals	in-world computation substrate that can host entities	you are a tool of something unseen; K
+Intrusion Countermeasures Electronics (ICE)	Cyberpunk	https://en.wikipedia.org/wiki/Intrusion_Countermeasures_Electronics	K,P	LAW	defensive programs in a net that attack intruders; lethal feedback into the user's body	machine-state interface from M to circuits	death from a screen; K, body
+Black ICE	Cyberpunk	https://en.wikipedia.org/wiki/Intrusion_Countermeasures_Electronics	K,P	LAW	ICE that can kill by neural feedback	machine-state interface from M to circuits	being killed through the interface
+Cyberdeck	Cyberpunk	https://en.wikipedia.org/wiki/Cyberdeck	P,K	COVERED	a portable computer device with an interface to the net; device pack	-	dependence on a tool
+Console cowboy (decker, netrunner)	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk	K,S	PACK	an outlaw specialist in net intrusion; role pack with a vulnerable body left behind	-	body left unguarded while the mind is away
+Megacorporation	Cyberpunk	https://en.wikipedia.org/wiki/Megacorporation	S	PACK	corporations as state-like powers with private armies; S institution pack	-	no rule of law that helps you
+Corporate extraterritoriality	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk	S	PACK	law that does not apply on corporate land; S law pack	-	no appeal
+Street samurai (razorgirl)	Cyberpunk	https://en.wikipedia.org/wiki/Molly_Millions	P,S	PACK	augmented mercenary with blades and reflex wires; body augmentation role	-	chrome and violence
+Molly Millions (mirrorshades, razor nails)	Cyberpunk	https://en.wikipedia.org/wiki/Molly_Millions	P	PACK	augmented fighter with retractable blades and mirrored sensor implants; cyborg pack	-	cold efficiency
+Johnny Mnemonic (data courier with implant)	Cyberpunk	https://en.wikipedia.org/wiki/Johnny_Mnemonic_(film)	P,K	COVERED	data stored in a brain implant with an overload risk; memory record store	-	carry a secret that kills you
+Cyberpsychosis	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk_2077	P,K	LAW	too many implants cause loss of empathy and rage; a ledger linking body replacement to mind drift	capacity ledger shared between body integrity and M channel	becoming a monster; K, body
+Braindance (recorded experience)	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk_2077	K,P	LAW	recorded sensory and emotional streams replayed by another brain; encode and decode of brain state	brain-state encode/decode on an M link	live another's death; K
+Strange Days (SQUID recording)	Cyberpunk	https://en.wikipedia.org/wiki/Strange_Days_(film)	K,P	LAW	a device that records and replays the senses of a person	brain-state encode/decode on an M link	experiencing a murder as the killer
+Soulkiller (engram upload that kills)	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk_2077	K,P	LAW	a program that scans a brain into a construct and destroys the original	copy identity rule for minds	the copy is you and you are dead
+Relic engram (Johnny Silverhand)	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk_2077	K,P	LAW	a stored person's mind that overwrites a host brain slowly	copy identity rule for minds	a second self taking over
+Blackwall (net fence against rogue AI)	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk_2077	K	LAW	barrier keeping hostile machine minds out of the net	in-world computation substrate that can host entities	something old and hungry behind a wall
+Sandevistan (time dilation implant)	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk:_Edgerunners	P	PACK	implant that speeds reaction hugely at heavy body cost; body speed dial with heat and wear	-	speed that burns you out
+Mantis blades	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk_2077	P	PACK	arm-blade implants; a body modification pack	-	body as weapon
+Monowire	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk_2077	P	PACK	molecule-thin cutting wire implant	-	body-horror weapon
+Gorilla arms	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk_2077	P	PACK	strength implants for arms; actuator pack	-	power and clumsiness
+Ripperdoc	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk_2077	P,S	PACK	back-alley surgeon who installs implants; role pack	-	trust in an unlicensed surgeon
+Subdermal armor	Cyberpunk	https://en.wikipedia.org/wiki/Cyberpunk	P	PACK	armor under the skin; body material pack	-	body as armor
+Simstim (simulated stimulus)	Cyberpunk	https://en.wikipedia.org/wiki/Neuromancer	K,P	LAW	experiencing another person's senses by a link	brain-state encode/decode on an M link	being a passenger
+Matrix (film) simulated world	Cyberpunk	https://en.wikipedia.org/wiki/The_Matrix	K,X	COVERED	a plane that minds experience as reality; planes plus K false beliefs that survive untested	-	nothing is real; K
+Agent Smith	Cyberpunk	https://en.wikipedia.org/wiki/Agent_Smith	K,P	LAW	a program that copies itself into other bodies in the net; self-replication in a machine space	in-world computation substrate that can host entities	you become him
+Red pill (waking from simulation)	Cyberpunk	https://en.wikipedia.org/wiki/The_Matrix	K	EXCLUDED	metaphor of choosing truth; narrative device	-	-
+Sentinels (Matrix machines)	Cyberpunk	https://en.wikipedia.org/wiki/Sentinel_(The_Matrix)	P	PACK	swarming tentacle robots; machine swarm pack	-	swarm and relentlessness
+Neural jacks (I know kung fu)	Cyberpunk	https://en.wikipedia.org/wiki/The_Matrix	K,P	LAW	skills loaded by direct write to memory	brain-state encode/decode on an M link	instant mastery; K
+Snow Crash (neurolinguistic virus)	Cyberpunk	https://en.wikipedia.org/wiki/Snow_Crash	K,S	LAW	a pattern that causes a mind to malfunction on perception; meme as a virus	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect	a picture that breaks you; K
+Metaverse (Snow Crash)	Cyberpunk	https://en.wikipedia.org/wiki/Metaverse	K,S	LAW	shared virtual world with avatars	in-world computation substrate that can host entities	a world that owns you
+Ghost in the Shell (ghost-hacking)	Cyberpunk	https://en.wikipedia.org/wiki/Ghost_in_the_Shell	K,P	LAW	rewriting memories and perception of a cyberbrain from outside	memory-record edit/erase as a targeted effect on K minds	you cannot trust your memory; K
+Cyberbrain	Cyberpunk	https://en.wikipedia.org/wiki/Ghost_in_the_Shell	P,K	LAW	a brain with a network interface; machine-state interface	machine-state interface from M to circuits	hacked mind
+Puppet Master (Ghost in the Shell)	Cyberpunk	https://en.wikipedia.org/wiki/Puppet_Master_(Ghost_in_the_Shell)	K,P	LAW	an AI that claims to be life and merges with a person	in-world computation substrate that can host entities	is it alive; K
+Tachikoma	Cyberpunk	https://en.wikipedia.org/wiki/Tachikoma	P,K	PACK	AI spider tanks that develop selfhood; machine pack with learning	-	innocence of machines
+Thermoptic camouflage	Cyberpunk	https://en.wikipedia.org/wiki/Ghost_in_the_Shell	P	PACK	active camouflage that bends light; material pack with a visibility dial	-	invisible attacker
+Replicant (Blade Runner)	Cyberpunk	https://en.wikipedia.org/wiki/Replicant	P,K,S	COVERED	artificial humans with implanted memories and a short life; body pack plus K doubt	-	who is human; K
+Voight-Kampff test	Cyberpunk	https://en.wikipedia.org/wiki/Blade_Runner	K,S	COVERED	test of emotional response used to detect machines; K probe through reaction	-	you may be the thing you hunt
+Tyrell Corporation	Cyberpunk	https://en.wikipedia.org/wiki/Blade_Runner	S	PACK	maker of replicants; institution pack	-	creator's cruelty
+Altered Carbon (stacks and sleeves)	Cyberpunk	https://en.wikipedia.org/wiki/Altered_Carbon	K,P,S	LAW	a stored mind moved between bodies; mind copy and identity	copy identity rule for minds	death is optional for the rich; K, S
+Meths (Methuselahs)	Cyberpunk	https://en.wikipedia.org/wiki/Altered_Carbon	S,P	PACK	ultra-rich with backup bodies; elite class pack	-	those who cannot die
+Psycho-Pass (Sibyl System)	Cyberpunk	https://en.wikipedia.org/wiki/Psycho-Pass	S,K	COVERED	institution that scores mental state and pre-punishes; S institution	-	being judged by a number
+Dominator (Psycho-Pass)	Cyberpunk	https://en.wikipedia.org/wiki/Psycho-Pass	P,S	PACK	weapon that reads a target's crime coefficient; sensor weapon pack	-	automated judgement
+Serial Experiments Lain (the Wired)	Cyberpunk	https://en.wikipedia.org/wiki/Serial_Experiments_Lain	K,M	LAW	a network layered on minds where belief makes gods; collective shared mind	in-world computation substrate that can host entities	identity dissolves; K
+Videodrome (New Flesh)	Cyberpunk	https://en.wikipedia.org/wiki/Videodrome	K,G	LAW	signal that causes hallucination and body change; infohazard with body effect	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect	signal remakes your body; K
+Tetsuo: The Iron Man	Cyberpunk	https://en.wikipedia.org/wiki/Tetsuo:_The_Iron_Man	G,P	LAW	human turns into metal; matter conversion of the body	pattern infection / self-replication law with conserved mass	body horror
+eXistenZ	Cyberpunk	https://en.wikipedia.org/wiki/Existenz	K,P	PACK	organic game pods with bio-ports; device pack with a reality-blur	-	reality blur; K
+Total Recall (implanted memories)	Cyberpunk	https://en.wikipedia.org/wiki/Total_Recall_(1990_film)	K	LAW	memory implants that make you doubt who you are	memory-record edit/erase as a targeted effect on K minds	who am I; K
+RoboCop (Murphy, Directives)	Cyberpunk	https://en.wikipedia.org/wiki/RoboCop	P,K,S	COVERED	a human brain in a machine body bound by rules; rule-bound agent with a hidden override	-	rules you cannot break
+ED-209	Cyberpunk	https://en.wikipedia.org/wiki/ED-209	P	PACK	autonomous combat robot with faulty logic; machine pack	-	automation fails and kills
+Akira (Tetsuo's psychic overload)	Cyberpunk	https://en.wikipedia.org/wiki/Akira_(1988_film)	M,G,K	COVERED	a mind with huge M channel that grows beyond control and mutates the body; M user with a body store runaway	-	power consuming the person
+Espers (Akira)	Cyberpunk	https://en.wikipedia.org/wiki/Akira_(1988_film)	M,G	COVERED	artificially induced M users in a lab; G variants with M channel	-	experimented children
+Deus Ex (augmentation rejection, Neuropozyne)	Cyberpunk	https://en.wikipedia.org/wiki/Deus_Ex:_Human_Revolution	P,G	PACK	implants need a drug to prevent rejection; dependence mechanic	-	chemical leash
+Deus Ex (Illuminati conspiracy)	Cyberpunk	https://en.wikipedia.org/wiki/Deus_Ex	S,K	COVERED	hidden elites controlling events; rumour plus institution	-	nothing is as it seems; K
+Social credit system	Cyberpunk	https://en.wikipedia.org/wiki/Social_credit_system	S	COVERED	reputation as a score controlling access; S institution	-	scrutiny everywhere
+Arcology	Cyberpunk	https://en.wikipedia.org/wiki/Arcology	S,P	PACK	self-contained mega-building city; setting pack	-	enclosed society
+Hive city	Cyberpunk	https://en.wikipedia.org/wiki/Hive_city	S,P	PACK	vertical city with class layers; setting pack	-	class layers
+Megacity (sprawl)	Cyberpunk	https://en.wikipedia.org/wiki/Megacity	S	PACK	dense urban area with neon and crime; setting pack	-	anonymity and noise
+Sensory overload	Cyberpunk	https://en.wikipedia.org/wiki/Sensory_overload	K,P	PACK	information-saturated environment that strains attention; perception dial	-	nothing stands out; K
+Dead Internet theory	Cyberpunk	https://en.wikipedia.org/wiki/Dead_Internet_theory	K,S	PACK	belief that most content is generated; false belief that survives untested	-	nobody real is there; K
+Virtual influencer	Cyberpunk	https://en.wikipedia.org/wiki/Virtual_influencer	S,K	PACK	artificial persona with followers; S reputation pack	-	nothing behind the face
+Cyberspace (virtual space)	Cyberpunk	https://en.wikipedia.org/wiki/Cyberspace	K	LAW	a space inside computers visible to minds	in-world computation substrate that can host entities	escape that traps
+Biopunk	Cyberpunk subgenres	https://en.wikipedia.org/wiki/Biopunk	G,P	PACK	genetic engineering as dominant tech; G variants and corporate biotech	-	bodies as commodity
+Nanopunk	Cyberpunk subgenres	https://en.wikipedia.org/wiki/Nanopunk	P	LAW	nanomachines as tech; molecular assemblers	pattern infection / self-replication law with conserved mass	invisible machines in your body
+Solarpunk	Cyberpunk subgenres	https://en.wikipedia.org/wiki/Solarpunk	S,P	PACK	renewable-powered hopeful society; culture pack	-	hope rather than fear
+Wetware (brain)	Cyberpunk subgenres	https://en.wikipedia.org/wiki/Wetware_(brain)	P,K	PACK	living tissue as computer; body part as a machine	-	flesh as hardware
+Neuralink-style brain implant	Transhumanism	https://en.wikipedia.org/wiki/Neuralink	P,K	COVERED	implant reading and writing neural signals; sensor interface	-	control of thought
+Microchip implant	Transhumanism	https://en.wikipedia.org/wiki/Microchip_implant_(human)	P,S	PACK	small tracking or ID chip in the body; device pack	-	surveillance in the body
+Magnetic implant (sixth sense)	Transhumanism	https://en.wikipedia.org/wiki/Magnetic_implant	P,K	PACK	implant that senses magnetic fields; new sense channel	-	a sense you did not evolve
+Cyborg (Neil Harbisson antenna)	Transhumanism	https://en.wikipedia.org/wiki/Cyborg_art	P,K	PACK	body with sensor addition; new sense channel	-	new sense
+Human enhancement	Transhumanism	https://en.wikipedia.org/wiki/Human_enhancement	P,G	COVERED	raising body or mind dials by drug, implant or gene; graded G plus ledger	-	inequality and cost
+Gene doping	Transhumanism	https://en.wikipedia.org/wiki/Human_genetic_enhancement	G	PACK	genetic change to raise performance; G variants	-	cheating and risk
+Designer baby	Transhumanism	https://en.wikipedia.org/wiki/Designer_baby	G,S	PACK	embryo selection or editing for traits; G variants plus taboo	-	loss of the unplanned
+Radical life extension	Transhumanism	https://en.wikipedia.org/wiki/Life_extension	G,P	PACK	slowing the aging process by body repair; body age dial	-	the long boredom of living
+Digital immortality	Transhumanism	https://en.wikipedia.org/wiki/Digital_immortality	K,P	LAW	a mind continuing as a copy in a machine	copy identity rule for minds	the copy suffers forever
+Whole brain emulation	Transhumanism	https://en.wikipedia.org/wiki/Mind_uploading	K,P	LAW	emulation of a brain on a computer	in-world computation substrate that can host entities	a mind in a box
+Morphological freedom	Transhumanism	https://en.wikipedia.org/wiki/Morphological_freedom	G,P,S	PACK	the right to change one's body; culture pack	-	body identity drift
+Intelligence amplification	Transhumanism	https://en.wikipedia.org/wiki/Intelligence_amplification	K,G	PACK	raising cognition by drug or implant; mind dial	-	the gap between smart and normal
+Friendly AI (alignment)	Transhumanism	https://en.wikipedia.org/wiki/Friendly_artificial_intelligence	K	COVERED	machine goals mismatching ours with agents as optimisers; mind with a drive set	-	a mind that does exactly what you said
+Paperclip maximiser	Transhumanism	https://en.wikipedia.org/wiki/Instrumental_convergence	K,P	COVERED	a mind with one drive that consumes everything; unbounded optimiser agent	-	indifferent mind with power
+Teletransportation paradox	Transhumanism	https://en.wikipedia.org/wiki/Teletransportation_paradox	X,K	COVERED	scan, destroy and rebuild a body; X exact copy with identity question	-	am I the copy; K
+Ship of Theseus identity	Transhumanism	https://en.wikipedia.org/wiki/Ship_of_Theseus	K,X	COVERED	replacing parts one by one; X rebuild with a continuity question	-	the self as a pattern
+Uplift (animals raised to sapience)	Transhumanism	https://en.wikipedia.org/wiki/Uplift_(science_fiction)	G,K	PACK	engineered animals with human minds; G variants and S status	-	new people with no place
+Nootropic pill (Limitless)	Transhumanism	https://en.wikipedia.org/wiki/Limitless_(film)	P,G	PACK	drug raising cognition with side effects and withdrawal; pharmacology pack	-	brilliance that costs
+Noosphere	Transhumanism	https://en.wikipedia.org/wiki/Noosphere	K,S	PACK	sphere of shared thought; rumour network picture	-	collective mind
+Kardashev scale	Transhumanism	https://en.wikipedia.org/wiki/Kardashev_scale	P	LAW	civilisation power by scale of energy use	Planet / astronomical scale slow world tick	scale beyond mind
+Gundam (mobile suit)	Mecha	https://en.wikipedia.org/wiki/Gundam_(fictional_robot)	P	COVERED	piloted giant robot with actuators and power plant; machine design	-	scale and the pilot's vulnerability
+Newtype (Gundam)	Mecha	https://en.wikipedia.org/wiki/Gundam	M,K,G	COVERED	people with an M channel for sensing and links; G variants with M sense	-	being understood too well; K
+Minovsky particle	Mecha	https://en.wikipedia.org/wiki/Gundam	P	LAW	a fictional particle that blocks radar so war is close-range; a local jammer of sensors	sensor EM/IR detection law	sensor-blind close battle; K
+Evangelion (Eva units)	Mecha	https://en.wikipedia.org/wiki/Evangelion_(mecha)	P,G,M	COVERED	giant biological machines synched with pilots by a link; bonded body and pilot mind	-	child in a monster body; body, K
+AT Field	Mecha	https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion	M	COVERED	a ward pattern around a body or being; stable design with a drain	-	shield that breaks
+Angels (Evangelion)	Mecha	https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion	M,G	PACK	giant beings with strange forms and a core; monster pack	-	alien incomprehensible
+Human Instrumentality Project	Mecha	https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion	K,M	LAW	merging all minds into one; mass mind link and merge	brain-state encode/decode on an M link	loss of self
+Entry plug (LCL)	Mecha	https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion	P,K	PACK	cockpit filled with fluid that carries the link; interface pack	-	drowning in the machine
+Macross (Valkyrie transformation)	Mecha	https://en.wikipedia.org/wiki/VF-1_Valkyrie	P	COVERED	transforming jet-robot machine; mechanism and mass conserved	-	human-scale war machine
+Zentradi (giant aliens)	Mecha	https://en.wikipedia.org/wiki/Super_Dimension_Fortress_Macross	G,S	PACK	cloned giant warriors without culture; G race and S culture shock	-	a culture that does not know love
+Protoculture (song as weapon)	Mecha	https://en.wikipedia.org/wiki/Macross	M,K	COVERED	music that drives minds; sensory bias effect through perception	-	song changes you; K
+Patlabor (labors)	Mecha	https://en.wikipedia.org/wiki/Patlabor	P,S	PACK	industrial work robots and a police force; machine pack	-	workaday mecha crime
+Armored Core	Mecha	https://en.wikipedia.org/wiki/Armored_Core	P	PACK	customisable war machines in corporate wars; machine design	-	corporate war
+BattleMech (BattleTech)	Mecha	https://en.wikipedia.org/wiki/BattleTech	P	COVERED	giant walker machines with heat management; machine design with a heat ledger	-	heat and fragility
+Neurohelmet (BattleTech)	Mecha	https://en.wikipedia.org/wiki/BattleTech	P,K	PACK	helmet that feeds balance into the machine; interface pack	-	pilot vulnerable to feedback
+Jaeger (Pacific Rim)	Mecha	https://en.wikipedia.org/wiki/Gipsy_Danger	P,K	COVERED	huge robot piloted by two linked minds; machine with a neural link and the drift	-	two minds as one; K
+The Drift (neural bridge)	Mecha	https://en.wikipedia.org/wiki/Pacific_Rim_(film)	K,M	COVERED	shared memory link between two pilots; link bond	-	your memories are exposed; K
+Voltron (combining lions)	Mecha	https://en.wikipedia.org/wiki/Voltron	P	PACK	robots that combine; machine with a combination protocol	-	team scale
+Gurren Lagann (spiral energy)	Mecha	https://en.wikipedia.org/wiki/Gurren_Lagann	M,K	COVERED	willpower-powered energy; belief substrate feeding an M source	-	defiance made power
+Getter Robo (Getter rays)	Mecha	https://en.wikipedia.org/wiki/Getter_Robo	P,G,M	PACK	radiation that evolves pilots and machines; G effects from a field	-	evolution as threat
+Code Geass (Knightmare frames)	Mecha	https://en.wikipedia.org/wiki/Code_Geass	P,S	PACK	armed frames in a political drama; machine pack	-	power through oppression
+Geass (mind-command eye)	Mecha	https://en.wikipedia.org/wiki/Code_Geass	M,K	COVERED	M effect that imposes a command once on a person; patron-host command with a one-use limit	-	your own will overridden; K
+Titanfall (Titans and pilot bond)	Mecha	https://en.wikipedia.org/wiki/Titanfall	P,K	PACK	giant robots with pilots in a bond; machine plus an AI mind	-	a machine that cares
+Transformers	Mecha	https://en.wikipedia.org/wiki/Transformers	P	PACK	sentient robots that transform; machine minds with mode switch	-	giants among us
+Metal Gear REX (nuclear walking tank)	Mecha	https://en.wikipedia.org/wiki/Metal_Gear_(mecha)	P	PACK	walking tank with a nuclear launcher; machine pack	-	catastrophic weapon
+Mazinger Z	Mecha	https://en.wikipedia.org/wiki/Mazinger_Z	P	PACK	first super robot with a pilot cockpit; machine pack	-	giant hero
+Escaflowne (guymelef)	Mecha	https://en.wikipedia.org/wiki/The_Vision_of_Escaflowne	P,M	COVERED	giant armor fused with magic stones and a fate-seeing power; machine with M store	-	magic machine
+Gunbuster (relativistic time dilation)	Mecha	https://en.wikipedia.org/wiki/Gunbuster	P	LAW	long space journeys pass years on Earth; relativistic time difference	relativistic velocity and light-time	loved ones age while you fight
+Exosuit (Edge of Tomorrow)	Mecha	https://en.wikipedia.org/wiki/Edge_of_Tomorrow	P	PACK	powered suit for infantry; machine pack	-	armour fragility
+Iron Man (arc reactor suit)	Mecha	https://en.wikipedia.org/wiki/Iron_Man	P	LAW	compact power source in a suit; a dense energy store	nuclear energy release and radiation dose law	power with a leash
+Powered exoskeleton	Mecha	https://en.wikipedia.org/wiki/Powered_exoskeleton	P	COVERED	worn frame with actuators and an energy store; machine design	-	strength with battery limits
+AT-AT walker	Mecha	https://en.wikipedia.org/wiki/AT-AT	P	PACK	walking tank; machine pack	-	walking fortress
+Maschinenmensch (Metropolis)	Mecha	https://en.wikipedia.org/wiki/Maschinenmensch	P,S,K	PACK	robot double of a person used to deceive; machine with a face copy	-	false face; K
+Godzilla (atomic breath)	Kaiju	https://en.wikipedia.org/wiki/Godzilla	P,G	LAW	giant creature with a nuclear heat beam; needs energy release and a plausible mass budget	nuclear energy release and radiation dose law	scale; nuclear allegory
+Mechagodzilla	Kaiju	https://en.wikipedia.org/wiki/Mechagodzilla	P	PACK	giant machine copy of a kaiju; mecha pack	-	a machine that outlasts
+King Ghidorah	Kaiju	https://en.wikipedia.org/wiki/King_Ghidorah	G,P	PACK	three-headed giant flier; monster pack	-	sky terror
+Gamera	Kaiju	https://en.wikipedia.org/wiki/Gamera	G,P	PACK	giant turtle that flies by jet-like thrust; monster pack with an energy cost	-	protector monster
+Rodan	Kaiju	https://en.wikipedia.org/wiki/Rodan	G	PACK	giant flier causing shockwaves; monster pack	-	sonic damage from above
+Destoroyah	Kaiju	https://en.wikipedia.org/wiki/Destoroyah	G,P	LAW	microscopic oxygen-eating particles that evolve into a giant	pattern infection / self-replication law with conserved mass	evolving terror
+Biollante	Kaiju	https://en.wikipedia.org/wiki/Biollante	G	PACK	plant-human-Godzilla hybrid; monster pack	-	grotesque body
+Hedorah (Smog Monster)	Kaiju	https://en.wikipedia.org/wiki/Hedorah	G,P	PACK	creature feeding on pollution; ecological monster	-	pollution as monster
+Shin Godzilla	Kaiju	https://en.wikipedia.org/wiki/Shin_Godzilla	G,S	COVERED	a creature that evolves in stages while bureaucracy fails; adaptation plus S institution	-	institutions fail
+Ultraman	Kaiju	https://en.wikipedia.org/wiki/Ultraman	M,P	PACK	giant hero with a time limit powered by light energy; hero pack	-	three minutes to win
+Kaiju (Pacific Rim)	Kaiju	https://en.wikipedia.org/wiki/Pacific_Rim_(film)	G,P	PACK	bio-engineered monsters coming through a rift; monster pack plus doorway	-	scale and doorways
+Mothra's fairies (Shobijin)	Kaiju	https://en.wikipedia.org/wiki/Mothra	M,K	PACK	small beings who speak for the god-monster; patron-spokes pack	-	prayer to the giant
+Daimajin	Kaiju	https://en.wikipedia.org/wiki/Daimajin	M,S	PACK	stone god that wakes when the faithful are betrayed; belief substrate activating	-	wrath of a god
+MUTO (Monsterverse Titans)	Kaiju	https://en.wikipedia.org/wiki/Monsterverse	G,P	PACK	giant radiation-eating animals with EMP; monster pack	-	scale
+Mad Max (wasteland)	Post-apocalypse	https://en.wikipedia.org/wiki/Mad_Max	S,P	PACK	fuel-poor world of road gangs; setting pack with scarcity	-	scarcity and violence
+War Boys (Fury Road)	Post-apocalypse	https://en.wikipedia.org/wiki/Mad_Max:_Fury_Road	S,K	COVERED	young men in a death cult who seek a glorious death; S culture with a belief reward	-	fanatics who want to die
+Immortan Joe	Post-apocalypse	https://en.wikipedia.org/wiki/Immortan_Joe	S	PACK	cult tyrant controlling water; S leader	-	control of a scarce resource
+The Road (McCarthy)	Post-apocalypse	https://en.wikipedia.org/wiki/The_Road	S,P	PACK	ash world with cannibals and a father's love; setting pack	-	cannibals and hunger
+A Canticle for Leibowitz	Post-apocalypse	https://en.wikipedia.org/wiki/A_Canticle_for_Leibowitz	K,S	COVERED	monks preserving partial knowledge through the dark ages; K knowledge loss and copying	-	knowledge as relic
+Wool (Silo)	Post-apocalypse	https://en.wikipedia.org/wiki/Silo_(series)	S,K	COVERED	sealed society with controlled information; S institution and K lies	-	a lie that holds the world
+Station Eleven	Post-apocalypse	https://en.wikipedia.org/wiki/Station_Eleven	S	PACK	travelling theatre after a plague; culture pack	-	culture as survival
+The Last of Us (Cordyceps)	Post-apocalypse	https://en.wikipedia.org/wiki/The_Last_of_Us	G,P,S	COVERED	a fungus that takes over a host and changes behaviour; real parasite scaled up	-	infected loved ones; body horror
+Clickers (The Last of Us)	Post-apocalypse	https://en.wikipedia.org/wiki/The_Last_of_Us	G,P	COVERED	blind infected that hunt by echolocation; sound-sense dial	-	you must stay silent
+Left 4 Dead special infected	Post-apocalypse	https://en.wikipedia.org/wiki/Left_4_Dead	G,P	PACK	infected with special abilities like Hunter, Smoker, Boomer, Witch; creature pack	-	each with a specific horror
+Days Gone (Freakers)	Post-apocalypse	https://en.wikipedia.org/wiki/Days_Gone	G,P	PACK	swarming infected with a nest structure; swarm pack	-	swarms at night
+28 Days Later (Rage virus)	Post-apocalypse	https://en.wikipedia.org/wiki/28_Days_Later	G,P	PACK	a virus giving instant uncontrolled rage; parasite changing behaviour	-	friend turns in seconds
+Horizon Zero Dawn (machine ecology)	Post-apocalypse	https://en.wikipedia.org/wiki/Horizon_Zero_Dawn	P,K	COVERED	robot animals with a metabolism of biomass; machine pack ecology	-	nature as machines
+Thunderjaw	Post-apocalypse	https://en.wikipedia.org/wiki/Horizon_Zero_Dawn	P	PACK	large combat machine with weak points; machine pack	-	giant with armour
+Faro Plague	Post-apocalypse	https://en.wikipedia.org/wiki/Horizon_Zero_Dawn	P	LAW	self-replicating war machines consuming biomass	pattern infection / self-replication law with conserved mass	the world eaten
+GAIA (terraforming AI)	Post-apocalypse	https://en.wikipedia.org/wiki/Horizon_Zero_Dawn	K,P	LAW	an AI that runs a planet for restoration	in-world computation substrate that can host entities	an intelligence beyond reach
+Nausicaa (Toxic Jungle)	Post-apocalypse	https://en.wikipedia.org/wiki/Nausica%C3%A4_of_the_Valley_of_the_Wind	G,P	COVERED	forest releasing spores that poison but also cleans the earth; ecology pack	-	the forest as enemy
+Ohmu (giant insects)	Post-apocalypse	https://en.wikipedia.org/wiki/Nausica%C3%A4_of_the_Valley_of_the_Wind	G,K,M	COVERED	giant insects with eyes turning red in rage and sense-link; swarm stampede with an emotional signal	-	stampede at scale
+God Warrior (Nausicaa)	Post-apocalypse	https://en.wikipedia.org/wiki/Nausica%C3%A4_of_the_Valley_of_the_Wind	P,G	PACK	living weapon that burns the world; creature pack	-	a failed weapon
+Snowpiercer (class train)	Post-apocalypse	https://en.wikipedia.org/wiki/Snowpiercer	S	COVERED	enclosed society in classes on a train; S institution	-	order held by violence
+Waterworld	Post-apocalypse	https://en.wikipedia.org/wiki/Waterworld	S,G	PACK	flooded world and gilled mutants; setting pack	-	water scarcity
+Day of the Triffids	Post-apocalypse	https://en.wikipedia.org/wiki/The_Day_of_the_Triffids	P,K	COVERED	mass blindness and walking stinging plants; senses broken at scale plus plant creature	-	blind and hunted
+Bird Box	Post-apocalypse	https://en.wikipedia.org/wiki/Bird_Box	K	LAW	entities that cause suicide when seen; percept-as-payload	percept-as-payload: a decoded sensory pattern triggers a neural-bias effect	do not look; K
+A Quiet Place	Post-apocalypse	https://en.wikipedia.org/wiki/A_Quiet_Place	P,K	COVERED	blind creatures that hunt by sound; sound sense dial	-	silence as survival
+The Mist	Post-apocalypse	https://en.wikipedia.org/wiki/The_Mist_(film)	K,S,G	COVERED	mist with creatures plus a mob that turns on itself; K fear plus S crowd	-	human panic worse than monsters
+Wasteland (CRPG)	Post-apocalypse	https://en.wikipedia.org/wiki/Wasteland_(video_game)	S	PACK	ruined desert RPG with rangers; setting pack	-	survival
+Borderlands (Vault and Eridium)	Post-apocalypse	https://en.wikipedia.org/wiki/Borderlands	M,P	PACK	alien material that powers abilities; charged material	-	loot
+Siren (Borderlands)	Post-apocalypse	https://en.wikipedia.org/wiki/Borderlands	M,G	COVERED	rare women with M powers; G variants	-	rare power
+Rage (id) wasteland	Post-apocalypse	https://en.wikipedia.org/wiki/Rage_(video_game)	S	PACK	setting pack	-	mutants and bandits
+Biomutant	Post-apocalypse	https://en.wikipedia.org/wiki/Biomutant	G,P	PACK	furry mutants in a toxic world; G variants	-	toxic world
+Atomfall	Post-apocalypse	https://en.wikipedia.org/wiki/Atomfall	S,K	PACK	quarantine zone after a nuclear accident; setting pack	-	isolation
+Nineteen Eighty-Four (Big Brother)	Dystopia	https://en.wikipedia.org/wiki/Nineteen_Eighty-Four	S,K	COVERED	surveillance state controlling thought through language and fear; S institution and K false belief	-	the room where they break you
+Room 101	Dystopia	https://en.wikipedia.org/wiki/Nineteen_Eighty-Four	K,S	COVERED	interrogation using your worst fear; K phobia dial used by an institution	-	your own fear used on you
+Newspeak (thought control)	Dystopia	https://en.wikipedia.org/wiki/Newspeak	K,S	PACK	a language designed to remove concepts; culture pack	-	no words for dissent
+Brave New World (Soma, caste)	Dystopia	https://en.wikipedia.org/wiki/Brave_New_World	G,S	COVERED	engineered castes and a drug for contentment; G variants and S pack	-	happy slavery
+Fahrenheit 451 (Hound)	Dystopia	https://en.wikipedia.org/wiki/Fahrenheit_451	P,S	PACK	a mechanical hound that hunts book owners; machine hunter pack	-	a machine that cannot be talked out
+The Handmaid's Tale (Gilead)	Dystopia	https://en.wikipedia.org/wiki/The_Handmaid's_Tale	S	PACK	theocratic state controlling women; S culture pack	-	bodily control by law
+The Hunger Games (Capitol, mutts)	Dystopia	https://en.wikipedia.org/wiki/The_Hunger_Games	S,G	COVERED	state spectacle of forced battle and genetic hybrid hounds; S institution plus G creature	-	fear of being chosen
+Tracker jackers	Dystopia	https://en.wikipedia.org/wiki/The_Hunger_Games	G,P	PACK	genetically modified wasps with hallucinogenic venom; creature plus drug	-	hallucination with pain
+Battle Royale	Dystopia	https://en.wikipedia.org/wiki/Battle_Royale_(novel)	S,K	COVERED	children forced to kill by a state with collars; S institution and a leash device	-	friends turned killers
+The Giver	Dystopia	https://en.wikipedia.org/wiki/The_Giver	K,S	COVERED	a society that suppresses colour and memory; K lost memory and S control	-	ignorance as peace
+Logan's Run	Dystopia	https://en.wikipedia.org/wiki/Logan's_Run	S	PACK	society that kills at thirty; S rule	-	age as sentence
+Minority Report (precogs)	Dystopia	https://en.wikipedia.org/wiki/Minority_Report_(film)	K,S	SECOND	prediction of crimes from precognition; true foresight needs information from the future	information from the future (precognition)	punished for a crime not yet done
+Gattaca	Dystopia	https://en.wikipedia.org/wiki/Gattaca	G,S	PACK	genetic discrimination; S culture and G variants	-	fate by genes
+Equilibrium (emotion suppression)	Dystopia	https://en.wikipedia.org/wiki/Equilibrium_(film)	K,S	PACK	state drug suppressing feeling; drug pack	-	emotionless order
+V for Vendetta	Dystopia	https://en.wikipedia.org/wiki/V_for_Vendetta	S,K	PACK	fascist state and a masked rebel; S institution	-	a mask as an idea
+The Truman Show	Dystopia	https://en.wikipedia.org/wiki/The_Truman_Show	K,S	COVERED	a person whose world is staged; K false belief that survives untested	-	nothing is real
+Brazil (bureaucratic dystopia)	Dystopia	https://en.wikipedia.org/wiki/Brazil_(1985_film)	S	PACK	bureaucracy that destroys; S institution	-	paperwork kills
+Metropolis (class city)	Dystopia	https://en.wikipedia.org/wiki/Metropolis_(1927_film)	S,P	PACK	a city of workers below and rulers above; S layers	-	exploitation
+We (Zamyatin)	Dystopia	https://en.wikipedia.org/wiki/We_(novel)	S	PACK	a glass city with scheduled lives; S institution	-	no privacy
+Soylent Green	Dystopia	https://en.wikipedia.org/wiki/Soylent_Green	S	PACK	food made from people; taboo cannibal secret	-	disgust at the secret
+I Have No Mouth and I Must Scream (AM)	Dystopia	https://en.wikipedia.org/wiki/I_Have_No_Mouth,_and_I_Must_Scream	K,P	COVERED	a machine mind that tortures survivors forever; machine mind with hatred and a power store	-	endless torture; K
+Paranoia (RPG, The Computer)	Dystopia	https://en.wikipedia.org/wiki/Paranoia_(role-playing_game)	S,K	COVERED	a mad AI that rules; S institution and K paranoia with secret societies	-	every friend may be a traitor
+Rapture (BioShock)	Dystopia	https://en.wikipedia.org/wiki/Rapture_(BioShock)	S,G	COVERED	an undersea city ruined by a gene drug; S institution and G plasmids	-	a ruined utopia
+Plasmids (BioShock)	Dystopia	https://en.wikipedia.org/wiki/BioShock	G,M	COVERED	genetic changes that give fire, telekinesis and bees; G variants with M effects	-	addiction to power
+Big Daddy and Little Sister	Dystopia	https://en.wikipedia.org/wiki/BioShock	P,K	PACK	a bonded armored guardian and a girl; machine-flesh guardian with a bond	-	a guardian that feels pain
+Midgar (Final Fantasy VII)	Dystopia	https://en.wikipedia.org/wiki/Midgar	S,P	PACK	city tiered by class sucking planet energy; setting pack	-	class and planet drain
+Mako (planet life energy)	Dystopia	https://en.wikipedia.org/wiki/Final_Fantasy_VII	M,G	COVERED	planetary M field used as fuel that mutates people; M source plus G effects	-	fuel that corrupts
+Jonah Hex	Weird West	https://en.wikipedia.org/wiki/Jonah_Hex	M,K	COVERED	a disfigured gunman who speaks with the dead; ghost-memory speaker	-	dead talking
+Deadlands (Reckoners, fear fuel)	Weird West	https://en.wikipedia.org/wiki/Deadlands	M,K,S	COVERED	powers fed by fear and a patron; belief substrate that grows from fear	-	fear as power; K, S
+Ghost rock	Weird West	https://en.wikipedia.org/wiki/Deadlands	M,P	PACK	a fuel with strange properties; charged material	-	a fuel with a hidden price
+Hucksters (poker magic)	Weird West	https://en.wikipedia.org/wiki/Deadlands	M	COVERED	spells cast by playing cards with a patron risk; spell record with a drain and patron backlash	-	gamble with a devil
+Harrowed (Deadlands)	Weird West	https://en.wikipedia.org/wiki/Deadlands	M,K	COVERED	dead people returned with a spirit fighting for control; host and patron within	-	the demon inside
+Wynonna Earp	Weird West	https://en.wikipedia.org/wiki/Wynonna_Earp	M,S	COVERED	a revolver that kills revenants and a curse on a family; heirloom store plus curse bond	-	inherited curse
+Revenant (Weird West)	Weird West	https://en.wikipedia.org/wiki/Wynonna_Earp	M,K	COVERED	dead returned by a curse; ghost memory with a body	-	the dead return
+The Dark Tower (Gunslinger)	Weird West	https://en.wikipedia.org/wiki/The_Dark_Tower_(series)	X,M,K	COVERED	a world with planes and a tower holding them together; planes and doorways	-	a world moving on
+The Beams (Dark Tower)	Weird West	https://en.wikipedia.org/wiki/The_Dark_Tower_(series)	M,X	COVERED	lines of force holding worlds up; M lines in the world	-	the world failing
+Todash space	Weird West	https://en.wikipedia.org/wiki/The_Dark_Tower_(series)	X,K	COVERED	a void between worlds with monsters; plane between planes	-	nothing between doors
+Crimson King	Weird West	https://en.wikipedia.org/wiki/Crimson_King	M,K	COVERED	a mad being trying to destroy the tower; big M being with delusion	-	cosmic malice
+From Dusk Till Dawn (vampire bar)	Weird West	https://en.wikipedia.org/wiki/From_Dusk_till_Dawn	G,K	PACK	a bar run by vampires on a border road; setting plus vampire pack	-	the trap is a bar
+Near Dark (vampire family)	Weird West	https://en.wikipedia.org/wiki/Near_Dark	G,S	PACK	nomad vampires as a family; vampire family culture	-	a family that kills
+Bone Tomahawk (troglodytes)	Weird West	https://en.wikipedia.org/wiki/Bone_Tomahawk	G,S	PACK	cannibal cave dwellers; human predator culture	-	cannibal horror
+Ravenous (wendigo cannibalism)	Weird West	https://en.wikipedia.org/wiki/Ravenous_(1999_film)	G,K	COVERED	eating a person gives strength and craving; transformation by taboo act	-	hunger you cannot stop
+Westworld (hosts)	Weird West	https://en.wikipedia.org/wiki/Westworld_(TV_series)	P,K,S	COVERED	artificial people with scripted loops who wake up; machine minds with memory and loops	-	the hosts remember; K
+Delos park (guest violence)	Weird West	https://en.wikipedia.org/wiki/Westworld	S,K	PACK	a park where guests may harm hosts; setting pack	-	what guests become
+Firefly (Reavers)	Weird West	https://en.wikipedia.org/wiki/Firefly_(TV_series)	G,S	COVERED	humans driven to cannibal rage by a chemical; drug-induced behaviour change plus rumour	-	rumour that outpaces fact; K
+Pax (Serenity)	Weird West	https://en.wikipedia.org/wiki/Serenity_(2005_film)	P,S	COVERED	a gas that removes aggression and kills the will to live; chemical agent pack	-	a cure that is worse
+Trigun (Vash the Stampede)	Weird West	https://en.wikipedia.org/wiki/Trigun	P,S	PACK	a pacifist gunman with a plant-based power; hero pack	-	a bounty on mercy
+Red Dead Undead Nightmare	Weird West	https://en.wikipedia.org/wiki/Red_Dead_Redemption	G,S	PACK	a zombie outbreak in a western; zombie pack	-	the dead in the desert
+Weird West (video game)	Weird West	https://en.wikipedia.org/wiki/Weird_West_(video_game)	M,S	PACK	setting pack with werewolves and witches	-	the frontier as horror
+Deadwood ghost town	Weird West	https://en.wikipedia.org/wiki/Ghost_town	S,K	PACK	abandoned town with legends; setting pack	-	emptiness and stories
+Dust devil (Dust Devil film)	Weird West	https://en.wikipedia.org/wiki/Dust_Devil_(film)	M,K	PACK	a spirit killing travellers in the desert; spirit pack	-	the road is a hunting ground
+Kaiju Number 8	Kaiju	https://en.wikipedia.org/wiki/Kaiju_No._8	G,P	PACK	a man who becomes a kaiju but keeps a mind; G variant with a sharp jump	-	a monster inside
+Hellsing (Alucard)	Weird West	https://en.wikipedia.org/wiki/Hellsing	G,M	COVERED	a vampire bound to a family; a bond with limited seals	-	a monster as a weapon

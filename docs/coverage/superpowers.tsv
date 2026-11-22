@@ -1,0 +1,393 @@
+entry	family	source_url	layers	verdict	mechanism	law_or_change	fear_source
+Superpowers	Meta	https://powerlisting.fandom.com/wiki/Superpowers	-	EXCLUDED	index page, not a power		(u) little fear value; mostly a capability
+Athleticism	Physical enhancement	https://powerlisting.fandom.com/wiki/Athleticism	P,G	COVERED	graded G trait on body physics and exertion module		admiration, uncanny competence (K)
+Agility/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Agility/Enhanced	P,G	COVERED	G graded effect on joint torque and reflex dials		speed beyond what perception can follow (K)
+Durability/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Durability/Enhanced	P,G	COVERED	G tougher tissue constants in body contact laws		attacks that do nothing: loss of control
+Durability/Invulnerability	Physical enhancement	https://powerlisting.fandom.com/wiki/Durability/Invulnerability	P,M	COVERED	M ward absorbs and dumps energy until the store drains		futility of fighting it
+Endurance/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Endurance/Enhanced	P,G	COVERED	G exertion and fatigue constants		something that does not tire
+Lifting/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Lifting/Enhanced	P,G	COVERED	G muscle force plus skeleton load limits		visible mass defiance (K)
+Lifting/Supernatural	Physical enhancement	https://powerlisting.fandom.com/wiki/Lifting/Supernatural	M	COVERED	M adds momentum at distance to the lift; load limited by store		impossible feats seen
+Punch/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Punch/Enhanced	P,G	COVERED	G force with contact laws and impact damage		pain, broken bone (body)
+Kick/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Kick/Enhanced	P,G	COVERED	same as punch via bodycontact		pain, broken bone (body)
+Roar/Supernatural	Physical enhancement	https://powerlisting.fandom.com/wiki/Roar/Supernatural	P,M	COVERED	sound as pressure wave; M adds energy to the wave		sound that hurts, panic (body, K)
+Metabolism/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Metabolism/Enhanced	P,G	COVERED	G physiology rates and food budget		body horror of hunger
+Longevity/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Longevity/Enhanced	G	COVERED	G senescence rate dial		outliving everyone, dread of the unageing (K, S)
+Health/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Health/Enhanced	P,G	COVERED	G immune and repair constants		something sickness will not touch
+Peak Human Mind/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Peak_Human_Mind/Enhanced	K,G	PACK	mind capacity dial for a learned mind		being outthought
+Intelligence/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Intelligence/Enhanced	K	PACK	bigger learned mind, more planning horizon		unpredictability of a smarter foe (K)
+Hypercompetence	Physical enhancement	https://powerlisting.fandom.com/wiki/Hypercompetence	K	PACK	skill dials near ceiling across tasks		no mistakes to exploit
+Dexterity/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Dexterity/Enhanced	P,G	COVERED	G hand control and hands module		surgical precision, uncanny
+Flexibility/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Flexibility/Enhanced	P,G	COVERED	G joint range; skeleton constraints		bodies bending wrong (body horror)
+Reflexes/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Reflexes/Enhanced	P,G,K	COVERED	G reaction latency dial		cannot ambush it
+Stamina	Physical enhancement	https://powerlisting.fandom.com/wiki/Stamina	P,G	COVERED	exertion module reserves		relentlessness
+Potential/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Potential/Enhanced	G,K	PACK	trait ceiling raised, learning rate dial		unseen potential, awe
+Survivability	Physical enhancement	https://powerlisting.fandom.com/wiki/Survivability	P,G	COVERED	combination of tissue, repair, and fault tolerance		it will not die
+Precision/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Precision/Enhanced	P,K	COVERED	aim noise dial lowered		never misses
+Accuracy/Enhanced	Physical enhancement	https://powerlisting.fandom.com/wiki/Accuracy/Enhanced	P,K	COVERED	aim noise dial lowered		never misses
+Superhumanization	Physical enhancement	https://powerlisting.fandom.com/wiki/Superhumanization	G	COVERED	applying a graded G variant to another body (see Infection)		loss of self
+Running/Enhanced	Movement	https://powerlisting.fandom.com/wiki/Running/Enhanced	P,G	COVERED	G leg power, slip and fall laws		speed beyond perception (K)
+Leaping/Enhanced	Movement	https://powerlisting.fandom.com/wiki/Leaping/Enhanced	P,G	COVERED	G leg power; falls and landing damage		landing craters, impact
+Leaping/Supernatural	Movement	https://powerlisting.fandom.com/wiki/Leaping/Supernatural	M	COVERED	M impulse at takeoff and landing, conserved momentum		awe
+Swimming	Movement	https://powerlisting.fandom.com/wiki/Swimming	P	COVERED	buoyancy and drag in fluid sim		drowning
+Wallcrawling	Movement	https://powerlisting.fandom.com/wiki/Wallcrawling	P,G	PACK	adhesion material property (gecko) on hands and feet		spider-like creeping, uncanny gait
+Wallrunning	Movement	https://powerlisting.fandom.com/wiki/Wallrunning	P	COVERED	friction and momentum from speed		defied gravity (K)
+Gliding	Movement	https://powerlisting.fandom.com/wiki/Gliding	P	COVERED	lift and drag in air sim		silent descent
+Brachiation	Movement	https://powerlisting.fandom.com/wiki/Brachiation	P,G	PACK	body plan with long arms, hang loads		inhuman motion
+Burrowing	Movement	https://powerlisting.fandom.com/wiki/Burrowing	P	COVERED	soil displacement by body force in voxel world		attack from below
+Levitation	Movement	https://powerlisting.fandom.com/wiki/Levitation	M	COVERED	M momentum push balancing weight, cost per second from store		object-defying float
+Flight	Movement	https://powerlisting.fandom.com/wiki/Flight	M	COVERED	M thrust with reaction on air or ground, drain limits time		loss of safe ground
+Typhokinetic Flight	Movement	https://powerlisting.fandom.com/wiki/Typhokinetic_Flight	M	COVERED	M air momentum carrying body		storm that moves with intent
+Dashing	Movement	https://powerlisting.fandom.com/wiki/Dashing	P,M	COVERED	burst of momentum; exertion		sudden closing distance
+Slow-Motion	Movement	https://powerlisting.fandom.com/wiki/Slow-Motion	M	SECOND	local time dilation not allowed by one change; fake as speed + perception dial	local time rate change	dread of the unmoving world
+Speed	Movement	https://powerlisting.fandom.com/wiki/Speed	P,M	COVERED	G or M raised acceleration, friction and air heating		blur, unseen attacker (K)
+Teleportation	Space	https://powerlisting.fandom.com/wiki/Teleportation	X	COVERED	X wormhole doorway, paired ends and energy cost		vanishing, no counter (K)
+Apportation	Space	https://powerlisting.fandom.com/wiki/Apportation	X	COVERED	X doorway for objects only		objects appear from nowhere
+Bilocation	Space	https://powerlisting.fandom.com/wiki/Bilocation	X,K	SECOND	one mind in two places needs mind copy and merge; X copies diverge	mind merge of copies	doubt about which is real
+Phasing	Space	https://powerlisting.fandom.com/wiki/Phasing	X	LAW	selective contact decoupling of own body from matter, needs a pattern law	contact-decoupling of a body from matter	solid walls are not safe
+Intangibility	Space	https://powerlisting.fandom.com/wiki/Intangibility	X	LAW	same contact-decoupling law, may reduce to doorway through the wall	contact-decoupling of a body from matter	nowhere is safe
+Intra-Phasing	Space	https://powerlisting.fandom.com/wiki/Intra-Phasing	X	LAW	phase through part of an object	contact-decoupling of a body from matter	strike that passes through
+Dreamscape	Space	https://powerlisting.fandom.com/wiki/Dreamscape	X,K,M	PACK	plane reached by a sleeping mind via M link; world as data		dream danger, cannot wake
+Planeswalking	Space	https://powerlisting.fandom.com/wiki/Planeswalking	X	COVERED	X planes as other worlds, doorway pairs		alien worlds, stranded
+Spatial Looping	Space	https://powerlisting.fandom.com/wiki/Spatial_Looping	X	LAW	doorway that returns to itself; loops in world graph	doorway graph with cycles and entity-state loop	trapped, repeat
+Space Compression	Space	https://powerlisting.fandom.com/wiki/Space_Compression	X	SECOND	metric change not doorways	metric distortion	geometry that lies
+Enormous Interior	Space	https://powerlisting.fandom.com/wiki/Enormous_Interior	X	COVERED	X plane attached via doorway bigger than exterior		larger inside than outside, dread
+Expansion	Space	https://powerlisting.fandom.com/wiki/Expansion	X	PACK	object grows by X transform of nearby matter, mass accounted		swelling, body horror
+Singularity	Space	https://powerlisting.fandom.com/wiki/Singularity	P	LAW	strong gravity needs relativity-level gravity	strong gravity well	being pulled in
+Gravity Manipulation	Space	https://powerlisting.fandom.com/wiki/Gravity_Manipulation	M	LAW	true field change vs momentum push; push covers part	gravity as a field with sources	weight changing under you
+Mass-Telekinesis	Space	https://powerlisting.fandom.com/wiki/Mass-Telekinesis	M	LAW	change of inertial mass without moving matter	mass-field coupling	object that is too heavy to lift
+Density Manipulation	Space	https://powerlisting.fandom.com/wiki/Density_Manipulation	M,X	COVERED	X rebuild pattern with different packing; mass conserved		body horror
+Telekinesis	Force	https://powerlisting.fandom.com/wiki/Telekinesis	M	COVERED	M moves momentum at distance with budget		unseen force
+Psychokinesis	Force	https://powerlisting.fandom.com/wiki/Psychokinesis	M	COVERED	same as telekinesis, M used with patterned intent		unseen force
+Pyro-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Pyro-Telekinesis	M	COVERED	M moves heat energy and flame fronts		fire that obeys
+Hydro-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Hydro-Telekinesis	M	COVERED	M pushes water momentum		water with will
+Geo-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Geo-Telekinesis	M	COVERED	M pushes soil, stone voxels		ground that moves
+Cryo-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Cryo-Telekinesis	M	COVERED	M removes heat energy from target		sudden cold, frostbite (body)
+Photo-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Photo-Telekinesis	M	COVERED	M moves light energy; beams, bending		light as weapon
+Vibro-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Vibro-Telekinesis	M	COVERED	M drives vibration, sound		shaking, deafness
+Magnetization	Force	https://powerlisting.fandom.com/wiki/Magnetization	P,M	COVERED	magnetic field effects in physics, M supplies energy		metal turning on you
+Magnetoreception	Senses	https://powerlisting.fandom.com/wiki/Magnetoreception	P	PACK	new sense with magnetic field channel, noisy dial		knows where you are
+Electroreception	Senses	https://powerlisting.fandom.com/wiki/Electroreception	P	PACK	new sense channel for electric field		animal sense of unseen life
+Electrolysis	Force	https://powerlisting.fandom.com/wiki/Electrolysis	P,M	COVERED	current through fluids drives chemistry		invisible shock
+Ionization	Force	https://powerlisting.fandom.com/wiki/Ionization	P,M	COVERED	M energy strips electrons; plasma		ozone, burns, sparks
+Radioionization	Force	https://powerlisting.fandom.com/wiki/Radioionization	P	COVERED	radiation hazard model in physics (u) or PACK		invisible poison, dread of the unseen
+Omnicombustion	Elemental	https://powerlisting.fandom.com/wiki/Omnicombustion	P,M	COVERED	fire law: combustion with fuel, energy from M		fire everywhere
+Burning/Absolute	Elemental	https://powerlisting.fandom.com/wiki/Burning/Absolute	P,M	COVERED	M heat flux; fire law		burn pain
+Freezing/Absolute	Elemental	https://powerlisting.fandom.com/wiki/Freezing/Absolute	P,M	COVERED	M extracts heat; cold exposure physiology		cold death
+Incineration	Elemental	https://powerlisting.fandom.com/wiki/Incineration	P,M	COVERED	M heat flux above ignition threshold		ash, horror of destruction
+Thermocombustion	Elemental	https://powerlisting.fandom.com/wiki/Thermocombustion	P	COVERED	heat-driven combustion law		sudden fire
+Self-Combustion	Elemental	https://powerlisting.fandom.com/wiki/Self-Combustion	P,M	COVERED	body burns with M fuel; cost in tissue		self-sacrifice, pain
+Evaporation	Elemental	https://powerlisting.fandom.com/wiki/Evaporation	P,M	COVERED	M latent heat into water		drying out
+Dehydration	Elemental	https://powerlisting.fandom.com/wiki/Dehydration	P,M	COVERED	physiology; M removes water from body		thirst, body horror
+Deoxygenation	Elemental	https://powerlisting.fandom.com/wiki/Deoxygenation	P,M	COVERED	M drives gas momentum, local oxygen drop; breath law		suffocation
+Aeromancy	Occult	https://powerlisting.fandom.com/wiki/Aeromancy	M	COVERED	air momentum via M with trained patterns		storm with purpose
+Hydromancy	Occult	https://powerlisting.fandom.com/wiki/Hydromancy	M	COVERED	M and water, plus divination reading is K (u)		drowning
+Pyromancy	Occult	https://powerlisting.fandom.com/wiki/Pyromancy	M	COVERED	M and fire law		fire cult
+Geomancy	Occult	https://powerlisting.fandom.com/wiki/Geomancy	M	COVERED	M and stone voxels, earth tremors		collapse
+Heliomancy	Occult	https://powerlisting.fandom.com/wiki/Heliomancy	M	PACK	sun as energy source for M store charging		sun scorches
+Selenomancy	Occult	https://powerlisting.fandom.com/wiki/Selenomancy	M,P	PACK	moon cycle as pack timing; tides real		werewolf-like madness (K)
+Chloromancy	Occult	https://powerlisting.fandom.com/wiki/Chloromancy	M	PACK	M accelerates plant growth by moving energy; plant physiology		plants that grow in minutes
+Typhomancy	Occult	https://powerlisting.fandom.com/wiki/Typhomancy	M	COVERED	M and storm energy		lightning storms
+Electro-Psionics	Mind	https://powerlisting.fandom.com/wiki/Electro-Psionics	M	LAW	M interface with nerve signals of another	nerve-state coupling over M	body that is not yours
+Electroscience	Tech	https://powerlisting.fandom.com/wiki/Electroscience	P	COVERED	engineering and electricity		power that kills
+Ergo-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Ergo-Telekinesis	M	COVERED	M moves energy generically		raw force
+Kineti-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Kineti-Telekinesis	M	COVERED	M carrying kinetic energy into target		impact from nothing
+Gyro-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Gyro-Telekinesis	M	COVERED	M torque at distance		spinning, nausea
+Psammo-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Psammo-Telekinesis	M	COVERED	M moves sand grains		burial
+Aero-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Aero-Telekinesis	M	COVERED	M moves air		suffocation
+Umbra-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Umbra-Telekinesis	M	PACK	shadow as darkness; light removal and M; pack for darkness entity		dark that moves
+Ecto-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Ecto-Telekinesis	M	COVERED	M patterns of ghost memories push things		poltergeist
+Sono-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Sono-Telekinesis	M	COVERED	M drives sound pressure		sound weapon
+Data-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Data-Telekinesis	M	LAW	M affecting digital state	machine-state interface from M to circuits	hacked reality
+Fauna-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Fauna-Telekinesis	M	COVERED	M to animal bodies like possession-lite		animals turned weapon
+Varo-Telekinesis	Force	https://powerlisting.fandom.com/wiki/Varo-Telekinesis	M	COVERED	M works on a varying class of matter		force
+Telepathy	Mind	https://powerlisting.fandom.com/wiki/Telepathy	M,K	LAW	M link carries thought patterns, needs encode/decode of neural states	brain-state encode/decode on an M link	violation of privacy, being known
+Clairtelepathy	Mind	https://powerlisting.fandom.com/wiki/Clairtelepathy	M,K	LAW	telepathy plus passive hearing of thoughts	brain-state encode/decode on an M link	no safe thought
+Telempathy	Mind	https://powerlisting.fandom.com/wiki/Telempathy	M,K	LAW	affect state only; simpler brain-state channel	brain-state encode/decode on an M link	being felt
+Empathy	Mind	https://powerlisting.fandom.com/wiki/Empathy	K	COVERED	K model of other minds from perception		being understood
+Mind Control	Mind	https://powerlisting.fandom.com/wiki/Mind_Control	M,K	COVERED	possession as patron driving a host, host agency dial		loss of self, betrayal by friend
+Domination	Mind	https://powerlisting.fandom.com/wiki/Domination	M,K	COVERED	patron link imposes drives		loss of will
+Hypnosis	Mind	https://powerlisting.fandom.com/wiki/Hypnosis	K	COVERED	suggestion by speech and attention; K belief updates		doubt about own memory
+Memory Overwrite	Mind	https://powerlisting.fandom.com/wiki/Memory_Overwrite	M,K	LAW	write to memory store via link	brain-state encode/decode on an M link	false memories, self doubt
+Memory Reading	Mind	https://powerlisting.fandom.com/wiki/Memory_Reading	M,K	LAW	read stored memory patterns	brain-state encode/decode on an M link	secrets exposed
+Will Breaking	Mind	https://powerlisting.fandom.com/wiki/Will_Breaking	K,S	COVERED	torture, fear, relationship dynamics in minds		helplessness
+Cyberpathy	Mind	https://powerlisting.fandom.com/wiki/Cyberpathy	M,P	LAW	mind interfaces with machine nets	machine-state interface from M to circuits	machines that know you
+Technopathy	Mind	https://powerlisting.fandom.com/wiki/Technopathy	M,P	LAW	control of machine state; may be done by induction at crude level	machine-state interface from M to circuits	systems turn on you
+Possession	Mind	https://powerlisting.fandom.com/wiki/Possession	M,K	COVERED	patron driving a host, designed in M		body stolen, who is acting?
+Multi-Possession	Mind	https://powerlisting.fandom.com/wiki/Multi-Possession	M,K	COVERED	one patron with many hosts, bandwidth limit		crowds behaving as one
+Mediumship	Occult	https://powerlisting.fandom.com/wiki/Mediumship	M,K	COVERED	spirit as ghost memory speaks via host		dead speaking
+Seance	Occult	https://powerlisting.fandom.com/wiki/Seance	M,K	COVERED	ritual structure for ghost memory contact		dead speaking, deception
+Haunting	Occult	https://powerlisting.fandom.com/wiki/Haunting	M,K	COVERED	ghost memory repeats via M pattern at a site		persistent presence, dread of the unseen
+Poltergeization	Occult	https://powerlisting.fandom.com/wiki/Poltergeization	M	COVERED	ghost-driven M telekinesis		objects move at night
+Precognition	Time	https://powerlisting.fandom.com/wiki/Precognition	K	SECOND	true future sight breaks one-change; fake by forecasting and K prior	future information flowing to the past	fate, inevitability
+Prescience	Time	https://powerlisting.fandom.com/wiki/Prescience	K	SECOND	as precognition; forecasting from models is COVERED	future information flowing to the past	dread of inevitability
+Retrocognition	Time	https://powerlisting.fandom.com/wiki/Retrocognition	K,M	COVERED	M reading residue patterns/ghost memories of past events (u)		seeing horror that happened
+Hindsight	Time	https://powerlisting.fandom.com/wiki/Hindsight	K	COVERED	inference from traces; K only		(u) little fear value; mostly a capability
+Psychometry	Time	https://powerlisting.fandom.com/wiki/Psychometry	M,K	COVERED	M patterns in objects hold memories of use		residue of crimes
+Flash-Forward	Time	https://powerlisting.fandom.com/wiki/Flash-Forward	-	SECOND	sees future scene	future information flowing to the past	inevitability
+Time Travel	Time	https://powerlisting.fandom.com/wiki/Time_Travel	-	SECOND	moves entity to past	travel to the past	paradox, loss of home
+Chronoskimming	Time	https://powerlisting.fandom.com/wiki/Chronoskimming	-	SECOND	time hopping	travel to the past	lost time
+Timescape	Time	https://powerlisting.fandom.com/wiki/Timescape	X	SECOND	place where time differs	local time rate change	stuck time
+Temporal Inversion	Time	https://powerlisting.fandom.com/wiki/Temporal_Inversion	-	SECOND	reverse time locally	local time reversal	reality undone
+Retrocausality	Time	https://powerlisting.fandom.com/wiki/Retrocausality	-	SECOND	effects precede causes	retrocausation	dread of unknowable cause
+Meta Time Travel	Time	https://powerlisting.fandom.com/wiki/Meta_Time_Travel	-	SECOND	time travel of timelines	travel to the past	paradox
+Healing Factor	Life and death	https://powerlisting.fandom.com/wiki/Healing_Factor	G,X	COVERED	G repair rate; X rebuild of parts still together		wounds closing, uncanny
+Regeneration/Enhanced	Life and death	https://powerlisting.fandom.com/wiki/Regeneration/Enhanced	G	COVERED	G tissue repair rate, mass drawn from food stores		body regrowing, body horror
+Regeneration/Supernatural	Life and death	https://powerlisting.fandom.com/wiki/Regeneration/Supernatural	M,X	COVERED	X pattern rebuild with matter from body mass or M transform		limb regrowth, body horror
+Regrowth	Life and death	https://powerlisting.fandom.com/wiki/Regrowth	G,X	COVERED	X conjure by transformation of nearby matter, needs mass		body horror
+Reattachment	Life and death	https://powerlisting.fandom.com/wiki/Reattachment	X	COVERED	X rewind of parts still together		severed parts moving
+Autotomy	Life and death	https://powerlisting.fandom.com/wiki/Autotomy	P,G	PACK	tail or limb shed body plan, G		disgust at self-mutilation
+Cauterization	Life and death	https://powerlisting.fandom.com/wiki/Cauterization	P,M	COVERED	heat seals wounds; burns tissue		burning pain
+Curing	Life and death	https://powerlisting.fandom.com/wiki/Curing	P,X	COVERED	X rewrites pathogen-damaged pattern or immune boost		relief, miracle
+Resurrection	Life and death	https://powerlisting.fandom.com/wiki/Resurrection	X,M	COVERED	X rebuild from copy of body pattern plus ghost memory of mind; limited by stored pattern		death is not final, wrongness of the returned
+Self-Resurrection	Life and death	https://powerlisting.fandom.com/wiki/Self-Resurrection	X,M	COVERED	own pattern stored, rebuilds on death		cannot kill it
+Reincarnation	Life and death	https://powerlisting.fandom.com/wiki/Reincarnation	M,K	COVERED	ghost memory seeding a new host mind at birth		old soul in young body, unease
+Immortality	Life and death	https://powerlisting.fandom.com/wiki/Immortality	G,M	COVERED	no senescence plus repair; still killable by structure loss		outliving all, dread of the unageing
+Immortality/Absolute	Life and death	https://powerlisting.fandom.com/wiki/Immortality/Absolute	-	SECOND	cannot be destroyed by any means	unconditional survival	nothing works
+Anti-Regeneration	Life and death	https://powerlisting.fandom.com/wiki/Anti-Regeneration	M,G	COVERED	M ward disrupts repair patterns		wounds that never close
+Unhealing	Life and death	https://powerlisting.fandom.com/wiki/Unhealing	M	COVERED	curse stops repair		slow death
+Atrophy	Life and death	https://powerlisting.fandom.com/wiki/Atrophy	P,M	COVERED	M drains tissue energy		wasting, body horror
+Necromancy	Occult	https://powerlisting.fandom.com/wiki/Necromancy	M,X	COVERED	M drives corpse as a host; X rebuild of remains		dead walk
+Reanimation	Occult	https://powerlisting.fandom.com/wiki/Reanimation	M	COVERED	M pattern drives dead body, drain over time		corpse moves
+Zombification	Infection	https://powerlisting.fandom.com/wiki/Zombification	P,M,K	COVERED	P parasite or M patron drives host; behaviour change		contagion, loved ones turned
+Dezombification	Infection	https://powerlisting.fandom.com/wiki/Dezombification	P,M	COVERED	remove patron or parasite		relief
+Vampirization	Infection	https://powerlisting.fandom.com/wiki/Vampirization	P,M,G	PACK	pack: blood dependence, light sensitivity, M patron thirst		predator among us, loss of self
+Ghoulification	Infection	https://powerlisting.fandom.com/wiki/Ghoulification	P,M	PACK	pack: carrion diet with parasite; reduced pain		disgust, cannibal
+Infection	Infection	https://powerlisting.fandom.com/wiki/Infection	P	COVERED	pathogen with spread law		contagion, invisible
+Infestation	Infection	https://powerlisting.fandom.com/wiki/Infestation	P	COVERED	parasite or swarm model		skin crawling, disgust
+Infestation Kiss	Infection	https://powerlisting.fandom.com/wiki/Infestation_Kiss	P	PACK	transmission route as contact of mouths		disgust, intimacy betrayed
+Hallucinogenic Venom	Infection	https://powerlisting.fandom.com/wiki/Hallucinogenic_Venom	P,K	COVERED	P toxin to perception noise dials		cannot trust senses
+Poison Generation	Infection	https://powerlisting.fandom.com/wiki/Poison_Generation	P	COVERED	body produces toxin; physiology metabolic cost		silent killer
+Omnipoison	Infection	https://powerlisting.fandom.com/wiki/Omnipoison	P	PACK	all poisons; toxin catalog dials		everything toxic
+Disintegration	Offence	https://powerlisting.fandom.com/wiki/Disintegration	P,M	COVERED	M energy dumped breaks bonds; energy conserved		instant death, no body
+Dissolution	Offence	https://powerlisting.fandom.com/wiki/Dissolution	P	COVERED	solvent chemistry in physics (u)		painful death
+Shattering	Offence	https://powerlisting.fandom.com/wiki/Shattering	P,M	COVERED	M impulse above fracture limit		break like glass
+Pulverization	Offence	https://powerlisting.fandom.com/wiki/Pulverization	P,M	COVERED	M impulse or crush forces		body horror
+Crushing	Offence	https://powerlisting.fandom.com/wiki/Crushing	P	COVERED	contact force on body		bone pain
+Strangulation	Offence	https://powerlisting.fandom.com/wiki/Strangulation	P	COVERED	airway and blood flow in body		suffocation
+Constriction	Offence	https://powerlisting.fandom.com/wiki/Constriction	P	COVERED	snake-like squeeze; body plan		helpless, slow death
+Decapitation	Offence	https://powerlisting.fandom.com/wiki/Decapitation	P	COVERED	bladed damage to body		gore
+Dicing	Offence	https://powerlisting.fandom.com/wiki/Dicing	P	COVERED	blade work		gore
+Mutilation	Offence	https://powerlisting.fandom.com/wiki/Mutilation	P	COVERED	damage model		gore
+Smiting	Offence	https://powerlisting.fandom.com/wiki/Smiting	M	COVERED	M discharge at target, store cost		judgment
+Punishment	Offence	https://powerlisting.fandom.com/wiki/Punishment	M,S	COVERED	curse tied to violation; wards		dread of unknown crime
+Weaponization	Offence	https://powerlisting.fandom.com/wiki/Weaponization	X	COVERED	X transform an object into weapon		ordinary things armed
+Energy Blast	Offence	https://powerlisting.fandom.com/wiki/Energy_Blast	M	COVERED	M energy emitted forward, spreading law		ranged death
+Pollen Attacks	Offence	https://powerlisting.fandom.com/wiki/Pollen_Attacks	P	COVERED	plant release, allergen or toxin		choking
+Self-Detonation	Offence	https://powerlisting.fandom.com/wiki/Self-Detonation	P,M	COVERED	store and release; body destroyed		suicide attack
+Self-Implosion	Offence	https://powerlisting.fandom.com/wiki/Self-Implosion	P,M	COVERED	M collapses body; energy goes to environment		suicide
+Absolute Counter	Defense	https://powerlisting.fandom.com/wiki/Absolute_Counter	-	SECOND	always wins any contest regardless	unconditional outcome rule	futility
+Omnicounter	Defense	https://powerlisting.fandom.com/wiki/Omnicounter	-	SECOND	cancel any attack	unconditional outcome rule	futility
+Deflection	Defense	https://powerlisting.fandom.com/wiki/Deflection	M	COVERED	M ward turns momentum away		shots turn aside
+Bullet Redirection	Defense	https://powerlisting.fandom.com/wiki/Bullet_Redirection	M	COVERED	M momentum on projectile		bullets turn back
+Force Field Generation	Defense	https://powerlisting.fandom.com/wiki/Force_Field_Generation	M	COVERED	M ward as stable pattern with drain		safe zone breaks
+Absorption	Absorb	https://powerlisting.fandom.com/wiki/Absorption	M	COVERED	stores charge from impact and ambient energy		dread of the thing that drinks power
+Energy Absorption	Absorb	https://powerlisting.fandom.com/wiki/Energy_Absorption	M	COVERED	store loaded by moving energy into pattern		fear of drain
+Life Absorption	Absorb	https://powerlisting.fandom.com/wiki/Life_Absorption	M	COVERED	M moves life energy; tissue energy drain		vampiric drain, body horror
+Power Absorption	Absorb	https://powerlisting.fandom.com/wiki/Power_Absorption	M,X	COVERED	copy patterns of others' stores and designs		stealing identity
+Anti-Magic	Negation	https://powerlisting.fandom.com/wiki/Anti-Magic	M	COVERED	wards that dissipate patterns		safe from magic
+Negation	Negation	https://powerlisting.fandom.com/wiki/Negation	M	COVERED	disruption of pattern		dread of canceled
+Abjuration	Negation	https://powerlisting.fandom.com/wiki/Abjuration	M	COVERED	M wards by design		protection
+Banishment	Negation	https://powerlisting.fandom.com/wiki/Banishment	M,X	COVERED	M drives entity out through doorway or breaks link		exile
+Exorcism	Negation	https://powerlisting.fandom.com/wiki/Exorcism	M,K	COVERED	break patron link, remove host drive		struggle, possessed voice
+Sealing	Negation	https://powerlisting.fandom.com/wiki/Sealing	M,X	COVERED	ward plus doorway to sealed plane		trapped, buried
+Imprisonment	Negation	https://powerlisting.fandom.com/wiki/Imprisonment	M,X	COVERED	wards, plane prison		trapped
+Self-Banishment	Negation	https://powerlisting.fandom.com/wiki/Self-Banishment	X	COVERED	X doorway to remote plane		loneliness
+Omni-Immunity	Defense	https://powerlisting.fandom.com/wiki/Omni-Immunity	-	SECOND	immunity to everything unconditional	unconditional outcome rule	futility
+Immunity	Defense	https://powerlisting.fandom.com/wiki/Immunity	P,G	COVERED	G resistance dial against a class of hazard		invulnerability to a type
+Fire Immunity	Defense	https://powerlisting.fandom.com/wiki/Fire_Immunity	P,G,M	COVERED	G tissue or M ward absorbs heat flux		uses fire against you
+Disease Immunity	Defense	https://powerlisting.fandom.com/wiki/Disease_Immunity	G	COVERED	immune dial		immune to plague
+Pain Suppression	Defense	https://powerlisting.fandom.com/wiki/Pain_Suppression	P,G	COVERED	G pain gain dial, injury still real		body ignoring harm
+Pain Inducement	Offence	https://powerlisting.fandom.com/wiki/Pain_Inducement	P,M,K	COVERED	M impulses on nerves or direct harm		torture
+Fear Inducement	Mind	https://powerlisting.fandom.com/wiki/Fear_Inducement	P,K	COVERED	K fear from unpredictability, manufactured by cues		raw fear
+Emotion Inducement	Mind	https://powerlisting.fandom.com/wiki/Emotion_Inducement	P,K	PACK	pheromone or induction pack; K emotion dials		feelings not yours
+Invisibility	Stealth	https://powerlisting.fandom.com/wiki/Invisibility	M,P	COVERED	M bends light around body or X; perception depends on senses		unseen threat, paranoia
+Camouflage	Stealth	https://powerlisting.fandom.com/wiki/Camouflage	P,G	PACK	chromatophores or material matches; mimicry		hidden predator
+Imperceptibility	Stealth	https://powerlisting.fandom.com/wiki/Imperceptibility	M,K	COVERED	M lowers signal in all senses, K misperception		presence unfelt
+Inaudibility	Stealth	https://powerlisting.fandom.com/wiki/Inaudibility	M	COVERED	M cancels sound		silent kill
+Inodorosity	Stealth	https://powerlisting.fandom.com/wiki/Inodorosity	P	PACK	scent suppression trait; senses		unscented hunter
+Unnoticeability	Stealth	https://powerlisting.fandom.com/wiki/Unnoticeability	K	COVERED	K attention model, low salience		forgettable, ignored
+Unpredictability	Stealth	https://powerlisting.fandom.com/wiki/Unpredictability	K	COVERED	K policy randomness; fear from unpredictability		fear from unpredictability
+Misdirection	Stealth	https://powerlisting.fandom.com/wiki/Misdirection	K	COVERED	K attention steering by action		deception
+Concealment	Stealth	https://powerlisting.fandom.com/wiki/Concealment	P,K	COVERED	hiding in the voxel world		hidden thing
+Shadowlessness	Absence	https://powerlisting.fandom.com/wiki/Shadowlessness	P	PACK	object with no shadow: light interaction pack		uncanny, wrongness
+Reflectionlessness	Absence	https://powerlisting.fandom.com/wiki/Reflectionlessness	P	PACK	no mirror image; light pack		vampire wrongness
+Death Illusion	Stealth	https://powerlisting.fandom.com/wiki/Death_Illusion	M,K	COVERED	illusion of death scene		false grief
+Glamouring	Stealth	https://powerlisting.fandom.com/wiki/Glamouring	M,K	COVERED	M light pattern over a body, fae style		beautiful lie
+Mimicry	Absorb	https://powerlisting.fandom.com/wiki/Mimicry	P,K	PACK	mimic of voice, appearance; K trust		impostor among us
+Group Mimicry	Absorb	https://powerlisting.fandom.com/wiki/Group_Mimicry	P,K	PACK	swarm of mimics; K social trust		who is real
+Identity Theft	Absorb	https://powerlisting.fandom.com/wiki/Identity_Theft	P,K,S	COVERED	take appearance plus social role; K and S		impostor, paranoia
+Doppelgeist	Absorb	https://powerlisting.fandom.com/wiki/Doppelgeist	M,K	COVERED	ghost memory copy of living person; K		seeing yourself
+Doubling	Absorb	https://powerlisting.fandom.com/wiki/Doubling	X	COVERED	X rough copy, copies diverge		which one am I
+Self-Replication	Absorb	https://powerlisting.fandom.com/wiki/Self-Replication	X,P	COVERED	X exact or rough copy; mass need		swarm of identical
+Cloning	Absorb	https://powerlisting.fandom.com/wiki/Cloning	X,G	COVERED	X copy or G cloning with growth		replaceable self
+Duplicate Merging	Absorb	https://powerlisting.fandom.com/wiki/Duplicate_Merging	X	SECOND	merge of diverged copies	mind merge of copies	self vs copy
+Shapeshifting	Body	https://powerlisting.fandom.com/wiki/Shapeshifting	X	COVERED	X pattern rebuild into another body plan, mass accounted		imposter, body horror
+Multi-Shapeshifting	Body	https://powerlisting.fandom.com/wiki/Multi-Shapeshifting	X	COVERED	X multiple forms		imposter
+Chimerism	Body	https://powerlisting.fandom.com/wiki/Chimerism	G,X	COVERED	G or X mixed body plans		body horror
+Hybridization	Body	https://powerlisting.fandom.com/wiki/Hybridization	G,X	COVERED	G hybrid lineage or X		uncanny valley
+Species-Shifting	Body	https://powerlisting.fandom.com/wiki/Species-Shifting	X	COVERED	X rebuild as another species		losing human form
+Metamorphosis	Body	https://powerlisting.fandom.com/wiki/Metamorphosis	G,X	COVERED	G lifecycle stage change; X rebuild		cocoon, body horror
+Gigantification	Body	https://powerlisting.fandom.com/wiki/Gigantification	X,M	COVERED	X rebuild at larger scale with mass from stores or matter; square-cube physics		giants, scale
+Minimization	Body	https://powerlisting.fandom.com/wiki/Minimization	X	COVERED	X shrink, mass goes somewhere; square-cube		helplessness, scale
+Amalgamorphing	Body	https://powerlisting.fandom.com/wiki/Amalgamorphing	X	COVERED	X fused body		body horror
+Fusionism	Body	https://powerlisting.fandom.com/wiki/Fusionism	X,M	COVERED	X pattern merge of two bodies		loss of self
+Formlessness	Body	https://powerlisting.fandom.com/wiki/Formlessness	P,X	COVERED	X liquid body; P fluid body		no weak point
+Elasticity	Body	https://powerlisting.fandom.com/wiki/Elasticity	G,P	PACK	tissue material property		bodies stretching wrong
+Rollability	Body	https://powerlisting.fandom.com/wiki/Rollability	P	PACK	body plan, rolling		uncanny
+Prehensile Ears	Body	https://powerlisting.fandom.com/wiki/Prehensile_Ears	G	PACK	odd appendage body plan; G		uncanny
+Extra Teeth	Body	https://powerlisting.fandom.com/wiki/Extra_Teeth	G	PACK	trait variant		predator mouth
+Webbed Digits	Body	https://powerlisting.fandom.com/wiki/Webbed_Digits	G	PACK	trait variant		inhuman
+Metal Tail	Body	https://powerlisting.fandom.com/wiki/Metal_Tail	G,P	PACK	material variant on body part		inhuman
+Organic Metal Skin	Body	https://powerlisting.fandom.com/wiki/Organic_Metal_Skin	G,P	PACK	tissue plus metal; skin constants		armoured flesh
+Exoskeleton	Body	https://powerlisting.fandom.com/wiki/Exoskeleton	G,P	PACK	body plan with shell		insect horror
+Elastic Skin	Body	https://powerlisting.fandom.com/wiki/Elastic_Skin	G,P	PACK	skin material		rubber wrong
+Skinlessness	Absence	https://powerlisting.fandom.com/wiki/Skinlessness	P	PACK	body without skin; pain, infection dials		gore, fear of exposed flesh
+Skeletonization	Absence	https://powerlisting.fandom.com/wiki/Skeletonization	P,M	COVERED	flesh gone; M drives bones as possession		skeleton walking
+Limblessness	Absence	https://powerlisting.fandom.com/wiki/Limblessness	P,G	PACK	body plan without limbs		uncanny
+Heartlessness	Absence	https://powerlisting.fandom.com/wiki/Heartlessness	P,M	PACK	body without heart; M store replaces function		undead
+Lunglessness	Absence	https://powerlisting.fandom.com/wiki/Lunglessness	P,M	PACK	no breathing; M or other energy		undead, no breath
+Brainlessness	Absence	https://powerlisting.fandom.com/wiki/Brainlessness	P,M	PACK	body without brain; M patron drives		mindless thing moving
+Bloodlessness	Absence	https://powerlisting.fandom.com/wiki/Bloodlessness	P	PACK	body without blood; coolants		uncanny
+Hungerlessness	Absence	https://powerlisting.fandom.com/wiki/Hungerlessness	P,G	PACK	no hunger; metabolism		unnatural
+Sleeplessness	Absence	https://powerlisting.fandom.com/wiki/Sleeplessness	P,G	PACK	no sleep; fatigue constants		unnatural, relentlessness
+Soullessness	Absence	https://powerlisting.fandom.com/wiki/Soullessness	M,K	COVERED	no ghost memory link or patron; K belief		empty, uncanny valley
+Necklessness	Absence	https://powerlisting.fandom.com/wiki/Necklessness	P	PACK	body variant		uncanny
+Nervelessness	Absence	https://powerlisting.fandom.com/wiki/Nervelessness	P	PACK	no nerves; pain absent		body ignoring harm
+Jointlessness	Absence	https://powerlisting.fandom.com/wiki/Jointlessness	P	PACK	body variant		uncanny
+Genelessness	Absence	https://powerlisting.fandom.com/wiki/Genelessness	G	PACK	no genome; G		artificial
+Werewolf Physiology	Body	https://powerlisting.fandom.com/wiki/Werewolf_Physiology	P,G,M	PACK	pack: lycanthropy by trigger, G		loved one into beast
+Wereboar Physiology	Body	https://powerlisting.fandom.com/wiki/Wereboar_Physiology	P,G,M	PACK	pack: variant		beast within
+Vampire Physiology	Body	https://powerlisting.fandom.com/wiki/Vampire_Physiology	P,G,M	PACK	pack: vampire body		predator immortal
+Demon Physiology	Body	https://powerlisting.fandom.com/wiki/Demon_Physiology	M,K	PACK	pack: demon body, patron link		evil, temptation
+Angel Physiology	Body	https://powerlisting.fandom.com/wiki/Angel_Physiology	M,K	PACK	pack: faith-substrate being		awe, judgment
+Dragon Physiology	Body	https://powerlisting.fandom.com/wiki/Dragon_Physiology	P,G,M	PACK	pack: dragon body, breath		apex predator, awe
+Monkey Physiology	Body	https://powerlisting.fandom.com/wiki/Monkey_Physiology	P,G	PACK	animal body plan		animal likeness
+Keelut Physiology	Body	https://powerlisting.fandom.com/wiki/Keelut_Physiology	P,G	PACK	folklore beast pack		folklore dread
+Ancient Arthropod Physiology	Body	https://powerlisting.fandom.com/wiki/Ancient_Arthropod_Physiology	P,G	PACK	extinct body plan		insect horror
+Ghost Physiology	Body	https://powerlisting.fandom.com/wiki/Ghost_Physiology	M	COVERED	ghost memory with M pattern; no body		dead among us
+Zombie Physiology	Body	https://powerlisting.fandom.com/wiki/Zombie_Physiology	P,M	PACK	pack		walking dead
+Mummification	Life and death	https://powerlisting.fandom.com/wiki/Mummification	P,M	COVERED	dry preservation plus M driver		ancient dread
+Fossilization	Life and death	https://powerlisting.fandom.com/wiki/Fossilization	X	COVERED	X rebuild into stone		entombed
+Petrification	Offence	https://powerlisting.fandom.com/wiki/Petrification	X	COVERED	X transforms tissue to stone, mass conserved		frozen alive
+Plantification	Offence	https://powerlisting.fandom.com/wiki/Plantification	X	COVERED	X transforms body to plant		loss of self
+Cyborgification	Offence	https://powerlisting.fandom.com/wiki/Cyborgification	X,P	COVERED	X plus engineering parts		loss of self
+Robotization	Offence	https://powerlisting.fandom.com/wiki/Robotization	X,P	COVERED	X transform body to machine		loss of self
+Dollification	Offence	https://powerlisting.fandom.com/wiki/Dollification	X	COVERED	X transforms body to doll, M drives		uncanny valley
+Toonification	Offence	https://powerlisting.fandom.com/wiki/Toonification	-	EXCLUDED	cartoon physics is genre rule		(u) little fear value; mostly a capability
+Fungification	Offence	https://powerlisting.fandom.com/wiki/Fungification	X,P	COVERED	fungal parasite plus X		spores, body horror
+Mageification	Offence	https://powerlisting.fandom.com/wiki/Mageification	M	PACK	grant M ability to person		(u) little fear value; mostly a capability
+Alchemy	Matter	https://powerlisting.fandom.com/wiki/Alchemy	X	COVERED	X transform matter with energy accounting		forbidden science
+Transmutation	Matter	https://powerlisting.fandom.com/wiki/Transmutation	X	COVERED	X rebuild at one pattern into another, mass-energy conserved		the world's stuff not stable
+Chrysopoeia	Matter	https://powerlisting.fandom.com/wiki/Chrysopoeia	X	COVERED	lead to gold, X with energy cost		greed, economic collapse (S)
+Conjuration	Matter	https://powerlisting.fandom.com/wiki/Conjuration	X	COVERED	X conjure by transforming nearby matter, true creation off		things from nowhere
+Creation	Matter	https://powerlisting.fandom.com/wiki/Creation	X	COVERED	X transform only; true creation off by default		(u) little fear value; mostly a capability
+Omnifabrication	Matter	https://powerlisting.fandom.com/wiki/Omnifabrication	X	SECOND	create anything from nothing	true creation of mass-energy	(u) little fear value; mostly a capability
+Materialization	Matter	https://powerlisting.fandom.com/wiki/Materialization	X	COVERED	X transform of air or stores into object		(u) little fear value; mostly a capability
+Terraforming	Matter	https://powerlisting.fandom.com/wiki/Terraforming	P,M,X	COVERED	bulk energy and matter movement, world scale cost		world changes
+Deconstruction	Matter	https://powerlisting.fandom.com/wiki/Deconstruction	X	COVERED	X pattern disassembly to raw matter		things falling apart
+Disassembly	Matter	https://powerlisting.fandom.com/wiki/Disassembly	X	COVERED	X pattern break by parts		dismantled
+Reconfiguration	Matter	https://powerlisting.fandom.com/wiki/Reconfiguration	X	COVERED	X rebuild same matter in new layout		(u) little fear value; mostly a capability
+Preservation	Matter	https://powerlisting.fandom.com/wiki/Preservation	M,P	COVERED	M ward holds pattern from decay, drain		frozen time
+Recreation	Matter	https://powerlisting.fandom.com/wiki/Recreation	X	COVERED	X rebuild from copy		(u) little fear value; mostly a capability
+Remolding	Matter	https://powerlisting.fandom.com/wiki/Remolding	X	COVERED	X reshape		(u) little fear value; mostly a capability
+Obsolescence	Matter	https://powerlisting.fandom.com/wiki/Obsolescence	P	COVERED	decay of objects by rust, hastened by M or X		(u) little fear value; mostly a capability
+Summoning	Summon	https://powerlisting.fandom.com/wiki/Summoning	M,X,K	COVERED	X doorway or M link to outsider; entity brings own mind		something comes, cosmic dread
+Spawning	Summon	https://powerlisting.fandom.com/wiki/Spawning	X,P	COVERED	conjure creatures from matter via X; biology limits		swarms
+Demonomancy	Occult	https://powerlisting.fandom.com/wiki/Demonomancy	M,K	COVERED	links to cosmic outsiders; pact as patron link		temptation, damnation
+Invocation	Occult	https://powerlisting.fandom.com/wiki/Invocation	M	COVERED	ritual pattern opens link		ritual dread
+Incantation	Occult	https://powerlisting.fandom.com/wiki/Incantation	M,K	COVERED	spoken pattern as design; K language		words with power
+Enchantment	Occult	https://powerlisting.fandom.com/wiki/Enchantment	M	COVERED	M pattern on object with store and drain		cursed item
+Hoodoo	Occult	https://powerlisting.fandom.com/wiki/Hoodoo	M,S	PACK	culture pack for folk rite		folklore dread
+Voodoo	Occult	https://powerlisting.fandom.com/wiki/Voodoo	M,S	PACK	culture pack; link to likeness		link to a doll
+Wicca	Occult	https://powerlisting.fandom.com/wiki/Wicca	M,S	PACK	culture pack		(u) little fear value; mostly a capability
+Witchcraft	Occult	https://powerlisting.fandom.com/wiki/Witchcraft	M,S	PACK	culture pack; suspicion		witch hunt, suspicion (S)
+Shamanism	Occult	https://powerlisting.fandom.com/wiki/Shamanism	M,S	PACK	culture pack; spirit links		spirit world
+Necroscience	Occult	https://powerlisting.fandom.com/wiki/Necroscience	M,X	COVERED	study of dead patterns; M		forbidden
+Animation	Summon	https://powerlisting.fandom.com/wiki/Animation	M,X	COVERED	M drives object like host		objects move
+Soul-Puppetry	Mind	https://powerlisting.fandom.com/wiki/Soul-Puppetry	M,K	COVERED	patron drives host; ghost memory as marionette		body not yours
+Totemism	Occult	https://powerlisting.fandom.com/wiki/Totemism	M,S	PACK	culture pack with believers' substrate		(u) little fear value; mostly a capability
+Tulpamancy	Mind	https://powerlisting.fandom.com/wiki/Tulpamancy	M,K	COVERED	belief-built being from linked patterns		imagined friend turns real
+Divination	Perception	https://powerlisting.fandom.com/wiki/Divination	K,M	PACK	reading signs; K inference only, no truth link		false confidence (K)
+Augury	Perception	https://powerlisting.fandom.com/wiki/Augury	K	PACK	omens as K cues		omens misread
+Tasseomancy	Perception	https://powerlisting.fandom.com/wiki/Tasseomancy	K	PACK	tea leaves: noise		(u) little fear value; mostly a capability
+Palmistry	Perception	https://powerlisting.fandom.com/wiki/Palmistry	K	PACK	read signs		(u) little fear value; mostly a capability
+Haruspicy	Perception	https://powerlisting.fandom.com/wiki/Haruspicy	K	PACK	entrails reading, gore		gore
+Clairvoyance	Perception	https://powerlisting.fandom.com/wiki/Clairvoyance	M,K	COVERED	remote sense via M link to a remote eye or hosts		being watched
+Clairaudience	Perception	https://powerlisting.fandom.com/wiki/Clairaudience	M,K	COVERED	remote hearing via M link		being overheard
+Claircognizance	Perception	https://powerlisting.fandom.com/wiki/Claircognizance	K	SECOND	knowing without a channel	information without channel	unknown source
+Omniscience	Perception	https://powerlisting.fandom.com/wiki/Omniscience	-	SECOND	know everything	unbounded information	nothing hidden
+Nigh-Omniscience	Perception	https://powerlisting.fandom.com/wiki/Nigh-Omniscience	-	SECOND	nearly all	unbounded information	(u) little fear value; mostly a capability
+Echolocation	Senses	https://powerlisting.fandom.com/wiki/Echolocation	P	COVERED	P sound sensing		unseen presence
+Sonar	Senses	https://powerlisting.fandom.com/wiki/Sonar	P	COVERED	P sound sensing		(u) little fear value; mostly a capability
+Radar	Senses	https://powerlisting.fandom.com/wiki/Radar	P	COVERED	P radio sensing; engineering		surveillance
+Blindsight	Senses	https://powerlisting.fandom.com/wiki/Blindsight	P,K	PACK	non-visual sense dials		(u) little fear value; mostly a capability
+Hearing/Enhanced	Senses	https://powerlisting.fandom.com/wiki/Hearing/Enhanced	P,G	COVERED	sense dials		nowhere to hide
+Perception/Enhanced	Senses	https://powerlisting.fandom.com/wiki/Perception/Enhanced	P,G	COVERED	sense dials		(u) little fear value; mostly a capability
+Thermoreception	Senses	https://powerlisting.fandom.com/wiki/Thermoreception	P	PACK	heat sense		(u) little fear value; mostly a capability
+Detection	Senses	https://powerlisting.fandom.com/wiki/Detection	P,M	COVERED	M sense of other patterns		being tracked
+Bloodline Tracking	Senses	https://powerlisting.fandom.com/wiki/Bloodline_Tracking	P,K,S	PACK	chemical or M track		hunted by descent
+Hyper-Sense	Senses	https://powerlisting.fandom.com/wiki/Hyper-Sense	P,G	COVERED	sense dials		(u) little fear value; mostly a capability
+Dowsing	Senses	https://powerlisting.fandom.com/wiki/Dowsing	K	PACK	noise reading of water		false confidence
+Telekinetic Stamina	Physical enhancement	https://powerlisting.fandom.com/wiki/Telekinetic_Stamina	M	COVERED	more M store throughput		(u) little fear value; mostly a capability
+Holo-Technology	Tech	https://powerlisting.fandom.com/wiki/Holo-Technology	P	PACK	projection tech		false reality
+Technomagic	Tech	https://powerlisting.fandom.com/wiki/Technomagic	M,P	COVERED	devices with M patterns		(u) little fear value; mostly a capability
+Technology Manipulation	Tech	https://powerlisting.fandom.com/wiki/Technology_Manipulation	P,M	COVERED	operate or build machines; M adds		(u) little fear value; mostly a capability
+Technoscience	Tech	https://powerlisting.fandom.com/wiki/Technoscience	P	COVERED	engineering as K		unchecked invention
+Cyberpresence	Tech	https://powerlisting.fandom.com/wiki/Cyberpresence	P	PACK	AI minds in networks		presence in the net
+Bio-Technology	Tech	https://powerlisting.fandom.com/wiki/Bio-Technology	P,G	COVERED	engineering with biology		(u) little fear value; mostly a capability
+Bio-Capacitor	Tech	https://powerlisting.fandom.com/wiki/Bio-Capacitor	P,M	PACK	body store of energy		(u) little fear value; mostly a capability
+Bioluminescence	Body	https://powerlisting.fandom.com/wiki/Bioluminescence	P	PACK	body light emission		glow in the dark
+Photosynthesis	Body	https://powerlisting.fandom.com/wiki/Photosynthesis	P	PACK	energy budget through light		(u) little fear value; mostly a capability
+Evolution	Body	https://powerlisting.fandom.com/wiki/Evolution	G	COVERED	G graded plus rare jumps		unstoppable adaptation
+Self-Evolution	Body	https://powerlisting.fandom.com/wiki/Self-Evolution	G,X	COVERED	X rebuild changes with feedback		adaptive foe
+Devolution	Body	https://powerlisting.fandom.com/wiki/Devolution	G	COVERED	G reverse		dread of regression
+Regression	Body	https://powerlisting.fandom.com/wiki/Regression	X	COVERED	X rewind of parts still together, age by pattern		(u) little fear value; mostly a capability
+Atavism	Body	https://powerlisting.fandom.com/wiki/Atavism	G	COVERED	G sharp-jump variant		beast within
+Mutation	Body	https://powerlisting.fandom.com/wiki/Mutation	G	COVERED	G variant with rare sharp-jump		mutants, otherness
+Omnipotence	Omni	https://powerlisting.fandom.com/wiki/Omnipotence	-	SECOND	anything	unbounded causal control	(u) little fear value; mostly a capability
+Nigh-Omnipotence	Omni	https://powerlisting.fandom.com/wiki/Nigh-Omnipotence	M	COVERED	huge store with large substrate of believers; limits emerge		gods
+Omnipresence	Omni	https://powerlisting.fandom.com/wiki/Omnipresence	-	SECOND	everywhere	nonlocal presence	(u) little fear value; mostly a capability
+Nigh-Omnipresence	Omni	https://powerlisting.fandom.com/wiki/Nigh-Omnipresence	M,X	COVERED	many doorways, hosts		everywhere watching
+Multipresence	Omni	https://powerlisting.fandom.com/wiki/Multipresence	M,X	COVERED	many hosts with one patron		(u) little fear value; mostly a capability
+Omni-Manipulation	Omni	https://powerlisting.fandom.com/wiki/Omni-Manipulation	-	SECOND	manipulate anything	unbounded causal control	(u) little fear value; mostly a capability
+Omnicide	Omni	https://powerlisting.fandom.com/wiki/Omnicide	-	SECOND	kill all		(u) little fear value; mostly a capability
+Omnilingualism	Omni	https://powerlisting.fandom.com/wiki/Omnilingualism	K	PACK	language competence dial		(u) little fear value; mostly a capability
+Omnibenevolence	Omni	https://powerlisting.fandom.com/wiki/Omnibenevolence	-	EXCLUDED	alignment tag		(u) little fear value; mostly a capability
+Omnimalevolence	Omni	https://powerlisting.fandom.com/wiki/Omnimalevolence	-	EXCLUDED	alignment tag, can be a mind		(u) little fear value; mostly a capability
+Omnicompetence	Omni	https://powerlisting.fandom.com/wiki/Omnicompetence	K	PACK	skill dials		(u) little fear value; mostly a capability
+Divinity	Divine	https://powerlisting.fandom.com/wiki/Divinity	M,S,K	COVERED	being with vast substrate of believers' patterns that weakens when faith breaks		awe, judgment, faith
+Deification	Divine	https://powerlisting.fandom.com/wiki/Deification	M,S	COVERED	belief substrate built up		worship
+Sanctification	Divine	https://powerlisting.fandom.com/wiki/Sanctification	M,S	COVERED	M ward on place, supported by believers		(u) little fear value; mostly a capability
+Sacredization	Divine	https://powerlisting.fandom.com/wiki/Sacredization	M,S	COVERED	(u) n/a		(u) little fear value; mostly a capability
+Damnification	Divine	https://powerlisting.fandom.com/wiki/Damnification	M,S,K	COVERED	curse by patron pact		(u) little fear value; mostly a capability
+Faithifery	Divine	https://powerlisting.fandom.com/wiki/Faithifery	S,M	COVERED	faith as substrate, believers' patterns		(u) little fear value; mostly a capability
+Authority	Social	https://powerlisting.fandom.com/wiki/Authority	S,K	COVERED	institutions, reputation		(u) little fear value; mostly a capability
+Leadership Manipulation	Social	https://powerlisting.fandom.com/wiki/Leadership_Manipulation	S,K	COVERED	politics		(u) little fear value; mostly a capability
+Taunting	Social	https://powerlisting.fandom.com/wiki/Taunting	K,S	COVERED	K dialogue and emotion		(u) little fear value; mostly a capability
+Thievery	Combat	https://powerlisting.fandom.com/wiki/Thievery	K,P	COVERED	skills		(u) little fear value; mostly a capability
+Taming	Social	https://powerlisting.fandom.com/wiki/Taming	K,P	COVERED	animal bond model		(u) little fear value; mostly a capability
+Domestication	Social	https://powerlisting.fandom.com/wiki/Domestication	K,P,G	COVERED	G selection, animal bond		(u) little fear value; mostly a capability
+Luck	Reality	https://powerlisting.fandom.com/wiki/Luck	-	SECOND	bias world randomness	bias to chance outcomes	(u) little fear value; mostly a capability
+Jinx	Reality	https://powerlisting.fandom.com/wiki/Jinx	M,S,K	COVERED	curse as pattern with drain plus K belief		rumours of bad luck
+Probability Manipulation	Reality	https://powerlisting.fandom.com/wiki/Probability_Manipulation	-	SECOND	bias outcomes	bias to chance outcomes	(u) little fear value; mostly a capability
+Reality Warping	Reality	https://powerlisting.fandom.com/wiki/Reality_Warping	-	SECOND	rewrite world rules	unbounded causal control	(u) little fear value; mostly a capability
+Fate Manipulation	Reality	https://powerlisting.fandom.com/wiki/Fate_Manipulation	-	SECOND	set outcomes	bias to chance outcomes	(u) little fear value; mostly a capability
+Genre-Shifting	Reality	https://powerlisting.fandom.com/wiki/Genre-Shifting	-	EXCLUDED	meta genre		(u) little fear value; mostly a capability
+Narration	Reality	https://powerlisting.fandom.com/wiki/Narration	-	EXCLUDED	narrator is meta		(u) little fear value; mostly a capability
+Choicifery	Reality	https://powerlisting.fandom.com/wiki/Choicifery	-	EXCLUDED	(u) n/a		(u) little fear value; mostly a capability
+Dystopianization	Reality	https://powerlisting.fandom.com/wiki/Dystopianization	-	EXCLUDED	(u) n/a		(u) little fear value; mostly a capability
+Utopianization	Reality	https://powerlisting.fandom.com/wiki/Utopianization	-	EXCLUDED	(u) n/a		(u) little fear value; mostly a capability
+Meta Science	Reality	https://powerlisting.fandom.com/wiki/Meta_Science	-	EXCLUDED	(u) n/a		(u) little fear value; mostly a capability
+Glitching	Reality	https://powerlisting.fandom.com/wiki/Glitching	-	EXCLUDED	simulation fiction trick		(u) little fear value; mostly a capability
+Acausality	Reality	https://powerlisting.fandom.com/wiki/Acausality	-	SECOND	events without causes	acausal events	(u) little fear value; mostly a capability
+Indeterminacy	Reality	https://powerlisting.fandom.com/wiki/Indeterminacy	-	SECOND	(u) n/a		(u) little fear value; mostly a capability
+Immutability	Reality	https://powerlisting.fandom.com/wiki/Immutability	-	SECOND	cannot be changed	unconditional outcome rule	(u) little fear value; mostly a capability
+Undefeatable	Reality	https://powerlisting.fandom.com/wiki/Undefeatable	-	EXCLUDED	narrative		(u) little fear value; mostly a capability
+Erasure/Absolute	Reality	https://powerlisting.fandom.com/wiki/Erasure/Absolute	X	SECOND	erase from existence	erase of mass-energy	(u) little fear value; mostly a capability
+Existence Switching	Reality	https://powerlisting.fandom.com/wiki/Existence_Switching	X	COVERED	X planes swap		(u) little fear value; mostly a capability
+Anachronism	Reality	https://powerlisting.fandom.com/wiki/Anachronism	-	SECOND	time		(u) little fear value; mostly a capability
+Forbidden Knowledge	Cosmic	https://powerlisting.fandom.com/wiki/Forbidden_Knowledge	K,M	COVERED	cosmic outsiders through resonant links; K minds break		cosmic dread, madness
+Eldritch Conversion	Cosmic	https://powerlisting.fandom.com/wiki/Eldritch_Conversion	M,K,X	COVERED	outsider link rewrites host		loss of mind
+Cosmic Storm	Cosmic	https://powerlisting.fandom.com/wiki/Cosmic_Storm	M	COVERED	M field surge		(u) little fear value; mostly a capability
+Panmnesia	Mind	https://powerlisting.fandom.com/wiki/Panmnesia	K	PACK	memory perfect		(u) little fear value; mostly a capability
+Hypercognition	Mind	https://powerlisting.fandom.com/wiki/Hypercognition	K	PACK	(u) n/a		(u) little fear value; mostly a capability

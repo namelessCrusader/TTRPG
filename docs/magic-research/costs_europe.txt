@@ -1,0 +1,259 @@
+COSTS AND COMPONENTS: EUROPEAN AND MEDITERRANEAN TRADITIONS
+Lane: costs_europe. Date 2026-11-21. Research only, no code.
+
+MARKS. (v) = checked against a source I read in this run. (k) = my own knowledge of the literature. (u) = unverified.
+HONEST NOTE ON (v). Web search in this run returned snippets and secondary pages, not full primary texts. I mark (v) only where a search result showed the point. Most claims are (k). Check (k) claims against Betz, Faraone/Obbink, Mathers, Kieckhefer, Price, Strömbäck, Storms before they go into data files.
+Key search sources used: Wikipedia "Magical papyri", "Nine Herbs Charm", "Seiðr", "Lacnunga"; esotericarchives.com Key of Solomon; Mathers edition scans on archive.org; Betz 1986 (is.muni.cz text mirror); a scholarly chapter on Lacnunga charms (ora.ox.ac.uk, snippet only).
+
+The eight cost kinds, shorthand:
+ E energy, W waste heat/waste, I information, M matter, WEAR, L links, T time, N being noticed.
+Component roles in the design: store=E, focus/inscription=I, catalyst=barrier, link=targeting, matched medium=cheap coupling, reagent=matter.
+
+=====================================================================
+0. SUMMARY OF WHAT THE EUROPEAN TRADITIONS SAY
+=====================================================================
+1. Almost nothing is "freehand" in these traditions in the sense of word alone with no prop. Even the shortest spoken charm is placed: a time, a place, a person, a substance. The stated reason is not power. The stated reason is correctness: the right name, the right hour, the right purity. (k)
+2. The commonest component classes are: (a) a LINK to the target (hair, nails, name, mother's name, clothing, the victim's own tablet-written name); (b) a PATTERN carrier (inscribed lamella, tablet, ring, figure, charaktêres); (c) MATTER with matched properties (similarity: lead for cold, binding; wax for a figure); (d) TIMING (planetary hour, moon phase, dawn); (e) PURITY of the practitioner and tools (fasting, abstinence, virgin parchment, new vessels); (f) a PROTECTION barrier (circle, amulet) against the thing called.
+3. Almost no source states an ENERGY cost in joules-like terms. The costs that ARE stated are: time spent in preparation (days to weeks), money and rare materials, danger from the called agent, loss of status, and bodily wear. Energy is hidden inside the agent: spirits and gods are the energy source (a "patron"). (k)
+4. Stacking is the norm in learned ritual: voice (names, voces magicae), gesture, object, place, time, purity, sometimes a second person (the child medium, the assistant). Folk charms stack fewer media: voice plus a plant or knot plus a time. (k)
+5. The key regularity for the design: components in these traditions are mostly INFORMATION, LINK, TIMING and PROTECTION. They are almost never ENERGY stores. The nearest to a store is the spirit/god, the consecrated object (a "charged" ring) and the body of the practitioner (fasting makes a vessel). That fits the design: "focus = information, link = targeting" is well supported; "store = energy" is weakly supported by the historical record and is a better fit to fiction and alchemy.
+
+=====================================================================
+1. GREEK MAGICAL PAPYRI (PGM, PDM) AND SPELL FORMULARIES
+=====================================================================
+Source. Corpus of papyri from Graeco-Roman Egypt, 2nd c. BCE to 5th c. CE, mostly Greek, with Demotic and Coptic. Standard translation: Betz (ed.), The Greek Magical Papyri in Translation (Chicago, 1986; 2nd ed. 1992) (v, via search). Also Faraone and Torallas Tovar, Greek and Egyptian Magical Formularies (v, named by search); Graf, Magic in the Ancient World (1997) (k); Faraone and Obbink, Magika Hiera (1991) (k).
+
+(a) FREEHAND vs COMPONENTS.
+- Freehand-like: short invocations and voces magicae (strings of sounds like ARBATHIAŌ) spoken alone, e.g. brief protective or "restraining" formulas said while doing an ordinary act. (k) Even these usually name a god and a time.
+- Needs components: nearly all formulae in the books. Typical recipe = a verbal formula + an inscribed object + a material + a time + a purity rule. (k)
+- Scale note: love spells (agôgê), binding spells, dream-sending, divination by lamp or bowl, invisibility, "headache" cures, and the "Mithras Liturgy" (an ascent rite, PGM IV) all give written recipes. (k)
+
+(b) COMPONENTS AND WHAT FOR.
+- Hair, nails, clothing, blood, a "leavings" of the target: LINK. Love spells say the ingredients include things like hair or clothing of the target. (v, low-quality page; k from Faraone, Ancient Greek Love Magic 1999)
+- The target's name AND the mother's name (not the father's): LINK / identity key. Ancient belief: maternity certain. (k)
+- Lamella of lead, tin, silver, gold, or papyrus, inscribed with names and charaktêres (ring-headed signs): PATTERN carrier. Lead is chosen for cold, heavy, binding properties: matched medium by similarity. (k)
+- Wax or clay figurines (kolossoi), pierced with needles, bound: LINK+PATTERN, a model of the target; similarity. (k)
+- Special ink (myrrh ink, "Hermes ink"), pen of reed or bird feather, blood of animals: MATTER with a matched property and ritual purity. (k)
+- Oil lamp, bowl of water or oil, boy medium (pais) or a virgin child: SENSOR / holder. In lamp and bowl divination the child is a channel that sees the god. (k)
+- Incense, herbs, stones, animals (a hawk, cock, ibis): MATTER, each tied to a god by similarity (sympatheia). Some animals are killed: consumed. (k)
+- Place: crossroads, graves of those who died untimely (aôroi), rivers, roofs, sea shore, temple. For defixiones: grave or well, where the dead or underworld gods hear. PLACE as channel/addressee. (k)
+- Time: lunar day, planetary day, hour of night, dawn. TIMING. (k)
+- Purity: abstain from sex, pork, fish, and so on for days (often seven or 3, 7, 14 days seen in recipes). PURITY. (k)
+- Amulets worn: PROTECTION and a standing store of the spell. (k)
+
+(c) CONSUMED, WORN OR KEPT.
+- Consumed: animals sacrificed, incense, ink, herbs, the written strip if burned or dissolved and drunk.
+- Worn: amulets, rings, lamellae in cases.
+- Kept/deposited: curse tablets (defixiones) are buried and left. They are one-use patterns left at the site to work. Figurines buried. (k)
+- Reusable: the lamp, the bowl, the ring (some rings "re-usable"). (k)
+
+(d) STACKING. A typical PGM rite stacks: voice (the long formula, with vowel strings) + gesture (hand positions, wreath, breathing, holding the ring) + object (the inscribed ring or lamella) + place (rooftop, grave) + time (hour, lunar day) + purity period + a second person (the child). The Mithras Liturgy stacks breathing, vowel chant, visualization of rays and a protective stance. (k) This is the clearest stacking in Europe.
+
+(e) COSTS AND RISKS (stated).
+- Danger from the summoned agent if you get words wrong or are impure. A common risk statement: the god may punish. (k)
+- Cost of money and rare materials. (k)
+- Many spells promise protection in the rite itself (a phylactery against the daimon). (k)
+- Purity "seems to rely much on" the practitioner's purity; the phrase "keep yourself pure" is common (v, via a scholarly article summary in search). The same summary said no text warns that a ritual fails for bad purification: that is inferred. (v)
+- The legal and social risk is real: magic could be prosecuted under Roman law (Sullan lex Cornelia, later imperial edicts). (k) That is social, not physics.
+
+(f) MAPPING.
+- Link (hair/name) -> L. Fits well: contact (Frazer's contagion) = L.
+- Pattern lamella and charaktêres -> I and WEAR (if reusable) or one-use I.
+- Lead, wax, matched stones -> "matched medium" (cheap coupling); also M when consumed.
+- Animals and incense -> M, plus a social/offering element (see gaps).
+- Timing -> T. But the PGM time is not "casting time from information"; it is a window you must WAIT for. See gap G3.
+- Purity -> a precondition on the holder (body state). Closest to: the practitioner's state variables (fasted, sleep, clean). Partial map to E (fasting reduces body energy) but the stated reason is cleanliness. See gap G1.
+- Child medium -> a second brain as holder/channel: fits "multiple interfaces" (holder = child). Costs: the child's own risk.
+- The god/daimon as ENERGY source: no direct map unless a "patron" bond (design Q on patrons). See gap G5.
+
+CURSE TABLETS (DEFIXIONES). (k mostly; Gager, Curse Tablets and Binding Spells from the Ancient World, 1992; Faraone 1991; Versnel 1991)
+(a) Freehand: none. A tablet is always a physical text.
+(b) Components: a thin lead sheet (lead = cold, slow, heavy; also cheap and available); a stylus; the victim's name (often with mother's name); a list of body parts to bind; names of underworld gods; sometimes a nail pierced through; folding or rolling. Deposit: grave, well, spring, sanctuary of chthonic gods. (k)
+(c) Consumed/kept: one-use, deposited, buried. The text stays as the standing pattern. (k)
+(d) Stacking: writing + object (lead) + place (grave/well) + deposit act + oral formula (probable) + sometimes a doll. (k)
+(e) Costs: little to the writer beyond cost of lead and time. The risk is exposure (a found tablet is evidence), and the belief that the cursed can counter. Also: justice-prayer tablets ask a god to act, so the writer shifts the cost to the god. (k)
+(f) Map: I (text), L (name), M (lead consumed, deposited), T (long delay while it "works"). The notable point: a tablet is a STORED, DELAYED, TARGETED pattern left in a place. It is the best historical model for "inscription = information, place = holder/amplifier". The place choice (grave, well) is an ENVIRONMENT interface. Fits the design's "environment" stage. No energy cost stated: the underworld god pays. Gap G5.
+
+=====================================================================
+2. EGYPTIAN HEKA
+=====================================================================
+Sources: Ritner, The Mechanics of Ancient Egyptian Magical Practice (Chicago, 1993) (k); Pinch, Magic in Ancient Egypt (1994) (k); Assmann on heka (k). Heka is both a force (personified as a god) and a technique. (k)
+(a) Freehand: the spoken word ("recitation", ra) is core, but it works with acts: "spell + ritual action + materials" is the usual triple in Egyptian texts. A spell without acts is rare; a few are recitation only. (k)
+(b) Components: images (wax or clay figures, drawn on papyrus or on the hand), knots (knotted linen threads, tied in sevens for protection), spit, saliva and fluids, written spell dissolved in water or beer and drunk or washed with (a "magic cup", cippus of Horus where water poured over inscribed stela is drunk: pattern transfer to the body), amulets (wedjat eye, scarab), inscribed statuettes, wands (ivory apotropaic wands, for protecting mother and child), and herbs and drugs. (k)
+(c) Mostly worn or kept: amulets, wands, stelae. Consumed: the water, drugs, wax. (k)
+(d) Stacking: words + image + substance + body contact (swallow it, bind it) + often priest status ("lector priest", hery-heb) + temple setting. (k)
+(e) Costs/risks: ritual impurity; the magician "knows the name". Execration rituals (smashing red pots with enemy names) are done with some risk of retaliation. Magic is state-sanctioned, with the king as chief magician; the gods themselves use heka. (k)
+(f) Map: I, L (name written on a pot or figure), M (consumed substance), WEAR (amulet). Notable: THE WRITTEN SPELL DISSOLVED AND DRUNK. This is "transfer of a stored pattern into a body": information moved by a physical carrier. Heka as a god-force is a field-like thing, close to M itself: the Egyptian view is that heka exists in the world and the practitioner draws on it and on the creator's gift. This is a good match for the design's "ambient M". (k) Also the SOCIAL LICENCE (priestly office) is not physics: gap G4.
+
+=====================================================================
+3. HERMETIC AND NEOPLATONIC THEURGY
+=====================================================================
+Sources: Iamblichus, De mysteriis (Clarke, Dillon, Hershbell trans. 2003) (k); Shaw, Theurgy and the Soul (1995) (k); Proclus, On the Hieratic Art (k); Corpus Hermeticum and Asclepius (animating statues) (k).
+(a) Freehand: contemplation alone is not enough for Iamblichus. He holds that theurgy must use matter: "synthemata" and "symbola" (tokens) placed in the right way. (k)
+(b) Components: stones, herbs, animals, incense, inscribed figures, statues with materials chosen for a god's nature (Proclus: heliotrope and sunflower for Sun). Names of gods. Hymns. (k)
+ Purpose: the material is "sympathetic" to the god, a hook for the god to be present. The ritual does not move the god. It prepares the receiver. So purpose = MATCHED MEDIUM (cheap coupling) and PURITY of the receiver, not power. (k)
+(c) Statues in the Asclepius: made with materials plus herbs, stones, spices with "divine force in them" so the statue "ensouls". Reusable; the object is the store. (k)
+(d) Stacking: hymn + incense + token + statue + place + purified soul + time. (k)
+(e) Costs: for the soul, purity, long discipline (virtue, philosophical training before ritual). Risks: contact with low daimons if impure. (k)
+(f) Map: matched medium -> cheap coupling, the strongest historical statement of it: "like attracts like" as an ENGINEERING PRINCIPLE (Plotinus Enn. IV.4.40-45, magic via sympatheia; Proclus). Good evidence that the design's "matched medium makes cheaper" is not invented. The ensouled statue is a store+focus (E + I). Practitioner's purity -> body/mind state. The cost "years of training" -> skill as I (information held in the practitioner). Gap: "the god chooses to come" is an agency/consent factor, not energy (G5).
+
+=====================================================================
+4. MEDIEVAL AND RENAISSANCE GRIMOIRES
+=====================================================================
+Sources: Kieckhefer, Magic in the Middle Ages (1989) and Forbidden Rites (1998) (k); Klaassen, Transformations of Magical Texts (2013) (k); Mathers' 1889 edition of the Greater Key of Solomon, used in search (v, parts); Picatrix tr. Greer and Warnock (2010) (k); Munich Handbook (CLM 849) ed. Kieckhefer / Klaassen translation (k); Boudet; Page, Magic in the Middle Ages (k).
+
+4.1 KEY OF SOLOMON (Clavicula Salomonis)
+(a) Freehand: none. All operations are ritual with a long preparation. (k)
+(b) Components (v for pentacle/parchment lines from Mathers scans seen in search):
+ - Virgin parchment or virgin paper made from animals never used for breeding; special pen (e.g. swallow) and ink/blood (e.g. screech-owl blood in a Jupiter pentacle) (v). Purpose: purity and matched property.
+ - Pentacles engraved on metals (silver for Moon/Jupiter) "in the day and hour of" a planet when it is in a sign (v). Purpose: PATTERN (I) + TIMING + matched metal.
+ - Circle, sword, knife with white handle, wand, censer, candles, garments of linen: tools made new, consecrated. Purpose: PROTECTION and purity. (k)
+ - Fasting, prayer, confession, abstinence, baths, for days to months depending on the operation (v, secondary summary; k).
+ - Names of God, sacred verses and psalms: words as authority. (k)
+(c) Consumed: animals killed for parchment; incense; candles. Kept: sword, knife, pentacles, circle drawn anew. (k)
+(d) Stacking: purity period + time (day/hour) + place (secluded) + circle (protection) + object (pentacle) + words (conjurations) + gesture + incense. This is the full stack. (k)
+(e) Costs/risks: danger from spirits if protection fails; compelled spirits are threatened with the divine names, not paid. Long time cost. (k) Modern commentary notes preparations like animal sacrifice and long fasts are adapted today (v, secondary).
+(f) Map: PROTECTION via circle -> catalyst/barrier? Design says catalyst = a barrier, not consumed. A circle is a barrier but its role is shielding the practitioner from the called thing: maps to "protection / shield" rather than to cost kinds. See G2. Purification -> T and body state. Pentacle -> I + WEAR (reusable). Virgin parchment -> M plus purity quality; "purity" as a material grade = coupling dial of the material (design 5.1 says purity sets coupling): a good fit. Time window -> G3. Compulsion of spirits by divine names: "authority" or "rank" - G4/G5.
+
+4.2 PICATRIX (Ghayat al-hakim, Arabic, tr. into Latin 13th c.)
+(k; Greer and Warnock 2010)
+(a) Freehand: it says in Book III that the mind alone (the "spiritus") can affect, via imagination: some operations by will and a prepared soul. But the main method is astral/talismanic. (k)
+(b) Components: talismans made in the right planetary hour, with the right stone/metal/plant/animal for each planet; images carved; incense and fumigations; fasting and purity; a focused invocation to the spirit of the planet. (k)
+(c) Consumed: incense, animals. Kept: the talisman, the worn ring. (k)
+(d) Stacking: planetary time + material + image + incense + word + intention. (k)
+(e) Costs: effort, rare materials, calendar waiting. (k)
+(f) Map: TIME as a window set by the sky (G3); matched materials (similarity by planet) -> matched medium; "the talisman collects celestial influence" -> a store that fills from an external flux when timed right. That is a candidate to map: a talisman made under the right hour "captures" a field that varies with time. In the design: M varies with place; here M varies with TIME and sky. Candidate missing law: temporal variation of M source S(x,t) (e.g. sun/moon cycles). The design already has S(x) and sunlight; extend to time-of-day/lunar cycle. (k)
+
+4.3 MUNICH MANUAL (CLM 849, 15th c., necromancer's handbook)
+(k; Kieckhefer, Forbidden Rites 1998; Klaassen).
+(a) Freehand: some short conjurations and charms. The longer operations need components. (k)
+(b) Components: crystal or a child or a mirror/sword for scrying (the child medium again); circle; fasting for days (e.g. 40 day or a few); consecrations of tools; fumigations; written names; sometimes a "psalter" for conjuring. Also illusionist/entertainment spells (dinner feasts, banquets of spirits), love and theft spells. (k)
+(c) Mixed. (k)
+(d) Stacking same as Key of Solomon, plus the CHILD MEDIUM, who is also the sensor. (k)
+(e) Costs: clerical necromancers risk heresy charges; danger from demons; sin. (k)
+(f) Map: the child/crystal scrying = a SENSOR coupling (the holder is a brain; the crystal is a lens). The sin/heresy cost is social/religious: G4. Fits the design: "holder", "shaper".
+
+=====================================================================
+5. JEWISH PRACTICAL KABBALAH AND AMULETS
+=====================================================================
+Sources: Idel, Golem (1990) (k); Schäfer and Shaked, Magische Texte aus der Kairoer Geniza (k); Naveh and Shaked, Amulets and Magic Bowls (1985) (k); Sefer Yetzirah (k); Sefer ha-Razim (k); Trachtenberg, Jewish Magic and Superstition (1939) (k); Bohak, Ancient Jewish Magic (2008) (k).
+(a) Freehand: prayer and the recitation of divine names alone is the base. Names of God, permutations of letters (Sefer Yetzirah's "gates"), kavvanah (intention). (k) Some tikkunim and healing words need no object.
+(b) Components: written amulets (kame'ot) on parchment, metal or clay; Aramaic incantation bowls (inscribed ceramic bowls buried upside down under thresholds to trap demons, 5th to 8th c. Mesopotamia) (k; Naveh and Shaked); names of angels; fasting and immersion (mikveh) before; careful scribe rules (ink, quill, pure state); sometimes a "Baal Shem", a licensed practitioner. (k)
+(c) Amulets worn or kept; bowls buried as standing pattern; golem rite: clay body + the Name written on its forehead or in its mouth; erasing a letter turns it off (emet -> met). (k)
+(d) Stacking: purity + time (specific day, hour) + fasting + name recitation + object + sometimes a spoken oath. For the golem (medieval Ashkenazi texts): a group of two or three adepts, circling clay while reciting permutations. (k)
+(e) Costs/risks: mostly moral and ritual; incorrect use of the divine Name is dangerous; golem lore warns of a creature that outgrows control. (k)
+(f) Map: the SCRIBAL AMULET = an I carrier worn (WEAR). The golem = a BODY (matter) + a standing PATTERN (the Name) + a kill-switch pattern (erase a letter). In design terms: a device that holds the pattern; its energy comes from the field or maker. The permutation of letters is explicit combinatorial information: the "pattern bits" cost, and the design's "errors that land on neighbouring valid spells" matches the warning that one wrong letter changes the meaning. Good fit. The ritual-purity rule (immersion before) is G1. The need for the right scribe also shows that PRODUCTION of the component has its own cost: the pattern must be written with correct, trained skill (I as skill).
+
+=====================================================================
+6. WESTERN ALCHEMY
+=====================================================================
+Sources: Principe, The Secrets of Alchemy (2013) (k); Newman, Atoms and Alchemy (2006) (k); Newman and Principe, Alchemy Tried in the Fire (2002) (k); Pseudo-Geber, Summa perfectionis (k); Ripley; the Emerald Tablet, Latin (k).
+(a) Freehand: none. Alchemy is a lab craft with long procedures. (k)
+(b) Components: raw materials (metals, sulphur, mercury, salts, acids), furnace, athanor (a steady-heat furnace), alembic, vessels (sealed), "philosophers' egg"; very long and gentle heating; purified starting matter ("prima materia"); sometimes prayer and secrecy; a "seed" (a little elixir to multiply) in multiplication. (k)
+(c) Consumed: the matter transformed (the aim); the fuel; the vessels sometimes cracked. Kept: apparatus. (k)
+(d) Stacking: matter + heat control + time (weeks to months; "putrefaction" 40 days) + vessel + sometimes planetary timing + moral purity of the operator ("only the pure succeed"). (k)
+(e) Costs: money (fuel, metals), long time, fumes and explosion risk, mercury poisoning (real, k), fraud and legal bans (Henry IV's ban on multiplying metals, 1404, k). (k)
+(f) Map: the best fit of all to the eight kinds. M (reagents), E (fuel, heat), W (fumes, heat loss), T (long, stated), WEAR (vessels), I (recipe knowledge, "secrets"). Multiplication of the stone with a "seed" is a CATALYST-like or chain process. The "philosophers' stone" is a store/catalyst of impossible strength, the one thing that violates conservation if it multiplies without limit: the design should note that the stone's "multiplication" is bounded by what the design allows (a charged material that releases energy or acts as catalyst, not a source). Purity of matter -> the design's "purity sets coupling". The operator's moral purity is G1. Newman's work shows Renaissance alchemists reasoned about matter by corpuscles (k): an in-world analogue of the physics reasoning.
+
+=====================================================================
+7. NORSE GALDR, SEIDR AND RUNES
+=====================================================================
+Sources: Price, The Viking Way (2002/2019) (k); Strömbäck, Sejd (1935; Eng. Cult and Seid) (k); Snorri, Ynglinga saga ch. 4 and 7 (k; v for seiðr/ergi gist); Eiríks saga rauða ch. 4 (the völva Þorbjörg) (k); Hávamál stanzas 138-165 (Odin on the tree; runes and the spell-songs Ljóðatal) (k); Runic inscriptions: Elder Futhark amulets; Sigrdrífumál runes (k); Mitchell, Witchcraft and Magic in the Nordic Middle Ages (2011) (k).
+(a) FREEHAND. Galdr (chanted or sung spells) is a vocal act. Hávamál's Ljóðatal lists spells Odin knows: ones for healing, blunting weapons, freeing from bonds, stilling a storm, making a hanged man talk, protecting in battle (k). Many are SUNG with no object named. These are the nearest to "freehand" in Europe. But: a cost in knowledge: you must KNOW the song (information gained at a price, e.g. Odin's self-sacrifice for runes). (k)
+(b) COMPONENTS.
+ - Runes carved: on wood, bone, metal; staves; with a blood-reddening of the carved lines (Egil's saga: Egil carves runes on a drinking horn and reddens them with blood to expose poison, k). Purpose: PATTERN + link (blood) + matched act. (k)
+ - Seiðr (Eiríks saga): Þorbjörg needed a high seat, a cushion stuffed with hen feathers, a staff (seiðstafr) with a brass knob set with stones, catskin gloves and hood, a girdle with a pouch of charms ("magic items"), a song called varðlokur sung by a choir of women, and a meal of animals' hearts. (k; the saga detail is well known). Purpose: SOCIAL STAGE + holder (the staff/seat) + a group (choir singers lend the song). Group = multiple minds. (k)
+ - Odin's runes: nine nights hanging on the tree, wounded by spear, no food or drink (Hávamál 138-139) (k). Price paid in body and pain for ACCESS to information.
+(c) Consumed: the hearts meal; blood. Kept: staff, carved objects; the runic inscription stays as the pattern. (k)
+(d) Stacking: song + staff + seat + costume + choir + meal + place + audience (Þorbjörg's performance was in a farm). The seiðr stack includes a group, as in design (several casters). (k)
+(e) COSTS AND RISKS.
+ - Social: seiðr was tied to ergi, "unmanliness"; male practitioners risked being called argr (v from search); Snorri says it left the practitioner "weak and helpless" (v, search summary); Odin was taunted for it in Lokasenna (v). Sources are limited and contested: scholars disagree on how strong the stigma was (v, the Turku abstract "limited sources, diverse explanations"; a source argues stigma was selective).
+ - Bodily: Odin's ordeal; trance (the practitioner "goes out", sends the soul or "hamr"). In Ynglinga saga Odin's body lay as if asleep while he went as a bird or beast (k).
+ - Legal: seiðr practitioners were outlawed or killed in sagas (e.g. Kotkel and family; the burning of sorcerers in Iceland) (k).
+(f) MAP. 
+ - Song knowledge -> I (skill), paid once.
+ - Staff and seat -> holder/focus (I), WEAR low.
+ - Blood on runes -> L (self-link) or a "life as energy" cost (E from body). Strong evidence for the design's body-as-energy source (k).
+ - Odin's hanging -> body sacrifice for information: a cost that converts E/pain/time into I (learning). Design: skill is acquired by practice, not trauma: the sagas treat it as a ONE-OFF PAYMENT for a capability. Candidate missing law: costs that are PAID ONCE to unlock a capability (initiation cost) rather than per cast. See G6.
+ - Trance "soul-flight" -> the body left unguarded (a risk: a vulnerable holder). Maps to I (working memory used by the remote sense) and the body being "offline". Risk, not cost kind. A fit for "being noticed"/vulnerable, not exactly. G7.
+ - Social stigma -> G4.
+ - Choir -> several casters = pooled information/energy; fits "group rituals".
+
+=====================================================================
+8. CELTIC AND ANGLO-SAXON CHARMS (LACNUNGA, LEECHBOOKS)
+=====================================================================
+Sources: Wikipedia "Nine Herbs Charm", "Lacnunga" (v); a Lacnunga chapter on gathering rites (ora.ox.ac.uk, snippet) (v); Storms, Anglo-Saxon Magic (1948) (k); Pollington, Leechcraft (2000) (k); Jolly, Popular Religion in Late Saxon England (1996) (k); Bald's Leechbook and Leechbook III (k); Celtic: the Irish lorica (Deer's Cry/St Patrick's Breastplate), Gaulish Coligny and the lead tablets of Chamalières and Larzac (k).
+(a) Freehand vs components. Anglo-Saxon charms mix: spoken or sung text (galdor), herbs, a gathering act, a physical vessel, and often Christian liturgy. The Nine Herbs Charm (Nigon Wyrta Galdor) is "intended to be a song, sung at key points in a healing ritual" (v). Some charms are all-verbal: "Against a Sudden Stitch" speaks to the cause, and the "Wen" charm. (k)
+(b) Components (v for the herb ritual): nine herbs; the healer sings while approaching, circles the plants three times before touching them, and gathers at dawn or dusk (v, snippet). Leechbook III prescribes singing twelve Masses over plants for another remedy (v, snippet). Other charms need: holy water, church-bells in metal, the sign of the cross, a eucharistic wafer, writing on a wafer, a bundle of herbs hung up. (k) Purposes: matter (medicine by herbs with real pharmacology, k), pattern (the song), timing (dawn/dusk), Christian licence (Mass, saints).
+(c) Mostly consumed (herbs, salves), a few worn (amulets). (k)
+(d) Stacking: song + herbs + gathering ritual + time of day + Christian rite + the patient's body. (v for some elements.)
+(e) Costs: little stated. The charm is cheap. The "cost" is knowing the song and having the herb at the right time. The risks mentioned are mostly to the PATIENT (the wyrm/disease). (k)
+(f) MAP: the herbs have real effects, so the matter column is physics (chemistry). The song is information. Dawn/dusk -> T (G3). Strong evidence for a "mundane + pattern" mixture: part of the cure is real pharmacology; the chant adds a pattern. Design implication: do not give the chant full credit. Best fit with "freehand if it fits caps": these are low-energy, local, small effects. Plant identification is disputed (v) which matters for data: the sim's version should use its own herbs and not claim historical identity. Celtic lead tablets of Chamalières and Larzac are defixiones in Gaulish (k): same stack as Greek.
+
+=====================================================================
+9. EARLY MODERN CUNNING FOLK AND FOLK MAGIC
+=====================================================================
+Sources: Davies, Popular Magic: Cunning-folk in English History (2003) (k); Thomas, Religion and the Decline of Magic (1971) (k); Maple, The Dark World of Witches / Owen Davies, Grimoires (2009) (k); Ginzburg, The Night Battles (1966, benandanti) (k); Briggs, Witches and Neighbours (1996) (k); Wilby, Cunning Folk and Familiar Spirits (2005) (k).
+(a) Freehand: curses and "blessings" spoken at once (the ill-wish), the evil eye by look alone (folk belief across the Mediterranean; Dundes ed., The Evil Eye, 1981) (k). Verbal charms for burns, warts and stopping blood, passed down orally by lineage (the seventh son, the charmer whose power passes to the opposite sex, k). Most are freehand + a short formula.
+(b) Components: for divination or finding thieves: sieve and shears, key and Bible, a crystal or mirror; for counter-witchcraft: witch bottles (urine, pins, hair, nails of the bewitched in a sealed bottle, heated or buried under the hearth; the bottle returns harm) (k, from Merrifield, Ritual, Magic and Cult in Roman and Medieval Britain?; k); poppets; horseshoes and rowan against the evil; hag stones; written charms (the "Sator" square, a protective inscription) (k). Purpose: LINK (urine of the victim), PROTECTION, matched medium.
+(c) Consumed: herbs, written charms burned. Kept: witch bottles (buried under hearth, the standing counter), amulets. (k)
+(d) Stacking: spoken formula + object + place (hearth, threshold) + the client's own body products + the cunning person's reputation (social licence). (k)
+(e) Costs/risks: social danger: the cunning person was a fixture but could be tried as a witch; fees were taken (money as a cost to the client). Power often said to pass at death, with a hard death if you could not pass it on: a "lineage cost". (k)
+(f) MAP: witch bottle = L (a link from the victim) + a standing trap. The Sator square = pattern. The "power passes to another before you can die" is a transfer of capability, not energy: G6. The evil eye = a no-component, no-word "tell"/glance effect: a body-level, involuntary emission; maps to a dial in the individual with a tell (N) and a side effect, possibly the design's involuntary emission of M. Interesting candidate: an INVOLUNTARY, UNCONTROLLED effect: sim: a high-dial individual with no control leaks. Needs no new law, only a dial.
+
+=====================================================================
+10. CROSS-TRADITION REGULARITIES
+=====================================================================
+R1. Components cluster as: LINK, PATTERN carrier, MATTER by similarity, TIMING, PURITY, PROTECTION. Energy stores are rare. The spirit/god is the usual energy source.
+R2. Links are nearly universal for targeting a person: hair, nails, name, mother's name, a body product, clothing. The same trio appears in PGM, medieval, Norse, folk. (k) Best-supported item in the design.
+R3. Two modes of "matched medium": (i) Frazer-type similarity: a figure for a person, lead for cold; (ii) Neoplatonic sympatheia: stone/plant/metal tied to a god or planet. Both say: the better the match, the less the ritual must force. Supports the "matched medium = cheaper coupling" rule.
+R4. The written pattern is separated from the act: lamella, tablet, pentacle, amulet, bowl, rune, scroll. Often the writing is the work and is left standing. The tablet or bowl, once placed, works with no operator. This supports "inscription = information, reusable or one-use".
+R5. Timing is treated as a precondition, not a cost: planetary hour, lunar day, dawn. The practitioner WAITS. This is not the design's "casting time" which comes from information content. See G3.
+R6. Purity is everywhere (fasting, abstinence, virgin materials, ritual bath, new tools). Stated reason: correctness/cleanliness. Physically it is mostly a precondition on the holder's state and on material purity.
+R7. Protection stacks first. The learned rites (Solomonic, Munich, PGM) set up a circle or amulet BEFORE the working, because the working invites something dangerous. Costs to the practitioner are mostly risk of the called agent, not a drain.
+R8. The practitioner's cost list is short: time, money, rare matter, body discipline, social danger. Direct statements of drained energy are rare. Odin's ordeal and the sieve of fasting are the main bodily costs.
+R9. Stacking grows with scale and stakes. Folk: word + one object. Learned: word + gesture + object + place + time + purity + protection + helper. Group: seiðr choir, golem circle, lector priest and assistants.
+R10. A child or a second person as medium (PGM lamp, Munich manual) is common for sensing. The second brain is a holder and sensor, and carries its own risk.
+R11. Matter in these traditions is often REAL chemistry or pharmacology (herbs, mercury, acids, ink). The ritual wraps a real material effect. A sim with conserved physics should let the real part work and the pattern part add what M allows.
+R12. Counter-magic is built in: amulets, witch bottles, bowls, circles. Defence uses the same components (pattern, barrier, link inverted).
+
+=====================================================================
+11. MAP TO THE EIGHT COST KINDS (what the survey says)
+=====================================================================
+1 ENERGY. Weakly documented in text. Body cost: Odin's ordeal, blood on runes, fasting. Ambient: heka as a force that exists in the world. Charged materials: ensouled statue, consecrated ring, talisman made at the right hour. Spirit/god as source: universal.
+2 WASTE. Almost absent from the texts. Alchemy (fuel, fumes) is the exception. Fine for the design: waste is physics, not folklore, so it is not expected in the sources.
+3 INFORMATION. Very strong. Names, voces magicae, charaktêres, pentacle design, letter permutations, rune-songs, recipe. "You must know it" and "one wrong letter ruins it". Initiation and training are repeated costs (Odin; theurgy training; scribe rules).
+4 MATTER. Strong. Reagents, herbs, animals, incense, lead, ink. Many consumed.
+5 WEAR. Present: tools made new and consecrated; amulets kept; tablets left. Wear as degradation is rarely stated.
+6 LINKS. Very strong and uniform across traditions (R2).
+7 TIME. Present twice: long preparation (days to months) and waiting for a window (R5).
+8 BEING NOTICED. Strong but social: prosecution, stigma, heresy. Also supernatural attention: the called agent, the evil eye. Physical "tells" (light, smell, sound) are not the focus; the sound of galdr and incense smoke are ever-present in practice (k).
+
+=====================================================================
+12. GAPS: THINGS THAT DO NOT MAP CLEANLY
+=====================================================================
+G1. PURITY OF THE PRACTITIONER (fasting, abstinence, ritual bath, virginity of tools). Stated reason is cleanliness or holiness. It may reduce to body state (fasting lowers energy but then should hurt), or to "no contamination" of a pattern. Candidate: material and holder purity as a coupling-quality dial. No energy cost, just a precondition. Partially mapped; the belief part is not physics.
+G2. PROTECTION AS A COMPONENT CLASS. Circles, amulets, bowls. The eight kinds treat the barrier as "catalyst". These are shields against a called agent. They fit the design's counter-magic (impedance, absorption) but they are a cost of the rite: you must build the shield first. Map: M + I + T of setup. Not a new law, but a ninth thing to list: "setup of defences".
+G3. TIMING WINDOWS (planetary hour, lunar day, dawn). Not casting time. A resource that varies with the clock and sky. Candidate missing law: time-varying source S(x,t) for M (sun, moon, season). The design already has S(x); add t. Then "right hour" is just "M is high now".
+G4. SOCIAL LICENCE AND STIGMA (priestly office, guild, seiðr and ergi, heresy, witch trials, cunning-folk reputation). Real costs to a person but belief and culture, not physics. In the sim it should live in the social layer (reputation, law, faction), not in the casting chain. Reading: BEING NOTICED covers sight but not being judged.
+G5. THE AGENT AS ENERGY SOURCE AND CONSENT (god, daimon, spirit, patron, Holy Name). The cost is paid to or by an agent: offerings, obedience, compulsion by rank. Closest: the design's patron bond (a far store with a lasting relation). Not a cost kind: a bond with obligations (a debt). Candidate: DEBT or OBLIGATION to a patron as a cost kind in the social layer.
+G6. ONE-OFF INITIATION COSTS AND LINEAGE TRANSFER (Odin's ordeal; "the power passes when the cunning person dies"; the seventh son; Solomon's ring). Capabilities bought once and transferred. Not per-cast. In the design, skill is learned through practice. Candidate: a mechanism for a costly one-time change in the practitioner (a dial raised at body cost), and for transferring a dial or pattern between people.
+G7. VULNERABLE HOLDER DURING A WORKING (trance, soul-flight, child medium, the lamp-boy). The cost is the holder's body being undefended or the second person's risk. Maps loosely to TIME and BEING NOTICED. Candidate: "attention locked" state (working memory used) already exists in the design as the ~4 sub-spell limit. Link them: a big working takes all attention, so the body is open.
+G8. SPEECH AS AUTHORITY / NAME-POWER (names of God, the true name, compulsion of spirits). Maps to I (you must know the name) and L (the name is a link) but the claim "the name compels" is a social/rank rule between agents. Keep as data on agent-to-agent bonds, not engine.
+G9. FAITH AND CORRECT BELIEF (the ritual works only if done by the right sort of person; Iamblichus: the gods respond to the right rite, not to coercion). Not physics. If a world pack wants it, it is a rule on M-couplings to agents, not part of the base.
+G10. ECONOMIC COST (money, fees, price of silver, lead). Real, but a market layer. The material costs in M are the physical form.
+
+=====================================================================
+13. WHAT THE SURVEY SUGGESTS FOR THE DESIGN (for discussion, not decided)
+=====================================================================
+S1. Keep the eight kinds. The European record supports I, M, L, T and the matched-medium rule strongly, and E weakly.
+S2. Add to the list of things the sim must have (no new kind): (a) time-varying M source (G3); (b) setup of protection as part of rites (G2); (c) a vulnerable-holder state (G7); (d) one-off dial changes and transfers (G6).
+S3. Keep out of the casting chain and put in the social layer: stigma, licence, law, fees, debts to patrons (G4, G5, G10).
+S4. What is freehand in Europe: short spoken or sung charms for small, local, known targets (healing, protection, minor binding, weather-stilling songs), and the evil eye as an involuntary glance. Anything with distance to a named person needs a link. Anything powerful needs an agent or a place.
+S5. What needs components in Europe: targeting at distance (link), lasting effects (pattern carried by an object), contact with strong sources (protection and purity), and anything made of matter (reagent).
+S6. Multiple interfaces: the best-documented stack is PGM lamp/ring rites and the Solomonic ritual. A design check: let each link in the chain use its own medium (child holder, lamella shaper, grave environment, spirit source) and charge each its own cost.
+
+=====================================================================
+14. WHAT I DID NOT VERIFY
+=====================================================================
+Specific PGM spell numbers and exact ingredient lists, the Munich manual details, Picatrix book details, Sefer Yetzirah specifics, Iamblichus passage numbers: (k). Fast check list: Betz 1986 for PGM IV (Mithras Liturgy), VII (lamp), XIII; Mathers 1889 for Key chapters on purification; Kieckhefer 1998 for the Munich manual; Strömbäck 1935 and Price for seiðr; Storms 1948 for charms.

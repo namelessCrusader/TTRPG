@@ -1,0 +1,38 @@
+MARK1 coverage: creepypasta lane (crawl 2026-11-22). 278 entries. TSV: creepypasta.tsv
+
+COUNTS BY VERDICT
+COVERED 144, PACK 110, LAW 15, SECOND 4, EXCLUDED 5.
+
+FAMILIES (42 labels; the big ones)
+Japanese legends 24, Fortean 22, Cursed media 20, Analog horror 18, Backrooms 16 (+7 entities, +7 liminal-space aesthetics), Urban legend 14, Cryptid 13, Internet legends 12, Video games 12, Mirror horror 8, Computers 8, Rituals 7, Reality 7, Killer personas 6, Haunted objects 6, plus curses, ghosts, demons, cosmic, biology, dreams, mind, ARGs, memetic hazards, time.
+
+HOW THE CRAWL WENT (breadth-first, honest)
+- Wikipedia: MediaWiki API category crawl, depth 2, seeds Category:Creepypastas, Urban legends, Analog horror, Alternate reality games, The Backrooms, Liminal space, Slender Man, Supernatural urban legends, Haunted objects, Japanese urban legends, Cryptids, Conspiracy theories, Films and TV about urban legends. ~75 category pages, member lists cached in raw/cats.json.
+- Wikipedia list pages (List of creepypastas, List of urban legends, List of analog horror media, List of allegedly cursed objects) were NOT read: the API returned HTTP 429 for every attempt after the category crawl. Their members are mostly covered through the category lists instead. Gap, not silent.
+- Creepypasta Fandom wiki: API works. Its category names differ from Wikipedia. Listed ~125 categories with sizes, then fetched members (up to 500 each) of 31 thematic categories (Cryptids, Spotlighted Pastas, Reality, Weird, Ritual, Mirrors, Ghosts, Demon/Devil, Gods, Items/Objects, Disappearances, Dreams/Sleep, Lovecraftian, Memes, Places, Computers and Internet, Video Games, Space, Science, Photography, Hospitals, Military, Food, Vehicles, Television, Music, Monsters, Animals, Nature, Holders, Beings). Cached in raw/fd_members.json. Roughly 12,000 page titles seen; the wiki has ~9,700 blog posts and thousands more pasta pages.
+- Backrooms Fandom: only the category list and the first 60 Entities page titles were read. Backrooms level descriptions in the TSV are from my memory and marked (u).
+- Snopes topic indexes: NOT crawled (time and rate limits). Urban legends come from the Wikipedia categories.
+- 1 request per second or slower, User-Agent naming a research crawl. No article text stored.
+
+WHAT WAS SAMPLED, AND WHY
+278 of roughly 12,000 seen titles. The Fandom wiki is dominated by thousands of one-off user stories; I took every FAMILY (a trope, such as mirror ritual, parasite host, cursed cartridge, rule list) with named representatives, and every Wikipedia-notable item in the creepypasta, analog horror, backrooms, ARG, Japanese-legend and Fortean categories I saw. Within the huge Fandom thematic categories (Mirrors 166, Ghosts 840, Demons 604) one row stands for a trope, not each story. Most single-story entries are the same few mechanisms again. Mechanism, verdicts and fear notes are mine and are a first pass; check before building packs.
+
+TOP MISSING LAWS (general, small)
+1. In-world computation substrate: a game, console or VM that can host an entity or a mind (BEN Drowned, Sonic.exe, Knob.exe, VR experiment, backlogs). 4 LAW rows.
+2. Procedural unbounded plane generator with inconsistent adjacency (the Backrooms, levels, The End). X gives doorways and planes, not endless generated layouts. 3 rows.
+3. Perception-triggered mind-state hook: content that changes the receiver on being perceived or understood (Kunekune, memetic symbol, dream entities, Smile Dog). 4 rows incl. combined.
+4. Recording/broadcast medium with corruption and an embedded signal (Local 58, Petscop, Marble Hornets). Media as a physical channel that carries hidden patterns. 3 rows.
+5. Knowledge-gated curse spread: the curse is carried by having been told or having seen (Red Room, Smile Dog, chain letters). Also fits a general "contagion by information".
+6. Rule-bound agents: conditional compliance triggers (Rule Horror, Bloody Mary, Kuchisake-onna, black-eyed children, Midnight game). Listed as a PACK dependency in about 12 rows: a pattern or entity whose action is keyed to what an observer does or answers.
+7. SECOND-change: time loops, changing the past, true omnipotence or reality rewrite (4 rows).
+
+WHAT IS SURPRISING
+- About half of the legends are COVERED by K and S alone: rumour mutation, shared false memory (Candle Cove, Mandela effect), misperception, moral panic. Creepypasta is mostly a rumour-and-perception genre, so MARK1's strongest layer fits best.
+- Almost no entry needs a second change. Only time-based stories do. Time loops are the genre's most common need that MARK1 refuses.
+- Ghosts, curses, possession, rituals, haunted objects are all already M designs (pattern, store, link, drain). The new work is data packs, not law.
+- Observer-conditioned entities (the SCP-173 type) were expected to need a law but a pattern that senses gaze through M is arguably a pack. Left as PACK, flagged for design (u).
+- The hardest fear to deliver is not a law but the narrator: scenes that work by withholding (liminal spaces, analog horror) depend on K and the narrator showing only what a character perceives.
+- Backrooms need exactly one law (generator) and then are only packs: each level is a plane pack.
+- 5 EXCLUDED rows are meta (aesthetics, Zalgo glyph text, product pages, simulation claim, water-fuelled car).
+
+Raw cache: /home/nisargparikh/.cache/mark1-build/coverage/creepypasta/raw/

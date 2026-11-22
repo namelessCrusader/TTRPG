@@ -1,0 +1,34 @@
+LANE: mythology_pantheons_religion (completeness round)
+Entries: 345 (slightly over the ~300 cap; nothing in merged.tsv repeated, 2302 existing titles checked, plus redirect targets).
+Counts by verdict: COVERED 184, PACK 135, EXCLUDED 12, LAW 10, SECOND 4.
+
+Families (entries): mythological objects 34, miracles and saints 34, hybrids 29, gods Greek 23, ceremonial magic 22, angels and demons 21, gods Egyptian 19, grimoires 18, gods Hindu 17, jinn 16, divination 16, heroes 13, gods Norse 12, gods Japanese 12, gods Mesopotamian 10, religion (relic, prayer, taboo...) 10, gods Aztec 9, alchemy 9, occult 9, gods Celtic 6, occult practice 4, theology 2.
+
+Method: MediaWiki API, breadth-first over the listed Category seeds (depth 0 and 1 subcategories, 150 categories, about 3,900 distinct pages found, 1 request per 2 s or slower, retries on 429 because other lanes shared the IP). Raw JSON cached in ~/.cache/mark1-build/coverage/mythology_pantheons_religion/raw/. Only names, links and own one-line summaries stored.
+Seeds that returned nothing as category names: Religious_miracles, Incorruptibles, Heroes_in_Greek_mythology, Deities_by_type (empty or renamed); covered by hand-picked titles from sibling categories (Christian miracles, Mythological heroes and hybrids pages). All 345 titles verified to exist (redirects resolved).
+
+WHAT WAS SAMPLED (no silent caps):
+- Gods: about 5 to 25 per pantheon, chosen for distinct mechanisms (storm, death, sleep, plague, fate, trickster, healer, sun, underworld). Pantheon lists hold hundreds (Hindu about 550, Greek about 520, Japanese about 300 pages in the crawl); the rest repeat the same few mechanisms. Japanese historical people (hundreds of samurai) were skipped as not mythology.
+- Occult category: 696 pages, mostly murder cases, TV shows and books; only practices and concepts kept. 70 divination methods (-mancy lists) represented by 12 types; the rest are cold reading or K.
+- Miracles: 136 pages, mostly saints; kept the miracle types and about 8 saints with distinct feats.
+- Objects, angels, jinn, grimoires, alchemy: broad sample of each distinct mechanism.
+
+TOP MISSING LAWS (LAW rows):
+1. Age-reset / repair-forever body pattern with a drain (amrita, fountain of youth, philosopher's stone) - 3 rows.
+2. Decay reversal over days with a template (resurrection of Jesus, long-dead revival); the X rewind covers only parts still together and soon.
+3. Pattern persistence and re-seeding across death (reincarnation, karma-like carry) - overlaps with the ghost-memory design.
+4. Transmutation of elements at M cost tied to nuclear binding energy (projection, philosopher's stone).
+5. Light-redirect pattern as a primitive (cap of invisibility).
+6. Parthenogenesis seeding pattern (virgin birth).
+7. True creation (cornucopia, Draupnir, Akshaya Patra, Brahma): repeated rows all hit the "true creation off by default" rule; it is the most common request that X refuses.
+SECOND rows (4): fixed fate (Moirai, Norns), true prophecy (Cassandra), omnipotence-like creation ex nihilo.
+
+WHAT IS SURPRISING:
+- Most of the religion layer is already COVERED: miracles reduce to P plus K (mould in a host, psychosomatic stigmata, mummification, crowd suggestion), and the few real-power ones (levitation, healing) fit M momentum and X rewind.
+- Gods are the cleanest fit to the "believer-linked substrate that weakens when faith breaks" rule: Marduk, Zeus, Huitzilopochtli (needs feeding), Tenjin (a vengeful ghost promoted to a patron), apotheosis in general. Sacrifice becomes an upkeep drain; this gives a mechanical reason for the horror in sacrifice rituals.
+- Fear is mostly K: omen dread, tempter voices, being watched and judged (recording angel, Medjed), plus body horror (flesh from bread, flayed skins, petrification).
+- Grimoires, sigils, circles and pacts map one-to-one onto "patterns, wards and bonds with a drain"; real-life grimoires are PACK data with no new law.
+- The divination family is almost entirely a K sink: cold reading, ideomotor effects and self-fulfilling expectation. True foresight is the one SECOND item. A good design test: a diviner who is right 60 percent of the time through cold reading and rumour is believable without breaking physics.
+- Real-world ritual harm (child sacrifice, albino body-part trade, child witchcraft accusations) is sensitive; entries are kept as S-layer fear sources only, for design awareness, not as content to depict. (u: how the owner wants these handled)
+
+(u) marks: the unverified claims in the TSV are the few marked (u); everything else is the lane's own reading of the layers, not checked against the engine.

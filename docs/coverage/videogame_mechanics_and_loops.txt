@@ -1,0 +1,31 @@
+LANE videogame_mechanics_and_loops (completeness round)
+Entries: 325 new (12 more were dropped as already in merged.tsv). Verdicts: COVERED 181, PACK 63, EXCLUDED 40, LAW 22, SECOND 19.
+Families: Spells 64, Meta 28, World model 18, Death and persistence 15, Loot loops 15, Dungeons 15, Progression 14, Time loops 12, Status effects 12, Combat 12, Resurrection 11, Class features 11, Items 11, Quest structure 11, Systems 11, Social 10, Magic mechanics 9, Encounters 9, Immortals 8, LitRPG 8, Time manipulation 6, Monsters 5, Survival 4, others 4.
+
+CRAWL HONESTY (not as exhaustive as asked)
+- Wikipedia API was fetched for: Video game terminology (190 members, all read), Role-playing game terminology (59), Roguelike video games (270 read, not each one entered), Fiction about resurrection (89), Fictional immortals (131), Time loop television episodes (18), Fictional characters who can manipulate time (124). Raw JSON cached in /home/nisargparikh/.cache/mark1-build/coverage/videogame/raw/.
+- The API rate-limited (429) hard at first; later calls used 4 s spacing and retries.
+- Category names that returned 0 members (wrong titles): Time loop fiction, Fiction about time loops, Time loop films, Dungeons & Dragons spells, Dungeons & Dragons magic, Role-playing game mechanics, Video game gameplay.
+- NOT fetched: dungeons.fandom.com pages (spell, class, condition lists), TV Tropes index pages, Wikipedia article bodies. D&D spell, condition and item rows come from my own knowledge, with fandom URLs as guesses (u). TV Tropes URLs are guessed from trope names (u).
+- Roguelike titles, immortal characters and time-manipulator characters were treated by the mechanic they carry, not one row per character (a named-character sample was skipped to stay mechanic focused). Cap not reached by the index; the cut is mine.
+
+SUMMARY
+- Most game terminology is META (UI, commerce, balance, dev tools): 40 EXCLUDED. These have no in-world form, but many have an in-world analog marked COVERED (HUD = interoception, minimap = a carried map with errors, fog of war = beliefs about the unseen).
+- Game progression (XP, levels, classes, skill trees, alignment) is PACK: the LitRPG reaction-pack route proven by cultivation.yaml, never an engine flag.
+- Hit points, status effects, saving throws, criticals, initiative are COVERED by real physiology and contact laws.
+
+TOP MISSING LAWS
+1. Time travel to the past (11 rows, all SECOND): return-by-death, loops with memory, prophecy as true foresight, fate.
+2. A plane snapshot-restore law with one carried pattern (4 rows): the only buildable loop is a pocket plane that resets while one mind keeps its pattern; also covers Heaven Sent, Mystery Dungeon, Loop Hero (u).
+3. Tissue rebuild with a mass budget (Cure Wounds, Lay on Hands, healing potions): healing by M needs a pattern rebuild of tissue that spends real matter.
+4. Body rebuild into another form with a mass budget (Polymorph, Shapechange, Wild Shape) and a mind pattern carry-over rule.
+5. Light redirection or absorption transduction (Invisibility, Darkness, Displacer beast).
+6. Pocket plane volume with conserved mass (bag of holding, infinite pockets).
+7. Mind pattern transfer into a new body (isekai reincarnation, LitRPG) (u).
+SECOND (not buildable): time travel to the past, time stop, omnipotence (Wish, Deck of Many Things), true creation, causality without transfer (Power Word Kill), nonlocal storage of whole people (the Blip).
+
+SURPRISING
+- Time loops split in two: the whole-world loop with memory is SECOND, yet a plane that resets for a looper is nearly built by X plus links, with the NPCs "not remembering" falling out of K for free. The fear in loops comes from the looper knowing more than the world.
+- Respawn, lives and phylactery immortality are PACK from a bind-point store plus rebuild, so "video game death" can be an in-world cultural fact (a bound, rebuilt people) without a flag. Its horror is the copy-versus-self question, produced by K.
+- Many roguelike features (Hades hub, Dark Souls bonfire, hollowing) map to the same stored-pattern pack.
+- Dynamic difficulty, rubber banding and level scaling are EXCLUDED on principle: the world must not bend toward the player.

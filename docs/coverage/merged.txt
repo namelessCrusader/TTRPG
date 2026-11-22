@@ -1,0 +1,65 @@
+MERGED COVERAGE (8 lanes: superpowers, horror, scifi, scp, creepypasta, folklore, weirdfiction, bestiaries)
+Rows read: 2471. After dedup by normalised entry name: 2301 (170 merged; all source_urls kept; the most demanding verdict wins, SECOND > LAW > PACK > COVERED > EXCLUDED; `lanes` column lists who found it).
+Caveat: many mechanisms were classified from titles, not article text (u). Dedup is by name only, so synonyms across lanes (e.g. Vampire / Vampire (folk)) may still be counted twice. Counts are therefore soft.
+
+VERDICT COUNTS
+COVERED 1365 (59%) | PACK 600 (26%) | LAW 191 (8%) | SECOND 77 (3%) | EXCLUDED 68 (3%)
+=> about 85% of the "more than normal" corpus is expressible today or with data only.
+
+LAYER COUNTS (an entry may use several layers)
+M 1083 | K 978 | P 958 | S 504 | X 361 | G 280 | no layer 58 (excluded rows)
+M and K and P carry almost everything; S shows up mainly in folklore, occult and institutions; X shows up in shapeshifting, conjuring, doorways, planes.
+
+MISSING GENERAL LAWS (ranked by LAW+SECOND rows each would unlock; keyword-clustered, approximate)
+ 1. Infohazard channel: percept-as-payload, a sensed pattern sets a bias, link or timer in a mind; also meme-entities, knowledge-gated curses, semantic-condition triggers  ~36
+ 2. Planet / astronomical scale: orbital mechanics, delta-v, slow world tick (climate, colonies, trade), light delay  ~26
+ 3. Mind copy / merge / brain-state encode-decode over an M link (telepathy, upload, resleeving, transmat identity, memory read/write)  ~19 (+4 SECOND)
+ 4. Memory-record edit/erase as a targeted effect on K minds (antimemetics)  ~17
+ 5. Computation substrate and machine-state interface (AI hosts, technopathy, circuits, recording media with corruption)  ~8-10
+ 6. Nuclear energy release, radiation dose and tissue damage, directed-energy deposit, mass-energy conversion  ~7
+ 7. Sleep / dream state as a body mode where perception intrudes (sleep paralysis, dream demons, shadow people)  ~6
+ 8. Perception anomaly detectors: agent-presence expectation violation (faces, uncanny valley), EM/IR sensors  ~6
+ 9. Pattern infection / self-replication with conserved mass (vampirism spread, The Thing, nanotech, grey goo)  ~5
+10. Contact decoupling of a body from matter (phasing, intangibility)  ~5
+11. Luck / bias of chaotic or quantum outcomes as a tiny M effect with a ledger  ~5 LAW (+3 SECOND if unbounded)
+12. Crowd panic and mass-movement dynamics (zombie apocalypse, hysteria)  ~4
+13. Local time-rate change / rate-freeze wards / time loops short of the X rewind  ~4
+14. Misc singles: gravity as field, mass-field coupling, doorway graphs with cycles, observer-dependent state, higher-dimensional voxels, alien-matter contamination, alternate biochemistry, vacuum biology, relativistic velocity, names/likeness as link keys, acquired sense channels, phobia dial and multi-self, amorphous bodies  1-2 each
+
+SECOND-CHANGE LIST (77 rows, in clusters)
+ - Time: time travel to the past, retrocausality, precognition/prescience/flash-forward, chronoskimming, temporal inversion, time loops (incl. horror loops), time viewer, flux capacitor, Great Race of Yith, Hounds of Tindalos, anachronism, acausality, SCP-4055, SCP-7346, SCP-7419, SCP-3324, SCP-3539, SCP-5541
+ - Omni: omnipotence, omniscience, nigh-omniscience, omnipresence, omnifabrication, omni-manipulation, omnicide, omni-immunity, absolute counter, omnicounter, immortality/absolute, erasure/absolute, immutability, indeterminacy, claircognizance
+ - Reality and fate: reality warping, rewriting reality, fate manipulation, probability manipulation, luck (unbounded), wishes (genie, monkey's paw, wishing objects), prophecy, SCP-2000, Tiamat, Azathoth, Yog-Sothoth, elder god awakening, Aeon, Protean, genies, wish and fortune dragons, creation-from-nothing motifs
+ - FTL and spacetime: faster-than-light travel, warp and Alcubierre drives, ansible, FTL comms, time dilation, space compression, bilocation, slow-motion (time-rate), duplicate merging
+ - Observer-dependent motion: SCP-173 style statue, Weeping Angels
+ - Teleport fusion and hell-dimension drives: The Fly, Event Horizon; uploaded-mind horror
+Note: several of these could be moved to LAW if the owner accepts a bounded local version (luck with a ledger; time-rate ward; observer-gated motion as a perception-triggered rule). Open question for the owner.
+
+EXCLUDED LIST (68)
+ - Meta and narrative: Superpowers (index), Genre-Shifting, Narration, Choicifery, Dystopianization, Utopianization, Meta Science, Glitching, Toonification, Undefeatable, Omnibenevolence, Omnimalevolence, Final Girl trope, Roko's basilisk, meta-horror, genre-savvy characters, comedy horror, Metafiction, Shaggy God story, Chosen One, Rubber science, Mundane SF, Space opera, Retrofuturism, Alternate history, Simulation hypothesis/theory, Fermi paradox
+ - SCP meta: object classes (Safe, Euclid, Keter, Thaumiel, Apollyon, Archon, Cernunnos, Ticonderoga, Neutralized, Esoteric) and narrative-only items (SCP-001, 2718, 3999, 2030)
+ - Nonsense under the laws: turbo encabulator, water-fuelled car, Nazi UFOs, Zalgo, Escape the Backrooms (game), Islands Non-Places
+ - Motif-index and literature items: Thompson motifs (A600, A812, A1100, A2200, N100, U0, X0, Z0), poems and stories as texts (The Raven, Lenore, Fungi from Yuggoth, Colloquy of Monos and Una, Ex Oblivione), memento mori, danse macabre, Wandering Jew
+ - Tabletop rules artifacts: legendary actions, challenge rating, alignment (alignment as physical substance)
+Suggestion: some excluded rows are useful as DESIGN PRESSURE, not content. Object classes map to "containment priority", a social/institution (S) concept, and Roko's basilisk is an infohazard test case for law #1.
+
+WHERE THE FEAR COMES FROM, BY LAYER (keyword tally of the fear_source column; rows may count in several)
+ K (unknown, misperception, rumour, unpredictability, loss of agency): ~1177 rows (about 51%). This dominates every lane. Fear lives in the gap between what a character perceives and what is true; the narrator-shows-only-perception rule is the single largest horror engine.
+ Body (P/G: pain, disgust, predation, paralysis, parasites, loss of bodily control): ~517 rows (about 22%). Strongest in SCP bio, bestiaries, folklore predators.
+ S (social: trusted role betrayed, taboo, institutions, reputation, cults): ~131 rows (about 6%). Mostly vampires-in-society, cults, SCP-like institutions, folklore.
+ M and X as DIRECT fear sources are rare (~5 rows): M and X supply the mechanism, K and body supply the dread. Pure scale (Azathoth, cosmic) is a K-failure: no mind to model.
+EXCITEMENT (superpowers, sci-fi tech) is mostly admiration and competence (K: seeing capability) rather than dread.
+
+SURPRISES
+ - Only about 11% of rows need new physics or a new law; "a second change" is ~3%. The single-change design holds up well.
+ - The biggest gap is not physics at all but INFORMATION: law 1 (infohazard), 3 (mind copy/brain state) and 4 (memory edit) are all K-layer laws. The corpus wants minds to be attackable through perception and memory.
+ - Orbital / planet scale is the biggest pure-physics gap and mostly comes from sci-fi; it is a scale/tick question, not a new law of nature.
+ - Time is the main SECOND cluster; no lane found a way to build loops or precognition from M alone.
+
+COMPLETENESS: MISSING OR THIN FAMILIES (keyword counts in merged entry/family names)
+ Absent (0 rows): LitRPG system tropes (DCC, cultivation, wuxia/xianxia), mythological pantheons and their powers, religious miracles and saints, weird west, video-game mechanics (respawn, save, inventory).
+ Thin (1-5 rows): cyberpunk and transhumanism (1), post-apocalypse (1), alchemy (3), mecha (5), fairy tales (5), time loops (2, plus horror loop), dreamlands (1).
+ Present at reasonable depth: kaiju (15), liminal spaces / backrooms (25), analog horror (20), Lovecraft, SCP, folklore monsters, bestiaries.
+ The 5 families recommended for new crawl lanes are returned in the structured output.
+
+UPDATE: 5 completeness lanes folded into merged.tsv (4128 rows; COVERED 2152, PACK 1426, LAW 308, SECOND 105, EXCLUDED 137). See docs/coverage-uncanny.md.

@@ -1,0 +1,379 @@
+LANE: COSTS AND COMPONENTS IN FICTION AND GAMES (2026-11-21)
+Owner's question: does everything cost nothing but ambient magic or life force? Maybe stuff has costs? What is cast freehand, what needs components, and do some things need several interfaces?
+
+HOW TO READ THE MARKS
+(v) checked against a source I read this run.
+(k) my own knowledge of the book, rulebook or game. Believed right.
+(u) unverified, from memory, or my own estimate.
+HONEST NOTE: I did not open any web page in this run. There is NO (v) mark anywhere below. Every claim is (k) or (u). The D&D SRD wording is quoted from memory (k) and should be re-checked against the SRD 5.1 text before any number goes into a data file. Fiction sources are books, rulebooks and games, not scholarship. Fan wikis were not used.
+
+THE EIGHT COST KINDS, SHORT FORM (from the design)
+ 1 ENERGY   2 WASTE   3 INFORMATION   4 MATTER   5 WEAR   6 LINKS   7 TIME   8 NOTICED
+Component roles: store = energy; focus or inscription = information; catalyst = barrier; link = targeting; matched medium = cheaper coupling; reagent = matter.
+
+CONTENTS
+ A. Headline and the big pattern
+ B. Tradition by tradition (16 entries, each with a to f)
+ C. Cross-cutting regularities
+ D. Test of the design's answer: where it holds, where it strains
+ E. Candidate missing laws (things that do not map)
+ F. What makes costs FUN
+ G. Recommendations and open choices for the owner
+
+==========================================================
+A. HEADLINE
+==========================================================
+Fiction agrees with the design on one thing above all: nothing is free. Almost every popular system has a cost that is NOT just a mana bar. The costs fall into a small set of types, and seven of the eight design kinds show up again and again.
+
+The pattern, in five lines:
+1. Freehand is the cheap, small, near, self-or-touch tier. Components appear when the effect is big, far, precise, lasting, or aimed at a particular thing.
+2. Components almost always do ONE of six jobs: store energy, hold a pattern, make a link, supply matter, protect or buffer, or give timing and licence. This matches the design's list closely. Two jobs are not in the list: PROTECTION (ward the caster from the effect) and LICENCE (permission or price paid to a being). See section E.
+3. Consumed versus kept is nearly always decided by ONE question: is the component matter, or is it a tool? Matter that becomes part of the effect is consumed. A tool that shapes the effect is kept, and it wears.
+4. Stacking is the rule for big magic. Almost every system has a tier where word, gesture, object, place, time and group are all required at once. The more media, the more reliable and the slower.
+5. The most FUN costs are the ones the player can see, plan around and pay in a choice: fuel you must carry, a store you must fill, a risk you can raise for more power. The least fun are hidden costs and flat tolls.
+
+==========================================================
+B. TRADITION BY TRADITION
+==========================================================
+Order: tabletop first, then books, then games. Each entry: (a) freehand or components, (b) components and their jobs, (c) consumed, worn or kept, (d) stacking, (e) costs and risks, (f) mapping to the eight kinds.
+
+----------------------------------------------------------
+B1. D&D 5E (SRD 5.1, Wizards of the Coast; the open text)
+----------------------------------------------------------
+(a) FREEHAND vs COMPONENTS.
+Cantrips cost no slot (k). A cantrip still needs its listed components: most need verbal and somatic (k). There is no purely thought-only tier in the base rules for most spells (k). Some spells list only V, or only S (k). With the optional or feat-based rules (Subtle Spell, Still Spell, Silent Spell metamagic) a sorcerer can drop V or S for sorcery points (k). 
+(b) COMPONENTS AND THEIR JOBS.
+ V (verbal): speech. Job: timing and pattern carrier, and it is a TELL (a silenced caster cannot cast V spells, and others hear it) (k).
+ S (somatic): a gesture. Job: pattern and aim. Needs a free hand (k). A hand full of a weapon and shield blocks it unless a feat or class feature allows it (k).
+ M (material): a named object. Job varies by spell: a focus-like prop (a bat-guano and sulphur ball for Fireball), a reagent, a symbol, or a costly consumed item. A component pouch or a spellcasting focus (wand, staff, orb, holy symbol, druidic sprig) replaces any M component that has NO listed gold cost (k).
+ M with a gold cost: the focus or pouch does NOT replace it (k). Examples (k): Identify needs a pearl worth 100 gp, Revivify needs diamonds worth 300 gp (consumed), Raise Dead 500 gp diamond, Resurrection 1000 gp, Clone 1000 gp plus more, Gate (a diamond) 5000 gp? (u: check), Simulacrum 1500 gp of ruby dust (consumed), Glyph of Warding 200 gp of incense and powdered diamond (consumed), Planar Binding 1000 gp jewel (consumed), Forbiddance 1000 gp, Heroes' Feast 1000 gp bowl, Programmed Illusion 25 gp of jade dust, Magic Jar a gem or crystal worth 500 gp (kept) (k, all numbers need re-checking).
+ Concentration: a spell can be held only while the caster stays alert, and a second concentration spell ends the first (k). Job: this IS a working-memory cap. It is close to the design's "about 4 open sub-spells", but the 5e cap is ONE.
+ Spell slots: levels 1-9 per long rest by class and level (k). Job: a rest-reset energy store. Upcasting spends a higher slot for a bigger effect (k).
+ Ritual casting: spells tagged ritual take +10 minutes and use no slot (k). Job: trades TIME for ENERGY. This is the cleanest statement in any game of the design's "slow code can be cheap".
+ Casting time: action, bonus action, reaction, minutes, hours (k). Long ones are interruptible (k).
+(c) CONSUMED, WORN OR KEPT.
+ Priced M components are consumed ONLY IF the spell text says so (k). Revivify's diamond is consumed. Identify's pearl is consumed in 5e (u: older editions kept it, check). Unpriced M components are never tracked. Focus is kept and never wears (k). Spell slots are consumed and return on a rest (k). Scrolls are consumed on use (k). Wands have charges and may crumble (k).
+(d) STACKING.
+ V plus S plus M in one cast is normal for mid spells (k). Rituals with a circle and long time and gold: Forbiddance, Hallow, Simulacrum, Clone (k). Circle of Teleportation and Teleportation Circle: a permanent inscribed circle (kept) plus a sigil sequence plus the spell (k). Glyph of Warding: written inscription, consumed reagent, trigger condition, stored spell (k). No true group casting in the core rules except the optional ritual and the Circle spells (u). 
+(e) COSTS AND RISKS.
+ Spell slots (energy-like). Gold (matter-like and social). Time. Concentration break on damage (a Constitution save) (k). Counterspell and Dispel Magic. Wild Magic surge table for the Wild Magic sorcerer (k). Spell fumble: none in core. Material component cost is the main hard "cost" for big effects. No wear, no waste heat, no being noticed except as a side effect of V and S (counterspell requires seeing the caster) (k).
+(f) MAPPING.
+ Slots: ENERGY (a reset store, not real joules). Gold M: MATTER (but it is really a price, see gap G1). V and S: INFORMATION and NOTICED. Rituals: TIME for ENERGY. Concentration: INFORMATION (working memory). Focus and pouch: no cost, a convenience. Gold-priced items: MATTER, LINK-free. Reagents that never run out (pouch): not mapped, and it is a game convenience on purpose.
+ FUN NOTE: gold-priced components are the one 5e cost that makes players DECIDE. Raise Dead is a real purchase. Slots make rest-management fun. The pouch makes small components vanish, which is good: nobody wants to count bat guano.
+
+----------------------------------------------------------
+B2. PATHFINDER 1E and 2E (Paizo; open game licence and the Archives of Nethys text)
+----------------------------------------------------------
+(a) 1E: spells need V, S, M, F (focus), DF (divine focus) (k). A material component pouch covers cheap ones (k). Verbal and somatic can be removed by metamagic feats (Silent Spell, Still Spell) for a higher-level slot (k). 2E: spells have "cast" actions: 1, 2 or 3 actions, with the components tied to those actions (somatic, verbal, material, focus). Casting a spell with 2 actions or 3 actions can add extra effect (k). 
+(b) Components: same jobs as D&D. Focus (F) is a pricey kept prop. Costly material components consumed (k). 
+(c) Consumed: costly M is consumed (k). F is kept.
+(d) STACKING: 2E "Cast a Spell" with several traits; rituals in 2E are a separate system: a ritual needs a primary caster, secondary casters, a cost in gold, a long casting time, and skill checks (k). SECONDARY CASTERS are real group casting with rolls (k). Rituals list a "cost" (gold) and checks by the primary and by secondaries; the ritual can fail or critically fail (k).
+(e) Costs: spell points (focus points in 2E, a SMALL regained pool for special feats and focus spells, regain by 10 minutes of refocus) (k). Backlash on rituals that critically fail (k). 
+(f) MAPPING: 2E rituals are a nice match to the design's "circle as coupled lanes" with a leader and helpers (METAPHYSICS addendum). 2E focus points: ENERGY with a fast, small reset (compare body-only spark). Critical failure: error landing on neighbouring spells (design's "failure by error") (k).
+ FUN NOTE: the 2E action count is a clean TIME cost that the player feels every turn.
+
+----------------------------------------------------------
+B3. ARS MAGICA (5th edition, Atlas Games; Mark Rein-Hagen and Jonathan Tweet, 1987 first edition)
+----------------------------------------------------------
+(a) Spontaneous magic is freehand: a magus can cast any Technique plus Form combination on the spot, but at a LOW LEVEL (Art total divided by 2 for non-fatiguing, and costs a Fatigue level when it is higher) (k). Formulaic spells are learned patterns and cast at full strength without extra cost (k). Ritual spells (level 20 and up, or those with a lasting duration or large effect) need a ritual, VIS, and a long casting time (k).
+(b) COMPONENTS.
+ Vis: raw magical substance in physical form (herbs, bones, blood, gems, stones). Job: ENERGY STORE and MATTER AT ONCE. Pawns of vis are spent for ritual magic and for enchanting. Vis comes in the Art of its Form: a pawn of Ignem (fire) vis, a pawn of Corpus vis (k).
+ Words and gestures: Voice and Gesture rolls and penalties if the magus cannot speak or move (k). Job: the pattern carrier; the cost is a TELL.
+ Laboratory: a lab with virtues and flaws; a lab total gives a bonus to inventing, enchanting, long-term (k). Job: a PLACE and a set of tools (shaper, environment).
+ Aura: the local magical aura gives a bonus to casting of the same realm; the aura of the Divine or the Infernal can penalise magic (k). Job: environment source. This is the design's "cost by gradient distance" and regional coupling in game form.
+ Talismans and Foci: a magus attunes a talisman that gives bonuses and a store of "penetration" (u). Job: matched medium.
+ Longevity potion: a vis-consuming potion that stops aging (k). A very clear ongoing cost: vis every season.
+(c) Vis is consumed. Labs are kept. Items made by enchanting use up vis and are kept and may be "invested" with effects.
+(d) STACKING: the great ritual is word plus gesture plus lab plus vis plus aura plus long time plus sometimes a covenant of several magi (k). Several magi can combine for a group ritual with a leader (k).
+(e) COSTS AND RISKS: Fatigue levels (a TIRING cost that comes back with rest). Twilight (a magus who botches or pushes too hard enters a trance state: lost time, gain or loss, a mental change, and may permanently warp) (k). Warping (a lasting loss of control and a creeping change, each point of Warping is gained from botches and magical overuse) (k). Gifted magi unsettle ordinary people ("the Gift" gives a social penalty) (k). Penetration (a spell must pierce a creature's Magic Resistance) (k). Aura matters. Realm antagonism (Divine aura reduces magic) (k).
+(f) MAPPING: Vis = ENERGY and MATTER together: a nice sign that the design is right to have a "charged material" row. Fatigue = ENERGY (body). Aura = environment source (design Q: "cost cheaper near the source"). The Gift = BEING NOTICED, but as a SOCIAL cost (people dislike you). Warping and Twilight: a candidate missing law (G2): cumulative, permanent damage to the PATTERN HOLDER by overuse, beyond "burnout and stilling". The design has burnout (D accumulates on tissue transducers) and that is close, but Twilight adds a change of MIND, not only a loss of coupling.
+ FUN NOTE: a vis economy is loved by players who want a resource game. Vis forces a map of places to harvest and makes the setting turn on who owns what. The Twilight roll is a gamble the player can choose to take.
+
+----------------------------------------------------------
+B4. MISTBORN (Brandon Sanderson, 2006-)
+----------------------------------------------------------
+(a) FREEHAND: none, in the sense of "free of fuel". An Allomancer needs to SWALLOW metal (k). A Feruchemist needs to STORE an attribute in a metalmind first, which costs a lack (k). A Hemalurgist needs a spike (k).
+(b) COMPONENTS.
+ Allomantic metals: 16 metals, each burned from the stomach; one effect per metal (steel pushes metal, iron pulls, pewter strengthens the body, tin senses, zinc and brass touch emotions, etc.) (k). Job: ENERGY (fuel) and PATTERN (the metal sets which effect, since the Misting dial picks the metal). Metals alloy into other metals that give "alloy" effects (k).
+ Metalminds (Feruchemy): a bracer or ring or necklace of metal that STORES an attribute (weight, speed, memory, strength, ...) (k). Job: a conserved STORE of a body quantity. Store a day of weak, tap a day of strong.
+ Hemalurgic spikes: a metal spike driven through a person and then into another to steal a power or trait (k). Job: a PATTERN CARRIER with a victim as source.
+(c) Metals are CONSUMED by burning (k). Metalminds are kept. Spikes are kept.
+(d) STACKING: Twinborn combine one Allomantic and one Feruchemical power (k). Allomancy plus a pewter-boosted body. A Compounder stores and then taps metal itself (u). 
+(e) COSTS AND RISKS: running out of metal mid-fight. Metal cravings. Burning too long and too hard (flaring) burns faster (k). A pushing or pulling Allomancer can be "pushed" back: the push is bounded by the SMALLER of the two masses (k): a good example of the reaction-partner rule (matches the design 2.5). Feruchemy: you can only tap what you stored. Hemalurgy: a spike costs a victim a life (k).
+(f) MAPPING: Allomancy: ENERGY from a matter fuel (chemistry) plus a body dial. This is already a "charged material" in the design. Feruchemy: a conserved STORE of a body quantity. The nearest design match is a charged crystal, but it is stored from the BODY, which is new. See G3: "store a body quantity and later spend it" (weight, speed) is a store that is not joules. It can be built as a store of a body variable. Hemalurgy: a LINK and a stolen pattern.
+ FUN NOTE: the best part is the PREPARE-THEN-SPEND shape. The player prepares in calm, spends in battle. A visible fuel gauge (vials of metal) is an easy-to-read cost. Flaring for a short burst is a choice.
+
+----------------------------------------------------------
+B5. KINGKILLER SYMPATHY (Patrick Rothfuss, 2007, 2011)
+----------------------------------------------------------
+(a) FREEHAND: none. Sympathy needs a SOURCE of energy (a candle, a lamp, the caster's body heat, a bound stone) and a LINK between two things that are alike (k). The caster holds the "Alar" (a belief that it will work) and splits their mind: one part holds the link, another part does the work (k). A skilled arcanist can keep several "minds" going at once (k).
+(b) COMPONENTS AND JOBS.
+ Source: heat or motion from a nearby thing. Job: ENERGY. The caster's body can be it (risky) (k).
+ Link: hair, a wax figure, a drop of blood, similarity of material (k). Job: LINK for targeting. Better match = stronger link (k). The link goes from "like" to "like": a drop of the target's blood to a person is a very strong one. Material of the same kind and shape is a medium one.
+ Binding: a "binding" is a pre-prepared sympathetic link set in a durable item (a sympathy lamp, a bloodless wax doll, a bound stone) (k). Job: an INSCRIPTION and a store.
+ Sygaldry: the written (runic) discipline; an inscription that works as a machine, running on a heat source (k). Job: fixed pattern. Wear: fixed inscriptions are slow to craft.
+ Alchemy: potions and reagents (k).
+ Naming: the namers know the true names of things (k). Job: a strong link.
+(c) CONSUMED: heat is consumed (the source goes cold, with a visible loss) (k). Links are not consumed but "slip" (loss). A binding's link wears (k).
+(d) STACKING: a complex working uses a source plus a link plus a binding plus a held belief plus several minds (k). A sympathy lamp: the binding is on the lamp, the heat comes from a source, the link joins the two.
+(e) COSTS AND RISKS: SLIPPAGE (loss of energy at the link: a real, quoted "ten percent" style cost in the story, I recall about 10 percent at best (u)). A mismatch in the link slips more. A caster who draws on their own body heat can die of cold (k). Sympathy is about CONSERVATION: you cannot move more energy than the source holds (k). Two worked examples in the books: a wax doll cooked to burn a person, and the cooling of a person's body when their body heat is drawn into a binding (k).
+(f) MAPPING: This is THE best match for the design. Source = ENERGY. Link = LINKS. Slippage = WASTE (and a function of match, like the design's "attunement is a match"). Alar = INFORMATION (belief as pattern strength, a mind dial). Sygaldry = inscription, WEAR. Splitting the mind = INFORMATION (working memory), the book says it limits how many things one can hold. So the design's "about 4 open sub-spells" has a direct fiction analogue, and Rothfuss uses a number close to it ("a split mind" can hold a handful) (u).
+ Everything in sympathy maps. The only soft element is ALAR, belief as a strength. This is a mind variable (a dial), so it fits as "mind dial", but it is a sign that a fictional magic system may use CONFIDENCE as a cost. See G4.
+ FUN NOTE: the heat source rule makes players READ THE ROOM: where is the fire, how cold is the target, what is nearby? Magic becomes an environmental puzzle.
+
+----------------------------------------------------------
+B6. FULLMETAL ALCHEMIST (Hiromu Arakawa, 2001-2010)
+----------------------------------------------------------
+(a) FREEHAND: a skilled alchemist can transmute by CLAPPING and touching, with no circle on the spot (k). The circle is inscribed on gloves or on the ground in advance (k). The clap makes the body a circuit. Edward uses no circle at all after he saw the Gate (k). 
+(b) COMPONENTS.
+ Transmutation circle: a fixed pattern. Job: the PATTERN HOLDER (INFORMATION) (k).
+ Material: the matter to be transmuted. Job: MATTER. "Equivalent exchange": mass in equals mass out (k). Transmuting a statue from the ground needs enough ground.
+ Understanding, decomposition, reconstruction: the three steps (k). Job: INFORMATION, knowledge of the material's structure.
+ Philosopher's Stone: a stone made from many lives (k). Job: a massive ENERGY store from a human cost. Using it skips the equivalent-exchange limit in the story (k).
+ The Gate: the price of human transmutation is a body part or more (k). Job: a TOLL (the design's "patron's price").
+(c) Matter is consumed (turned into other matter, nothing destroyed). Circles on gloves are kept and wear (k). Stone is consumed (k).
+(d) STACKING: circle plus clap plus material plus knowledge plus (in great works) a Stone. Also a LARGE CIRCLE across a country (the story's finale) with a sacrifice population at nodes (k).
+(e) COSTS AND RISKS: a failed transmutation can rebound (Edward and Alphonse lost a leg, an arm, a body) (k). The Truth takes a "toll" proportional to the attempt. Human transmutation is forbidden. Unbalanced circles fail (k).
+(f) MAPPING: Equivalent exchange = MATTER, and it is the exact conservation rule the design already uses for "conjure means transform". Circle = INFORMATION (inscription). The Stone = ENERGY from lives (a patron-store; see design Q17). The toll of the Gate: not physics, a cost the story chooses (G1, "price demanded by a power" / licence).
+ FUN NOTE: equivalent exchange is a very good player-facing rule: simple, readable, and a puzzle ("what can I turn this into?").
+
+----------------------------------------------------------
+B7. EARTHSEA (Ursula K. Le Guin, 1968-)
+----------------------------------------------------------
+(a) FREEHAND: a mage who knows the true name of a thing can speak it and act, with no tools (k). A small working (a light) may be a word alone. A staff is a focus and a mark of office (k).
+(b) COMPONENTS: the True Name (Old Speech). Job: a perfect LINK to a thing, and PATTERN (the name is the pattern). A name is learned, not made (k). Names can be given as a gift (a person's name is told to a friend: trust) (k). Silence and rest are components: a "weave" of calm (u).
+(c) Names are not consumed. But a mage may spend his own power and years.
+(d) STACKING: the great Summoning and Changing; "the Roke" school teaches Hardic then Old Speech then Changing, Summoning, Naming (k). Large workings need several mages (u).
+(e) COSTS AND RISKS: THE EQUILIBRIUM: every act changes the world, and a change here has a counter-change elsewhere (k). Weather magic can bring storm elsewhere (k). So big spells need a REASON and a sense of whole-world cost. The costs are not paid in a unit; they are paid in consequences. A mage who works in anger or pride may call a shadow (k). The cost of a deep working: the mage's own life energy and death-ward (the Dry Land) (k).
+(f) MAPPING: True name = LINK (exact target handle). The Equilibrium: NOT one of the eight. It is a rule that every effect has a non-local, non-proportional cost. In a conserved sim you can approximate with conserved quantities (heat dumped elsewhere is real). The moral and balance part is a NARRATIVE cost (G5).
+ FUN NOTE: a name you must discover is a quest item. It is an excellent reward hook: "learn the name of the wind". It makes information a thing you go and find.
+
+----------------------------------------------------------
+B8. DRESDEN FILES (Jim Butcher, 2000-)
+----------------------------------------------------------
+(a) FREEHAND vs COMPONENTS: EVOCATION (a burst of force, fire, cold, light) is done with will, a word, and a FOCUS item (staff, blasting rod, ring, shield bracelet) (k). It is quick, uses the caster's own energy and runs fatigue. THAUMATURGY (rituals) needs a circle, components, time, a link to the target (hair, blood, a possession), and preparation (k).
+(b) COMPONENTS.
+ Focus (staff, rod): job: shaper (channel energy). Without it the same power burns the caster's hand (k).
+ Circle: job: contain and shape the energy (and keep out others). Drawn in chalk, salt or silver, or a physical ring. Must be unbroken (k).
+ Sympathetic link: hair, blood, a sample (k). Job: LINK. Works on contagion and similarity: a doll for a person (k).
+ Potions and ingredients: job: matter and pattern (k).
+ Power sources: the caster's will; a ley line; a node; a sacrifice (blood magic) (k). Emotional power: a strong emotion raises power (k). Soulfire (k).
+ The Laws of Magic (Seven): don't kill with magic, don't enthrall, don't transform, don't invade the mind, don't reach beyond the veil, don't deal with Outsiders, don't use the dead (k). Job: SOCIAL LICENCE, enforced by the Wardens (k).
+(c) Focus kept (and may be a signature). Reagents consumed. Circles temporary (or permanent when carved).
+(d) STACKING: the top Dresden rituals use circle plus link plus time plus ingredients plus a power source (a ley line or a blood sacrifice) plus several allies (a council ritual, the Merlin's Wake-style big spells) (k).
+(e) COSTS AND RISKS: fatigue and exhaustion (will drain); more power = less control (k); technology fails near a wizard (a side effect = a TELL) (k); the Fall of a black-magic user (the practice corrupts the mind) (k); a supernatural debt (a Fae owes a bargain; a deal is a binding with a toll) (k); the Mantle of a patron (power and a cost to character) (k).
+(f) MAPPING: Focus = matched medium and shaper. Circle = shaper plus environment. Link = LINKS. Fatigue = ENERGY (body). "Tech fails near wizards" = BEING NOTICED (a real field side effect, and the design's tell; maps to electronic damage by induced fields, a lawful tell). Black magic corrupting = (G2) a lasting change of the practitioner's MIND by use. The Seven Laws: not physics (G1).
+ FUN NOTE: "more power less control" is a design gold nugget: the player picks the dial. Dresden's wizards also stay in danger from their own best attack, so each big cast is a decision.
+
+----------------------------------------------------------
+B9. CULTIVATION NOVELS (xianxia/wuxia web fiction; the genre, not one book)
+----------------------------------------------------------
+Sources: the genre as I know it (k), plus the owner's two epubs in the repo root, which I did NOT open this run (u for any title-specific claim).
+(a) FREEHAND: a cultivator at a high enough realm casts by thought or gesture. At low realm, techniques need a posture, a word and a pose, or a talisman (k).
+(b) COMPONENTS.
+ Qi from the world: gathered from the air, a spirit vein, a formation, or a SPIRIT STONE (a crystalline store of dense qi, also used as money) (k). Job: ENERGY store. Spirit stones are the DESIGN's "charged material".
+ Pills (dan) and elixirs: refined from herbs and beast cores (k). Job: ENERGY or a breakthrough aid; grades; "pill toxicity" or "pill impurities" (u), the drug is not clean (k). Job: matter plus pattern (alchemy).
+ Arrays (formations): carved or laid out from stones and flags, with a core (a spirit stone) (k). Job: INSCRIPTION plus ENERGY. Mass arrays protect sects.
+ Talismans: paper or jade inscribed with a technique and spent on use (k). Job: a one-shot INSCRIPTION. See also the Daoist talismans (another lane).
+ Artefacts: weapons and tools refined with a blood bond (k). Job: a matched medium, with a LINK to the owner.
+ Techniques and manuals: books of patterns. Job: INFORMATION (learned).
+ Beast cores: qi stores from creatures (k). Job: ENERGY store with a source.
+ Tribulation: a heavenly lightning that tests a breakthrough (k). Job: a LAWFUL over-dense release; the design already has "TRIBULATION" in 8.1.
+(c) Spirit stones are consumed as they are drained (turn to dust) (k). Pills consumed. Talismans consumed. Arrays are kept and the core stones drain. Artefacts kept, can be damaged.
+(d) STACKING: a breakthrough is: a quiet place plus an array plus pills plus spirit stones plus a guard plus a time of days to years (k). An alchemy furnace: fire plus herbs plus qi plus time plus a recipe (k).
+(e) COSTS AND RISKS: QI DEVIATION (qi runs wrong, meridians are damaged; sometimes crippling or death) (k). Impure foundation from rushing with pills (k). Heart demons (a mental flaw that grows and blocks advancement) (k). Karma and debts: killing or stealing creates "karmic" debts (u). Lifespan costs for some forbidden arts (k). Resources: stones are scarce and everybody competes (k).
+(f) MAPPING: Spirit stone = ENERGY store. Pill = MATTER plus ENERGY, with a toxicity = WASTE of a different type, a chemical side effect (G6: "impurity accumulation" is a cumulative non-heat waste in the body). Array = INFORMATION plus WEAR (core drain). Qi deviation = the design's BURNOUT AND STILLING. Heart demon: the learned mind's dial (the "divided heart" in Q22). Karma: social/belief (G1).
+ FUN NOTE: the cultivation genre is basically a resource-and-risk loop. The reader sees that more stones means faster growth, and that rushing has a bill. This is the type of loop the owner likes (LitRPG).
+
+----------------------------------------------------------
+B10. DUNGEON CRAWLER CARL (Matt Dinwiddie, 2020-) and the LitRPG form
+----------------------------------------------------------
+(a) FREEHAND: the "System" is a game layer. Skills and spells in DCC use MANA from a pool; some skills are passive and cost nothing (k). Spells have a mana cost, a cooldown or both (k).
+(b) COMPONENTS: mostly none. Items and gear matter: scrolls, spell books, potions, boxes of loot (k). Mana potions refill the pool (k). Some spells have reagent-like costs (u).
+(c) Potions and scrolls: consumed. Gear: kept, wears (k). Spell books: kept.
+(d) STACKING: combos of class perks, items, pets and party roles (k).
+(e) COSTS AND RISKS: mana (pool and regeneration tied to Intelligence or a similar stat) (k); cooldowns; a "stat check"; the system itself is a hostile show with ratings (SOCIAL COST: viewers) (k); some skill choices have strong downsides (k).
+(f) MAPPING: Mana pool = ENERGY (abstract). Cooldown = TIME, but enforced by the system, not by information. The show's ratings: BEING NOTICED, but as a social currency (G7). In the design, a cooldown is a gap: it is a COUNTER ON A SPELL not tied to any physical quantity. In physics terms it could be "recovery of a store or a heat limit".
+ FUN NOTE: LitRPG players LIKE: (1) numbers on a screen, (2) a mana bar, (3) cooldown timers they can plan around, (4) rare loot that changes a build. The cost is read as a gauge. The risk is a hostile system that changes rules. A conserved-physics world gives the same gauge if the player has a way to READ their own stores (body energy, heat, a charged gem) as a bar.
+
+----------------------------------------------------------
+B11. THE ELDER SCROLLS (Bethesda; Morrowind 2002, Oblivion 2006, Skyrim 2011)
+----------------------------------------------------------
+(a) FREEHAND: spells cost MAGICKA from a pool, with no material cost, and take a short cast time (k). Magicka regenerates over time (k). In Morrowind each spell has a chance to fail based on skill, and failure costs the magicka anyway (k).
+(b) COMPONENTS: SPELLMAKING (an altar where the player composes a spell from effects with a magnitude, duration and area; the cost scales as a formula) (k). ENCHANTING: soul gems (filled with a trapped soul) charge an item; the soul's size sets the enchant power (k). ALCHEMY: ingredients with several properties; combine two or three to make a potion (k).
+(c) Soul gems: the soul is consumed when the item is enchanted; filled gems are consumed on recharge (k). Enchanted items recharge by a soul gem or by use (k). Potions consumed. Ingredients consumed.
+(d) STACKING: few; enchanting stacks effects on an item. 
+(e) COSTS AND RISKS: magicka; Morrowind spell failure; a Skyrim "dual-casting" costs more but is stronger (k); Skyrim armor does not hinder magic (k). Soul trapping needs a victim and a gem (k). Daedric artefacts have a price (a quest and a patron) (k). 
+(f) MAPPING: Magicka = ENERGY. Soul gem = an ENERGY store with a SOURCE (a life). The design's charged material fits well. The size of the soul equals the charge (a good design-compatible monotone). Alchemy's property-matching (an ingredient has several effects, and you pair them for a shared effect) is a lovely game form of "a matched medium": two reagents must SHARE a property. Spellmaking's cost formula: INFORMATION (bits of effect) as an auto-priced cost.
+ FUN NOTE: Spellmaking is the clearest "you build the spell and see the price" interface, which the design wants (a menu of building blocks with a visible cost).
+
+----------------------------------------------------------
+B12. THE WITCHER (Andrzej Sapkowski, 1990s; CD Projekt Red games 2007-2015)
+----------------------------------------------------------
+(a) FREEHAND: the five SIGNS (Aard, Igni, Yrden, Quen, Axii) are cast by hand gesture alone, with no components, from the witcher's own reserve (in the games: stamina or vigour) (k). They are weak and short-range (k). Signs are the "freehand tier" in its purest form.
+(b) COMPONENTS: potions, oils, bombs and decoctions (alchemy). Potions are TOXIC: each raises a toxicity meter, and too much harms the witcher (k). Oils coat a sword for a specific monster (k). Bombs: pre-made. Decoctions: made from a monster's parts, very strong and very toxic (k). RITUALS in the stories and games (for example lifting a curse, or the Trial of the Grasses): longer, with components, a place and a time (k). Mages (Sorceresses) in the books use portals, many components, and a lot of power from a source (an "Elder Blood" or a chaos source (u)).
+(c) Potions: consumed. Oils: wear off after a number of strikes. Bombs: consumed; refilled by meditation using alcohol (a game convenience) (k).
+(d) STACKING: a ritual: a place (a crossroads or a shrine), a time (midnight or a moon), a component (a name or a token), a Sign (u), sometimes an offering (k).
+(e) COSTS AND RISKS: TOXICITY (a body cost of imbibing); mutation; sterility; the witcher's training cost many boys their lives (k). A mage's chaos use ages or exhausts the body; Sorceresses use glamour (k).
+(f) MAPPING: Signs = freehand, ENERGY from the body (a small reserve). Toxicity = a cumulative WASTE in the body, again G6 (a chemical, non-heat waste with a recovery rate). Potion durations = TIME and a store decay (half-life). Ritual with place and time = INFORMATION (a timing code) and environment. Mages' portals need big stores (ENERGY).
+ FUN NOTE: "signs against rituals" is exactly the owner's question in game form: a SMALL FAST freehand set, and a SLOW GROUNDED ritual set. The design should keep the same split: a few cheap near-free tools in combat, and rich slow work in preparation. Toxicity is a famous good cost: it makes potion use a TIMING decision (drink early, not too many).
+
+----------------------------------------------------------
+B13. MAGIC: THE GATHERING (Richard Garfield, 1993-)
+----------------------------------------------------------
+(a) FREEHAND: there is no freehand tier. Every spell costs mana, produced by lands (k). Some effects are free (a "free spell" with an alternative cost) (k).
+(b) COMPONENTS: five colours of mana (white, blue, black, red, green), each with a philosophy (k). A land produces one mana per turn when tapped; a land can be played once per turn (k). Cost can include colourless mana, coloured mana, life, discarding cards, sacrificing a creature, exiling a card, and paying counters (k). 
+(c) Lands are "tapped" (a refreshing use), not consumed. Spells are consumed. Costs like sacrificing a creature are matter. 
+(d) STACKING: combo decks stack cost reducers, untappers and free spells (k).
+(e) COSTS AND RISKS: the tempo of mana; a missed land drop; paying life (an actual body cost, 20 life each start) (k); card disadvantage; colour screw (k).
+(f) MAPPING: Mana = ENERGY, from a typed store with a refresh each turn. A land = a SOURCE with a rate. Life as a cost = a body store used as energy. Discard / sacrifice = MATTER. The five colours are an artifact of design, not physics, but their LESSON is useful: the five costs are DIFFERENT KINDS OF PRICE (life, cards, tempo, board, mana).
+ FUN NOTE: the best idea in MTG is that costs are CHOICES of a DIFFERENT currency: pay life for speed, pay cards for power. This is the same as the owner's multi-cost view. The design's eight kinds give the same variety by real quantities.
+
+----------------------------------------------------------
+B14. NOITA (Nolla Games, 2020) and MAGICKA (Arrowhead, 2011)
+----------------------------------------------------------
+NOITA
+(a) FREEHAND: wands fire their spells in order, with no components; a wand has MANA, a recharge time and a cast delay (k). 
+(b) COMPONENTS: the wand is a frame (capacity, mana pool, mana recharge, cast delay, recharge, spread, shuffle). Spells are cards loaded into slots (k). Modifiers (multicast, trigger, timer, damage plus, speed plus) placed before a projectile change it (k). This is a COMPOSITION grammar.
+(c) Spells are kept. Wands are kept. Mana is spent and regenerates (k). Some spells have limited uses (u). 
+(d) STACKING: the whole game is stacking: trigger spells that fire another spell on impact, multicast, path modifiers, chained timers (k).
+(e) COSTS AND RISKS: each spell adds a mana cost and a delay; too many exceed the wand's mana, so it stalls (k). Friendly fire and self-damage. The world is made of falling-sand (like our voxels): fire spreads, oil burns, water extinguishes, acid dissolves (k). Self-kill by your own explosive spells is the main hazard. 
+(f) MAPPING: Wand mana = ENERGY store with a recharge rate. Cast delay = TIME. Slots and capacity = INFORMATION (bits the wand can hold) and the wand's "mana pool" limits energy. Modifiers stacking: the design's composed spell grammar. Cost summation per node: the "cost by complexity" law (the design 3 and 8: cost by information). The world is a material sim, so a spell's effect uses real laws; this is the closest game to Mark_1's own approach. 
+ FUN NOTE: THE major lesson: when spells are composed from parts and the world is a real simulation, the PLAYER FINDS combos and the cost stays readable (a mana number on the wand). Players enjoy discovery that is lawful.
+
+MAGICKA
+(a) FREEHAND: spells are built live by combining up to five ELEMENTS (earth, water, cold, fire, lightning, life, arcane, shield, steam, ice, ...) queued on a key and then cast as a projectile, beam, area or self-buff (k). There is no mana: the cost is TIME and RISK.
+(b) COMPONENTS: the elements (queued), a staff or a weapon (to channel), a Magick (a pre-defined multi-element combo), 
+(c) Nothing consumed. A spell is built from a queue; mistakes waste time.
+(d) STACKING: you stack elements in a queue; opposing elements cancel (fire and cold; water and lightning has a danger) (k). 
+(e) COSTS AND RISKS: friendly fire; self-harm (casting lightning while wet, fire on oneself); long cast time for bigger combos; a mistake in the queue is a wrong spell (k). 
+(f) MAPPING: Queue length = INFORMATION cost, and the time it takes = TIME. Opposing elements cancel: the design's "interference". Wet plus lightning: lawful field and matter interaction. No ENERGY pool at all: a world where the only cost is INFORMATION, TIME and NOTICED. This tests the design: a system with no energy bar still has a cost because the player's own errors matter. Nice evidence that "freehand = what the mind's capacity and the medium's precision allow" can stand alone.
+ FUN NOTE: both games make the cost the PLAYER'S OWN HANDLING. That is where a text-based solo D&D substitute differs: in Mark_1 the equivalent handling is the choice menu and the working-memory cap.
+
+----------------------------------------------------------
+B15. WHEEL OF TIME (Robert Jordan, 1990-2013) and STORMLIGHT ARCHIVE (Sanderson, 2010-)
+----------------------------------------------------------
+(Short, because the earlier fiction lane covered these; only costs and components here.)
+WoT
+(a) FREEHAND: a channeler who can hold the One Power weaves with thought alone; no components (k). Strength limits how much flow.
+(b) COMPONENTS: angreal and sa'angreal amplify flow (k): a FOCUS that raises the cap. Ter'angreal: fixed-effect devices (k). Cuendillar: a heart-of-stone item (k). 
+(c) Kept. Some break (Choedan Kal-type big ones, or those that can be burned out) (u).
+(d) STACKING: a CIRCLE of channelers links, led by one who controls the flow of the group (k). Women can link with women, men with men; mixed linking with a special form (k). A circle of 13 is the Dark One-era "Black Ajah" use, (u).
+(e) COSTS AND RISKS: BURNOUT (a channeller who overdraws loses the ability, "stilled" or "burned out") (k); the Taint on saidin (madness in men) (k); channeling gives a tell (a woman or man with the Power senses another using it) (k); weaves leave a residue (k). 
+(f) MAPPING: Strength = the dial. Angreal = a FOCUS that raises throughput (design's "rated throughput"). Burnout = BURNOUT AND STILLING in the design, clearly. Taint = G2 (a cumulative harm to the MIND by use of a source). Tell = NOTICED. Circle = Q22 "circles as coupled lanes".
+STORMLIGHT
+(a) FREEHAND: a Knight Radiant, bonded to a spren, inhales Stormlight and speaks an oath's ideal (k). The surges (Lashings, etc.) are then cast with a mental act.
+(b) COMPONENTS: Stormlight stored in gems (spheres) (k). Job: ENERGY and money. Fabrials: devices that use spheres, with a gem of a specific type for each effect (k). Job: DEVICE, INFORMATION (the crafted pattern), ENERGY. Spren: the bond (a patron-like source) (k).
+(c) Stormlight is consumed and leaks out of the sphere over days to weeks (k). Fabrials kept; the gem may crack (u).
+(d) STACKING: gem plus fabric plus a bonded spren plus an oath (k). 
+(e) COSTS AND RISKS: running out; leakage; oath failure breaks the bond (k); a Voidbringer-type flaw (u). 
+(f) MAPPING: gems = a charged material with leakage (the design: "LEAKAGE" in 8.1). Oaths = bond limits (design 8.1). Spheres = money and battery: a design hint, since conserved energy that is also currency forces an economy.
+ FUN NOTE: the sphere economy makes the player's wealth the same thing as their power. That is an elegant "one resource" idea, and it makes theft and bank-robbery a magic issue.
+
+----------------------------------------------------------
+B16. THE DRESDEN-STYLE HEDGE: HARRY POTTER, DISCWORLD, AND OTHERS (a short sweep, lower confidence)
+----------------------------------------------------------
+Harry Potter: wand plus word plus intent (k). Few listed costs. Costs are mostly SKILL and talent, and a few hard laws (Gamp's Law of Elemental Transfiguration: you cannot make food from nothing) (k). Unforgivable curses need intent and malice (k). Horcruxes: a murder splits the soul (k). Lesson: a "no-cost" magic system forces the author to add hard limits elsewhere. Gamp's Law is MATTER conservation in a folk form.
+Discworld: octarine background magic, wizards avoid using magic because it draws things from the Dungeon Dimensions (k). Headology is non-magic. "Magic costs because it draws attention" is a NOTICED cost, not an ENERGY cost. Good for a creature-ecology tie (design section 7).
+D&D 3e psionics and Spellcasting by points: a point system: a pool of power points that may be spent to augment (k). Lesson: augmenting a power by spending more points = a continuous energy dial.
+Ars Magica's close cousin, Mage: The Ascension: Paradox (a backlash when magic is too coincidence-breaking or too visible to sleepers) (k). Lesson: a cost for being SEEN, a NOTICED cost in the social form. The design handles this as a physical tell; Paradox is a belief-based one (G7).
+
+==========================================================
+C. CROSS-CUTTING REGULARITIES
+==========================================================
+R1. TWO TIERS ARE UNIVERSAL. A small, fast, cheap, near tier (cantrips, Signs, evocation, spontaneous magic, Noita single shots) and a big, slow, prepared tier (rituals, thaumaturgy, formulaic ritual, arrays, great circles). Almost nothing has only one tier. Freehand = tier one.
+R2. A FREEHAND LIMIT IS ALWAYS A BODY OR MIND LIMIT, NEVER A RULE. Reserves (stamina, magicka, Fatigue levels, slots), concentration (cap on held spells), working memory (split mind), and risk (control falls as power rises). This matches "FREEHAND is whatever fits the body's energy, power and heat caps, the mind's capacity and the medium's precision".
+R3. SIX COMPONENT JOBS RECUR: energy store, pattern holder, link, matter, shaper or focus (raise the cap or channel), protection or containment (the circle, a ward, a pouch). The design has five. See section E for PROTECTION.
+R4. CONSUMED vs KEPT FOLLOWS "MATTER vs TOOL". Matter that enters the effect is consumed (reagents, vis, spirit stones, soul charge, metals). A tool or a pattern that shapes the effect is kept, and may wear (foci, circles, wands, metalminds). Stores are consumed in energy but the container is kept (gems, spheres). This is exactly the design's split of MATTER vs WEAR.
+R5. LINKS ARE ALMOST ALWAYS "SIMILARITY or CONTACT". Hair, blood, a name, a wax doll, a possession, the same material. Better match = stronger link, worse match = slip. (Kingkiller, Dresden, Earthsea, 5e's "a sample of the target" in scry spells.) This matches the design and Frazer.
+R6. THE BIG LIMIT ON REACH IS KNOWLEDGE OF THE TARGET. D&D Scrying wants a familiarity table (k). Kingkiller needs a link. Earthsea needs a name. Dresden needs a link. So RANGE is paid in LINKS, not energy.
+R7. STACKING GROWS WITH STAKES. A larger or lasting effect lists more media. Every system in section B has a "great working" that stacks 4 to 7 media. Several media in one rite is the NORM at the top.
+R8. THE PREPARE-THEN-SPEND SHAPE. Spell preparation, metalminds, vis harvest, charging gems, memorised slots, enchanting: the stake is paid in calm and spent in crisis. This is "imprinting" and "stores" in the design.
+R9. COSTS IN FICTION ARE USUALLY LEGIBLE GAUGES. Stamina bar, metal vials, vis pawns, toxicity meter, gold price. Hidden costs are rare and usually a story twist (Twilight, Taint).
+R10. THE BEST SYSTEMS HAVE A SECOND AXIS OF DANGER, A DIAL TO CHOOSE POWER OVER SAFETY. More power less control (Dresden), flaring (Mistborn), pushing past the limit (WoT burnout), rushing with pills (cultivation), Twilight (Ars Magica), upcasting (D&D), Wild Surge. This matches the design's "overreach hazard" and error-lands-on-neighbours.
+R11. A CUMULATIVE BODY OR MIND COST THAT DOES NOT RESET WITH A REST. Warping, the Taint, black-magic corruption, pill toxicity, Witcher toxicity (short-term), heart demons. These are the most remembered costs in fiction.
+R12. A SOCIAL OR PRICE COST FROM A BEING. Patrons, the Gate, the Seven Laws, karma, the Equilibrium, Paradox. These do not map to physics. See E.
+R13. CONSERVATION IS THE FAVOURITE RULE OF THE BEST-LOVED SYSTEMS. Equivalent exchange, Sympathy's heat, Feruchemy, Mistborn's push by mass. Readers and players enjoy a puzzle with a hidden ledger. This is in favour of the whole Mark_1 approach.
+R14. NO SYSTEM LETS A COMPONENT BE FREE FOREVER EXCEPT AS A DELIBERATE CONVENIENCE (the pouch, the focus, the "mana recharge"). Where it is waved away, it is to avoid bookkeeping of trivial things. The design should do the same: waive cost below a small threshold.
+
+==========================================================
+D. TEST OF THE DESIGN'S ANSWER: WHERE IT HOLDS, WHERE IT STRAINS
+==========================================================
+HOLDS (fiction agrees):
+D1. Nothing is free: every system has a cost. The design's eight kinds cover the cost lists of 12 of 16 entries with few leftovers.
+D2. "Freehand is whatever fits the caps": matches R2.
+D3. "Store = energy", "inscription = information", "link = targeting", "reagent = matter": all four are directly seen (vis and gems; circles and arrays; hair, name and doll; metals and equivalent exchange).
+D4. "Multiple interfaces per chain stage": every great working stacks media. The chain (holder, shaper, environment, source) maps well: Dresden has holder (mind), shaper (focus plus circle), environment (ley line, a place), source (will, ley line); Kingkiller has holder (mind), shaper (binding), environment (the link), source (heat).
+D5. "Casting time from information cost": 5e rituals (time for slots), Magicka (queue time), Noita (cast delay). Good.
+D6. "Waste heat": rarely stated in fiction, but Kingkiller (cold when body heat is drawn), Dresden (exhaustion), Stormlight (glow leaks) show it. Fiction undersells WASTE, so the design's choice to book it is an ADDED realism, not a copy. Watch: the design's waste heat could be the most novel cost for players, and may need a visible gauge (body temperature, hot spots, steam).
+
+STRAINS (needs a decision):
+D7. "CATALYST = a barrier, not consumed." Fiction rarely has a catalyst in the chemistry sense. The nearest cases: a focus that lets power through at all (Dresden's staff, Dresden's circle as a containment), a lab (Ars Magica), a witcher's meditation. I found few cases where a component is "needed but not consumed to LOWER A BARRIER". Most "kept" components are SHAPERS or AMPLIFIERS. Suggest rename or merge: catalyst ~ shaper or amplifier (see G8).
+D8. "BEING NOTICED (tells)" is the cost that fiction uses MOST in the social form (Paradox, the Gift, Discworld's Dungeon Dimensions, Wardens, a show's ratings) and LEAST in the physical form (WoT: a channeler can sense another channeler's weave; Dresden: tech failure; Mistborn: Seekers sense burning metal). The design's physical tell is sound. Note the social half is the part players talk about.
+D9. "LINKS = targeting only." In fiction, a link ALSO carries ENERGY (Kingkiller, the heat flows through the link), and OFTEN is also the PATTERN (a name is both target and spell). So link has two jobs in fiction: aim and carry. The design's chain may handle that by calling the link both the shaper and the target coupling. Flag for the chain model.
+D10. "MATTER = conjuring and reagents." Fiction also has matter used as FUEL (Mistborn metals, cultivation pills, vis). The design treats fuel as ENERGY from a "charged material". Fine, but the two are one object: the item is consumed (matter) and its energy is released (energy). The design should book both from ONE consumption event, so no double counting. 
+D11. "WEAR (foci, engravings...)". Fiction rarely wears a focus. Fiction DOES wear the BODY (Taint, burnout) and the STORES (soul gem, spirit stone). So the design's wear row could be mostly for inscriptions and crystals, with the main wear on the caster.
+
+==========================================================
+E. CANDIDATE MISSING LAWS (things that do NOT map to the eight kinds)
+==========================================================
+G1. LICENCE OR PRICE TO A BEING. The Gate's toll, a Fae debt, a patron's price, a god's due, the Seven Laws and the Wardens, Daedric quests. This is a cost paid to a MIND or an institution, not to nature. In the design it can map to the "bond" and "patron" mechanisms (Q17, bonds addendum), because a patron is a pattern in M that holds a store and a will. So it is not a ninth kind of physics but it is a ninth kind of COST: SOCIAL. Recommend a ledger line called OBLIGATION that sits in the learned mind and the bond graph, not in physics. (Social or belief element, not physics.)
+G2. LASTING MIND CHANGE FROM USE (corruption). Warping and Twilight (Ars Magica), the Taint (WoT), black-magic fall (Dresden), heart demons (cultivation), pill toxicity (body), Hemalurgy. The design has burnout (coupling falls). It has no rule for "use changes the practitioner's values or dials in a lasting way". With the learned mind's dials (traits are dials plus history, no flags), this can be: use of a channel shifts a dial (aggression, attachment) by a small amount per use. It is a SIDE EFFECT of coupling a mind to a strong field. Candidate law: a field that is strong enough to couple a mind also drives its state (feedback). Possibly maps to WASTE if waste may include "noise injected into the holder's own pattern". (Candidate missing law; partly a belief element.)
+G3. STORING A BODY QUANTITY (Feruchemy). Store weight, speed, memory, or fat, and later spend it. This is a store that is not joules but a conserved body variable. It maps to ENERGY only if the body variable is an energy-equivalent. It might map to a general "store of a conserved body quantity" with a symmetric cost. A candidate missing STORE TYPE, not a missing law. Cheap to add if the body model has such variables.
+G4. BELIEF AND CONFIDENCE AS A STRENGTH (Alar, faith). In Kingkiller and in D&D clerics. Maps to the learned mind's dial (a mind-state variable, e.g. certainty) that sets the match of the pattern. It is a mind variable, so not physics, but it should be stated as INFORMATION quality (error rate falls with certainty).
+G5. NON-LOCAL CONSEQUENCE (the Equilibrium; Paradox). Every big act has an effect elsewhere that is not proportional or local. In a conserved sim, this is partly real: heat dumped somewhere, mass moved, a storm sent elsewhere. Anything beyond is a narrative law. Recommend: do not model. Let conserved physics give consequences.
+G6. NON-HEAT CUMULATIVE WASTE IN THE BODY (toxicity, impurities, qi deviation residue). The design has waste heat and "other waste". Fiction's most-loved body cost is a cumulative chemical load that decays slowly (potion toxicity). It fits the pharmacology (ADME curves, design 5.3) if potions have clearance rates. Needs a gauge. Probably covered by "other waste", but name it.
+G7. BEING SEEN BY THE UNBELIEVING (Paradox) or BY AN AUDIENCE (DCC ratings). A social tell. The design has physical tells and the mind model can supply social reaction. Not physics.
+G8. THE KEPT "BARRIER" COMPONENT. See D7. There is a small gap between catalyst and shaper in fiction. Possibly missing: a PROTECTION component (the circle that shields the caster from the backlash; Dresden's circle; a witch's salt line; the Glove that keeps a transmutation from rebounding). Protection lowers the risk side, not the cost side. The design's "chain" could host this as the environment stage.
+G9. SACRIFICE AS ENERGY SOURCE (blood magic, the Philosopher's Stone, cultivation of lives, a lot of dark fantasy). Cost is a life, which is energy and information and moral weight at once. Energy part maps (a body's stores released), moral part does not. In a sim it would be a store with a harvest cost. See section F: moral weight is a game and mind-model matter (witnesses, bonds, law), not a physics one.
+G10. COOLDOWNS NOT TIED TO ANY QUANTITY (LitRPG, MMOs). A pure TIME gate. In a physical world a cooldown is an emergent recovery (heat, store, attention). Recommend: do not add a free cooldown. If the player wants cooldown-like pacing, show the recovery gauge that causes it.
+G11. CURRENCY EQUALS POWER (Stormlight spheres). Not a physics gap but an ECONOMY effect of making stores tradable. It follows for free if charged materials have a market value in the sim.
+
+==========================================================
+F. WHAT MAKES COSTS FUN (the owner plays LitRPG and D&D)
+==========================================================
+F1. LEGIBLE: the player can read the cost before choosing. Gauges (mana bar, toxicity, vis pawns, gold price on the spell text). Hidden costs feel unfair unless they are the surprise of a story.
+F2. CHOICE BETWEEN KINDS OF PRICE: MTG (life, cards, mana, tempo), Dresden (power vs control), Ars Magica (spontaneous vs ritual, vis vs fatigue). Having two or three routes to the same effect with different prices is the heart of fun. The design's eight kinds already allow this: slow and cheap (time), fast and costly (energy), prepared (store), borrowed (a link plus a patron).
+F3. PREPARE THEN SPEND: stores, metalminds, vis, slots, enchanting. It gives a calm-time game (gather, craft, charge) and a crisis-time game (spend). Fits the solo D&D substitute: preparation scenes are rich, and crisis scenes are fast.
+F4. A DIAL TO CHOOSE RISK: flaring, upcasting, over-channelling, rushing. The player says "I'll risk the surge". With the design's error-lands-on-neighbours rule, the risk is lawful and interesting rather than random death.
+F5. COSTS THAT CREATE QUESTS AND PLACES: names to find (Earthsea), vis sites (Ars Magica), ley lines (Dresden), spirit veins (cultivation), rare reagents (Elder Scrolls). A cost that must be FOUND gives a reason to go somewhere. In Mark_1 this is the field M map, charged-material deposits, link samples.
+F6. COSTS THAT CHANGE THE WORLD ECONOMY: vis, spirit stones, Stormlight spheres, soul gems. The setting gets trade, theft and politics for free.
+F7. A COST WITH A BODY FEEL: heat, hunger, cold, nausea, toxicity, fatigue. The player gets prose hints. Mark_1 is text, so a cost the narrator can DESCRIBE (your fingers go numb, steam rises from your sleeves) is much better than a number. Kingkiller's cold hands and Witcher's toxicity are the model.
+F8. NOT FUN: flat tolls with no choice; tiny components that need counting (bat guano); cooldowns the player cannot explain; costs that punish creativity (a spell that fails because of a hidden rule); permanent loss with no warning (a stilled channeller without any sign beforehand).
+F9. WARN BEFORE PERMANENT. The best permanent costs (WoT burnout, Twilight) give a SIGN first: the channel flickers, the vis glows, the toxicity bar goes yellow. The design should make D (damage) visible in the narrator before it reaches 1.
+F10. CONVENIENCE WAIVER. Waive bookkeeping for cheap things (the pouch). Let a minimum-cost threshold remove trivial reagents from play, and use the saved attention for the costs that matter.
+
+==========================================================
+G. RECOMMENDATIONS AND OPEN CHOICES FOR THE OWNER
+==========================================================
+(These are options to go through one by one. None is decided.)
+Q-A. Add a NINTH COST LINE, OBLIGATION, outside physics (G1)? It lives in the mind and bond graph. Option 1: yes, as a bond-graph debt. Option 2: no, patrons simply hold stores and the price is whatever the patron's mind wants. Recommendation: option 2 first, since a patron mind that wants something already gives a price without a new law. Revisit if play shows a need.
+Q-B. A rule that use of a strong channel shifts the user's dials over time (G2)? Option 1: yes, small and visible (a pack number; zero turns it off). Option 2: no; only burnout. Recommendation: option 1 as a PACK parameter, off in the base, because the owner likes cumulative costs from LitRPG and Ars Magica, but the base should stay physical.
+Q-C. A "store of a body quantity" type (G3)? Needs the body model to expose a few conserved variables. Recommendation: defer; it is cheap once those variables exist.
+Q-D. Name the non-heat body waste explicitly (G6) as "load" with a clearance rate, shared by potions, qi residue and overuse. Recommendation: yes, one gauge, reused.
+Q-E. Replace "catalyst = barrier" with two roles: AMPLIFIER (raises the throughput cap, kept, wears) and PROTECTION (lowers the backlash, kept) (D7, G8). Recommendation: yes. Fiction supports both; "a barrier lowered" is rare.
+Q-F. Treat the link as carrying both aim and energy (D9)? Recommendation: let the chain allow a link stage that can ALSO be the path of the energy (Kingkiller), with a slip loss set by match.
+Q-G. One-event consumption for fuel items (D10): a charged material is consumed once, booking matter and energy together. Recommendation: yes.
+Q-H. Cost waiver threshold for trivial components (F10, R14). Recommendation: yes, a pack number in joules and grams below which a component is not tracked.
+Q-I. Visible gauges: which cost gauges does the narrator show? Recommendation: body energy, body heat and a "load" line, plus store charge on carried items; wear shown as signs.
+Q-J. Keep cooldown out (G10). Recommendation: yes. Let recovery (heat, store, attention) set pacing.
+Q-K. No physics for karma, the Equilibrium or Paradox (G5, G7). Recommendation: yes. Social reaction comes from the learned mind, and non-local consequence from real conservation.
+
+HEADLINE (repeat): the design's eight kinds fit fiction well. Fiction adds three things worth a look: a cumulative lasting change in the practitioner (G2), a social or price cost to a being (G1), and a protection role for components (G8). The most fun costs are legible, prepared in calm, and spent by choice.
+
+SOURCES (all (k) from memory; none opened this run)
+ D&D 5e System Reference Document 5.1 (Wizards of the Coast, CC-BY).
+ Pathfinder 1e and 2e, Paizo (Archives of Nethys text).
+ Ars Magica 5th edition, Atlas Games (2004).
+ Sanderson: Mistborn trilogy (2006-2008); The Way of Kings (2010).
+ Rothfuss: The Name of the Wind (2007); The Wise Man's Fear (2011).
+ Arakawa: Fullmetal Alchemist (2001-2010).
+ Le Guin: A Wizard of Earthsea (1968), The Tombs of Atuan, The Farthest Shore.
+ Butcher: The Dresden Files (2000-).
+ Dinwiddie: Dungeon Crawler Carl (2020-).
+ Bethesda: Morrowind, Oblivion, Skyrim.
+ Sapkowski: the Witcher saga; CD Projekt Red games.
+ Wizards of the Coast: Magic: The Gathering comprehensive rules (concept of costs).
+ Nolla Games: Noita (2020). Arrowhead: Magicka (2011).
+ Jordan: The Wheel of Time. Pratchett: Discworld. Rowling: Harry Potter. White Wolf: Mage: The Ascension.
+ Frazer, The Golden Bough (1890-1915), for laws of contagion and similarity (k; covered by other lanes).

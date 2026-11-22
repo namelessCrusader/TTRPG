@@ -1,0 +1,326 @@
+entry	family	source_url	layers	verdict	mechanism	law_or_change	fear_source
+Permadeath	Death and persistence	https://en.wikipedia.org/wiki/Permadeath	P,K	COVERED	one body one life; death is the physiology law ending the agent, world goes on	-	loss that cannot be undone; K stakes
+Saved game	Death and persistence	https://en.wikipedia.org/wiki/Saved_game	-	EXCLUDED	snapshot of world state is a tool level feature (owner may use snapshots), not in-world	-	none in world
+Save scumming	Death and persistence	https://en.wikipedia.org/wiki/Saved_game	-	EXCLUDED	reloading to dodge outcomes is a meta action outside the sim	-	none
+Autosave	Death and persistence	https://en.wikipedia.org/wiki/Autosave	-	EXCLUDED	engine checkpointing, no in-world form	-	none
+Game over	Death and persistence	https://en.wikipedia.org/wiki/Game_over	P,K	COVERED	player body dies or mind fails; session ends or switches to another character	-	finality; K
+Extra life (1-up)	Death and persistence	https://en.wikipedia.org/wiki/1-up	X	LAW	a stored pattern that rebuilds the body at death (a store plus rebuild link); needs a death-trigger law for stores	death-triggered rebuild from a charged store	wonder and greed; K
+Lives counter	Death and persistence	https://en.wikipedia.org/wiki/Life_(video_games)	M,X	PACK	N stored copies charged in a phylactery-like store, each death spends one	-	dread of the last one; K
+Respawn point	Death and persistence	https://tvtropes.org/pmwiki/pmwiki.php/Main/RespawnPoint	X,M	PACK	bind-point: a ward-like pattern linked to a copy template; death triggers rebuild there; copy is rough or exact by store charge	-	loss of self vs copy question; K
+Spawn point	World structure	https://en.wikipedia.org/wiki/Spawn_(video_games)	-	EXCLUDED	engine placement of agents at start, world authoring tool	-	none
+Respawning enemies	World structure	https://en.wikipedia.org/wiki/Mob_(video_games)	P,G	COVERED	populations regrow by breeding and migration over world time, not on room reload	-	inexhaustible threat; K
+Corpse run (Souls bloodstain)	Death and persistence	https://tvtropes.org/pmwiki/pmwiki.php/Main/CorpseRun	M,S	PACK	dropped inventory stays at death site with a ghost memory pattern; retrievable	-	dread of going back; K
+Hardcore mode	Death and persistence	https://en.wikipedia.org/wiki/Permadeath	P	COVERED	default behaviour of the sim	-	stakes; K
+Challenge run	Play style	https://en.wikipedia.org/wiki/Challenge_run	-	EXCLUDED	self imposed player restrictions, meta	-	none
+New Game Plus	Death and persistence	https://en.wikipedia.org/wiki/New_Game_Plus	-	EXCLUDED	restart with carried items; in world only as a time loop (see loops)	-	none
+Time loop (die and return with memory)	Time loops	https://en.wikipedia.org/wiki/Time_loop	X,M	SECOND	returning to an earlier state with memory needs changing the past; the only buildable version is a replayed pocket plane (see plane loops)	time travel to the past	helplessness and mounting madness; K
+Time loop as pocket plane replay	Time loops	https://en.wikipedia.org/wiki/Time_loop	X,M,K	LAW	a plane (X) resets to its snapshot while a resonant link keeps one mind's pattern; needs a snapshot-restore law for planes (u)	plane snapshot restore with one carried pattern	uncanny repetition seen by locals who do not remember; K
+Groundhog Day style loop	Time loops	https://en.wikipedia.org/wiki/Groundhog_Day_(film)	X	SECOND	reset of the whole town with one rememberer is past change	time travel to the past	existential boredom; K
+Loop with local residents unaware	Time loops	https://tvtropes.org/pmwiki/pmwiki.php/Main/TimeLoop	K	COVERED	NPC beliefs rebuilt each run; the dread comes from the looper knowing more than the world	-	isolation; K
+Cause and Effect (ship explosion loop)	Time loops	https://en.wikipedia.org/wiki/Cause_and_Effect_(Star_Trek:_The_Next_Generation)	X,K	SECOND	temporal causality loop across ships	time travel to the past	inevitable disaster; K
+Heaven Sent (death each loop)	Time loops	https://en.wikipedia.org/wiki/Heaven_Sent_(Doctor_Who)	X,M	LAW	a pocket plane with a body rebuild each cycle and a pursuer; same snapshot law as pocket plane replay (u)	plane snapshot restore with one carried pattern	relentless pursuer; K and body
+Window of Opportunity	Time loops	https://en.wikipedia.org/wiki/Window_of_Opportunity_(Stargate_SG-1)	X	SECOND	memory carries across resets	time travel to the past	frustration; K
+Monday (X-Files)	Time loops	https://en.wikipedia.org/wiki/Monday_(The_X-Files)	X	SECOND	repeating day with a bank robbery	time travel to the past	doom; K
+Eve of the Daleks	Time loops	https://en.wikipedia.org/wiki/Eve_of_the_Daleks	X	SECOND	short loop with exterminating enemy	time travel to the past	repeated death; K
+Cyclic reset by a cosmic outsider	Time loops	https://tvtropes.org/pmwiki/pmwiki.php/Main/TimeLoop	M,X	LAW	an entity with a vast linked substrate resets a region; same snapshot-restore law (u)	plane snapshot restore with one carried pattern	powerlessness; K
+Return by Death	Time loops	https://tvtropes.org/pmwiki/pmwiki.php/Main/ReturnByDeath	X	SECOND	memory goes back to a past save point	time travel to the past	grim repetition; K
+Rewind a damaged object	Time loops	https://en.wikipedia.org/wiki/Time_loop	X	COVERED	rewind of parts still together is in the X extension	-	wonder; K
+Resurrection (fresh body)	Resurrection	https://en.wikipedia.org/wiki/Category:Fiction_about_resurrection	X,P	COVERED	rebuild a body whose parts are still together and restart physiology; short window	-	violation of the natural; K
+Resurrection from ashes	Resurrection	https://en.wikipedia.org/wiki/Category:Fiction_about_resurrection	X,M	SECOND	true creation off by default; mass and pattern must be paid for, so only rough copy	true creation	taboo; S
+Monkey's Paw (bargain revival)	Resurrection	https://en.wikipedia.org/wiki/The_Monkey%27s_Paw	M,K	PACK	a cursed artefact whose pattern rebuilds a body imperfectly (graded damage); wish phrasing literal	-	corrupted result; K
+Pet Sematary (burial revival)	Resurrection	https://en.wikipedia.org/wiki/Pet_Sematary	M,X,K	PACK	a site with a patron-pattern that drives reanimated hosts; bodies return wrong	-	the returned is wrong; K
+Rondo of Blood revive-the-maiden	Resurrection	https://en.wikipedia.org/wiki/Castlevania:_Rondo_of_Blood	X,M	PACK	ritual rebuild of a body by a patron; PACK ritual record	-	desperation; K
+Shadow of the Colossus (bargain revive)	Resurrection	https://en.wikipedia.org/wiki/Shadow_of_the_Colossus	M,X	PACK	a patron drains many large structures to rebuild one body; drain costs are the plot	-	cost without warning; K
+The Returned (dead walk back)	Resurrection	https://en.wikipedia.org/wiki/The_Returned_(novel)	X,S	PACK	rebuilt people with partial memory; S reaction is the horror	-	neighbours uneasy; S
+Resurrection by serum / medical revive	Resurrection	https://en.wikipedia.org/wiki/Return_from_Death	P	COVERED	cardiac arrest recovery within a time window; physiology	-	clinical fear; body
+Superman death and return	Resurrection	https://en.wikipedia.org/wiki/The_Death_of_Superman	X	PACK	a body in a recharging cocoon rebuilds slowly	-	wonder; K
+Dying and returning Jack Harkness	Resurrection	https://en.wikipedia.org/wiki/Jack_Harkness	X,G	PACK	a body that rebuilds after death with a pattern anchor (G or X trait)	-	alien nature; K
+Blip (half vanish and return)	Resurrection	https://en.wikipedia.org/wiki/The_Blip	M,X	SECOND	mass removal then reappearance; needs storage of people with preserved state across time; deleted mass violates conservation	nonlocal storage of whole bodies	vast loss; S
+Immortality by pattern repair	Immortals	https://en.wikipedia.org/wiki/Category:Fictional_immortals	M,P	COVERED	a body pattern that repairs damage, drain paid from M or food; stops when drain unpaid	-	envy and dread of the long life; K
+Highlander (immortals who revive)	Immortals	https://en.wikipedia.org/wiki/Highlander_(film)	X,M	PACK	body rebuild trait with a decapitation severing the pattern link; fight to take drained store	-	hidden predators; K
+Immortal by phylactery	Immortals	https://en.wikipedia.org/wiki/Koshchei	M,X	PACK	life stored in a hidden object: pattern link to body; destroying the store kills	-	unkillable until the secret leaks; K
+Immortal vampire (Alucard, Selene)	Immortals	https://en.wikipedia.org/wiki/Alucard_(Castlevania)	M,G,P	COVERED	already covered as vampires in the horror lane; mutant physiology plus M feeding	-	predation; body
+Regenerator Wolverine-like	Immortals	https://en.wikipedia.org/wiki/Wolverine_(character)	G,P	COVERED	graded fast healing gene with a metabolic cost	-	body horror; body
+Death as a person (Endless, Ryuk)	Immortals	https://en.wikipedia.org/wiki/Death_of_the_Endless	M,K	PACK	a being with a vast substrate of believers' linked patterns, escorts dead patterns	-	inevitability; K
+Struldbrugg (immortal but ageing)	Immortals	https://en.wikipedia.org/wiki/Struldbrugg	P	COVERED	no death but ageing continues; physiology	-	despair; K
+Wandering Jew (cursed deathlessness)	Immortals	https://en.wikipedia.org/wiki/Wandering_Jew	M,S	PACK	a curse pattern that suppresses death with a drain from the world; S exile	-	eternal exile; S
+Time stop	Time manipulation	https://en.wikipedia.org/wiki/Category:Fictional_characters_who_can_manipulate_time	M,X	SECOND	freezing time is not a transfer of momentum	time control	helplessness; K
+Super speed (time perception slowed)	Time manipulation	https://en.wikipedia.org/wiki/Quicksilver_(Marvel_Comics)	M,P	COVERED	M moves momentum to the body; the perceived slow world is a faster sense clock (K dial)	-	uncatchable; K
+Slow motion bullet time	Time manipulation	https://en.wikipedia.org/wiki/Bullet_time	M,K	PACK	M boosted nervous pattern with higher sense rate and clocked actions	-	awe; K
+Rewind time (Tracer recall)	Time manipulation	https://en.wikipedia.org/wiki/Tracer_(Overwatch)	X	COVERED	rewind of parts still together, a body returned to a past state of itself within the window	-	slipperiness; K
+Time travel to past (Chronos)	Time manipulation	https://en.wikipedia.org/wiki/Chronos_(character)	X	SECOND	travel to the past	time travel to the past	paradox; K
+Timeline branching	Time manipulation	https://en.wikipedia.org/wiki/Category:Fictional_characters_who_can_manipulate_time	X	SECOND	alternate histories need a second change; planes as other worlds covers only separate worlds	time travel to the past	uncertainty; K
+Experience point	Progression	https://en.wikipedia.org/wiki/Experience_point	K	PACK	practice raises skill dials with diminishing returns; the number is a LitRPG pack display	-	none; pack
+Level (video games)	Progression	https://en.wikipedia.org/wiki/Level_(video_games)	K,S	PACK	a pack of thresholds; in-world "System" pack as in cultivation.yaml	-	wonder at growth; K
+Hit points	Progression	https://en.wikipedia.org/wiki/Hit_points	P	COVERED	real body tissues, blood, shock; HP bar is a pack display with no engine role	-	pain; body
+Health regeneration out of combat	Progression	https://en.wikipedia.org/wiki/Health_(game_terminology)	P	COVERED	healing rates with food and rest	-	none; body
+Mana pool	Progression	https://en.wikipedia.org/wiki/Magic_(game_terminology)	M,P	COVERED	a body store charged from M and food, finite	-	exhaustion; body
+Skill tree	Progression	https://en.wikipedia.org/wiki/Skill_tree	K	PACK	prerequisite structure of learned patterns, a pack that gates what an agent can attempt (learned, not engine gated)	-	none
+Class (character class)	Progression	https://en.wikipedia.org/wiki/Character_class	S,K	PACK	social role plus trained skill bundle; culture pack	-	none
+Job system	Progression	https://en.wikipedia.org/wiki/Job_system	S,K	PACK	swappable trained skill bundles as culture roles	-	none
+Alignment (D&D)	Progression	https://en.wikipedia.org/wiki/Alignment_(Dungeons_%26_Dragons)	K,S	PACK	a culture or mind dial summary, never an engine flag	-	moral certainty; S
+Attribute scores	Progression	https://en.wikipedia.org/wiki/Attribute_(role-playing_games)	P,G	COVERED	body strengths from genetics and training, measured physical quantities	-	none
+Saving throw	Progression	https://en.wikipedia.org/wiki/Saving_throw	P	COVERED	resolved by the physical law with the agent's actual body and chance of reaction	-	chance; K
+Critical hit	Progression	https://en.wikipedia.org/wiki/Critical_hit	P	COVERED	a strike hitting a vital structure, from the contact law	-	visceral; body
+Initiative	Progression	https://en.wikipedia.org/wiki/Initiative_(role-playing_games)	P,K	COVERED	reaction time and attention dials; clocks, no turns	-	surprise; K
+Status effect	Progression	https://en.wikipedia.org/wiki/Status_effect	P,M	COVERED	poison, burn, sleep as physiology and M states; each is a real cause	-	dread of effects you cannot see; K
+Poisoned condition	Status effects	https://dungeons.fandom.com/wiki/Poisoned	P	COVERED	toxin physiology	-	slow decline; body
+Paralysis (held)	Status effects	https://dungeons.fandom.com/wiki/Paralyzed	P,M	COVERED	neurotoxin or an M bond holding muscle momentum	-	helplessness; body
+Charm condition	Status effects	https://dungeons.fandom.com/wiki/Charmed	M,K	PACK	a patron pattern driving a host's choices through belief weights	-	loss of agency; K
+Frightened condition	Status effects	https://dungeons.fandom.com/wiki/Frightened	K	COVERED	fear from unpredictability, dials	-	fear; K
+Blinded condition	Status effects	https://dungeons.fandom.com/wiki/Blinded	P,K	COVERED	sense broken	-	disorientation; K
+Deafened condition	Status effects	https://dungeons.fandom.com/wiki/Deafened	P,K	COVERED	sense broken	-	isolation; K
+Stunned condition	Status effects	https://dungeons.fandom.com/wiki/Stunned	P	COVERED	concussion or shock	-	vulnerability; body
+Exhaustion levels	Status effects	https://dungeons.fandom.com/wiki/Exhaustion	P	COVERED	exertion and fatigue physiology (src/voxel/exertion)	-	slow collapse; body
+Invisible condition	Status effects	https://dungeons.fandom.com/wiki/Invisible	M,K	LAW	M bends light around a body; needs a light-bending transduction pattern with a visible shimmer	light redirection transduction	being watched by nothing; K
+Prone and grappled conditions	Status effects	https://dungeons.fandom.com/wiki/Grappled	P	COVERED	body contact law	-	restraint; body
+Incapacitated and unconscious	Status effects	https://dungeons.fandom.com/wiki/Unconscious	P	COVERED	faint and sleep physiology	-	vulnerability; body
+Death saving throws (bleed out)	Status effects	https://en.wikipedia.org/wiki/Hit_points	P	COVERED	blood loss over real time with a chance of recovery from aid	-	ticking clock; body
+Concentration (spell maintenance)	Magic mechanics	https://en.wikipedia.org/wiki/Magic_systems_in_games	M,K	COVERED	a pattern with a drain; mind attention keeps the link; interruption cuts it	-	fragility; K
+Spell slots (Vancian)	Magic mechanics	https://en.wikipedia.org/wiki/Vancian_magic	M,K	PACK	prepared patterns charged to a store; each cast empties one; one pack option for the finite store	-	rationed power; K
+Mana regeneration	Magic mechanics	https://en.wikipedia.org/wiki/Magic_(game_terminology)	M,P	COVERED	body store refills from food and M ambient	-	none
+Cooldowns	Magic mechanics	https://en.wikipedia.org/wiki/Cooldown_(video_games)	M,P	COVERED	real recovery of a transducing pattern or body part; no timer flag	-	none
+Casting time and components	Magic mechanics	https://en.wikipedia.org/wiki/Magic_(game_terminology)	M,K	COVERED	gesture and spoken sequence shape the pattern; materials as charged stores	-	none
+Ritual casting	Magic mechanics	https://en.wikipedia.org/wiki/Magic_systems_in_games	M,S	COVERED	slower pattern assembly with shared sources and lower drain	-	cult dread; S
+Counterspell	Magic mechanics	https://dungeons.fandom.com/wiki/Counterspell	M	COVERED	an opposing pattern absorbing or cancelling the transferred momentum	-	duel tension; K
+Dispel Magic	Magic mechanics	https://dungeons.fandom.com/wiki/Dispel_Magic	M	COVERED	cut or overload a pattern's link or ward	-	vulnerability of enchantments; K
+Detect Magic	Magic mechanics	https://dungeons.fandom.com/wiki/Detect_Magic	M,K	PACK	a sense tuned to M gradients; a trained or genetic sense dial	-	seeing the unseen; K
+Magic Missile	Spells	https://dungeons.fandom.com/wiki/Magic_Missile	M	COVERED	projectile momentum moved at a distance	-	certain hit; K
+Fireball	Spells	https://dungeons.fandom.com/wiki/Fireball	M,P	COVERED	energy moved into a volume: combustion law	-	burn horror; body
+Lightning Bolt	Spells	https://dungeons.fandom.com/wiki/Lightning_Bolt	M,P	COVERED	energy transfer along a line, plasma channel	-	awe; K
+Cure Wounds	Spells	https://dungeons.fandom.com/wiki/Cure_Wounds	M,X	LAW	healing by pattern rebuild of tissue from a body model; needs a tissue rebuild law with matter budget	tissue rebuild with mass budget	relief; K
+Raise Dead	Spells	https://dungeons.fandom.com/wiki/Raise_Dead	X,M	COVERED	rebuild of a body whose parts are together	-	taboo; S
+Resurrection (spell)	Spells	https://dungeons.fandom.com/wiki/Resurrection	X,M	SECOND	returning a long decayed body requires creation	true creation	taboo; S
+Wish	Spells	https://dungeons.fandom.com/wiki/Wish	M	SECOND	true omnipotence	omnipotence	monkey paw logic; K
+Teleport	Spells	https://dungeons.fandom.com/wiki/Teleport	X	COVERED	wormhole doorway or pattern copy and destroy	-	dread of copy; K
+Dimension Door	Spells	https://dungeons.fandom.com/wiki/Dimension_Door	X	COVERED	short wormhole doorway	-	surprise; K
+Gate (summon)	Spells	https://dungeons.fandom.com/wiki/Gate	X,M	COVERED	doorway to a plane	-	outsiders arriving; K
+Plane Shift	Spells	https://dungeons.fandom.com/wiki/Plane_Shift	X	COVERED	planes as other worlds	-	strangeness; K
+Fly	Spells	https://dungeons.fandom.com/wiki/Fly	M	COVERED	momentum applied to the body against gravity with drain	-	vertigo; body
+Polymorph	Spells	https://dungeons.fandom.com/wiki/Polymorph	X,G	LAW	pattern rebuild of body into another form with mass budget; mind carryover issue	body rebuild with mass budget	loss of self; K
+Shapechange	Spells	https://dungeons.fandom.com/wiki/Shapechange	X,G	LAW	same body rebuild law	body rebuild with mass budget	loss of self; K
+Disguise Self	Spells	https://dungeons.fandom.com/wiki/Disguise_Self	M,K	PACK	light pattern illusion or rough surface rebuild; perceiver sense is noisy	-	trust broken; S
+Illusion (Major Image)	Spells	https://dungeons.fandom.com/wiki/Major_Image	M,K	COVERED	M shaped light and sound, believed by senses until tested	-	doubt of senses; K
+Phantasmal Killer	Spells	https://dungeons.fandom.com/wiki/Phantasmal_Killer	K,P	COVERED	fear from belief induces real stress death via physiology	-	belief kills; K
+Charm Person	Spells	https://dungeons.fandom.com/wiki/Charm_Person	M,K	PACK	see charm condition	-	trust betrayed; S
+Dominate Person	Spells	https://dungeons.fandom.com/wiki/Dominate_Person	M,K	PACK	patron drives a host through a link	-	agency theft; K
+Sleep (spell)	Spells	https://dungeons.fandom.com/wiki/Sleep	M,P	COVERED	M damps nervous activity of targets (drain by body count)	-	vulnerability; body
+Hold Person	Spells	https://dungeons.fandom.com/wiki/Hold_Person	M	COVERED	M bond locking muscle momentum	-	helplessness; body
+Web	Spells	https://dungeons.fandom.com/wiki/Web	M,P	PACK	a material conjured (X) by transformation from carried matter	-	entrapment; body
+Fog Cloud	Spells	https://dungeons.fandom.com/wiki/Fog_Cloud	M,P	COVERED	water vapour from conversion of stored matter	-	blindness; K
+Darkness	Spells	https://dungeons.fandom.com/wiki/Darkness	M	LAW	absorbing light needs a light absorbing transduction	light redirection transduction	blindness; K
+Light	Spells	https://dungeons.fandom.com/wiki/Light	M	COVERED	energy into photons from a store	-	none
+Shield	Spells	https://dungeons.fandom.com/wiki/Shield_(spell)	M	COVERED	a ward pattern absorbing momentum	-	safety; K
+Mage Armor	Spells	https://dungeons.fandom.com/wiki/Mage_Armor	M	COVERED	a worn ward	-	safety; K
+Mirror Image	Spells	https://dungeons.fandom.com/wiki/Mirror_Image	M,K	PACK	decoys by M light patterns	-	confusion; K
+Misty Step	Spells	https://dungeons.fandom.com/wiki/Misty_Step	X	COVERED	short doorway	-	none
+Thunderwave	Spells	https://dungeons.fandom.com/wiki/Thunderwave	M,P	COVERED	momentum burst to air	-	startle; K
+Burning Hands	Spells	https://dungeons.fandom.com/wiki/Burning_Hands	M,P	COVERED	energy to a cone; combustion	-	burn; body
+Ray of Frost	Spells	https://dungeons.fandom.com/wiki/Ray_of_Frost	M,P	COVERED	energy removed from a target by transduction; heat sink	-	cold; body
+Cone of Cold	Spells	https://dungeons.fandom.com/wiki/Cone_of_Cold	M,P	COVERED	heat extraction at volume	-	freezing; body
+Acid Arrow	Spells	https://dungeons.fandom.com/wiki/Melf%27s_Acid_Arrow	M,P	PACK	conjured acid by transformation of matter	-	dissolving flesh; body
+Disintegrate	Spells	https://dungeons.fandom.com/wiki/Disintegrate	M,X	LAW	conversion of mass into energy is not allowed by conservation of mass unless tied to a bound energy accounting; as sublimation it is rough	mass-energy conversion	erased body; K
+Finger of Death	Spells	https://dungeons.fandom.com/wiki/Finger_of_Death	M,K	LAW	a lethal energy burst; zombie raising by a patron driving the corpse	see mechanism (u)	death on a word; K
+Power Word Kill	Spells	https://dungeons.fandom.com/wiki/Power_Word_Kill	M,K	SECOND	killing on a word without any transferred energy is causality without a channel	causality without transfer	absolute threat; K
+Feeblemind	Spells	https://dungeons.fandom.com/wiki/Feeblemind	M,K	PACK	M damage to a neural pattern; graded cognitive loss	-	losing mind; K
+Wall of Fire	Spells	https://dungeons.fandom.com/wiki/Wall_of_Fire	M,P	COVERED	sustained energy transfer with drain	-	barrier; K
+Wall of Force	Spells	https://dungeons.fandom.com/wiki/Wall_of_Force	M	COVERED	a rigid ward pattern	-	unbreakable; K
+Wall of Stone	Spells	https://dungeons.fandom.com/wiki/Wall_of_Stone	X	PACK	X conjures matter by transforming carried or nearby material	-	none
+Create Water	Spells	https://dungeons.fandom.com/wiki/Create_Water	X	PACK	transform mass to water from available matter; true creation off	-	none
+Goodberry	Spells	https://dungeons.fandom.com/wiki/Goodberry	X	PACK	rebuild of berry food from a source plant's mass	-	none
+Speak with Dead	Spells	https://dungeons.fandom.com/wiki/Speak_with_Dead	M,K	COVERED	ghost memory patterns read for a time	-	corpse speaks; K
+Animate Dead	Spells	https://dungeons.fandom.com/wiki/Animate_Dead	M,P	COVERED	a patron pattern driving a dead body's muscles	-	walking dead; body
+Simulacrum	Spells	https://dungeons.fandom.com/wiki/Simulacrum	X,M	COVERED	a rough copy with half store	-	doppelganger; K
+Contingency	Spells	https://dungeons.fandom.com/wiki/Contingency	M	COVERED	a store plus trigger pattern	-	surprise; K
+Glyph of Warding	Spells	https://dungeons.fandom.com/wiki/Glyph_of_Warding	M	COVERED	a ward store that discharges on trigger	-	trap; K
+Alarm	Spells	https://dungeons.fandom.com/wiki/Alarm	M,K	COVERED	a ward sensing entry and signalling a link	-	surveillance; K
+Scrying	Spells	https://dungeons.fandom.com/wiki/Scrying	M,K	COVERED	M link to a target body pattern to read sense	-	watched; K
+Mage Hand	Spells	https://dungeons.fandom.com/wiki/Mage_Hand	M	COVERED	a small force pattern	-	none
+Detect Thoughts	Spells	https://dungeons.fandom.com/wiki/Detect_Thoughts	M,K	PACK	reading neural pattern by link; yields perception not truth	-	privacy loss; K
+Message	Spells	https://dungeons.fandom.com/wiki/Message	M	COVERED	a link carrying sound pattern	-	none
+Sending	Spells	https://dungeons.fandom.com/wiki/Sending	M	COVERED	a link carrying a pattern of speech	-	none
+Commune and Contact Other Plane	Spells	https://dungeons.fandom.com/wiki/Contact_Other_Plane	M,X,K	COVERED	asking a resonant outsider, risk of madness	-	madness; K
+Hallow and Magic Circle	Spells	https://dungeons.fandom.com/wiki/Magic_Circle	M	COVERED	a ward against patterns of a type	-	sanctuary; K
+Bless and Bane	Spells	https://dungeons.fandom.com/wiki/Bless	K,S	PACK	a patron boosts and weakens belief weights, small effect	-	none
+Hex and Curse	Spells	https://dungeons.fandom.com/wiki/Bestow_Curse	M	COVERED	curse as a stable pattern with a drain	-	sickening; K
+Heal (mass)	Spells	https://dungeons.fandom.com/wiki/Mass_Heal	X,M	LAW	see cure wounds	tissue rebuild with mass budget	relief; K
+Earthquake	Spells	https://dungeons.fandom.com/wiki/Earthquake	M,P	COVERED	energy delivered into ground, mechanics	-	catastrophe; body
+Meteor Swarm	Spells	https://dungeons.fandom.com/wiki/Meteor_Swarm	M,P	PACK	conjured mass accelerated, big drain	-	awe; K
+Time Stop (spell)	Spells	https://dungeons.fandom.com/wiki/Time_Stop	M	SECOND	see time stop	time control	helplessness; K
+Haste and Slow	Spells	https://dungeons.fandom.com/wiki/Haste	M,P	COVERED	momentum assist to limbs; body cost afterwards	-	exhaustion; body
+Barkskin and Stoneskin	Spells	https://dungeons.fandom.com/wiki/Stoneskin	M,X	COVERED	ward over skin or pattern rebuilt tissue	-	none
+Wild Shape (druid)	Class features	https://dungeons.fandom.com/wiki/Wild_Shape	G,X	LAW	see polymorph	body rebuild with mass budget	loss of self; K
+Rage (barbarian)	Class features	https://dungeons.fandom.com/wiki/Rage	P,K	COVERED	adrenaline physiology and fear dials	-	fury; body
+Sneak attack	Class features	https://dungeons.fandom.com/wiki/Sneak_Attack	P,K	COVERED	attack from unseen: an unperceived target takes more damage via perception	-	ambush; K
+Lay on Hands	Class features	https://dungeons.fandom.com/wiki/Lay_on_Hands	M,X	LAW	see cure wounds	tissue rebuild with mass budget	relief; K
+Turn Undead	Class features	https://dungeons.fandom.com/wiki/Turn_Undead	K,M	COVERED	fear and belief substrate disrupt patron driven bodies	-	holy dread; K
+Divine intervention	Class features	https://dungeons.fandom.com/wiki/Divine_Intervention	M,S	COVERED	a being with a substrate of believers' linked patterns acts through them	-	divine unpredictability; K
+Bardic inspiration	Class features	https://dungeons.fandom.com/wiki/Bardic_Inspiration	K,S	COVERED	morale dials change through speech	-	none
+Familiar (wizard)	Class features	https://dungeons.fandom.com/wiki/Find_Familiar	M,K	COVERED	bond pattern with a small animal mind sharing sense	-	none
+Animal companion	Class features	https://dungeons.fandom.com/wiki/Animal_Companion	K,G	COVERED	trained animal mind bonded by habit	-	none
+Warlock pact (patron)	Class features	https://dungeons.fandom.com/wiki/Warlock	M,K	COVERED	possession as a patron driving a host, bargain with cosmic outsider	-	bargain dread; K
+Monk ki	Class features	https://dungeons.fandom.com/wiki/Ki	M,P	COVERED	body store of M with trained pattern	-	none
+Alchemy and potions	Items	https://dungeons.fandom.com/wiki/Potion	P,X	COVERED	real chemistry plus X rebuild for exotic effects	-	none
+Potion of healing	Items	https://dungeons.fandom.com/wiki/Potion_of_Healing	P,X	LAW	see cure wounds, or real medicine	tissue rebuild with mass budget	relief; K
+Bag of holding	Items	https://dungeons.fandom.com/wiki/Bag_of_Holding	X	LAW	a bag opening on a pocket plane with finite volume; the doorway law covers access, mass conserved there	pocket plane volume with mass conserved (u)	none
+Portable hole	Items	https://dungeons.fandom.com/wiki/Portable_Hole	X	COVERED	a wormhole doorway object	-	none
+Magic sword (+1 weapon)	Items	https://dungeons.fandom.com/wiki/Magic_Weapon	M	COVERED	a pattern store that moves momentum on strike	-	none
+Cursed item	Items	https://dungeons.fandom.com/wiki/Cursed_Item	M	COVERED	curse as a pattern with drain and bond to wearer	-	cannot take it off; body
+Sentient sword (intelligent item)	Items	https://dungeons.fandom.com/wiki/Intelligent_Item	M,K	COVERED	a mind pattern in a store	-	a will in the hilt; K
+Ring of Invisibility	Items	https://dungeons.fandom.com/wiki/Ring_of_Invisibility	M	LAW	see invisible condition	light redirection transduction	none
+Wand of Wonder	Items	https://dungeons.fandom.com/wiki/Wand_of_Wonder	M	PACK	a random transduction pattern drawn from a table	-	chaos; K
+Staff of the Magi	Items	https://dungeons.fandom.com/wiki/Staff_of_the_Magi	M	COVERED	big store plus patterns	-	none
+Deck of Many Things	Items	https://dungeons.fandom.com/wiki/Deck_of_Many_Things	M,X,K	SECOND	some cards wish or erase a person from existence	omnipotence	gambler dread; K
+Mimic chest	Monsters	https://dungeons.fandom.com/wiki/Mimic	P,G,K	COVERED	already covered as mimics	-	false trust; K
+Beholder	Monsters	https://dungeons.fandom.com/wiki/Beholder	G,M	PACK	many sensory transduction pattern eyes	-	gaze dread; K
+Displacer beast	Monsters	https://dungeons.fandom.com/wiki/Displacer_Beast	M,K	PACK	light offsetting transduction makes position misperceived	-	misjudge; K
+Mind flayer	Monsters	https://dungeons.fandom.com/wiki/Mind_Flayer	G,M,K	PACK	brain eating predator with M mind pattern read	-	mind theft; K
+Roper and lurker	Monsters	https://dungeons.fandom.com/wiki/Roper	G,P	PACK	ambush predator mimicking rock	-	ambush; K
+Treasure goblin (loot piñata)	Loot loops	https://tvtropes.org/pmwiki/pmwiki.php/Main/LootPinata	P,S	PACK	a creature that hoards and flees	-	none
+Inventory (video games)	Loot loops	https://en.wikipedia.org/wiki/Inventory_(video_games)	P	COVERED	carried mass, volume and weight limits are physical	-	none
+Weight limit and encumbrance	Loot loops	https://en.wikipedia.org/wiki/Inventory_(video_games)	P	COVERED	carrying capacity from body strength and exertion law	-	none
+Infinite pockets	Loot loops	https://en.wikipedia.org/wiki/Inventory_(video_games)	X	LAW	a body bag with dimensional volume (see bag of holding)	pocket plane volume with mass conserved (u)	uncanny; K
+Item stacking	Loot loops	https://en.wikipedia.org/wiki/Item_(game_terminology)	P	COVERED	physical packing of goods	-	none
+Loot drops	Loot loops	https://en.wikipedia.org/wiki/Loot_(video_games)	P,S	COVERED	bodies carry property; no random tables, what the creature carried	-	greed; K
+Loot box	Loot loops	https://en.wikipedia.org/wiki/Loot_box	-	EXCLUDED	monetization mechanic, meta	-	none
+Random loot tables	Loot loops	https://en.wikipedia.org/wiki/Loot_(video_games)	-	EXCLUDED	engine randomness replaced by what the world holds	-	none
+Rarity tiers (common to legendary)	Loot loops	https://en.wikipedia.org/wiki/Loot_(video_games)	M,S	PACK	rarity as real scarcity of materials and pattern skill; a display label in a pack	-	none
+Legendary weapon with a story	Loot loops	https://tvtropes.org/pmwiki/pmwiki.php/Main/LegendaryWeapon	M,K,S	COVERED	ghost memory plus rumours accrete on an artefact	-	reputation; S
+Crafting	Loot loops	https://en.wikipedia.org/wiki/Crafting_(video_games)	P,X	COVERED	material processing and construction	-	none
+Item identification (unknown potion)	Loot loops	https://tvtropes.org/pmwiki/pmwiki.php/Main/UnidentifiedItem	K	COVERED	false beliefs survive untested; trying it is the test	-	dread of the unknown; K
+Vendor and shop economy	Loot loops	https://en.wikipedia.org/wiki/Virtual_economy	S	COVERED	social trade, prices from scarcity	-	none
+Gold as drop	Loot loops	https://en.wikipedia.org/wiki/Virtual_economy	S	COVERED	coin objects with social value	-	none
+Grinding	Loot loops	https://en.wikipedia.org/wiki/Grinding_(video_games)	K	COVERED	practice raising skill with diminishing returns	-	none
+Compulsion loop	Loops	https://en.wikipedia.org/wiki/Compulsion_loop	K	COVERED	drives and rewards of minds; the player's own loop is meta	-	none
+Core gameplay loop	Loops	https://en.wikipedia.org/wiki/Game_loop	-	EXCLUDED	design term for the player, not a world thing	-	none
+Quest (video games)	Quest structure	https://en.wikipedia.org/wiki/Quest_(video_games)	S,K	COVERED	requests between minds, with beliefs and rewards	-	none
+Quest marker	Quest structure	https://en.wikipedia.org/wiki/Quest_(video_games)	-	EXCLUDED	UI guidance, though a guide NPC covers the idea	-	none
+Fetch quest	Quest structure	https://tvtropes.org/pmwiki/pmwiki.php/Main/FetchQuest	S	COVERED	a mind requests an object; trust and risk apply	-	none
+Escort mission	Quest structure	https://tvtropes.org/pmwiki/pmwiki.php/Main/EscortMission	P,K	COVERED	a vulnerable agent with own choices follows the party	-	anxiety; K
+Timed quest (countdown)	Quest structure	https://tvtropes.org/pmwiki/pmwiki.php/Main/TimedMission	P	COVERED	real clocks: fire spreads, poison acts, ritual completes	-	pressure; K
+Branching quest outcomes	Quest structure	https://en.wikipedia.org/wiki/Nonlinear_gameplay	K,S	COVERED	world state changes from choices; no authored tree	-	none
+Dialogue tree	Quest structure	https://en.wikipedia.org/wiki/Dialogue_tree	K	COVERED	free speech with menu input; minds parse	-	none
+Persuasion and intimidation checks	Quest structure	https://tvtropes.org/pmwiki/pmwiki.php/Main/SpeechSkill	K,S	COVERED	belief and fear dials respond to what is said and the body seen	-	none
+Boss (video games)	Encounters	https://en.wikipedia.org/wiki/Boss_(video_games)	P,G	COVERED	a big creature or a leader; no special engine flag	-	dread; K
+Boss phases	Encounters	https://tvtropes.org/pmwiki/pmwiki.php/Main/BossBattle	P,K	COVERED	changes in behaviour from injury and resources	-	escalation; K
+Mini-boss	Encounters	https://tvtropes.org/pmwiki/pmwiki.php/Main/MiniBoss	P	COVERED	a tough creature	-	none
+Raid (video games)	Encounters	https://en.wikipedia.org/wiki/Raid_(video_games)	S,P	COVERED	party and large foe, plain interaction	-	none
+Random encounter	Encounters	https://en.wikipedia.org/wiki/Random_encounter	P,S	COVERED	travelling meets wanderers by population law not dice	-	ambush; K
+Mob (video games)	Encounters	https://en.wikipedia.org/wiki/Mob_(video_games)	P	COVERED	ordinary creatures	-	none
+Wave defense	Encounters	https://tvtropes.org/pmwiki/pmwiki.php/Main/TowerDefense	P,S	COVERED	attackers arriving over time by mind decision	-	siege; K
+Boss with weak spot	Encounters	https://tvtropes.org/pmwiki/pmwiki.php/Main/WeakSpot	P	COVERED	vulnerable body structure	-	none
+Invulnerable until phase	Encounters	https://tvtropes.org/pmwiki/pmwiki.php/Main/InvulnerabilityPhase	M	PACK	a ward store that must be drained first	-	none
+Fog of war	World model	https://en.wikipedia.org/wiki/Fog_of_war	K	COVERED	knowledge of unseen areas is beliefs, can be wrong	-	dread of unknown; K
+Mini-map	World model	https://en.wikipedia.org/wiki/Mini-map	K	COVERED	a map is an object a mind carries, with possible errors	-	none
+Heads-up display	World model	https://en.wikipedia.org/wiki/HUD_(video_games)	K	COVERED	the narrator shows only what a character perceives; interoception is the HUD analog	-	none
+Line of sight	World model	https://en.wikipedia.org/wiki/Line_of_sight_(video_games)	P,K	COVERED	raycast through voxels with light	-	being seen; K
+Stealth mechanic	World model	https://tvtropes.org/pmwiki/pmwiki.php/Main/StealthBasedGame	P,K	COVERED	sound and light detection by noisy senses	-	being hunted; K
+Aggro and threat table	World model	https://en.wikipedia.org/wiki/Hate_(video_games)	K	COVERED	agents choose targets by drives and fear, not a number	-	none
+Pathing and NPC schedule	World model	https://en.wikipedia.org/wiki/Non-player_character	K	COVERED	minds with goals and habits	-	none
+Invisible wall	World model	https://en.wikipedia.org/wiki/Invisible_wall	-	EXCLUDED	engine artefact; the voxel world has real walls	-	none
+Fast travel	World model	https://en.wikipedia.org/wiki/Fast_travel	X	PACK	waypoint doorways or a travel montage skipped with world tick momentum	-	none
+Warp zone	World model	https://en.wikipedia.org/wiki/Warp_(video_games)	X	COVERED	wormhole doorway	-	none
+Open world	World model	https://en.wikipedia.org/wiki/Open_world	-	COVERED	the base design of the voxel world	-	none
+Procedural generation (map seed)	World model	https://en.wikipedia.org/wiki/Map_seed	-	EXCLUDED	a world authoring tool, not in-world	-	none
+Persistent world	World model	https://en.wikipedia.org/wiki/Persistent_world	-	COVERED	the sim continues	-	none
+Day and night cycle	World model	https://tvtropes.org/pmwiki/pmwiki.php/Main/DayNightCycle	P	COVERED	sun and light law	-	none
+Weather system	World model	https://tvtropes.org/pmwiki/pmwiki.php/Main/WeatherSystem	P	COVERED	humidity and wind law	-	none
+Destructible environment	World model	https://en.wikipedia.org/wiki/Destructible_environment	P	COVERED	mechlaw and combustion	-	none
+Environmental hazard (lava, spikes)	World model	https://tvtropes.org/pmwiki/pmwiki.php/Main/HazardLevel	P	COVERED	real heat, fall and puncture	-	none
+Trap (dungeon trap)	World model	https://tvtropes.org/pmwiki/pmwiki.php/Main/TrapMaster	P,M	COVERED	mechanisms with stored energy	-	surprise; body
+Dungeon crawl	Dungeons	https://en.wikipedia.org/wiki/Dungeon_crawl	P,K	COVERED	a place with enclosed spaces and hazards	-	dread of dark; K
+Roguelike	Dungeons	https://en.wikipedia.org/wiki/Roguelike	P,K	COVERED	permadeath and varied runs: base design	-	none
+Roguelite meta-progression	Dungeons	https://en.wikipedia.org/wiki/Roguelike	-	EXCLUDED	unlocks persisting across runs, a meta carry over	-	none
+Procedural dungeon floors	Dungeons	https://en.wikipedia.org/wiki/Roguelike	-	EXCLUDED	generation tool; in world each is a place	-	none
+Endless dungeon (Dungeon of the Endless)	Dungeons	https://en.wikipedia.org/wiki/Dungeon_of_the_Endless	X	PACK	a plane without bound, a pocket plane with a generated layout	-	never leaving; K
+Living dungeon (megadungeon as creature)	Dungeons	https://tvtropes.org/pmwiki/pmwiki.php/Main/LivingDungeon	G,M	PACK	a dungeon that grows rooms like an organism or a patron's body	-	the place hunts; K
+Dungeon core as monster	Dungeons	https://tvtropes.org/pmwiki/pmwiki.php/Main/DungeonCore	M,X	PACK	a store and a plane maker that spawns guardians	-	none
+Mystery dungeon (reshuffles each entry)	Dungeons	https://en.wikipedia.org/wiki/Mystery_Dungeon	X	LAW	a plane regenerates its layout on entry; same snapshot law as loops (u)	plane regeneration	disorientation; K
+Loop Hero style ever-repeating path	Dungeons	https://en.wikipedia.org/wiki/Loop_Hero	X,K	LAW	a loop of the world's route that forgets; plane snapshot law	plane snapshot restore with one carried pattern	memory fraying; K
+Inscryption (cards, trapped by a captor)	Dungeons	https://en.wikipedia.org/wiki/Inscryption	M,K,X	PACK	a trapping mind forcing a game on prisoners in a plane	-	captor dread; K
+Darkest Dungeon (stress and afflictions)	Dungeons	https://en.wikipedia.org/wiki/Darkest_Dungeon	K	COVERED	stress dials and break behaviours as drives	-	cosmic dread; K
+Sanity meter	Dungeons	https://tvtropes.org/pmwiki/pmwiki.php/Main/SanityMeter	K	COVERED	dials for fear, sleep and belief conflict; no meter, only effects	-	losing grip; K
+Hunger meter	Survival	https://tvtropes.org/pmwiki/pmwiki.php/Main/HungerMeter	P	COVERED	physiology	-	starvation; body
+Thirst and temperature meter	Survival	https://tvtropes.org/pmwiki/pmwiki.php/Main/SurvivalGame	P	COVERED	physiology	-	none
+Survival mode	Survival	https://en.wikipedia.org/wiki/Survival_mode	P	COVERED	physiology and weather	-	none
+Base building (Minecraft style)	Survival	https://tvtropes.org/pmwiki/pmwiki.php/Main/BaseBuilding	P,S	COVERED	construction by agents	-	none
+Tech tree	Systems	https://en.wikipedia.org/wiki/Technology_tree	S	COVERED	culture knowledge; discovered by minds	-	none
+Dwarf Fortress emergent tantrum spiral	Systems	https://en.wikipedia.org/wiki/Dwarf_Fortress	K,S	COVERED	moods and cascading events from minds	-	none
+Emergent gameplay	Systems	https://en.wikipedia.org/wiki/Emergent_gameplay	-	COVERED	the design goal	-	none
+Dynamic difficulty balancing	Systems	https://en.wikipedia.org/wiki/Dynamic_game_difficulty_balancing	-	EXCLUDED	the world must not bend toward the player	-	none
+Rubber banding	Systems	https://tvtropes.org/pmwiki/pmwiki.php/Main/RubberBandAI	-	EXCLUDED	cheating AI, against the principle	-	none
+Level scaling enemies	Systems	https://tvtropes.org/pmwiki/pmwiki.php/Main/LevelScaling	-	EXCLUDED	world does not scale to the player	-	none
+Game balance	Systems	https://en.wikipedia.org/wiki/Game_balance	-	EXCLUDED	design process	-	none
+Cheat codes and exploits	Systems	https://en.wikipedia.org/wiki/Video_game_exploit	P,K	COVERED	any physics exploit is a real law interplay, wanted	-	none
+Glitch and clipping	Systems	https://en.wikipedia.org/wiki/Video_game_exploit	-	EXCLUDED	engine bug	-	none
+God mode	Systems	https://tvtropes.org/pmwiki/pmwiki.php/Main/GodMode	-	EXCLUDED	tool flag; in-world only as omnipotence	-	none
+Debug console	Systems	https://tvtropes.org/pmwiki/pmwiki.php/Main/DebugMode	-	EXCLUDED	dev tool	-	none
+Achievement (video games)	Meta	https://en.wikipedia.org/wiki/Achievement_(video_games)	-	EXCLUDED	meta	-	none
+Battle pass and microtransaction	Meta	https://en.wikipedia.org/wiki/Battle_pass	-	EXCLUDED	commerce	-	none
+Downloadable content	Meta	https://en.wikipedia.org/wiki/Downloadable_content	-	PACK	a pack download is the real analog	-	none
+Skin (video games)	Meta	https://en.wikipedia.org/wiki/Skin_(video_games)	-	EXCLUDED	cosmetic	-	none
+Transmog	Meta	https://en.wikipedia.org/wiki/Transmog	-	EXCLUDED	cosmetic	-	none
+Matchmaking and ranked	Meta	https://en.wikipedia.org/wiki/Matchmaking_(video_games)	-	EXCLUDED	multiplayer meta	-	none
+Griefer	Meta	https://en.wikipedia.org/wiki/Griefer	S	COVERED	a malicious mind in a world	-	none
+Speedrunning	Meta	https://en.wikipedia.org/wiki/Speedrunning	-	EXCLUDED	player meta	-	none
+Tool-assisted speedrun	Meta	https://en.wikipedia.org/wiki/Tool-assisted_speedrun	-	EXCLUDED	player meta	-	none
+Tutorial (video games)	Meta	https://en.wikipedia.org/wiki/Tutorial_(video_games)	K	COVERED	a mentor NPC; or the character sheet help	-	none
+Cutscene	Meta	https://en.wikipedia.org/wiki/Cutscene	-	EXCLUDED	narrator writes scenes; a cutscene is narration	-	none
+Silent protagonist	Meta	https://en.wikipedia.org/wiki/Silent_protagonist	-	EXCLUDED	narrative convention	-	none
+Ludonarrative dissonance	Meta	https://en.wikipedia.org/wiki/Ludonarrative_dissonance	-	EXCLUDED	critique term	-	none
+Lag	Meta	https://en.wikipedia.org/wiki/Lag_(video_games)	-	EXCLUDED	engine artefact	-	none
+Quick time event	Meta	https://en.wikipedia.org/wiki/Quick_time_event	P,K	COVERED	reaction under stress is real reaction time	-	none
+Hitbox	Meta	https://en.wikipedia.org/wiki/Hitbox	P	COVERED	real voxel contact	-	none
+Aim assist	Meta	https://en.wikipedia.org/wiki/Aim_assist	-	EXCLUDED	controller aid	-	none
+Cover system	Combat	https://en.wikipedia.org/wiki/Cover_system	P	COVERED	cover by solid voxels	-	none
+Combo (video games)	Combat	https://en.wikipedia.org/wiki/Combo_(video_games)	P,K	COVERED	trained chained actions	-	none
+Dual wield	Combat	https://en.wikipedia.org/wiki/Dual_wield	P	COVERED	two held tools; body	-	none
+Tank (video games)	Combat	https://en.wikipedia.org/wiki/Tank_(video_games)	P,K	COVERED	someone chooses to absorb attacks	-	none
+Healer (video games)	Combat	https://en.wikipedia.org/wiki/Healer_(video_games)	P	COVERED	medicine, or M healing if LAW exists	-	none
+Friendly fire	Combat	https://tvtropes.org/pmwiki/pmwiki.php/Main/FriendlyFire	P	COVERED	area attacks hit anyone	-	none
+Fatality finishing move	Combat	https://en.wikipedia.org/wiki/Fatality_(Mortal_Kombat)	P	COVERED	violence by physics, gore as body horror	-	visceral; body
+Hack and slash	Combat	https://en.wikipedia.org/wiki/Hack_and_slash	P	COVERED	melee	-	none
+Probability of kill	Combat	https://en.wikipedia.org/wiki/Probability_of_kill	P	COVERED	emerges from physics	-	none
+Player versus player	Combat	https://en.wikipedia.org/wiki/Player_versus_player	S	COVERED	minds fight	-	none
+Hit-stop and screen shake	Combat	https://en.wikipedia.org/wiki/Game_feel	-	EXCLUDED	presentation	-	none
+Overpowered build	Combat	https://en.wikipedia.org/wiki/Optimization_(role-playing_games)	-	COVERED	min-max by player; the world answers	-	none
+Party (role-playing games)	Social	https://en.wikipedia.org/wiki/Party_(role-playing_games)	S	COVERED	a group of linked minds	-	none
+Non-player character	Social	https://en.wikipedia.org/wiki/Non-player_character	K	COVERED	all minds equal	-	none
+Companion approval	Social	https://tvtropes.org/pmwiki/pmwiki.php/Main/AffectionMeter	K,S	COVERED	belief and affect dials toward the player	-	none
+Romance options	Social	https://tvtropes.org/pmwiki/pmwiki.php/Main/RomanceSidequest	K	COVERED	attraction and partner choice	-	none
+Reputation system	Social	https://tvtropes.org/pmwiki/pmwiki.php/Main/ReputationSystem	S,K	COVERED	rumour graph	-	none
+Faction standing	Social	https://tvtropes.org/pmwiki/pmwiki.php/Main/FactionSystem	S	COVERED	institution pack	-	none
+Karma and morality meter	Social	https://tvtropes.org/pmwiki/pmwiki.php/Main/KarmaMeter	S	COVERED	only others' beliefs, no engine flag	-	none
+Wanted level and bounty	Social	https://tvtropes.org/pmwiki/pmwiki.php/Main/WantedLevel	S	COVERED	law enforcement minds and rumours	-	none
+Shared guild or clan	Social	https://en.wikipedia.org/wiki/Clan_(video_games)	S	COVERED	institution	-	none
+Lootable corpses and pickpocket	Social	https://tvtropes.org/pmwiki/pmwiki.php/Main/PickpocketTheMark	P,S	COVERED	theft by hands	-	none
+Pacifist run	Play style	https://tvtropes.org/pmwiki/pmwiki.php/Main/PacifistRun	K	COVERED	choices	-	none
+System (LitRPG interface)	LitRPG	https://tvtropes.org/pmwiki/pmwiki.php/Main/LitRPG	M,S	PACK	a cosmic mind or patron overlays stats on perception; in-world reaction pack as cultivation.yaml	-	inhuman judge; K
+Skill acquisition prompts	LitRPG	https://tvtropes.org/pmwiki/pmwiki.php/Main/LitRPG	K,M	PACK	a patron grants or notes learned skills; text from a system pack	-	none
+Class change quests	LitRPG	https://tvtropes.org/pmwiki/pmwiki.php/Main/LitRPG	S,M	PACK	pack	-	none
+Dungeon Crawler Carl style show	LitRPG	https://tvtropes.org/pmwiki/pmwiki.php/Main/LitRPG	S,M	PACK	an audience institution with sponsors and a game maker	-	spectacle; S
+Isekai (summoned player)	LitRPG	https://en.wikipedia.org/wiki/Isekai	X	COVERED	a person through a doorway from another plane	-	culture shock; S
+Reincarnation with memory	LitRPG	https://tvtropes.org/pmwiki/pmwiki.php/Main/ReincarnationIntoAnotherWorld	X,M	LAW	a mind pattern moved to a new body via link; copy law of mind into a new brain (u)	mind pattern transfer into a new body	identity loss; K
+Gamer body (reset sleep heal)	LitRPG	https://tvtropes.org/pmwiki/pmwiki.php/Main/GamerBody	G,M	PACK	a body law pack with fast recovery on sleep	-	none
+Inventory screen magic (pocket)	LitRPG	https://tvtropes.org/pmwiki/pmwiki.php/Main/LitRPG	X	LAW	see infinite pockets	pocket plane volume with mass conserved (u)	none
+Tutorial island	Meta	https://tvtropes.org/pmwiki/pmwiki.php/Main/TutorialLevel	-	EXCLUDED	design device	-	none
+NPC with exclamation mark	Meta	https://tvtropes.org/pmwiki/pmwiki.php/Main/ExclamationMarkQuestIndicator	-	EXCLUDED	UI	-	none
+Video game text parser adventure	Meta	https://en.wikipedia.org/wiki/Text-based_game	K	COVERED	text input mapped to menu	-	none
+Choose your own adventure	Meta	https://tvtropes.org/pmwiki/pmwiki.php/Main/ChooseYourOwnAdventure	-	EXCLUDED	authored branching	-	none
+Gamemaster (DM)	Meta	https://en.wikipedia.org/wiki/Gamemaster	-	COVERED	the narrator and the world, the project's whole point	-	none
+Metaplot	Meta	https://en.wikipedia.org/wiki/Metaplot	-	EXCLUDED	authored lore	-	none
+Rules lawyer	Meta	https://en.wikipedia.org/wiki/Rules_lawyer	-	EXCLUDED	table behaviour	-	none
+Dice pool and dice notation	Meta	https://en.wikipedia.org/wiki/Dice_notation	-	EXCLUDED	replaced by physical simulation	-	none
+Solo RPG oracle tables	Meta	https://en.wikipedia.org/wiki/Solo_role-playing_game	-	COVERED	the sim is the oracle	-	none
+Dwarf death-spiral fear (Fear and Hunger)	Dungeons	https://en.wikipedia.org/wiki/Fear_%26_Hunger	P,K	COVERED	dismemberment and hunger physiology, grim	-	body horror; body
+Cult of the Lamb (cult leader sim)	Dungeons	https://en.wikipedia.org/wiki/Cult_of_the_Lamb	S,M	PACK	beings with substrates of believers' linked patterns	-	faith economy; S
+Lobotomy Corporation (contain entities)	Dungeons	https://en.wikipedia.org/wiki/Lobotomy_Corporation	S,M	PACK	containment staff vs entity patterns; same as SCP lane	-	breach; K
+Hades (death return to the hub)	Death and persistence	https://en.wikipedia.org/wiki/Hades_(video_game)	X	PACK	the body reforms at a bound place after each death (respawn point) with memory held by the hub	-	none
+Dark Souls bonfire and hollowing	Death and persistence	https://en.wikipedia.org/wiki/Dark_Souls	M,K	PACK	a binding store, with hollowing as a drain of mind pattern	-	slow loss of self; K
+Undead curse (cannot die, mind decays)	Death and persistence	https://tvtropes.org/pmwiki/pmwiki.php/Main/CursedWithAwesome	M,K	PACK	a curse pattern keeping bodies alive while minds drain	-	losing self; K
+Ghost of a former player	Death and persistence	https://en.wikipedia.org/wiki/Dark_Souls	M,K	COVERED	ghost memory patterns	-	none
+Drop-in co-op summon	Meta	https://en.wikipedia.org/wiki/Co-op_mode	X	PACK	a doorway summoning an ally from another plane	-	none
+Souls invasion (hostile summon)	Meta	https://en.wikipedia.org/wiki/Dark_Souls	X,M	PACK	a hostile pattern arriving through a link	-	being hunted; K
+Prophecy and chosen one	Quest structure	https://tvtropes.org/pmwiki/pmwiki.php/Main/TheChosenOne	K,S	COVERED	rumours and belief make a person marked; no fate flag	-	burden; K
+Fate and destiny (no free will)	Quest structure	https://tvtropes.org/pmwiki/pmwiki.php/Main/Fate	-	SECOND	a binding future needs causality from the future	time travel to the past	inevitability; K
+Prophecy (true foresight)	Quest structure	https://tvtropes.org/pmwiki/pmwiki.php/Main/Prophecy	K	SECOND	true foresight needs info from the future; predictions by good models stay COVERED	time travel to the past	dread; K

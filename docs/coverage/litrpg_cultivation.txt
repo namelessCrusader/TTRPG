@@ -1,0 +1,40 @@
+LANE: litrpg_cultivation (completeness round)  337 entries, 8 columns, new vs merged.tsv (10 name-duplicates dropped)
+
+VERDICT COUNTS
+PACK 196 (58%) | COVERED 109 (32%) | LAW 23 (7%) | EXCLUDED 6 (2%) | SECOND 3 (1%)
+=> about 90% of this lane is expressible today or with data only. That matches the owner's earlier proof that a "system" is a data reaction-pack (cultivation.yaml).
+
+FAMILIES
+DCC (142 rows): system mechanics, interface, status effects, spells, items, crafting, mobs, bosses, races, deities, achievements, skills, benefits, quests, events, classes, locations, tattoos, pets.
+Beware of Chicken (25): spirit animals, sects, organisations, places, events, demons.
+Cultivation concepts, realms, institutions (59): qi, dantian, meridians, realms, tribulation, formations, pills, talismans, sword intent, soul search, contracts, sects, face, demonic and dual cultivation.
+Wuxia (16), Isekai (19), LitRPG mechanics (27), tabletop RPG mechanics (15), source works (23), Taoist and folklore practice (10).
+
+WHAT WAS CRAWLED, AND WHAT WAS SAMPLED (no silent caps)
+- Wikipedia MediaWiki API: rate-limited after about 8 calls (HTTP 429). Fell back to article HTML for Xianxia, Wuxia, Isekai and LitRPG (depth 1: followed the linked concept titles) and category HTML for Category:Wuxia, Isekai, Xianxia_novels, Chinese_fantasy_novels. Category:Xianxia, Category:LitRPG and Category:Fantasy_role-playing_game_mechanics do not exist (404) or came back empty.
+- DCC fandom API worked (about 60 categories listed, 49 category member lists cached, about 2000 titles). Category sizes: Achievements 161, Mob Types 120, Races 117, Skills 105, Spells 98, Loot Boxes 75, Status Effects 68, Deities 56, Potions 42, Quests 37, and so on. Sampled: 142 rows. Loot Boxes (75), Achievements (155 of 161), Races (111 of 117), Dungeon Floors, Syndicate Races, Do Not Port, Images and NPC lists are covered by family-level representatives only, NOT row by row.
+- Beware of Chicken fandom API worked; the wiki is small (about 25 content pages in mechanics-relevant categories); nearly all were taken.
+- BLOCKED (HTTP 403): tvtropes.org, novelupdates.com, cultivationnovel.fandom.com (the API returned empty or a challenge page). So the NovelUpdates tag BFS and the TV Tropes LitRPG index were NOT done. Cultivation and wuxia concept rows come from the Wikipedia link lists plus my own knowledge (k/u), not from those wikis.
+- Raw cache: /home/nisargparikh/.cache/mark1-build/coverage/litrpg_cultivation/raw/ (JSON category lists, Wikipedia HTML). Only names, links and my own one-line summaries are stored in the TSV.
+- Mechanisms were classified from titles and family, not from article text (u); every mechanism is tagged (u).
+- If the owner wants the missing tags, a second pass needs a browser-like fetch (or the owner's manual export) for TV Tropes, NovelUpdates and the Cultivation Novel wiki.
+
+TOP MISSING LAWS (rows each; clusters approximate)
+1. Bounded death-reversal: a stored body pattern is restored after death at a booked cost (respawn, resurrection, revive, nine lives, Lazarus, immortalized)  ~6, +3 more already in merged. Probably a bounded use of the X rewind; needs a rule for how the snapshot is made and kept.
+2. M-driven tissue repair with a rate cap (heal spells, potions, regeneration, limb regrowth)  ~6. Healing is the most common effect in LitRPG and it is not listed as a magic effect in the design: it needs energy booked from M and a biology limit on how fast tissue can grow.
+3. Acquired-sense channel that reports derived aggregate scores (HUD, status window, appraisal)  ~4. The numbers must be defined as measurable proxies, else the character perceives a number the world does not have (this is a K and S design question as much as a law).
+4. Brain-state decode (soul search, detect thoughts, walk in their shoes), percept-as-payload (fear spell, reaper gaze, mind horror, charm), luck bias (karma, roll the dice): existing laws in merged, re-confirmed here.
+5. Singles: contact decoupling (phase through walls), pattern rebuild of a body to rigid or small form with the mass accounted (petrify, shrink), an oath-enforcement outcome rule (Heavenly Dao oath; needs a judge or a bond), a place with no adjacency (DCC "Nothing"), a rule-inverting effect (opposite-day ring), in-world computation substrate (VRMMORPG).
+SECOND: Heavenly Dao as an abstract judge, rebirth/regression to the past, wish spell (3 new rows; time loop is in merged).
+
+WHERE THE FEAR AND EXCITEMENT COME FROM
+- Excitement here is mostly growth and mastery (K: anticipation of the next threshold; the learning history is the engine), not dread.
+- The fear specific to this lane is S and K together: an authority that grades you, an audience that watches you, patrons with their own agenda, a contract you did not choose, and killing that pays. These come from institutions and information asymmetry, not from physics.
+- Body fear (sepsis, poison, dismemberment, parasites, gu worms) is plain P and G and is already covered.
+
+SURPRISES
+- The System itself (DCC's AI, the Solo Leveling gate System, the Scum Villain System) is not a law. It is an entity with sensors, an effect reach and a ledger, i.e. a pack built from existing layers: a machine mind (P,K) with patron-style bonds (M) and an audience economy (S). The expensive parts are the HUD and the death-reversal, not the System.
+- Levels, classes, skills and achievements all reduce to a reaction-pack on a logged event stream (trigger: kill, location, condition; effect: dial change or verb unlock). That fits the plan "LM output always logged as typed deltas": achievements are cheap if the event log is complete. The more important design question is that "killing pays" is an incentive the pack author sets, and the learned minds will respond to it (S).
+- Cultivation realms are threshold jumps in a store dial; tribulation is a threshold discharge. Both are instabilities already in the M design, so xianxia needs data, not code.
+- Of the 3 SECOND rows, two (rebirth, regression) are one thing: information to the past. A bounded alternative is "memory is kept across a respawn" with no change to the world, which is law 1 above.
+- Isekai and "trapped in a game" are doorways plus a rule-authority pack; the isekai trope "truck-kun" is narrative only (EXCLUDED), as are alignment and saving throws (labels and dice).

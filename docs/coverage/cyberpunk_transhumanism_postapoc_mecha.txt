@@ -1,0 +1,39 @@
+LANE: cyberpunk_transhumanism_postapoc_mecha (completeness round)
+Rows: 452 new entries (the cap of about 300 was knowingly exceeded because the owner asked for the search to be as exhaustive as possible). 16 candidates were dropped as already in merged.tsv. Every source_url was checked against the wiki API (title exists); 2 Warhammer links were repointed to the nearest existing page.
+
+COUNTS BY VERDICT
+COVERED 164 (36%) | PACK 240 (53%) | LAW 44 (10%) | SECOND 2 (0.4%) | EXCLUDED 2 (0.4%)
+=> 89% is covered or data-only, close to the merged corpus (85%). Layers used: P 195, K 163, M 152, G 140, S 121, X 16 (entries may use several).
+
+FAMILIES (rows)
+Cyberpunk 62; Mecha 33; Post-apocalypse 31; Dystopia 27; Shadowrun magic 26; Weird West 25; STALKER anomalies 23; Transhumanism 20; STALKER artifacts 19; Fallout creatures 18; Warhammer 40k xenos 18; STALKER mutants 15; Fallout systems 15; Kaiju 15; Fallout perks 13; Metro mutants 13; Warhammer chaos 13; Warhammer technology 11; Shadowrun critters 10; Warhammer psykers 8; Fallout cryptids 7; Metro systems 7; Shadowrun cyberware 7; Zone literature 6; Metro phenomena 4; cyberpunk subgenres 4; Shadowrun matrix 2.
+
+WHAT WAS CRAWLED AND WHAT WAS SAMPLED (no silent caps)
+- Wikipedia API (category members, depth 0 for all seeds, depth 1 partly): Cyberpunk, Transhumanism, Fictional cyborgs (141 pages), Post-apocalyptic fiction (37 + 20 subcategories), Post-apocalyptic video games (578 pages; I read every 5th title only), Dystopian fiction, Mecha (+12 subcategories), Mecha anime and manga (246 pages; read every 2nd), Fictional mecha, Fictional androids (71), Fictional AIs (52), Biopunk, Cyberpunk themes (30 + 17 subcategories). The depth-1 pass was cut short by Wikimedia 429 rate limits (the IP is shared with other lanes) and stopped partway through the subcategory list. Raw category JSON is cached under ~/.cache/mark1-build/coverage/cyberpunk_transhumanism_postapoc_mecha/raw/.
+- Categories that came back empty or do not exist under the names in the brief: Category:Cyborgs_in_fiction, Category:Kaiju, Category:Weird_West, Category:Western_horror, Category:Mind_uploading_in_fiction (a page, not a category). Weird West and kaiju rows therefore come from my own knowledge plus the Mecha and Fictional mecha lists (u).
+- Fandom APIs (fandom.com /api.php, about 1 request per second): stalker (anomaly, artifact and mutant lists for SoC, CS, CoP, Heart of Chornobyl: taken in full, then grouped), fallout (Creatures, Perks, Cryptids, Aliens, Super mutants, Ghouls, Insects: sampled about 1 in 3 perks and the main creature families, not every per-game variant), shadowrun (Critters 171 pages, Magic 66, Cyberware 11, Spirits 24, Artifacts 18: critters that already appear in the folklore and bestiary lanes were skipped, only Shadowrun-specific ones kept, some marked (u)), warhammer40k (Chaos 1538 pages, Daemons 249, Races 150, Daemon Engines 46: representatives per family only, no named characters), metrovideogame.fandom.com (Mutants 40, Factions 43; the "metro.fandom.com" host in the brief is a transit wiki, so I used the Metro 2033 wiki instead).
+- TV Tropes: blocked (HTTP 403 to curl); not used. The cyberpunk tropes were taken from Wikipedia themes and my own knowledge (u).
+- Not captured: named characters (skipped on purpose; they are people, not mechanisms), per-game duplicates, Fallout 76 and Shelter variants, most Warhammer vehicles and weapons, most mecha anime titles (only about 20 archetypes picked from 246).
+- Mechanisms were classified from titles and general knowledge, not article text (u). Rows I was unsure about carry (u) in the mechanism.
+
+TOP MISSING LAWS (rows each, for LAW and SECOND)
+ 1. In-world computation substrate that can host entities (the net, ICE, AI hosts, metaverse, singularity): 11
+ 2. Pattern infection / self-replication with conserved mass (FEV, grey goo, nanopunk, Faro, Destoroyah, Smith, Tetsuo): 5
+ 3. Brain-state encode/decode over an M link (braindance, simstim, skill chips, Strange Days, Instrumentality): 5
+ 4. Nuclear energy release and radiation dose (Zone radiation, Fallout, Godzilla, arc reactor): 4
+ 5. Machine-state interface from M to circuits (cyberbrain, datajack, technomancer, black ICE): 4
+ 6. Copy identity rule for minds (Soulkiller, Relic engram, Altered Carbon, digital immortality): 4
+ 7. New in this lane: a capacity ledger shared between body integrity and M channel (Essence, cyberpsychosis, cybermancy): 3
+ 8. Percept-as-payload (Snow Crash, Bird Box, Videodrome): 3
+ 9. Memory-record edit/erase (ghost-hacking, Total Recall): 2
+ 10. Singles: relativistic light-time (Gunbuster), sensor EM/IR detection (Minovsky), astronomical scale (Kardashev), reversible death window (cryonics).
+SECOND: Minority Report precogs (information from the future) and the Wish Granter (true wish execution).
+EXCLUDED: Red pill (metaphor) and Mysterious Stranger (random narrative helper).
+
+WHAT IS SURPRISING
+- The big three of this lane map almost one to one onto the M design: the STALKER Zone is "a region with elevated M that grows patterned stores, anomalies and mutants". Anomalies are stationary M patterns with a trigger and a drain, artifacts are charged materials, psi mutants (Burer, Poltergeist, Controller) are M users or patron-host pairs. The whole Zone is almost pure PACK data once a region-level M concentration exists.
+- Warhammer Chaos is the archetype of "beings with vast substrates of believers' linked patterns": the gods, daemons, possession, Orks (WAAAGH! as belief-powered reality) and the warp-as-plane are all COVERED with no new law. Daemon engines are patron-host in a machine.
+- Cyberpunk needs one new idea more than any other: the machine substrate (rule 1) and mind copy/link rules (3 and 6). Without them the net, upload, braindance and AI-god rows (about 40) stay as props. With them cyberpunk's fear (loss of self, hijacked body, the person you left behind) comes from K and the body.
+- Shadowrun's Essence is a clean example of a ledger the engine could own: replacing body costs M capacity. It also explains cyberpsychosis (drift tied to implant count) if drift is a dial.
+- Fear in this lane is mostly the unknown rule (Zone, Metro anomalies: K), the body (mutation, implants), and institutions (dystopia, corporations: S). Post-apocalypse rows lean on scarcity and crowd panic; the crowd-dynamics law from the merged list matters (Left 4 Dead, 28 Days Later, Ohmu stampede).
+- Mecha is the least magical: most is P engineering plus a pilot link. The drift, AT Field, Newtype and spiral energy are all expressible with M links, wards and belief substrates. Only time dilation and a jamming particle need physics laws.

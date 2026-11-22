@@ -1,0 +1,28 @@
+SCIFI LANE SUMMARY (coverage pass, documents only)
+
+Counts by verdict (286 entries): COVERED 186, LAW 49, PACK 27, EXCLUDED 14, SECOND 10.
+(see scifi.tsv; sums checked by script)
+
+Families: FTL and spacetime; Matter and energy tech (incl. weapons, drives, materials, spaceflight); Computers, AI, minds; Aliens and bio; Society and genre settings.
+
+What was crawled (BFS, depth 2): Wikipedia category members via API for Fictional technology, Fictional materials, Fictional computers, Fictional weapons, Fictional metals, Fictional robots, Science fiction themes (264 members, subcategory names noted), Star Trek / Star Wars technology, Technology by work. Atomic Rockets: main index (158 links) plus full downloads of 11 topic pages (FTL, time travel, transmat, psionics, aliens, alien bodies, exotic sidearms, man amplifiers, antigravity, reactionless drives, space war intro); headings used as entries. Raw files cached in ~/.cache/mark1-build/coverage/scifi/raw/.
+NOT reached: TV Tropes (Cloudflare challenge blocks curl, so none of its indexes were read); Wikipedia hit rate limits mid-crawl (several subcategories returned empty: AI, megastructures, fictional species, weapons-by-type, diseases). Gaps are therefore real: depth 3 was not done, and about 100 Fictional robots / AI / spacecraft names were seen but only archetypes taken (one entry per mechanism, not per named character). Source URLs for entries not directly in a fetched listing are inferred Wikipedia titles (u).
+Sampling: entries are per mechanism or trope, not per named work; named works (HAL, Skynet, GLaDOS, SHODAN, AM, Mind, Multivac) were kept as one exemplar of each AI-goal type.
+
+Top missing laws (counts in TSV):
+1. Orbital mechanics and delta-v at planet scale (about 11 entries): spaceflight, bombardment, war, mining.
+2. Planet-scale slow dynamics / coarse world tick (about 8): terraforming, colonies, generation ships, empires, trade.
+3. Copy identity rule for minds (5): upload, transmat, resleeving; a design decision, not only physics.
+4. Nuclear energy release (about 6): fission, fusion, antimatter, torchships, plus radiation dose and tissue damage (2).
+5. Self-replication with mass conservation (4): grey goo, von Neumann probes, berserkers.
+6. Sensor EM/IR detection and light delay law (4): space combat, stealth, comms delay.
+7. Astronomical scale beyond the voxel cell (megastructures, Dyson, black holes).
+8. Alternate biochemistry (2); degenerate matter EOS; directed-energy deposit; computation substrate; population-scale social dynamics (psychohistory); rate-freeze ward for stasis fields.
+SECOND (10): FTL travel/comms/warp, past-directed time travel, time viewer, precognition, flux-capacitor devices, relativistic time dilation (u).
+
+Surprising:
+- Most sci-fi "technology" collapses into M (momentum or energy at a distance) plus X (rebuild): force fields, tractor beams, artificial gravity, reactionless drives, inertial dampening, blasters, lightsabers, teleporters, replicators all fit with M budgets as the limiter.
+- The real gap is not exotic physics but SCALE: space-based sci-fi needs orbits, radiation, sensors and a slow world tick. These are ordinary physics laws, not a second change.
+- Only FTL and past-directed time are true SECOND items; wormhole doorways in X give stargates without FTL signalling.
+- AI, uploads, hive minds and aliens are mostly K layer: fear comes from opaque goals, misperception and the identity question, not from technology.
+- Sci-fi fear sources split: body (disgust, vacuum, radiation), K (unknown intent, paranoia about who is human), and scale (awe, insignificance).

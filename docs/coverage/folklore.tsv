@@ -1,0 +1,412 @@
+entry	family	source_url	layers	verdict	mechanism	law_or_change	fear_source
+Vampire (European)	Undead	https://en.wikipedia.org/wiki/Vampire	M,G,K,S	LAW	dead-host pattern kept running by a patron drive that feeds on blood-borne energy; spreads by bite	pattern infection: a self-replicating pattern spread by contact, bite or blood into hosts	hidden predator among neighbours (K misperception), body predation
+Werewolf	Shapeshifters	https://en.wikipedia.org/wiki/Werewolf	X,G,M,K	COVERED	curse-bond triggers pattern rebuild to wolf form with mass bookkeeping from a body store; mind drifts toward the beast pattern		person you know becomes predator (K), loss of self
+Draugr	Undead	https://en.wikipedia.org/wiki/Draugr	M,P,K	COVERED	grave-bound spirit pattern drives a corpse with a store; heavy strength from M momentum		returning dead neighbour, cold body horror
+Revenant	Undead	https://en.wikipedia.org/wiki/Revenant	M,K	COVERED	ghost memory seats in own corpse; grievance is the drive		the dead return with a grudge (K), disgust
+Ghoul (Arabian)	Undead	https://en.wikipedia.org/wiki/Ghoul	P,K,S	PACK	desert scavenger species or cursed humans eating corpses; shapeshifting lure via X		disgust, the lure that looks like a friend
+Lich	Undead	https://en.wikipedia.org/wiki/Lich	M,X,K	COVERED	mind pattern stored in a phylactery store, body rebuilt from it by X; needs steady energy		the death that fails, patient intelligence
+Zombie (Haitian)	Undead	https://en.wikipedia.org/wiki/Zombie	M,K,S	COVERED	drugged or bound host driven by a patron (bokor); tetrodotoxin-style P cases are pure biology		loss of will in a living body, social taboo
+Skeleton (animated)	Undead	https://en.wikipedia.org/wiki/Skeleton	M	COVERED	bone frame driven by a small pattern with a store; no flesh so no biology (u: url guessed)		uncanny motion without a mind (K)
+Mummy	Undead	https://en.wikipedia.org/wiki/Mummy	M,P,S	COVERED	preserved body plus ward-curse with drain on tomb violators (u: url guessed)		curse that finds you later (K rumour)
+Jiangshi	Undead	https://en.wikipedia.org/wiki/Jiangshi	M,P,S	COVERED	corpse driven by an unquiet pattern, hops from rigor; seeks living qi (energy)		pursuit by something that will not tire
+Banshee	Ghosts and omens	https://en.wikipedia.org/wiki/Banshee	M,K	COVERED	ghost-pattern that wails ahead of a death; omens only if it perceives illness or danger		dread of the foretold death (K)
+Ghost (haunting)	Ghosts and omens	https://en.wikipedia.org/wiki/Ghost	M,K	COVERED	ghost memory loop in a store replaying a scene; interacts through small M pushes		the dead are still here, unprovable (K)
+Poltergeist	Ghosts and omens	https://en.wikipedia.org/wiki/Poltergeist	M,K	COVERED	noisy spirit pushing objects with M momentum, often tied to a distressed living host		objects move on their own (K)
+Wild Hunt	Ghosts and omens	https://en.wikipedia.org/wiki/Wild_Hunt	M,S,K	COVERED	a host of linked spirits riding together; sighting spreads by rumour		seeing it means you are taken
+Will-o'-the-wisp	Ghosts and omens	https://en.wikipedia.org/wiki/Will-o%27-the-wisp	P,M,K	COVERED	marsh gas flame (P) or lure-spirit pattern leading travellers off paths		misperceived light draws you into danger (K)
+Black dog (spectral)	Ghosts and omens	https://en.wikipedia.org/wiki/Black_dog	M,K,S	COVERED	spirit pattern in dog form or a rumour-sustained omen with no body at all (u: url guessed)		omen of death, the unknown
+Shadow person	Ghosts and omens	https://en.wikipedia.org/wiki/Shadow_person	M,K,P	COVERED	sleep-paralysis perception plus rumour; or a real pattern with low light output		peripheral dread, misperception (K)
+Brownie	House spirits	https://en.wikipedia.org/wiki/Brownie	M,S,K	COVERED	small household spirit paid in gifts; leaves if insulted (culture rule) (u: url guessed)		fear is mild, taboo of insult
+Kobold	House spirits	https://en.wikipedia.org/wiki/Kobold	M,S	COVERED	mine/house spirit; ore-poisoning P cause behind the name		mischief that kills in the dark
+Domovoi	House spirits	https://en.wikipedia.org/wiki/Domovoi	M,S	COVERED	house guardian bonded to the family hearth through a link		breaking family ties angers it
+Zashiki-warashi	House spirits	https://en.wikipedia.org/wiki/Zashiki-warashi	M,S	COVERED	child spirit bound to a house; its leaving marks decline		luck (K rumour)
+Leshy	Nature spirits	https://en.wikipedia.org/wiki/Leshy	M,K	COVERED	forest spirit confusing paths by M sense-injection		getting lost is the fear
+Dryad	Nature spirits	https://en.wikipedia.org/wiki/Dryad	M,P,S	COVERED	spirit bonded to a tree via a link, dies with the tree		the tree has a life
+Kodama	Nature spirits	https://en.wikipedia.org/wiki/Kodama	M,S	COVERED	tree spirit whose tree is a taboo to cut (u: url guessed)		curse for felling it
+Green Man	Nature spirits	https://en.wikipedia.org/wiki/Green_Man	M,P	PACK	plant-grown patron over woods; pack data for growth rate		uncanny face in leaves
+Nymph (Greek)	Nature spirits	https://en.wikipedia.org/wiki/Nymph	M,K	COVERED	place-bound spirit with domain; capricious mind		desire and abduction
+Rusalka	Nature spirits	https://en.wikipedia.org/wiki/Rusalka	M,K	COVERED	drowned woman ghost that drowns men		seduction then drowning, body fear
+Vodyanoy	Nature spirits	https://en.wikipedia.org/wiki/Vodyanoy	M,P	COVERED	water spirit linked to a mill pond		the pond takes someone
+Kikimora	House spirits	https://en.wikipedia.org/wiki/Kikimora	M,K	COVERED	nocturnal house spirit that torments sleepers (u: url guessed)		noises and hidden presence
+Baba Yaga	Witches and sorcerers	https://en.wikipedia.org/wiki/Baba_Yaga	M,X,K,S	PACK	powerful hermit mage with hut as large pattern		the helpful horror, unpredictable (K)
+Koschei the Deathless	Soul-external	https://en.wikipedia.org/wiki/Koschei_the_Deathless	M,X	COVERED	life stored in an object (store) hidden in nested containers (u: url guessed)		enemy who cannot be killed until the object is found
+Zmey Gorynych	Dragons	https://en.wikipedia.org/wiki/Zmey_Gorynych	P,M	PACK	large multi-headed fire reptile; body data (u: url guessed)		uncanny body or rule-breaking (K, body)
+Firebird	Birds	https://en.wikipedia.org/wiki/Firebird	P,M	PACK	bird whose feathers are charged stores (u: url guessed)		beauty and theft quest
+Fairy (Aos Sí)	Fae	https://en.wikipedia.org/wiki/Fairy	M,X,K,S	COVERED	beings of another plane with bargains and glamour (MC4 intrinsic pacts)		unpredictable alien rules (K), bargains
+Changeling	Fae	https://en.wikipedia.org/wiki/Changeling	X,M,K,S	COVERED	stock or copy left in place of a taken child; copy is rough X rebuild (u: url guessed)		your child is not your child (K), social horror
+Leprechaun	Fae	https://en.wikipedia.org/wiki/Leprechaun	M,K	COVERED	trickster mage bound by wish-bargain rules		trick
+Selkie	Shapeshifters	https://en.wikipedia.org/wiki/Selkie	X,M,S	COVERED	skin is an item holding the seal form pattern; theft binds her		theft of identity, grief
+Kelpie	Water spirits	https://en.wikipedia.org/wiki/Kelpie	P,M,X	COVERED	water spirit lures riders in horse form, drowns them		the helpful horse that drowns
+Pooka	Fae	https://en.wikipedia.org/wiki/Pooka	X,K	COVERED	shapeshifting mischief spirit (u: url guessed)		trick
+Dullahan	Ghosts and omens	https://en.wikipedia.org/wiki/Dullahan	M,K	COVERED	headless rider spirit, death herald; head is a pattern node		death announced
+Cu Sith	Fae	https://en.wikipedia.org/wiki/Cu_Sith	P,M	PACK	green dog of fae, breed data		hunting hound sound
+Fetch	Ghosts and omens	https://en.wikipedia.org/wiki/Fetch	M,K	COVERED	double-spirit of a person, omen of death (u: url guessed)		seeing your own double
+Troll	Giants and ogres	https://en.wikipedia.org/wiki/Troll	P,M,S	COVERED	stone-skinned giant, petrified by sunlight as a P rule		uncanny body or rule-breaking (K, body)
+Elf (Norse)	Fae	https://en.wikipedia.org/wiki/Elf	G,M	PACK	long-lived humanoid species with strong M affinity		uncanny body or rule-breaking (K, body)
+Dwarf (smith)	Fae	https://en.wikipedia.org/wiki/Dwarf	P,M	PACK	mountain-dwelling smith species, forge law plus charged materials (u: url guessed)		uncanny body or rule-breaking (K, body)
+Tomte/Nisse	House spirits	https://en.wikipedia.org/wiki/Tomte	M,S	COVERED	farm guardian with offering rule		insult taboo
+Huldra	Nature spirits	https://en.wikipedia.org/wiki/Huldra	X,M	COVERED	forest woman with a hidden tail (X rough copy flaw) (u: url guessed)		disguise flaw
+Nøkken	Water spirits	https://en.wikipedia.org/wiki/N%C3%B8kken	M,P	COVERED	music-lure water spirit (u: url guessed)		drowning by enchantment
+Jötunn	Giants and ogres	https://en.wikipedia.org/wiki/J%C3%B6tunn	P,G	PACK	large frost-adapted species; square-cube bookkeeping		uncanny body or rule-breaking (K, body)
+Valkyrie	Gods and psychopomps	https://en.wikipedia.org/wiki/Valkyrie	M,S	COVERED	chooser of the slain, a patron of battle linked to warriors		uncanny body or rule-breaking (K, body)
+Norn	Gods and psychopomps	https://en.wikipedia.org/wiki/Norn	M,K	COVERED	beings who weave fate; fate-weaving = predictive manipulation (u: url guessed)		inevitability (u)
+Fenrir	Beasts	https://en.wikipedia.org/wiki/Fenrir	P,M	PACK	giant wolf bound by a ward-chain (gleipnir)		the bound doom
+Jörmungandr	Sea monsters	https://en.wikipedia.org/wiki/J%C3%B6rmungandr	P	PACK	world-ring serpent scale in a plane		uncanny body or rule-breaking (K, body)
+Kraken	Sea monsters	https://en.wikipedia.org/wiki/Kraken	P	COVERED	giant cephalopod, real deep-sea biology		vast unseen below (K)
+Sea serpent	Sea monsters	https://en.wikipedia.org/wiki/Sea_serpent	P,K	COVERED	undiscovered large animal plus misperception		uncanny body or rule-breaking (K, body)
+Mermaid	Aquatic	https://en.wikipedia.org/wiki/Mermaid	G,P	PACK	aquatic humanoid species with echo-voice		uncanny body or rule-breaking (K, body)
+Siren (Greek)	Aquatic	https://en.wikipedia.org/wiki/Siren	P,M	COVERED	voice with M sense-injection or pure psychoacoustics (u: url guessed)		irresistible voice, loss of will
+Harpy	Hybrids	https://en.wikipedia.org/wiki/Harpy	P,G	PACK	bird-woman species data		uncanny body or rule-breaking (K, body)
+Gorgon/Medusa	Hybrids	https://en.wikipedia.org/wiki/Gorgon	M,P	COVERED	gaze that transmits freezing energy (petrifaction as rapid crystallise or cold)		the look that kills
+Minotaur	Hybrids	https://en.wikipedia.org/wiki/Minotaur	G,P	PACK	bull-man in a labyrinth		trapped maze
+Centaur	Hybrids	https://en.wikipedia.org/wiki/Centaur	G	PACK	horse-human species (physiology problem u)		uncanny body or rule-breaking (K, body)
+Satyr	Hybrids	https://en.wikipedia.org/wiki/Satyr	G	PACK	goat-man		uncanny body or rule-breaking (K, body)
+Cyclops	Giants and ogres	https://en.wikipedia.org/wiki/Cyclops	G,P	PACK	one-eyed giant		uncanny body or rule-breaking (K, body)
+Hydra	Dragons	https://en.wikipedia.org/wiki/Hydra	G,P	COVERED	regrowth by repair pattern store (u: url guessed)		cut it and worse
+Chimera	Hybrids	https://en.wikipedia.org/wiki/Chimera	G	PACK	composite body (u: url guessed)		uncanny body or rule-breaking (K, body)
+Sphinx	Riddlers	https://en.wikipedia.org/wiki/Sphinx	K,S	COVERED	riddle-asking creature kills non-answers		uncanny body or rule-breaking (K, body)
+Cerberus	Beasts	https://en.wikipedia.org/wiki/Cerberus	P	PACK	three-headed dog		uncanny body or rule-breaking (K, body)
+Pegasus	Beasts	https://en.wikipedia.org/wiki/Pegasus	P,M	COVERED	winged horse needs M lift (wings can't carry mass)		uncanny body or rule-breaking (K, body)
+Hippogriff	Hybrids	https://en.wikipedia.org/wiki/Hippogriff	P,M	COVERED	as Pegasus		uncanny body or rule-breaking (K, body)
+Griffin	Hybrids	https://en.wikipedia.org/wiki/Griffin	P,M	COVERED	lion-eagle hybrid with M lift		uncanny body or rule-breaking (K, body)
+Basilisk	Reptiles	https://en.wikipedia.org/wiki/Basilisk	P,M	COVERED	lethal gaze or breath = venom or M death-glare		gaze death
+Cockatrice	Hybrids	https://en.wikipedia.org/wiki/Cockatrice	P,M	COVERED	rooster-serpent petrifier		uncanny body or rule-breaking (K, body)
+Unicorn	Beasts	https://en.wikipedia.org/wiki/Unicorn	P,M	COVERED	horn as charged purification store		purity myth
+Phoenix	Birds	https://en.wikipedia.org/wiki/Phoenix	M,X	COVERED	burns and rebuilds from ash via pattern-store and X rewind of parts together (u: url guessed)		uncanny body or rule-breaking (K, body)
+Dragon (European)	Dragons	https://en.wikipedia.org/wiki/Dragon	P,M	COVERED	big reptile with fire organ (combustion) and M lift		hoard, destruction
+Wyvern	Dragons	https://en.wikipedia.org/wiki/Wyvern	P	PACK	two-legged dragon		uncanny body or rule-breaking (K, body)
+Lindworm	Dragons	https://en.wikipedia.org/wiki/Lindworm	P	PACK	wingless serpent		uncanny body or rule-breaking (K, body)
+Golem	Artificial	https://en.wikipedia.org/wiki/Golem	M,X,K	COVERED	clay body driven by a written pattern; word on forehead is the pattern		creature that obeys too literally
+Homunculus	Artificial	https://en.wikipedia.org/wiki/Homunculus	X,M	COVERED	rebuilt small person		uncanny body or rule-breaking (K, body)
+Mandrake	Plants	https://en.wikipedia.org/wiki/Mandrake	P,M	PACK	root with human shape; scream folklore plus real alkaloids		scream that kills
+Alraune	Plants	https://en.wikipedia.org/wiki/Alraune	P,M	PACK	plant-born spirit		uncanny body or rule-breaking (K, body)
+Lamia	Hybrids	https://en.wikipedia.org/wiki/Lamia	P,K	COVERED	child-eating serpent woman (u: url guessed)		uncanny body or rule-breaking (K, body)
+Empusa	Fae	https://en.wikipedia.org/wiki/Empusa	X,M	COVERED	shapeshifting seducer-demon (u: url guessed)		uncanny body or rule-breaking (K, body)
+Incubus/Succubus	Demons	https://en.wikipedia.org/wiki/Incubus	M,X,K	COVERED	sleep-visiting predator draining energy		sleep helplessness
+Nightmare (Mare)	Dreams	https://en.wikipedia.org/wiki/Nightmare	M,K	COVERED	sleep-pressing spirit; sleep paralysis P (u: url guessed)		paralysis in bed
+Sandman	Dreams	https://en.wikipedia.org/wiki/Sandman	M,K	COVERED	sleep-bringing spirit		uncanny body or rule-breaking (K, body)
+Bogeyman	Dreams	https://en.wikipedia.org/wiki/Bogeyman	K,S	COVERED	rumour-grown figure used by parents; no body needed		uncanny body or rule-breaking (K, body)
+Krampus	Festival beasts	https://en.wikipedia.org/wiki/Krampus	S,M	PACK	festival demon (u: url guessed)		uncanny body or rule-breaking (K, body)
+Perchta	Festival beasts	https://en.wikipedia.org/wiki/Perchta	S,M	PACK	house-inspecting witch (u: url guessed)		uncanny body or rule-breaking (K, body)
+Wolpertinger	Hybrids	https://en.wikipedia.org/wiki/Wolpertinger	G	PACK	hoax hybrid		uncanny body or rule-breaking (K, body)
+Gytrash	Ghosts and omens	https://en.wikipedia.org/wiki/Gytrash	M,K	COVERED	shape-shifting dog omen		uncanny body or rule-breaking (K, body)
+Shuck	Ghosts and omens	https://en.wikipedia.org/wiki/Shuck	M,K	COVERED	black-dog omen (u: url guessed)		uncanny body or rule-breaking (K, body)
+Knocker	Nature spirits	https://en.wikipedia.org/wiki/Knocker	M,S	COVERED	mine spirit warns of cave-ins by sounds (P sense) (u: url guessed)		uncanny body or rule-breaking (K, body)
+Boggart	House spirits	https://en.wikipedia.org/wiki/Boggart	M,K	COVERED	poltergeist-type household spirit		uncanny body or rule-breaking (K, body)
+Bugbear	Dreams	https://en.wikipedia.org/wiki/Bugbear	K,S	COVERED	child-scaring monster		uncanny body or rule-breaking (K, body)
+Redcap	Fae	https://en.wikipedia.org/wiki/Redcap	M,P	COVERED	goblin dying if cap dye dries; blood-dye store		uncanny body or rule-breaking (K, body)
+Jenny Greenteeth	Water spirits	https://en.wikipedia.org/wiki/Jenny_Greenteeth	P,S	COVERED	pond hag; child-warning story (u: url guessed)		uncanny body or rule-breaking (K, body)
+Grindylow	Water spirits	https://en.wikipedia.org/wiki/Grindylow	P	PACK	pond clutching creature		uncanny body or rule-breaking (K, body)
+Melusine	Fae	https://en.wikipedia.org/wiki/Melusine	X,S	COVERED	woman with serpent form under taboo (looking taboo)	semantic-condition triggers: bonds, wards and curses fire on a perceived symbolic predicate (invited, named, looked at, crossed a threshold)	uncanny body or rule-breaking (K, body)
+Sleipnir	Beasts	https://en.wikipedia.org/wiki/Sleipnir	G	PACK	eight-legged horse		uncanny body or rule-breaking (K, body)
+Wendigo	Americas	https://en.wikipedia.org/wiki/Wendigo	M,P,K,S	LAW	famine-possession turning a host into a cannibal; curse spread by eating human flesh	pattern infection: a self-replicating pattern spread by contact, bite or blood into hosts	hunger, cannibalism, self loss
+Kitsune	Japan	https://en.wikipedia.org/wiki/Kitsune	X,M,K	COVERED	fox that rebuilds a human form (X); tails = growth of M store with age		charming stranger who is not human (K)
+Tanuki (bake-danuki)	Japan	https://en.wikipedia.org/wiki/Tanuki	X,K	COVERED	raccoon-dog illusionist; leaf-money = fae-gold X rough copy that reverts (u: url guessed)		false coin fraud
+Tengu	Japan	https://en.wikipedia.org/wiki/Tengu	M,S	PACK	mountain goblin-sorcerer, martial tutor		uncanny body or rule-breaking (K, body)
+Oni	Japan	https://en.wikipedia.org/wiki/Oni	P,M,S	PACK	giant horned brute species, iron club		uncanny body or rule-breaking (K, body)
+Kappa	Japan	https://en.wikipedia.org/wiki/Kappa	P,M,S	COVERED	river imp with a head dish of water; politeness bow spills it (a taboo-like weakness) (u: url guessed)		drowning, child-taking
+Yuki-onna	Japan	https://en.wikipedia.org/wiki/Yuki-onna	M,X,K	COVERED	snow woman drains heat energy; M cold at a distance		cold death, beauty
+Rokurokubi	Japan	https://en.wikipedia.org/wiki/Rokurokubi	G,K	COVERED	neck-stretching woman by night; hidden from herself		the neighbour's secret
+Nukekubi	Japan	https://en.wikipedia.org/wiki/Nukekubi	M,K	COVERED	head detaches at night to feed; head pattern node mobile		uncanny body or rule-breaking (K, body)
+Futakuchi-onna	Japan	https://en.wikipedia.org/wiki/Futakuchi-onna	G,P	PACK	second mouth hidden in hair		body horror
+Jorōgumo	Japan	https://en.wikipedia.org/wiki/Jor%C5%8Dgumo	X,P	COVERED	spider that takes a woman's form to prey		lure, cocoon
+Tsuchigumo	Japan	https://en.wikipedia.org/wiki/Tsuchigumo	P,S	PACK	giant spider, tribe-demonised		uncanny body or rule-breaking (K, body)
+Nue	Japan	https://en.wikipedia.org/wiki/Nue	M,X,K	COVERED	chimeric omen-bringing spirit; sickness cause rumour		uncanny body or rule-breaking (K, body)
+Baku	Japan	https://en.wikipedia.org/wiki/Baku	M,K	COVERED	dream-eater; relieves nightmares (u: url guessed)		uncanny body or rule-breaking (K, body)
+Tsukumogami	Japan	https://en.wikipedia.org/wiki/Tsukumogami	M,X	COVERED	old tool gains mind when its pattern accumulates M store over 100 years		the household tool wakes
+Kuchisake-onna	Japan	https://en.wikipedia.org/wiki/Kuchisake-onna	K,S	COVERED	urban legend rumour spreading through child networks with a scripted question		the unanswerable question
+Onryō	Japan	https://en.wikipedia.org/wiki/Onry%C5%8D	M,K	COVERED	grudge ghost with strong linked curse to the wronger		curse contagion in a house
+Gashadokuro	Japan	https://en.wikipedia.org/wiki/Gashadokuro	M	COVERED	giant skeleton from many unburied bones		uncanny body or rule-breaking (K, body)
+Noppera-bō	Japan	https://en.wikipedia.org/wiki/Noppera-b%C5%8D	K	COVERED	faceless person; perception of blank face is a sense deception (X mask)		faceless
+Nurarihyon	Japan	https://en.wikipedia.org/wiki/Nurarihyon	K,S	COVERED	intruder who is accepted as master by belief (u: url guessed)		uncanny body or rule-breaking (K, body)
+Bakeneko/Nekomata	Japan	https://en.wikipedia.org/wiki/Bakeneko	G,M	COVERED	aged cat gains tails and powers		uncanny body or rule-breaking (K, body)
+Kamaitachi	Japan	https://en.wikipedia.org/wiki/Kamaitachi	P,K	COVERED	whirlwind with slashing cut; real vacuum-like wind cuts (u)		uncanny body or rule-breaking (K, body)
+Yamata no Orochi	Japan	https://en.wikipedia.org/wiki/Yamata_no_Orochi	P	PACK	eight-headed serpent		uncanny body or rule-breaking (K, body)
+Raijū	Japan	https://en.wikipedia.org/wiki/Raij%C5%AB	M,P	COVERED	lightning animal; charge store		uncanny body or rule-breaking (K, body)
+Ōmukade	Japan	https://en.wikipedia.org/wiki/%C5%8Cmukade	P	PACK	giant centipede		uncanny body or rule-breaking (K, body)
+Ningyo	Japan	https://en.wikipedia.org/wiki/Ningyo	G,S	PACK	fish-person whose flesh gives immortality (cannibal-taboo)		uncanny body or rule-breaking (K, body)
+Umibōzu	Japan	https://en.wikipedia.org/wiki/Umib%C5%8Dzu	P,K	COVERED	sea giant, sea-storm omen, misperception of wave		uncanny body or rule-breaking (K, body)
+Namazu	Japan	https://en.wikipedia.org/wiki/Namazu	P,K	COVERED	earthquake catfish: prior tremor sense; tremor rumour (u: url guessed)		uncanny body or rule-breaking (K, body)
+Satori	Japan	https://en.wikipedia.org/wiki/Satori	K,M	COVERED	reads minds: a noisy sense of mind surface thought; M receiver (u: url guessed)		it knows what you think
+Jikininki	Japan	https://en.wikipedia.org/wiki/Jikininki	M,S	COVERED	greedy dead who eat corpses		uncanny body or rule-breaking (K, body)
+Yamauba	Japan	https://en.wikipedia.org/wiki/Yamauba	P,K	PACK	mountain witch (u: url guessed)		uncanny body or rule-breaking (K, body)
+Hitotsume-kozō	Japan	https://en.wikipedia.org/wiki/Hitotsume-koz%C5%8D	P	PACK	one-eyed child spook (u: url guessed)		uncanny body or rule-breaking (K, body)
+Fenghuang	China	https://en.wikipedia.org/wiki/Fenghuang	M,S	PACK	auspicious bird of virtue		uncanny body or rule-breaking (K, body)
+Qilin	China	https://en.wikipedia.org/wiki/Qilin	M,S	PACK	virtue beast that steps without crushing grass		uncanny body or rule-breaking (K, body)
+Chinese dragon	China	https://en.wikipedia.org/wiki/Chinese_dragon	M,P,S	COVERED	weather-power patron, rain bonded to ritual		uncanny body or rule-breaking (K, body)
+Nian	China	https://en.wikipedia.org/wiki/Nian	P,S	COVERED	new-year beast scared by red and noise		uncanny body or rule-breaking (K, body)
+Taotie	China	https://en.wikipedia.org/wiki/Taotie	G,K	PACK	gluttonous monster on ritual bronzes		uncanny body or rule-breaking (K, body)
+Hundun	China	https://en.wikipedia.org/wiki/Hundun	K	COVERED	chaos without face; undifferentiated pattern		uncanny body or rule-breaking (K, body)
+Pixiu	China	https://en.wikipedia.org/wiki/Pixiu	M,S	PACK	wealth-guarding beast		uncanny body or rule-breaking (K, body)
+Xiezhi	China	https://en.wikipedia.org/wiki/Xiezhi	M,S	COVERED	beast that detects the guilty by horn (K sense)		uncanny body or rule-breaking (K, body)
+Jingwei	China	https://en.wikipedia.org/wiki/Jingwei	M,K	COVERED	drowned girl turned bird filling the sea; persistent drive		uncanny body or rule-breaking (K, body)
+Diting	China	https://en.wikipedia.org/wiki/Diting	M,K	PACK	hearing beast that hears truth		uncanny body or rule-breaking (K, body)
+Bai Ze	China	https://en.wikipedia.org/wiki/Bai_Ze	K	PACK	knowledge beast that catalogues monsters		uncanny body or rule-breaking (K, body)
+Huli jing	China	https://en.wikipedia.org/wiki/Huli_jing	X,K	COVERED	fox spirit that takes human shape and feeds on qi		uncanny body or rule-breaking (K, body)
+Sun Wukong	China	https://en.wikipedia.org/wiki/Sun_Wukong	X,M,K	COVERED	trickster with 72 transformations and elastic staff (X + store)		uncanny body or rule-breaking (K, body)
+Mogwai	China	https://en.wikipedia.org/wiki/Mogwai	M,K	PACK	mischievous demon (u: url guessed)		uncanny body or rule-breaking (K, body)
+Ox-Head and Horse-Face	China	https://en.wikipedia.org/wiki/Ox-Head_and_Horse-Face	M,S	COVERED	underworld guards, psychopomps		uncanny body or rule-breaking (K, body)
+Xingtian	China	https://en.wikipedia.org/wiki/Xingtian	G,M	PACK	headless warrior with face on torso		uncanny body or rule-breaking (K, body)
+Zhulong	China	https://en.wikipedia.org/wiki/Zhulong	P,M	PACK	torch-dragon, eyes open for day (u: url guessed)		uncanny body or rule-breaking (K, body)
+Hungry ghost (Preta)	Buddhism	https://en.wikipedia.org/wiki/Hungry_ghost	M,S,K	COVERED	spirit with insatiable need; hunger drive cannot be sated (u: url guessed)		uncanny body or rule-breaking (K, body)
+Kumiho	Korea	https://en.wikipedia.org/wiki/Kumiho	X,K	COVERED	fox with liver-eating bargain		uncanny body or rule-breaking (K, body)
+Dokkaebi	Korea	https://en.wikipedia.org/wiki/Dokkaebi	M,S,K	PACK	club-wielding goblin granting wishes (u: url guessed)		uncanny body or rule-breaking (K, body)
+Haetae	Korea	https://en.wikipedia.org/wiki/Haetae	M,S	PACK	ward-beast against fire		uncanny body or rule-breaking (K, body)
+Jeoseung Saja	Korea	https://en.wikipedia.org/wiki/Jeoseung_Saja	M,S	COVERED	psychopomp of the dead (u: url guessed)		uncanny body or rule-breaking (K, body)
+Rakshasa	India	https://en.wikipedia.org/wiki/Rakshasa	X,P,M	COVERED	shapeshifting man-eater; illusion by X (u: url guessed)		uncanny body or rule-breaking (K, body)
+Naga	India	https://en.wikipedia.org/wiki/Naga	G,M,S	PACK	serpent-person species of waters (u: url guessed)		uncanny body or rule-breaking (K, body)
+Garuda	India	https://en.wikipedia.org/wiki/Garuda	P,M	PACK	divine bird, M lift		uncanny body or rule-breaking (K, body)
+Vetala	India	https://en.wikipedia.org/wiki/Vetala	M,K	COVERED	spirit that inhabits corpses (possession) and asks riddles		riddle-bound threat
+Yaksha	India	https://en.wikipedia.org/wiki/Yaksha	M,S	PACK	nature guardian with wealth store		uncanny body or rule-breaking (K, body)
+Apsara	India	https://en.wikipedia.org/wiki/Apsara	M	PACK	celestial dancer (u: url guessed)		uncanny body or rule-breaking (K, body)
+Asura	India	https://en.wikipedia.org/wiki/Asura	M,S	COVERED	beings of vast substrate of devotees		uncanny body or rule-breaking (K, body)
+Pishacha	India	https://en.wikipedia.org/wiki/Pishacha	M,K	COVERED	flesh-eating ghost, madness driver		uncanny body or rule-breaking (K, body)
+Churel	India	https://en.wikipedia.org/wiki/Churel	M,K	COVERED	ghost of woman dead in childbirth, lures men (u: url guessed)		uncanny body or rule-breaking (K, body)
+Brahmarakshasa	India	https://en.wikipedia.org/wiki/Brahmarakshasa	M,S	COVERED	learned ghost, spirit of fallen Brahmin (u: url guessed)		uncanny body or rule-breaking (K, body)
+Kirtimukha	India	https://en.wikipedia.org/wiki/Kirtimukha	M	PACK	face-of-glory ward (u: url guessed)		uncanny body or rule-breaking (K, body)
+Vanara	India	https://en.wikipedia.org/wiki/Vanara	G,S	PACK	monkey-folk species		uncanny body or rule-breaking (K, body)
+Aswang	Philippines	https://en.wikipedia.org/wiki/Aswang	X,G,K,S	COVERED	day-human, night-predator in village (host of a patron), feeds on foetuses; hides socially		the neighbour is the predator (K)
+Manananggal	Philippines	https://en.wikipedia.org/wiki/Manananggal	G,M,K	COVERED	upper torso detaches at night; salt on lower half as material weakness		uncanny body or rule-breaking (K, body)
+Tikbalang	Philippines	https://en.wikipedia.org/wiki/Tikbalang	G,K	PACK	horse-man leading travellers astray		uncanny body or rule-breaking (K, body)
+Kapre	Philippines	https://en.wikipedia.org/wiki/Kapre	P,K	PACK	tree giant smoking tobacco (u: url guessed)		uncanny body or rule-breaking (K, body)
+Duwende	Philippines	https://en.wikipedia.org/wiki/Duwende	M,S	COVERED	mound spirit; taboo of greeting (u: url guessed)		uncanny body or rule-breaking (K, body)
+Sigbin	Philippines	https://en.wikipedia.org/wiki/Sigbin	G,M	PACK	backwards-walking creature sucking blood		uncanny body or rule-breaking (K, body)
+Bakunawa	Philippines	https://en.wikipedia.org/wiki/Bakunawa	P,K	COVERED	moon-eating dragon: eclipse myth, misperception		uncanny body or rule-breaking (K, body)
+Pontianak	Malay	https://en.wikipedia.org/wiki/Pontianak	M,K	COVERED	ghost of woman dead in childbirth; scent warning (u: url guessed)		uncanny body or rule-breaking (K, body)
+Penanggalan	Malay	https://en.wikipedia.org/wiki/Penanggalan	G,M	PACK	floating head with entrails		uncanny body or rule-breaking (K, body)
+Toyol	Malay	https://en.wikipedia.org/wiki/Toyol	M,S	COVERED	bound child spirit servant for theft (bonded servitor) (u: url guessed)		uncanny body or rule-breaking (K, body)
+Leyak	Bali	https://en.wikipedia.org/wiki/Leyak	X,M,S	COVERED	black-magic practitioners with floating head (u: url guessed)		uncanny body or rule-breaking (K, body)
+Barong/Rangda	Bali	https://en.wikipedia.org/wiki/Barong	M,S	COVERED	good and evil patrons in ritual dance, belief substrate (u: url guessed)		uncanny body or rule-breaking (K, body)
+Phi Krasue	Thailand	https://en.wikipedia.org/wiki/Phi_Krasue	G,M	COVERED	floating head and entrails (u: url guessed)		uncanny body or rule-breaking (K, body)
+Mekong Naga fireballs	Thailand	https://en.wikipedia.org/wiki/Mekong_Naga_fireballs	P,K	COVERED	natural gas-bubble lights, misperception (u) (u: url guessed)		uncanny body or rule-breaking (K, body)
+Jinn	Middle East	https://en.wikipedia.org/wiki/Jinn	M,X,K,S	COVERED	beings of another plane, smokeless fire; bargains and possession		uncanny body or rule-breaking (K, body)
+Ifrit	Middle East	https://en.wikipedia.org/wiki/Ifrit	M,P	COVERED	fire jinn, strong patron		uncanny body or rule-breaking (K, body)
+Marid	Middle East	https://en.wikipedia.org/wiki/Marid	M,P	COVERED	water or sea jinn, powerful (u: url guessed)		uncanny body or rule-breaking (K, body)
+Peri	Persia	https://en.wikipedia.org/wiki/Peri	M	PACK	fairy-like benign (u: url guessed)		uncanny body or rule-breaking (K, body)
+Div	Persia	https://en.wikipedia.org/wiki/Div	M,S	PACK	demon in Shahnameh (u: url guessed)		uncanny body or rule-breaking (K, body)
+Simurgh	Persia	https://en.wikipedia.org/wiki/Simurgh	M,S	PACK	wise gigantic bird healing wounds		uncanny body or rule-breaking (K, body)
+Roc	Middle East	https://en.wikipedia.org/wiki/Roc	P	PACK	giant eagle carrying elephants (u: url guessed)		uncanny body or rule-breaking (K, body)
+Zahhak	Persia	https://en.wikipedia.org/wiki/Zahhak	M,P	COVERED	king with serpents on shoulders feeding on brains		uncanny body or rule-breaking (K, body)
+Qareen	Middle East	https://en.wikipedia.org/wiki/Qareen	M,K	COVERED	a double spirit companion; possession variant (u: url guessed)		uncanny body or rule-breaking (K, body)
+Buraq	Middle East	https://en.wikipedia.org/wiki/Buraq	M	PACK	winged steed travelling at sight distance		uncanny body or rule-breaking (K, body)
+Lamassu	Mesopotamia	https://en.wikipedia.org/wiki/Lamassu	M,S	PACK	winged guardian with gate-ward		uncanny body or rule-breaking (K, body)
+Pazuzu	Mesopotamia	https://en.wikipedia.org/wiki/Pazuzu	M,S	COVERED	wind demon, ward against Lamashtu (u: url guessed)		uncanny body or rule-breaking (K, body)
+Lilitu/Lilith	Middle East	https://en.wikipedia.org/wiki/Lilitu	M,K	COVERED	night spirit stealing children (u: url guessed)		uncanny body or rule-breaking (K, body)
+Tiamat	Mesopotamia	https://en.wikipedia.org/wiki/Tiamat	P,M	SECOND	primordial chaos sea; creation from her body = true creation	SECOND: true creation from nothing (off by default in X)	cosmic scale
+Humbaba	Mesopotamia	https://en.wikipedia.org/wiki/Humbaba	P,K	PACK	forest guardian with seven radiances (u: url guessed)		uncanny body or rule-breaking (K, body)
+Scorpion man	Mesopotamia	https://en.wikipedia.org/wiki/Scorpion_man	G	PACK	gate-guard hybrid		uncanny body or rule-breaking (K, body)
+Anzû	Mesopotamia	https://en.wikipedia.org/wiki/Anz%C3%BB	M,P	COVERED	storm bird stealing the tablet of destiny (artifact of fate = information store)		uncanny body or rule-breaking (K, body)
+Ammit	Egypt	https://en.wikipedia.org/wiki/Ammit	M,S	COVERED	soul-devourer; weighing of heart = judgment, soul-store consumption		uncanny body or rule-breaking (K, body)
+Bennu	Egypt	https://en.wikipedia.org/wiki/Bennu	M,X	COVERED	self-renewing bird		uncanny body or rule-breaking (K, body)
+Apep	Egypt	https://en.wikipedia.org/wiki/Apep	M,S	COVERED	chaos serpent against sun; ritual of the sun boat needs belief		uncanny body or rule-breaking (K, body)
+Ka and Ba	Egypt	https://en.wikipedia.org/wiki/Ka_and_Ba	M	COVERED	double and soul-bird; spirit pattern split (u: url guessed)		uncanny body or rule-breaking (K, body)
+Dybbuk	Jewish	https://en.wikipedia.org/wiki/Dybbuk	M,K	COVERED	possessing spirit of the dead in a host (u: url guessed)		uncanny body or rule-breaking (K, body)
+Leviathan	Jewish	https://en.wikipedia.org/wiki/Leviathan	P	PACK	primordial sea monster		uncanny body or rule-breaking (K, body)
+Behemoth	Jewish	https://en.wikipedia.org/wiki/Behemoth	P	PACK	giant land beast		uncanny body or rule-breaking (K, body)
+Ziz	Jewish	https://en.wikipedia.org/wiki/Ziz	P	PACK	giant bird, storm cover		uncanny body or rule-breaking (K, body)
+Angel (messenger)	Abrahamic	https://en.wikipedia.org/wiki/Angel	M,S,K	COVERED	substrate-based patron beings, linked to believers		awe, blinding light
+Demon (Abrahamic)	Abrahamic	https://en.wikipedia.org/wiki/Demon	M,K,S	COVERED	patron beings that tempt via bonds		uncanny body or rule-breaking (K, body)
+Devil/Pact-maker	Abrahamic	https://en.wikipedia.org/wiki/Devil	M,S,K	COVERED	bargain as bond with drain on soul pattern		uncanny body or rule-breaking (K, body)
+Nephilim	Abrahamic	https://en.wikipedia.org/wiki/Nephilim	G,M	PACK	giant hybrids (u: url guessed)		uncanny body or rule-breaking (K, body)
+Tokoloshe	Africa	https://en.wikipedia.org/wiki/Tokoloshe	M,K,S	COVERED	small spirit tormenting sleepers; beds raised on bricks as ward (u: url guessed)		uncanny body or rule-breaking (K, body)
+Mami Wata	Africa	https://en.wikipedia.org/wiki/Mami_Wata	M,K,S	COVERED	water spirit patron over wealth and devotees		uncanny body or rule-breaking (K, body)
+Anansi	Africa	https://en.wikipedia.org/wiki/Anansi	K,S	COVERED	trickster spider; stories as knowledge economy		uncanny body or rule-breaking (K, body)
+Impundulu	Africa	https://en.wikipedia.org/wiki/Impundulu	M,P,K	COVERED	lightning bird familiar of witches (u: url guessed)		uncanny body or rule-breaking (K, body)
+Grootslang	Africa	https://en.wikipedia.org/wiki/Grootslang	P	PACK	giant cave serpent-elephant		uncanny body or rule-breaking (K, body)
+Mokele-mbembe	Africa	https://en.wikipedia.org/wiki/Mokele-mbembe	P,K	COVERED	unconfirmed sauropod-like; rumour		uncanny body or rule-breaking (K, body)
+Ninki Nanka	Africa	https://en.wikipedia.org/wiki/Ninki_Nanka	P,K	COVERED	swamp dragon rumour (u: url guessed)		uncanny body or rule-breaking (K, body)
+Adze	Africa	https://en.wikipedia.org/wiki/Adze	M,P	COVERED	firefly vampire, shapeshifts (u: url guessed)		uncanny body or rule-breaking (K, body)
+Aziza	Africa	https://en.wikipedia.org/wiki/Aziza	M,S	PACK	forest fairies who teach (u: url guessed)		uncanny body or rule-breaking (K, body)
+Abiku	Africa	https://en.wikipedia.org/wiki/Abiku	M,K,S	COVERED	child who dies and is reborn repeatedly, pattern persistence (u: url guessed)		uncanny body or rule-breaking (K, body)
+Obayifo	Africa	https://en.wikipedia.org/wiki/Obayifo	M,K	COVERED	witch-vampire glowing at night (u: url guessed)		uncanny body or rule-breaking (K, body)
+Sasabonsam	Africa	https://en.wikipedia.org/wiki/Sasabonsam	P,M	PACK	tree-dwelling monster with iron teeth (u: url guessed)		uncanny body or rule-breaking (K, body)
+Popobawa	Africa	https://en.wikipedia.org/wiki/Popobawa	M,K	COVERED	night molester, mass hysteria by rumour		uncanny body or rule-breaking (K, body)
+Inkanyamba	Africa	https://en.wikipedia.org/wiki/Inkanyamba	P,M	COVERED	storm serpent (u: url guessed)		uncanny body or rule-breaking (K, body)
+Nyami Nyami	Africa	https://en.wikipedia.org/wiki/Nyami_Nyami	M,S	PACK	river god of Zambezi (u: url guessed)		uncanny body or rule-breaking (K, body)
+Eloko	Africa	https://en.wikipedia.org/wiki/Eloko	P	PACK	dwarf with grass body and bell (u: url guessed)		uncanny body or rule-breaking (K, body)
+Bultungin	Africa	https://en.wikipedia.org/wiki/Bultungin	X,G	COVERED	hyena-human shapeshifters (u: url guessed)		uncanny body or rule-breaking (K, body)
+Zombi (loa)	Haiti	https://en.wikipedia.org/wiki/Zombi	M,S	COVERED	ancestral spirit patrons ridden through possession (the horse) (u: url guessed)		uncanny body or rule-breaking (K, body)
+Baron Samedi	Haiti	https://en.wikipedia.org/wiki/Baron_Samedi	M,S	COVERED	loa of death; patron (u: url guessed)		uncanny body or rule-breaking (K, body)
+Soucouyant	Caribbean	https://en.wikipedia.org/wiki/Soucouyant	X,M	COVERED	skin-shedding fire-ball blood-sucker; salt/rice counting ward (u: url guessed)		uncanny body or rule-breaking (K, body)
+Jumbee	Caribbean	https://en.wikipedia.org/wiki/Jumbee	M,K	COVERED	spirit; haunted tree (u: url guessed)		uncanny body or rule-breaking (K, body)
+Obeah	Caribbean	https://en.wikipedia.org/wiki/Obeah	M,S,K	COVERED	folk magic with sympathetic fetish (u: url guessed)		uncanny body or rule-breaking (K, body)
+Skin-walker	Americas	https://en.wikipedia.org/wiki/Skin-walker	X,M,K,S	LAW	witch changes into animals by wearing skins; offence taboo to speak of it	semantic-condition triggers: bonds, wards and curses fire on a perceived symbolic predicate (invited, named, looked at, crossed a threshold)	fear of speaking its name, mimics voices
+Thunderbird	Americas	https://en.wikipedia.org/wiki/Thunderbird	P,M	PACK	storm bird patron (u: url guessed)		uncanny body or rule-breaking (K, body)
+Piasa	Americas	https://en.wikipedia.org/wiki/Piasa	P	PACK	cliff-painting winged beast		uncanny body or rule-breaking (K, body)
+Ahuizotl	Americas	https://en.wikipedia.org/wiki/Ahuizotl	P,K	PACK	hand-tailed water predator (u: url guessed)		uncanny body or rule-breaking (K, body)
+Chupacabra	Americas	https://en.wikipedia.org/wiki/Chupacabra	P,K	COVERED	livestock-killer rumour spreading; mange coyotes real		uncanny body or rule-breaking (K, body)
+La Llorona	Americas	https://en.wikipedia.org/wiki/La_Llorona	M,K	COVERED	ghost of a weeping mother near water, child-takers (u: url guessed)		uncanny body or rule-breaking (K, body)
+Nahual	Americas	https://en.wikipedia.org/wiki/Nahual	X,M,S	COVERED	shaman shapeshifter into an animal double (u: url guessed)		uncanny body or rule-breaking (K, body)
+Cadejo	Americas	https://en.wikipedia.org/wiki/Cadejo	M,S	COVERED	spirit dogs, good and bad (u: url guessed)		uncanny body or rule-breaking (K, body)
+Camazotz	Americas	https://en.wikipedia.org/wiki/Camazotz	P,M	PACK	bat-god		uncanny body or rule-breaking (K, body)
+Quetzalcoatl	Americas	https://en.wikipedia.org/wiki/Quetzalcoatl	M,S	COVERED	feathered serpent god; belief substrate (u: url guessed)		uncanny body or rule-breaking (K, body)
+Curupira	Americas	https://en.wikipedia.org/wiki/Curupira	G,K	COVERED	backward-footed forest guard misleading trackers		uncanny body or rule-breaking (K, body)
+Boitatá	Americas	https://en.wikipedia.org/wiki/Boitat%C3%A1	P,K	COVERED	fire-serpent marsh lights (u: url guessed)		uncanny body or rule-breaking (K, body)
+Iara	Americas	https://en.wikipedia.org/wiki/Iara	X,M	COVERED	river siren (u: url guessed)		uncanny body or rule-breaking (K, body)
+Boto (Encantado)	Americas	https://en.wikipedia.org/wiki/Boto	X,K	COVERED	river dolphin that takes a handsome man form (u: url guessed)		uncanny body or rule-breaking (K, body)
+Saci	Americas	https://en.wikipedia.org/wiki/Saci	M,K	PACK	one-legged whirlwind prankster (u: url guessed)		uncanny body or rule-breaking (K, body)
+Mapinguari	Americas	https://en.wikipedia.org/wiki/Mapinguari	P,K	PACK	giant sloth-like forest monster, stench		uncanny body or rule-breaking (K, body)
+Lobisomem	Americas	https://en.wikipedia.org/wiki/Lobisomem	X,G	COVERED	local werewolf (u: url guessed)		uncanny body or rule-breaking (K, body)
+Alicanto	Americas	https://en.wikipedia.org/wiki/Alicanto	P,M	PACK	gold-eating bird		uncanny body or rule-breaking (K, body)
+Pishtaco	Americas	https://en.wikipedia.org/wiki/Pishtaco	S,K	COVERED	rumour of fat-stealing outsider; social fear (u: url guessed)		uncanny body or rule-breaking (K, body)
+Chullachaqui	Americas	https://en.wikipedia.org/wiki/Chullachaqui	X,K	COVERED	forest guardian mimicking people, unequal feet (u: url guessed)		uncanny body or rule-breaking (K, body)
+Sisimite	Americas	https://en.wikipedia.org/wiki/Sisimite	G	PACK	hairy man (u: url guessed)		uncanny body or rule-breaking (K, body)
+El Silbón	Americas	https://en.wikipedia.org/wiki/El_Silb%C3%B3n	M,K	COVERED	whistling ghost, curse (u: url guessed)		uncanny body or rule-breaking (K, body)
+Kushtaka	Americas	https://en.wikipedia.org/wiki/Kushtaka	X,M	COVERED	land-otter man drawing the lost		uncanny body or rule-breaking (K, body)
+Qalupalik	Arctic	https://en.wikipedia.org/wiki/Qalupalik	P,S	COVERED	sea woman snatching children walking near ice (u: url guessed)		uncanny body or rule-breaking (K, body)
+Adlet	Arctic	https://en.wikipedia.org/wiki/Adlet	G	PACK	dog-human hybrid		uncanny body or rule-breaking (K, body)
+Amarok	Arctic	https://en.wikipedia.org/wiki/Amarok	P,K	COVERED	giant wolf, lone-hunter warning (u: url guessed)		uncanny body or rule-breaking (K, body)
+Tupilak	Arctic	https://en.wikipedia.org/wiki/Tupilak	M,X,S	COVERED	made monster composed of animal parts and bonded to a victim (u: url guessed)		uncanny body or rule-breaking (K, body)
+Sedna	Arctic	https://en.wikipedia.org/wiki/Sedna	M,S	COVERED	sea mother patron whose hair is combed by shamans (u: url guessed)		uncanny body or rule-breaking (K, body)
+Ijiraq	Arctic	https://en.wikipedia.org/wiki/Ijiraq	X,K	COVERED	shape-shifting child-abductor of the tundra (u: url guessed)		uncanny body or rule-breaking (K, body)
+Sasquatch/Bigfoot	Americas	https://en.wikipedia.org/wiki/Sasquatch	P,K	COVERED	undiscovered primate, rumour and traces (u: url guessed)		uncanny body or rule-breaking (K, body)
+Wisakedjak	Americas	https://en.wikipedia.org/wiki/Wisakedjak	K,S	COVERED	trickster		uncanny body or rule-breaking (K, body)
+Coyote (trickster)	Americas	https://en.wikipedia.org/wiki/Coyote	K,S	COVERED	trickster (u: url guessed)		uncanny body or rule-breaking (K, body)
+Deer Woman	Americas	https://en.wikipedia.org/wiki/Deer_Woman	X,K	COVERED	lure that kills abusive men		uncanny body or rule-breaking (K, body)
+Little People (Memegwesi)	Americas	https://en.wikipedia.org/wiki/Little_People	M,S	COVERED	small beings with taboo (u: url guessed)		uncanny body or rule-breaking (K, body)
+Rougarou	Americas	https://en.wikipedia.org/wiki/Rougarou	X,G	COVERED	Cajun werewolf, Lenten taboo (u: url guessed)		uncanny body or rule-breaking (K, body)
+Jersey Devil	Americas	https://en.wikipedia.org/wiki/Jersey_Devil	P,K	COVERED	regional cryptid rumours (u: url guessed)		uncanny body or rule-breaking (K, body)
+Hodag	Americas	https://en.wikipedia.org/wiki/Hodag	P	PACK	hoax creature		uncanny body or rule-breaking (K, body)
+Pukwudgie	Americas	https://en.wikipedia.org/wiki/Pukwudgie	M,K	PACK	small tricksters (u: url guessed)		uncanny body or rule-breaking (K, body)
+Wampus cat	Americas	https://en.wikipedia.org/wiki/Wampus_cat	P,M	PACK	witch-cat		uncanny body or rule-breaking (K, body)
+Cherufe	Americas	https://en.wikipedia.org/wiki/Cherufe	P,M	PACK	lava-dwelling giant		uncanny body or rule-breaking (K, body)
+Trauco	Americas	https://en.wikipedia.org/wiki/Trauco	M,K	PACK	forest man seducing women (blame story) (u: url guessed)		uncanny body or rule-breaking (K, body)
+Yacumama	Americas	https://en.wikipedia.org/wiki/Yacumama	P	PACK	giant river serpent (u: url guessed)		uncanny body or rule-breaking (K, body)
+Taniwha	Oceania	https://en.wikipedia.org/wiki/Taniwha	P,M,S	COVERED	water guardian, ancestral kin		uncanny body or rule-breaking (K, body)
+Patupaiarehe	Oceania	https://en.wikipedia.org/wiki/Patupaiarehe	M,S	PACK	pale fairies of mist		uncanny body or rule-breaking (K, body)
+Bunyip	Oceania	https://en.wikipedia.org/wiki/Bunyip	P,K	COVERED	swamp creature, nocturnal sounds		uncanny body or rule-breaking (K, body)
+Rainbow Serpent	Oceania	https://en.wikipedia.org/wiki/Rainbow_Serpent	M,S,P	COVERED	creator-patron in landscape, with sacred waters		uncanny body or rule-breaking (K, body)
+Menehune	Oceania	https://en.wikipedia.org/wiki/Menehune	S	PACK	small builders of stone structures (u: url guessed)		uncanny body or rule-breaking (K, body)
+Pele	Oceania	https://en.wikipedia.org/wiki/Pele	M,P,S	COVERED	volcano goddess: patron with belief substrate tied to a real volcano (u: url guessed)		uncanny body or rule-breaking (K, body)
+Mo'o	Oceania	https://en.wikipedia.org/wiki/Mo%27o	P,M	PACK	lizard guardian (u: url guessed)		uncanny body or rule-breaking (K, body)
+Nightmarchers (huaka'i pō)	Oceania	https://en.wikipedia.org/wiki/Nightmarchers	M,S,K	COVERED	procession of ghost warriors; looking taboo (u: url guessed)		uncanny body or rule-breaking (K, body)
+Mimi spirits	Oceania	https://en.wikipedia.org/wiki/Mimi_spirits	M,S	PACK	thin cliff-dwelling spirits teaching (u: url guessed)		uncanny body or rule-breaking (K, body)
+Yowie	Oceania	https://en.wikipedia.org/wiki/Yowie	P,K	COVERED	Australian ape cryptid		uncanny body or rule-breaking (K, body)
+Tiki	Oceania	https://en.wikipedia.org/wiki/Tiki	M,S	PACK	carved ancestor image as vessel (u: url guessed)		uncanny body or rule-breaking (K, body)
+Stallo	Sami	https://en.wikipedia.org/wiki/Stallo	P,S	PACK	giant ogre outwitted (u: url guessed)		uncanny body or rule-breaking (K, body)
+Noaidi's drum	Sami	https://en.wikipedia.org/wiki/Noaidi%27s_drum	M,S	COVERED	shaman uses trance to travel; spirit projection (u: url guessed)		uncanny body or rule-breaking (K, body)
+Barghest	England	https://en.wikipedia.org/wiki/Barghest	M,K	COVERED	black dog omen		uncanny body or rule-breaking (K, body)
+Jack o' Lantern (fool's fire)	England	https://en.wikipedia.org/wiki/Jack_o%27_Lantern	M,K	COVERED	soul with ember wandering (u: url guessed)		uncanny body or rule-breaking (K, body)
+Hag (Night hag)	Europe	https://en.wikipedia.org/wiki/Hag	M,K,S	COVERED	sleep-sitter; sleep paralysis (u: url guessed)		uncanny body or rule-breaking (K, body)
+Cailleach	Celtic	https://en.wikipedia.org/wiki/Cailleach	M,P	COVERED	winter hag-patron of weather (u: url guessed)		uncanny body or rule-breaking (K, body)
+Morrigan	Celtic	https://en.wikipedia.org/wiki/Morrigan	M,S	COVERED	battle-crow patron (u: url guessed)		uncanny body or rule-breaking (K, body)
+Tuatha Dé Danann	Celtic	https://en.wikipedia.org/wiki/Tuatha_D%C3%A9_Danann	M,X,S	COVERED	beings of another plane with substrate (u: url guessed)		uncanny body or rule-breaking (K, body)
+Cat Sìth	Celtic	https://en.wikipedia.org/wiki/Cat_S%C3%ACth	X,M	COVERED	fae cat stealing souls before burial (u: url guessed)		uncanny body or rule-breaking (K, body)
+Bean nighe	Celtic	https://en.wikipedia.org/wiki/Bean_nighe	M,K	COVERED	washerwoman omen (u: url guessed)		uncanny body or rule-breaking (K, body)
+Sluagh	Celtic	https://en.wikipedia.org/wiki/Sluagh	M,K	COVERED	host of restless dead		uncanny body or rule-breaking (K, body)
+Asrai	English	https://en.wikipedia.org/wiki/Asrai	M,P	COVERED	water fairy that melts in sunlight (u: url guessed)		uncanny body or rule-breaking (K, body)
+A0 Creator and creation from nothing	Motif A	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	none	SECOND	true creation from nothing is off by default; creation myths run as in-world belief only	SECOND: true creation from nothing (off by default in X)	awe, cosmic scale
+A100 Gods of sky, sea, earth	Motif A	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S,K	COVERED	patron beings with large believer-linked substrates that weaken when faith breaks		awe, power with limits
+A500 Culture hero	Motif A	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	a person who teaches a technique that spreads by social learning		the unknown rule or the helpless victim (K)
+A600 Cosmogony: world from body of giant	Motif A	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	none	EXCLUDED	origin story, narrative-only; in-world only as a belief		the unknown rule or the helpless victim (K)
+A812 Earth-diver	Motif A	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	none	EXCLUDED	origin story, narrative only		the unknown rule or the helpless victim (K)
+A1000 World flood	Motif A	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	P,S	COVERED	flood is physical water; the myth is a cultural memory		mass death, helplessness
+A1100 Establishment of natural order	Motif A	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	none	EXCLUDED	etiological story		the unknown rule or the helpless victim (K)
+A1415 Theft of fire	Motif A	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	knowledge and fire diffusion by theft; cultural event		the unknown rule or the helpless victim (K)
+A2200 Why animals look as they do	Motif A	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	G	EXCLUDED	just-so etiology, narrative-only		the unknown rule or the helpless victim (K)
+B0 Mythical animals	Motif B	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	G,P,M	PACK	each one is a species pack; see creature entries		the unknown rule or the helpless victim (K)
+B100 Magic animals / treasure animals	Motif B	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	G,M	PACK	animal with a charged store or tuned pattern (golden goose)		the unknown rule or the helpless victim (K)
+B200 Animals with human traits (talking animals)	Motif B	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,G	PACK	minds in animal bodies with a speech channel; pack data		uncanny speech from a beast
+B300 Helpful and grateful animals	Motif B	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	reciprocity from minds with drives; works from social layer		the unknown rule or the helpless victim (K)
+B600 Marriage to animal	Motif B	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,K,S	COVERED	shapeshifter partner under a taboo condition		the unknown rule or the helpless victim (K)
+B215.1 Language of the birds	Motif B	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,M	LAW	learning a non-human language by eating or bathing in something; an acquired sense channel	acquired sense channel: learning a non-human language or signal by a physical change to the receiver	knowledge you should not have
+C0 Taboo about supernatural beings	Motif C	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	LAW	bond conditions on perceived symbolic predicates; breach starts a drain	semantic-condition triggers: bonds, wards and curses fire on a perceived symbolic predicate (invited, named, looked at, crossed a threshold)	breaking a rule you did not know (K)
+C100 Sex taboo	Motif C	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	COVERED	culture rule plus bond		the unknown rule or the helpless victim (K)
+C200 Eating taboo (fairy food)	Motif C	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	LAW	accepting a host's food binds the guest to a plane by link	semantic-condition triggers: bonds, wards and curses fire on a perceived symbolic predicate (invited, named, looked at, crossed a threshold)	trapped by an unnoticed act
+C300 Looking taboo (forbidden room, looking back)	Motif C	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	LAW	breach is a perceived act; the bond trigger needs perception predicates	semantic-condition triggers: bonds, wards and curses fire on a perceived symbolic predicate (invited, named, looked at, crossed a threshold)	curiosity as danger
+C400 Speaking taboo / naming	Motif C	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	LAW	speaking a name opens a link (true names)	names as link keys: a stable identifier addresses a link so speaking or knowing a name binds or summons	saying the wrong word
+C900 Punishment for breaking taboo (pillar of salt)	Motif C	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,X	COVERED	curse drain triggered by breach; transformation by X to salt-like mineral		the unknown rule or the helpless victim (K)
+D0 Transformation man to animal	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,M	COVERED	pattern rebuild with mass bookkeeping from a store; cannot exceed available mass		the unknown rule or the helpless victim (K)
+D100 Man to bird, fish, beast	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X	COVERED	as D0; flight bodies need M lift or realistic wings		the unknown rule or the helpless victim (K)
+D200 Transformation to object	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,M	COVERED	cursed into statue or tree: pattern rebuild of matter, mind kept in a store		helplessness, aware inside
+D300 Disenchantment (kiss, act, burning skin)	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,M,S	COVERED	curse has a stated release predicate (an event) which unwinds the pattern		the unknown rule or the helpless victim (K)
+D500 Transformation by magic power or curse	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,M	COVERED	bond with condition		the unknown rule or the helpless victim (K)
+D700 Disenchantment motifs	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,M	COVERED	see D300		the unknown rule or the helpless victim (K)
+D800 Magic objects	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,P	COVERED	charged materials and stores with patterns		the unknown rule or the helpless victim (K)
+D1010 Magic ring/sword/cloak	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M	COVERED	artefact = pattern with purpose (invisibility cloak redirects light)		the unknown rule or the helpless victim (K)
+D1100 Magic clothing (invisibility)	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	redirecting light around a body; costs steady energy; breakable senses understand it		ghost presence, K
+D1170 Magic mirror/scrying	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	link-based sight through a paired pattern		being watched
+D1300 Magic mirror that answers truth	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	LAW	answers of true facts need an information source; if oracle, it queries a knowing mind	oracle objects: a pattern answering true facts must link to a knowing mind or a record (information source law)	the unknown rule or the helpless victim (K)
+D1400 Magic cornucopia (food/gold)	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,X	COVERED	conjure by transforming matter; true food-from-nothing excluded		the unknown rule or the helpless victim (K)
+D1500 Wishing objects	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	SECOND	true wishes = omnipotence; capped wish = pack data bounded by store	SECOND: unbounded wish execution (omnipotence)	monkey's paw dread
+D1500.1 Magic object cures	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,G,P	COVERED	repair pattern aids biology		the unknown rule or the helpless victim (K)
+D1800 Magic power by spell or word	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	spells as records of physical quantities		the unknown rule or the helpless victim (K)
+D1960 Magic sleep (Sleeping Beauty)	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,P	COVERED	metabolic stasis by store-sustained field		the unknown rule or the helpless victim (K)
+D2000 Magic injury (spell on person)	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M	COVERED	curse with drain		the unknown rule or the helpless victim (K)
+D2060 Death-dealing by magic	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,P	COVERED	a push of energy or momentum at a body; physical limit		the unknown rule or the helpless victim (K)
+D2100 Magic wealth	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,X	COVERED	conjure by transforming matter; gold turns to leaves later (rough copy)		the unknown rule or the helpless victim (K)
+D2140 Magic control of weather	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,P	COVERED	energy at distance; local weather limited by field M budget		the unknown rule or the helpless victim (K)
+D1810 Magic knowledge (prophecy, clairvoyance)	Motif D	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	SECOND	true foresight is retrocausal; clairvoyance through links is OK	SECOND: true foreknowledge needs retrocausal information	the unknown rule or the helpless victim (K)
+E0 Resuscitation	Motif E	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,M	COVERED	rewind of parts still together; if the body is whole and soon		the unknown rule or the helpless victim (K)
+E100 Resuscitation by magic object	Motif E	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,M	COVERED	same; limited by what remained of the pattern		the unknown rule or the helpless victim (K)
+E200 Malevolent return from the dead	Motif E	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	ghost memory with drive		the unknown rule or the helpless victim (K)
+E300 Friendly return from the dead	Motif E	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	ghost memory with attachment		the unknown rule or the helpless victim (K)
+E400 Ghosts and revenants: miscellaneous	Motif E	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	ghost memory loops, haunted places		the unknown rule or the helpless victim (K)
+E600 Reincarnation	Motif E	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,G,K	COVERED	a patron-like spirit pattern re-seating into a newborn host; limited memory		the unknown rule or the helpless victim (K)
+E700 The soul as bird/insect/breath	Motif E	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M	COVERED	soul = pattern stored in a small mobile carrier		the unknown rule or the helpless victim (K)
+E710 External soul (Koschei, heart hidden)	Motif E	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,X	COVERED	life store outside the body; its destruction ends the pattern		the unknown rule or the helpless victim (K)
+F0 Otherworld journeys	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,M,K	COVERED	planes as other worlds with wormhole doorways		the unknown rule or the helpless victim (K)
+F100 Journey to the land of the dead	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,M,S	COVERED	plane pack with its own laws		the unknown rule or the helpless victim (K)
+F200 Fairies and elves	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,X,S	COVERED	plane-dwelling beings with bargains		the unknown rule or the helpless victim (K)
+F251 Fairy time passes slowly (Rip van Winkle)	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,P	LAW	a plane may run at another clock rate than home	per-plane clock rate: a plane may run at a different rate than the home world	loss of years, return to a stranger world
+F300 Fairy mistress/lover	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	seduction plus bond		the unknown rule or the helpless victim (K)
+F400 Spirits of earth, water, etc.	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M	COVERED	nature spirits as place-bound patterns		the unknown rule or the helpless victim (K)
+F500 Remarkable persons (giants, dwarfs)	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	G,P	PACK	body scaling data with square-cube law		the unknown rule or the helpless victim (K)
+F600 Extraordinary powers (strongman)	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	G,M	PACK	strong body or M momentum		the unknown rule or the helpless victim (K)
+F700 Extraordinary places	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,P	COVERED	planes, glass mountain, hanging gardens		the unknown rule or the helpless victim (K)
+F800 Extraordinary things / trees	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	P,M	PACK	plants with strange properties		the unknown rule or the helpless victim (K)
+F900 Extraordinary occurrences	Motif F	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	P,K	COVERED	marvels via physics or misperception		the unknown rule or the helpless victim (K)
+G10 Cannibals / ogres	Motif G	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	P,K,S	COVERED	predators with a taboo-violating diet		the unknown rule or the helpless victim (K)
+G200 Witches	Motif G	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S,K	COVERED	human mage under suspicion; evil eye, flight, familiars; social persecution		the unknown rule or the helpless victim (K)
+G211 Witch as animal	Motif G	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,K	COVERED	shapeshift into animal, hurt animal shows in woman (body continuity)		the unknown rule or the helpless victim (K)
+G240 Witch harms people	Motif G	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	curse with drain; blame by rumour		the unknown rule or the helpless victim (K)
+G300 Other ogres (giants, trolls)	Motif G	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	P	PACK	body data		the unknown rule or the helpless victim (K)
+G400 Falling into ogre's power	Motif G	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K	COVERED	trap by deception; works from minds		the unknown rule or the helpless victim (K)
+G500 Ogre defeated	Motif G	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K	COVERED	trickery		the unknown rule or the helpless victim (K)
+H0 Identity tests	Motif H	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K	COVERED	recognition from perception		the unknown rule or the helpless victim (K)
+H500 Tests of cleverness (riddles)	Motif H	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K	COVERED	riddle contests from K layer		the unknown rule or the helpless victim (K)
+H900 Tasks and quests	Motif H	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	task structure is narrative; goals are drives		the unknown rule or the helpless victim (K)
+J0 Acquisition of wisdom	Motif J	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K	COVERED	learning		the unknown rule or the helpless victim (K)
+K0 Contest won by deception	Motif K	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K	COVERED	deception works via false beliefs that survive		the unknown rule or the helpless victim (K)
+K100 Deceptive bargains	Motif K	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S,M	COVERED	contract exploited by wording; bond semantics need exact wording		the unknown rule or the helpless victim (K)
+K300 Thefts and cheats	Motif K	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	crime and perception		the unknown rule or the helpless victim (K)
+K800 Fatal deception	Motif K	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K	COVERED	trap by false belief		the unknown rule or the helpless victim (K)
+K1800 Disguise and illusion	Motif K	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,K	COVERED	X rough copy of a form with sense noise		the unknown rule or the helpless victim (K)
+K1900 Impostures	Motif K	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	passing as someone else		the unknown rule or the helpless victim (K)
+M0 Judgments and decisions	Motif M	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	institutions		the unknown rule or the helpless victim (K)
+M200 Bargains and promises	Motif M	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	COVERED	bonds and oaths as patterns or as social contracts		the unknown rule or the helpless victim (K)
+M300 Prophecies	Motif M	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K	SECOND	true prophecy is retrocausal; self-fulfilling prophecy by belief works	SECOND: true foreknowledge needs retrocausal information	dread of fate
+M400 Curses	Motif M	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	COVERED	stable pattern with drain, condition, victim link		the unknown rule or the helpless victim (K)
+N0 Wagers / gambling	Motif N	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	games		the unknown rule or the helpless victim (K)
+N100 Nature of luck and fate	Motif N	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	none	EXCLUDED	fate as metaphysics is narrative-only; luck is statistical		the unknown rule or the helpless victim (K)
+N500 Treasure trove	Motif N	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	S,K	COVERED	hidden stores; guarded by curse		the unknown rule or the helpless victim (K)
+P0 Society (kings, class)	Motif P	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	S	COVERED	institutions		the unknown rule or the helpless victim (K)
+Q0 Rewards and punishments	Motif Q	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	S	COVERED	social norms and spirits judging		the unknown rule or the helpless victim (K)
+R0 Captives and fugitives	Motif R	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	ordinary		the unknown rule or the helpless victim (K)
+S0 Unnatural cruelty	Motif S	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	body harm		the unknown rule or the helpless victim (K)
+T0 Sex and marriage	Motif T	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	social layer		the unknown rule or the helpless victim (K)
+U0 Nature of life	Motif U	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	none	EXCLUDED	moral lessons		the unknown rule or the helpless victim (K)
+V0 Religion	Motif V	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	S,M	COVERED	belief substrates and institutions		the unknown rule or the helpless victim (K)
+X0 Humor	Motif X	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	none	EXCLUDED	narrative device		the unknown rule or the helpless victim (K)
+Z0 Formulaic tales	Motif Z	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	none	EXCLUDED	narrative form		the unknown rule or the helpless victim (K)
+Three wishes (genie / monkey's paw)	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	SECOND	an agent that executes any wish; unbounded wish power	SECOND: unbounded wish execution (omnipotence)	literal-minded horror
+Philosopher's stone	Alchemy	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,X	COVERED	a store/catalyst for X; transmutation bounded by mass		uncanny body or rule-breaking (K, body)
+Elixir of life	Alchemy	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	G,P,M	PACK	repair pattern drug		uncanny body or rule-breaking (K, body)
+Sleeping hero under the mountain	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,P	COVERED	stasis body with store		uncanny body or rule-breaking (K, body)
+Swan maiden / feather robe	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,S	COVERED	robe holds form pattern; theft binds her		uncanny body or rule-breaking (K, body)
+Pact with the Devil (Faust)	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S,K	COVERED	bond with soul drain		uncanny body or rule-breaking (K, body)
+Deal with Death	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	psychopomp bargaining		uncanny body or rule-breaking (K, body)
+Death personified	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	COVERED	patron of death, belief substrate		uncanny body or rule-breaking (K, body)
+Evil eye	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K,S	LAW	harm caused by a glance + envy; belief-driven; with M it is a focused push	semantic-condition triggers: bonds, wards and curses fire on a perceived symbolic predicate (invited, named, looked at, crossed a threshold)	envy, being looked at
+Sympathetic magic (voodoo doll, hair)	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,X	LAW	a link between an object and a person established by shared material or likeness	likeness or shared-material links: a link formed by shared material or form to a person	harm done at distance by something personal
+Familiar (witch's animal)	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	animal bonded by link		uncanny body or rule-breaking (K, body)
+Haunted house	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	ghost memory loop in structure		uncanny body or rule-breaking (K, body)
+Crossroads pact	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	COVERED	ritual site as bond locus		uncanny body or rule-breaking (K, body)
+Weeping or bleeding statue	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,P,K	COVERED	M-store release or condensation; misperception		uncanny body or rule-breaking (K, body)
+Cursed treasure	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M	COVERED	store with drain		uncanny body or rule-breaking (K, body)
+Changeling exchange of newborn	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	X,S	COVERED	rough copy rebuilt		uncanny body or rule-breaking (K, body)
+Wild man / woodwose	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	G,K	COVERED	feral humans		uncanny body or rule-breaking (K, body)
+Hag-riding	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	sleep paralysis + spirit		uncanny body or rule-breaking (K, body)
+Rain-making ritual	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,S	COVERED	energy at distance + social ritual		uncanny body or rule-breaking (K, body)
+Soul theft (sleep, picture)	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	M,K	COVERED	pattern removal		uncanny body or rule-breaking (K, body)
+Cannibal witch (Hansel and Gretel)	Cross-motif	https://en.wikipedia.org/wiki/Motif-Index_of_Folk-Literature	K,S	COVERED	trap house		uncanny body or rule-breaking (K, body)

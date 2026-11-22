@@ -1,0 +1,39 @@
+LANE: superpowers (MARK1 coverage pass)
+Entries: 392 (TSV: docs/coverage/superpowers.tsv). Verdicts: COVERED 248, PACK 82, SECOND 34, LAW 16, EXCLUDED 12.
+
+SOURCES AND WHAT WAS ACTUALLY CRAWLED
+- Superpower Wiki (powerlisting.fandom.com) via MediaWiki API, BFS from Category:Powers, depth 2: 32 categories, 25,572 main-namespace page titles (cached in ~/.cache/mark1-build/coverage/superpowers/raw/pages.json). The wiki is mostly one flat category; the real structure is in title suffixes (Manipulation 3216, Physiology 1667, Generation 990, Mimicry 726, Creation 710, Mastery 640, Proficiency 634, Magic 583, Attacks 537, Empowerment 502, ...).
+- Crawl gap (u): a few real pages (Omnipotence, Healing Factor, Phasing, Cloning, ...) were not in the crawl listing, probably redirects or pages in other categories. I checked those by name through the API and kept them.
+- TV Tropes (Super Power Lottery, Stock Superpowers): NOT crawled. Cloudflare returned a "Just a moment" challenge page; I did not try to get around it.
+- Wikipedia "List of superhuman features and abilities in fiction": NOT crawled. The API rate-limited the crawler (HTTP 429 style message) after a few calls and the exact title returned "missingtitle" (probably renamed or deleted). Retry later with a slower rate.
+- No article text was copied. Only titles, links and my own one-line summaries are stored.
+
+WHAT WAS SAMPLED (no silent caps)
+25.5k titles are combinatorial (element x suffix: "Pollen Attacks", "Music Constructs", ...). I did not walk them all. I took: (1) every standalone base power I judged distinct (about 870 one-word titles; I took roughly 300 of the most distinct, skipping tier variants /Absolute /Enhanced /Supernatural except where the tier changes the verdict); (2) one representative per suffix family (-kinesis variants, Physiology, Immunity, Absorption, Mimicry, Construct, Attacks, Embodiment, Empowerment); (3) all the "Omni-" and "Self-" families by representative. Family counts of the sample are in the TSV. About 392 entries, slightly over the 300 cap, because many are cheap variants that probe a different law. The ~5,650 non-suffixed pages not sampled are mostly sub-variants.
+Family labels in the TSV are mine, not the wiki's.
+
+BIG FINDING
+About 63% of sampled powers (COVERED) fall out of the existing layers with no new law: the one change (M moves energy and momentum at a distance) plus X (pattern rebuild, wormhole doorways, copies) plus G and body physics already give telekinesis, all the -kinesis elements, flight, force fields, healing, regeneration, shapeshifting, size change, teleportation, summoning, possession, necromancy, curses and gods. Another 21% are PACK: creatures, body plans, senses, cultures.
+Only 16 entries need a missing LAW and 34 need a SECOND change.
+
+COUNTS BY FAMILY (sample): Body 39, Physical enhancement 26, Offence 26, Occult 25, Force 23, Mind 21, Reality 19, Life and death 18, Space 16, Absence 16, Movement 15, Matter 15, Senses 13, Time 12, Absorb 12, Stealth 11, Omni 11, Infection 10, Defense 10, Perception 10, Elemental 9, Tech 8, Negation 8, Divine 6, Social 5, Summon 3, Cosmic 3.
+
+TOP MISSING LAWS (LAW verdict)
+1. Brain-state encode/decode over an M link (telepathy, memory reading and overwrite, clairtelepathy, telempathy): 5 entries + nerve-state coupling (electro-psionics). The M design has links to spirits and patrons, but reading or writing a living mind's content is not defined. This is the most important single gap, since many horror and superhero tropes are mind-based.
+2. Contact decoupling of a body from matter (phasing, intangibility, intra-phasing): 3.
+3. Machine-state interface from M to circuits (technopathy, cyberpathy, data telekinesis): 3. Crude version: M induces currents. Full version needs a model of device state.
+4. Gravity as a real field with sources, strong gravity (gravity manipulation, singularity): 2. Push-by-momentum covers the cheap version.
+5. Mass-field coupling (change inertial mass without moving matter): 1.
+6. Doorway graphs with cycles and entity-state loops (spatial looping): 1.
+
+SECOND-CHANGE CLUSTERS (34): true time travel and time loops, local time rate change (time stop, slow motion), retrocausality and true precognition (future information flowing back), luck and probability bias, unbounded control (omnipotence, reality warping, fate), unbounded information (omniscience), true creation of mass-energy, unconditional-outcome rules (absolute counter, omni-immunity, immutability), mind merge of diverged copies, metric distortion, nonlocal omnipresence. Note: a model that forecasts from K inference can fake precognition as a real in-world skill, with noise and false confidence, which is a design choice not a law.
+
+EXCLUDED (12): genre-shifting, narration, choice-giving, dystopianization, toonification, glitching, undefeatable (narrative), omnibenevolence/malevolence (alignment tags), meta science.
+
+WHAT IS SURPRISING
+- The superpower wiki is mostly a catalogue of one idea (move X at a distance, become Y, copy Z), so the layers cover far more than the 25k titles suggest.
+- Cost and limits come free: nearly every COVERED entry has a drain on the M store or on body mass (X must get matter from somewhere), so "godlike" powers become scarce by construction.
+- Fear in this lane is mostly the body (body horror: transformations, regrowth, parasites, petrification, absences like skinlessness) and K (impostors, hidden presence, false beliefs, loss of self through possession or mind control). Raw spectacle powers produce excitement, not fear, and need the K layer to be frightening.
+- Absence powers (heartlessness, lunglessness, brainlessness) become undead only if an M store or patron stands in for the missing function: a PACK, not a law.
+- Divination as read by tea leaves is just K noise: it stays PACK and adds false confidence, which is itself a fear source.
+- Mark (u): all verdicts are my reading of MARK1's design docs, not tested against the implementation.

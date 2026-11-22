@@ -1,0 +1,391 @@
+entry	family	source_url	layers	verdict	mechanism	law_or_change	fear_source
+Lucid dreaming	Dream phenomena	https://en.wikipedia.org/wiki/Lucid_dreaming	P,K	COVERED	sleeping mind runs a self-model with weak sensory input; awareness-in-dream is a flag on the K state, no physics	-	vertigo of unreliable reality; K
+Nightmare (sleep disorder)	Dream phenomena	https://en.wikipedia.org/wiki/Nightmare	P,K	COVERED	REM-linked threat sims in the mind's own predictor; wakes body with fear response	-	helpless dread; body and K
+Night terror	Dream phenomena	https://en.wikipedia.org/wiki/Night_terror	P,K	COVERED	sleep-stage arousal with panic and no recall; body-only physiology	-	screaming child with no one home; body
+Recurring dream	Dream phenomena	https://en.wikipedia.org/wiki/Recurring_dream	K	COVERED	persistent memory pattern re-sampled in sleep	-	inevitability; K
+Prophetic dream	Dream phenomena	https://en.wikipedia.org/wiki/Precognition#Dreams	K,M	PACK	dream is noisy inference from real cues, true by coincidence; or an M link to a distant store gives real info	-	fate feeling; K
+Shared dream	Dream phenomena	https://en.wikipedia.org/wiki/Shared_dream	M,X	LAW	two sleepers linked through M into one X plane both render; needs a general law for a mind-rendered shared plane	dream plane as a rendered X plane whose contents are driven by two minds' predictors	losing the line between your mind and another; K
+Dream invasion	Dream phenomena	https://en.wikipedia.org/wiki/Inception	M,X,K	LAW	entering another's sleeping mind via link; same law as shared dream plus a write path	mind-rendered plane with write access	violation of the last private place; K
+Dream sharing machine	Dream phenomena	https://en.wikipedia.org/wiki/Dream_sharing	P,M	PACK	device couples two sleepers' links; engineering of a link transducer	-	loss of privacy; K
+False awakening	Dream phenomena	https://en.wikipedia.org/wiki/False_awakening	K	COVERED	dream contains a waking-routine; the predictor repeats an unverified belief	-	you cannot trust waking; K
+Hypnagogia	Dream phenomena	https://en.wikipedia.org/wiki/Hypnagogia	P,K	COVERED	sensory noise at sleep onset; dials on perception	-	hallucination at the edge; K
+Hypnic jerk	Dream phenomena	https://en.wikipedia.org/wiki/Hypnic_jerk	P	COVERED	motor release at sleep onset; body law	-	falling jolt; body
+Old Hag	Dream phenomena	https://en.wikipedia.org/wiki/Old_Hag	K,S	COVERED	folk label for sleep paralysis; culture explains a body event as an entity	-	the thing in the room; K and S
+Sleepwalking	Dream phenomena	https://en.wikipedia.org/wiki/Sleepwalking	P,K	COVERED	motor routines run with the narrator-view shut; body agent without awareness	-	walking without a self; K
+Sleep talking	Dream phenomena	https://en.wikipedia.org/wiki/Somniloquy	P	COVERED	speech from sleeping mind leaks secrets; K leak	-	truth said unguarded; K
+Exploding head syndrome	Dream phenomena	https://en.wikipedia.org/wiki/Exploding_head_syndrome	P,K	COVERED	auditory perception glitch at sleep onset	-	phantom bang; body
+Sleep deprivation hallucination	Dream phenomena	https://en.wikipedia.org/wiki/Sleep_deprivation	P,K	COVERED	fatigue raises perceptual noise and false beliefs	-	slow loss of sanity; body and K
+Fatal familial insomnia	Dream phenomena	https://en.wikipedia.org/wiki/Fatal_familial_insomnia	P,G	PACK	prion mutation gene variant that blocks sleep, drives decline	-	dread of inevitability; body
+Narcolepsy	Dream phenomena	https://en.wikipedia.org/wiki/Narcolepsy	P,G	PACK	gene variant that forces sleep onset at rates; faint-rate machinery	-	losing control at any moment; body
+Mass sleep epidemic (Encephalitis lethargica)	Dream phenomena	https://en.wikipedia.org/wiki/Encephalitis_lethargica	P,S	PACK	disease pack that induces long stupor, spreads by contact	-	frozen people; body
+Kleine-Levin syndrome	Dream phenomena	https://en.wikipedia.org/wiki/Kleine-Levin_syndrome	P,G	PACK	periodic hypersomnia as dial cycle	-	vanishing weeks; body
+Dream incubation	Dream phenomena	https://en.wikipedia.org/wiki/Incubation_(ritual)	S,K	COVERED	temple ritual to seek guidance in sleep; culture plus K	-	answers from the dark; S
+Dreamtime (Aboriginal)	Dream phenomena	https://en.wikipedia.org/wiki/Dreamtime	S,K	EXCLUDED	living cosmology tradition; cultural, real people's sacred belief, treat only as culture-pack respect	-	sacred; S
+Oneiromancy	Dream phenomena	https://en.wikipedia.org/wiki/Oneiromancy	S,K	COVERED	dream interpretation as social practice; unreliable divination	-	false certainty; S
+Dream Cycle (Lovecraft)	Dream fiction	https://en.wikipedia.org/wiki/Dream_Cycle	X,M,K	LAW	dreaming minds enter a persistent plane; needs shared mind-rendered plane law	mind-rendered shared plane with persistence	wonder then trap; K
+Dreamlands (Dream Cycle setting)	Dream fiction	https://en.wikipedia.org/wiki/Dreamlands	X,M	LAW	a plane reached through sleep links, geography from belief; same law as above	mind-rendered shared plane with persistence	wonder, danger of not waking; K
+Nightgaunts	Dream fiction	https://en.wikipedia.org/wiki/Nightgaunt	X,M	PACK	faceless winged beings of the dream plane, a creature pack	-	silent abduction; body and K
+Zoogs	Dream fiction	https://en.wikipedia.org/wiki/Zoog	X	PACK	small dream-plane creatures, creature pack	-	swarm; K
+Ghasts	Dream fiction	https://en.wikipedia.org/wiki/Ghast_(Dreamlands)	X	PACK	plane predators fear light; pack	-	dark hunger; body
+Leng spiders	Dream fiction	https://en.wikipedia.org/wiki/Spiders_of_Leng	X	PACK	plane predator with web; pack	-	cold hunting horror; body
+Ulthar cats	Dream fiction	https://en.wikipedia.org/wiki/Ulthar	S	PACK	cat taboo as culture; pack	-	social law with teeth; S
+Randolph Carter	Dream fiction	https://en.wikipedia.org/wiki/Randolph_Carter	K	EXCLUDED	a specific protagonist; mind pack only	-	unknown and misperception; K
+The Sandman (Gaiman)	Dream fiction	https://en.wikipedia.org/wiki/The_Sandman_(comic_book)	M,X,S	LAW	personified Dream as a being whose substrate is all dreamers' linked patterns; needs shared dream plane	mind-rendered plane plus faith-substrate being	awe; S
+Morpheus (Greek god of dreams)	Dream fiction	https://en.wikipedia.org/wiki/Morpheus	M,S	COVERED	god as believers' linked pattern substrate	-	a presence behind sleep; S
+Oneiroi	Dream fiction	https://en.wikipedia.org/wiki/Oneiroi	M,S	COVERED	personified dream spirits as believer-pattern beings	-	crowd of whispers; S
+Phobetor and Phantasos	Dream fiction	https://en.wikipedia.org/wiki/Phobetor_and_Phantasos	M,S	COVERED	dream-form gods as cults; belief substrate	-	mimicry in sleep; S
+Sandman (folklore)	Dream fiction	https://en.wikipedia.org/wiki/Sandman	S	COVERED	bedtime figure for children, a rumour agent	-	nursery threat; S
+Dream eaters (tapir/Baku)	Dream fiction	https://en.wikipedia.org/wiki/Baku_(mythology)	M,X	PACK	creature that feeds on dream-patterns by link; pack	-	being consumed from the inside; K
+Inception (film)	Dream fiction	https://en.wikipedia.org/wiki/Inception	M,X	LAW	nested shared dream planes with time dilation; dream plane time rate	plane with its own clock rate	losing track of the layer; K
+Paprika (anime)	Dream fiction	https://en.wikipedia.org/wiki/Paprika_(2006_film)	P,M,X	LAW	device linking dream planes; as above	mind-rendered shared plane	bleed of dream into waking; K
+Doctor Sleep	Dream fiction	https://en.wikipedia.org/wiki/Doctor_Sleep	M,K	COVERED	psychics eat vitality of others; M drain by a body-store	-	predator that looks harmless; K
+Silent Hill otherworld	Dream fiction	https://en.wikipedia.org/wiki/Silent_Hill	X,K	LAW	a reality that reshapes to a person's guilt; plane rendered from one mind; needs plane that mirrors a patron mind	mind-rendered plane seeded by one mind	self-judgment; K
+Yume Nikki	Dream fiction	https://en.wikipedia.org/wiki/Yume_Nikki	X,K	LAW	game of a single dreamer's plane; the mind-rendered plane law	mind-rendered plane	isolation; K
+Dreamcast of Lucid Dreaming (WILD)	Dream phenomena	https://en.wikipedia.org/wiki/Lucid_dream	K	EXCLUDED	technique, not an entity; covered by lucid dreaming	-	unknown and misperception; K
+Dreamwalker	Dream fiction	https://en.wikipedia.org/wiki/Dreamwalker	M,X	LAW	a mind that enters planes at will; needs plane entry rules	mind-rendered plane entry	the unseen visitor; K
+Dream Quest	Dream fiction	https://en.wikipedia.org/wiki/The_Dream-Quest_of_Unknown_Kadath	X	COVERED	journey across a plane with moving geography; X plane	-	wonder; K
+Alice's Adventures in Wonderland	Dream fiction	https://en.wikipedia.org/wiki/Alice's_Adventures_in_Wonderland	X,K	LAW	plane where size and logic shift; needs scale-changing doors, partly X	scale-changing X door	loss of rules; K
+Through the Looking-Glass	Dream fiction	https://en.wikipedia.org/wiki/Through_the_Looking-Glass	X	COVERED	mirror doorway to a reversed plane; X wormhole	-	everything slightly wrong; K
+Cheshire Cat	Dream fiction	https://en.wikipedia.org/wiki/Cheshire_Cat	X,M	PACK	body that fades at will; pattern drive plus pack	-	a grin without a body; K
+Queen of Hearts	Dream fiction	https://en.wikipedia.org/wiki/Queen_of_Hearts_(Alice's_Adventures_in_Wonderland)	S	PACK	tyrant agent in the plane; pack	-	arbitrary death; S
+Little Nemo	Dream fiction	https://en.wikipedia.org/wiki/Little_Nemo	X	COVERED	dream plane in a comic; same X plane	-	wonder; K
+Neverland	Dream fiction	https://en.wikipedia.org/wiki/Neverland	X,M	PACK	plane with no ageing, a pack of laws for it	ageless plane tag	escape and cost; K
+Wizard of Oz Oz	Dream fiction	https://en.wikipedia.org/wiki/Oz_(fictional_country)	X	COVERED	plane reached by storm doorway; X	-	displacement; K
+Narnia	Dream fiction	https://en.wikipedia.org/wiki/Narnia	X	COVERED	plane reached by a door in a wardrobe; X	-	wonder; K
+Pan's Labyrinth	Dream fiction	https://en.wikipedia.org/wiki/Pan's_Labyrinth	X,K	COVERED	ambiguous plane; K decides if real; narrator shows what the child perceives	-	ambiguity between trauma and magic; K
+Coraline Other World	Dream fiction	https://en.wikipedia.org/wiki/Coraline	X,M,K	COVERED	a plane run by a bargaining mimic with button eyes; pact and mimic	-	a loving copy that wants you; K
+The Other Mother	Dream fiction	https://en.wikipedia.org/wiki/Coraline	M,K	COVERED	patron that traps and consumes; cosmic outsider with link	-	a mother who is a trap; K
+Fantasia	Dream fiction	https://en.wikipedia.org/wiki/Fantasia_(1940_film)	K	EXCLUDED	animated music film, nothing to model	-	unknown and misperception; K
+Grimm: Allerleirauh	Grimm	https://en.wikipedia.org/wiki/Allerleirauh	S	PACK	incest escape tale; culture and a disguise pack	-	danger from kin; S
+Grimm: The Blue Light	Grimm	https://en.wikipedia.org/wiki/The_Blue_Light_(fairy_tale)	M	PACK	light that summons a bound spirit; pact item	-	power with a master; K
+Grimm: The Boots of Buffalo Leather	Grimm	https://en.wikipedia.org/wiki/The_Boots_of_Buffalo_Leather	P	PACK	soldier and devil's pact tale; contract pack	-	bargain; S
+Grimm: The Brave Little Tailor	Grimm	https://en.wikipedia.org/wiki/The_Brave_Little_Tailor	K,S	COVERED	reputation spreading from a boast; rumour mutates	-	false fame; S
+Grimm: Brother and Sister	Grimm	https://en.wikipedia.org/wiki/Brother_and_Sister_(fairy_tale)	M	PACK	curse turns a boy into a deer; shapechange curse	-	losing form; body
+Grimm: Bluebeard	Grimm	https://en.wikipedia.org/wiki/Bluebeard	S,K	COVERED	serial killer husband and a forbidden room; secrets and hidden bodies	-	a house with a secret; K
+Grimm: The Devil with the Three Golden Hairs	Grimm	https://en.wikipedia.org/wiki/The_Devil_with_the_Three_Golden_Hairs	M,S	PACK	quest set by a ruler; bargain with a patron	-	danger of tasks; S
+Grimm: Death's Messengers	Grimm	https://en.wikipedia.org/wiki/Death's_Messengers	S	PACK	death sends signs of warning; omen tale	-	fate; K
+Grimm: The Devil's Sooty Brother	Grimm	https://en.wikipedia.org/wiki/The_Devil's_Sooty_Brother	M	PACK	service to the devil by contract; pact	-	bondage; S
+Grimm: Doctor Know-all	Grimm	https://en.wikipedia.org/wiki/Doctor_Know-all	K	COVERED	false reputation; lucky guesses	-	being found out; S
+Grimm: The Elves and the Shoemaker	Grimm	https://en.wikipedia.org/wiki/The_Elves_and_the_Shoemaker	M	PACK	helper creatures work at night; brownie pack	-	unseen help; K
+Grimm: The Fisherman and His Wife	Grimm	https://en.wikipedia.org/wiki/The_Fisherman_and_His_Wife	M	PACK	wishing fish with escalating requests; wish agent with drain	-	greed; S
+Grimm: Fitcher's Bird	Grimm	https://en.wikipedia.org/wiki/Fitcher's_Bird	K,S	COVERED	killer sorcerer; hidden bodies; deception	-	a house of dismembered women; body
+Grimm: Frau Holle	Grimm	https://en.wikipedia.org/wiki/Frau_Holle	X	COVERED	doorway through a well to another plane; X	-	moral test; S
+Grimm: The Frog Prince	Grimm	https://en.wikipedia.org/wiki/The_Frog_Prince	M	PACK	curse form; shapechange curse	-	disgust and promise; body
+Grimm: The Girl Without Hands	Grimm	https://en.wikipedia.org/wiki/The_Girl_Without_Hands	M,S	PACK	devil's bargain with bodily cost; pact	-	mutilation; body
+Grimm: The Glass Coffin	Grimm	https://en.wikipedia.org/wiki/The_Glass_Coffin	M	PACK	preservation pattern around a body; pack	-	a body that waits; K
+Grimm: Godfather Death	Grimm	https://en.wikipedia.org/wiki/Godfather_Death	M,S	PACK	death as person who sees through illness; pack	-	inevitable; K
+Grimm: The Goose Girl	Grimm	https://en.wikipedia.org/wiki/The_Goose_Girl	K,S	COVERED	identity swap and a speaking horse head; mimicry	-	stolen identity; S
+Grimm: The Golden Goose	Grimm	https://en.wikipedia.org/wiki/The_Golden_Goose	M	PACK	object that binds touchers; sticky-curse	-	ridiculous trap; S
+Grimm: Hans My Hedgehog	Grimm	https://en.wikipedia.org/wiki/Hans_My_Hedgehog	G	PACK	mutant birth; gene pack	-	rejection; S
+Grimm: The Hare and the Hedgehog	Grimm	https://en.wikipedia.org/wiki/The_Hare_and_the_Hedgehog	K	COVERED	trick by lookalike; deception	-	exhaustion; K
+Grimm: The Singing Bone	Grimm	https://en.wikipedia.org/wiki/The_Singing_Bone	M,S	COVERED	murdered body's bone voices truth; ghost memory in remains	-	the dead speak; K
+Grimm: The Juniper Tree	Grimm	https://en.wikipedia.org/wiki/The_Juniper_Tree	M,S	COVERED	murdered child returns as bird; ghost and cooked-flesh horror	-	infanticide and cannibalism; body
+Grimm: Iron John	Grimm	https://en.wikipedia.org/wiki/Iron_John	S	PACK	wild man; creature pack	-	wild kin; K
+Grimm: Jorinde and Joringel	Grimm	https://en.wikipedia.org/wiki/Jorinde_and_Joringel	M	PACK	witch turns girls to birds in cage; transformation curse	-	loss of the beloved; K
+Grimm: King Thrushbeard	Grimm	https://en.wikipedia.org/wiki/King_Thrushbeard	S	COVERED	humbling of a proud woman; social	-	public shame; S
+Grimm: Little Red Riding Hood	Grimm	https://en.wikipedia.org/wiki/Little_Red_Riding_Hood	K	COVERED	wolf impersonates kin; mimicry	-	predator in familiar form; K
+Grimm: Maid Maleen	Grimm	https://en.wikipedia.org/wiki/Maid_Maleen	S	COVERED	years walled in; isolation	-	buried alive; body
+Grimm: The Master Thief	Grimm	https://en.wikipedia.org/wiki/The_Master_Thief	K	COVERED	deception; theft	-	being outwitted; S
+Grimm: Mother Trudy	Grimm	https://en.wikipedia.org/wiki/Mother_Trudy	M	PACK	witch who kills the curious; hostile pack	-	curiosity punished; K
+Grimm: The Nixie of the Mill-Pond	Grimm	https://en.wikipedia.org/wiki/The_Nixie_of_the_Mill-Pond	M	PACK	water spirit holds a soul	-	drowning; body
+Grimm: Old Rinkrank	Grimm	https://en.wikipedia.org/wiki/Old_Rinkrank	X	PACK	underground captor; plane under a glass mountain	-	buried; body
+Grimm: One-Eye Two-Eyes Three-Eyes	Grimm	https://en.wikipedia.org/wiki/One-Eye_Two-Eyes_Three-Eyes	G	PACK	visual mutation variants and a magic tree; gene pack	-	otherness; S
+Grimm: The Robber Bridegroom	Grimm	https://en.wikipedia.org/wiki/The_Robber_Bridegroom	S,K	COVERED	cannibal band in a hidden house; ordinary crime	-	dismemberment; body
+Grimm: Rapunzel	Grimm	https://en.wikipedia.org/wiki/Rapunzel	S	COVERED	tower captivity by a sorceress; ordinary physical plus hair-as-rope	-	isolation; body
+Grimm: The Seven Ravens	Grimm	https://en.wikipedia.org/wiki/The_Seven_Ravens	M	PACK	curse changes brothers; shapechange	-	family transformed; K
+Grimm: The Six Swans	Grimm	https://en.wikipedia.org/wiki/The_Six_Swans	M	PACK	shirts undo swan curse; curse removable with crafts	-	silence and vow; S
+Grimm: Sleeping Beauty	Grimm	https://en.wikipedia.org/wiki/Sleeping_Beauty	M	COVERED	sleep curse with a spindle; frozen mind	-	inevitable doom; K
+Grimm: Snow-White and Rose-Red	Grimm	https://en.wikipedia.org/wiki/Snow-White_and_Rose-Red	M	PACK	bear is a cursed prince; pack	-	unexplained power with a cost; K
+Grimm: Snow White	Grimm	https://en.wikipedia.org/wiki/Snow_White	M,K	COVERED	enchanted mirror (information store), poisoned apple, glass coffin	-	jealous murder; S
+Grimm: The Shroud	Grimm	https://en.wikipedia.org/wiki/The_Shroud	M	COVERED	dead child's grief returns; ghost	-	grief makes ghost; K
+Grimm: The Spirit in the Bottle	Grimm	https://en.wikipedia.org/wiki/The_Spirit_in_the_Bottle	M	PACK	bound spirit grants power; pact	-	a freed thing; K
+Grimm: Thumbling	Grimm	https://en.wikipedia.org/wiki/Thumbling	G	PACK	tiny person; size mutant	-	danger in small scale; body
+Grimm: The Twelve Dancing Princesses	Grimm	https://en.wikipedia.org/wiki/The_Twelve_Dancing_Princesses	X,M	COVERED	nightly door to a hidden plane; worn-out shoes as evidence	-	secret nightlife; K
+Grimm: The Twelve Brothers	Grimm	https://en.wikipedia.org/wiki/The_Twelve_Brothers	M	PACK	ravens curse; shapechange	-	silence; K
+Grimm: The Wolf and the Seven Young Goats	Grimm	https://en.wikipedia.org/wiki/The_Wolf_and_the_Seven_Young_Goats	K	COVERED	wolf mimics mother's voice; mimicry	-	monster knocks; K
+Grimm: The Water of Life	Grimm	https://en.wikipedia.org/wiki/The_Water_of_Life	M	PACK	healing store as a spring; M store pack	-	quest; K
+Grimm: The Youth Who Went Forth to Learn What Fear Was	Grimm	https://en.wikipedia.org/wiki/The_Youth_Who_Went_Forth_to_Learn_What_Fear_Was	K,S	COVERED	a man without fear, fear from the unknown; K	-	fear as taught; K
+Grimm: Town Musicians of Bremen	Grimm	https://en.wikipedia.org/wiki/Town_Musicians_of_Bremen	K	COVERED	animals scare robbers by noise; misperception	-	false monster; K
+Grimm: Rumpelstiltskin name-power	Grimm	https://en.wikipedia.org/wiki/Rumpelstiltskin_name-power	M,K	COVERED	true name as a key in a binding pact; knowledge breaks it	-	racing against a name; K
+Grimm: Hansel and Gretel witch	Grimm	https://en.wikipedia.org/wiki/Hansel_and_Gretel_witch	S	COVERED	baiting a trap with food; cannibal	-	being fattened; body
+Grimm: The Fox and the Geese	Grimm	https://en.wikipedia.org/wiki/The_Fox_and_the_Geese	K	COVERED	animal trick; deception	-	unknown and misperception; K
+Grimm: The Old Woman in the Wood	Grimm	https://en.wikipedia.org/wiki/The_Old_Woman_in_the_Wood	M	PACK	enchanted bird and key; pack	-	unexplained power with a cost; K
+Grimm: How Some Children Played at Slaughtering	Grimm	https://en.wikipedia.org/wiki/How_Some_Children_Played_at_Slaughtering	S	COVERED	children mimic violence; social	-	innocent horror; S
+Grimm: The Crystal Ball	Grimm	https://en.wikipedia.org/wiki/The_Crystal_Ball	M	PACK	scrying device; knowledge pack	-	unexplained power with a cost; K
+Grimm: The Singing Springing Lark	Grimm	https://en.wikipedia.org/wiki/The_Singing_Springing_Lark	M	PACK	beast-husband curse; pack	-	unexplained power with a cost; K
+Grimm: The Three Snake-Leaves	Grimm	https://en.wikipedia.org/wiki/The_Three_Snake-Leaves	M	PACK	revival herb; X rewind or healing herb	-	unexplained power with a cost; K
+Grimm: Sweet Porridge	Grimm	https://en.wikipedia.org/wiki/Sweet_Porridge	M	PACK	runaway object by a missing word; command pack	-	an overflow; K
+Grimm: The Wishing-Table, the Gold-Ass, and the Cudgel in the Sack	Grimm	https://en.wikipedia.org/wiki/The_Wishing-Table,_the_Gold-Ass,_and_the_Cudgel_in_the_Sack	M	PACK	conjure items; X copy items	-	unexplained power with a cost; K
+Andersen: The Snow Queen	Andersen	https://en.wikipedia.org/wiki/The_Snow_Queen	M,K	PACK	ice splinter in eye alters perception; sense dial plus a patron queen	-	cold sight; K
+Andersen: The Shadow	Andersen	https://en.wikipedia.org/wiki/The_Shadow	M,K	PACK	shadow takes over the man; possession by a patron driving host	-	being replaced; K
+Andersen: The Red Shoes	Andersen	https://en.wikipedia.org/wiki/The_Red_Shoes	M	PACK	cursed shoes force dancing; control curse	-	cannot stop; body
+Andersen: The Little Mermaid	Andersen	https://en.wikipedia.org/wiki/The_Little_Mermaid	G,M	PACK	bargain for legs with pain cost; pact	-	pain at every step; body
+Andersen: The Little Match Girl	Andersen	https://en.wikipedia.org/wiki/The_Little_Match_Girl	P,K	COVERED	hypothermia visions; physiology plus hallucination	-	dying alone; body
+Andersen: The Steadfast Tin Soldier	Andersen	https://en.wikipedia.org/wiki/The_Steadfast_Tin_Soldier	P	COVERED	a toy comes to life at night; toy as animated thing	-	body; pain or loss
+Andersen: The Tinderbox	Andersen	https://en.wikipedia.org/wiki/The_Tinderbox	M	PACK	summoned dogs bound to a tinderbox; pact item	-	unexplained power with a cost; K
+Andersen: The Ice-Maiden	Andersen	https://en.wikipedia.org/wiki/The_Ice-Maiden	M	PACK	mountain spirit claims climbers; pack	-	nature as hunter; K
+Andersen: Ole Lukøje	Andersen	https://en.wikipedia.org/wiki/Ole_Luk%C3%B8je	M	COVERED	sandman who sprays dreams	-	unexplained power with a cost; K
+Andersen: The Flying Trunk	Andersen	https://en.wikipedia.org/wiki/The_Flying_Trunk	X	PACK	fire-flight trunk; machine pack	-	unstable space; K
+Andersen: The Emperor's New Clothes	Andersen	https://en.wikipedia.org/wiki/The_Emperor's_New_Clothes	K,S	COVERED	false belief survives untested due to social pressure	-	collective delusion; S
+Andersen: The Princess and the Pea	Andersen	https://en.wikipedia.org/wiki/The_Princess_and_the_Pea	P	COVERED	sensitivity as a test	-	body; pain or loss
+Andersen: The Travelling Companion	Andersen	https://en.wikipedia.org/wiki/The_Travelling_Companion	M	PACK	ghost repays kindness; dead helper	-	unexplained power with a cost; K
+Andersen: The Galoshes of Fortune	Andersen	https://en.wikipedia.org/wiki/The_Galoshes_of_Fortune	M	PACK	cursed shoes grant wishes with cost	-	unexplained power with a cost; K
+Andersen: The Wild Swans	Andersen	https://en.wikipedia.org/wiki/The_Wild_Swans	M	PACK	nettle shirts break swan curse	-	ordeal; body
+Andersen: The Fir-Tree	Andersen	https://en.wikipedia.org/wiki/The_Fir-Tree	K	EXCLUDED	didactic allegory, no mechanism	-	unknown and misperception; K
+Andersen: Thumbelina	Andersen	https://en.wikipedia.org/wiki/Thumbelina	G	PACK	tiny person	-	bodily difference; body
+Andersen: The Nightingale	Andersen	https://en.wikipedia.org/wiki/The_Nightingale	P	COVERED	clockwork vs living bird; machine mind	-	body; pain or loss
+Andersen: The Garden of Paradise	Andersen	https://en.wikipedia.org/wiki/The_Garden_of_Paradise	X	PACK	plane of temptation	-	unstable space; K
+Andersen: The Story of a Mother	Andersen	https://en.wikipedia.org/wiki/The_Story_of_a_Mother	M,S	PACK	a mother bargains with Death for a child	-	bargain; S
+Andersen: The Snowman	Andersen	https://en.wikipedia.org/wiki/The_Snowman	M	COVERED	a conscious snowman yearning for the stove	-	unexplained power with a cost; K
+Andersen: Little Claus and Big Claus	Andersen	https://en.wikipedia.org/wiki/Little_Claus_and_Big_Claus	S	COVERED	trickster deceit and murder	-	social pressure and shame; S
+Andersen: The Most Incredible Thing	Andersen	https://en.wikipedia.org/wiki/The_Most_Incredible_Thing	M	PACK	a self-moving statue clock; construct pack	-	unexplained power with a cost; K
+Andersen: The Wicked Prince	Andersen	https://en.wikipedia.org/wiki/The_Wicked_Prince	S	COVERED	tyrant against god; social	-	social pressure and shame; S
+Andersen: The Goblin and the Grocer	Andersen	https://en.wikipedia.org/wiki/The_Goblin_and_the_Grocer	S	PACK	household goblin choosing poetry or food	-	social pressure and shame; S
+Fairy tale: The Red Ettin	Fairy tale	https://en.wikipedia.org/wiki/The_Red_Ettin	S	PACK	three-headed giant; creature pack	-	ogre; body
+Fairy tale: Silver Hoof	Fairy tale	https://en.wikipedia.org/wiki/Silver_Hoof	M	PACK	Russian tale of drinking from a hoofprint; transform curse	-	unexplained power with a cost; K
+Fairy tale: The Bear (fairy tale)	Fairy tale	https://en.wikipedia.org/wiki/The_Bear_(fairy_tale)	M	PACK	bear husband tale	-	unexplained power with a cost; K
+Fairy tale: Puss in Boots	Fairy tale	https://en.wikipedia.org/wiki/Puss_in_Boots	K,S	COVERED	false rumour of a lord; reputation	-	unknown and misperception; K
+Fairy tale: The Ugly Duckling	Fairy tale	https://en.wikipedia.org/wiki/The_Ugly_Duckling	G	COVERED	outsider; genetic difference	-	exclusion; S
+Fairy tale: Cinderella	Fairy tale	https://en.wikipedia.org/wiki/Cinderella	M	PACK	fairy godmother magic with a time limit; drain	-	unexplained power with a cost; K
+Fairy tale: Beauty and the Beast	Fairy tale	https://en.wikipedia.org/wiki/Beauty_and_the_Beast	M,G	PACK	curse form and rose; curse with a release clause	-	unexplained power with a cost; K
+Fairy tale: Pied Piper of Hamelin	Fairy tale	https://en.wikipedia.org/wiki/Pied_Piper_of_Hamelin	M,S	PACK	music binds minds of rats and children; sound-driven control	control by music pattern	the town's lost children; S
+Fairy tale: Bluebeard's chamber	Fairy tale	https://en.wikipedia.org/wiki/Bluebeard's_chamber	S	COVERED	(u) covered by the family pattern; not studied individually	-	social pressure and shame; S
+Fairy tale: Baba Yaga	Fairy tale	https://en.wikipedia.org/wiki/Baba_Yaga	M,X	PACK	witch whose hut has legs; moving-house construct and plane border	-	an ambivalent crone; K
+Fairy tale: Koschei the Deathless	Fairy tale	https://en.wikipedia.org/wiki/Koschei_the_Deathless	M	PACK	soul stored outside body; store with distant link	-	can't be killed; K
+Fairy tale: Firebird	Fairy tale	https://en.wikipedia.org/wiki/Firebird	M	PACK	M-rich creature with gold feathers	-	unexplained power with a cost; K
+Fairy tale: Vasilisa the Beautiful	Fairy tale	https://en.wikipedia.org/wiki/Vasilisa_the_Beautiful	M	PACK	helper doll and a skull lantern	-	unexplained power with a cost; K
+Fairy tale: Hop-o'-My-Thumb	Fairy tale	https://en.wikipedia.org/wiki/Hop-o'-My-Thumb	S	COVERED	abandoned children and an ogre	-	abandonment; S
+Fairy tale: Tom Thumb	Fairy tale	https://en.wikipedia.org/wiki/Tom_Thumb	G	PACK	tiny person	-	bodily difference; body
+Fairy tale: Jack and the Beanstalk	Fairy tale	https://en.wikipedia.org/wiki/Jack_and_the_Beanstalk	G,M	PACK	magic beans; giant; fast growth	-	bodily difference; body
+Fairy tale: Goldilocks and the Three Bears	Fairy tale	https://en.wikipedia.org/wiki/Goldilocks_and_the_Three_Bears	K	COVERED	trespass tale	-	unknown and misperception; K
+Fairy tale: The Gingerbread Man	Fairy tale	https://en.wikipedia.org/wiki/The_Gingerbread_Man	K	PACK	animate food	-	unknown and misperception; K
+Fairy tale: The Little Red Hen	Fairy tale	https://en.wikipedia.org/wiki/The_Little_Red_Hen	K	EXCLUDED	moral tale	-	unknown and misperception; K
+Fairy tale: Aladdin's lamp	Fairy tale	https://en.wikipedia.org/wiki/Aladdin	M	PACK	bound being with a master	-	unexplained power with a cost; K
+Fairy tale: Ali Baba and the Forty Thieves	Fairy tale	https://en.wikipedia.org/wiki/Ali_Baba_and_the_Forty_Thieves	M	PACK	a password opens the cave; a keyed door	-	unexplained power with a cost; K
+Fairy tale: Sinbad's Roc and Old Man of the Sea	Fairy tale	https://en.wikipedia.org/wiki/Sinbad's_Roc_and_Old_Man_of_the_Sea	P,M	PACK	clinging parasite old man	-	a burden that never leaves; body
+Fairy tale: Scheherazade	Fairy tale	https://en.wikipedia.org/wiki/Scheherazade	S	COVERED	survival by storytelling	-	social pressure and shame; S
+Fairy tale: Bearskin	Fairy tale	https://en.wikipedia.org/wiki/Bearskin_(German_fairy_tale)	M	PACK	bargain not to wash for seven years	-	stigma; S
+Fairy tale: Donkeyskin	Fairy tale	https://en.wikipedia.org/wiki/Donkeyskin	S	COVERED	disguise to flee	-	social pressure and shame; S
+Fairy tale: Tam Lin	Fairy tale	https://en.wikipedia.org/wiki/Tam_Lin	M	PACK	fairy abduction rescue; ward and shapechange	-	unexplained power with a cost; K
+Fairy tale: Thomas the Rhymer	Fairy tale	https://en.wikipedia.org/wiki/Thomas_the_Rhymer	M,X	PACK	gifted tongue that cannot lie; geas with time passage	-	unexplained power with a cost; K
+Fairy tale: The Juniper Tree cannibalism	Fairy tale	https://en.wikipedia.org/wiki/The_Juniper_Tree_cannibalism	S	COVERED	(u) covered by the family pattern; not studied individually	-	social pressure and shame; S
+Fairy tale: The Snow Child	Fairy tale	https://en.wikipedia.org/wiki/The_Snow_Child	M	PACK	a child formed of snow	-	unexplained power with a cost; K
+Fairy tale: The Golden Key	Fairy tale	https://en.wikipedia.org/wiki/The_Golden_Key	X	PACK	key that opens an unknown box	-	unstable space; K
+AT 300 dragon slayer	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	S	COVERED	monster hunt with reward	-	-
+AT 400 supernatural wife	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	M	PACK	swan-maiden stolen skin binds her	-	-
+AT 500 helper's name	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	M,K	COVERED	name as a key	-	-
+AT 510 persecuted heroine	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	S	COVERED	tale type, covered by the tale elements in its mapped lines	-	-
+AT 700 Thumbling	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	G	PACK	tale type, covered by the tale elements in its mapped lines	-	-
+AT 780 singing bone	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	M	COVERED	tale type, covered by the tale elements in its mapped lines	-	-
+AT 880 test of fidelity	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	S	COVERED	tale type, covered by the tale elements in its mapped lines	-	-
+AT 1000 stupid ogre	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	S	COVERED	tale type, covered by the tale elements in its mapped lines	-	-
+AT 1200 foolish villagers	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	S	COVERED	tale type, covered by the tale elements in its mapped lines	-	-
+AT 2000 cumulative tales	AT index	https://en.wikipedia.org/wiki/Aarne–Thompson–Uther_Index	K	EXCLUDED	tale type, covered by the tale elements in its mapped lines	-	-
+Rule of three	Fairy-tale elements	https://en.wikipedia.org/wiki/Rule_of_three_(writing)	K	EXCLUDED	narrative device only	-	unknown and misperception; K
+Once upon a time	Fairy-tale elements	https://en.wikipedia.org/wiki/Once_upon_a_time	K	EXCLUDED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Happy ending	Fairy-tale elements	https://en.wikipedia.org/wiki/Happy_ending	K	EXCLUDED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Cloak of invisibility	Fairy-tale elements	https://en.wikipedia.org/wiki/Cloak_of_invisibility	M,P	COVERED	bend light or sight signals by M; or sense-confusion	-	the unseen watcher; K
+Seven-league boots	Fairy-tale elements	https://en.wikipedia.org/wiki/Seven-league_boots	M,P	COVERED	stored M gives momentum; movement artefact	-	unexplained power with a cost; K
+Magic carpet	Fairy-tale elements	https://en.wikipedia.org/wiki/Magic_carpet	M,P	COVERED	M momentum on a patterned cloth	-	unexplained power with a cost; K
+Golden apple	Fairy-tale elements	https://en.wikipedia.org/wiki/Golden_apple	M	PACK	M store food; item	-	unexplained power with a cost; K
+Wish (fairy tale)	Fairy-tale elements	https://en.wikipedia.org/wiki/Wish_(fairy_tale)	M,X	LAW	literal wish granting needs a patron that reads intent and a bounded cost law	wish interpretation by a patron mind	monkey's paw twist; K
+Enchanted forest	Fairy-tale elements	https://en.wikipedia.org/wiki/Enchanted_forest	M,K	COVERED	M-dense wood plus lore; getting lost by link	-	the forest as a trap; K
+Impossible tasks	Fairy-tale elements	https://en.wikipedia.org/wiki/Impossible_tasks	S,M	COVERED	quests set by powers to get rid of a hero	-	social pressure and shame; S
+Rash promise	Fairy-tale elements	https://en.wikipedia.org/wiki/Rash_promise	M,S	COVERED	geas pacts with M enforcement	-	doom by one word; K
+Talking objects	Fairy-tale elements	https://en.wikipedia.org/wiki/Talking_objects	M	PACK	animated items by patterns	-	unexplained power with a cost; K
+Resurrection in fairy tales	Fairy-tale elements	https://en.wikipedia.org/wiki/Resurrection_in_fairy_tales	X	COVERED	rewind of parts still together; conjure	-	unstable space; K
+Stepmother (archetype)	Fairy-tale elements	https://en.wikipedia.org/wiki/Stepmother_(archetype)	S	COVERED	family conflict agent	-	social pressure and shame; S
+Wicked witch (archetype)	Fairy-tale elements	https://en.wikipedia.org/wiki/Witch_(archetype)	M,S	COVERED	M practitioner with a social stigma	-	unexplained power with a cost; K
+Wizard (archetype)	Fairy-tale elements	https://en.wikipedia.org/wiki/Wizard_(archetype)	M	COVERED	(u) covered by the family pattern; not studied individually	-	unexplained power with a cost; K
+Fairy godmother	Fairy-tale elements	https://en.wikipedia.org/wiki/Fairy_godmother	M	PACK	(u) covered by the family pattern; not studied individually	-	unexplained power with a cost; K
+Three wishes genie	Fairy-tale elements	https://en.wikipedia.org/wiki/Three_wishes_genie	M	PACK	(u) covered by the family pattern; not studied individually	-	unexplained power with a cost; K
+Fairy ring	Fairies	https://en.wikipedia.org/wiki/Fairy_ring	M,X	PACK	mushroom circle as a doorway that is time-warped; X door	-	losing years; K
+Fairy path	Fairies	https://en.wikipedia.org/wiki/Fairy_path	M,K	PACK	route that must not be blocked; taboo	-	unexplained power with a cost; K
+Fairy fort	Fairies	https://en.wikipedia.org/wiki/Fairy_fort	M,S	PACK	mound as a ward-protected site; taboo against disturbing	-	unexplained power with a cost; K
+Fairy-lock	Fairies	https://en.wikipedia.org/wiki/Fairy-lock	M	PACK	binding by a lock	-	unexplained power with a cost; K
+Fairy time dilation	Fairies	https://en.wikipedia.org/wiki/Fairyland	X	LAW	a plane whose clock runs differently from ours	plane clock offset	returning to a changed world; K
+Fairy food taboo	Fairies	https://en.wikipedia.org/wiki/Fairy_food_taboo	M,S	PACK	eating plane food binds you	-	unexplained power with a cost; K
+Iron and fairies	Fairies	https://en.wikipedia.org/wiki/Iron_in_folklore	M	COVERED	iron disrupts M patterns by conductivity; law fits	-	unexplained power with a cost; K
+Seelie and Unseelie courts	Fairies	https://en.wikipedia.org/wiki/Seelie	S,M	PACK	factions with codes	-	social pressure and shame; S
+Aos Sí	Fairies	https://en.wikipedia.org/wiki/Aos_S%C3%AD	S,M	PACK	(u) covered by the family pattern; not studied individually	-	social pressure and shame; S
+Cottingley Fairies	Fairies	https://en.wikipedia.org/wiki/Cottingley_Fairies	K,S	COVERED	photo hoax; rumour	-	unknown and misperception; K
+Dead fairy hoax	Fairies	https://en.wikipedia.org/wiki/Dead_fairy_hoax	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Pixie-led	Fairies	https://en.wikipedia.org/wiki/Pixie-led	M,K	COVERED	misperception causing wandering; K and M	-	lost in a familiar place; K
+Kallikantzaros	Goblins	https://en.wikipedia.org/wiki/Kallikantzaros	S,M	PACK	(u) covered by the family pattern; not studied individually	-	social pressure and shame; S
+Level 6 Lights Out	Backrooms levels	https://backrooms.fandom.com/wiki/Level_6	X,K	COVERED	(u) dark level where light draws predators; a plane tag with dark rule	-	blindness and sound; K
+Level 7 Thalassophobia	Backrooms levels	https://backrooms.fandom.com/wiki/Level_7	X,P	COVERED	(u) endless ocean with things below; plane of water	-	depth fear; K
+Level 8 Cave System	Backrooms levels	https://backrooms.fandom.com/wiki/Level_8	X,K	COVERED	(u) caves with its own entities; plane plus pack	-	getting lost underground; K
+Level 9 The Suburbs	Backrooms levels	https://backrooms.fandom.com/wiki/Level_9	X,K	COVERED	(u) endless night suburbs; plane	-	empty houses; K
+Level 10 The Bumper Crop	Backrooms levels	https://backrooms.fandom.com/wiki/Level_10	X,S	COVERED	(u) farmland with settlements; plane plus culture	-	a place with rules unknown to you; K
+Level 11 The Endless City	Backrooms levels	https://backrooms.fandom.com/wiki/Level_11	X,S	COVERED	(u) urban plane with factions	-	a place with rules unknown to you; K
+Level 13 The Infinite Apartments	Backrooms levels	https://backrooms.fandom.com/wiki/Level_13	X,K	COVERED	(u) repeating residential levels	-	a place with rules unknown to you; K
+Level 14 Paradise	Backrooms levels	https://backrooms.fandom.com/wiki/Level_14	X,K	COVERED	(u) pleasant plane with a catch	-	too good to trust; K
+Level 17	Backrooms levels	https://backrooms.fandom.com/wiki/Level_17	X	COVERED	(u) plane with its own rules	-	a place with rules unknown to you; K
+Level 19 Attic	Backrooms levels	https://backrooms.fandom.com/wiki/Level_19	X	COVERED	(u) attic plane	-	a place with rules unknown to you; K
+Level 20	Backrooms levels	https://backrooms.fandom.com/wiki/Level_20	X	COVERED	(u) plane	-	a place with rules unknown to you; K
+Level 52	Backrooms levels	https://backrooms.fandom.com/wiki/Level_52	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 188 The Courtyard	Backrooms levels	https://backrooms.fandom.com/wiki/Level_188	X	COVERED	(u) gentle plane	-	a place with rules unknown to you; K
+Level 666	Backrooms levels	https://backrooms.fandom.com/wiki/Level_666	X,M	COVERED	(u) hell-themed plane	-	a place with rules unknown to you; K
+Level 999	Backrooms levels	https://backrooms.fandom.com/wiki/Level_999	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 1000	Backrooms levels	https://backrooms.fandom.com/wiki/Level_1000	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 0.1	Backrooms levels	https://backrooms.fandom.com/wiki/Level_0.1	X	COVERED	(u) sublevel variant	-	a place with rules unknown to you; K
+Level 0.66	Backrooms levels	https://backrooms.fandom.com/wiki/Level_0.66	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 1.01	Backrooms levels	https://backrooms.fandom.com/wiki/Level_1.01	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 2.1	Backrooms levels	https://backrooms.fandom.com/wiki/Level_2.1	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 37.1	Backrooms levels	https://backrooms.fandom.com/wiki/Level_37.1	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 38	Backrooms levels	https://backrooms.fandom.com/wiki/Level_38	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 55	Backrooms levels	https://backrooms.fandom.com/wiki/Level_55	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 64	Backrooms levels	https://backrooms.fandom.com/wiki/Level_64	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 100	Backrooms levels	https://backrooms.fandom.com/wiki/Level_100	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 134	Backrooms levels	https://backrooms.fandom.com/wiki/Level_134	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 200	Backrooms levels	https://backrooms.fandom.com/wiki/Level_200	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 300	Backrooms levels	https://backrooms.fandom.com/wiki/Level_300	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 404	Backrooms levels	https://backrooms.fandom.com/wiki/Level_404	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 500	Backrooms levels	https://backrooms.fandom.com/wiki/Level_500	X	COVERED	(u)	-	a place with rules unknown to you; K
+Level 601 Exit	Backrooms levels	https://backrooms.fandom.com/wiki/Level_601/Exit	X	COVERED	(u) exit plane	-	a place with rules unknown to you; K
+Absolute Infinity of the Unknown	Backrooms levels	https://backrooms.fandom.com/wiki/Absolute_Infinity_of_the_Unknown	X	LAW	(u) a level of unbounded size; needs procedural infinite plane	lazy unbounded plane generator	scale without end; K
+Beyond the Absolute Limit	Backrooms levels	https://backrooms.fandom.com/wiki/Beyond_the_Absolute_Limit	X	LAW	(u) beyond-limit plane; unbounded plane	lazy unbounded plane generator	a place with rules unknown to you; K
+Fragmentation	Backrooms levels	https://backrooms.fandom.com/wiki/Fragmentation	X	LAW	(u) plane split into pieces; unstable plane topology	plane with changing connectivity	a place with rules unknown to you; K
+After Life	Backrooms levels	https://backrooms.fandom.com/wiki/After_Life	X,M	COVERED	(u) afterlife plane; spirit memory	-	a place with rules unknown to you; K
+Level 255 The After	Backrooms levels	https://backrooms.fandom.com/wiki/Level_255/The_After	X,M	COVERED	(u)	-	a place with rules unknown to you; K
+Home (Backrooms)	Backrooms levels	https://backrooms.fandom.com/wiki/Home	X	COVERED	(u)	-	a place with rules unknown to you; K
+Entity 1 (Backrooms)	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_1	P	COVERED	(u) wanderer hostile creature; creature pack	-	an unknown hostile mind; K and body
+Entity 3A Skin-Stealer variant	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_3-A	K	COVERED	(u) mimic variant	-	an unknown hostile mind; K and body
+Entity 5-A	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_5-A	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 6	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_6	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 7	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_7	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 8	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_8	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 9	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_9	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 12	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_12	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 16	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_16	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 19	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_19	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 20	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_20	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 22	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_22	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 26	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_26	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 27	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_27	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 30	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_30	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 31	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_31	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 32	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_32	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 34	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_34	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 37	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_37	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 38	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_38	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 42	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_42	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 46	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_46	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 47	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_47	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 49	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_49	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 52	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_52	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 55	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_55	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 57	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_57	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 58	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_58	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 60	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_60	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 62	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_62	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 69	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_69	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 70	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_70	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 73	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_73	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 77	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_77	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 81	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_81	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 83	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_83	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 90	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_90	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 94	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_94	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 98	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_98	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 99	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_99	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 122	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_122	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 150	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_150	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 163	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_163	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 196	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_196	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 224	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_224	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 301	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_301	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 333	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_333	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 379	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_379	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 404	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_404	K	PACK	(u) oddball entity	-	an unknown hostile mind; K and body
+Entity 444	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_444	S	PACK	(u) social entity	-	an unknown hostile mind; K and body
+Entity 500	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_500	P	PACK	(u)	-	an unknown hostile mind; K and body
+Entity 700	Backrooms entities	https://backrooms.fandom.com/wiki/Entity_700	P	PACK	(u)	-	an unknown hostile mind; K and body
+Boundless Torturer	Backrooms entities	https://backrooms.fandom.com/wiki/Boundless_Torturer	P,M	PACK	(u) anomalous entity; pain-based predator	-	torture; body
+Forgotten Dentist	Backrooms entities	https://backrooms.fandom.com/wiki/Forgotten_Dentist	P	PACK	(u) anomalous entity	-	bodily harm; body
+Juju Man	Backrooms entities	https://backrooms.fandom.com/wiki/Juju_Man	M	PACK	(u) oddball entity	-	an unknown hostile mind; K and body
+Perfect Emptiness	Backrooms entities	https://backrooms.fandom.com/wiki/Perfect_Emptiness	X	PACK	(u) oddball entity	-	void; K
+Tagapabalita	Backrooms entities	https://backrooms.fandom.com/wiki/Tagapabalita	S,K	PACK	(u) oddball entity of news	-	an unknown hostile mind; K and body
+Radiophobia (entity)	Backrooms entities	https://backrooms.fandom.com/wiki/Radiophobia	K	PACK	(u)	-	an unknown hostile mind; K and body
+The Extras	Backrooms entities	https://backrooms.fandom.com/wiki/The_Extras	K	PACK	(u) crowd entity	-	an unknown hostile mind; K and body
+The Poltergeist	Backrooms entities	https://backrooms.fandom.com/wiki/The_Poltergeist	M	COVERED	(u) object-moving spirit by M momentum	-	an unknown hostile mind; K and body
+The Voidpeople	Backrooms entities	https://backrooms.fandom.com/wiki/The_Voidpeople	M	PACK	(u)	-	an unknown hostile mind; K and body
+Behemoth (Backrooms)	Backrooms entities	https://backrooms.fandom.com/wiki/Behemoth	P	PACK	(u) huge creature	-	scale; body
+Blood Eagles	Backrooms entities	https://backrooms.fandom.com/wiki/Blood_Eagles	P	PACK	(u)	-	an unknown hostile mind; K and body
+Children of the Empyrean Sea	Backrooms entities	https://backrooms.fandom.com/wiki/Children_of_the_Empyrean_Sea	M	PACK	(u)	-	an unknown hostile mind; K and body
+Leftovers	Backrooms entities	https://backrooms.fandom.com/wiki/Leftovers	P	PACK	(u)	-	an unknown hostile mind; K and body
+AMARANTH	Backrooms entities	https://backrooms.fandom.com/wiki/AMARANTH	M	PACK	(u)	-	an unknown hostile mind; K and body
+The Halloween Demon	Backrooms entities	https://backrooms.fandom.com/wiki/The_Halloween_Demon	S,M	PACK	(u) seasonal entity	-	an unknown hostile mind; K and body
+The Night	Backrooms entities	https://backrooms.fandom.com/wiki/The_Night	X	PACK	(u)	-	an unknown hostile mind; K and body
+The Rot Infection	Backrooms entities	https://backrooms.fandom.com/wiki/The_Rot_Infection	P	PACK	(u) infection; disease pack	-	decay; body
+The Wanderer	Backrooms entities	https://backrooms.fandom.com/wiki/The_Wanderer	K	PACK	(u)	-	an unknown hostile mind; K and body
+The Death Locomotive	Backrooms entities	https://backrooms.fandom.com/wiki/The_Death_Locomotive	P	PACK	(u) mimic entity train	-	an unknown hostile mind; K and body
+The Teratoma	Backrooms entities	https://backrooms.fandom.com/wiki/The_Teratoma	G	PACK	(u) growth entity	-	disgust; body
+The Umbra	Backrooms entities	https://backrooms.fandom.com/wiki/The_Umbra	M	PACK	(u)	-	an unknown hostile mind; K and body
+Hydrolitis Plague	Backrooms entities	https://backrooms.fandom.com/wiki/Hydrolitis_Plague	P	PACK	(u)	-	an unknown hostile mind; K and body
+Phenomenon 35	Backrooms entities	https://backrooms.fandom.com/wiki/Phenomenon_35	X	LAW	(u) phenomenon (not creature); needs plane event law	plane-wide events as scheduled laws	an unknown hostile mind; K and body
+Phenomenon 88	Backrooms entities	https://backrooms.fandom.com/wiki/Phenomenon_88	X	LAW	(u)	plane-wide events as scheduled laws	an unknown hostile mind; K and body
+M.E.G. Object 1	Backrooms objects	https://backrooms.fandom.com/wiki/Object_1	P	PACK	(u)	-	unknown object power; K
+Object 10	Backrooms objects	https://backrooms.fandom.com/wiki/Object_10	M	PACK	(u)	-	unknown object power; K
+Object 13	Backrooms objects	https://backrooms.fandom.com/wiki/Object_13	M	PACK	(u)	-	unknown object power; K
+Object 17	Backrooms objects	https://backrooms.fandom.com/wiki/Object_17	M	PACK	(u)	-	unknown object power; K
+Object 20	Backrooms objects	https://backrooms.fandom.com/wiki/Object_20	M	PACK	(u)	-	unknown object power; K
+Object 25	Backrooms objects	https://backrooms.fandom.com/wiki/Object_25	M	PACK	(u)	-	unknown object power; K
+Object 32	Backrooms objects	https://backrooms.fandom.com/wiki/Object_32	M	PACK	(u)	-	unknown object power; K
+Object 101	Backrooms objects	https://backrooms.fandom.com/wiki/Object_101	M	PACK	(u)	-	unknown object power; K
+Object 200	Backrooms objects	https://backrooms.fandom.com/wiki/Object_200	M	PACK	(u)	-	unknown object power; K
+Object 201	Backrooms objects	https://backrooms.fandom.com/wiki/Object_201	M	PACK	(u)	-	unknown object power; K
+Object 300	Backrooms objects	https://backrooms.fandom.com/wiki/Object_300	M	PACK	(u)	-	unknown object power; K
+Dream Wine	Backrooms objects	https://backrooms.fandom.com/wiki/Dream_Wine	M,K	PACK	(u) drink that induces dreaming	-	unknown object power; K
+Interlevel Hyperlink	Backrooms objects	https://backrooms.fandom.com/wiki/Interlevel_Hyperlink	X	COVERED	(u) a link between planes as a wormhole door	-	unknown object power; K
+Dispositive FAX	Backrooms objects	https://backrooms.fandom.com/wiki/Dispositive_FAX	M	PACK	(u)	-	unknown object power; K
+BASILISK (Backrooms)	Backrooms objects	https://backrooms.fandom.com/wiki/BASILISK	K	PACK	(u)	-	unknown object power; K
+Kalthoff Rifles	Backrooms objects	https://backrooms.fandom.com/wiki/Kalthoff_Rifles	P	PACK	(u)	-	unknown object power; K
+Amazing Tape	Backrooms objects	https://backrooms.fandom.com/wiki/Amazing_Tape	P	PACK	(u)	-	unknown object power; K
+Cadaver Asada	Backrooms objects	https://backrooms.fandom.com/wiki/Cadaver_Asada	P	PACK	(u)	-	unknown object power; K
+Backrooms: Black Door	Backrooms objects	https://backrooms.fandom.com/wiki/Doors	X	COVERED	(u) a door to another plane	-	unknown object power; K
+Backrooms: Hounds	Backrooms entities	https://backrooms.fandom.com/wiki/Hounds	P	COVERED	(u)	-	an unknown hostile mind; K and body
+Backrooms: Howlers	Backrooms entities	https://backrooms.fandom.com/wiki/Howlers	P	PACK	(u)	-	an unknown hostile mind; K and body
+Backrooms: Clumps	Backrooms entities	https://backrooms.fandom.com/wiki/Clumps	P	PACK	(u)	-	an unknown hostile mind; K and body
+Backrooms: Windows entity	Backrooms entities	https://backrooms.fandom.com/wiki/Windows	P	PACK	(u)	-	an unknown hostile mind; K and body
+Backrooms: Sirens	Backrooms entities	https://backrooms.fandom.com/wiki/Sirens	P	PACK	(u)	-	an unknown hostile mind; K and body
+Backrooms: Dollmakers	Backrooms entities	https://backrooms.fandom.com/wiki/Dollmakers	P	PACK	(u)	-	an unknown hostile mind; K and body
+Backrooms: Redacted Entities	Backrooms entities	https://backrooms.fandom.com/wiki/Redacted	K	EXCLUDED	(u) listed in the Backrooms category; page not read, family default: a creature pack, hostile or social	-	an unknown hostile mind; K and body
+Backrooms: Founders	Backrooms groups	https://backrooms.fandom.com/wiki/Founders	S	COVERED	(u) a faction culture	-	survival politics; S
+Backrooms: Almond Water economy	Backrooms groups	https://backrooms.fandom.com/wiki/Almond_Water	S	COVERED	(u) a healing currency; resource	-	survival politics; S
+Backrooms: Wanderers	Backrooms groups	https://backrooms.fandom.com/wiki/Wanderers	S	COVERED	(u)	-	survival politics; S
+Backrooms: Major Explorer Group	Backrooms groups	https://backrooms.fandom.com/wiki/M.E.G.	S	COVERED	(u) institution	-	survival politics; S
+Archive 81	Analog horror	https://en.wikipedia.org/wiki/Archive_81	K,S	COVERED	recorded tapes of a cult; found-footage	-	unknown and misperception; K
+Buffet Infinity	Analog horror	https://en.wikipedia.org/wiki/Buffet_Infinity	K,X	PACK	restaurant of endless food	-	unknown and misperception; K
+Creep	Analog horror	https://en.wikipedia.org/wiki/Creep_(2014_film)	K	COVERED	human predator with a camera	-	unknown and misperception; K
+Kraina Grzybow TV	Analog horror	https://en.wikipedia.org/wiki/Kraina_Grzybów_TV	K	PACK	fungal-themed broadcast	-	unknown and misperception; K
+Late Night with the Devil	Analog horror	https://en.wikipedia.org/wiki/Late_Night_with_the_Devil	M,K	COVERED	possession broadcast	-	unexplained power with a cost; K
+The Man in the Suit	Analog horror	https://en.wikipedia.org/wiki/The_Man_in_the_Suit_(web_series)	K	PACK	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Milk and Serial	Analog horror	https://en.wikipedia.org/wiki/Milk_%26_Serial	K	PACK	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Monument Mythos	Analog horror	https://en.wikipedia.org/wiki/The_Monument_Mythos	M,X	PACK	(u) covered by the family pattern; not studied individually	-	unexplained power with a cost; K
+Backrooms (film)	Analog horror	https://en.wikipedia.org/wiki/Backrooms_(film)	X	COVERED	(u) covered by the family pattern; not studied individually	-	unstable space; K
+The Creep Tapes	Analog horror	https://en.wikipedia.org/wiki/The_Creep_Tapes	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Kenopsia	Liminal aesthetics	https://en.wikipedia.org/wiki/Kenopsia	K	COVERED	place that feels abandoned when it should be busy; K from expectations	-	eerie absence; K
+Dead mall	Liminal aesthetics	https://en.wikipedia.org/wiki/Dead_mall	K,S	COVERED	decayed commercial space	-	abandonment; K
+Non-place (Augé)	Liminal aesthetics	https://en.wikipedia.org/wiki/Non-place_(Aug%C3%A9)	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Heterotopia (Foucault)	Liminal aesthetics	https://en.wikipedia.org/wiki/Heterotopia_(Foucault)	S	COVERED	(u) covered by the family pattern; not studied individually	-	social pressure and shame; S
+Traumacore	Liminal aesthetics	https://en.wikipedia.org/wiki/Traumacore	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Nostalgiacore	Liminal aesthetics	https://en.wikipedia.org/wiki/Nostalgiacore	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Spaceland	Liminal aesthetics	https://en.wikipedia.org/wiki/Spaceland	X	COVERED	(u) covered by the family pattern; not studied individually	-	unstable space; K
+Empty swimming pool	Liminal aesthetics	https://en.wikipedia.org/wiki/Empty_swimming_pool	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Stairs to nowhere	Liminal aesthetics	https://en.wikipedia.org/wiki/Stairs_to_nowhere	X	COVERED	(u) covered by the family pattern; not studied individually	-	unstable space; K
+Escalator to nowhere	Liminal aesthetics	https://en.wikipedia.org/wiki/Escalator_to_nowhere	X	COVERED	(u) covered by the family pattern; not studied individually	-	unstable space; K
+Rest stop at 3am	Liminal aesthetics	https://en.wikipedia.org/wiki/Rest_stop_at_3am	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Hotel corridor	Liminal aesthetics	https://en.wikipedia.org/wiki/Hotel_corridor	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Abandoned school	Liminal aesthetics	https://en.wikipedia.org/wiki/Abandoned_school	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Indoor playground	Liminal aesthetics	https://en.wikipedia.org/wiki/Indoor_playground	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Airport at night	Liminal aesthetics	https://en.wikipedia.org/wiki/Airport_at_night	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Dead Internet theory	Liminal aesthetics	https://en.wikipedia.org/wiki/Dead_Internet_theory	K,S	COVERED	belief that bots outnumber humans; rumour	-	unknown and misperception; K
+Jamais vu	Liminal aesthetics	https://en.wikipedia.org/wiki/Jamais_vu	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Cotard delusion	Liminal aesthetics	https://en.wikipedia.org/wiki/Cotard_delusion	K	COVERED	belief that you are dead; false belief	-	unknown and misperception; K
+Déjà vu	Liminal aesthetics	https://en.wikipedia.org/wiki/D%C3%A9j%C3%A0_vu	K	COVERED	(u) covered by the family pattern; not studied individually	-	unknown and misperception; K
+Berserk	Dark fantasy	https://en.wikipedia.org/wiki/Berserk	M,K,S	COVERED	(u) covered by the family pattern; not studied individually	-	unexplained power with a cost; K
+Dark Souls	Dark fantasy	https://en.wikipedia.org/wiki/Dark_Souls	M,S	PACK	(u) covered by the family pattern; not studied individually	-	unexplained power with a cost; K
+Bloodborne	Dark fantasy	https://en.wikipedia.org/wiki/Bloodborne	M,G,K	PACK	(u) covered by the family pattern; not studied individually	-	unexplained power with a cost; K
+Elden Ring	Dark fantasy	https://en.wikipedia.org/wiki/Elden_Ring	M,S	PACK	(u) covered by the family pattern; not studied individually	-	unexplained power with a cost; K
+Pathologic	Dark fantasy	https://en.wikipedia.org/wiki/Pathologic	P,S,K	COVERED	(u) covered by the family pattern; not studied individually	-	body; pain or loss
