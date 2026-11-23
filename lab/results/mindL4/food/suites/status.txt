@@ -1,0 +1,8 @@
+lab.mindL.test_food: 9 pass, 0 fail
+lab.mindL.test_survival: 3 pass, 0 fail
+lab.world2.test_world: 92 pass, 0 fail
+lab.mindL.test_mind: 30 pass, 0 fail
+lab.mindL.test_tournament: 17 pass, 0 fail
+lab.mindL.test_effects: 10 pass, 0 fail
+lab.mindL.test_concerns: 12 pass, 0 fail
+sweep need done

@@ -1,0 +1,27 @@
+== RISK, P-need Fenn, all6hl2f (30 seeds, paired by seed)
+depletion                rules 0.01015  oracle 0.009683  oracle-rules -0.0004678  t CI [-0.001288, +0.0003528]  bootstrap [-0.001311, +0.0002375]  Wilcoxon p 0.543  (both zero in 0% of seeds)
+near_miss_per_1000       rules 0  oracle 0  oracle-rules +0  t CI [+0, +0]  bootstrap [+0, +0]  Wilcoxon p 1.000  (both zero in 100% of seeds)
+burn_per_year            rules 50.51  oracle 45.91  oracle-rules -4.596  t CI [-6.585, -2.608]  bootstrap [-6.532, -2.711]  Wilcoxon p 0.000  (both zero in 0% of seeds)
+extreme_share            rules 0.4316  oracle 0.3927  oracle-rules -0.0389  t CI [-0.05138, -0.02643]  bootstrap [-0.05073, -0.02735]  Wilcoxon p 0.000  (both zero in 0% of seeds)
+PASS RULE (depletion, oracle below rules, t and bootstrap CIs both exclude 0): NOT MET (interval wide / includes 0)
+calibrator (30 nights, pooled both arms, 0 deaths): bins [0.0, 0.05, 0.1, 0.2, 0.4, 1.01], person-nights [0, 0, 0, 0, 219000], deaths [0, 0, 0, 0, 0]
+Cox on focal deaths: no deaths in an arm (oracle 0, rules 0): not finite
+MH rate ratio: n/a
+whole-cast depletion (mean of 5 people): rules 0.0127, oracle 0.0117
+   by person: rules:Tom 0.0167, rules:Sir Ada 0.0172, rules:Oren 0.0191, rules:Fenn 0.0096, rules:Marta 0.0011, oracle_both:Tom 0.0157, oracle_both:Sir Ada 0.0140, oracle_both:Oren 0.0167, oracle_both:Fenn 0.0105, oracle_both:Marta 0.0015
+whole cast, both choosers: 0 deaths in 600.0 person-years = 0.0 per 1000 py [0.0, 6.1]
+== FOOD BALANCE all lives: 43800 inn-nights, 219000 person-nights alive (a ration = 667 kcal; a person's day = 2400 kcal = 3.6 rations)
+production per night (rations): catches 12.92 + counter refill 4.99 = 17.91; plus work at the counter 1.84 (labour, not in the mean supply)
+demand per night 18.00; production/demand 0.99 (with work 1.10)
+eaten per night 16.42 = 91% of the need (2189 kcal a person-day); spoiled or unused catch 3.34 a night
+eaten from: own catch 2.47, another's catch 7.10, counter 6.84 (rations a night)
+inn-days whose own production (catches + refill) was below the cast's need: 54%
+producers' catch: mean 3.23, empty 0.54, person-day CV 1.49 (all producer-days, laid-up included)
+well producers' catch: mean 3.61, empty 0.49, person-day CV 1.38
+who eats (rations a day; share of the need; own/other's/counter; days under 50/75/100 percent of the need; laid-up days; days at an extreme)
+  Tom      3.07 =  85%  (0.57/1.40/1.10)  <50% 0.22  <75% 0.37  <100% 0.56  laid 0.11  hunger-extreme 0.501  thirst-extreme 0.009  relief 0.72 of the 0.90 drift (80%; a ration is worth 0.94 of its nominal 0.25)  of the <75% days: laid 0.075, well 0.297
+  Sir Ada  3.10 =  86%  (0.57/1.41/1.12)  <50% 0.21  <75% 0.37  <100% 0.55  laid 0.11  hunger-extreme 0.493  thirst-extreme 0.008  relief 0.73 of the 0.90 drift (81%; a ration is worth 0.94 of its nominal 0.25)  of the <75% days: laid 0.074, well 0.297
+  Oren     3.14 =  87%  (0.78/1.45/0.90)  <50% 0.21  <75% 0.35  <100% 0.54  laid 0.11  hunger-extreme 0.462  thirst-extreme 0.001  relief 0.73 of the 0.90 drift (82%; a ration is worth 0.94 of its nominal 0.25)  of the <75% days: laid 0.081, well 0.273
+  Fenn     3.44 =  96%  (0.55/1.52/1.36)  <50% 0.16  <75% 0.30  <100% 0.48  laid 0.10  hunger-extreme 0.397  thirst-extreme 0.011  relief 0.78 of the 0.90 drift (87%; a ration is worth 0.91 of its nominal 0.25)  of the <75% days: laid 0.066, well 0.233
+  Marta    3.67 = 102%  (0.00/1.31/2.35)  <50% 0.05  <75% 0.19  <100% 0.46  laid 0.11  hunger-extreme 0.282  thirst-extreme 0.013  relief 0.88 of the 0.90 drift (97%; a ration is worth 0.96 of its nominal 0.25)  of the <75% days: laid 0.017, well 0.174
+

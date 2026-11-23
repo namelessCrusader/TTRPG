@@ -1,0 +1,24 @@
+PASS RULE AND RISK MEASURE (written 2026-11-22 BEFORE any food-world survival sweep; nothing is tuned toward it).
+World all6hl2f = all6hl2 + field (food supply and bandit arrival set from the sources, see world.py FIELD block).
+730 nights a life, seeds 1-30 (more if time allows, never fewer), focals Tom / Sir Ada / Marta by seed, Fenn = P-need(0.9), Oren = P-hard(0.9).
+Choosers: rules (partner-blind) and oracle_both (knows both partners' rules). P-kind(0.9) Fenn is run afterwards for comparison only.
+
+THE RISK MEASURE (per life, read from the reserve record of every night, passive)
+  Every person has a hunger reserve (44.25 days) and a thirst reserve (4.44 days). Death is a reserve at zero.
+  f(t) = the LOWEST of the two reserve fractions during night t (reserve / its full value; 1 = full, 0 = dead).
+  DEPLETION (PRIMARY) = the mean over all 730 nights of (1 - f(t)); a night after death counts as 1 (dead = fully depleted), so an early death cannot make a life look safe.
+  Secondary, no pass role:
+    NEAR-MISS nights per 1,000 = nights with f(t) < 0.20 (a dead night counts).
+    BURN = days of reserve drawn down per year (gross draw, all clocks).
+    EXTREME-NIGHT share = nights with hunger held at its cap for at least one turn (thirst is counted separately).
+    ESTIMATED DEATH RISK = for each person-night, the arm-blind empirical probability of dying within the next 30 nights given its f(t) bin
+       (bins <0.05, 0.05-0.1, 0.1-0.2, 0.2-0.4, >=0.4, fitted on all five cast members of BOTH arms pooled); a life's risk = the mean over its nights x 365/30 (a rate a year).
+       Reported only if the pooled sample has at least 15 deaths.
+    Cox hazard ratio on focal deaths (stratified by seed; the old statistic), with its profile CI, as the secondary test on deaths.
+    The whole cast's DEPLETION (all five people, both arms), and deaths by cause per 1,000 person-years against the library.
+
+PASS: for each seed, d = DEPLETION(oracle_both) - DEPLETION(rules) (paired by seed). The mean of d is below 0 AND the 95 percent interval of the mean excludes 0
+  by BOTH a paired t interval (n-1 degrees of freedom) AND a bootstrap over seeds (2,000 resamples, percentile). A Wilcoxon signed-rank p is shown as a check.
+  NOT MET otherwise. If both arms have zero depletion in more than 80 percent of seeds the verdict is NO EXPOSURE (the world does not starve the focal, so the
+  question cannot be asked there), and says so.
+(Amended 2026-11-22 before any sweep: the world gained the energy-conservation and whole-ration-meal laws found by the smoke runs; the measure and the rule are unchanged.)

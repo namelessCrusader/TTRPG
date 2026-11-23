@@ -1,0 +1,56 @@
+FOOD STEP, report (2026-11-22). Fixed lethal world "all6hl2f" = all6hl2 + flag "field". Flags off: exactly as before (suites below).
+
+VERDICT
+The empty larder was a supply deficit, and it is fixed from the sources. The survival comparison is NOT MET: the oracle's depletion is lower by 0.047 points of the reserve (4.6 percent), but the interval includes 0. The fixed world starves nobody: 0 deaths in 600 person-years, 0 near-miss nights. The question has little exposure here. Secondary measures (reserve burn, extreme-hunger nights) favour the oracle with CIs that exclude 0, and are consistent in direction with the old finding. No death-based test is possible (0 events).
+
+1. DIAGNOSIS (old lethal2 runs, 43,800 inn-nights; balance_old.txt)
+Need: a person needs 3.6 rations a day (hunger drifts 0.9 a day, a ration takes 0.25). One need unit = 2,400 kcal (Tsimane men 2,592 kcal a day, Library card doi:10.7554/elife.62883; brief range 2,000-2,800), so a ration = 667 kcal.
+Production was 13.3 rations a night (catches 8.3 + counter refill by the cook 5.0) for a demand of 17.0: 78 percent. Eaten 13.5 a night = 80 percent of the need (1,912 kcal a person-day). Inn-days with production below the cast's need: 73 percent.
+Where it went: Tom, Sir Ada, Oren got 63-66 percent of their need, Fenn 88, Marta 112. Marta (cook, fed by the counter) was the only one over. Catch eaten by others was 5.2 of 8.3 rations. Days under 50 percent of the need: 41 percent for Tom/Sir Ada/Oren. Laid-up days were not recorded in that sweep, so their share is not known there. So the cast lived on the edge of the 45-day reserve: a supply deficit, not a sharing or self-care bug.
+Two energy bugs found by smoke runs, both fixed behind the flag: (a) a repeated food kind took only 60 percent of its relief off the hunger (LABOUR_REPEAT, from appetite studies, destroying kcal); (b) a meal fed a person whose hunger was below a whole ration, wasting the rest. Under field a ration always relieves 0.25 and a person eats only when a whole ration fits (the portion stays in the pot).
+
+2. FOOD SUPPLY, from sources (world.py FIELD block)
+Rule: mean supply = mean demand (the steady state of a stable population; Tsimane household production 5,700 kcal a day equals what that household eats, Gurven et al. 2015): counter refill 5 + 4 producers x (1 - 0.10 laid-up) x m = 5 x 3.6; m = 3.61 rations (1.00 of a person-day) per well producer-day.
+Variance unchanged from the hard world, from the library: empty catch 0.48 (Tsimane hunts 45 percent, Ache about half), Gamma(2) size, person-day CV 1.1 (Ache) to 1.6 (Tsimane household). Work at the counter is not counted in the mean supply.
+Measured in the 60 lives (219,000 person-nights): catches 12.92 + refill 4.99 = 17.91 rations a night vs demand 18.00 (0.99). Well producers' catch mean 3.61, empty 0.49, person-day CV 1.38: inside the source ranges. With work at the counter, 1.10.
+Eaten: 16.42 a night = 91 percent of the need (2,189 kcal a person-day). The rest is spoilage: 3.34 rations a night (19 percent of catches, the perishable-catch law, half-life 90 turns, unsourced u). I tried raising production to cover it: spoilage rose with it (smoke runs, lossfit), so no loss factor was added.
+Who eats (share of need): Tom 85, Sir Ada 86, Oren 87, Fenn 96, Marta 102 percent. Days under 50 percent of the need: 21-22 percent for the three producers, 16 Fenn, 5 Marta. Days under 75 percent: 35-37 percent. Shortfall comes from the variance, timing, access and spoilage. A day-level shortfall is common (about half of person-days are under 100 percent). I could not find a source figure for the share of household-days under need in the Library response (it gives catch variance, not household shortfall frequency); I did not tune toward one. Say so: item 2's request to match the shortfall frequency to a source is NOT met; only the mean and the variance are sourced.
+
+3. THE BANDIT (old rate 0.6 a night, unsourced)
+Sources fix deaths, not arrivals: violent death 0.03 percent (late-medieval Europe, Eisner 2003) to 1 percent a person-year (precontact Hiwi, Hill et al. 2007). No non-lethal threat rate exists in the library.
+Derivation: total violence budget R = 1 percent a person-year (top of the band, which is a choice) split half to raids (the raid law halves to HARD_RAID x 0.5) and half to the lone bandit (the split is an unsourced choice; Eisner: most killings were between acquaintances). Arrival chance b = 0.01 x 0.5 x 5 / (365 x d).
+d = deaths per arrival, MEASURED (calib_bandit.py: 24,000 fresh nights with a forced bandit, raid nights excluded): 22 people killed in 23,969 nights = 9.18e-4 (Poisson 95% CI 5.8e-4 to 1.4e-3). So b = 0.0746 a night (was 0.6), about 27 arrivals a year. Fresh nights carry no wound in, so d is a floor.
+Check: violent deaths in the sweep: 0 in 600 person-years (95% upper bound 6.1 per 1,000 person-years, 0.61 percent). The library band is 0.3-10 per 1,000: the bound sits inside it, but the sweep expected about 3 bandit deaths (3,267 arrivals x 9.18e-4, Poisson chance of 0 is 5 percent) plus raid deaths and saw none. The deaths per arrival in carried lives (people hurt and tended, the cast fighting back as a group) is lower than the fresh-night calibration. Either way the simulated rate is below the top of the band and not above it. I did not retune.
+
+4. SURVIVAL-RISK MEASURE and PASS RULE (PASS_RULE_FOOD.txt, written before any sweep)
+Per life: DEPLETION = mean over 730 nights of 1 - f, f = the lowest of the hunger and thirst reserve fractions of the night (a dead night counts 1). Secondary: near-miss nights (f below 0.2), reserve burn, extreme-hunger nights, estimated death risk from reserve bins (needs 15 deaths, not reached).
+PASS: oracle_both minus rules, paired by seed, mean below 0, and both the paired t interval and a seed bootstrap (2,000) exclude 0. NO EXPOSURE if both arms are zero in over 80 percent of seeds (not the case: depletion is above 0 in all seeds).
+
+5. RESULTS (30 seeds, 730 nights, Fenn P-need 0.9, Oren P-hard 0.9; focals Tom / Sir Ada / Marta by seed; paired by seed)
+measure                    rules     oracle    oracle - rules   t 95% CI               bootstrap 95% CI      Wilcoxon p
+depletion (PRIMARY)        0.01015   0.00968   -0.00047         [-0.00129, +0.00035]   [-0.00131, +0.00024]  0.54
+near-miss nights /1000     0         0         0                -                      -                     1.00
+burn, reserve days a year  50.51     45.91     -4.60            [-6.59, -2.61]         [-6.53, -2.71]        <0.001
+extreme-hunger night share 0.432     0.393     -0.039           [-0.051, -0.026]       [-0.051, -0.027]      <0.001
+PASS RULE: NOT MET (primary interval includes 0).
+Cox hazard ratio on focal deaths: not defined, 0 events in either arm. Mantel-Haenszel: n/a.
+Whole-cast depletion (5 people): rules 0.0127, oracle 0.0117. By person (rules/oracle): Tom 0.0167/0.0157, Sir Ada 0.0172/0.0140, Oren 0.0191/0.0167, Fenn 0.0096/0.0105, Marta 0.0011/0.0015.
+Reading: the secondary measures say the oracle burns less reserve and spends fewer nights at the hunger cap, but depletion is about 1 percent of the reserve in both arms, so the primary has almost nothing to measure. This is the honest result of a world with a sourced, balanced supply: it is not dangerous enough for the partner knowledge to change survival. P-kind Fenn comparison was NOT run (a 60-life sweep takes about 90 minutes and the P-need sweep already shows no exposure).
+
+6. DEATHS BY CAUSE vs the library
+Whole cast, both choosers: 0 deaths in 600.0 person-years = 0 per 1,000 [0, 6.1]. Before (lethal2): hunger 58 per 1,000 a year (no source; far above any source), the library's violent band 0.3-10 per 1,000. Starvation 0, violence 0, thirst 0. Hunger is no longer a killer. Violence is within the band's upper bound by the CI, but its point estimate (0) is below the band's low end (0.3 per 1,000); with 600 person-years that cannot be told apart from 0.3-6.
+
+CHECKS
+Flags-off lab suites (run under lab.lock after the constant was set): test_food 9 pass, test_survival 3, test_world 92, test_mind 30 (golden traces), test_tournament 17, test_effects 10, test_concerns 12; 0 failures.
+Mutation test on a copy of lab/ (no .venv): four mutations to world.py, each caught by test_food: supply x1.3, raid not halved, repeat-ration discount restored, bandit budget unsplit.
+test.lock: no use in any scratch script (grep). Nothing left running (no tournament, chain or calibration process).
+
+FIX ROUND (verifier's problems)
+1. Blocker: report and results did not exist. Now written (this file; lab/results/mindL4/food/).
+2. Blocker: no sweep. Ran: 60 lives (30 seeds x 2 choosers), results above, tables.json / tables.txt.
+3. Blocker: calibration unfinished and FIELD_D_BANDIT None. Calibration finished (22 deaths in 23,969 nights); FIELD_D_BANDIT = 22 / 23969 is set in lab/world2/world.py, with the field flag now runnable end to end. Nothing left running.
+4. Minor, provenance: the raid/bandit split and the 1 percent budget are named choices in the report (sections 3). Unsourced numbers are labelled: the split, the spoilage half-life.
+5. Info, checks: flags-off suites run (pass); test_food run (pass); mutation test done; test.lock audit done.
+
+FILES
+Scratch /home/nisargparikh/.cache/mark1-build/mindL4/food/ (runs_need, tables.txt, tables.json, calib/, suites/, PASS_RULE_FOOD.txt, balance_old.txt). Code: lab/world2/world.py (FIELD block, flag "field"), lab/mindL/tournament.py (world all6hl2f, reserve recording), lab/mindL/food_report.py, lab/mindL/test_food.py. Results copied to lab/results/mindL4/food/.

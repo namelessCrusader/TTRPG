@@ -113,6 +113,7 @@ traits, liking and memories from the night before; `night` numbers the night.
 """
 from __future__ import annotations
 
+import functools
 import math
 import random
 
@@ -305,6 +306,80 @@ LETHAL_START, LETHAL_TURNS = 0.325, 300
 LETHAL_DRIFT = {"thirst": 0.004, "hunger": 0.003}
 LETHAL_RESERVE = {k: LETHAL_DAYS[k] - (1.0 - LETHAL_START) / (LETHAL_DRIFT[k] * LETHAL_TURNS) for k in LETHAL_DAYS}
 LETHAL_EXTREME = 0.999
+
+# field (2026-11-22, owner "makes sense"): the FOOD SUPPLY and the BANDIT's arrival set from the sources, not by taste or to pass a test. Needs `hard` (it
+# builds on the hard world's empty catch 0.48, its Gamma(2) size and its laid-up people). With the flag off nothing here is read.
+#  1. DEMAND. A person's hunger drifts 0.9 a night (LETHAL_DRIFT x LETHAL_TURNS) and a ration takes PORTION = 0.25 off it, so a person needs
+#     NEED_RATIONS = 3.6 rations a day to stay level. In kcal, one need unit is the adult's daily need: Tsimane adult men's mean daily energy intake
+#     is 2,592 kcal (Library card doi:10.7554/elife.62883) and the brief's adult range is 2,000-2,800 (Pontzer et al. 2012, Hadza total energy
+#     expenditure, about 2,600 for men and 1,900 for women, from memory (u)); the middle, 2,400 kcal, is used, so a ration is 667 kcal. (The older
+#     "1,100 kcal a need unit" note in the meals block made the inn feed people about 40 percent of a real day; the dynamics are unchanged, only the kcal label.)
+#  2. SUPPLY. The old inn made about 15 rations a night for 5 people who need 18: the counter (`stock`) is refilled by the cook alone (COOK_MAKES = 5 a
+#     night; the 20 rations of STOCK_ were a night-0 stock, halved by `luck`), the four others bring a catch of mean LUCK_SHARE x 20 / 4 = 2.5 rations (0.69 of a
+#     day's need), and the laid-up bring nothing. Measured in the lethal2 sweep (60 lives, 43,800 nights): 13.5 rations eaten a night, 80 percent of
+#     the need. Everybody lived on the edge of the 45-day reserve, a SUPPLY deficit, not a sharing or self-care one.
+#     Now: the MEAN supply equals the MEAN demand, the steady state of any stable population (the Tsimane household mean production, 5,700 kcal a day, is
+#     the consumption of the household it feeds, Gurven et al. 2015). Counter refill C (the cook's COOK_MAKES, unchanged) plus the catches of the producers
+#     who are well (prevalence HARD_PREVALENCE are laid up and bring nothing) equal the demand of the cast:
+#         C + n_prod x (1 - HARD_PREVALENCE) x m = n x NEED_RATIONS    ->  m = 3.61 rations (1.00 of a person's day) for each producer's well day.
+#     The field's VARIANCE is the hard world's, unchanged: empty chance 0.48 (Tsimane hunts 45 percent, Ache about half), person-day CV 1.37 (field
+#     1.1 Ache, 1.6 Tsimane household), Gamma(2) size. `m` is the mean of the whole-ration catch (the integer rounding is corrected, field_catch_mean()).
+#     Work at the counter (WORK_YIELD) is labour turned into food and is NOT counted in the mean supply (it adds about 3 percent, measured).
+#     So any shortfall that still happens comes from the variance (a household-day's production is below its need on most days), access and choice.
+#     ENERGY IS CONSERVED (found by the first smoke run of this flag: with a supply of 101 percent of the need in rations, a ration took only 0.65-0.81 of its
+#     nominal 0.25 off the hunger, so the cast was relieved of 63-89 percent of its drift and 58-87 percent of days reached the extreme). Cause: the LABOUR_REPEAT
+#     satiety law cuts a ration of the kind just eaten to 60 percent of its relief (Rolls et al. 1981, "variety raises intake about 60 percent", u): a food
+#     that is eaten but takes only 60 percent off the need destroys kcal. Rolls measured INTAKE (appetite), not absorption; a kcal is a kcal. Under `field` a ration
+#     relieves PORTION whatever was eaten before (the discount stays for the old worlds). Game and greens still exist as kinds; only the vanishing of energy is gone.
+#     NOTHING IS WASTED ON THE SATIATED (second finding of the smoke run): the cast ate 104 percent of the need in rations but took only 80 percent off its hunger,
+#     because a serve (or a buy, or work) fed a person whose hunger was already at or below FULL and the ration was used up with no relief (Fenn ate 141 percent
+#     of the need, Marta 119 percent, while Tom, Sir Ada and Oren ate 81-90 percent). Under `field` a person eats only when the hunger left can take a whole ration
+#     (hunger >= PORTION, self.full): a smaller appetite leaves the portion in the pot. That removes the partial-ration waste too (a ration eaten at hunger 0.15 wasted 0.10).
+#     CHECK OF THE BALANCE (smoke runs, 3 lifetimes x 120 nights): production without work 102 percent of the demand; of it about 20 percent spoils (lumps that nobody
+#     could eat in time: the perishable-catch law, half-life 90 turns, u), the work at the counter adds about 13 percent, and the cast EATS 98 percent of its need.
+#     Raising the production to cover the spoilage (to 136 percent) only raised the spoilage (to 31 percent of production), so no loss factor is added: the supply meets the
+#     demand in the net sense too, and who is still short is a matter of timing, access and choice (see the report).
+#  3. THE BANDIT. The old arrival chance was 0.6 a night (unsourced). The sources fix DEATHS, not arrivals: violent death 0.03 percent (late-medieval Europe,
+#     Eisner 2003) to 1 percent a person-year (precontact Hiwi, Hill et al. 2007); no source measures non-lethal threats (the library says so). The HARD world
+#     already spends the top of the band, 1 percent, on raids (Turkana unit). Here the top-of-band budget R_VIOL = 0.01 a person-year is the total of ALL
+#     outside violence and is SPLIT: half to raids (HARD_RAID x RAID_SHARE) and half to the lone bandit; the half-and-half is an unsourced choice, backed only
+#     by Eisner's finding that most late-medieval killings were quarrels between acquaintances, not strangers' attacks. The bandit's arrival chance per night is
+#         b = R_VIOL x (1 - RAID_SHARE) x n / (365 x d),   d = deaths per arrival, MEASURED in this world (FIELD_D_BANDIT, a calibration run of forced bandit nights).
+FIELD_FLAGS = ("field",)
+NEED_RATIONS = LETHAL_DRIFT["hunger"] * LETHAL_TURNS / 0.25      # PORTION = 0.25 is defined further down; 3.6 rations a person a day
+FIELD_KCAL_DAY = 2400.0                                          # a person's daily need; a ration is FIELD_KCAL_DAY / NEED_RATIONS kcal
+R_VIOL = 0.01                                                    # the violent-death budget of the whole inn, per person-year (top of the library band)
+RAID_SHARE = 0.5                                                 # the share of R_VIOL spent on raids; the rest is the bandit's
+# Measured 2026-11-22: 12 lives x 1,000 fresh nights (seeds 5001-5006 and 5101-5106 x 2,000 nights, `calib_bandit.py`), the bandit forced to arrive, the cast all
+# `rules` (Fenn P-need, Oren P-hard), nights with a raid excluded: 22 people killed by the bandit in 23,969 nights = 9.18e-4 per arrival (Poisson 95% CI 5.8e-4 to 1.4e-3).
+# Fresh nights (no wound carried in) so a bandit that meets a person already hurt kills a little more often than this: the rate is a floor, the sweep checks the total.
+FIELD_D_BANDIT = 22 / 23969
+
+
+@functools.lru_cache(maxsize=None)
+def field_catch_mean(v=HARD_EMPTY, target=None, n_prod=4, n=5, prevalence=HARD_PREVALENCE, counter=5):
+    """The `mean` argument of World._luck under `field`: the continuous mean that makes the MEAN WHOLE-RATION catch of a well producer equal
+    m = (n x NEED_RATIONS - counter) / (n_prod x (1 - prevalence)). A catch is int(Gamma(2, scale) x mean / (1 - v) + 0.5) with chance 1 - v, else 0."""
+    import math
+    m = target if target is not None else (n * NEED_RATIONS - counter) / (n_prod * (1.0 - prevalence))
+
+    def cdf(x, th):                       # Gamma(shape 2, scale th)
+        return 1.0 - math.exp(-x / th) * (1.0 + x / th) if x > 0 else 0.0
+
+    def got(mu):                          # E[int(G x mu / (1 - v) + 0.5)] x (1 - v), summed over the whole-ration steps
+        th = mu / (2.0 * (1.0 - v))
+        return (1.0 - v) * sum(1.0 - cdf(k + 0.5, th) for k in range(0, 400))
+    lo, hi = 0.0, 4.0 * m
+    for _ in range(80):
+        mid = (lo + hi) / 2.0
+        lo, hi = (mid, hi) if got(mid) < m else (lo, mid)
+    return (lo + hi) / 2.0
+
+
+def field_bandit_p(n=5):
+    """The chance of a bandit's arrival on a night, from the violent-death budget and the measured deaths per arrival."""
+    assert FIELD_D_BANDIT, "run the bandit calibration first"
+    return min(1.0, R_VIOL * (1.0 - RAID_SHARE) * n / (365.0 * FIELD_D_BANDIT))
 EXPR_MEAN, EXPR_SD, EXPR_LO, EXPR_HI = 0.7, 0.2, 0.15, 1.0     # expressiveness: the share of a state's size that shows
 ACU_MEAN, ACU_SD, ACU_LO, ACU_HI = 1.0, 0.3, 0.4, 1.6          # acuity: the reading's noise is SIGN_NOISE / acuity
 SIGN_NOISE = 0.12
@@ -504,9 +579,10 @@ class World:
         self.flags = frozenset(BASE_FLAGS if flags == "all" else FLAGS if flags == "all2" else
                                ALL3 if flags == "all3" else ALL4 if flags == "all4" else
                                ALL5 if flags == "all5" else ALL6 if flags == "all6" else flags)
-        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS) - set(LETHAL_FLAGS) - set(LETHAL2_FLAGS)
+        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS) - set(LETHAL_FLAGS) - set(LETHAL2_FLAGS) - set(FIELD_FLAGS)
         assert not bad, f"unknown flags {sorted(bad)}"
         self.night = night
+        self.full = PORTION if "field" in self.flags else FULL     # field: a meal is a whole ration, eaten only when the hunger left can take it (no partial meal is wasted)
         self.rng = random.Random(seed)
         rng = self.rng
         self.t = 0
@@ -531,7 +607,7 @@ class World:
         self.n = 0
         # A bandit comes in from the road in about 60% of the nights.
         if bandit is None:
-            bandit = rng.random() < 0.6
+            bandit = rng.random() < (field_bandit_p() if "field" in self.flags else 0.6)
         self.bandit_at = rng.randint(turns // 3, 2 * turns // 3) if bandit else None
         if carry:                       # the same cast as last night: no random draw here
             for name, c in carry.items():
@@ -568,6 +644,8 @@ class World:
         if self.hard:                  # the source rates replace the dials given
             assert "tend" in self.flags and "luck" in self.flags, "hard needs tend (ailments) and luck (the catch)"
             luck, raid = HARD_EMPTY, HARD_RAID
+            if "field" in self.flags:  # the raid keeps its half of the violent-death budget (the bandit has the other half)
+                raid = HARD_RAID * RAID_SHARE
             self._episodes(seed, carry)
         self.perish = {}               # lumpy: fresh item -> the turn it came in (it spoils from then on)
         self.rot = {}                  # lumpy: item -> the fraction of a ration spoiled and not yet taken off
@@ -617,6 +695,8 @@ class World:
         people = [p for p in self.people.values() if p.kind != "cook"]
         lumps = {}
         mean = LUCK_SHARE * sum(STOCK.values()) * supply / len(people)
+        if "field" in self.flags:            # the mean catch that meets the demand (see FIELD above); the variance is the hard world's
+            mean = field_catch_mean(v, n_prod=len(people), n=len(self.people), counter=sum(COOK_MAKES.values())) * supply
         rng = random.Random(f"luck/{seed}")
         for p in people:
             if v == 0:
@@ -867,7 +947,7 @@ class World:
         mine = self.held(p)
         for n in mine:
             th = W[n]
-            if "food" in th["props"] and not (n in self.portions and p.hunger <= FULL):   # a full stomach holds no more
+            if "food" in th["props"] and not (n in self.portions and p.hunger <= self.full):   # a full stomach holds no more
                 add("eat", f"eat a portion of {n}" if n in self.portions else f"eat {n}", obj=n, need=p.hunger * self._eff(p, n))
             if "ale" in th["props"]:
                 add("drink", f"drink {n}", obj=n, need=p.thirst, ale=1.0)
@@ -1249,7 +1329,7 @@ class World:
         """lumpy: the share of what is left of `item` that its holder could not eat before it spoils (0 for what keeps)."""
         if item not in self.perish or self.portions.get(item, 0) <= 0:
             return 0.0
-        usable = (max(0.0, p.hunger - FULL) + 0.003 * SPOIL_HALF) / PORTION
+        usable = (max(0.0, p.hunger - self.full) + 0.003 * SPOIL_HALF) / PORTION
         return max(0.0, 1.0 - usable / self.portions[item])
 
     def _drift(self, p):
@@ -1545,7 +1625,7 @@ class World:
 
     def _eff(self, person, item):
         """labour: the share of a ration's relief that `item` would give `person` now (1 unless it is the kind it just ate)."""
-        if "labour" not in self.flags or item not in self.portions:
+        if "labour" not in self.flags or item not in self.portions or "field" in self.flags:
             return 1.0
         return LABOUR_REPEAT if person.last_kind == self.kind_of.get(item, STAPLE) else 1.0
 
@@ -1554,11 +1634,13 @@ class World:
         n = min(n, self.portions.get(item, 0))
         if n <= 0:
             return 0
+        if "field" in self.flags and person.hunger < self.full:      # a person whose hunger cannot take a whole ration does not eat: the portion stays in the pot (nothing is wasted on the satiated)
+            return 0
         self.portions[item] -= n
         if "labour" in self.flags:       # sensory-specific satiety: the same kind again relieves less
             k = self.kind_of.get(item, STAPLE)
             for _ in range(n):
-                person.hunger = max(0.0, person.hunger - PORTION * (LABOUR_REPEAT if person.last_kind == k else 1.0))
+                person.hunger = max(0.0, person.hunger - PORTION * (LABOUR_REPEAT if person.last_kind == k and "field" not in self.flags else 1.0))
                 person.last_kind = k
         else:
             person.hunger = max(0.0, person.hunger - PORTION * n)

@@ -84,7 +84,7 @@ from pathlib import Path
 from lab.world2.lifetime import NAMES, Cast, hook, night_seed, night_stats
 from lab.world2.partners import Hard, Kind, Need
 from lab.world2.policy import Random, Rules, T_RULES, softmax, utility
-from lab.world2.world import (CAST, LETHAL_FLAGS, LETHAL2_FLAGS, ALL3, ALL4, ALL5, ALL6, SIGNS_FLAGS, HARD_FLAGS, AIL_P, RAID_P, COOK_MAKES, DEED, DRIVES, FLAGS, HARMFUL, PORTION, HARSH_ACTS, KIND_ACTS, NATURE,
+from lab.world2.world import (CAST, LETHAL_FLAGS, LETHAL2_FLAGS, FIELD_FLAGS, LETHAL_RESERVE, ALL3, ALL4, ALL5, ALL6, SIGNS_FLAGS, HARD_FLAGS, AIL_P, RAID_P, COOK_MAKES, DEED, DRIVES, FLAGS, HARMFUL, PORTION, HARSH_ACTS, KIND_ACTS, NATURE,
                               PHYSICAL, RATE, ROOMS, START_ROOM, TEND_MIN, WORK_TIRE, World)
 
 OUT = Path(__file__).resolve().parents[1] / "results" / "mindL3"
@@ -133,6 +133,8 @@ WORLDS = {
     "all6hl": frozenset(ALL6) | set(SIGNS_FLAGS) | set(HARD_FLAGS) | set(LETHAL_FLAGS),
     # lethal2 (2026-11-22): all6hl plus the three general fixes (bring any consumable, the raid law, one self-care for every chooser)
     "all6hl2": frozenset(ALL6) | set(SIGNS_FLAGS) | set(HARD_FLAGS) | set(LETHAL_FLAGS) | set(LETHAL2_FLAGS),
+    # field (2026-11-22): all6hl2 with the food supply and the bandit's arrival set from the sources
+    "all6hl2f": frozenset(ALL6) | set(SIGNS_FLAGS) | set(HARD_FLAGS) | set(LETHAL_FLAGS) | set(LETHAL2_FLAGS) | set(FIELD_FLAGS),
     "all6hl_rev": frozenset(ALL6) | set(SIGNS_FLAGS) | set(HARD_FLAGS) | {"lethal"},     # the same with the next-night revival (for learning)
     "no_lumpy": frozenset(ALL6) - {"lumpy"},
     "no_stock": frozenset(ALL6) - {"stock"},
@@ -539,9 +541,11 @@ class MWorld(World):
             rec.start_night(self)
 
     def _feed(self, person, n, item):
+        before = person.hunger
         got = super()._feed(person, n, item)
         if self.rec is not None and got:
             self.rec.fed(self, person, item, got)
+            self.rec.relief(person, before - person.hunger)
         return got
 
     def step(self, policy):
@@ -590,13 +594,23 @@ class Recorder:
         # counter's stock, how many providers a person had for a need, who tended and defended whom, what spoiled
         self.all_err, self.catch_log, self.fed_log, self.house_log, self.lump_log, self.cur = [], [], [], [], [], None
         self.prov = {}
+        self.res_log = []                          # (2026-11-22, read-only) per night, per person: reserve fractions at the end, the lowest of the night, days burned, laid up
+        self._res_prev, self._res_cur = None, None
         self.care = {"by": {}, "to": {}}           # verb -> {person: count}, scored nights only
         self.by_partner = {}                       # (2026-11-21) partner -> verb -> [done acts at the focal, sum b, sum bpot]
 
     def start_night(self, w):
+        self._relief_cur = {n: 0.0 for n in NAMES}
+        self._res_prev = {n: dict(w.people[n].reserve) for n in NAMES}
+        self._res_cur = {n: {"min": 1.0, "burn": 0.0, "cap_h": 0, "cap_t": 0} for n in NAMES}
         self.cur = {n: [0, 0, 0] for n in NAMES}                  # rations eaten from one's own catch / another's catch / the counter
         self.catch_log.append(dict(w.catch))
         self.house_log.append([w.portions.get(n, 0) for n in COOK_MAKES])
+
+    def relief(self, person, x):
+        """The hunger a feeding actually took off (need units): what a ration is worth after the satiety law and the floor at 0."""
+        if person.name in self._relief_cur:
+            self._relief_cur[person.name] += x
 
     def fed(self, w, person, item, got):
         if person.name not in self.cur:
@@ -656,7 +670,21 @@ class Recorder:
                             a[3] += 1
 
     # -- inside a night
+    def _reserves(self, w):
+        for n in NAMES:
+            p = w.people[n]
+            c, prev = self._res_cur[n], self._res_prev[n]
+            for k, v in p.reserve.items():
+                if v < prev[k]:
+                    c["burn"] += prev[k] - v
+                prev[k] = v
+                c["min"] = min(c["min"], max(0.0, v) / LETHAL_RESERVE[k])
+            c["cap_h"] += int(p.hunger >= 0.999)
+            c["cap_t"] += int(p.thirst >= 0.999)
+
     def after_step(self, w):
+        if "lethal" in w.flags:
+            self._reserves(w)
         if w.night < WIN0:
             return
         self.rooms.append(tuple(None if w.people[n].dead else w.people[n].room for n in NAMES))
@@ -717,6 +745,11 @@ class Recorder:
         p = w.people[self.focal]
         self.nights.append({"err": err, "dead": bool(p.dead), "down": bool(p.down), "hp": round(p.hp, 2)})
         self.fed_log.append(self.cur)
+        if "lethal" in w.flags:
+            self.res_log.append({m: {"end": round(min(max(0.0, w.people[m].reserve[k]) / LETHAL_RESERVE[k] for k in LETHAL_RESERVE), 4),
+                                     "min": round(self._res_cur[m]["min"], 4), "burn": round(self._res_cur[m]["burn"], 4),
+                                     "cap": self._res_cur[m]["cap_h"], "cap_t": self._res_cur[m]["cap_t"], "relief": round(self._relief_cur[m], 3), "hunger": round(w.people[m].hunger, 3), "laid": int(m in w.laid),
+                                     "dead": int(w.people[m].dead)} for m in NAMES})
         lump = {}                                   # lumpy: what came in, what was eaten by its owner / another, what spoiled, per night
         for it in w.perish:
             if it in w.init_portions:
@@ -922,7 +955,7 @@ def run(spec):
            "split": dict(zip(DRIVES, [round(v / max(1, rec.split_n), 4) for v in rec.split_sum])),
            "made": rec.made, "recv": rec.recv, "made_to": rec.made_to, "recv_from": rec.recv_from, "agg": rec.agg,
            "gossip_effect": rec.gossip_effect, "err_all": rec.all_err, "catch": rec.catch_log, "fed": rec.fed_log,
-           "house": rec.house_log, "lump": rec.lump_log, "prov": rec.prov, "care": rec.care, "by_partner": rec.by_partner,
+           "house": rec.house_log, "res": rec.res_log, "lump": rec.lump_log, "prov": rec.prov, "care": rec.care, "by_partner": rec.by_partner,
            "deaths": rec.deaths, "laid_nights": rec.laid_n, "max_err": {k: round(sum(wt * max(0.0, 1.0 - sset) for d, (wt, sset) in NATURE[kd].items()), 4) for k, kd in KINDS_OF.items()}, "cpu_s": round(cpu, 1)}
     RUNS.mkdir(parents=True, exist_ok=True)
     tmp = out.with_suffix(".tmp")

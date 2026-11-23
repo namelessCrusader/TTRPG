@@ -1,0 +1,13 @@
+== FOOD BALANCE /home/nisargparikh/.cache/mark1-build/mindL4/lethal2/runs_need: 43800 inn-nights, 206188 person-nights alive (a ration = 667 kcal; a person's day = 2400 kcal = 3.6 rations)
+production per night (rations): catches 8.29 + counter refill 4.99 = 13.28; plus work at the counter 0.57 (labour, not in the mean supply)
+demand per night 16.95; production/demand 0.78 (with work 0.82)
+eaten per night 13.50 = 80% of the need (1912 kcal a person-day); spoiled or unused catch 0.37 a night
+eaten from: own catch 2.70, another's catch 5.23, counter 5.58 (rations a night)
+inn-days whose own production (catches + refill) was below the cast's need: 73%
+producers' catch: mean 2.24, empty 0.54, person-day CV 1.50 (all producer-days, laid-up included)
+who eats (rations a day; share of the need; own/other's/counter; days under 50/75/100 percent of the need; laid-up days; days at an extreme)
+  Tom      2.27 =  63%  (0.59/1.05/0.62)  <50% 0.41  <75% 0.60  <100% 0.76  laid 0.00  extreme 0.000
+  Sir Ada  2.34 =  65%  (0.60/1.08/0.66)  <50% 0.40  <75% 0.59  <100% 0.75  laid 0.00  extreme 0.000
+  Oren     2.38 =  66%  (1.03/0.97/0.38)  <50% 0.43  <75% 0.58  <100% 0.71  laid 0.00  extreme 0.000
+  Fenn     3.17 =  88%  (0.71/1.40/1.07)  <50% 0.28  <75% 0.45  <100% 0.60  laid 0.00  extreme 0.000
+  Marta    4.03 = 112%  (0.00/1.03/3.00)  <50% 0.06  <75% 0.20  <100% 0.40  laid 0.00  extreme 0.000
