@@ -1,0 +1,385 @@
+ARCHITECTURE AUDIT, LANE D: CODE ARCHITECTURE
+Date 2026-11-22. Documents only; nothing was run except grep, wc and an AST read.
+Measured facts (all from the tree as it stands, uncommitted wave-14/15 work included):
+  src/voxel 80,638 lines in 164 files, 3.86 MB; src/mpm 4.7k; src/core 6.1k; src/mind 3.0k; src/rooms 1.8k; src/bonds 2.1k.
+  214 test files. 19 voxel files are over 50 KB.
+  World has 38 mixin classes in 33 files, MRO length 38, 854 attributes (dir(World)).
+  119 distinct "self.x = ..." state attributes are assigned inside mixins; 20 of them are written by more than one mixin
+  (worst: _torque_solid by 8 mixins, _slack_mat by 6, shed by 6, _boxed by 4).
+  35 method names are defined in more than one mixin (a later one in the MRO silently shadows an earlier one).
+  93 getattr(self, ...) and 6 hasattr(self, ...) probes in voxel code (hidden optional coupling).
+Already decided/scheduled and NOT re-proposed here: AU1-AU5 (content as data; engine mods through a law-plugin
+interface with a conformance suite; staged with 16a), EA5 chunk interface (design only), fact goldens (EA6),
+PA1-PA6 primitives (16a), the build order at "ENGINE AUDIT QUESTIONS DONE".
+
+======================================================================
+D1. THE WORLD IS A 38-MIXIN CHAIN; THE LAW IS NOT A UNIT
+======================================================================
+What exists
+  src/voxel/sim.py:139-170: 25 mixins imported and listed in "class World(LazyLawsMixin, HeatHistoryMixin, ReactionMixin,
+  FickSolidsMixin, HumidMixin, LayersMixin, MechanismsMixin, FieldsMixin, ... PerceiveMixin)". Another 13 mixins
+  (WetMixin, OutsideMixin, FlatRoutesMixin, PathingMixin, ReflexMixin, BeliefsMixin, RecordsMixin, PushMixin, GasFlowMixin,
+  BodyHeatMixin, BodyContactMixin, ChemClockMixin, WoodWaterMixin) are reached as bases of those, so the real order is a
+  linearisation nobody wrote down. The tick is one hard-coded sequence of about 29 "self._law_*()" calls
+  (sim.py:339-431) with inline gates ("if self._heat_busy()", "if hot is not None"). The mixin order is also the
+  override order: an earlier mixin wins.
+Problem (concrete)
+  a. Hidden coupling by name. A mixin calls methods and reads fields that live in other mixins with no declaration.
+     Measured: WillMixin calls into 17 other mixins (13 into Mechanisms, 13 into FlatRoutes), BodiesMixin 15,
+     FlatRoutes/Motion 13, Mechanisms 13, Hands 11, BodyContact 10, Senses 10, Heat 10. will.py cannot be understood or
+     tested without the whole World.
+  b. Silent shadowing. 35 names are defined twice (e.g. total_energy in Ledgers and Wet; _law_smoke in Layers and Air;
+     _law_boil in Heat and Wet; _law_o2 and _law_air in LazyLaws and Air; _identity and _law_identity in Mechanisms and
+     Things; _routes and _fit_grid in FlatRoutes and Pathing). Some are deliberate overrides (the lazy-law seam), some are
+     leftovers. Which one runs depends on the order of the base list. Reorder the list and a law changes with no error.
+  c. The ONE composition mechanism for "a later wave extends an earlier law" is the same-named hook, e.g. _tick_end is
+     defined in 7 mixins (Events, HeatHistory, Outside, ChemClock, WoodWater, LazyLaws, Wet) and _tick_start in 3,
+     _after_raster in 2. Every one calls super() correctly or the chain breaks; there is no check. A new law that forgets
+     super()._tick_end() silently disables 6 others.
+  d. Shared mutable state with no owner: 20 attributes written by several mixins (above). "Who writes shed" has the answer
+     "6 files". A bug in a conserved ledger (energy "shed") needs all 6 read to localise.
+  e. Cost of an agent edit. The reading set for any law change is the law file plus an unknown set of callees. There is no
+     machine-readable answer to "what does law X read, what does it write, what must run before it".
+  f. Lazy state is a convention (sim.py:172-192): class attributes set to None, made by ensure_* in fields.py, so that
+     restore() and the golden hash see nothing. Works, but each new law adds another bare class attribute on World, with no
+     list of which exist.
+Better options
+  A. LAW REGISTRY (recommended). Each law is a small object/record: name, gate (the existing provable "is anything
+     here" predicate), run(world), and DECLARED reads, writes (field names on a named FieldSet), ledgers it posts to,
+     "after" (ordering constraints), optional twin (the slow reference), cost ceiling, and source/citation. World keeps
+     fields and kernels; the registry holds the tick order (topologically sorted from after/reads/writes, with the
+     current order frozen as the golden order so nothing changes on day one). step() becomes "for law in schedule: if
+     law.gate(w): law.run(w)". Mixins turn into plain modules of functions taking (world), moved over one at a time;
+     a mixin method can be registered as-is on day one (law = bound method) so migration is incremental.
+  B. Keep mixins, add only a lint: a script that parses every mixin (AST, as done for this audit), and fails the suite on
+     (i) a method defined in two mixins that is not on an explicit "OVERRIDES" allow-list, (ii) a hook (_tick_end etc.)
+     that does not call super(), (iii) a state attribute written by more than one mixin not on an allow-list. Cheap,
+     catches the worst of a-d, changes no behaviour.
+  C. Composition by fields: split World into sub-objects (heat, air, bodies, ...) each owning its arrays. Cleanest, but the
+     largest rewrite (every self.E / self.mat / self.fvol access across 80k lines) and bit-for-bit goldens make it a
+     long migration. Not recommended before the playable MVP.
+  What the registry gives that the mixin chain cannot:
+   - scheduling: order derived from declarations, and a CHECK that the declared reads/writes match what the law touches
+     (see D2 tracing);
+   - profiling: tools/law_timing.py already wraps every _law_* method by name; a registry makes that a first-class
+     feature (per-law ms ceiling in the record, a failing test when exceeded, instead of a hand-run tool);
+   - parallelism: two laws with disjoint write sets and no write-to-read overlap can run concurrently (numba nogil
+     kernels with threads), or the same law over disjoint chunks (EA5). Without declared sets nobody can prove this;
+   - twin coverage: every law carries its slow twin (src/voxel/slowtwins.py, twinharness.py exist) and the suite can
+     assert "every registered law has a twin or a written exemption";
+   - AU2 mod interface: this IS the interface AU2 decided ("a mod declares its new quantities, ledger rows, tick laws
+     and gates, and what it may touch"). Building the registry first means AU2 is "load a mod = register its laws";
+     the conformance suite (books balance, deterministic, mod-off bit for bit, cost ceiling, sources cited) runs over any
+     registered law, built-in or mod, with the same code. Without it AU2 would have to invent the declaration format and
+     ALSO retrofit the 29 built-in laws.
+  Mod-off bit-for-bit is easy under a registry: an unregistered law is not in the schedule.
+Cost and risk
+  A: about 29 top-level laws plus the hooks. Phase 1 (registry exists, every current _law_* registered as-is in current
+  order with gates, reads/writes declared but unchecked): small, mechanical, golden unchanged by construction; roughly
+  1 wave lane. Phase 2 (declarations verified by a tracing world that records which fields a law touches during the
+  golden scenes; mismatch fails): medium. Phase 3 (move mixin bodies into law modules; drop the base list): large,
+  do per law, opportunistically, when a law is touched anyway. Risk: declarations rot if not verified (hence the
+  tracing check); golden hashes pin behaviour so regressions are loud. Risk of NOT doing it: AU2 + 16a land on the
+  mixin chain, adding 5-10 more mixins before the registry exists, and the retrofit grows.
+  B: half a lane, near zero risk.
+Scheduled or NEW: AU2 (the interface) is scheduled with 16a, but the registry underneath it is NEW and is a
+  prerequisite of AU2. "Law registry" was raised as a suggestion in the chat summary, not decided.
+Priority: HIGH (B now, A phase 1 before 16a so AU2 builds on it).
+Owner-level or technical: the registry itself is technical. The OWNER-LEVEL piece is one question: "is a law a
+  declared unit that mods and agents can add without touching World (A), or do we keep the mixin chain and police it
+  (B)?" Recommend A, in the staged form above.
+
+======================================================================
+D2. DECLARED READS/WRITES ARE ALSO THE AGENT-EDITING CONTRACT
+======================================================================
+What exists
+  tools/law_timing.py (per-law ms), tools/golden.py (hashes vars(world); lazy state kept out of the hash by class
+  attributes), slowtwins.py / twinharness.py (new, uncommitted), tests/test_lazy_laws.py (gated == ungated).
+  skip_quiet=False already exists as a global "run everything" switch (sim.py comment at 345-358) which the
+  active-region test compares against.
+Problem
+  The safety nets are strong but all are END-TO-END (hash the whole world after N ticks). When a golden changes an agent
+  learns THAT something changed, not WHICH law or which field. And an agent adding a field has no list of every place
+  that must know about it (snapshot/restore, golden hash, ledgers, lazy ensure_*).
+Better option
+  A FIELD TABLE next to the registry: one record per world array (name, dtype, shape rule, unit, owner law, conserved
+  ledger, lazy or not, in snapshot yes/no, in golden yes/no). snapshot, restore, golden hash and the lazy-class-attribute
+  list (sim.py:172) are all generated from it. Today these four are maintained by hand in four places.
+  With the registry, the same table feeds a "touch trace": run each golden scene once with fields wrapped, record
+  reads/writes per law, diff against declarations. Then a failing test says "law _law_smoke wrote fvol, undeclared".
+Cost and risk: medium; a wrapper that traces numpy field access is invasive in hot paths, so do it as a debug build of
+  World (property accessors) used only by the check, never in play. Risk low if kept out of the hot path.
+Scheduled or NEW: NEW (EA6 fact goldens give the "what" tier; this is the "which law" tier).
+Priority: MEDIUM (after D1 phase 1).
+Owner-level or technical: technical.
+
+======================================================================
+D3. MODULE SIZES (largest 15 in src, bytes) AND WHAT TO DO
+======================================================================
+   1. src/voxel/heat.py        136,864  HeatMixin only; 46 methods, one class (class at line 995, so ~1000 lines of
+                                         module-level helpers/kernels precede it); 17 numba hits
+   2. src/voxel/will.py        113,104  WillMixin, 34 methods; calls into 17 mixins; imports src.mind.tourney
+   3. src/mpm/matter.py        102,592  the particle solver, one class Matter (line 289) plus _Tap; imports from voxel
+   4. src/voxel/layers.py      100,583  2,242 lines, 118 defs (surface layer pool, not the World mixin)
+   5. src/voxel/bodies.py       94,539  1,676 lines, 34-method mixin plus 45 defs, 7 constants
+   6. src/voxel/motion.py       92,350  TWO mixins in one file: FlatRoutesMixin (41 defs) and MotionMixin (39 defs), 32
+                                         cross-calls between them; the 35-name duplicate list is mostly this file
+   7. src/mpm/core.py           88,692  MPM kernels
+   8. src/voxel/mechlaw.py      86,174  MechanismsMixin, 80 methods (the biggest class by count)
+   9. src/voxel/scenes.py       85,725  1,612 lines; only 3 constants; scene builders (content in code)
+  10. src/voxel/slowforms.py    78,664  2,080 lines, 176 defs
+  11. src/voxel/fluids.py       75,090
+  12. src/voxel/pose.py         70,886
+  13. src/voxel/senses.py       65,752
+  14. src/voxel/matrec.py       61,028  material records (1,163 lines, 28 consts)
+  15. src/voxel/mindlink.py     61,021  the voxel-to-mind bridge
+  (16. materials.py 59,883.) 19 voxel files exceed 50 KB; the 15 above hold about 1.2 MB of the 3.86 MB.
+Problem (concrete)
+  An agent reads whole files. 137 KB is about 35-40k tokens, a third of a working context for ONE file, and
+  most edits touch 50 lines of it. Files that hold two mixins (motion.py), a law plus its kernels plus its data
+  (heat.py: ~1000 lines before the class), or a law plus a scene (scenes.py) make an unrelated change collide. The
+  repo's own editability rule (small kernel modules) is violated by the files that matter most. Also these files
+  are where merge collisions between parallel lanes happen (the test.lock/batch-2 stall story is a symptom of one
+  tree being edited by many lanes; big shared files make it worse).
+Better option
+  Split BY LAW, not by size, into a package per area, keeping the public import path stable
+  (heat/__init__.py re-exports): heat/conduct.py, heat/rise.py, heat/burn.py, heat/boil_melt.py, heat/kernels.py,
+  heat/data.py. Rule of thumb: one law (or one kernel family) per module, under about 25 KB, its constants and its
+  numba kernels beside it, so a law module is the unit an agent edits and the unit the registry (D1) registers.
+  Order by pain: motion.py (separate the two mixins, zero logic change, trivially safe), heat.py, will.py (split by
+  decision stage: perceive/choose/act/reflex), mechlaw.py (by mechanism family), scenes.py (see D5), matter.py.
+Cost and risk: pure moves under golden = low risk, but each is a large diff that conflicts with any in-flight lane
+  touching the same file (the tree has ~40 modified files right now). Do the splits BETWEEN waves, one file per lane,
+  never concurrently with a lane that edits that file. The numba cache key includes the file, so a split recompiles
+  once.
+Scheduled or NEW: "split by law" was floated in chat; not on the decided build order. NEW, bundled with D1 phase 3.
+Priority: MEDIUM-HIGH (motion.py first, now: one-hour, safe).
+Owner-level or technical: technical.
+
+======================================================================
+D4. DEPENDENCY STRUCTURE: LAYERS, CYCLES, THE VOXEL-TO-MIND IMPORT
+======================================================================
+What exists (checked by grep, intra-voxel imports by regex)
+  - src/mind imports nothing from voxel/rooms/core (stated at src/mind/__init__.py:9 and true by grep). GOOD.
+  - src/voxel imports src.mind in three places: policy.py:6 (from src.mind.core import BATCH), mindlink.py:92-95
+    (core, api, loop, record) and will.py:9 (from src.mind.tourney import merge). So the arrow is voxel -> mind.
+  - src/mpm/matter.py:35 imports from ..voxel.materials (ASH, LEAF, ROPE, WOOD) while voxel imports mpm
+    (sim.py:34 "from ..mpm.matter import Matter"). That is a package-level CYCLE, kept alive only because
+    voxel/__init__ and materials do not import mpm at module load. One new import line breaks it at import time.
+  - src/rooms imports mind + stdlib; src/core (6k lines, the old LLM game master) has its own effects/spatial layer
+    and does not import voxel; src/core/mind.py is a SECOND mind (names overlap: core.mind vs src/mind).
+  - Intra-voxel: 136 modules with imports, only one module-level 2-cycle found (quiet <-> slownet/slowbody); the mixins
+    avoid cycles by the trick of coupling through self (D1a), so the import graph looks acyclic while the CALL graph
+    is a ball.
+  - tools/ and tests/ import src freely; lab never imports src (rule held).
+Problem
+  a. voxel -> mind is the intended direction for the bridge (mind is the generic lower layer, voxel plugs in) and is
+     NOT itself a defect, but will.py:9 puts mind logic (tourney.merge) in the middle of the physics-side
+     decision code; and policy.py reaches a constant from mind.core. Of the three, only mindlink.py is a proper
+     bridge. 14b added the will.py one. If mind ever needs one world fact (e.g. perceived state) the arrow reverses and
+     you get the cycle.
+  b. mpm -> voxel.materials means the particle solver cannot be built/tested/benchmarked without the voxel package
+     (and materials.py is a 59 KB constants file). Materials are exactly what AU5 moves into data, which will fix this
+     if mpm then reads a material table passed in (dependency injection), not an import.
+  c. No machine check of layers. Nothing stops physics from importing the narrator or src.core.
+Better option
+  Write the layer rule down and enforce it with a 30-line test (import-linter style, or an AST scan like this audit's):
+     L0  numpy/stdlib kernels (mpm/kernels, voxel/kernels, bonds/kernel) -> imports nothing of ours
+     L1  data (materials table, matrec, packs; later the loaded YAML) -> L0 only
+     L2  physics laws (voxel, mpm, bonds)  -> L0, L1
+     L3  minds (src/mind, src/rooms) -> imports nothing from L2 (as today)
+     L4  bridges (mindlink.py, policy.py, will.py stage that calls the mind) -> L2 + L3
+     L5  play loop / narrator / session (see D8)  -> everything, imported by nobody
+  Concretely: move the mind-calling parts of will.py behind mindlink.py (will keeps physics-of-acting: reflex, exertion),
+  pass the material table into Matter instead of importing it, and make the test fail on a new upward import.
+Cost and risk: small (the test) to small-medium (will.py move: it is the same seam that the 16a primitives layer
+  rewrites anyway, so do it THERE, not as a separate project). Risk low.
+Scheduled or NEW: NEW. The data/materials injection is implied by AU5 (materials onto the format) but the layer test
+  is not scheduled.
+Priority: MEDIUM (the test now, cheap; the will.py move with 16a).
+Owner-level or technical: technical.
+
+======================================================================
+D5. CONSTANTS AND CONTENT IN PYTHON AGAINST DATA PACKS (AU5)
+======================================================================
+What exists
+  Only 3 YAML locations in src: src/mind/data/verbs.yaml, src/core/data/{reactions,couplings,composer_eval}.yaml and
+  src/core/data/packs/{dcc,farming,cultivation}.yaml. The voxel world, the actual game, has NO data pack:
+  materials.py (107 upper-case constants, 886 lines), matterdata.py (39), matrec.py (28 consts, 48 defs, 1,163 lines),
+  mixtable.py, bodies.py (45 defs holding species/body sheets in code), slowforms.py (2,080 lines of form tables),
+  scenes.py (1,612 lines, scene content as builder code), layers.py. docs/constants.md exists as a human index.
+  The PACKS the owner's north star names (litrpg-systems-as-packs, cultivation proven with zero engine code) live in
+  src/core (the OLD engine) and are not loadable by the voxel world.
+Problem
+  a. Content as code means: adding a material or a creature is a Python edit in a 100 KB file, only developers (and
+     agents holding the whole file) can do it, no validation names the field, and goldens move on every constant.
+  b. Two worlds of content with no bridge: old packs (core) vs voxel Python tables. AU5's "existing content moved onto
+     the format as the format test" is the plan, but it means moving constants whose float32 values are pinned by
+     goldens: load order, parsing precision (YAML float -> float64 -> float32 cast) must reproduce bits exactly.
+  c. Sourced numbers and their provenance already live next to constants as comments (matrec, "sourced" tools); a
+     data format must carry that (value, unit, source id) or the sourcing discipline is lost in the move.
+  d. scenes.py is content (a room, a forge) in code; scene builders are test fixtures and also the future "world
+     authoring"; today they are the 85 KB file in the largest-15 list.
+Better option
+  Follow AU5 as decided, with these concrete cautions:
+   1. Format = YAML with an explicit unit and source per value, a loader that casts exactly as the constants did (one
+      golden test: loaded table == old Python table, array_equal, run BEFORE the Python table is deleted).
+   2. Tables go through the registry's field/quantity declarations (D1/D2) so a mod's material and the built-in ones
+      use one path.
+   3. Move in this order, smallest blast first: verbs (already data), materials/matrec/mixtable (feeds mpm, solves D4b),
+      species/body sheets (bodies.py), slowforms, then scenes as scene-files.
+   4. Keep a generated "constants.py" snapshot read-only for numba kernels: numba kernels cannot read dicts; kernels get
+      their constants as arrays/tuples built at load time from the data. Document that handoff (it is the one
+      technical trap in AU5).
+Cost and risk: large in total but already planned and staged; the trap is bit-exactness for goldens and numba constant
+  capture (a global constant is baked into the compiled kernel; a loaded one must be passed as an argument or the
+  compiled cache goes stale when data changes: "cache=True" kernels do not notice a data edit).
+Scheduled or NEW: AU5 scheduled (with 16a). The numba constant-capture issue and the exact-cast golden check are NEW
+  and should be written into AU5.
+Priority: HIGH (already planned; the cautions are what is new).
+Owner-level or technical: technical, except the old-engine packs (below).
+  OWNER-LEVEL: what happens to src/core's packs and engine (6k lines, LLM game master, old playtest loop)? Options: keep
+  as a reference/test bed; port the pack format into the voxel entity schema (AU3) and retire core; or freeze it.
+  Recommend: AU3's schema supersedes the core pack format, mine core for ideas only (as engine-redesign-target
+  already says "locked fresh-core rebuild"), freeze core and stop maintaining it, so there is ONE content format.
+
+======================================================================
+D6. HOW EASY EACH PART IS FOR AN LLM AGENT TO EDIT SAFELY
+======================================================================
+Rating (my read; 5 = safe to hand to a fresh agent with only the file and its test):
+  src/mind (3k lines, imports nothing, data in YAML, typed api)          5
+  src/bonds, src/mpm kernels (pure numpy/numba, small interface)          4
+  new wave-15 modules (bleeding, grip, firstaid, fick_solids, reactions,
+    heathist*, lazy*): small, law-per-file, own test file                 4
+  matrec / materials / mixtable (tables)                                  3 (easy edit, golden bit-exactness unseen)
+  senses, perceive, events, beliefs                                       3
+  fields.py, fluids.py, air.py, support.py                                3 (field owner is implicit)
+  heat.py, layers.py, slowforms.py, scenes.py                             2 (size; kernels, data and law mixed)
+  bodies.py, pose.py, skeleton.py, hands.py, motion.py                    2 (articulated body is a ball of coupled laws)
+  will.py, mechlaw.py, mindlink.py                                        1 (17-way coupling; decision, physics and
+                                                                              mind bridge interleaved)
+What makes an edit unsafe today (each one is addressed by an item above)
+  - Edits that change a number change a hash and the agent does not learn which law (D2).
+  - Reading set is unbounded (D1a, D3).
+  - Test cost: the full suite takes about 62 minutes (chat); the agent cannot loop on it; lane locks serialise runs (D7).
+  - Shadowed methods and super()-less hooks give silent no-ops (D1b/c).
+  - Conventions live in prose comments (excellent ones, long) not in checks. The comments in heat.py/sim.py are the
+    best documentation in the repo and also the clearest sign that the rules are enforced by memory.
+Better option
+  The registry, the field table, the layer test and the by-law split are the editability work. Add one small thing:
+  a per-law "card" (docstring header or the registry record itself): what it reads/writes, which tests cover it, which
+  twin, the one-line command to run ITS tests only (see D7). An agent handed "edit law X" then needs the card, the
+  module and the named tests.
+Cost/risk: small, rides on D1. Scheduled or NEW: NEW (editability rule is decided; this operationalises it).
+Priority: HIGH as an outcome; no separate work item.
+Owner-level or technical: technical.
+
+======================================================================
+D7. TEST TIERS AND LOCKS (CODE SIDE ONLY)
+======================================================================
+What exists: 214 test files; the full suite about 62 minutes; one test.lock and one lab.lock; tools/stepcheck.sh,
+  tools/golden.py, tools/law_timing.py. EA6 fact goldens and "fast and slow tiers" were raised in chat.
+Problem: wall-clock of a verification loop is the real throttle on every lane; one lock makes lanes queue.
+Better option (code side)
+  - Mark every test with a tier at collection by a registry-derived mapping: T0 per-law quick (tiny worlds, seconds;
+    selected by "tests that cover law X" from the law card), T1 module set (minutes), T2 full + goldens (62 min,
+    nightly or pre-merge). An agent runs T0 for the law it touched; a lane runs T1; only wave close runs T2.
+  - Per-lane locks keyed by what a lane may touch (the registry's write sets give the key), instead of a global lock;
+    full-suite lock stays global.
+  - pytest-xdist or a process pool across test files is the cheap win if the lock is about CPU contention, not
+    correctness (numba cache dirs are the shared-state trap: set a per-worker NUMBA_CACHE_DIR or pre-warm once).
+Cost: low-medium. Scheduled or NEW: partly raised (chat), not on the decided build order. Priority: HIGH for throughput.
+Owner-level or technical: technical.
+
+======================================================================
+D8. THE PLAY LOOP WILL SIT ON TOP OF THIS: THE ARCHITECTURAL SEAM IT NEEDS
+======================================================================
+(The playable-MVP decision itself is another lane; this is only what the code structure must provide.)
+What exists: World.step(); World.policy = TablePolicy() swappable ("who chooses; the sim never knows", sim.py);
+  World.traces (every decision logged); World.speech, World.sounds; mindlink.py as the bridge; slow Scheduler
+  (slowtime.py:318) for time-skip; perceive.py/senses.py producing percepts; src/core has a session loop for the old engine.
+Problem: there is no single module whose job is "one turn of the game": today play-like drivers are scene scripts and
+  tests that call step() in a loop and poke world methods. Two risks: the loop gets written as one more thing that
+  reaches into World internals through self-like access, and the "queue until interrupted by salience" (PA3, world-tick
+  momentum) logic gets duplicated per driver.
+Better option
+  A thin L5 "session" API with FOUR calls only, over the registry: observe(actor) -> percepts, act(actor, primitive
+  sequence) -> accepted/refused, advance(until=salience|n ticks) -> events, save()/load(). Everything else (narrator,
+  parser, UI) uses just these; tests and the playtest harness use them too, so the harness exercises the real path.
+  World exposes no other way in for L5.
+Cost: small when done with 16a (the primitives layer is where act() is born). Scheduled: implied by PA1-PA6 and the
+  world-tick design, not defined as an API. Priority: MEDIUM (decide the 4-call surface before 16a ends).
+Owner-level or technical: technical.
+
+======================================================================
+D9. NUMBA KERNELS AND WHERE RUST WOULD FIT
+======================================================================
+What exists: @njit in about 15 files: voxel/{kernels,routing,heat,fluids,senses,outside,label,mixtable,faceenv,gasflow,
+  window,lazykernels}.py, mpm/kernels.py (28 hits, the densest), bonds/kernel.py. cache=True throughout (kernels.py:28).
+  routing.py has 42 numba hits. tools/law_timing.py skips the first ticks "numba compiles and caches fill".
+Problem
+  a. Cold start: first run after any edit to a kernel file recompiles; a fresh checkout or a new agent worktree pays the
+     whole compile (tens of seconds to minutes across the files) and per-test processes may each pay it if the cache
+     dir is not shared or is invalidated by the file split (D3).
+  b. Kernels sit inside big modules (heat.py: kernels and law together), so editing the law text invalidates the cache of
+     every kernel in the file. Splitting kernels into their own modules (D3) fixes this.
+  c. numba cannot see data loaded at runtime as constants (D5); float32 vs float64 (batch 3 flips E to float64) is
+     decided per dtype signature, so a flip multiplies compiled specialisations.
+  d. Numba is a heavy dependency (llvmlite) and ties to NumPy/Python versions; it limits distribution of the game to
+     "pip install in a venv".
+Where Rust fits (honest read)
+  Not now. Rust (PyO3/maturin) pays when (1) startup time and distribution matter (a prebuilt wheel has no JIT),
+  (2) a kernel needs real parallelism with a guarantee and a proper type check (rayon over chunks, EA5), (3) a hot
+  loop is memory-bound and numba's prange/array model is the limit, (4) the same kernel must run headless in a
+  server/CI without LLVM. Candidates in order: mpm/kernels.py and bonds/kernel.py (self-contained, pure arrays, small
+  interface, 28+12 njit functions), then conduction and gas flow (whole-world passes), then routing. Poor candidates:
+  anything touching Python objects (will/policy/mindlink), which are not hot anyway (>10 runs/sec target is a
+  physics-time target, not a mind-time target; mind has 0 model calls in reactive mode).
+  Cost of switching a kernel: a rewrite plus bit-exact parity against the numba version (goldens help), a build step in
+  every agent environment, and a second language for agents to edit safely (agents are decent in Rust but the borrow
+  checker makes the "edit one line" case slower than numpy). Risk: high relative to benefit today.
+Better option now
+  Cheap numba hygiene: a shared NUMBA_CACHE_DIR, kernels in dedicated *_kernels.py files with no law logic, constants as
+  explicit arguments, an explicit warm-up (one function that calls each kernel once on a tiny world, run at session
+  start and in CI) so first-tick latency is paid at load, not in play. Revisit Rust only if the profile after the
+  registry (D1: per-law ms at scale) shows a specific law over its ceiling on the owner's laptop, or if packaging for
+  others becomes a goal.
+Scheduled or NEW: NEW. Priority: LOW (hygiene items MEDIUM, Rust LOW).
+Owner-level or technical: the warm-up and kernel files are technical. "Do we ever ship this to people without a Python
+  environment" is OWNER-LEVEL and is the trigger that would move Rust up; recommend deciding it after the playable MVP.
+
+======================================================================
+D10. SMALLER FINDINGS
+======================================================================
+  a. 93 getattr(self, ...)/6 hasattr probes (e.g. sim.py:377 "getattr(self, 'igniters', None)") are optional state with no
+     home; fold into the lazy-state/field table (D2). Technical, low.
+  b. src/core (old engine) and src/mind duplicate concepts (two "mind" modules, effects vs events, pack format). One live
+     content/engine lineage is cheaper; see D5 owner-level note. Technical/owner, medium.
+  c. Uncommitted work: about 40 modified and 36 new files (git status) include wave-14/15 modules and tests. Not an
+     architecture issue, but any of the splits above should only start after the tree is committed, one file per lane.
+  d. step() order is the only place the physics order is written; before the registry exists, add one test that pins
+     the call sequence (record the _law_* order for a scene and compare to a stored list) so a reorder is a failing
+     test, not a silent change. Cheap, immediate, technical, medium.
+  e. Python-side "events" (EventsMixin) and the beliefs/perceive pair mix physics-side event logging with knowledge
+     (K1-K12) concerns; the knowledge layer (16b) should land as its own module over the event log, not as more methods
+     on EventsMixin/BeliefsMixin. Technical, medium, with 16b.
+
+======================================================================
+PRIORITISED SUMMARY
+======================================================================
+  1. HIGH   D1 Law registry (phase 1 before 16a; B lint now). Prerequisite of AU2. NEW. Owner choice: A (staged) vs B.
+  2. HIGH   D5 AU5 data move with two new cautions: bit-exact load check, numba constant capture. Scheduled + NEW cautions.
+            Owner choice: freeze src/core and make AU3's schema the single content format.
+  3. HIGH   D7 Test tiers + per-lane locks (code side), fed by law cards. Partly raised, NEW as a build item.
+  4. MED-HIGH D3 Split by law, motion.py first (two mixins in one file), then heat.py, will.py, mechlaw.py; between waves.
+  5. MEDIUM D4 Layer rule as a test; move the mind-calling part of will.py behind mindlink with 16a; inject materials
+            into mpm.
+  6. MEDIUM D2 Field table (snapshot, golden, lazy list generated) + touch-trace check of declared reads/writes.
+  7. MEDIUM D8 Four-call session API (observe/act/advance/save) decided before 16a ends.
+  8. MEDIUM D10d step-order pin test (do now, minutes).
+  9. LOW    D9 numba hygiene (warm-up, kernel files, cache dir); Rust deferred until a measured need or a
+            distribution goal (owner question after the MVP).
+OWNER-LEVEL QUESTIONS (everything else is technical):
+  Q1. Law registry staged (A) or lint only (B)?  Recommend A.
+  Q2. src/core: freeze and fold its pack format into AU3, or keep both?  Recommend freeze.
+  Q3. Is shipping to people without a Python environment a goal (moves Rust up)?  Recommend decide after MVP.

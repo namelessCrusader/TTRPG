@@ -1,0 +1,878 @@
+ARCHITECTURE AUDIT, LANE B: MINDS
+Written 2026-11-22. Documents only: nothing was run, edited or timed. Every
+number below is read from a file or from decisions.md; where a cost is not
+measured it says so.
+
+Scope: src/mind (api, catalog, verbs.yaml, choosers, loop, core, scope,
+tourney, record), src/voxel/will.py, policy.py, beliefs.py, reflex.py,
+mindlink.py, and the learned mind in lab/mindL. The question: how does the
+learned mind get into src, behind ONE mind interface, inside the latency
+budget, and where may a language model be used.
+
+Already decided or scheduled and NOT re-proposed here (build on these):
+  K1-K12 knowledge layer (wave 16b); PA1-PA6 primitives (16a), PA4 one
+  interface for everyone, PA2 free text to primitives; SC2-SC7 daily life,
+  SC4 level of detail, SC5 the twin protocol for every approximation; SV1-SV5
+  concerns and effects (lab); Fam1-Fam6 family step (lab, next); AU2 law
+  plugins with a conformance suite, AU3 the entity file with a `mind`
+  component; EA7 heavy ticks and approximate twins; D1 (lab next lever);
+  the latency invariant (reactive = 0 NPC model calls).
+
+--------------------------------------------------------------------------
+0. THE PICTURE IN TEN LINES
+--------------------------------------------------------------------------
+1. src/mind (about 3,000 lines of code, 587-line catalog test) is a clean,
+   stdlib-only, TASK-LEVEL interface, and two backends use it: src/rooms
+   (a fork of the lab inn) and src/voxel/mindlink.py (voxel bodies).
+2. The only things that choose through it are STATELESS choosers: Rules,
+   Random, Gate, Combined (a text model plus trait bias), Replay, Player,
+   Tourney (loop.py:84 NPC table; choosers.py).
+3. The learned mind (lab/mindL, 8,497 lines with tests and reports) is a
+   STATEFUL agent written against the lab inn's own world object
+   (w.log, w.here, w.perceived_need, w.drive_error ...). It cannot be a
+   Chooser as the protocol is written (item 1).
+4. About 890 lines of it (actor_critic, world_model, habit, valence,
+   curiosity, episodic, effects, concerns) import NOTHING from the world:
+   numpy and the standard library only. The world is reached through two
+   adapters, reader.py and drives.py, plus Mind._readings and
+   Agent.perceived_at_me (item 2). This is the best news in the lane.
+5. The voxel backend has NO needs: catalog drives `hunger` and `thirst` are
+   `voxel: null`, `safety` is a binary percept test, `harm` is a scripted
+   per-name weight (verbs.yaml:97-102; mindlink.py:287-301). It offers 14
+   verbs (door, walk, take, strike, shout, wait), the inn has 24 plus 9.
+   So "the learned mind into src" is two separate jobs: the plumbing
+   (doable now, on the rooms backend) and the voxel life (blocked on the
+   body-needs reader, 15c bodies and 16a primitives) (items 3, 4).
+6. The rooms fork is stale: forked at lab/world2/world.py sha1 0cea595,
+   now 66084f1; 806 lines here against 2,148 in the lab; it has none of
+   needs, meals, partner, news, calm, signs, hard, lethal, perma, field,
+   serve, tend (grep: 0 hits). The lab inn moved on for two months.
+7. Evidence: the learned mind does not yet beat the rules in the lab
+   (step 2 L1/L2: effects -0.058, labels +0.240, rules +0.380; survival
+   check not met, 0 deaths in 600 person-years, secondary measures FAVOUR
+   the oracle; concern weights at noise level, about 0.04). The interface
+   work is worth doing now; porting the CLAIM is not (item 9).
+8. Rules are spread over four places that do not share code: the backend's
+   `rule_scores` (mindlink.py:671, rooms/backend.py:246), the Rules chooser
+   (T=0.2), the voxel reflex TablePolicy (policy.py:363), and the dormant
+   src/core NPC mind (item 8).
+9. The LM story in src is thin: NO live model chooser exists in src (only
+   record and replay; no src/mind/remote.py), and the only live LM code is
+   the old engine's ChoiceLM in src/core/llm.py. Player parse, addressed-NPC
+   wording and narration are not built (item 12).
+10. The most expensive work in the lane is not code but a choice: where the
+   learned mind runs FIRST in the real engine and where its code lives
+   (items 3 and 5 are owner-level).
+
+--------------------------------------------------------------------------
+PART I. THE MIND INTERFACE: WHAT MUST CHANGE
+--------------------------------------------------------------------------
+
+ITEM 1. THE CHOOSER PROTOCOL CANNOT HOLD A LEARNING MIND
+What exists
+  - src/mind/api.py:312 Chooser: submit(DecisionRequest), poll(id).
+    api.py:271 DecisionRequest: option TEXTS, group names, and the three
+    rule-score tuples. Header rule (api.py:19-21): "a chooser gets a
+    DecisionRequest and nothing more ... holds no Ref, no tick".
+  - loop.py:189-243 Mind.decide builds the Menu, throws the Option objects
+    away after the request is made, asks, and tells the backend.
+  - tourney.py/policy.batchable: a chooser is asked about SUB-MENUS and the
+    winners merged; this assumes asking changes nothing (will.py:903
+    `batchable`, policy.py:383).
+  - choosers.py:59-70: draws are seeded from (seed, who, request id), no
+    state.
+Problem
+  A learned mind needs four things the protocol deliberately hides:
+  (a) WHO the options are about (a Ref per role): valence, partner models,
+      concerns and the actor's U[verb, target] table are all keyed by
+      person. DecisionRequest strips identities on purpose (to keep model
+      prompts clean). The two purposes collide in one type.
+  (b) OUTCOMES: what happened between this choice and the next (the events
+      it perceived, the change in its own needs). There is no channel back
+      to a chooser; Why/Job events go to the log, not to the mind.
+  (c) STATE ACROSS DECISIONS and a place to keep it for snapshots: lab
+      Mind holds ActorCritic, Habit, Valence, WorldModel, PartnerModels,
+      Episodic, Curiosity, DeltaMeanings, RWConcerns and an open Step
+      (mind.py:113-218). Nothing in src snapshots or restores a chooser;
+      the voxel link has `on_restore` that only FORGETS pending requests
+      (mindlink.py:1155).
+  (d) NOT being asked twice or in pieces. A learner that is asked about
+      batches of a menu would "act" several times per decision (and the
+      tournament would update the actor on sub-picks that never happen).
+  It also has a randomness problem: lab Mind uses a stateful
+  np.random.default_rng (mind.py:119); the sim rule is NO generator, draws
+  from hash of (seed, who, id) (design 2.4; choosers.seed_of). A stateful
+  rng is not restored by a snapshot, so a replay after restore diverges.
+Better options
+  A. (recommended) Add a second, richer contract beside Chooser, in
+     src/mind/api.py, and make Chooser a special case of it:
+        Mind (one per character, stateful):
+          observe(obs)      percepts it perceived, job events, its own body
+                            state, readings of others' signs; no world access
+          decide(ask)  -> Decision    ask = the typed Menu (Options with
+                            Refs and features), SelfState, Needs, a clock;
+                            pure of side effects on the WORLD, may update
+                            its own working state
+          close(outcome)    the step closes (next choice, death, sleep):
+                            reward inputs, learning
+          sleep(span)       consolidation (replay), tied to a real sleep
+                            JOB, not a loop boundary
+          state()/restore(s)  plain data (arrays and dicts), snapshot-safe
+          explain(decision) -> typed terms for the cause log
+     Chooser adapters: ChooserMind(chooser) ignores observe/close/sleep and
+     keeps today's behaviour byte for byte (so goldens do not move).
+     Draws come from seed_of(seed, who, decision counter), the counter being
+     part of state().
+  B. Keep Chooser, add optional hooks read with getattr (the voxel policy
+     style: observe, prepare, limbs). Cheaper, already the house style, but
+     unchecked: a typo in a hook name silently becomes "no learning". Only
+     acceptable if a conformance suite (item 6) checks that every hook the
+     mind declares is called.
+  C. Make the learned mind a Backend-side policy (as lab does it). Rejected:
+     it forks the logic per backend, the opposite of one interface (PA4).
+Cost and risk
+  Small: one protocol file, one adapter, loop.py change in `decide` (pass
+  the Menu through instead of dropping it), tests. Risk: the "no Ref in a
+  request" rule exists for the model prompt; keep DecisionRequest for text
+  models and add a separate typed ask for Minds, so nothing about the model
+  path changes. Risk 2: a stateful mind in a snapshot makes snapshot size
+  and restore time a mind concern (weights are small: see item 2).
+Status: NEW (K1 asks for a replaceable mind interface but not this shape).
+Priority: P1. Technical.
+
+ITEM 2. THE LEARNED MIND IS NEARLY WORLD-FREE; THE FIVE HARD-WIRED TABLES
+ARE THE ONLY BLOCKER
+What exists (lab/mindL)
+  World-free, numpy only: actor_critic.py (89), world_model.py (34),
+  habit.py (32), valence.py (35), curiosity.py (47), episodic.py (52),
+  effects.py (306), concerns.py (293): about 890 lines.
+  World-bound, and why:
+    reader.py:28-43   VERBS = sorted(DUR) (inn verb names), PEOPLE = the CAST
+                      of five plus "the bandit", TARGETS one-hot of fixed
+                      size NT, KEYS = 43 inn option-feature names (ale, anger,
+                      armed ... goal_*), ZDIM = 1 + 43 + 7.
+    drives.py:25-76   DRIVES from world2 (7), ROOMS one-hot in the critic
+                      state, NATURE[kind] = a (weight, set point) table keyed
+                      by the inn's TYPE STRING (peasant, knight, merchant,
+                      thief, cook, bandit), TURNS = 300.
+    partners.py:46    KIND_ACTS and HARSH_ACTS verb lists (the labels that
+                      SV3 replaces by effects, still the control arm).
+    mind.py:310-326   Mind._readings calls w.here, w.perceived_need,
+                      w.held, w.loose, w.things; Agent.perceived_at_me scans
+                      w.log; H.state reads w.danger, w.wealth, w.here, w.t.
+    mind.py:64-93     DEFAULT has about 20 settings, 12 of them "off so every
+                      older run reproduces" (traces, effects, fx_fix,
+                      concerns, b_trust, pm_forget, pm_detect, cn_things ...).
+    Time unit is the inn TURN everywhere: effects.CREDIT = 12 turns,
+    WINDOW = 30 turns, habit fade per NIGHT, replay at the night's end.
+Problem
+  (a) A new verb (a 16a macro, a pack verb, a cached plan, a mod verb) has no
+      row: W[verb], M[verb] are fixed-size arrays sized at import. Content
+      as data is blocked by code constants.
+  (b) A new person has no slot in U[verb, target] or the one-hot; the
+      partner dicts grow but the actor table does not. An open world has
+      unbounded, changing people.
+  (c) The feature columns are the inn's, by name. The voxel backend and the
+      rooms backend give Options NO features at all (rooms/backend.py:41:
+      "an Option of this backend has no features"). So the reader has nothing
+      to read outside the lab inn.
+  (d) NATURE keyed by type string is a trait flag by another name. The
+      owner's principle (learned-mind-principles): no trait flags, traits are
+      dials plus history plus state. Weights and set points must be
+      per-character dials (AU3 `needs and drives` component), not a lookup by
+      "knight".
+  (e) Turn-based time constants cannot be moved to a world where acts take
+      ticks of 50 ms and a day is a real cycle. gamma^dt, CREDIT, WINDOW,
+      fade per night all need a world-time unit (seconds of world time).
+  (f) The 12 off-by-default arms are the lab's reproducibility device (flag
+      off = bit for bit). In src they are dead branches and a test matrix.
+Better options
+  1. Extract the world-free learners into one package, ported with their
+     tests, with open-ended keys: verb rows allocated on first sight from the
+     catalog (or, better, a verb is READ as a vector: catalog group, `serves`
+     drives, flags, plus declared features, so a pack verb works with no
+     new row and rows are shared by similar verbs). People and things are
+     keyed by Ref id in dicts or hashed slots, never one-hot. Target
+     identity for the actor = the same Ref id.
+  2. Replace KEYS by CATALOG-DECLARED FEATURE CHANNELS: a verb states which
+     numeric features its options carry (name, range, meaning, source), the
+     backend fills them; reader builds z from the declaration. This is the
+     same data-not-code move as the catalog itself, and it makes the reader
+     the same function in every world.
+  3. Drives and set points per character from the entity file; the drive
+     LIST comes from the catalog `drives:` block (today 4 words) extended to
+     the 7 numeric needs, each backend declaring how it reads them (item 4).
+  4. World-time units: seconds. The inn declares its turn length in seconds;
+     the lab keeps working through a conversion constant.
+  5. One MindSpec (data) naming the modules and their settings; each module
+     is a plugin with terms(ctx), learn(step), night/sleep, state(); the
+     choice is the sum of plugin terms (Mind.terms at mind.py:220-308 already
+     is that sum, written as a chain of `if "X" in m`). Ablations stay a lab
+     tool (a spec without the plugin). Dead arms (the control labels arm,
+     b_trust, the non-trace critic) are deleted from the src copy once the
+     winning configuration is frozen.
+Cost and risk
+  Medium: about 900 lines move; the reader/drives rewrite is the real work.
+  Risk: silently changing the learner while generalising it. Mitigation: the
+  lab goldens (golden_traces_off.json) and the lab tests (test_mind.py 613,
+  test_effects 435, test_concerns 445, test_tournament 379) become a
+  REFERENCE: the ported mind must reproduce a lab night bit for bit under the
+  adapter that restores the inn's tables. That is the same sha-pinned
+  golden discipline the rooms fork already uses.
+Status: NEW. Priority: P1. Technical, except where the code lives
+(item 5, owner-level).
+
+ITEM 3. THE VOXEL BACKEND HAS NO NEEDS, SO THERE IS NOTHING TO LEARN FROM
+What exists
+  verbs.yaml:97-102: drives hunger and thirst `voxel: null`; safety =
+  "percept_any" test; harm = "sheet: harm". mindlink.py:287-301 self_state;
+  mindlink.py:264-286 fears(), _harm(). mindlink.py:671-719 rule_scores:
+  a hand table (strike = harm weight x 1.5 armed else 0.5; take 0.8; flee
+  safety x (1 - danger); walk 0.1; wait 0.2; door replies 0.9 / 0.6 / 0.4),
+  prior_avg = prior (traits not read, Q5), habit 0. Voxel catalog verbs: 14.
+  Physiology and bodies exist (physiology.py, bodyheat, vasculature,
+  bleeding, firstaid) but nothing exposes them as drives.
+Problem
+  The learned mind's reward is the DROP in weighted drive error (H module).
+  In the voxel there is no drive error: no energy balance, hydration,
+  warmth, pain, fatigue, company or curiosity vector is read. Without it the
+  learned mind has nothing to maximise and the rules have nothing to serve:
+  today a calm voxel man never does anything except walk out of a door
+  "rarely, by choice" (mindlink.py:140-148). Also: the voxel `harm` drive is
+  a PER-NAME weight on a character sheet (scripted grudges), the opposite of
+  "concerns are acquired, never declared".
+  Nothing here is a mind problem alone: it needs the body.
+Better options
+  A. A BODY-NEEDS READER in the backend: a typed vector, each need read from
+     the body's own ledgers (energy reserve and glycogen/fat, water, core
+     temperature against comfort, pain and injury from damage records,
+     fatigue and sleep debt from the body clock, breath from the O2 chain),
+     with each need's SET POINT a body/dial value, and the reading carrying
+     the same signs (SV2) others can perceive. The reward is then the drop in
+     this error, from real physiology, no designer reward (matches
+     learned-mind-principles: blind rewards).
+  B. Needs that are not bodily (company, standing, curiosity, wealth) come
+     from the mind's own acquired concerns and the world's social ledgers
+     (SV1), not from a body register. The lab's 7 inn drives become: 4 bodily
+     (energy, safety/pain, rest, warmth) + 3 social/cognitive that are
+     LEARNED or from culture packs. Do not invent a voxel "company need".
+  C. Until 15c (bodies) and 16a (primitives) land, run the learned mind on
+     the rooms backend only (item 4).
+Cost and risk
+  Reader: small once the body ledgers are final (15c: the heart/perfusion
+  model, adult bodies, medical function records feed it). Risk: building the
+  reader against the stick-figure body now, then rebasing (EA2 rebases the
+  body once). Do the reader AFTER 15c's body slice, before 16a.
+Status: partly implied (SC6 needs, EA8 senses) but the NEEDS VECTOR as the
+learned mind's input is NEW. Priority: P1 for design, build after 15c.
+Technical, with the scope question in item 4.
+
+ITEM 4. WHERE THE LEARNED MIND RUNS FIRST IN THE REAL ENGINE (and the stale
+rooms fork)
+What exists
+  src/rooms/world.py: 806 lines, LAB_SHA1 0cea5952 (world.py:62), golden
+  tests/data/inn_rules_seed{0,1,2}.jsonl header pins the same sha (test_rooms
+  .py:81). The lab inn is now 66084f1, 2,148 lines (lab flags: drives gossip
+  trade watch check known reprisal wear meals partner news calm signs hard
+  lethal perma field serve tend). The learned mind, all its tests and all
+  four lab result sets (steps 1-3, hard inn, lethal, lethal2, food) run on
+  the new lab inn; nothing in src runs it.
+Problem
+  The goldens guarantee only that the fork has not drifted from its own
+  frozen sha; the lab itself drifted away. Re-forking 1,340 lines of delta
+  every few weeks is the drift cost the design already warned about
+  (sim-mind-design.md 3.5 risk "the fork drifts from the lab inn"), and the
+  lab is about to change again (the FAMILY step: Fam3 household, Fam4
+  everyone learns, Fam5 death in, coarse past Fam2).
+Options (a real trade-off, see "OWNER CHOICES")
+  P. PLUMBING FIRST ON THE STALE FORK. Wire the Mind interface (item 1) and
+     a ported learned mind into src/rooms as it is. Use it only for
+     conformance tests: determinism, snapshot round trip, the no-hidden-
+     fact test, cost per decision, the LM-call ledger. Results stay in the
+     lab. Cheap; honest; proves the seam. Risk: the fork has no signs/
+     concerns world, so effects/concerns modules are exercised only
+     synthetically there.
+  Q. RE-SYNC THE FORK ONCE, AT THE END OF THE FAMILY STEP. One bigger copy,
+     then freeze the lab inn as the "mindL benchmark" (no more lab inn
+     features after that; new worlds go to voxel). Costs one big port; stops
+     the drift by decree. Gives full lab-grade runs in src.
+  R. SKIP THE INN, GO TO A VOXEL HOUSEHOLD. Build the family inn as a voxel
+     scene with real bodies and the needs reader. The real thing, blocked on
+     15c, 16a, and a social-act vocabulary (eat, drink, serve, give, tell,
+     tend, sleep, work) that the 14-verb voxel catalog lacks. Latest.
+Recommendation: P now, R as the destination, Q only if the family-step
+results are strong enough to justify a src rerun. The learned mind should
+reach voxel after, not before, 15c and 16a; the audit's build order already
+puts those first.
+Cost: P small; Q about one agent-week and a new sha pin; R large and shared
+with other lanes.
+Status: NEW (the "learned mind into src" path was never written down).
+Priority: P1 to decide. OWNER-LEVEL (scope and cost).
+
+ITEM 5. WHERE THE SHARED LEARNER CODE LIVES (the isolation rule)
+What exists
+  lab/README.md and sim-mind-design.md 2.1: "lab and src never import each
+  other; they exchange JSONL files". Reason given: the lab venv has torch and
+  model packages that must not touch the sim environment, plus the laptop's
+  RAM and heat. The learned mind is numpy only.
+Problem
+  The rule was made for a torch boundary. The learners do not cross it, but
+  the rule still forces two copies: either the learner is written once in lab
+  and COPIED into src (a sha-pinned fork like rooms: drift every time a lab
+  result changes a module, and this is exactly where the lab is most active),
+  or it is written in src and the lab imports it (forbidden).
+Options
+  1. A neutral numpy-only package that BOTH import (for example `mindcore/`
+     at the repo root; neither src nor lab). Keeps the torch isolation (it
+     never imports torch), removes the fork, one test suite. Needs a one-line
+     amendment of the isolation rule: "only the numpy/stdlib-only package
+     mindcore is shared".
+  2. Keep the rule; port by copy at milestones with a sha pin and a
+     byte-for-byte golden (as rooms). Zero rule change; fork drift cost on
+     every lab change (and the lab learner is still changing: concerns
+     constants unsourced, effects b_partner untuned).
+  3. Move the lab's learner into src/mind (it is the destination) and have
+     the lab call it through JSONL cards. Impractical: the lab runs 100k
+     decisions a night in-process.
+Recommendation: option 1. If the owner prefers the strict rule, option 2
+with the golden, but then freeze the learner modules in the lab at the moment
+of the port and say so in the lab README.
+Cost: one amendment and a directory move; risk: the venv boundary (mindcore
+must never import torch; add a test that imports it in a clean numpy-only
+interpreter).
+Status: NEW. Priority: P1 (decide before item 2 starts). OWNER-LEVEL
+(principle: a rule you set, with a real reason).
+
+ITEM 6. A MIND CONFORMANCE SUITE (one acceptance test for rules, scripted,
+learned and model minds)
+What exists
+  Tests are per-piece: tests/test_mind_core.py (462), test_mind_loop (540),
+  test_mind_scope (547), test_mindlink (836), test_mind_record (298),
+  test_mind_catalog (587); lab/mindL/test_mind.py (613) includes
+  test_mind_inputs_hold_no_hidden_fact (perturb unperceived facts, state,
+  menu and reward must not change). AU2 already plans a conformance suite
+  for LAW mods; there is none for minds.
+Problem
+  Each new mind kind (a scripted scene mind, a learned mind, a pack mind, a
+  model mind) would be tested by hand, and the three most valuable tests
+  live only in the lab.
+Better option
+  One suite, run for every mind kind registered, checking:
+    1. DETERMINISM: same seed and same inputs, same decisions; a snapshot
+       taken mid-run and restored replays identically (draws from a counter
+       in state, not a generator).
+    2. NO HIDDEN FACT: the lab test, ported: change anything the character
+       did not perceive; observe(), decide() inputs and the reward are
+       unchanged (the god-channel ablation made this the master rule).
+    3. LEGAL ONLY: the pick is always an index into the offered menu; a
+       blocked option is never picked.
+    4. THE LATENCY LEDGER: model calls per tick by purpose (item 12) are
+       zero in reactive mode.
+    5. COST CEILING: ms per decision, and ms per decision at 100 characters
+       (item 7), p99 as well as mean (EA7).
+    6. STATE ROUND TRIP: state() then restore() is the identity.
+    7. EXPLAIN: explain() returns typed terms that sum to the score.
+Cost: small once item 1 exists (it is the item 1 test). Status: NEW, matches
+AU2's pattern. Priority: P1 (written WITH item 1). Technical.
+
+ITEM 7. PER-TICK AND PER-DECISION COST; THE BUDGET AND THE PLACES IT LEAKS
+What exists and what is NOT measured
+  Measured elsewhere: the crowd kernel timing is 7.41 ms (batch 1 end
+  checks); the old per-decision measure "157 against 151 us" is for the
+  batched belief view only (sim-mind-design.md 3.4). I could not find any
+  recorded cost of Mind.decide in src or of the learned mind per decision in
+  either world, and I did not run anything. UNMEASURED: the learned mind's
+  ms per decision (27 options x ZDIM 51 einsums, kNN episodic lookup,
+  partner logistic per social option, an optional effects and concerns term)
+  and the link's own bind() per voxel decision (routes, doors, things).
+  Decision frequency is low: the duel prototype asked the mind 8 questions
+  in 150 ticks (sim-mind-design 3.5); a task-level mind asks when a job
+  ends, not at every reaction time.
+Where it leaks, from reading the code
+  a. loop.py:208-215 builds the full scene text (describe.describe) and a
+     DecisionRequest for EVERY decision, including reactive NPCs whose chooser
+     is Rules and reads no text. loop.py:235 appends a row with situation
+     text, option lists and probabilities for every job, kept in a list
+     (`self.rows`) with no bound: at 100 NPCs over hours this is memory and
+     string work for nothing. (Likely, not measured.)
+  b. core.menu is built with the pre-rank cut at 16 (core.py:54) by
+     max(prior, prior_avg) + habit: the RULES decide what the chooser may
+     see. For a learned mind that is a rule veto (item 9).
+  c. Every Option is a frozen, validated, sorted-pairs object (api.py:130+),
+     built per decision per option: a deliberate trade for hashability.
+  d. Level of detail (SC4) is not yet in the mind: a far NPC would call the
+     same decide path.
+Better option
+  1. Build the budget as an acceptance number, not a hope: add decisions per
+     simulated second, mean and p99 ms per decision, rows memory per hour to
+     the timing harness (the one that reports crowd 7.41 ms). Target to set
+     by the owner after measuring; suggestion: the whole mind layer at most
+     5 percent of a tick at 20 awake NPCs and 1 ms at p99 per decision.
+  2. Lazy text: build the scene text and request only when the chooser or a
+     log level needs it (a Rules or learned mind needs neither). Rows to a
+     bounded ring or a JSONL sink.
+  3. LEVEL-OF-DETAIL TIERS for minds (the SC4 detail ladder, applied to
+     cognition): NEAR (full decide, learning on), ROUTINE (the mind is asked
+     at routine boundaries only, a habit-level pick, step rewards summed over
+     the span), OFFSCREEN (a twin: the SC5 coarse protocol advances the
+     character's needs and schedule; the mind state is not touched except by
+     one summary close() at hand-back). The learned mind's `sleep(span)` and
+     `close(outcome)` take a SPAN so a coarse stretch is one update, with a
+     measured drift budget (EA7).
+Cost: 1 and 2 small; 3 is the design piece, and it waits for SC4/SC5 (16+).
+Status: 1 and 2 NEW; 3 is SC4/SC5 applied to minds (scheduled, details NEW).
+Priority: P2 for 1-2, P2 for 3. Technical.
+
+ITEM 8. RULES LIVE IN FOUR PLACES AND ONE OF THEM IS A TRAIT TABLE
+What exists
+  - Backend rule_scores: mindlink.py:671-719 (hand table, SCORE at :135,
+    NO_REASON -1.0 at :149, door replies :168) and rooms/backend.py:246
+    (the inn's utility, forked from lab/world2/policy.py:34-133).
+  - choosers.Rules: softmax((prior + habit)/T), T = 0.2.
+  - voxel reflex TablePolicy (policy.py:363-436): a table keyed by percept,
+    a seam of a different shape (per limb, `pick(situation, menu)`).
+  - src/core mind.py: traits, salience bands, drive-utility selector
+    (dormant, "no new code imports it").
+  - Catalog `serves` (verbs.yaml fields) names which drive a verb relieves;
+    used only to write scene text and "what is missing", never to score.
+  - Lab NATURE per type string; voxel `sheet.harm` by NAME.
+Problem
+  A new backend must write its own scoring from nothing; there is no single
+  statement of "what a character with these needs, in this state, prefers".
+  The same idea (a verb that serves a drive relieves it) is written in the
+  catalog, in the voxel table, in the inn's `utility`, and in the lab's
+  H module, four ways. The type-keyed NATURE and the name-keyed `sheet.harm`
+  are trait flags (against the owner's rule) and make traits a thing you
+  write per person.
+Better option
+  ONE RULES MIND, written as data over the catalog: score(option) = sum over
+  drives d of weight_d(character) x need_d x serves(verb, d) x relief
+  estimate, plus the declared feature terms; weights and set points are the
+  character's DIALS (AU3). It is the same homeostatic form the learned mind
+  starts from (drives.reward), so the learned mind is "the rules mind with
+  the same objective and learned relief estimates"; the rules mind is what a
+  learned mind is measured against (the lab's oracle gap) and the fallback
+  for far NPCs (item 7). Backends stop writing rule_scores; they supply
+  features and needs. Keep backend rule_scores as a legacy shim until the
+  goldens (tests/data/inn_rules_*.jsonl, voxel mindlink scenes) are re-pinned
+  as declared diffs.
+Cost and risk
+  Medium. Risk: it is a behaviour change. Declared diffs for every rooms and
+  mindlink golden; do it behind a flag, off by default, as the lab does.
+  Risk 2: the voxel scenes (duel, fire) were tuned around the hand table
+  (mindlink.py:140-148 describes a decision it took to keep a defender from
+  walking out a third of the time). Re-tune through needs, not constants.
+Status: NEW. Priority: P2. Technical (it implements "no trait flags").
+
+ITEM 9. THE MENU CUT AND THE RULE VETO; THE LEARNED MIND SEES THE FULL MENU
+What exists
+  core.py:152-221 menu(): pre-rank cut to 16 by max(prior, prior_avg) +
+  habit (mass 0.95, 12 first, plus the null act and one of each verb);
+  loop.py:206 `player=player or c.batch is not None` is the existing escape
+  (a player's menu is never cut, tournament merges); will.py MENU_CAP 7 per
+  limb (policy.py:351) kept for non-batchable policies (scripted scenes and
+  the mind link: switches.py:520).
+Problem
+  The cut was designed for a text model that cannot read more than 16
+  options (lab: 62 percent right at 16, 47 percent at 64). A learned mind
+  scores a long menu in one numpy pass; cutting by the RULES' score hands the
+  rules a veto over what the learned mind can ever choose, which contradicts
+  "no gate hides an option" (M12, mindlink.py:70-80) and the action scope
+  hierarchy principle (characters may choose anything).
+Better option
+  A learned or rules mind gets the full legal menu (like Player). Cuts and
+  batches stay only for text-model choosers (and then only in offline
+  evaluation, item 12). For very long menus (16a primitives: body part x
+  target x how hard) use the scope hierarchy (scope.py), scoring a scope by
+  the log-sum-exp of its members' scores, so the learned mind chooses a
+  scope then an act with the same learned values at both levels, no rule
+  cut. The `batchable` purity attribute and the tourney path then apply to
+  text models only.
+Cost: small. Risk: menu size grows in the voxel inn; measure p99 ms (item 7).
+Status: NEW (it applies action-scope-hierarchy to the learned mind).
+Priority: P2. Technical.
+
+ITEM 10. LEARNED STORES VERSUS TYPED BELIEFS (K1 for the learned mind)
+What exists
+  api.py:106 Belief(kind, about, value, text, source, how, t): a VIEW, built
+  per decision. The voxel store is Mind.bel[key] = (value, ev_id, how, tick),
+  at most 64 keys (beliefs.py; BEL_CAP). The rooms backend builds beliefs from
+  the inn's rows (backend.py:206-236). K1-K8 extend it to four kinds, seven
+  fields (confidence as (r, s) counts, distinct-source count, evidence,
+  salience, history, link to the true event), trust per teller, power-law
+  forgetting per part. The learned mind keeps its OWN knowledge in
+  valence (cue to value), partner models (per person logistic), episodic
+  (kNN of steps), concerns, world-model matrices.
+Problem
+  Two knowledge systems with no bridge. K1 says "records at the boundary,
+  learning inside; the learned store reads and writes typed claims at the
+  boundary". Today the learned mind's belief that "Tom treats me kindly" is a
+  logistic weight no one can read, tell, or cite; and the typed store knows
+  nothing the learned stores learned. The cause log (Why: score, margin) says
+  nothing of WHY in learned terms. K12 (legibility: why someone believes) is
+  therefore impossible for a learned mind.
+Better option
+  1. A BeliefStore protocol in src/mind (observe(percept), recall(who, query,
+     t), tell/hear, forget(t)), the typed table first (K1 start), behind the
+     Backend or the Mind. Backends stop building beliefs ad hoc.
+  2. PROJECTION: every learned store exposes read-only typed claims of kind
+     "who is who" and "how the world works" (for example "act X by partner
+     P tends to relieve my need N: confidence from window counts") through
+     the same Belief type, so a learned mind can TELL what it learned and the
+     cause log can show it. The learned store is the SOURCE OF TRUTH for the
+     numbers; the Belief is its report. Never the other way (no writing a
+     claim into the learned store by decree except through the cultural
+     prior hook, set_prior, already built).
+  3. explain(decision) returns the decomposition (actor, habit, valence,
+     world, partner, concern, episodic, curiosity: mind.py:220-308 already
+     computes these as a dict `last["terms"]`) as typed terms into Why; this
+     is "LM and learner output always logged as typed deltas"
+     (engine-redesign-target) applied to learning.
+Cost: store protocol small; projection per module moderate; K waits for 16b.
+Do the explain() part in item 1 (cheap, high value). Status: K1/K12 scheduled
+for 16b; the learned-store projection and Why terms are NEW.
+Priority: P2 (explain with item 1, projection with 16b). Technical.
+
+ITEM 11. TIME, SLEEP AND THE NIGHT: LEARNING BOUNDARIES MUST BE WORLD EVENTS
+What exists
+  lab Mind: learn per step, replay at night_end (mind.py:278-292), habit
+  fade per night, traces carried over nights (cfg traces). Inn: 300 turns a
+  night is the loop. effects/partners windows count turns.
+Problem
+  In a continuous world there is no "night end" call. Consolidation must
+  follow a real sleep job of that character (it can be interrupted, short,
+  absent for a sleepless week); step boundaries must follow job ends and
+  interrupts, not turns. Reward over a step must integrate over world time
+  (a 6-hour sleep is one step of dt 6 h, or the credit window handles it).
+Better option
+  close(outcome, span_s) and sleep(span_s, depth) driven by the backend from
+  its own events (job done or interrupted, `sleeps` event). Habit fade and
+  replay scale with the slept span and sleep depth. A character that does not
+  sleep does not consolidate (a genuine, testable effect: fatigue degrades
+  learning, from the body clock when it exists). Constants in seconds (item 2).
+Cost: small once item 2 has the unit change. Status: NEW. Priority: P2.
+Technical.
+
+ITEM 12. WHERE A LANGUAGE MODEL MAY BE USED, AND WHERE IT MUST NOT
+What exists
+  The latency invariant (memory: 6 GB VRAM; a round trip is 13-16 s; reactive
+  = zero NPC calls; allowed: the player parse, the addressed NPC's reply).
+  src/mind: modes reactive | featured | all (loop.py:82); `featured`: the model
+  chooses for named characters and for whoever the player addressed
+  (loop.py:180-187 chooser(), Mind.addressed); `all` for offline evaluation;
+  Metered counts requests per tick (loop.py:117-141, the only ledger);
+  Combined/Gate model choosers pick an OPTION from texts; src/mind/record.py
+  records, a lab script scores, Replay applies; no live socket.
+  src/core/llm.py ChoiceLM (Qwen3-0.6B) belongs to the dormant engine.
+  PA2(b): player free text becomes primitives within the fixed language,
+  refused when the target is not perceived. K10: the player sees only what
+  the character perceives. MC7: prose by default, numbers when asked.
+Problem
+  1. The invariant is enforced by structure, not by a test: nothing fails if
+     a new feature adds a per-NPC call. Metered counts only the chooser path.
+  2. `featured` mode lets a model PICK an NPC's act. That is the wrong job
+     for the model that is allowed (the addressed NPC's reply): what a
+     character does is the mind's, how it is worded is not. It also keeps
+     ~1,100 lines (Combined, Gate, Tourney, the model prompt shape,
+     describe text) on the runtime path for a mode the laptop cannot afford.
+  3. Three places want a model (parse, reply wording, narration) and the
+     budget names two. Narration was never given a rule.
+  4. Nothing says what the model's output is allowed to be, so a reply
+     could carry facts nobody adjudicated.
+Rule proposed (a boundary, with its reason in each line)
+  MAY USE A MODEL:
+    P1. PLAYER PARSE: free text to a typed primitive sequence, constrained
+        to the perceived menu and the closed language (PA2b: refused if the
+        target is not perceived). Grammar- or pointer-constrained decoding
+        so it cannot invent a target. Pre-parser (keywords, templates)
+        first: most turns are cheap imperatives (the latency memory's next
+        lever). Fall back to "I did not understand" with the legal menu,
+        never to a guess.
+    P2. ADDRESSED-NPC REPLY WORDING: the NPC's mind (rules or learned)
+        CHOOSES a typed speech act (verb: tell, refuse, ask, greet, lie;
+        claim from its own beliefs; stance). The model only WORDS it, given
+        the typed act, the character's perceivable voice dials and recent
+        lines. Its prose is for the PLAYER's eyes and is never parsed back
+        into the world: any NPC that hears the speech hears the typed claim
+        (through the sound model, K3), not the prose. Therefore the LM can
+        never smuggle a fact, a promise or a deal into the sim.
+    P3. OPTIONAL: narration polish (a template description is the default,
+        describe.py exists; K10, MC7). One call per PLAYER turn at most,
+        only while the player is waiting, off the critical path of the world
+        tick, droppable.
+    P4. OFFLINE ONLY (never in play): authoring content (data engine),
+        generating training data, offline evaluation of model choosers,
+        judging. These are the trained-DM direction's uses.
+  MUST NOT USE A MODEL:
+    N1. any NPC decision in reactive play (the invariant); `featured` and
+        `all` are offline evaluation modes, not play modes.
+    N2. perception, belief formation, believing, forgetting (K5-K8 are
+        processes; the model would be a god-channel).
+    N3. adjudication, physics, any change of the world except through the
+        validator as typed records (engine-redesign-target: model output is
+        logged as typed deltas).
+    N4. NPC-to-NPC speech (typed claims only).
+    N5. per-tick work of any kind, and learning updates.
+    N6. runtime plan search by NPCs (a cached plan may be adopted; filling
+        the cache for an off-menu PLAYER intent may call a model once;
+        PA4/16b).
+  The model service is one engine-wide object: load once, a call budget per
+  purpose, a time-out, a fallback (template text), every call logged with
+  its purpose and its output; the latency ledger counts calls by purpose per
+  turn and the conformance suite asserts zero for NPC decisions.
+Better options (code shape)
+  1. Replace `Metered` by an engine-wide LM LEDGER (purpose, tokens, ms,
+     fallback), asserted in tests (item 6.4).
+  2. Move Combined, Gate, Tourney and the featured/all modes to a
+     src/mind/eval sub-package; the play loop imports none of it. They stay
+     tested (the text-model line of work, SMALL_MODEL_*), since the
+     trained-DM direction needs them; but they are not part of the mind
+     interface.
+  3. Add two small typed interfaces: Parse (text, perceived menu) -> typed
+     primitives | refusal, and Voice (typed speech act, voice dials) -> prose,
+     each with a deterministic template implementation and a model
+     implementation behind the same signature.
+Cost: ledger and package move small; Parse and Voice interfaces are the play
+loop's (lane C); the mind side is only the typed speech act and the rule.
+Risk: narration quality with templates only is low; the owner must say
+whether a third call is acceptable (see OWNER CHOICES).
+Status: the invariant and PA2 are decided; the boundary rule, the Voice
+split, the ledger, demoting featured/all, and the narration rule are NEW.
+Priority: P1 for the written boundary and the ledger (cheap, protects the
+budget); P2 for the package move; Parse/Voice with the play loop. Owner-level
+for narration and for whether `featured` survives; the rest technical.
+
+ITEM 13. THE PLAYER'S CHARACTER IS A MIND TOO (autopilot)
+What exists
+  loop.py:180-187: if who == config.player, the chooser is the Player; the
+  mind never runs. SC6 (decided): the player character has own habits and
+  routines for routine needs, the player can always override and is told
+  when a need becomes pressing or a habit cannot be met; a dial from mostly
+  automatic to fully manual. PA3: queued sequences, interrupted by salience.
+Problem
+  The player's character is exactly the case the learned mind's habit
+  module (K) and homeostasis (H) fit, but the loop has no way to let a mind
+  run a character the player owns.
+Better option
+  Chooser slot per character is an ORDERED CHAIN: Player (if the player has
+  a move queued), else Autopilot(mind of the character) if the dial allows,
+  else ask the player. The mind keeps learning from what the player chose
+  (a Player pick is a step like any other: close() with the same reward, so
+  the character's habits come from how the player plays it; K, valence).
+  Pressing-need alert = the mind's salience over the same needs vector (item
+  3), the same lens as the halt rule of world-tick-momentum.
+Cost: small once item 1 is in. Status: SC6 decided; the interface hook NEW.
+Priority: P2. Technical. (A decided dial, owner level already.)
+
+ITEM 14. INTERRUPTS AND SALIENCE ARE HAND CLASSES; MAKE THEM ONE LENS
+What exists
+  verbs.yaml:108-114 interrupts_known: any, harm_to_me, violence_seen,
+  alarm_heard, fire_seen; mindlink.py:155-185 CLASS, WORD, FIRST maps;
+  will.py `rank(percept)` (policy.py:280); Percept.salience field (api.py);
+  the world-tick momentum design says halt on perception x drive salience,
+  one lens for halt + narrate + context.
+Problem
+  Five authored classes decide what stops a job; a mind that has learned
+  that a particular person's footsteps matter cannot make them interrupt.
+Better option
+  Interrupt = a percept whose salience for THIS character, perception x the
+  character's drive relevance (needs vector, concerns, world-model
+  surprise: prediction error is already computed by W and C modules), is
+  above a dial. The five classes remain as the DEFAULT relevance seed for
+  characters with no experience; learned relevance changes it. Same function
+  feeds the narrator's "what to mention" and the player's halt rule.
+Cost: small to medium; after items 1 and 3. Status: partly designed
+(world-tick-momentum, PA3); the learned relevance link is NEW.
+Priority: P3. Technical.
+
+--------------------------------------------------------------------------
+PART II. SMALLER FINDINGS IN THE FILES OF THIS LANE
+--------------------------------------------------------------------------
+
+ITEM 15. will.py (1,969 lines) IS THE MIND SEAM AND A LAW FILE AT ONCE
+  What exists: WillMixin holds percept ranking, reaction stages (flinch,
+  premove, go), per-limb menus (`_menu`), falling decides, execution of
+  picks, door menus, attention law, hooks to the mind (prepare, limbs,
+  observe, batchable read with getattr at will.py:879-923).
+  Problem: the mind link depends on will.py internals (intent keys, `want`
+  rows, `_chose`), and 16a will rewrite per-limb menus into primitives, so
+  this is where the mind seam will break first.
+  Better: freeze the contract between will.py and the mind as a small,
+  named, tested set of hooks (prepare, limbs, pick, observe, on_restore,
+  idle_in_room, batchable) in one place (a Protocol), generate the getattr
+  reads from it, and split will.py along the cut the lane D audit proposes
+  (attention/reaction, per-limb menus, falling, execution). Cost: medium,
+  mostly mechanical; do it with 16a. Status: file splitting is lane D's;
+  the hook Protocol is NEW. Priority: P3. Technical.
+
+ITEM 16. beliefs.py (561) AND reflex.py (310): KEEP; THREE SEAMS TO NAME
+  - beliefs.py writes Mind.bel in one place (good). Its 64-key cap with
+    oldest-first eviction and a voice never forgotten is a placeholder for
+    K8 power-law forgetting; ensure K's rewrite goes through BeliefStore
+    (item 10), not around it.
+  - reflex.py is the cleanest contract in the lane (one row per reflex,
+    delay from the person's own dial, drink/fatigue/sleep-debt multipliers,
+    thresholds raised by sleep, never an infinite threshold). It needs no
+    change. One cross-lane note: its dials (`drunk`, `fatigue`,
+    `sleep_debt`) are "set by nothing yet" and are the same quantities the
+    needs vector (item 3) reads; one source of truth, from the body clock.
+  - Reflex vs mind credit: a step whose outcome was produced by a reflex
+    (flinch, falling, balance) must not teach the actor a wrong lesson about
+    its chosen act. The step record needs the list of reflex events inside
+    the span (Ev with cause), and the learner discounts credit for them.
+    Cost small; Status NEW; Priority P3; Technical.
+
+ITEM 17. THE PRE-RANK, `p_avg` AND THE JUDGE SIGNALS
+  What exists: DecisionRequest.prior_avg and Decision.probs/average() exist so
+  lab/judge/signals.py can compute "p_char versus p_avg" (surprise in
+  character). Rooms backend logs p_char and p_avg per decision.
+  Problem: for a learned mind, "an average character over the same options"
+  is undefined (its history is its character). The lab uses clones and
+  oracles for this (L1/L2, clone ratio 0.77-1.3).
+  Better: log probs and the typed terms only; compute any baseline OFFLINE
+  by replaying the same menus through a reference mind (a fresh clone, the
+  rules mind). Drop p_avg from the runtime request for minds that have none.
+  Cost small. Status NEW. Priority P3. Technical.
+
+ITEM 18. ONE SLOT FOR "WHO CHOOSES" IN THE ENTITY FILE
+  What exists: AU3 lists `mind` as an optional component. Today who chooses
+  is MindConfig(npc="rules"|"random", player, featured) (loop.py:89-115): a
+  global, with a closed table NPC = {"rules", "random"} (loop.py:84).
+  Better: the `mind` component is {kind: rules|scripted|learned|model(offline),
+  spec: a MindSpec id, dials, seed}, registered by name (a mod can add a
+  kind, AU2); state is SAVED separately from the pack (a life, not content:
+  weights, stores, counters), with provenance (seed, world, config sha) so
+  a starting mind trained in a simple world (priming, learned-mind-principles
+  9.9) is data with a source. Trained weights are not committed (the repo
+  is public; lab results are .gitignored). Cost small, with item 1.
+  Status: AU3 scheduled; the registry and saved-state split NEW.
+  Priority: P2. Technical.
+
+ITEM 19. THE CATALOG VERB LIST IS CLOSED CODE-ADJACENT DATA
+  What exists: verbs.yaml (547 lines, 34 verbs, 24 rooms, 14 voxel with step
+  programs of limb/row/test). catalog.py (589) and test_mind_catalog.py (587)
+  hold it to the inn (names, durations, flags, option words).
+  Problem for minds: (a) the voxel step program IS a hand-written plan; PA4
+  and 16b make cached plans the same thing, so there should be one
+  representation (a plan = a primitive sequence with success tests and
+  interrupt classes), the catalog program being a SEEDED plan. (b) the
+  catalog is held to the inn's words, so a new backend must match the
+  inn's strings.
+  Better: after 16a, express voxel programs as seeded plans in the plan
+  cache's format and let the catalog hold only the verb's meaning (roles,
+  serves, features, told) not the backend program. Already implied by PA4,
+  PA6. Status: scheduled (16a/16b); the "catalog holds meaning only" split
+  is NEW. Priority: P3. Technical.
+
+ITEM 20. src/core (OLD ENGINE) AND harvest.py: MARK AND LEAVE
+  src/core mind.py (two-speed NPC mind: salience bands, trait-weighted
+  fight or flight, drive-utility selector), llm.py, social.address, and
+  src/voxel/harvest.py (task-level harvest of picks) are dormant or
+  narrow. Keep dormant as decided. Two debts: the trace-harvest idea (learn
+  only SIM-BLESSED picks) is re-expressed by the learned mind's reward
+  (the drop in drive error), so harvest.py should be retired when item 1
+  lands, or its row format made the one `explain` row; and src/core's
+  social.address (the addressed-NPC LM reply) is the only existing reply
+  code: read it for the P2 Voice interface, do not import it.
+  Status: decided dormant; the retire/merge note NEW. Priority: P4.
+
+--------------------------------------------------------------------------
+PART III. THE PATH: BRINGING THE LEARNED MIND INTO src
+--------------------------------------------------------------------------
+
+What must change, in order (each step leaves everything green and is
+independently valuable):
+
+STEP B0 (decide, no code): owner choices 1-3 below.
+STEP B1 THE INTERFACE (items 1, 6, 12.1, 18): Mind protocol, ChooserMind
+  adapter (every existing golden byte for byte), typed Ask, explain(), the
+  LM ledger, the conformance suite run for Rules/Random/Player. No behaviour
+  change. About 1 week of agent work, small risk.
+STEP B2 THE LEARNER PACKAGE (items 2, 5): extract the world-free modules
+  to the shared package; open-ended verb/person keys; catalog-declared
+  feature channels; seconds as the time unit; a MindSpec; reproduce a lab
+  night bit for bit under an adapter that restores the inn tables. Medium.
+STEP B3 THE ADAPTER ON ROOMS (item 4 option P): reader and drives adapters
+  for the src/rooms inn; conformance suite for a learned mind: determinism,
+  snapshot, hidden fact, cost ms per decision. Report cost (item 7.1). No
+  science claims here: the lab does the results.
+STEP B4 THE RULES MIND AS DATA (item 8) and the full-menu rule (item 9),
+  behind flags with declared diffs.
+STEP B5 THE VOXEL LIFE, AFTER 15c AND 16a (items 3, 10, 11, 14): needs
+  reader from the body ledgers, social-act primitives, sleep-driven
+  consolidation, the BeliefStore with projection (16b), level-of-detail
+  tiers (SC4). The first real learned-mind household in voxel.
+GATE BEFORE B5 (item 9 of Part I summary): a stated acceptance rule for "a
+  learned mind replaces rules for this character": the family step's
+  checks 1-3 (coarse vs full consistency, kin cues like humans, usual
+  controls) PASS, plus a survival or continuous risk measure with its pass
+  rule written first, plus the oracle gap non-negative. Today none is met.
+
+LATENCY BUDGET OF THE LEARNED MIND (design numbers, to be verified)
+  Zero model calls by construction. A decision is numpy on 27 options;
+  expected well under 1 ms (UNMEASURED: measure it in B3). Learning is per
+  step, at job ends. The daily cost is dominated by bind() in the voxel link,
+  not by the mind. The budget accounting needs the LM ledger (item 12) and the
+  decisions-per-second report (item 7).
+
+--------------------------------------------------------------------------
+OWNER CHOICES (real trade-offs; the rest of this document is technical)
+--------------------------------------------------------------------------
+O1. WHERE THE LEARNED MIND RUNS FIRST (item 4): P plumbing on the stale rooms
+    fork now and results stay in the lab; Q re-sync the fork once after the
+    family step; R go straight to a voxel household after 15c/16a.
+    Recommendation: P now, R as destination, Q only if the family-step
+    results are strong.
+O2. THE ISOLATION RULE (item 5): allow ONE shared numpy-only package
+    (mindcore) imported by both lab and src, or keep the strict rule and
+    port by copy with a sha-pinned golden at milestones. Recommendation: the
+    shared package, torch stays out.
+O3. NARRATION (item 12): is a model call for prose polish acceptable in
+    play (at most one per player turn, droppable, never on the world tick),
+    or is narration templates only until a faster local model exists?
+    Recommendation: templates by default, polish an opt-in setting.
+O4. DOES `featured` SURVIVE (item 12): the model choosing an NPC's act is
+    offline-evaluation only in this proposal; the addressed NPC's mind
+    chooses the act and a model only words it. Recommendation: demote it.
+O5. THE GATE FOR "LEARNED REPLACES RULES" (Part III): the learned mind has
+    not beaten the rules in any lab result so far. How much evidence before a
+    learned mind is the default for NPCs in play? A real trade-off between
+    the principle (no scripted behaviour) and play quality (rules are
+    currently better and cheaper). Recommendation: an explicit opt-in per
+    character (the mind component) until the gate passes, so a household can
+    mix rules and learned minds and the difference is visible.
+
+--------------------------------------------------------------------------
+SUMMARY TABLE
+--------------------------------------------------------------------------
+Item  What                                             New/Sched  Pri  Owner?
+ 1    Stateful Mind protocol beside Chooser            NEW        P1   no
+ 2    Extract world-free learners; open keys; feature   NEW        P1   no (location: O2)
+      channels in the catalog; seconds; MindSpec
+ 3    Voxel needs vector from the body ledgers          NEW        P1   no (after 15c)
+ 4    Where the learned mind runs first; stale fork     NEW        P1   YES (O1)
+ 5    Where shared learner code lives (isolation rule)  NEW        P1   YES (O2)
+ 6    Mind conformance suite                            NEW        P1   no
+ 7    Cost: measure, lazy text, bounded rows, LOD tiers NEW/SC4    P2   no
+ 8    One rules mind as data; kill trait tables         NEW        P2   no
+ 9    Full menu for learned/rules minds, no rule veto   NEW        P2   no
+10    BeliefStore; learned stores project to Beliefs;   K1/K12     P2   no
+      explain() into Why
+11    Sleep and span-based learning boundaries          NEW        P2   no
+12    LM boundary rule, ledger, Voice split, demote     NEW        P1/P2 YES (O3, O4)
+      featured/all and model choosers to eval
+13    Player character autopilot hook                   SC6        P2   no (dial decided)
+14    Interrupts as learned relevance                   PA3 +NEW   P3   no
+15    will.py hook Protocol and split                   NEW/lane D P3   no
+16    beliefs/reflex seams; reflex credit               NEW        P3   no
+17    p_avg and judge signals                           NEW        P3   no
+18    mind component registry; saved lives              AU3 + NEW  P2   no
+19    Catalog holds meaning only; programs are plans    PA4/16b    P3   no
+20    src/core and harvest.py mark and retire           decided    P4   no
+ --   Learned-replaces-rules gate                       NEW        P1   YES (O5)
+
+Not measured or not checked in this audit (so, to be verified before use):
+the learned mind's ms per decision (either world); bind() cost per voxel
+decision; memory of Mind.rows per hour; whether the 12 off-by-default lab
+options are all dead (a search for live users of each was not done); the
+lab's current per-night time with all modules on.

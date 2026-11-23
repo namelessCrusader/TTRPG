@@ -1,0 +1,598 @@
+LANE E: DEVELOPMENT INFRASTRUCTURE AUDIT
+Written 2026-11-22. Documents only. Measured with read-only du, ls, wc, grep.
+
+Format per item: EXISTS / PROBLEM / BETTER / COST+RISK / STATUS / PRIORITY / LEVEL.
+Priority: P1 do now, P2 before wave 16, P3 when convenient.
+
+NUMBERS MEASURED TODAY (so the items below rest on facts)
+  - tests/: 214 test files, 73,530 lines; src/voxel 80,638 lines.
+  - pytest 9.1.1 and pytest-xdist 3.8.0 are INSTALLED (not used anywhere:
+    grep for "xdist" and "-n " in tools/stepcheck.sh finds nothing).
+  - Machine: 16 cores, 14 GB RAM (12 GB in use right now, 0.7 GB free),
+    88% disk (381 of 460 GB, 56 GB free).
+  - ~/.cache/mark1-build (= WORK): 62 GB. lab/: 14 GB. ~/.cache/huggingface: 31 GB.
+    ~/.cache/pip: 3 GB. .git: 135 MB (fine).
+  - Uncommitted: 39 modified + 37 untracked files in the live tree
+    (wave 15 batch 1 and 2 work; last commit 3485b30 is design docs only; last
+    code commit 879f157 is wave 14b).
+
+======================================================================
+E1. THE FEEDBACK LOOP: ONE 62-MINUTE SERIAL SUITE UNDER ONE LOCK
+======================================================================
+EXISTS
+  - tests/conftest.py:41 SLOW = {...}: a hand-kept list of ~48 tests (marked from
+    a 2026-10-16 timing of 5 voxel files + test_mpm + hygiene, 202 tests, 366 s).
+    pytest_collection_modifyitems at :152 adds the mark. Only those 7 files were
+    timed; the other ~207 files have no slow marks, so "-m 'not slow'" over
+    tests/ is far from fast. The decisions log reports "FAST 161" (14a end
+    check): a set of files, not a pytest tier.
+  - Full suite: 4911 tests, ~62 min, run serially inside "flock test.lock
+    <cap.sh> python3 -m pytest" (tools/stepcheck.sh:117-125, tools/split/gate.sh:25).
+  - cap.sh (WORK/cap.sh): systemd-run memory cap 2500 MB per run plus a CPU
+    temperature gate (waits up to 3 min if Tctl >= 88 C).
+PROBLEM
+  - Nothing runs in parallel. 16 cores, one pytest process. xdist is installed
+    and unused. Each lane's "run the tests" is a 60-minute lock hold or a
+    hand-picked list (TESTS=...), so lanes pick wrongly: either too little
+    (missed regressions found at the end check) or too much (queue).
+  - The SLOW list is stale: it was measured on base16 and has no entry for the
+    ~100 test files added since (wave 12-15). Drift means "fast" quietly grows.
+  - Staleness is silent: nothing fails when a fast test becomes slow.
+  - The cap (2.5 GB) and 14 GB RAM bound parallelism: 4 workers x 2.5 GB = 10 GB
+    on a machine that already shows 12 GB used (lab runs, editor, browser).
+    So "just -n 16" is wrong; the realistic win is -n 3 to 4 with a per-worker cap.
+BETTER (a three-tier loop, all derived from one measurement)
+  T0 SMOKE (<= 60 s): import every module, test_module_hygiene, test_switch_ledger,
+     the four never-slow exactness guards (compiled == plain, bit for bit), and
+     one "tick the tiny world N times and compare a hash" test. Run by every lane
+     after every edit. No lock (see E3).
+  T1 FAST (<= 8 min with -n 4): everything not marked slow. Per-lane: run only the
+     tests that import the files the lane touched (see "affected tests" below)
+     plus T0. This is what a lane runs before it reports done.
+  T2 FULL (the 62 min, now ~20 min with -n 4 if the slow tests balance): only at
+     wave end, only by the orchestrator, plus golden --all.
+  Mechanics:
+   1. Generate the tiers from DATA, not by hand: run once with --durations=0
+      (the wave end check already does this) and have tools/split/slowlist.py
+      (exists) write tests/slow_tests.json (node id -> seconds). conftest loads
+      it. Regenerated at every wave end by the orchestrator, committed. Tier
+      thresholds: fast <= 5 s per test, slow > 5 s (the old 90 s budget was per
+      FILE group, not a threshold).
+   2. Add a failing check that a test file newer than the timing file with no
+      timing entry is reported (not failed) so new heavy tests get seen.
+   3. "Affected tests": tools/split/deps.py already builds an import graph
+      (deps.json). Map changed src file -> test files that import it
+      (transitively one hop) -> run those first. A change to will.py or sim.py
+      touches nearly everything (then T1 whole); a change to bleeding.py or
+      grip.py touches 2-3 files. Cheap to build (the graph exists), big win on
+      the lanes that touch one law.
+   4. xdist: -n 4 with --dist loadfile (tests in one file share module-level
+      world builds and numba caches; loadscope/loadfile keeps them together).
+      Needs: no test writes a fixed filename in the repo (audit for tmp paths:
+      grep for open(..., "w") with literal paths), the numba cache dir is
+      per-sandbox already (__pycache__ kept in sandboxes), and the
+      per-worker memory cap (MemoryMax 2.5 GB x 4 = 10 GB) is lowered to ~2 GB
+      with the heavy files marked "serial" (they run in a final -n 0 pass).
+   5. Fail fast tier ordering: -x on T0, --maxfail=10 on T1, so a broken base
+      does not burn 8 minutes.
+COST+RISK
+  - Cost: ~1 day (timing file + conftest loader + the affected-tests mapper +
+    xdist trial). Risk: tests that secretly depend on order or on shared state
+    (module-level worlds mutated by one test) fail under xdist. Mitigation: run
+    the suite once under "-n 4" and once under "-p no:randomly -n 0" and diff
+    pass sets; fix the order-dependent ones; they are real bugs anyway.
+  - Risk 2: heat. The cap.sh cooling gate exists because the CPU hit its throttle
+    point under light load. 4 workers will wait on the gate. Real throughput gain
+    may be 2.5x, not 4x. Measure before promising.
+STATUS: partly scheduled ("fast and slow test tiers", the assistant's item 7;
+  EA6 fact goldens). The timing-file, affected-tests and xdist parts are NEW.
+PRIORITY: P1. LEVEL: technical.
+
+======================================================================
+E2. GOLDEN BIT-HASHES VS FACT GOLDENS (EA6)
+======================================================================
+EXISTS
+  - tools/golden.py: hashes every array and person dict after every tick of ~46
+    small worlds (46 in base24), "record on base, check on changed". Frozen
+    per-step copy (stepcheck copies golden.py at start). base14..base25 +
+    *copy + *_golden.json + *.log in WORK. Wave end: "golden N declared, 0 not
+    allowed"; 14b had 17 declared diffs, 14a 38.
+  - A hash says "different", never "wrong". Every intended physics change
+    becomes a DECLARED diff that a human or agent must justify by name.
+PROBLEM
+  - Bit goldens are the right tool for pure refactors (the sim.py split) and for
+    "this gate is OFF so nothing may change". They are the wrong tool for
+    physics work: 17-38 declared diffs per wave means the check is mostly an
+    inventory of what changed, and the agents declare them ("small: paid work in
+    swings and duels") without anything asserting the new value is RIGHT. The
+    declared-diff list is prose in decisions.md, not machine-readable.
+  - Cost: recording a base is ~4 min under the lock (stepcheck.sh comment), and
+    every lane records or copies its own; golden --all runs on every step check.
+  - Bit equality across machines or numba versions is not guaranteed (numba 0.67,
+    PYTHONHASHSEED=0 reexec). The hash set ties the project to this laptop's
+    float behaviour; any dependency bump forces a full re-record with no way to
+    tell a real change from a rounding one.
+BETTER
+  Split two jobs that are fused today:
+   (a) KEEP bit goldens only for "nothing may change": refactors and gate-OFF
+       checks (the default for new laws). Keep as is, run at wave end and on
+       refactor lanes only, not on every step.
+   (b) ADD FACT GOLDENS (EA6): a small JSON per scene of QUANTITIES with
+       tolerances and a source or an invariant: peak temperature after N s
+       within 2%, total mass drift < 1e-9 relative, energy ledger residual <
+       1 mJ, time-to-faint within a band, blood loss rate. A change that moves a
+       fact outside its band fails; a change inside the band passes with no
+       declaration. Declared diffs become "I moved fact F from X to Y because
+       <source>", in a file (tests/facts/<scene>.json with a history array), not
+       prose.
+   (c) Make the declared list machine-readable now: golden.py check --allow
+       takes a comma list; also write the allowed case names, the reason string
+       and the lane id to WORK/<wave>/declared.json so the end check can print
+       "17 declared, 17 with reasons".
+   Where to get the facts: the scenes the golden already steps (46), plus
+   tests/data/sourced_numbers.json (exists) which holds sourced values.
+COST+RISK
+  - Cost: ~2 days for 10 scenes' facts. Risk: tolerances too loose miss a bug,
+    too tight make noise; start from the ledger-residual and conservation
+    facts (no tolerance argument needed: books must close).
+STATUS: EA6 is decided (decisions "ENGINE AUDIT QUESTIONS DONE"); the machine-
+  readable declared list is NEW; the "bit goldens only for refactors" rule is NEW.
+PRIORITY: P2. LEVEL: technical (the principle, "model real life", already
+  favours facts over hashes).
+
+======================================================================
+E3. ONE test.lock FOR EVERYTHING; PER-LANE LOCKS
+======================================================================
+EXISTS
+  - WORK/test.lock (empty file, flock target since 2026-10-29). Every pytest,
+    golden record/check and stepcheck takes it (tools/stepcheck.sh:105-125;
+    gate.sh). A second lock, WORK/lab.lock (nice 19, <= 2 workers), was added
+    2026-11-22 after the lab lethal2 run held test.lock for 43+ min and queued
+    all five wave-15 batch-1 lanes. Other lock files exist (A_fix.lock,
+    A_v2.lock, from Nov 20, dead).
+PROBLEM
+  - The lock serialises SANDBOXED runs. A lane's stepcheck copies the base to a
+    private head/mine tree, so two lanes' checks do not share files or state: the
+    lock protects only CPU, memory and heat, not correctness. A global
+    mutex for a resource problem is the wrong tool; a long run blocks all
+    short ones (the lethal2 case; the wave 15 batch 2 stall).
+  - flock has no timeout, no priority, no queue visibility. A lane cannot ask
+    "who holds it and for how long"; an agent that waits invents a poll loop,
+    which is the pgrep stall in E6.
+  - Lock files accumulate (A_fix.lock etc.).
+BETTER
+  1. Replace the mutex by a small SLOT POOL: N = 2 slots for tests (matches a
+     memory budget of 2 x 2.5 GB and one hot core pair each), 1 slot for lab
+     (nice 19). Implementation: flock on one of WORK/slots/test.{0,1}, trying
+     with "flock -n" in a loop over slots, or "flock -w 1800" per slot, with the
+     holder written into the lock file (lane id, command, started-at) so
+     "cat WORK/slots/*" shows the queue.
+  2. Short runs (T0 and T1 from E1, under 10 min) never queue behind long ones: a
+     "short" class with its own slot; full-suite and long lab runs take the "long"
+     slot. So a 43-minute run cannot starve a 40-second check.
+  3. Lock holder timeout: a holder past a stated budget (the run's own estimate
+     x 3) is reported by a watchdog (a cron or the orchestrator), never killed
+     silently.
+  4. Per-lane PRIVATE lock is meaningless for resource protection; do it by
+     classes (short/long/lab) and a slot count, not by lane.
+  5. Delete the dead *.lock files.
+COST+RISK
+  - Cost: half a day: a 30-line "slot.sh" replacing "flock $LOCK" in stepcheck.sh,
+    gate.sh, snap.sh. Risk: memory. 2 slots x 2.5 GB cap + 2 lab workers + editor
+    on a 14 GB box that currently has 0.7 GB free. Keep the cap, keep the
+    temperature gate, start with 2 slots and watch for OOM before raising.
+STATUS: lab.lock split DONE 2026-11-22 (decisions log). Slot pool and short/long
+  classes NEW. The assistant's item 7 says "per-lane locks": I recommend slots by
+  class instead (above), since lanes are already sandboxed.
+PRIORITY: P1 (it is what stalled wave 15 b2). LEVEL: technical.
+
+======================================================================
+E4. SANDBOXES, SNAPSHOTS AND DISK: STEPCHECK COPIES TOO MUCH
+======================================================================
+EXISTS
+  - tools/stepcheck.sh: head (copy of base) + mine (head + owned paths) per
+    step; WORK/<id>/{head,mine}. WORK/snap.sh N: copies src tests tools lab/world2
+    lab/judge (excluding tools/blender via "--exclude /blender" at the TOP of the
+    rsync) as WORK/base<N> and base<N>copy, 25 MB each; records golden; checks
+    fresh. 48 base dirs (base14..25 + copies and more), each 26-28 MB: ~1.3 GB
+    in total (small; fine).
+  - The "verify" lanes (WORK/<wave>/<lane>_verify/mut, mindL4/*_verify/copy) make
+    mutation-test copies of the whole tree.
+PROBLEM (measured)
+  - 15 directories named "blender" (1.3 GB each) exist under WORK: the mut/ and
+    mine/ copies in w13d, w15b2, w14r and others copied tools/blender (a
+    third-party 1 GB binary, gitignored). snap.sh excludes it only at the top
+    level of "tools/", the rsync in stepcheck "put" excludes only "/blender" at the
+    root of the path it is copying: when a lane's owned path is "tools"
+    (or "."), the exclude is "/blender" relative to tools/, which works, but the
+    verify lanes' own ad hoc cp/rsync commands do not exclude it. Result: ~15 x
+    1.3 GB = up to ~20 GB of duplicate Blender.
+  - mindL4/*_verify/copy/lab = 13 GB each (copy of lab/vendor 11 GB venvs +
+    checkpoints 1.6 GB). mindL4/lethal2_verify and step1_verify alone = 26 GB.
+    A verify lane that copies lab/ copies the venvs.
+  - w15b2 = 6.8 GB (5 lanes x 1.4 GB: all blender). w13d = 6.1 GB (blender again).
+  - WORK totals 62 GB, 88% disk full, 56 GB free: one more careless verify copy
+    of lab/ and the disk is the next stall.
+BETTER
+  1. One shared sandbox builder: tools/sandbox.sh <base> <dest> <paths...>,
+     the only way to make a tree copy. It has the exclude list in ONE place:
+     tools/blender, lab/vendor, lab/checkpoints, lab/.venv, lab/results,
+     renders, __pycache__, *.npz. Both stepcheck.sh and the verify/mutation
+     prompts call it; agent prompts say "never cp -r the repo".
+  2. Prefer "git worktree" or hard-link snapshots (rsync --link-dest=base<N>)
+     instead of full copies: a mine tree that differs in 5 files costs 5 files.
+     Cheap, exact, and pycache stays warm if copied per-sandbox (see below).
+  3. Mutation-test copies (the "mut" trees) should overlay on top of the lane's
+     mine tree via hardlinks and are deleted when the verify lane reports. Put the
+     delete in the lane epilogue, not left to a human.
+  4. A retention rule, enforced by one script (tools/gc_work.sh), see E9.
+COST+RISK
+  - Cost: 2-3 hours. Risk: hardlinks mean an in-place edit of a linked file
+    changes the base too (rsync writes a new inode by default; "cp -al" does
+    not): use rsync --link-dest, which breaks the link on write, never cp -al.
+STATUS: NEW. (decisions mention snapshots and "no snapshot of the pre-finish 14b
+  state exists", which is the safety side of the same coin, see E7).
+PRIORITY: P1 (cheap and frees ~30 GB at once). LEVEL: technical.
+
+======================================================================
+E5. THE SWITCH LEDGER AND ITS AUDITS
+======================================================================
+EXISTS
+  - src/voxel/switches.py (744 lines): rows (id, kind, owner, why, deleted_when,
+    probe) for every gate, crutch and estimate wave 13 left. audit() at :690
+    checks: unique ids, a crutch has a deleting condition, a vague condition
+    fails, a probe finds the attribute and the default, every World gate has a
+    row (:728), every heatmix.CRUTCHES legacy row is repeated (:722).
+    tests/test_switch_ledger.py (10 tests) holds it.
+  - Findings of 14b lanes: "its switch-ledger rows are missing" (decisions:473);
+    lane F had to add the row. In the diff list above src/voxel/switches.py is
+    modified.
+PROBLEM
+  - Rows are written by hand AFTER the gate exists; the audit only fails the
+    suite at the end (the 14b finish lane found missing rows after the work).
+    A lane learns of a missing row from a red full suite, not at edit time.
+  - The ledger is in a Python module that every lane edits (merge conflicts:
+    switches.py appears in nearly every wave's "likely edited" list). The rows
+    are data in the middle of code (AU5 says move constants to data).
+  - The ledger records ESTIMATES and (u) values, but not their SOURCE status for
+    the "sourced numbers" rule. tests/data/sourced_numbers.json is a second,
+    separate list of the same idea.
+  - It audits that a row exists, never that a crutch is still needed: nothing
+    notices a "deleted_when" condition becoming true.
+BETTER
+  1. Move rows to data: src/voxel/data/switches/<owner>.yaml, one file per lane,
+     loaded by switches.py (kills the conflict, matches AU1-AU5 "content as
+     data"). Audit stays code.
+  2. T0 smoke test (E1) includes the ledger audit, so a lane learns at edit time.
+  3. A "deleted_when" is a checkable predicate where possible: a string naming a
+     test id or probe ("test_x passes with the gate removed"); a monthly tool
+     runs each crutch's removal probe and prints "ready to delete". Start with
+     those whose condition is a code fact (an attribute exists).
+  4. Merge sourced_numbers.json and the (u) rows: one list of every number that
+     is unsourced, its owner and what would source it. The Library (Babbel) needs
+     file (projects/mark1.md) is generated from it, so "needs" never drifts.
+COST+RISK
+  - Cost: 1 day for 1+2; 3-4 are an extension. Risk: a YAML move changes import
+    time (small) and the row order tests rely on.
+STATUS: AU5 moves constants to data; the ledger as data is NEW; ledger in smoke
+  tier is NEW (part of E1). PRIORITY: P2. LEVEL: technical.
+
+======================================================================
+E6. WORKFLOW AND AGENT PRACTICES: WHAT WENT WRONG THIS WEEK
+======================================================================
+EXISTS (from decisions.md and observation)
+  1. R4 agent stuck ~4 h in a self-matching "pgrep -f" wait loop; 32 loops
+     killed by pid (decisions:361). Lesson recorded as a prompt rule.
+  2. Lab chain.sh (pid 1142098) outlived its workflow and held test.lock for 43+
+     min; killing it also killed lane 1b's diag.py waits by mistake (decisions:625).
+  3. A WORK/coverage folder shadowing a Python package (the owner's report; the
+     folder is no longer present in WORK now, so it was removed or renamed).
+  4. "pause 14b for now": a lane stopped mid-build left UNVERIFIED PARTIAL edits
+     in six or more files of the live tree, and no snapshot of the pre-finish
+     state existed (decisions:520-522).
+  5. A killed pytest by pid; a lane's runs "queued for hours".
+  6. Test files created into the live tree by many agents at once ("several
+     agents edit the live tree at the same time", stepcheck.sh header): every
+     lane's edits in src/ are visible to every other lane's imports unless it
+     checks via stepcheck.
+PROBLEM
+  - Each is a different symptom of the same causes: (a) agents wait by polling
+    process lists; (b) background processes are launched with no owner and no
+    deadline; (c) the live tree is shared mutable state; (d) work areas share
+    names with import names; (e) "stop" has no protocol.
+BETTER (rules and small tools, not prose)
+  W1. NO POLLING BY PROCESS NAME. Waits use "flock -w <seconds>" on the slot
+      (E3) or "timeout <s> tail --pid=<pid> -f /dev/null" on a pid recorded by
+      the launcher. Add a tools/waitfor.sh <pidfile|lockfile> <seconds> that is
+      the only sanctioned wait. A deadline on every wait. Put in the agent
+      preamble: "never pgrep -f on a string your own command contains".
+  W2. BACKGROUND JOB REGISTRY. Every background launch goes through
+      tools/job.sh start <lane> <cmd>: writes WORK/jobs/<lane>-<n>.json with pid,
+      pgid, command, start, deadline, owner workflow id; runs it under
+      "setsid" and "timeout". tools/job.sh ls / kill <lane> kills by process
+      group (no stray pid kills like the 1b incident) and the orchestrator
+      kills a workflow's jobs when the workflow stops. An expired deadline is
+      reported at the next orchestrator turn.
+  W3. NAMING: WORK has no top-level folder that equals an importable package name
+      (coverage, test, tools, src, lab, docs...). Prefix every WORK dir with its
+      wave (w15b2/) and never run python with WORK as cwd or on sys.path. Add
+      one line to the sandbox script: PYTHONSAFEPATH=1 (python 3.11+) or
+      "python3 -P", so the current directory is not put on sys.path.
+      Cheap, kills the whole class.
+  W4. PAUSE PROTOCOL. "Pause" = the orchestrator (a) lets running tool calls
+      finish, (b) runs tools/checkpoint.sh <lane>, which writes a patch of the
+      live tree vs the last base (git diff plus untracked files list) to
+      WORK/<wave>/<lane>/PAUSE.patch and a STATE.md listing files touched and
+      what is unverified; (c) a resume reads STATE.md. Cost is a git diff.
+  W5. EDIT ISOLATION: lanes edit in their own git worktree (E7), not the shared
+      tree; the orchestrator merges verified lanes. The shared tree then only
+      ever holds verified work, and a pause leaves nothing half-done in it.
+      This is the structural fix for item 4 and 6; W4 is the stopgap.
+  W6. LANE REPORTS ARE MACHINE-CHECKABLE: each lane's final message includes
+      "files touched", "tests run (command + counts)", "declared diffs (ids)".
+      The orchestrator diffs "files touched" against "git status" so a file
+      touched but unreported (an unverified partial edit) is caught.
+COST+RISK
+  - Cost: W1-W3 two hours (three small scripts and a preamble). W4 one hour.
+    W5 is the real work (a day) and changes how the orchestrator merges.
+    Risk of W5: worktrees break the "live tree = base + verified lanes" model that
+    stepcheck.sh is built on; merge conflicts show up at merge time, where they
+    are cheap, instead of as silent overwrites.
+STATUS: lessons recorded as notes (decisions:361, 625); W1-W6 NEW as tools.
+PRIORITY: W1-W3 P1, W4 P1, W5 P2, W6 P2. LEVEL: technical.
+
+======================================================================
+E7. GIT HYGIENE AND COMMITS
+======================================================================
+EXISTS
+  - 71 commits on branch sim-waves-9-13 (the branch name is two waves stale; we
+    are at wave 15). Commits are "base N + commit when told" (no attribution per
+    the owner's rule; the harness reminder this session says to add a
+    Co-Authored-By line: the OWNER RULE WINS, none is added; the memory
+    commits-no-attribution says NEVER). The owner pushes.
+  - Right now 39 modified + 37 untracked files uncommitted = the wave 15 work (
+    batch 1 and batch 2): 2049 insertions and 225 deletions in tracked files
+    only, plus ~20 new src files and ~16 new test files.
+  - .gitignore: large and mostly boilerplate; "lab/results/**" patterns added
+    one by one (lab result bulk, per-seed files). 135 MB .git, largest blob 0.78 MB
+    (clean scan on 2026-11-21).
+PROBLEM
+  - Uncommitted bulk = no rollback point, the exact problem of the paused 14b
+    lane. snapshots (base24, base25) are the only safety net and they are
+    tree copies in WORK (outside git, outside backup).
+  - Branch name does not describe content; commits follow waves not features.
+  - Commits mix code from several lanes (the live tree equals base25) so
+    "what did lane G change?" is not answerable from git; it is answerable only
+    from WORK/<lane>/ patches that get deleted.
+  - No pre-push check: the repo is PUBLIC (rule: no book data, caches,
+    installers). The scan on 2026-11-21 was manual.
+BETTER
+  1. A "lane commit" per verified lane onto a local branch wave15 (merged and
+     squashed at wave end by the owner's ask): never pushed, only a local safety
+     net and a "what did this lane change" record. Message: "w15 lane 2a: <title>",
+     no attribution, no Claude mention. This replaces most of the base<N>
+     snapshot role (snapshots remain for golden bases).
+  2. Rename the branch (git branch -m sim-waves-9-13 sim-waves-14-15 or just
+     "sim") at the next commit.
+  3. Pre-push guard: tools/prepush_scan.sh (largest blobs > 2 MB, files matching
+     *.epub *.pdf books/ lab/results/books*, strings that look like keys). The
+     manual scan, scripted; run before every push.
+  4. A commit when a wave is verified, as already done; plus an interim commit
+     after each batch (wave 15 has two batches uncommitted).
+  5. .gitignore cleanup: collapse the duplicated boilerplate; keep a section
+     "mark1-specific". Low value, no rush.
+COST+RISK
+  - Cost: 1-2 hours (script + habit). Risk: lane commits onto a branch while
+    other lanes edit the same working tree would sweep their partial edits in:
+    only safe with W5 worktrees, or committing paths owned by the lane
+    (git add <owned paths>) only. Use owned paths (stepcheck already knows them).
+STATUS: commit-on-ask and no-attribution rules DECIDED. Lane commits, prepush
+  scan and the rename are NEW. PRIORITY: P2 (lane commits with owned paths: P1,
+  because 76 files are uncommitted right now). LEVEL: the commit policy touches
+  the owner's rule "commit when asked": lane commits to a LOCAL branch are an
+  owner-level OK (nothing leaves the machine; no push).
+
+======================================================================
+E8. SNAPSHOTS AND BASES: THE BASE-N SCHEME
+======================================================================
+EXISTS: base14..base25, each: tree copy, copy-of-copy (to check the snapshot is
+  stable while running), a golden json and log. snap.sh does it; 12 bases on disk.
+PROBLEM
+  - Each base is cut by hand at a wave end after a 62-min suite; the base is the
+    unit of "known good". Only base25 is current; base14..23 are never used
+    again (golden bases of old waves) but kept. Wave 15's two batches
+    have no intermediate base, so lanes in batch 2 measure against base25 and
+    see all of batch 1's changes as "NEW or declared".
+  - The "copy" duplicate and "diff -r" protect against editing during snapshot:
+    that is exactly what a git commit gives for free (a tree hash).
+BETTER
+  - Derive a base from a git commit: "git archive <commit> src tests tools lab/..."
+    into WORK/base<N>; the commit hash IS the base id, so "what is base25?"
+    is a hash and a diff, and "copy" is unnecessary. Combined with E7 lane
+    commits this gives an intermediate base after every batch at the cost of a
+    golden record (~4 min) rather than a manual ritual.
+  - Delete bases older than the last 2 (their goldens are in git history of
+    the facts files once E2 exists).
+COST+RISK: low. A git archive cannot hold uncommitted state, so it requires E7.
+STATUS: NEW. PRIORITY: P3 (after E7). LEVEL: technical.
+
+======================================================================
+E9. DISK USE: WHAT IS IN lab/ (14 GB) AND WHAT CAN GO
+======================================================================
+MEASURED (du, 2026-11-22)
+  lab/                      14 GB total
+    vendor/.venv-openjev    5.6 GB   third-party venv (Sep 24)
+    vendor/.venv-von13      5.0 GB   third-party venv (Sep 28)
+    .venv                   5.4 GB   the mind-lab venv (needed, rebuildable)
+    checkpoints/rooms_tuned.pt 1.6 GB  fine-tuned rooms checkpoint (gitignored)
+    results/                1.2 GB   (methods 383 MB; mindL2 124 MB; mindL3 110;
+                                     scope 103; mindL 89; mindL4 72; ...)
+    methods/                22 MB    code and case data
+    everything else         < 3 MB
+  (The three venvs = 16 GB if you add the vendor pair + .venv; du says lab is
+   14 GB, so the vendor pair and .venv together are ~11 GB with shared
+   hardlinks or sparse data. Treat as ~11 GB of environments.)
+  Outside lab/, the larger problem:
+    ~/.cache/mark1-build (WORK)   62 GB   <- the real disk hog
+      mindL4/ 25 GB: step1_verify and lethal2_verify each hold a 13 GB COPY of lab
+        (vendor venvs + checkpoint); food_verify 350 MB, lethal_verify 218 MB
+      w15b2 6.8 GB, w13d 6.1 GB, w14r 3.1 GB, w13b 3.0 GB, w13c 2.0 GB, w14b 1.9 GB,
+        w15b1 1.7 GB: nearly all of it is tools/blender copies (1.3 GB each,
+        15 copies) in *_verify/mut and mine
+      base14..25 + copies: ~1.3 GB (fine)
+    ~/.cache/huggingface  31 GB (model weights; the user's models for the lab)
+    ~/.cache/pip           3 GB
+CAN GO (verified by name; recommended order; I did not delete anything):
+  1. WORK/mindL4/step1_verify/copy and lethal2_verify/copy: 26 GB. A verify
+     copy, report is in the lane dir. Delete the copy/ subdirs after the lane
+     report is read.
+  2. WORK/*/**/blender (15 dirs x 1.3 GB = ~19 GB, overlaps nothing in item 1).
+  3. WORK/*_verify/mut trees of finished waves (13, 14a, 14b, 15 b1): ~8 GB with
+     blender removed more like 1 GB.
+  4. lab/vendor/.venv-openjev and .venv-von13 (10.6 GB): third-party
+     environments from September, referenced by lab experiments from the
+     OpenJEV / "von13" era. Check the lab README and "grep -r vendor lab/*.py"
+     for a live reference first; if none, move to external disk or delete.
+     (I did not check whether the 14b-15 lab code uses them. This one needs the
+     owner: it may be the only way to reproduce an old result.)
+  5. lab/checkpoints/rooms_tuned.pt 1.6 GB: the rooms backend's fine-tune. Keep
+     (needed for the rooms backend / trained-DM line) unless retrained on demand.
+  6. lab/results/methods 383 MB: gitignored bulk, rebuildable; keep until the
+     book-scenario work (wave 11 item) is final.
+  7. ~/.cache/pip 3 GB: `pip cache purge`; ~/.cache/huggingface 31 GB: audit
+     with `huggingface-cli scan-cache` (owner's models; not mine to cut).
+  Potential: ~45 GB from items 1-3 with no information loss, ~56 GB with item 4.
+  Disk free would go from 56 GB to ~100+ GB (88% -> ~75%).
+BETTER (keep it clean going forward)
+  - tools/gc_work.sh with a stated policy, run at each wave end by the
+    orchestrator (dry-run by default, "--yes" to delete): keep the last 2 bases;
+    keep each lane's report and logs; delete head/mine/mut/copy and any
+    "blender" or "lab/vendor" dirs once the lane's verdict is recorded;
+    delete *.lock files with no holder.
+  - sandbox.sh (E4) so the problem does not recur.
+COST+RISK: item 1-3 deletion is safe (verified copies; reports are separate
+  folders). I checked names, not contents of each: gc script must test that the
+  report file exists before deleting a lane's trees.
+STATUS: the assistant listed "clean-up pass at some point" (item 8). The
+  accounting above is NEW: the real hog is WORK (62 GB), not lab/ (14 GB).
+PRIORITY: P1 for items 1-3 (88% full); items 4-5 are owner-level.
+LEVEL: items 1-3 technical; 4 (the vendor venvs) OWNER-LEVEL only because it
+  could remove the ability to reproduce an old result.
+
+======================================================================
+E10. THE TEST SUITE ITSELF: QUALITY NOT SPEED
+======================================================================
+EXISTS: 214 files; 4911 passing (14a end). Verify lanes already do mutation
+  testing by hand ("mutations not caught" found weak tests in lab step 3, a
+  vacuous 14b test). test_module_hygiene, test_snapshot, test_w13_snapshot.
+PROBLEM
+  - Test strength is checked only when a verify lane happens to mutate. Weak
+    tests (placebo, swap, fx_fix) were found late.
+  - Naming: test_w13_*, test_c10_tier1, test_c12_crafts, test_wave14a_finish,
+    test_fin14b: tests named by wave and lane, not by law. A reader cannot find
+    "the tests for the heat law"; agents add yet another wave file. (Same
+    issue as the "mixin chain" of the world: the structure follows the build
+    schedule.)
+  - Test files that import the sim at module import time (world builds at
+    import) slow the collection of every run.
+BETTER
+  1. Rename/regroup by law at the next quiet point: tests/heat/, tests/body/,
+     tests/mind/ (pytest rootdir-style folders). A git mv + conftest tiers by
+     folder; combine with the E1 affected-tests mapper which then needs no
+     import graph for most lanes (folder = law).
+  2. A small mutation harness in tools/ (exists in lane verify scripts, not
+     reusable): given a changed file and its tests, flips one operator or
+     constant in each changed function and checks a test fails. Run per lane by
+     the verify step; report survivors. mutmut is an option, but a 40-line
+     custom operator-flip on only the diff is cheaper and bounded.
+  3. Collection-time check: fail if collecting takes > 30 s (a test that
+     builds a world at import).
+COST+RISK: regrouping is mechanical but touches 214 files (git sees renames
+  fine); the risk is lanes in flight referencing old paths: do it between waves.
+STATUS: mutation checks by verify lanes exist (hand-run); the regroup and the
+  reusable harness are NEW. PRIORITY: P3 (regroup), P2 (mutation harness).
+LEVEL: technical.
+
+======================================================================
+E11. FASTER FEEDBACK: A DEV LOOP FOR A SINGLE LAW (THE PROPOSAL)
+======================================================================
+Today a lane's loop is: edit -> stepcheck (copy trees, record or copy golden
+base, check 46 cases, run listed tests, all under one lock) = minutes to an hour.
+Proposal, in order of leverage:
+  1. "make smoke" (E1 T0): 60 s, no lock, no copy, runs in the live tree.
+  2. "make law X": runs tests/<law folder or affected set> + the scenes of
+     that law in tools/law_timing.py and prints the facts (E2) with their bands.
+     Target: 1-3 minutes. This is the loop an agent or the owner lives in.
+  3. "make check": T1 (xdist -n 4) + golden on --only the cases whose scene
+     touches the changed files (tools/golden.py coverage already maps
+     case -> code touched; "golden.py coverage" exists, see its usage header).
+     Target: 8 minutes.
+  4. "make wave": T2 + golden --all + timing table + base from commit. Wave end
+     only.
+  The golden "--only <cases that cover the changed lines>" idea reuses
+  golden.py coverage (exists) so a one-law change checks 5 cases, not 46.
+COST: mostly glue over what exists. Needs E1 and E3 first.
+STATUS: partly scheduled (fast tier, fact goldens), the "make" front door is NEW.
+PRIORITY: P1 (as the product of E1 and E3). LEVEL: technical.
+
+======================================================================
+E12. SMALL ITEMS
+======================================================================
+  a. WORK is ~/.cache/mark1-build: a cache dir (cleaners may delete it). It
+     holds base snapshots and the owner's decisions.md (the owner's DECISION LOG,
+     which exists only there: ~/.cache/mark1-build/w14/decisions.md, 793 lines).
+     Copy decisions.md (and w15 specs) into the repo (docs/decisions/) at each
+     wave end; tracked by git. Cheap and removes a single point of loss. P1.
+  b. cap.sh / snap.sh / fuzz_run.py / unit3.py live in WORK, not in the repo:
+     version them under tools/dev/ so the loop is reproducible (the orchestrator
+     already refers to them by path). P2.
+  c. The "heat gate" at 88 C in cap.sh can stall a lane silently for 3 minutes
+     per run; log the wait into the lane's output (it does: "cap.sh: waited N s").
+     Consider nice/ionice and a fan curve, not a code change. P3.
+  d. Memory: 14 GB with 12 GB in use; the full suite at a 2.5 GB cap plus a lab
+     run plus the editor is near the limit. If xdist is adopted, size workers
+     from free memory at start (tools/slot.sh reads /proc/meminfo). P2.
+  e. pytest's -p no:cacheprovider everywhere: fine for sandboxes; in the live
+     tree enable --lf (last failed) so a lane re-runs only its failures. P3.
+  f. Delete dead lock files A_fix.lock, A_v2.lock (E3). P3.
+
+======================================================================
+SUMMARY TABLE
+======================================================================
+ Id   Item                                    Status    Prio  Level
+ E1   Test tiers from timing data + xdist     part/NEW  P1    technical
+ E2   Fact goldens; bit goldens only for      EA6/NEW   P2    technical
+      refactors; declared diffs machine-read
+ E3   Slot pool by class, not one flock       NEW       P1    technical
+ E4   One sandbox builder; stop copying       NEW       P1    technical
+      blender and lab/vendor
+ E5   Switch ledger as data + in smoke tier   NEW/AU5   P2    technical
+ E6   Agent practices: no pgrep, job registry NEW       P1    technical
+      pause protocol, worktrees
+ E7   Lane commits on a local branch,         NEW       P1/P2 owner-level OK
+      prepush scan
+ E8   Bases from git commits                  NEW       P3    technical
+ E9   Disk: WORK 62 GB (not lab 14 GB);       NEW       P1    mostly technical;
+      ~45 GB freeable with no loss                              vendor venvs owner
+ E10  Tests by law; mutation harness          NEW       P2/P3 technical
+ E11  "make smoke/law/check/wave"             NEW       P1    technical
+ E12  decisions.md out of a cache dir;        NEW       P1    technical
+      dev scripts into the repo
+
+OWNER-LEVEL CHOICES (everything else is technical and I would just schedule it)
+  1. E7: OK for LOCAL lane commits on a working branch (no push, no attribution)
+     so verified work has a rollback point? Today 76 files of wave 15 are
+     uncommitted.
+  2. E9 item 4: delete or archive lab/vendor/.venv-openjev and .venv-von13
+     (10.6 GB) if no live lab code needs them.
+  3. E1: accept a memory/heat-limited parallelism of 2-4 test workers (a
+     faster loop uses more of the laptop at once; fans and heat were a past
+     problem).
+
+SUGGESTED ORDER (about 3 days of work in total, mostly glue)
+  Day 0 (2 h): E12a (copy decisions.md into the repo), E9 items 1-3 (free ~45 GB),
+     E6 W1-W3 (waitfor.sh, job.sh, python -P).
+  Day 1: E4 sandbox.sh, E3 slot pool, E7 lane commits with owned paths.
+  Day 2: E1 timing file + tiers + xdist trial; E11 make targets.
+  Day 3: E2 declared.json + first 5 fact goldens; E5 ledger to data.
+  Before wave 16: E6 W5 worktrees; E10 mutation harness.

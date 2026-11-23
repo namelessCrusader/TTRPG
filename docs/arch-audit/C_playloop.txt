@@ -1,0 +1,630 @@
+ARCHITECTURE AUDIT, LANE C: THE PLAY LOOP AND THE SMALLEST PLAYABLE MVP
+Written 2026-11-22. Documents only: nothing in src/, tests/ or tools/ was touched, no tests, sim or git were run.
+Marks: (u) = unverified, read from code or docs but not measured or run. "OWNER" = a real trade-off of scope, play, cost or
+principle. "TECH" = technical, can just be scheduled.
+Status keys: EXISTS (built), SCHEDULED (an owner decision names it), NEW (not yet in decisions.md).
+
+=====================================================================================================
+0. THE SHORT VERSION
+=====================================================================================================
+
+There is no way for a person to play MARK1 in the voxel world today. src/voxel has 80k lines of physics, bodies and a linked
+mind, but no player, no prose view of the world, no save to disk, and no front end. The pieces are closer than they look,
+though, because the MIND INTERFACE (src/mind: Mind, Backend, the player chooser, chains, addressed NPCs, scene text) is already
+a play loop: src/rooms/__main__.py can be played by a person (`--play`) or by an agent over many calls (`session`), and the
+voxel world already sits behind the same Backend (src/voxel/mindlink.py: VoxelBackend, MindPolicy).
+
+So the play loop is mostly a SHELL around things that exist, plus three real gaps:
+
+  GAP 1. A NARRATOR. Today a player reads describe.describe() (src/mind/describe.py), which is a CHOOSER's input ("no numbers,
+         no ids, at most 5 percepts") and not prose for a person. perceive.render() (src/voxel/perceive.py:547) words one
+         percept row at a time. Nothing says where you are, what the room looks like, or how your body feels.
+  GAP 2. SAVE AND LOAD ON DISK. World.snapshot() / restore() (src/voxel/ledgers.py:126, 149) is in-memory and leaves the mind out.
+         The rooms `session` replays from seed + picks, which breaks whenever any law changes.
+  GAP 3. A REAL INPUT PATH FOR TYPED TEXT. The numbered menu works. Free text (PA2b) and queued sequences (PA3) are decided but
+         unbuilt, and src/core's composer and pieces are written against the OLD engine's types.
+
+The smallest playable MVP (section 1) is reachable in TWO STEPS, and the first step does not need the voxel world, the paused
+waves 15, or 16a. I recommend building a new package src/play (a shell over the Backend protocol, per owner rules: generic,
+mutable, small files) and proving it on the rooms inn first, then pointing it at a voxel scene.
+
+The 5 most important items:
+  C1  Define the MVP as two steps (MVP-0 on the rooms backend, MVP-1 on one voxel scene) and start MVP-0 now, in parallel.
+  C2  Narrator = a pure function of the character's own percept rows, beliefs and self-state (K10 by construction), with
+      per-channel renderers and phrase packs as DATA.
+  C3  The player's question arrives INSIDE World.step() (will.py:806-930). Decide how a front end gets control back: this shapes
+      save, undo, replay and every front end.
+  C4  Save = true state + decision log + a version stamp, not replay from a seed. State the compatibility promise (OWNER).
+  C5  Input in three tiers (numbered, lexical, model), porting the pieces.py grammar onto mind Options; speech is closed speech
+      acts until 16b's claim language exists.
+
+=====================================================================================================
+1. THE SMALLEST PLAYABLE MVP (C1)
+=====================================================================================================
+
+DEFINITION (one sentence). A person starts a scenario from a short list, reads what their character perceives as prose, acts by
+number or by a typed short phrase, queues a few steps and lets time pass with interruptions, talks to an NPC, saves, quits and
+resumes, and every session leaves a log that replays and can be reviewed afterwards. NPCs and the world run by their own laws
+with 0 model calls; a model is called only for a typed phrase the matcher cannot place and for an addressed NPC's reply, and the
+game is fully playable with both switched off (always a text-only option; latency budget).
+
+WHAT IT IS NOT (cut on purpose): no character creator (premade sheets, AU3 later), no quest engine (a scenario is a premise
+paragraph, the world supplies the stakes), no graphics, no real-time control (PA3 says later), no free-text conversation
+understanding (needs 16b's claim language), no magic, no multi-settlement world.
+
+TWO STEPS.
+  MVP-0 (the shell, on the rooms inn).
+    Why the inn first: it is the only world with persons, needs, trade, theft, violence, speech and a finished Backend, it runs in
+    turns (cheap), and it has goldens, a player chooser, chains and a session replay. It exercises everything the shell needs
+    except physics. Parts: src/play shell, narrator v0, input tiers 1 and 2, save/load, session log, agent session CLI, text front end.
+    Depends on: NOTHING in the build order (reads src/mind and src/rooms only). It can proceed while waves 15 are paused.
+  MVP-1 (one voxel scene, the same shell).
+    Parts: a voxel scenario with 1 player body and 2 to 3 NPCs (scenes.py has workshop_world, house_fire, two_rooms, fire_alarm,
+    duel; none is a place you live in), the menu of today's 28 verbs, the narrator over voxel percept rows (perceive.py), waiting
+    with halt, speech acts.
+    Depends on: (a) wave 15 batch 2 merged, end-checked and COMMITTED (the live tree is dirty, 60+ modified files, no snapshot),
+    so the shell is not built on a moving base; (b) nothing else. 15c, 15d, 15e, 16a, 16b IMPROVE it (bodies in the narrator,
+    light, smell, primitives, free text) but do not block it.
+  MVP-2 is simply "the waves land": 16a (primitives, PA2 list and free-text translation, PA3 queues), 16b (plan cache, knowledge,
+  K10 belief-labelled menus, K12 "who told you?"), 15d light (the narrator works in the dark), EA8c senses (smell, touch,
+  proprioception, pain location become channels the narrator already has a slot for).
+
+ACCEPTANCE TESTS (stated first, as the owner's pattern asks):
+  A1  An agent plays 30 decisions of the inn and 30 of a voxel scene through the CLI; the session log replays to the same final
+      world hash.
+  A2  LEAK TEST (K10): hide an entity from a character (wall, dark, distance); no narrator line names it or its state. Run on 100
+      seeded states per scenario. Include the known-name case (item 11).
+  A3  TEXT-ONLY: every action and every view is reachable with the model off and no graphics. Run the whole scripted playthrough
+      with models disabled.
+  A4  LATENCY: reactive turns cost 0 model calls (counted by the existing Mind.remote meter, loop.py:155-172); p95 "act and see
+      the result" under the stated budget (item 12 gives the budget to set; measure, do not assume).
+  A5  PROSE: the narrator never prints a tick, an id, a raw number (MC7 default). Numbers appear only on an explicit ask.
+  A6  SAVE: save, quit, load, continue = the same world hash as an uninterrupted run, with a log appended, not rewritten.
+
+OWNER-LEVEL? YES. The choices are (i) rooms first vs voxel first (a scope and risk trade-off: rooms first costs nothing in physics
+but the first thing played is not the physics world); (ii) whether the MVP may be built while the waves are paused (it touches only
+new files, so it needs no test.lock, only fast tests).
+RECOMMEND: rooms first, in parallel; voxel when wave 15 is committed. SCHEDULED? The MVP as a milestone is NEW (decisions CV2,
+CV3 already wait on "a playable MVP" without defining it). Priority P0.
+
+=====================================================================================================
+2. WHAT EXISTS: THE MAP (read before the items)
+=====================================================================================================
+
+src/mind (3.5k lines, imports no backend, no lab):
+  loop.py:89-115      MindConfig: mode reactive/featured/all, `player` (who is the human), `npc` chooser, `menu` flat/two, `batch`.
+  loop.py:143-188     Mind: `ask` is the player callback; `chooser(who)` routes the player, the model for `addressed` NPCs
+                      (loop.py:183-188), the rules for everyone else. This is ALREADY "only the player parse and the addressed
+                      NPC call a model".
+  loop.py:189-243     Mind.decide: bind -> menu -> scene text -> request -> ask -> backend.start. Player chains (`job.then`,
+                      loop.py:350-358): "1 4 7" queues three options; a chain stops when the next is illegal or the job is not done.
+  api.py              the frozen types, stdlib only: DecisionRequest, Option, Job, Percept, SelfState. A request carries texts
+                      only, "no Ref, no tick".
+  describe.py         scene text for a CHOOSER; refuses digits (describe.py:12-21). Not prose for a person.
+  data/verbs.yaml     the 28-verb catalog (content as data already), with `told_text` words per verb (catalog.py:133).
+
+src/rooms (the inn): backend.py (turn-based Backend), world.py (a fork of lab/world2, held byte-for-byte by inn goldens),
+  __main__.py: `run`, `--play` (interactive, numbers, chains, q), `session start/pick/show/end` (agent playtest over many calls,
+  state = seed + picks in JSON, replayed from the start each call, digest-checked, __main__.py:205-253).
+
+src/voxel (80k lines): the same Backend through mindlink.py (VoxelBackend 207-1000, MindPolicy 1085-1187: prepare/limbs/pick/
+  on_restore; link() sets attention "onset"). Percept rows: perceive.py (Rec rows, per-viewer, "a row says only what the senses
+  could tell", render() at 547, phrase tables SAYS_AS/SAYS_AS_RESULT/SAYS_AS_WORLD/HEARD_AS at 67-98). Beliefs: beliefs.py view()
+  at 444 (percepts + beliefs in the person's own words). Time: slowtime.py (Clock 83, Scheduler 318, twins in slowtwins.py).
+  Snapshot: ledgers.py:126/149 (deepcopy of everything except policy, event_sink, _epoch). golden.py hashes whole worlds and has a
+  "rewind" case. There is NO player designation in the voxel code (grep: no "player" outside comments) and no disk save.
+
+src/core (6k lines, the OLD engine: its own World, entities, effects bus, LM game master):
+  playtest.py (134)   the agent play loop: view + piece table -> one composed line -> parse -> run -> corpus row; a refusal costs no time.
+  pieces.py (199)     the decision-2 grammar: (then ...), (if (near X) ...), "carrying", verb+slot values, PieceError names the bad piece.
+  composer.py (900)   free text -> steps by route (physical/social/inspect/refuse), lexicon, name matching, LM only when ambiguous.
+  social.py (546)     stances as CONSTRAINED SELECTION from an authored reaction set (LM selects, never writes).
+  director.py (131)   chaos dial + GM moves in lulls.  llm.py (119) ChoiceLM PMI selection.  webserver.py (205) click-a-tile UI.
+  engine.py, state.py, perceive.py, reactions.py, seed.py, mind.py: the old world; src/core is the old engine and is not the target.
+
+Library connection: none of this lane needs the library at build time; narrator content is the owner's to author. (The K12 and
+CV4 reveal designs reference the library's uncanny answer, already in decisions.md.)
+
+=====================================================================================================
+ITEM C2. THE NARRATOR (K10, MC7, CV4)
+=====================================================================================================
+
+WHAT EXISTS
+  - perceive.py:547-640 render(rec, viewer): one percept row to one clause ("someone hits Berel, to the north-east"). Honest by
+    construction: a person is named only when the row names them; a sound says its kind only.
+  - beliefs.py:444 view(w, p): percepts + beliefs in the person's words.
+  - mindlink.py:287 self_state(): "hurt, short of breath, bleeding, afraid, angry at X", holds.
+  - describe.py: the chooser's scene text (situation + question), rooms `screen()` (rooms/__main__.py:97) prints it with the menu.
+  - D11 (data-engine-design.md) already says selector and narrator are separate roles; OPEN_DESIGNS notes "narration as an async
+    consumer of the event log" and "narrate analysis of the log, not the log" (daicer, NaNoGenMo).
+
+THE PROBLEM
+  1. There is no SCENE description: where you are, what the room is like, what you can see right now, exits, the weather in the
+     doorway. The per-row render says only what CHANGED. A player who walks into a room reads nothing.
+  2. There is no BODY narration: warmth, cold, pain location, hunger, tiredness, the feel of a grip. The sensed state exists
+     (self_state, wounds, exertion, fatigue, bodyheat) but only a few words reach a person ("hurt", "short of breath").
+  3. The phrase tables are Python constants (perceive.py:67-98), content in code, against AU1. They are also tied to the old verbs.
+  4. Names: render() says persons[pid]["name"] when a row names the person (perceive.py:600). Whether the character has ever LEARNED
+     that name is not checked (u: I read _who_words and where actor_seen is set; I did not trace it for strangers). A narrator
+     that says "Berel" for someone the character has never met breaks K10 in the quietest possible way, and CV4's mimic (a
+     perceived shape that is not what it is) cannot work.
+  5. The chooser's text and the player's text are the same thing today, so any prose polish risks changing the training and
+     golden surfaces (describe.SPELLING is hashed into datasets). They must be SEPARATE modules.
+  6. K10 has no mechanical guard. Nothing stops a later author from letting the narrator read world state "just this once".
+
+BETTER OPTION (one design, three layers)
+  Layer N1: a function `narrate(View) -> Narration`, where View is a NEW frozen, plain-data type built ONLY from:
+      (a) the character's own percept rows of this tick (Rec rows, perceive.py),
+      (b) the character's own beliefs (beliefs.view) with confidence and source,
+      (c) self-state (body channels),
+      (d) the character's own standing facts (name, what is held, where they believe they are).
+    The narrator module must not import World or any src.voxel module except the row types. A lint test enforces it. That is K10
+    and K12 by construction, and CV4's "altered experience" comes free: if a drug, fear or a cognitohazard distorts the percept
+    rows or the beliefs, the narrator shows the distortion without knowing about it. The after-session reveal (CV4, K12) reads the
+    TRUE records from the log, a different module that is never fed back.
+  Layer N2: renderers are REGISTERED PER CHANNEL (saw, heard, felt, smelled, proprioception, pain, internal) and phrase packs are
+    DATA (YAML: verb x result -> clause templates, direction words, intensity words, with each pack stating its source). 15d,
+    EA8c and magic then ADD channels as data and a renderer, never edit the narrator. A pack is validated by the AU4 `check` tool
+    (every verb in the catalog has a clause; no digits; no id leak).
+  Layer N3 (optional, off by default): a style pass by a small model that rewrites N1's text into nicer prose, as an async consumer
+    of the same Narration. It may not add facts: a post-check compares its noun and number set against N1's and falls back to N1 on
+    any addition. Costs a model call per beat, so it is a dial and never in the reactive loop's budget.
+  Seams: MC7 (prose by default, numbers on ask, a warning before anything permanent) lives in N1 as a "detail" switch on a view
+    ("how badly am I hurt?" answers from self-state with words; "show numbers" prints the character's OWN measured quantities only,
+    since numbers can be privileged information; LitRPG "System" screens are an in-world artefact whose text comes from the
+    artefact's own record, never from the sim). Scene description N1-scene is a render of the beliefs' "where" facts plus current
+    looked rows, in a fixed order (place, light, who, what, exits, sounds), at most a fixed number of clauses, with a "look" command
+    that is free (no time). Salience orders the clauses (the owner's one-lens decision: halt, narrate, context are one signal).
+  Until 15d lands everything is lit, so the narrator has no darkness to show; the channel slots simply stay empty and the
+  "short and vague in the dark" language of PA2 arrives with 15d as a data change.
+
+COST AND RISK
+  Cost: N1 + packs for the inn and the 28 voxel verbs: a few days; the packs are the long part (every verb x result). Risk: the
+  scene text will expose how thin the percept rows are (item 4: names; light; "where am I" beliefs). That is a finding, not a
+  failure: the narrator is the first reader that shows what the character does NOT know yet.
+  Deterministic and 0 model calls in N1 (templates). N3 is the only part that costs a call.
+SCHEDULED? K10 and MC7 are decided (SCHEDULED as principles); the narrator MODULE is NEW. Priority P0 (nothing is playable without it).
+OWNER-LEVEL? Mostly TECH. The OWNER-LEVEL choice is N3 (model-written prose): quality vs latency budget vs the "no facts added" risk.
+  Recommend: ship N1 only, add N3 as a dial later, measured against the leak test.
+
+=====================================================================================================
+ITEM C3. WHO HOLDS THE CONTROL FLOW: THE QUESTION ARRIVES INSIDE step()
+=====================================================================================================
+
+WHAT EXISTS
+  - In the voxel world the policy is called from inside World.step(): will.py:806, 911, 923, 1930 call self.policy.pick(...);
+    mindlink.MindPolicy.prepare (1109) calls mind.decide(), which for the player calls ask() (loop.py:360). So the player's
+    question is asked in the MIDDLE of a tick, in the middle of the persons loop.
+  - In the rooms backend the turn is explicitly split at each choice (b.step() runs to the first choice; b.start() runs on to the
+    next, rooms/backend.py 1-30), so the loop can return to the caller between choices.
+  - The rooms `session` solves "return control" with an exception (Stop) plus REPLAY FROM THE START on every call.
+
+THE PROBLEM
+  A blocking callback is fine for `--play` at a terminal (the call just waits), but not for: an agent that plays one choice per call,
+  a web or GUI front end, a pause, an undo, a save at the moment of choice, a timeout, or a "wait" that must be interrupted by a
+  keypress. Raising an exception from inside step() leaves the world half-ticked (the persons loop stopped midway, double-buffered
+  state half-written, `_pending` events), so the only safe continuation is to restore to the start of the tick and run it again,
+  which works only if the whole tick is deterministic and the policy answers the same questions in the same order.
+  Replay from tick 0 on each call is O(history) and so becomes unusable in the voxel world (a 25 ms tick: a 10-minute scene is
+  24,000 ticks).
+
+BETTER OPTIONS
+  (a) SNAPSHOT AT THE START OF EACH TICK, only when a player is present (World.snapshot() exists; cost is a deepcopy of the
+      lattice and records: (u) not measured here; a measurement is the first task). On the player's question, raise a PendingDecision
+      carrying the request; the shell restores the snapshot, stores the answer, and re-runs the one tick with the answer
+      pre-loaded. Cheap if snapshots are made only on ticks where a player decision is due (the mind knows when: needs_decision).
+  (b) COOPERATIVE: make the step a generator/coroutine at the policy seam so a decision yields to the caller and resumes in place.
+      Cleanest for the front end; invasive in will.py (a 1969-line file in the middle of wave work). Not recommended now.
+  (c) THREAD: run the world in a worker thread, the player's ask() blocks on a queue. Simple, works with every existing line, no
+      invasive change; determinism is unaffected because the world thread is the only writer. Costs: the GIL and numba threading
+      are fine; debugging is a little worse; save-at-choice is safe because the world thread is parked.
+  RECOMMEND: (c) for MVP-0 and MVP-1 (smallest change, the world thread is parked at a clean decision point, so snapshot, save and
+  undo all happen there), with (a) as the fallback if a platform needs it. The shell owns a `Session` state machine:
+  RUNNING / WAITING_FOR_PLAYER(request) / PAUSED / OVER, and exactly one front-end call enters it per transition.
+  The decision point is also the place where "time is frozen while you think" is true by construction (turn-based play pays
+  nothing for heavy ticks, EA7).
+
+COST AND RISK
+  (c): about a day, low risk. (a): medium: needs a tick-determinism guarantee (the golden suite gives one). A parked world thread
+  holding the numba kernel state is fine.
+SCHEDULED? NEW. Priority P0 (it decides the Session API). OWNER-LEVEL? TECH.
+
+=====================================================================================================
+ITEM C4. TURNS, TIME, PAUSE AND STEP-BY-STEP (PA3, world-tick momentum)
+=====================================================================================================
+
+WHAT EXISTS
+  - The unit of play is already the JOB: the player picks an option, the backend runs it as a job (mindlink `start`, `advance`,
+    `_end`) until done, failed or stopped; the next question is asked when the job ends or is interrupted (`advance` returns a
+    reason, mindlink.py:874; `_news` 966 interrupts a job by a salient percept; the catalog has `interrupts_known`).
+  - Player chains: "1 4 7" queues up to the legal chain (loop.py:350).
+  - Time machinery: slowtime.Clock (a world clock with a time-of-day parser, slowtime.py:83-110), Scheduler with watchpoints and
+    "SkipReport", twins (slowtwins.py; SC5 generalises them).
+  - The momentum design (world-tick-momentum memory): two-channel halt (standing drives, task guard), one lens for halt, narrate and
+    context. Decided as PA3(b): queue + interruption + step-by-step; real-time later.
+
+THE PROBLEM
+  1. Interruption is defined for NPC minds. For the PLAYER'S job, what interrupts is the same percept salience, but the SHELL must
+     tell the player WHY the sequence stopped ("you stop: the floor shifts under you"), in the narrator's terms. `advance`'s reason
+     strings are internal codes today.
+  2. There is no "wait / rest / sleep for a while" act that the player can choose with a duration and a stop rule. Without it the
+     only way to pass time is a null act, one decision at a time, which is unplayable in a world with a 25 ms tick (TICK_S,
+     materials.py:491).
+  3. Between decisions the player's BODY is not idle in a real world: a fall, a blow or a fire does not wait for the player's
+     typing. In a turn-based shell time is frozen at the question, so this only matters INSIDE a running job. The table's reflexes
+     (flinch, pull away, brace) must keep running for the player's body while a job runs, and the narrator must report them
+     ("you flinch back from the flame"). This is SC6's rule (the character has habits; the player can always override and is told),
+     now needed for reflexes. A policy that blocks reflexes for the player body makes the body helpless; one that lets reflexes
+     override a chosen job needs a stated rule (reflex wins only for acts the catalog marks as involuntary).
+  4. Waiting minutes or hours: full ticking is the exact path; waiting by approximate twins is allowed with a measured drift budget
+     and the approximation shown in the log (EA7 (ii), SC5). The shell needs `wait until <time of day | something happens | N
+     minutes>` which runs full ticks while anything salient is near (the player or something warm, loud, moving) and hands the rest
+     to twins. The cost per wall second of full ticks is NOT known to this audit (u).
+  5. Pause and step-by-step: in a turn-based shell pause is free. "Step-by-step against a queued sequence" means the queue is a list
+     of options the player can view, edit, and advance one at a time (the rooms chain has no view or edit of the remaining chain).
+
+BETTER OPTION
+  The shell's `Queue` is a first-class object: a list of options with the remaining steps shown, run-until-interrupted by default,
+  `step` runs exactly one step, `cancel` drops the rest; an interruption returns the queue to the player with the reason in prose.
+  `wait` is a catalog verb ("wait, for a duration or until a stop rule"), a job like any other, so NPCs get it too (PA4: one
+  interface), with the stop rule built from the SAME halt channels. All time shown to the player is wall-clock-of-the-world words
+  ("about ten minutes pass"), never ticks. When a heavy tick happens in real-time mode the clock slows (EA7); the shell shows
+  nothing about it in turn-based mode.
+COST AND RISK: medium (wait + queue view + reason strings). Risk is point 3 (reflex vs chosen act) because it touches will.py's
+  decision order, which is hot for waves 15. Do the queue and wait in the shell first and treat point 3 as a decision in 16a.
+SCHEDULED? PA3 is SCHEDULED (with 16a); the shell Queue and `wait` job are NEW. Priority P1. OWNER-LEVEL? Point 3 is OWNER-LEVEL
+  (how much the body acts on its own while the player's job runs; it is a scope-of-agency question). The rest is TECH.
+
+=====================================================================================================
+ITEM C5. INPUT: FREE TEXT TO PRIMITIVES, AND WHAT TO REUSE FROM src/core (PA2, the plan cache)
+=====================================================================================================
+
+WHAT EXISTS
+  - Tier 1: the numbered menu and chains (rooms --play). Menu options come from bind() with roles and words from the catalog.
+  - src/core/pieces.py (199 lines): the PIECE GRAMMAR: (then A B), (if (near X) A B), carrying, verb+slot:value, a reverse index from
+    (verb, parts) to the one legal Option, and PieceError naming the exact bad piece with no time passing. The plan-cache design
+    (section 1) states "the plan language IS that piece grammar". It is written against core's Option(verb, args).
+  - src/core/composer.py (900 lines): the free-text routing ideas: route first (physical/social/inspect/refuse), lexicon with
+    synonyms, name matching before any model, then per-slot selection by a PMI chooser (llm.py ChoiceLM, a 0.6B, ~50-150 ms).
+  - The playtest lesson (memory playtest-harness, run #1): "befriend Pip" was routed to "throw knife" because social words were not
+    in the lexicon; fixed by routing by lexicon, never by a scored pool. Unrecognised intent must REFUSE or ask, never fall through.
+  - Decided: PA2(a) a list of what the character perceives in body terms and (b) free text translated into primitives, refused if the
+    target is not perceived, NOW (with 16a). PA3 queues. Plan cache (16b) gives off-menu intents a path.
+
+THE PROBLEM
+  1. Nothing in src/mind or src/voxel parses a typed phrase. The 28 verbs are the only language; "go to the door and open it" is two
+     numbers on a menu that must be on screen.
+  2. The two src/core files hold the right IDEAS but their code is bound to core's World/Option/state types. A port by copying drags
+     the old engine in; a rewrite against mind Options (roles, kind person/thing/place, `told_text`) is about 400 lines.
+  3. Without the lexical tier (no model), every typed phrase is a model call, which is the player-parse call the latency budget
+     allows once, not four times per sentence. And with the model off there would be no typed input at all, against the text-only rule.
+  4. Targets must come from what the character PERCEIVES (PA2, K10). The menu already guarantees that for numbered picks (the menu
+     lists seen things). A typed phrase may name something real but unperceived ("the key in the cellar"): the matcher must refuse
+     by name ("you do not see a key"), which also leaks nothing.
+
+BETTER OPTION: THREE TIERS, ONE ENDPOINT
+  T1 numbered / chained menu (exists).
+  T2 LEXICAL MATCH over the CURRENT menu, 0 model calls: verb synonyms and role-name matching against Option.text and roles (the
+     lexicon is DATA, a pack beside verbs.yaml), then the pieces grammar for sequences and conditions. Exactly one legal option
+     matches -> run; several -> ask "which: ..." (a numbered mini-menu); none -> T3 or a named refusal.
+  T3 MODEL: only when T2 finds nothing: one call that SELECTS from the menu (constrained, the ChoiceLM method), or proposes a plan
+     of EXISTING actions (the plan cache, 16b). The model never writes an effect; the sim judges. A typed phrase the character has
+     not shown proficiency in is "attempted by physics", per K10, not blocked.
+  The endpoint is the same for all three: a Plan = a short sequence of mind Options (+ optional guards), checked piece by piece, so
+  refusal names the bad piece and costs no time. NPC cached plans (PA4) expand through the same type.
+  What to reuse from src/core: the pieces.py GRAMMAR AND ERROR SHAPE (port, do not import); the composer's routing and refusal
+  rules and its regression cases as TESTS (the "befriend Pip" class); social.py's constrained-selection method for the addressed NPC.
+  What not to reuse: composer's slot code, effects, DSL.
+
+SPEECH (a special case of input). Free-text conversation understanding needs a closed claim language (16b/K-layer). Before it, the
+  honest MVP is SPEECH ACTS: the verb catalog's own talk verbs (greet, ask about X, tell X, threaten, trade, persuade) chosen like
+  any act, with the player's quoted words kept in the log and shown to the listener's narrator as flavour (as pieces.py already
+  carried a quoted `speak` string) but NOT understood. The voxel LINES table is a closed shout set (policy.py LINES, perceive.py
+  heard-as). An addressed NPC's reply is a mind decision over its own menu of speech acts (the model chooser, loop.py:183), and the
+  words shown come from the speech act's template. Do not let a model WRITE the reply with facts in it: it would invent beliefs.
+  OWNER-LEVEL? The pre-16b speech limit is an OWNER trade-off: dialogue will feel menu-like until 16b.
+
+COST AND RISK: T2 about 3 to 5 days with the lexicon pack; T3 depends on 16a/16b. Risk: synonyms are content; the lexicon grows
+  forever; keep it data with a coverage report ("which typed phrases fell to T3 or were refused") from the session log, so the
+  lexicon is grown from play, not guessed.
+SCHEDULED? PA2 and the plan cache are SCHEDULED (16a/16b). The T1/T2 shell tiers, the lexicon pack and the speech-acts-first
+  choice are NEW. Priority P0 for T1/T2, P1 for T3. OWNER-LEVEL? TECH, except the speech note above.
+
+=====================================================================================================
+ITEM C6. SAVE, LOAD, REPLAY AND DETERMINISM
+=====================================================================================================
+
+WHAT EXISTS
+  - World.snapshot()/restore() (ledgers.py:126, 149): an exact in-memory deepcopy of every instance attribute except policy,
+    event_sink and _epoch; a restore bumps `_epoch` so event ids stay unique; MindPolicy.on_restore (mindlink.py:1155) drops the
+    mind's rows, ids, jobs and starts from the undone future. test_snapshot.py, test_w13_snapshot.py and a golden "rewind" case
+    cover it. Lazy state is class attributes so old snapshots still restore (sim.py:150-185 comment).
+  - golden.py hashes whole worlds (bit goldens); the inn has byte-for-byte event goldens (tests/data/inn_rules_seed{0,1,2}.jsonl).
+  - Determinism: the world is "no randomness anywhere" (sim.py:28); the rooms choosers are seeded from the world seed; GPU model
+    runs are replayable only from logs (sim-mind-design.md 531, 583).
+  - The rooms session: state = seed + picks in a JSON file, replayed from tick 0 each call, with a digest per choice that stops the
+    session when the code changed (rooms/__main__.py:205-253). src/core pickled whole worlds (playtest.py `act`).
+
+THE PROBLEM
+  1. No save to disk for the voxel world. A deepcopy snapshot is a Python value, not a file. Pickling a World with weakrefs, a
+     policy hook and numba objects is fragile (u: not tried), and a pickle is tied to the exact class layout of that commit.
+  2. The mind is outside the snapshot ON PURPOSE (a model's weights could be huge), but a saved GAME needs the mind's state:
+     the seeded choosers' generator positions, `addressed`, `jobs` (partly in persons), chains, the Recorder, the plan cache, and any
+     NPC learning state. A restore that forgets them resumes a different game, silently.
+  3. Replay from seed + picks is the right idea for AGENT SESSIONS and bug reproduction but cannot be the save format: the code is
+     changing every wave (golden diffs are declared per wave) so every old log dies at the next wave; the rooms digest check stops
+     rather than adapts. For a long-lived character it would force "start over" on every update.
+  4. Any model output in a run (parse, addressed reply, N3 prose) makes a log the ONLY way to reproduce it. The memory note
+     engine-redesign-target already requires "LM output always logged as typed deltas".
+  5. Undo/rewind: snapshots make it technically cheap, but whether a solo D&D substitute should offer it is a play-feel choice.
+
+BETTER OPTION
+  A save is a bundle: { world state, mind state, decision log, version stamp }.
+    - world state: arrays as .npz plus plain records as JSON (a documented format, not a pickle), with every record class
+      self-describing; written at a clean decision point (item C3) so the world is not mid-tick.
+    - mind state: the choosers' RNG states, jobs, queue, addressed set, plan cache, anything learned; a `state()`/`load()` pair on
+      the Mind interface (a TECH addition to api.py's Backend/Mind protocol).
+    - decision log: the session log of item C7 (every pick, typed phrase, parse result, model output with its text and latency).
+    - version stamp: git sha, world-law version (contract version), content-pack hashes, schema number.
+  LOAD checks the stamp. Same version: exact resume, hash verified. Different version: the world state loads if the schema
+  migrates (a migration table, written only when a wave changes a record shape), else it loads as "from an older version" with a
+  stated warning, and the decision log can still drive a fresh REPLAY for review only.
+  PROMISE (the OWNER decision): before MVP-1 ships, saves may break between waves ("pre-release saves are disposable"); from the
+  first time the owner wants a long-lived character, a migration discipline begins (a saved field is never silently reinterpreted).
+  Recommend the first. Replay from the log stays the agent and bug-reproduction path, and is the golden-style check
+  (save, load, continue == uninterrupted run, hashed).
+  Undo: expose as a dial `undo: off | last decision | any`, default off in play and on in agent sessions; each undo is itself
+  logged (a "took back" event) so the corpus is honest (the trace-harvest memory wants only BLESSED traces, not rewound ones).
+
+COST AND RISK: a day or two for the bundle format on the inn; larger for the voxel World (many lazy pools, wave 13's T1-T9 state:
+  mixes, records, layers, climate, slow scheduler, twins: each has its own snapshot semantics (u)). Risk: a record class not
+  covered by the writer is silently lost. Mitigation: the writer is generic over World.__dict__ with an explicit "not state" list
+  matching _NOT_STATE, and the round-trip test is the golden "rewind" run through disk. Disk size per save: (u) not measured.
+SCHEDULED? NEW (decisions mention determinism and goldens only). Priority P1 (needed before anything long can be played).
+OWNER-LEVEL? The compatibility promise and the undo dial are OWNER-LEVEL (scope and play feel). The bundle format is TECH.
+
+=====================================================================================================
+ITEM C7. SESSION LOGS: ONE SCHEMA FOR REPLAY, CORPUS, REVIEW AND THE REVEAL
+=====================================================================================================
+
+WHAT EXISTS (five separate logs, five formats)
+  - Mind.rows (loop.py:229-239): one row per job started: request id, situation text, options, groups, cut, pick, probs, Why, job id.
+  - Backend event streams: rooms world.log (the lab's format), starts, job_events (backend.py).
+  - src/core corpus.jsonl rows (tick, prompt, answer, result, story) from playtest.py.
+  - trace.py (harvest of scored picks) and the kNN datastore (trace-harvest memory), BLESSED picks only.
+  - Remote-call meter Mind.remote (tick -> number of model requests).
+
+THE PROBLEM
+  A play session produces data wanted by FIVE consumers with five needs: replay and bug repro (everything, in order), playtest
+  review (what the player was shown and typed), the corpus for the trained DM (state -> pick, blessed ones), K12's after-session
+  reveal (true records of how a rumour travelled, who lied) and the latency audit (calls and ms). Each currently reads a different
+  file. The rooms rows have no field for what the PLAYER WAS SHOWN (the prose) or what they TYPED, and none for the parse result.
+  If the session log is built from the narrator's output only, the reveal cannot be computed; if from true events only, the review
+  of "was the player misled" cannot.
+
+BETTER OPTION
+  ONE append-only JSONL per session, one line per transition, with a header (version stamp, seed, scenario, switches, models):
+    - decision rows = the existing Mind.rows schema unchanged (spelling checked), PLUS `shown` (narration text), `typed` (the raw
+      input), `parse` ({tier, plan or refusal piece, lexicon hit}), `model` ({prompt hash, output text, latency ms, call kind}),
+      `world_hash` every N ticks (cheap check for replay),
+    - `truth` rows (the true event ids behind each shown line) kept in a SEPARATE file so a review tool can diff shown vs true
+      (CV4 reveal, K12 reveal), never read by any mind or narrator,
+    - `meta` rows: save, load, undo, pause, wait stop reason.
+  The log is the input to: replay (A1), the lexicon coverage report (item C5), the blessed-trace harvest, the playtest findings, and
+  a latency table (calls and p50/p95/p99 per decision, EA7's rule: report the worst, not only the mean).
+  Privacy: logs stay local (repo is PUBLIC, memory commits-no-attribution); the repo keeps no session logs (as logs/ is already ignored).
+COST AND RISK: small (a writer and a schema). Risk: schema sprawl; keep rows plain data, one version number, and the AU4 `check`
+  tool validates a log file.
+SCHEDULED? K12's reveal and the trace harvest are SCHEDULED/old; the unified session schema is NEW. Priority P1 (cheap, and every
+  later playtest depends on it). OWNER-LEVEL? TECH.
+
+=====================================================================================================
+ITEM C8. THE TEXT-ONLY FRONT END, AND THE FRONT-END SEAM
+=====================================================================================================
+
+WHAT EXISTS: rooms `--play` (a terminal REPL: reads the scene, a numbered grouped menu, "your choice:", q to quit); rooms `session`
+  (one call per choice, for agents); core `session` (do/step/note/end); core `web` (stdlib http, click-a-tile). PA2's STANDING rule:
+  always a text-only option; graphics is another front end over the same primitives.
+
+THE PROBLEM: three front-end shapes with three code paths and no common interface; the REPL and agent session both reimplement
+  "show a screen, read a choice, handle q". When a graphical or web front end comes, it would be a fourth. And meta-commands
+  (look, inventory, status, wait, save, undo, why do you believe that?, help) have no home, so each front end would invent them.
+
+BETTER OPTION
+  ONE Session API (item C3), TWO front ends from day one so the seam is proven: (1) an interactive REPL, (2) the agent CLI with the
+  same calls over many invocations (state in the save bundle, not in replay). The Frontend protocol is small:
+      present(narration, menu, status) ; read() -> Input(kind: pick|text|meta, value) ; notify(message)
+  A text front end is a PURE FUNCTION from (Narration, Menu) to text; no front end may read the World. Meta-commands live in the
+  shell under a reserved prefix (for example a slash) so they never collide with in-fiction typed phrases; each is free (no time)
+  unless it is an act. `why` is K12's in-world "who told you?" and routes to the character's own belief sources. Accessibility
+  follows from text-only: no colour dependence, width-wrapped, readable by a screen reader.
+  The old click-a-tile web UI is a prototype of PA2(c) (the spatial picker) and a design reference, not code to keep.
+COST AND RISK: small; the risk is only that the REPL grows its own game logic, which the lint (front ends import only src/play's
+  Session and Narration types) prevents.
+SCHEDULED? PA2's text-only rule SCHEDULED; the Frontend protocol NEW. Priority P1. OWNER-LEVEL? TECH.
+
+=====================================================================================================
+ITEM C9. WHAT TO KEEP, PORT OR RETIRE FROM src/core
+=====================================================================================================
+
+  playtest.py (134)    PORT THE PATTERN: view + choices -> one answer -> parse -> run -> log row; a refusal costs no time and names the
+                       bad piece; the agent playtest harness found real bugs (social routed to violence, loot loop, water on fire)
+                       and should keep running after each slice on the new shell. Do not import.
+  pieces.py (199)      PORT the grammar and error shape onto mind Options (item C5). Small, valuable, the plan-cache's plan language.
+  composer.py (900)    KEEP AS DESIGN AND TEST CASES: routing, lexicon synonyms, name matching before any model, the three
+                       regression cases of the playtest memory. Do not port the slot code.
+  social.py (546)      KEEP THE METHOD: an authored set of reactions per intent; a model SELECTS, never writes. That is the addressed
+                       NPC call. Its authored reaction CONTENT is Python per scene, against AU1; it becomes speech-act data.
+  director.py (131)    DO NOT PORT. A chaos dial and GM moves in lulls is a GM-fiat layer: the voxel world is lawful and sim-authoritative.
+                       Lulls are the player's business (use `wait`, whose halt channels bring consequences) and pacing is a design
+                       question for the scenario author (AU3 expectations), not a runtime director. If the owner wants a pacing aid,
+                       scope it as a dial in a scenario pack (OWNER-LEVEL).
+  llm.py (119)         KEEP the ChoiceLM PMI selection as the T3 chooser candidate and the prompt-assembly-under-budget helper
+                       (assemble()). 6 GB VRAM and a 0.6B are in budget; verify before committing.
+  webserver.py (205)   RETIRE (design reference for the spatial picker only).
+  engine, state, reactions, seed, mind, effects, dsl, checks, combat, ...: the old world; retire with src/core when nothing reads
+                       it. src/core is the old engine; mark it frozen and stop touching it. Lane A (the four worlds) decides the
+                       deletion; this lane only says the play loop needs none of it at runtime.
+SCHEDULED? NEW (a keep/port/retire call). Priority P2. OWNER-LEVEL? TECH, except director.py (a principle call).
+
+=====================================================================================================
+ITEM C10. WHERE THE SHELL LIVES, AND KEEPING IT EDITABLE
+=====================================================================================================
+
+PROPOSED LAYOUT (new, small files, each under about 400 lines):
+  src/play/session.py     the Session state machine, the Queue, wait, save/load bundle, the world thread (C3, C4, C6)
+  src/play/narrate.py     View -> Narration (C2); renderers per channel
+  src/play/phrases/*.yaml phrase packs (data): verb x result clauses, directions, intensity, per-channel; sourced and validated
+  src/play/parse.py       tiers T1 to T3 -> Plan; the pieces grammar; the refusal shapes (C5)
+  src/play/lexicon/*.yaml synonyms (data)
+  src/play/log.py         the session schema (C7)
+  src/play/front/repl.py, agent.py     the two front ends (C8)
+  src/play/scenarios/*.yaml  a scenario = scene factory name + seed + premise paragraph + who the player is + switches (data; AU3)
+RULES KEPT: imports only src.mind's frozen types and the Backend protocol (and for voxel, the Rec row type); never src.core, never
+  lab. The shell works on any backend: rooms now, voxel next, a future outdoor world later. Nothing in it is special-cased to a
+  scenario (the magic_duel lesson); flags enable capabilities, they never replace cognition.
+EDITABILITY (owner rules): every part is replaceable behind a tiny interface (Narrator, Parser, Frontend, Session); LLM agents
+  can add a phrase pack or a lexicon entry without touching code; `check` validates both (AU4).
+SCHEDULED? AU5 (with 16a) moves verbs, materials and sheets onto data; src/play's own data packs are NEW. Priority P0 (the layout
+  is free to choose now and costly to change later). OWNER-LEVEL? TECH.
+
+=====================================================================================================
+ITEM C11. NAMES, STRANGERS AND "WHO IS THAT" (a K10 plumbing gap found while reading)
+=====================================================================================================
+
+WHAT EXISTS: render() words a person as persons[pid]["name"] when a row names them (perceive.py:600-604); `actor_seen` is set by
+  the senses (perceive.py:326, 348, 390, 459); the rooms inn uses names throughout (everyone in the inn knows everyone).
+THE PROBLEM (u): nothing checked in this audit says the voxel world records whether the viewer has LEARNED a name. If it does not,
+  the narrator would print the true name of a stranger, which is a god-channel in the plainest words a player reads, and it would
+  also make introductions, disguises, mimics and the "who told you" belief chain (K12) impossible to show. This is the K10 leak
+  most likely to ship by accident because it looks like correct output.
+BETTER OPTION: a person is shown by BODY-TERMS DESCRIPTION (the PA2 form: "a tall man in a leather apron") until the viewer holds a
+  name belief with a source (told by X, read on a sign, heard called); names are claims in the knowledge layer (K1 to K3), learned by
+  the same belief process. MVP before 16b: a small `known_names` set per person in the belief store, filled by the introduce/greet
+  verbs and by the premise for people the character already knows (a scenario lists them). The narrator asks one function:
+  `how_called(viewer, other)`.
+COST AND RISK: small for the set, larger for descriptions (body-term descriptors come from the body sheet, EA2, and clothing).
+SCHEDULED? K10/K12 principle SCHEDULED; this concrete need is NEW. Priority P1 (P0 for MVP-1's leak test). OWNER-LEVEL? TECH.
+
+=====================================================================================================
+ITEM C12. LATENCY AND REAL-TIME ON ONE LAPTOP (the play budget)
+=====================================================================================================
+
+WHAT EXISTS: latency-budget memory (6 GB VRAM; reactive mode 0 NPC model calls; player parse + addressed NPC reply only); EA7 (the
+  tick may run long and the world clock slows in real time; paused or turn-based play pays nothing; report p99 and worst tick; twins
+  for waiting with a measured drift budget); Mind.remote meters model calls per tick; tools/law_timing.py and stepcheck exist.
+THE PROBLEM: no number states what a PLAY turn may cost. Two different budgets are being mixed: (a) the cost of one decision for the
+  player (the shell: narrator + parse + at most 1 model call), and (b) the cost of the world running between decisions (voxel ticks;
+  a job of 3 game seconds is 120 ticks of 25 ms). The shell's budget is small and easy to meet; (b) is the world's, and this audit
+  did not measure it (u). Waiting (item C4) makes (b) the dominant cost.
+BETTER OPTION: state the play budgets as tests, set from a measurement after MVP-0:
+    P1  the shell: narrator + parse (T1/T2) under 50 ms median, under 200 ms p99, 0 model calls;
+    P2  T3 parse or addressed reply: one call, with a stated ceiling (for example 2 s on the 6 GB card for a 0.6B select; measure);
+    P3  a job of typical length (a few game seconds): world time to run it under a stated wall ceiling in turn-based play; a longer
+        `wait` uses twins beyond a salience radius;
+    P4  report p50/p95/p99 and worst per decision in the session log (EA7).
+  Use the existing meters. Make the player see a "..." when a decision takes more than a threshold, never a silent stall.
+COST AND RISK: measurement only. SCHEDULED? Budgets SCHEDULED in principle (latency-budget, EA7); concrete play numbers NEW.
+  Priority P1. OWNER-LEVEL? The numbers are the OWNER'S call (play feel against cost); the machinery is TECH.
+
+=====================================================================================================
+ITEM C13. STARTING, ENDING AND THE PLAYER'S CHARACTER (small, but an MVP cannot skip them)
+=====================================================================================================
+
+WHAT EXISTS: playtest.py BRIEFS (one sentence per scene, Python); the rooms inn picks a person to play (CAST_NAMES); the lab's
+  `perma` flag (permanent death) and `lethal` flag in the lab world; voxel persons with body sheets (D7) and the stick figure as
+  the default body (EA2 will replace it with adult sheets); Backend.over() (rooms/backend.py:130).
+THE PROBLEM: (1) how a scenario starts: a premise for the player (what the character knows, wants, carries) lives nowhere as data;
+  the K10 rule says the character's beliefs make the menu, so the premise must be seeded BELIEFS, not a text blurb the narrator
+  reads (AU3 "seeded knowledge" arrives with 16b). (2) What ends the game: death of the player's body, or leaving, or the scenario's
+  condition; a scenario "goal" must not become a quest engine. (3) After death: end and reveal (CV4, K12 reveals are exactly for this),
+  or continue as another person. Family (docs/family-design.md) later makes "play on as kin" possible; before that it is "the
+  story is over". (4) The shell must work when the player's body is unconscious or incapacitated (the world runs on; the narrator
+  shows the senses that remain; the shell shows "you are unconscious"), which the question-in-step design (C3) must allow.
+BETTER OPTION: scenario files (item C10) with: factory, seed, player person, premise paragraph (shown ONCE as the opening, in the
+  narrator's voice), a short list of seeded beliefs (until 16b: a Python list in the scenario file), end rules limited to the body
+  states the sim already has (death, incapacity), and a reveal switch. No win conditions; a premise is not a rule.
+COST AND RISK: small. SCHEDULED? AU3 and the premade sheets exist as plans; this is NEW as shell data. Priority P1.
+OWNER-LEVEL? YES for the death rule: end vs continue (permadeath dial per pack, the lab's `perma` precedent). Recommend an end with
+  the reveal, a dial per scenario later.
+
+=====================================================================================================
+ITEM C14. THE AGENT PLAYTEST LOOP, KEPT ALIVE
+=====================================================================================================
+
+WHAT EXISTS: playtest-harness memory: `python -m src.core session` found the top bugs of the old engine; rooms `session` plays the
+  inn for an agent; wave workflows do not run a play loop on the voxel world, so a regression in what a player would FEEL is found
+  by nobody until a person plays.
+THE PROBLEM: after each wave there is no cheap "does this still play" check. Tests prove physics, not play. The harness's value was
+  catching coherence gaps (a misroute, a ghost item, a silent contradiction).
+BETTER OPTION: the agent CLI of item C8 plus a small fixed set of persona scripts (an arsonist, a diplomat, a thief, a brawler as
+  in run #4) run by a cheap agent after each wave, writing the session log (C7), with the leak test (A2) and a "nothing nonsensical
+  in the narration" read by the agent. This is NOT a test in the hour-long suite; it is a per-wave play check with a report.
+  Findings feed the lexicon coverage report and the narrator packs.
+SCHEDULED? the harness idea is old; its voxel version is NEW. Priority P2 (after MVP-0 exists). OWNER-LEVEL? TECH.
+
+=====================================================================================================
+3. DEPENDENCIES AND ORDER (against decisions.md "ENGINE AUDIT QUESTIONS DONE")
+=====================================================================================================
+
+Build order there: 15 b2 (paused) -> b3 -> b4 healing -> 15c solids -> 15d light -> 15e gas fire -> 16a primitives -> 16b knowledge
+and plans -> magic.
+
+  NOW, IN PARALLEL (touches only new files; fast tests only; no test.lock):
+    1. src/play layout, Session API with the world thread, Frontend protocol (C3, C8, C10).
+    2. Narrator v0 + phrase packs for the inn, leak and no-digit tests (C2).
+    3. Input T1 + T2: the pieces grammar ported to mind Options, the lexicon pack (C5).
+    4. Session log schema + replay check; save bundle on the inn (C6, C7).
+    5. Scenario files for the inn (C13). First agent playthrough (C14).
+    Exit = acceptance tests A1 to A6 on the inn.
+  AFTER WAVE 15 BATCH 2 IS MERGED AND COMMITTED (MVP-1):
+    6. Point the shell at one voxel scenario; narrator packs for the 28 voxel verbs and the percept rows; `wait` with halt; the Queue;
+       known-names (C11); the voxel save writer; budgets measured (C12).
+  WITH 16a (AU5 stage 1):
+    7. PA2(a) list-of-perceived-things and PA2(b) typed phrase to primitives replace T2's matching over 28 verbs; shortcuts as plans;
+       reflex-vs-chosen-act rule (C4 point 3); the phrase and lexicon packs move to the AU2/AU4 pack format.
+  WITH 15d, EA8c, 15e: new channels (light, smell, touch, proprioception, pain location) are added to the narrator as DATA.
+  WITH 16b: T3 plan cache; K10 belief-labelled menus; K12 "who told you?"; seeded beliefs in scenarios; free-text speech.
+  WITH CV4 packs: the altered-experience dial and the after-session reveal (reads the truth log).
+
+WHAT THE MVP DOES NOT NEED FROM THE WAVES (so none of them blocks it): light, rods, skeleton, healing, gas-phase fire, the
+primitives, the knowledge layer, the plan cache, magic.
+
+RISKS THAT COULD BLOCK PLAY AND ARE NOT WAVE-SCHEDULED:
+  R1  the voxel world has no "place you live in": every scene is an experiment. A scenario with 2 to 3 NPCs, needs, and something to
+      do (a forge or workshop, a house, a yard) is a content job that must be done by someone before MVP-1 means anything. (OWNER:
+      which scenario first; recommend the workshop or forge because 14b and wave 15's physics is strongest there.)
+  R2  the world's cost per game second on this laptop is unmeasured here (u). If a 3-second job costs several wall seconds, play will
+      stall regardless of the shell.
+  R3  K10 leaks (names, item C11; hidden state via any beliefs path) ship silently without the leak test.
+  R4  an uncommitted, moving tree: the shell must not be validated against a base that is still being edited.
+
+=====================================================================================================
+4. SUMMARY TABLE
+=====================================================================================================
+
+ #    item                                   status                 priority  owner-level?
+ C1   MVP definition, two steps               NEW                    P0        YES (rooms first; parallel build)
+ C2   narrator (pure of percepts, data packs) K10/MC7 sched; module NEW   P0   mostly TECH (N3 prose is OWNER)
+ C3   question-inside-step: world thread       NEW                    P0        TECH
+ C4   turns, queue, wait, reflexes             PA3 sched; shell NEW   P1        reflex rule OWNER
+ C5   input tiers; pieces port; speech acts    PA2/plan cache sched   P0/P1     speech limit OWNER
+ C6   save/load/replay/undo                    NEW                    P1        compat promise + undo OWNER
+ C7   one session-log schema                   NEW                    P1        TECH
+ C8   text front end and Frontend protocol     text-only sched        P1        TECH
+ C9   src/core keep/port/retire                NEW                    P2        director.py OWNER (principle)
+ C10  src/play layout, data packs              AU5 partly             P0        TECH
+ C11  names and strangers (K10 leak)           NEW                    P1        TECH
+ C12  play latency budgets                     principle sched        P1        numbers OWNER
+ C13  scenario start, end, death               NEW                    P1        death rule OWNER
+ C14  agent playtest per wave                  old, voxel NEW         P2        TECH
+
+OWNER QUESTIONS THIS LANE RAISES (for the one-by-one pass, in the order I would ask):
+  Q-C1  Build the MVP in two steps, rooms inn first in parallel with the paused waves? (C1)
+  Q-C2  Saves: disposable until MVP-1 ships, then a migration discipline? Undo: off in play, on for agents? (C6)
+  Q-C3  Model-written prose (N3) as an optional dial later, or never? (C2)
+  Q-C4  Dialogue before 16b is speech acts with the typed words kept as flavour: acceptable? (C5)
+  Q-C5  While the player's job runs, which acts of the body are involuntary reflexes that may override it? (C4)
+  Q-C6  What does the death of the player's body do: end with the reveal (recommended), or play on? (C13)
+  Q-C7  Which scenario first for MVP-1? (R1)
+  Q-C8  The play budgets (C12): which latency per decision is acceptable? (after measuring)

@@ -1,0 +1,312 @@
+ARCHITECTURE AUDIT, LANE A: THE FOUR WORLDS
+src/voxel, src/core, src/rooms, lab/world2 (and what sits on them: src/mind, lab/mindL)
+Date 2026-11-22. Documents only. Nothing was run, edited or committed. The lane writes only this file.
+
+Marks: (v) checked by reading the file or a grep this session; (u) an estimate or a judgement.
+Cost scale: S = a day or less of agent work, M = a few days, L = a wave, XL = several waves. All are (u).
+Priority: HIGH = blocks a playable game or silently invalidates the mind work; MED = slows work or lets drift in; LOW = tidy.
+
+----------------------------------------------------------------------
+0. WHAT THIS LANE DID NOT RE-PROPOSE (already decided or scheduled)
+----------------------------------------------------------------------
+- The voxel sim is the truth; the inn is a validated coarse twin for offscreen and long horizons (SC4, SC5; decisions.txt "SC5", engine audit F24). This lane asks what that needs, not whether.
+- The twin protocol (slowtwins.py, twinharness.py) generalised to every coarse version (SC5). Wave 15 batch 2 lane 2d owns tick-vs-jump.
+- The family step in the lab, with the coarse past as the first approximate twin (Fam2, SC7).
+- Primitives layer 16a, plan cache and knowledge layer 16b, authoring AU1-AU5, content as data, text-only option always (PA1-PA6, K1-K12).
+- src/mind as the neutral mind interface with two backends (docs/sim-mind-design.md 2.1; src/mind/__init__.py).
+- Lane D covers the mixin chain, module sizes, the layer rule and the 4-call session API (D1, D4, D8). Lane B covers the learned mind. Lane C covers the play loop and the MVP. Lane E covers tests, locks and the 14 GB lab. I cross-refer and do not repeat.
+
+----------------------------------------------------------------------
+1. THE FOUR WORLDS AT A GLANCE
+----------------------------------------------------------------------
+                  src/voxel (+mpm,bonds)      src/rooms                   lab/world2 (+lab/mindL)        src/core
+what it is        the truth: a conserved      the lab inn as a Backend    the lab inn, where the learned  the old 2D cell engine, an LLM
+                  voxel world, 5 cm, 25 ms    of src/mind, turns of 3-5   mind was trained and judged     game master, a piece table, a
+                  tick (v)                    min (v)                                                     playtest loop (v)
+code size         80,638 lines, 163 files     1,751 lines (world 806)     5,128 lines (world 2,148,       6,065 lines, 27 files, plus
+                                                                          tests 1,892); mindL 8,497       770 lines of YAML data
+laws              physical: matter, heat,     inn laws: drives, gossip,   the same inn plus 14 flag       tag-rule reactions, a 2D heat
+                  fluids, gas, bodies,        a trade/blow/theft set,     groups: meals, partner, news,   and fluid cell grid, combat
+                  skeleton, physiology,       beliefs with source events  calm, luck, need acts, lumpy,   bands, a Mythic-style oracle
+                  senses, ledgers (v)         (the original inn, no       signs, hard, lethal, perma,     and clocks, a director (v)
+                                              flags) (v)                  bring, raidlaw, selfcare, field
+minds             none of its own; src/mind   src/mind choosers on the   rule scores (policy.py), the    core/mind.py: salience bands
+                  plugs in through            inn's rule scores; Player   learned mind (mindL),           plus trait-scored goals; an LM
+                  mindlink.py; reflex tables  chooser (v)                 tournaments (v)                 picks among authored reactions
+                  and TablePolicy (v)                                                                     (social.py)
+content           Python scenes, 3,466 lines  Python constants (CAST,     Python constants (the same)     YAML: reactions, couplings, 3
+                  in scenes*.py; materials    THINGS, KINDS, CHEST) (v)   (v)                             packs (dcc, cultivation,
+                  in Python (AU5 will move)                                                                farming), composer eval (v)
+tests             169 test files import       1 file (tests/test_rooms.py) 92 tests in test_world.py,     34 test files, about 3.6k lines
+                  src.voxel; golden bit       plus goldens of 3 nights    mindL about 80, judge 8; lab    (v); dormant code, last touched
+                  hashes (tools/golden.py)    (v)                         golden is `lab.world2.golden`   2026-09-07
+what a person     14 of the catalog's 34      26 of the 34 verbs (v)      37 verbs, 13 of them not in     its own 2D verbs
+can do through    verbs have a voxel program                              the catalog (v)
+the mind          (v)
+interface
+run surface       scene scripts (python -m    python -m src.rooms run /   lab.run, lab.world2.run, the    python -m src.core web/play/
+                  src.voxel.scenes <name>)    --play / session (v)        tournaments                    session (v)
+
+Hard facts behind the table:
+- Catalog: src/mind/data/verbs.yaml has 34 verbs. A voxel program exists for only 14 (walk_to, flee_to, take, drop, open, close_door, use_key, pick_lock, bar_door, unbar_door, kick_in, shout_fire, strike, wait). A rooms program exists for 26. The two backends SHARE 7 verbs (walk_to, flee_to, take, drop, open, strike, wait). Eat, drink, give, tell, steal, help_up, bandage, praise, accuse, insult, threaten, shove, search, cut, hide, play are rooms-only (v, by loading the YAML).
+- The voxel's limb acts (src/voxel/policy.py:152-181) have no eat, drink, give or tell act. A body law for eating exists (bodyheat.py:802 `eat`, digestion.py) and nothing in will/mindlink/policy calls it (grep, v). The body can digest a meal and cannot be asked to eat one.
+- The voxel mind link reports only two drives, safety and harm (mindlink.py:298), and verbs.yaml sets `voxel: None` for hunger and thirst, although bodyheat.py:595 already computes `DG.hunger`.
+- The rooms inn is a fork pinned at lab/world2/world.py sha1 0cea5952 (src/rooms/world.py:62). The lab file now hashes to 66084f1b. The lab file is 2,148 lines, the fork is 806.
+- src/core is not dormant for planning: docs/plan-cache-design.md cites src/core/pieces.py (lines 48, 220, 254, 832), knn.py, trace.py and couplings.yaml as the base of the plan language and the missing-law ticket list. README.md still describes src/core as THE game and its run commands.
+
+----------------------------------------------------------------------
+2. WHAT TO KEEP FROM EACH (the verdict, short)
+----------------------------------------------------------------------
+KEEP FROM VOXEL: everything physical. It is the truth. What it lacks is a MIND-FACING surface (catalog parity, needs as drives, social facts as beliefs): items A1, A2, A9.
+
+KEEP FROM ROOMS: the Backend implementation of src/mind, the Player loop (`python -m src.rooms run --play`, `session`; today the ONLY playable path through the mind interface), the compat goldens idea (a world held byte for byte to a reference). Replace: the pinned fork (A3), the hard-coded inn (A6).
+
+KEEP FROM LAB/WORLD2: the INN LAWS and their LESSONS (not the file): the five causes of the rules cast's quarrels (repeat charge, no discharge of a grievance, no wound term, moot charges, answer charged like a first harm), meals and `serve`, bring-to-the-bedridden, one shared self-care function, the sourced food supply (0.99 of need), the sourced bandit rate, hardship rates, uneven luck, gossip by salience, the continuous survival-risk measure. Keep lab/mindL and the tournaments as the place experiments run, isolated enough for torch and cheap runs. Do not keep a second copy of the world (A3).
+
+KEEP FROM SRC/CORE (full table in A7):
+  KEEP AND PORT: pieces.py (the grammar and the refuse-by-name parser), composer.py's lexical machinery and composer_eval.yaml (the only labelled free-text set), the playtest/session protocol and the "bless only if the world advanced" harvest rule (trace.py), social.py's address() idea (the one allowed NPC-reply model call as a constrained choice), checks.oracle (lazy canon), reach.py (the reachable-state counter), couplings.yaml's `missing:` ticket idea, the three packs as authoring test cases.
+  RETIRE: state.py, effects.py, reactions.py, parts.py, spatial.py, combat.py, acts.py, the 2D renderers, webserver.py, llm.py, mind.py, the bands in checks.py, the director as an engine feature.
+
+----------------------------------------------------------------------
+3. HOW THEY SHOULD RELATE
+----------------------------------------------------------------------
+One connected world, seen at three resolutions, with one mind interface above them:
+
+  L-top   src/mind: catalog of verbs, menus, choosers, appraisal and needs rules (A4), beliefs (K1), the Player.
+          Knows no backend. Stdlib only. (Already true.)
+  Backends of src/mind, one Backend protocol, one conformance suite (A11):
+    FINE    src/voxel via mindlink.py        the truth; 25 ms tick; bodies, matter, light, fire
+    COARSE  src/rooms                         a room-graph world in seconds and kcal; a twin (SC5), NOT a second truth
+    (no third world. src/core is retired; the lab inn is the coarse world with experiment flags.)
+  lab/: experiments only. It imports src.mind and src.rooms (one way; A3), never the reverse. It keeps its own venv for torch and its own tournaments and reports.
+
+Where each kind of fact lives (the rule that stops the four-world drift):
+  - Physical facts (matter, heat, blood, food as kcal): voxel is the truth. The coarse world keeps them as booked quantities in SI-based units with a stated error budget against voxel runs (A5).
+  - Appraisals and relations (liking, trust, anger, reputation, concerns, ownership CLAIMS): in the mind, as beliefs fed by percepts (A4, A13). Not fields on a person in the world.
+  - Content (cast, things, kinds, supplies): data packs read by both worlds (A6).
+  - Verbs: one catalog; each backend declares which it runs; the parity table is a test (A1).
+
+----------------------------------------------------------------------
+4. THE ITEMS
+----------------------------------------------------------------------
+
+A1. THE VERB CATALOG IS NOT YET THE CONTRACT BETWEEN WORLDS
+---------------------------------------------------------------
+What exists: src/mind/data/verbs.yaml (34 verbs, `backends:` per verb). Voxel runs 14, rooms 26, both 7 (counts above). The lab inn offers 37 verbs; 13 are NOT in the catalog: accept, ask, buy, fend off, gossip, look around, offer, refuse, serve, sit down, sleep, tend, work (v: regex over lab/world2/world.py against the catalog). The decision docs count the verbs three ways: PA6 says "today's 28 verbs", the catalog has 34, the lab inn has 37. verbs.yaml is also modified and uncommitted (+81 lines: the door verbs), so there is no frozen reference.
+Problem: (1) A mind chosen on the inn menu transfers to the voxel on 7 verbs. The lab's whole food, gossip and self-care work lives in verbs the voxel cannot express. (2) The learned mind was trained on a menu the catalog cannot even write (the 13 verbs), so its menus cannot be replayed through src/mind. (3) PA6's "re-express 28 verbs as shortcuts" has no agreed list to be complete against. (4) Eating exists as a body law and is not an act (policy.py:152-181 has no eat/drink/give/tell).
+Better option: make the catalog the acceptance contract. (a) Add the 13 inn verbs to the catalog as data, each with a rooms program (they exist) and a voxel program or an explicit `voxel: n/a (reason)`. (b) A test prints and checks the parity table (verb x backend: program, n/a with reason, or MISSING); MISSING fails once a backend is declared to be at parity for a group. (c) The voxel programs are written ON the 16a primitives (serve = take + walk + give; sleep = lie down + wait until wake; eat = hand to mouth + the existing `eat` body law; ask/offer/accept/refuse/tell/gossip/praise/insult = speech acts through the existing sound and sense laws, with the verb's `told` text only for narration). (d) One count is used everywhere.
+Cost and risk: M for the data and the test; the voxel programs ride on 16a (L, already scheduled). Risk: low for the data; the speech acts depend on the K layer for meaning (a told claim is a typed belief, K1-K3).
+Scheduled or NEW: PA6 schedules "re-express the verbs"; the 13 missing verbs, the parity test and the single count are NEW.
+Priority: HIGH.
+Owner-level or technical: technical.
+
+A2. BODY NEEDS ARE NOT DRIVES IN THE VOXEL; THE INN'S SELF-CARE RULE HAS NO VOXEL TWIN
+---------------------------------------------------------------
+What exists: the inn has seven drives (energy as hunger and thirst, safety, company, standing, wealth, rest, curiosity) with set points and NATURE weights (lab/world2/world.py `DRIVES`, `NATURE`, drift per turn `RATE`). The lab's latest fixes are one shared self-care function (`selfcare`), `serve`, `bring`, a sourced supply and the `field` energy fixes (repeat ration 60 percent, meals wasted on the full; lab/world2/world.py:329-348). The voxel has the body that makes those needs real: digestion stores, glycogen, thirst and heat balance (digestion.py, bodyheat.py:595 `DG.hunger`, bodynodes.py). But the link reports only `safety` and `harm` (mindlink.py:298) and the catalog's hunger and thirst rows say `voxel: None` (verbs.yaml `drives`).
+Problem: a voxel mind never feels hungry, thirsty, cold or tired as a choosable pressure, so no self-care exists in the truth world and the inn's food results cannot be checked against it. The owner's SC1 ("the same body drives for everyone") is decided and has no code seam yet.
+Better option: one function in src/mind, `needs(self_state) -> {drive: level in 0..1}`, with each backend filling a SelfState the same way: rooms from its drive fields, voxel from the body (hunger from the gut and glycogen stores, thirst from water balance, fatigue from sleep debt and exertion, cold from the heat model, pain from the injury records, fear from the existing fear read). The inn's set points become the mapping table (data). The shared self-care rule lives next to it, backend neutral, and is tested on both. Company, standing, wealth and curiosity stay mind-side (no body); they are driven by percepts (A4).
+Cost and risk: M. Risk: the inn's drive drift is per turn; it must be re-expressed per second (D15 of the engine audit) before it is compared to a body that runs in joules and grams. A unit test that holds the rooms drift to the voxel body's hunger curve over a day is the check (a first agreement test, A5).
+Scheduled or NEW: SC1 and SC6 are decided; 16a schedules the body clock and the self-care dial. The needs function, the shared SelfState mapping and the agreement test are NEW.
+Priority: HIGH (the learned mind's survival selection is only meaningful if the voxel can ask the same question).
+Owner-level or technical: technical (the principle is decided).
+
+A3. ONE INN, ONE COPY: THE FORK HAS DRIFTED AND NOTHING CATCHES IT
+---------------------------------------------------------------
+What exists: src/rooms/world.py is a FORK of lab/world2/world.py at sha1 0cea5952 (world.py:62), and src/rooms/rules.py a fork of lab/world2/policy.py (rules.py:34). The fork header says the link to the lab is "only the goldens". The lab has since gained 14 flag groups (meals, partner, news, calm, luck, tend/allies/labour, lumpy/stock/choosy, signs, hard, lethal, perma, bring/raidlaw/selfcare, field) and `carry`/`night`/`supply`/`ill`/`raid` arguments (lab/world2/world.py:576-580). The lab file is 2,148 lines and the fork 806 (v). The goldens' header still holds the OLD hashes (tests/data/inn_rules_seed0.jsonl line 1). tests/test_rooms.py:81 compares the golden's header with the fork's own constants, not with the lab file, so the test cannot notice that the lab changed. The only drift detector is `python -m lab.world2.golden --check`, a lab command that is not in the src suite.
+Problem: (1) Everything the learned mind was selected on since 2026-11-08 (meals, partner, news, calm, luck, hard, lethal, field) exists in one place only, the lab, and cannot run through src/mind, so the learned mind cannot be put into the voxel link or the rooms Player loop with its own world. (2) The knowledge design (docs/knowledge-design.md:130) already assumes THREE versions of each law: "the main sim first, a matching version in the lab inn afterwards"; with the fork that is four. (3) Each new inn fix is made twice or, as now, once and the second silently never. (4) The inn constants per turn are held in two copies.
+Better options:
+  (i) RECOMMENDED. Lift the isolation rule ONE WAY. The lab may import src.mind and src.rooms (both stdlib-only); src never imports lab; the lab keeps its venv for torch. Move the CURRENT lab world and policy into src/rooms, re-applying the fork's four documented changes (step() split in two; `_choose` split into `_ready` and `start`; the `on_end` hook; `Person.heard`; world.py header). lab/world2 becomes a thin re-export plus the lab-only runner, lifetime and experiment code. The flags-off goldens, the lab's digests (lab/results/mindL/world_flags_off.json) and the lab's 92 + 8 tests are the proof that nothing moved.
+  (ii) Keep both, and generate the fork mechanically: a script that applies the four patches to the lab file, plus a test that hashes the lab file's BYTES (reading, not importing) and fails when the fork is behind. Cheaper now, but the double copy and the double calibration stay.
+  (iii) Leave it. Not recommended: drift is already large.
+  A drift test (the byte-hash check of (ii)) is worth adding today whatever the choice. It fails now, which is the finding.
+Cost and risk: (i) M; (ii) S; (iii) free. Risk of (i): lab reproducibility; held by the flags-off digests, the goldens and a flags-on golden set written first (a gap today: there are no flags-on goldens, only digests with all flags off).
+Scheduled or NEW: NEW (F24 notes the twin; the fork's drift is not noted anywhere).
+Priority: HIGH.
+Owner-level or technical: OWNER-LEVEL. It changes a standing rule ("lab never imports src"). The reasons for the rule (torch and the venv kept apart, the sim and the mind moving in parallel) survive a one-way import of two stdlib-only packages; the card/JSONL crossing for the model stays.
+
+A4. THE SOCIAL LAWS LIVE IN THE WORLD OBJECT, ONCE, IN THE LAB; THE VOXEL HAS NONE
+---------------------------------------------------------------
+What exists: in the inn, liking, anger, trust, reputation, wear, reprisal and gossip are applied by the WORLD in `_perceive`, `_learn`, `_learn_flag`, `_provoked`, `_witness`, `_after` (lab/world2/world.py:1672-1930), as fields on `Person`. The learned mind keeps its own copy of the same quantities mind-side (lab/mindL/concerns.py, partners.py, drives.py, mind.py). src/core/social.py has a third (an `EDGE_KINDS = {disposition, fear, trust}` store on the graph, social.py:24). The voxel has beliefs with sources (beliefs.py) and a `told` channel, but no liking, trust, anger, reputation, debt or concern store (grep: no `liking`, `reputation`, `gossip` in src/voxel).
+Problem: (1) The five quarrel causes found in the inn and the sourced concern rates (Hall 2018: about 94, 164 and 219 hours to casual, friend and close friend) have no home that both worlds can use. (2) Putting appraisal in the world breaks the owner's no-god-channel rule: a world-side `liking` is a fact no one perceived. (3) The same word is used for two things: voxel `stance` is a body posture (87 files) while social stance is an attitude (core/social.py `STANCE`).
+Better option: a backend-neutral relations store in src/mind (`relations.py`): (a) state per ordered pair (liking, trust, anger, debts, ownership claims, reputation heard) held in the Mind as typed beliefs (K1, K2), updated ONLY by percepts (saw, heard, told, did); (b) the inn's laws as pure functions (percept, state) -> state, each with its constants per second or per contact hour, not per turn; (c) rooms and voxel only emit percepts and run verbs. The inn laws are then tested once against the five causes and the Hall rates; the voxel gets them for free the day it emits the percepts. Name the quantity `attitude`, so `stance` stays posture.
+Cost and risk: M-L. Risk: the learned mind (lane B) already carries its own appraisal terms; the boundary must be decided with lane B so the rules-level laws live in src/mind and the learned mind READS them (a rule of the world, not a rule of the learner). Risk of recalibrating the inn: the per-turn constants must pass the same flags-on goldens after conversion.
+Scheduled or NEW: partly scheduled (K1-K12 for beliefs; the family step for concerns; AG1 for claims). The home (mind-side, percept-fed), the unit rule and the rename are NEW.
+Priority: HIGH.
+Owner-level or technical: technical with a principle at stake (no god-channel; appraisal belongs to the mind). I would ask the owner for a one-line nod because it moves code the lab inn owns today.
+
+A5. ROOMS AS THE VALIDATED COARSE TWIN: WHAT IT HAS TO BE, AND WHAT IT CANNOT BE
+---------------------------------------------------------------
+What exists: the SC5 contract (applicable, horizon, advance with all ledgers booked, materialise consistent with what was seen; exact and approximate grades; one shared harness). The voxel has the machinery (slowtwins.py, twinharness.py, slowtime.py, slownet.py). The voxel has an inn-night scene with real bodies (scenes_slow.py:184, "THE INN NIGHT WITH REAL BODIES") and the inn runs 300 turns a night. The rooms world has no energy ledger in SI units, no horizon, no materialisation, and its constants are per turn. The inn's "night" is a day: 300 turns of 288 s is 86,400 s (the lab says so at world.py:244, "One night is one day"), while the voxel inn night is hours.
+Problem: (1) Without a stated unit the two worlds cannot be compared at all; D15 of the engine audit names it. (2) Some inn laws have no fine truth to be a twin of: the market, the supply of food, a bandit raid, an ailment episode, gossip at village scale. The voxel has no economy, no crops, no animals, no weather (EA5: the outdoors is later). A coarse law with no fine counterpart cannot be validated by an agreement test; it can only be a labelled stand-in. (3) The twin's HORIZON (when to hand back to the voxel) has no definition for a world of rooms: an observer entering, a fire, a blow, a rare event.
+Better option: split the rooms world's laws in two classes and state it in the code.
+  CLASS T (twin laws): hunger and thirst balance, sleep, warmth in a shut room, injury and bleeding rates, who is in which room, who saw what. Checked against voxel runs of the same cast and the same hours: facts (who is fed by hour N, hunger distribution, who woke, who was hurt, who knows what) within a stated budget, via the shared twin harness. The first agreement test is the inn-night scene (voxel) against the rooms night (cast of 4-5, 8 hours, no violence).
+  CLASS S (stand-in laws): food supply, catch luck, raids, ailments, hardship. Each is a labelled calibration to a source (the Library responses), recorded as a row in a stand-in table with its source and the process in the voxel that will REPLACE it when that exists. They are never called "twin".
+  Define the horizon list: a person enters the observed room; fire or smoke; a blow, a fall or a wound; a threshold flip (a reserve at zero); a rare-event draw; the player's attention. Materialise: when the player arrives, the coarse state becomes voxel placements consistent with what was seen (K10), using the oracle idea from core (A7).
+  Put the unit rule in code: seconds are the unit; a turn is a stated jump length (D15a), and `Turn.seconds` is passed to every rate.
+Cost and risk: L (the agreement test and the unit conversion M; horizon and materialise L). Risk: the voxel inn night may not match the inn's hunger and fatigue on the first try; that is the point of the test, and the finding feeds the calibrations. Risk of over-claiming: calling a stand-in law a twin.
+Scheduled or NEW: SC5, SC7, Fam2 and F24 schedule the twin at the family step. The class T/S split, the stand-in table and the horizon list are NEW.
+Priority: HIGH for the unit rule and the first agreement test (they invalidate selection runs if wrong); the full twin can wait for the family step.
+Owner-level or technical: OWNER-LEVEL for one question: is rooms a permanent LAB INSTRUMENT (cheap, isolated, tuned for learning) or an offscreen part of the GAME (a twin the player can meet)? My recommendation: both, in this order. Instrument first (its value does not depend on twin-hood). It becomes a game part only for the T laws and only after its agreement test passes. The S laws stay an instrument until a fine world replaces them. This fits SC5's grades (exact and approximate) and keeps the lab's learning runs cheap.
+
+A6. THE INN IS HARD-CODED; THE COARSE WORLD SHOULD BE A GENERIC ROOM-GRAPH ENGINE OVER A SCENE PACK
+---------------------------------------------------------------
+What exists: ROOMS, TRAITS, KINDS, CAST, THINGS, WEAPON, CHEST, DUR and the effects of every verb (`_apply`: `if v == "take"` ...) are Python in world.py (rooms/world.py and lab/world2/world.py:171-200 and 489+). voxel scenes are Python too (scenes*.py, 3,466 lines; each `scene_*` builds a World by code).
+Problem: (1) Content as data is a standing rule and AU5 moves materials, verbs, species and body sheets only. Scenes and casts are not on the list. (2) A coarse twin of a voxel scene needs the room graph, the cast and the things DERIVED from that scene (rooms from walls and doors; the voxel routing code already builds routes); a hard-coded inn cannot be derived from anything. (3) A second scene (a village, a dungeon level, the family's house) needs a fork of a 2,000-line file.
+Better option: a YAML scene pack for the coarse world (rooms and edges with door states, kinds with trait means, things with properties and holders, cast with sheets, supply dials), validated by the AU4 checker, plus a one-way exporter from a voxel scene (rooms from the routing graph and the labelled spaces, cast from persons, things from entities). The inn becomes the first pack. Verb EFFECTS stay code (laws are code); each reads the verb's catalog entry for roles and durations (A1). Do the same for the voxel scenes in AU5's stage (a scene file format), since the exporter needs a source of truth.
+Cost and risk: M for the inn as a pack; L for the exporter and a scene format in voxel. Risk: low for the pack (the flags-off goldens prove it), medium for the exporter (it defines what "a room" is in voxel).
+Scheduled or NEW: AU1/AU5 cover content as data in general; scenes and casts as data, and the rooms exporter, are NEW.
+Priority: MED now, HIGH when the twin starts (A5) or a second scene is wanted.
+Owner-level or technical: technical.
+
+A7. SRC/CORE: RETIRE PIECE BY PIECE, PORT WHAT THE PLAN STILL NEEDS
+---------------------------------------------------------------
+What exists: src/core (6,065 lines, 27 files) has its own cell world, effect bus, reactions, parts, a game master with an LM, a piece table, a playtest loop, a director, adjudication, a kNN trace store and a web UI. The code was last touched 2026-09-07; 34 test files (about 3.6k lines) still import it and run in the full suite; README.md describes it as the shipped game; sim-mind-design 1.3 says "does not delete src/core". The new design cites parts of it as foundations (plan-cache-design 48, 220, 254, 358, 831-835).
+Problem: (1) Two NPC minds named alike (core/mind.py and src/mind). (2) A reader (or an agent) who follows the README reaches the retired engine. (3) The suite pays for tests of dead physics. (4) The parts the plan needs are mixed in with the parts it does not, so nobody can tell which file is safe to delete. (5) An empty file named `python3` sits at the repo root (v).
+Better option: freeze it now (no new imports; an import test that fails on a new `src.core` import outside tests/legacy), and carry it out file by file:
+
+  file(s)                                   verdict            where the idea goes
+  pieces.py (199)                           KEEP, PORT         src/mind/pieces.py over catalog Options and roles; the PieceError refuse-by-name parser; the plan language of plan-cache-design; PA2's free text translated into primitives
+  composer.py (900), eval_composer.py,
+    data/composer_eval.yaml                 KEEP, PORT         lexical clause splitting, fuzzy verb match, "already done" threading, live slot candidates; the eval YAML (132 lines) becomes the PA2 translator's regression set
+  playtest.py, __main__.py `session`        KEEP, PORT         the one session protocol (observe, act, advance, save) of lane D's D8, over src/mind Backends; agent playtests run on rooms now and voxel later
+  trace.py, knn.py                          KEEP, PORT (small) the BLESS rule: harvest a pick only if the world advanced (job done and state changed); store lives with src/mind/record.py
+  social.py (546)                           PORT THE IDEA      address(): the single allowed NPC-reply model call as a constrained choice over the verb catalog's social verbs scored by the relations store (A4); voices as narration (lane C)
+  checks.py                                 PORT oracle only   "resolve an unknowable fact once, then it is canon" = the lazy materialisation law for SC4 and the inn's chest ("things are made when needed"); bands and clocks are dice and are NOT kept (PA2: no dice, perception noise instead)
+  reach.py (74)                             PORT               the reachable-state counter over a Backend (needs snapshot and restore): a neutral design-feedback tool; cheap to run on rooms
+  couplings.yaml, test_couplings.py         PORT THE IDEA      the `missing:` list as the ticket store of plan-cache 11; the edges themselves should be GENERATED from lane D's declared reads and writes, not kept by hand
+  dsl.py (250), effects.py                  REFERENCE ONLY     the total loop-free AST as a design input for the plan language and the magic grammar; the bus itself is replaced by voxel Ev (events.py)
+  director.py (131)                         RETIRE as engine    pacing becomes a PACK entity that acts through ordinary verbs (the CV6 pattern); never the engine's default
+  state, reactions, parts, spatial, combat,
+    acts, perceive, mind, seed, llm,
+    webserver, parts, reach's 2D bits       RETIRE             voxel and src/mind cover them; the web UI returns as a graphics front end over the same primitives (PA2), text-only always available
+  data/packs/{dcc,cultivation,farming}.yaml  KEEP AS TEST CASES  see A8
+
+Cost and risk: S for the freeze and the import test; M in slices for the ports (each port moves its tests with it, so the suite shrinks as it ports). Risk: low if each port lands with its tests. The README and root file are S.
+Scheduled or NEW: NEW. "src/core stays dormant" (sim-mind-design) is a hold, not a plan; the per-file table is the plan.
+Priority: HIGH for the freeze, README and port list (it costs every newcomer, human or agent); the ports follow 16a and 16b.
+Owner-level or technical: technical. One veto note for the owner: this overrules "does not delete src/core" by deleting it in stages once each piece is ported.
+
+A8. THE THREE PACKS AND THE PARSE SET ARE THE ONLY OF THEIR KIND; THEY ARE ON THE OLD FORMAT
+---------------------------------------------------------------
+What exists: src/core/data/packs/dcc.yaml (128 lines), cultivation.yaml (150), farming.yaml (119) are the proofs that "a LitRPG system is a data pack" (tests/test_cultivation.py, test_dcc.py, test_farming.py). They run only on core's tag-rule reactions. composer_eval.yaml holds 132 lines of labelled free text. Nothing in the voxel world has a pack.
+Problem: when core is retired these are lost, and they are exactly the proof cases AU5 and CV8 need ("the 28 test cases ... then one full genre"). Also CV5 says a System entity exists only in packs and never by default; the DCC pack's voice (every line is the System) is a narrator style, which lane C's narrator needs.
+Better option: before deleting core, extract each pack into a plain-text case card (what it must show, in physics terms: xp as a stored quantity with threshold reactions, a loot box as a sealed container, a countdown as a clock, a farming plot as soil and growth) and file them with the coverage test cases; keep the YAML in docs/legacy as a reference for the DCC narrator voice. Re-express them on the voxel/mind side only when the pack interface (AU2) exists.
+Cost and risk: S. Risk: none; the loss is the risk.
+Scheduled or NEW: NEW (as the carry-over list).
+Priority: MED.
+Owner-level or technical: technical.
+
+A9. THREE PLAY DRIVERS; ONLY ONE PLAYS THE MIND INTERFACE
+---------------------------------------------------------------
+What exists: (1) `python -m src.core session|play|web` plays the OLD engine (playtest-harness memory: run #1 caught social intent misrouted to violence). (2) `python -m src.rooms run --play <name>` and `session start|pick|show|end` play the inn through src/mind with the Player chooser (src/rooms/__main__.py). (3) The voxel has scene scripts that call step() in a loop (D8 of lane D); it has no player driver.
+Problem: the standing practice ("run the playtest after each slice") has only the old engine's harness, and its findings do not tell us about the voxel or the inn. The rooms session is the one real play path, and it is invisible in the README.
+Better option: make the rooms session the agent playtest harness NOW (one protocol, the 4 calls of D8, with the bless rule from A7 kept for the harvest), and let the voxel join it when 16a gives it acts. Run it after each slice on rooms, and write the findings as tickets (missing law, missing verb: couplings idea).
+Cost and risk: S-M. Risk low.
+Scheduled or NEW: lane C owns the MVP; this item is the worlds-side start. NEW.
+Priority: HIGH (cheap and unblocks feedback).
+Owner-level or technical: technical.
+
+A10. FOUR BELIEF STORES AND FOUR EVENT FORMATS
+---------------------------------------------------------------
+What exists: belief stores in core/perceive.py (a snapshot store with staleness, in `e.mind["belief"]`), voxel/beliefs.py (`Mind.bel[key] = (value, ev_id, how, tick)`, capped at 64 keys), the inn (`_learn` keeps the event each belief came from), and src/mind/api.py `Belief`. Event formats: core effects log (a typed delta list), voxel `Ev` (events.py), the inn's log rows (lab/judge/signals.py reads these: id, t, actor, kind, traits, action, target, ...), and src/mind's decision rows (record.py).
+Problem: the judge signals, the survival reports and the book scenarios read only the inn's row format, so none can run on a voxel night. K1-K2 say there is one belief schema, with seven fields; today three worlds build their own.
+Better option: the voxel `Belief` of beliefs.py extended to the seven fields is THE schema (it already keeps its source event); the inn writes through the same type. One exporter turns a voxel `Ev` stream into the inn's row format (`ev_to_row`), so lab/judge/signals and the lab reports run on voxel nights unchanged. Keep the inn rows as the lab's report format (a view), not the store.
+Cost and risk: M. Risk: the voxel verbs are limb acts, so the exporter works at the TASK level (the job events of src/mind), which already carry verbs and roles.
+Scheduled or NEW: K1-K2 schedule the schema; the exporter is NEW.
+Priority: MED (HIGH once the first voxel inn run is made).
+Owner-level or technical: technical.
+
+A11. NO SHARED CONFORMANCE SUITE FOR A BACKEND
+---------------------------------------------------------------
+What exists: the Backend protocol (src/mind/api.py:324). tests/test_rooms.py has its own protocol section and tests/test_mindlink.py has another; neither checks the other. Each backend is tested by its own authors' scenes.
+Problem: a third backend (the generated coarse twin, A5; a mocked backend for the narrator tests) would get a third set. There is also no test that the same cast through two backends gives compatible facts.
+Better option: one parametrised suite over Backends: determinism per seed; the null act always available; blocked options never reach a chooser; snapshot and restore round-trip (needed by reach and the twin harness); job events obey the protocol (start, act, done, failed, stopped); percept channels are the closed list. Then the agreement tests (A5) are built on top. This is also AU2's conformance suite in miniature.
+Cost and risk: S-M. Risk low.
+Scheduled or NEW: NEW.
+Priority: MED.
+Owner-level or technical: technical.
+
+A12. THE INN'S FLAG SETS: EXPERIMENT ARMS THAT HAVE ACCRETED INTO A SECOND ENGINE
+---------------------------------------------------------------
+What exists: lab/world2/world.py:184-348: BASE_FLAGS, FLAGS, NEW_FLAGS, LUCK, NEED, LUMPY, SIGNS, HARD, LETHAL, LETHAL2, FIELD, and the aliases "all", "all2" ... "all6"; an `assert not bad` over seven set unions (line 582). Some "flags" are bug fixes (the repeat ration, meals wasted on the full) and some are experiment arms.
+Problem: a flag that is really the right behaviour should be on by default; the aliases hide which arm a result used (all5 versus all6 is not readable); and no row says when a flag is deleted. The voxel has this discipline already (switches.py: each gate has an owner, a reason and a deleted_when).
+Better option: (a) name conditions in a data file (`conditions.yaml`: name -> flag list, with the date and the report that used it), so a result says "condition: lethal2-field" and the set is readable; (b) every flag gets a switch-ledger row (owner, why, deleted_when; bug-fix flags are marked `default_on_when: the next tournament`); (c) when the world moves to src (A3), the audit test moves with it.
+Cost and risk: S-M. Risk: old reports quote alias names; keep the aliases as conditions.
+Scheduled or NEW: NEW (the ledger idea is in the voxel; the inn is not covered).
+Priority: MED.
+Owner-level or technical: technical.
+
+A13. OWNERSHIP, VALUE AND THEFT: THE INN HAS A GOD FIELD, THE VOXEL HAS NOTHING
+---------------------------------------------------------------
+What exists: the inn's things carry `owner`, `hidden` and `value` (lab/world2/world.py `self.things[...]`, `wealth()` at 831); `steal`, `give`, `take_from` and the wealth drive read them. The voxel's `steal` and `take_from` verbs have no voxel program (verbs.yaml: `voxel: None`), and the voxel has no ownership or value notion (things.py has `owner` only for body parts; v).
+Problem: if "who owns the iron" is a field on a thing, it is a fact no one perceived, the same god-channel the learned-mind principles reject. If it is absent, `steal` is not a crime and a village has no law, no debt, no market. The owner's AG1 says an agreement is a typed claim held by minds, records or institutions.
+Better option: ownership is a CLAIM (AG1, K1): "A holds title to X", held in memories, witnessed, written down or recorded by an institution; a theft is a take against a claim that the taker, or an observer, believes. The inn's `owner` field becomes a belief seeded at setup for each person who would know (the `known` flag's idea made the default); `value` is a per-mind estimate (or a market quote later). The coarse world keeps claims as beliefs too, so the twin and the truth share them. No `owner` field on voxel things.
+Cost and risk: M (it rides on 16b's knowledge layer and AG6). Risk: medium; the inn's `steal` and `search` logic reads `owner` directly in a dozen places.
+Scheduled or NEW: AG1 and AG6 schedule claims with 16b; the removal of the god field from the inn is NEW.
+Priority: MED now (do not add `owner` to the voxel); HIGH when the first voxel trade or theft scene is built.
+Owner-level or technical: technical, with the principle decided already.
+
+A14. THE INN'S EXOGENOUS DIALS (SUPPLY, LUCK, RAIDS, AILMENTS) ARE STAND-INS FOR PROCESSES THE VOXEL DOES NOT YET OWN
+---------------------------------------------------------------
+What exists: `supply`, `luck`, `ill`, `raid`, the `hard` source rates (lab/world2/world.py:244-340), `FIELD_KCAL_DAY`, `NEED_RATIONS`, the bandit chance 0.075 a night (still above the library's "a few times a year"; decisions.txt, lab food step), the catch Gamma(shape 2) law.
+Problem: these are calibrations to the Library's sources, kept in prose comments in a Python file. They are correct and useful and nothing links them to what will replace them (farming, hunting, weather, a bandit population with its own drives). In the voxel they would be a second, silent set of numbers.
+Better option: one table (in the scene pack, A6) with columns: dial, value, unit per second or per person-year, source id, `replaced_by` (the process that will derive it; or `none yet`), and the report that used it. A lint refuses a dial with no source or no unit. When a village layer arrives (EA5), the dial is turned into a derived value and compared to the table's old number: the first real test of the twin.
+Cost and risk: S. Risk none.
+Scheduled or NEW: NEW (SC4 mentions routine-level background life; the stand-in table is not planned).
+Priority: LOW now, MED at the family step.
+Owner-level or technical: technical.
+
+A15. NAMES THAT MEAN TWO THINGS
+---------------------------------------------------------------
+What exists: "World" (voxel World, rooms World, core World, lab World); "mind" (core/mind.py, src/mind, voxel events.Mind record, lab/mindL); "stance" (voxel body posture in 87 files; core/social STANCE, a voice setting; the social attitude); "night" (the inn's night is 24 h; the voxel inn night is hours; `night` in the lab means a lifetime step); "turn" (a mind turn of 3-5 min; the engine turn; a lab round). The decision docs use all of them.
+Problem: small, but it already caused a wrong comparison (the inn night versus the voxel night) and will cause more when the twin and the lab are joined.
+Better option: a one-page glossary in docs (with the retired meaning marked) and two renames in code: social `stance` to `attitude`, the lab `night` to `day` in comments and reports. Do the renames when A3 and A4 move the code.
+Cost and risk: S.
+Scheduled or NEW: NEW.
+Priority: LOW.
+Owner-level or technical: technical.
+
+----------------------------------------------------------------------
+5. OVERLAP MATRIX: THE THINGS THE OWNER NAMED
+----------------------------------------------------------------------
+topic                   voxel                          rooms (fork)           lab inn (world2/mindL)              core                      verdict
+food and self-care      body digestion law, no act     no meals, no serve     meals, serve, bring, field, one     basic hunger tags         A2: needs function in src/mind, one shared self-care rule
+                        (bodyheat.py:802 unused)                              self-care rule, sourced supply
+social attitudes        none                           blow/praise only       liking, anger, trust, reprisal,     disposition/fear/trust    A4: relations store in src/mind, percept-fed
+                                                                              wear, calm, partner                 edges
+gossip and belief       beliefs.py with sources,       beliefs with sources   gossip by salience, news flag,      belief store with         A10 + A4: one Belief schema, told as a chosen act (K3)
+                        `told` channel                                        lies and checks                     staleness
+piece table / grammar   none                           none                   none                                pieces.py (the grammar)   A7: port to src/mind over catalog roles; PA2 and plan cache
+free-text compose       none                           none                   none                                composer.py + eval YAML   A7: port as the PA2 translator and its regression set
+playtest harness        scene scripts                  session (plays via     none                                session (old engine)      A9: rooms session is the harness now; one protocol
+                                                      src/mind)
+stances (naming)        body posture                   -                      -                                   voice STANCE              A15: rename the social one to attitude
+packs (LitRPG)          none                           none                   none                                dcc, cultivation, farming A8: keep as test cases
+adjudication / dice     perception noise by law        -                      luck as a world fact                bands and clocks          do not keep bands (PA2: no dice)
+pacing                  -                              -                      the raid plan                       director                  pack-level entity only (CV6)
+
+----------------------------------------------------------------------
+6. WHAT WAS CHECKED AND FOUND SOUND (so nobody re-opens it)
+----------------------------------------------------------------------
+- src/mind imports nothing from src/voxel, src/rooms or lab, and src/rooms imports only src/mind and the stdlib (v). The one-way rule of 3.0 is true as written.
+- The record and replay crossing for the decision model (src/mind/record.py, JSONL cards, lab never imports src) works for both backends and does not need to change.
+- The catalog's `backends:` structure is the right place for per-backend programs; it only needs filling (A1).
+- The two-level menu (scope, then act) and the tournament merge are backend neutral (src/mind/scope.py, tourney.py).
+- The compat-goldens idea (hold a port byte for byte to a reference) was right; it only lost its anchor when the reference moved (A3).
+
+----------------------------------------------------------------------
+7. ORDER OF WORK
+----------------------------------------------------------------------
+Now, small, no owner call: A7 freeze, README and root file; A3 byte-hash drift test (it fails today, that is the point); A1 parity table as a test and the 13 missing verbs in the catalog; A9 the rooms session as the agent harness; A8 case cards; A15 glossary.
+Needs the owner's call first: A3 (lift the isolation rule one way), A5 (instrument first, game part later, with the class T and S split).
+With wave 16a: A1 voxel programs, A2 needs function, A4 relations store and the unit rule.
+With wave 16b: A10, A13, the ports of pieces and composer (A7).
+At the family step: A5 agreement test and the twin, A6 scene pack and exporter, A14 table.
+
+----------------------------------------------------------------------
+8. QUESTIONS FOR THE OWNER (one at a time)
+----------------------------------------------------------------------
+Q1 (A3). May the lab import src.mind and src.rooms (one way), so there is one inn? Options: (i) yes, move the current inn into src/rooms; (ii) keep the copies and sync by script plus a drift test; (iii) leave it.
+Q2 (A5). Is the rooms world a lab instrument, a part of the game (the offscreen twin), or both in that order? My recommendation: both in that order, with the twin claim limited to the class T laws until an agreement test passes.
+Q3 (A4). Do appraisals (liking, trust, anger, claims) live in the mind and not in the world? My recommendation: yes; the rules-level laws in src/mind, the learned mind reads them (to settle with lane B).
+Q4 (A7). OK to freeze src/core now and delete it in stages as each piece is ported, overruling "does not delete src/core"?
