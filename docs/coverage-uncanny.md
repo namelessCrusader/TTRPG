@@ -137,3 +137,37 @@ Each line: what a pack file must express. Form, patterns and stores, triggers, l
 - **Slender Man** (Eric Knudsen / Something Awful), **Siren Head**, some **creepypasta characters**, **Backrooms** (partly community CC BY-SA, partly owned) and **fandom-wiki** content (DCC, Beware of Chicken, Warhammer, STALKER, Fallout, Shadowrun) are owned or share-alike: we model mechanisms and invent our own names and designs. Named games, books and shows are used only as labels in the coverage tables.
 - **Public domain** is safe to use directly: folklore, Grimm, Andersen, Lovecraft (largely), Poe, M. R. James, mythology, religious texts (as traditions, with the sensitivity note below).
 - **Sensitive content.** Real-world ritual harm (child sacrifice, albino body-part trade, child witchcraft accusations) is kept as S-layer fear sources only; Dreamtime and living sacred traditions are excluded as content. (u: how the owner wants these handled; see OWNER_QUESTIONS.)
+
+## Owner decisions (2026-11-22, CV1-CV8)
+
+- **CV1, the order of the missing laws:**
+  1. bounded rebuild (heal, polymorph, respawn);
+  2. information attacks on minds;
+  3. planes with their own rules.
+  All of them come AFTER the normal simulation build (waves 15, 16a, 16b), as magic or as engine mods.
+- **CV2, bounded versions of "second change" tropes:** build them now, and work toward the unbounded cases once there is a playable MVP:
+  - a plane-reset loop with one carried pattern;
+  - luck as a small, paid field bias on chaotic outcomes;
+  - a rate-slowing ward that draws process energy;
+  - observer-gated motion as perception plus behaviour.
+- **CV3, bounded versions of the hard cases** (the unbounded ones wait for the pack interface):
+  - travel into A VERSION of the past: a plane rebuilt from a stored snapshot, the traveller copied in, the original "dies", and the main timeline untouched;
+  - TRUE WISHES: the closest lawful plan of magic that brings the wish about (monkey's-paw literalism emerges);
+  - OMNIPOTENCE: standard magic extended at ruinous, unsustainable cost.
+- **CV4, cognitohazards for the player:** real. The narrator shows the character's ALTERED experience, under a per-pack dial the owner controls.
+  - INCOMPREHENSION DISTRESS: unresolved prediction error raises stress.
+  - Resistance comes through habituation, understanding, training, a tolerance-of-uncertainty dial, and coping.
+- **CV5, rewards for killing:**
+  - possible as in-world facts, NOT the default;
+  - a System entity only in packs;
+  - the NATURAL version: real loot, food and status, and a slain magical being's stored M absorbed by nearby minds with coupling.
+- **CV6, difficulty scaling:**
+  - only as an in-world being that chooses to scale its challenges (a pack dungeon AI);
+  - by default difficulty EMERGES: people settle and gather by danger, knowledge of danger spreads with its distortions, and survival of the fittest makes dangerous places dangerous.
+- **CV7, sensitive real-world material:**
+  - possible to build, as a fear source and as optional content, CENSORED BY DEFAULT;
+  - the engine supports the full range of human behaviour;
+  - no gruesome real-world material shipped for now;
+  - nothing illegal or outside Claude's limits is ever built, whatever the dials;
+  - living sacred traditions under MC8.
+- **CV8, the first packs:** the 28 test cases, then one full genre (folklore).

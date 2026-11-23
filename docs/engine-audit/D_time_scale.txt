@@ -1,0 +1,394 @@
+ENGINE AUDIT, LANE D: TIME, SCALE AND NUMERICS
+Date: 2026-11-22. Documents only: nothing was edited, run or committed. Reading, grep and three tiny python probes (a 40^3 World to count bytes per voxel, an import check of numba, nproc and free) are the only measurements.
+
+Claim marks: (v) verified by reading the code or a probe here; (k) from knowledge, not opened this session; (u) unverified, an estimate or a guess.
+Priority = realism impact over cost. "Owner-level" = a real trade-off of realism, scope, play or cost that the owner should decide; "technical" = engineering with one right answer.
+"Scheduled" names the decision or wave in /home/nisargparikh/.cache/mark1-build/w14/decisions.md (waves 15 batches 2-4, 16a, 16b, family, healing, magic, SC1-SC5, W15-Q8, D4 Rust) or docs/realism-map.md.
+
+
+======================================================================
+0. THE SHORT ANSWER
+======================================================================
+
+The engine's time and scale choices were made so that a 5 cm lattice, a 25 ms tick and one Python process could run a house. They did that well. What they cost, in the order a player or a study would meet it:
+
+ 1. The world is ONE DENSE BOX. A house is the ceiling (1.6 M voxels = 26 ms a tick, about a 6 m cube at 5 cm). There is no village, no yard that goes on, no arrow that crosses a field. (D10)
+ 2. The physics depends on the clock. Several laws carry per-tick and per-voxel constants, and nothing checks that halving the tick or the cell gives the same facts. TICK_S is documented as "not a tuning knob" but nothing proves it. (D1, D2, D18)
+ 3. State is float32 and its conservation is kept by BOOKING the rounding (quant, f32, recast ledgers), not by construction. Bits depend on the CPU and the numpy build. (D6, D7, D8)
+ 4. Time above the tick is thin. A night works only where a closed form exists and the world is provably quiet; the mind lab runs on turns of 3-5 minutes that nothing ties back to seconds. (D14, D15)
+ 5. Stiffness is paid for in the time step: the particle and bond solvers are explicit, so materials are softened until a tick can afford them. The owner's rod-skeleton and shape-keeping decision is the fix, and it needs an implicit or position-based integrator to be real. (D12)
+ 6. Speed is one thread, numpy temporaries and numba loops, with Rust installed and not yet used. 16 cores sit idle. (D13)
+
+Five things I did NOT find wrong, so nobody re-opens them:
+ - The tick itself is not wrong. 25 ms resolves every body law we have (reflex latency 90-120 ms is 4-5 ticks; a step is 0.35 s). Do not shorten it globally; multi-rate (D3) is the cure for the fast laws.
+ - Heat conduction is nowhere near its stability limit at 5 cm and 25 ms. The diffusion number r = alpha dt / dx^2 is about 2e-4 for iron (alpha about 1.5e-5 m2/s), 1e-6 for wood (v, arithmetic). FACE_CLIP 0.15 (materials.py:557) is not what holds conduction stable. The problem is the opposite: heat is run 40 to 40,000 times more often than its own timescale needs (D3).
+ - Determinism of CHOICE and chance is already good: events.py:86 hash01 is a counter-based draw keyed on (parts), with no RNG state and no Python hash(); a replay in another process gives the same draw. (v)
+ - The twin protocol (slowtwins.py, twinharness.py) is the right shape for every coarse version. Most of what follows is to USE it more widely, not to redesign it.
+ - The seam between lattice units and SI (src/mpm/matter.py docstring) is the right place for unit conversion; it is the interior of the lattice laws where units leak (D18).
+
+
+======================================================================
+1. TIME
+======================================================================
+
+D1. ONE FIXED TICK, NO CONVERGENCE CHECK (TIME-STEP AND CELL-SIZE INVARIANCE)
+----------------------------------------------------------------------
+CHOICE: materials.py:491 TICK_S = 0.025, one global step for every law; sim.py:339-409 runs about 40 laws in a fixed order each tick. Lattices carry voxel_cm (sim.py:196) and a "scale" (sim.py:200); 5 cm is used by 46 scenes, 10 cm by 4 (v: grep).
+WHY: the comment at materials.py:491-500 says it was never written down and two parts of the sim assumed different answers; fixing it to one number made falls and the will layer consistent. Fixed dt keeps replay and golden bits exact.
+REALISM COST: the claim "heat and fire laws are SI per second times TICK_S, so they do not depend on the voxel size or the tick" (materials.py:33-36) is a design intent that only the SI-written laws honour. Laws that carry a per-tick or per-voxel rate (D2) answer differently at 12.5 ms or 10 cm, and nobody can say by how much. The visible symptoms in the repo are the repeated "it was right at 10 cm and wrong at 5 cm" notes (materials.py PLUME_REACH_M comment; fluids.py:71 puddle depth "5 mm deep at 5 cm"; the 3.3x plank energy in realism-map section 1). Each was found by accident, one at a time. Also, Lie splitting (laws applied one after another, each reading the last one's output) has first-order error in dt; its size on the coupled pairs (burn and conduct, gas flow and heat, boil and conduct) is unmeasured (u).
+BETTER:
+  a. A CONVERGENCE HARNESS: run each golden scene at dt/2 and at dx/2 (and the 10 cm path as the coarse rung) and compare FACTS (the twinharness.compare machinery already does "full vs coarse, drift against a budget"). A fact that moves more than its budget names a hidden constant. Sources: Roache, Verification and Validation in Computational Science and Engineering (1998), grid convergence index; ASME V&V 20 (2009); Oberkampf and Roy (2010) (all k).
+  b. Dimensional homogeneity as a test: Buckingham pi (k). Scale invariance (run the same physical scene at two voxel sizes) is the cheap, practical form.
+  c. For coupled pairs the error shrinks with a symmetric (Strang) order, or by reversing the law order on odd ticks (D4).
+COST/RISK: the harness is test time only, no runtime cost. The fixes it finds are small each. Risk: it will produce many declared golden diffs (D9).
+STATUS: NEW. The twin harness (wave 15 batch 2, SC5) is the machinery; no scheduled item uses it for dt or dx refinement.
+PRIORITY: HIGH (cheapest way to find every hidden constant; it protects every later law).
+KIND: technical.
+
+D2. PER-TICK AND PER-VOXEL CONSTANTS STILL IN THE LEGACY GAS AND SMOKE LAWS
+----------------------------------------------------------------------
+CHOICE (v, all in the OLD gas path that gas_flow replaces, air.py:15 GAS_FLOW = False by default):
+  kernels.py:35-42  oxygen diffusion k = 0.1 + (T1+T2)/1600, capped at 0.45, per tick, per face, independent of dx and dt
+  kernels.py:71     gas overturn rate 0.02 per K per tick, cap 0.45
+  air.py:262, 294   0.9 and 0.4 of a cell's smoke escapes or rises per tick
+  air.py:435        a pressure term dT * 0.02 capped at 0.45 per tick
+  heat.py:92        RISE_MAX 0.5, "the most of its gas a cell hands up in a tick"
+  gasflow.py:94     GAS_KMAX 0.1 per pass; gasflow.py:100-101 CFL 0.8 and substeps max 8
+  materials.py:506  FALL_SUBSTEPS 16 voxels per tick
+WHY: falling-sand-style cellular rules (the lineage named in air.py:136) are cheap and stable.
+REALISM COST: change the tick or the voxel and smoke, oxygen and warm-gas behaviour change with it; a 20 cm room, a 5 cm room and a 25 ms vs 12.5 ms run disagree. The cap 0.45 makes the legacy field lossy ("pumped mass when it tried to carry O2", realism-map 3.1).
+BETTER: the SI gas flow (gasflow.py, gasmom.py: projection, flux-form limited advection, CFL-based substeps) already exists and carries heat, smoke and oxygen. Make it the only gas law (W15-Q8 default-on) and DELETE the per-tick rules. Remove FALL_SUBSTEPS as a physics limit (D19).
+COST/RISK: the flow measured 0.7-1.25 ms with 20 unconverged iterations, expect 2-5 ms (realism-map 3.1); Rust/numba port (D13) pays for it.
+STATUS: SCHEDULED (W15-Q8: every law on in every world; gas_flow and gas_momentum default-on flips; switches.py rows cold.legacy_pressure_mean, gas.eddy_heat). The part that is NEW: write the deletion as a test (D1a) so the legacy rules cannot return.
+PRIORITY: MEDIUM (already moving).
+KIND: technical.
+
+D3. EVERYTHING RUNS AT ONE RATE, OR AT A RATE SET BY `tick % N` NEAR THE LAW
+----------------------------------------------------------------------
+CHOICE (v): the lattice laws run every tick; the slower ones were each given their own stride, written next to the law:
+  heat.py:102        RAD_EVERY = 6 (radiation across air)
+  skinworld.py:78    SKIN_STRIDE = 12 (thin skins step with dt x 12, backward Euler)
+  layers_world.py:41 DEP_EVERY = 40, EPS_EVERY = 40 (soot, emissivity)
+  matlaws.py:41,42,49 VETO_EVERY 10 / 40 hot, SPALL_EVERY 20
+  bleeding.py:38     Z_EVERY = 8
+  gasflow.py:107     GAS_GEO_TICKS = 20
+  slowtime.py:43-50  FOLD_AFTER 200, RETRY 200, PROBE_BACKOFF 400
+  bodyheat.py:16     thermoregulation 1 Hz
+WHY: each lane had a cost ceiling and a measured reason (skin cost, soot cost). Fine one at a time.
+REALISM COST:
+  1. Aliasing. All the "% N" phases start at tick 0, so a tick where tick % 120 == 0 does the radiation, skin, soot and veto passes together: the mean tick is under 25 ms and the worst tick is not (u: not measured, but the numbers are in the sources above). Real-time play (the owner's goal: a 25 ms tick on one laptop) is a worst-case budget, not a mean.
+  2. Lag. A wound-height read every 8 ticks, a structural veto every 10-40 ticks (0.25-1 s of sim time), a soot pass each second: effects land late by up to a stride. For a blast or a collapse the order of structural veto and impact is not a physical one.
+  3. The strides are not tied to timescales. Conduction in a 5 cm iron cell has a diffusion time dx^2/alpha of about 170 s, in wood about 5 h, in still air about 2 minutes (v, arithmetic); yet conduction runs every 25 ms (about 7,000 times per diffusion time for iron). Heat is therefore the most over-sampled law in the engine, while gas flow (CFL 0.1-0.8 with substeps) and impact are the ones that really need 25 ms or finer.
+BETTER:
+  a. ONE MULTI-RATE SCHEDULER. Each law declares its own timescale and cadence (tau = dx^2/alpha, dx/u, 1/rate); the scheduler runs it at the stride its tau allows, with the step integrated exactly (implicit for diffusion, closed form for decay) and PHASE-STAGGERED across ticks so cost is flat. Operator-splitting theory for multi-rate: Strang (1968), Gear and Wells (1984) multirate ODE methods, Constantinescu and Sandu (2007) (all k).
+  b. Run conduction on its timescale with an implicit solve (backward Euler is already used for skins, skinworld.py:78): fewer, larger steps, exactly conservative in flux form, wake only where a gradient exists (the "sleep regions" already prove quiet exactly).
+  c. Keep the fast laws (gas CFL, impact, bonds) at tick or finer, with substeps inside the tick.
+COST/RISK: M-L. Risk: the ignition and burn laws read surface temperature and want fine dt; the thin-skin (skin) law handles this, so conduction can go slower than the skin. Needs the D1 convergence harness first.
+STATUS: partly scheduled. "Slow clocks / heap" (realism-map section 4 clocks) and W13 T5 built the slow scheduler for slow processes only; the multi-rate treatment of the FAST lattice laws is NEW.
+PRIORITY: MEDIUM-HIGH (flat worst-case cost, and the cheapest speed-up that keeps facts).
+KIND: technical (the real-time worst-case question is D5, owner-level).
+
+D4. THE ORDER OF LAWS INSIDE A TICK IS A HIDDEN CAUSE
+----------------------------------------------------------------------
+CHOICE (v): sim.py:339-409: unrasterise matter, matter step, bodies, fluid flow, grips, footing, support, torque, rasterise, ignite, conduct, crack, rise, burn, boil, melt, acid, smoke, o2, air, identity, bleed, life, perceive, will, pose, joints, thermostats, floor. Each law reads what the earlier ones wrote this tick and what the later ones wrote last tick.
+WHY: comments at sim.py:345-361 give real causes for several of these (matter off the lattice before laws that would move it, back before laws that read it).
+REALISM COST: first-order splitting bias (u: unmeasured). Concrete biases a careful reader can predict: a person perceives and decides AFTER the world moved this tick, then acts into a world that the next tick moves first, so every reaction has a built-in one-tick head start for the world; fluid flow runs before support, so a spilling liquid on a thing that is about to fall uses the old position. "x affects y only through a cause" is satisfied, but the cause's timing is the code order.
+BETTER: (a) measure it with the D1 harness; (b) alternate the order on odd ticks (palindromic or Strang composition: A(dt/2) B(dt) A(dt/2) for the pairs that couple) which makes the bias second order at no cost; (c) record the law order as data (a table the manifest checks) so a new law is placed deliberately. Sources: Strang (1968), Yoshida (1990) composition (k).
+COST/RISK: low; risk is golden churn (D9).
+STATUS: NEW.
+PRIORITY: LOW-MEDIUM (cheap, but its size is unmeasured).
+KIND: technical.
+
+D5. REAL TIME IS A MEAN, NOT A BUDGET
+----------------------------------------------------------------------
+CHOICE: the goal "a 25 ms tick on one laptop" and the timing gates (crowd 9.7 ms, 1.6 M voxels 26 ms, tree_fell 110 ms: decisions.md 14b END CHECKS) are means over a scene. A felled tree is 110 ms, 4.4 ticks of budget, per tick, for its fall (v).
+WHY: bonded matter has a piece-substep BUDGET (bonds/store.py:56-69, 2.0e5 piece-substeps a tick) that bounds cost, then SOFTENS (D12) to fit.
+REALISM COST: the engine makes cost a physical property of what is in the scene: a heavy event is made lighter (softer, fewer pieces), never later or slower. When the budget is exceeded the choices are (1) lose fidelity silently (today's softening), (2) drop frames, (3) slow the world (time dilation).
+BETTER: report worst-case and 99th-percentile tick time with the means, and decide the policy: a heavy tick may run long and the world clock slows for that stretch ("bullet time") when the player is watching in real time, while a paused or turn-based session (which the decisions already allow: PA3 queued sequences, step-by-step available, the 6 GB model latency) pays nothing. Frame-time papers: Glenn Fiedler, "Fix Your Timestep" (2004) (k): fixed dt with an accumulator and a cap.
+COST/RISK: low to measure; the policy is a product choice.
+STATUS: NEW (the decisions call for real time but never fix a worst-case rule).
+PRIORITY: MEDIUM.
+KIND: OWNER-LEVEL (play: is the world allowed to slow down under load, or must it soften?).
+
+D6. FLOAT32 STATE: ENERGY, MASS, FLUID, SMOKE, OXYGEN
+----------------------------------------------------------------------
+CHOICE (v): sim.py:190-194 E is float32 "and every golden hash"; a warm-body world builds E_dtype=np.float64 (D4 note: a flesh voxel holds 7400 J and a float32 step there is 5e-4 J). smass, fvol, fpot, fallh, edge, smoke, o2, p_add are float32 too. Measured here: 41 bytes per voxel at construction, 51 after one step (v: probe, 40^3 at 5 cm). The particle and bond solvers are float64 (mpm/core.py:190-193; bonds/store.py:361). Face-environment tables are float32 and "checked to the bit" (faceenv.py:71).
+WHY: memory bandwidth (conduction is bandwidth-bound, kernels.py comment) and bit-exact goldens.
+REALISM COST:
+  1. A float32 cell has 24 bits. A hot iron voxel (125 ml x 7.87 g/ml x 0.45 J/gK = about 440 J/K) at 1000 K holds about 4.4e5 J; its ulp is about 0.03 J, which is a leak of 1.2 W over 25 ms (v, arithmetic). A slow drain or a long cooldown of a forged bar can stall or step. The repo already hit this once for bodies (bodyheat.py:11, "float32 loses a resting drain entirely") and fixed it by a special world, not by the lattice.
+  2. Two precision worlds cross at a seam (f32 lattice <-> f64 particles). The rounding at promote/rasterise is a conservation leak unless booked.
+  3. Float32 sums over a million cells do not add to the true total; the ledger must tolerate it.
+BETTER: (a) E in float64 for the lattice, everywhere (+4 bytes a voxel, 51 to 55: about 8% memory; bandwidth cost on E-bound kernels about 1.3x until the kernel is fused: u); (b) or keep float32 for DERIVED fields (smoke, o2) where a relative 6e-8 is fine and put the CONSERVED ones (E, smass, fvol) in a representation that cannot lose a quantum (D7). Fused Rust or numba kernels read E once and write once, so f64 costs little (D13). Source: Goldberg, "What every computer scientist should know about floating-point arithmetic" (1991) (k); Higham, Accuracy and Stability of Numerical Algorithms (k).
+COST/RISK: every golden hash changes (D9). Memory fine. Time low once fused.
+STATUS: NEW as a general decision (E_dtype is an option, D4 used it for bodies; no wave schedules f64 for all). W15-Q8 says "every law on" and not "every number wide enough".
+PRIORITY: MEDIUM-HIGH.
+KIND: technical, with a cost trade-off the owner can veto (memory and speed against exact drain).
+
+D7. CONSERVATION BY ACCOUNTING (QUANT, F32, RECAST) INSTEAD OF BY CONSTRUCTION
+----------------------------------------------------------------------
+CHOICE (v): ledgers.py:37-44 books "recast" (a legacy law changes a material), "quant" (the quantiser rounds a mix to integer weights, at most 6e-8 of a lump per species, mixtable.py:26-28) and "f32" (what float32 storage took, mixtable.py:47 and 1067-1074), "squeeze" (clamped when a cell was over-filled), plus the old "gone" and "shed". Total mass and energy are conserved up to these terms, which are written by the mixture table only.
+WHY: the mix table lets a cell hold many species at once with exact float64 amounts, then stores float32; a ledger is the honest way to say where the rounding went. "Every joule booked" is the owner's rule and this obeys it.
+REALISM COST: none visible directly (rounding is small and booked). The cost is in what cannot be checked: a leak smaller than the rounding floor, and a ledger term that can hide a real law's error behind "f32". Every new law has to make its own term; the BOOKS list grows (about 25 entries). The audit costs 0.95 ms and runs once a second normally (realism-map section 3.7).
+BETTER: CONSERVED BY CONSTRUCTION. Store energy and mass as integers of a fixed quantum (for example micro-joules and micrograms in int64: 9.2e12 J and 9.2e9 kg of range), and move amounts between cells as integer fluxes computed in float, rounded once per face and applied with opposite signs. Then nothing is created or lost by any kernel, summation is associative (so order and threads cannot change the total), results are hardware independent, and the quant, f32 and recast terms collapse to "rounding of the flux", which is zero because it is moved, not dropped. This is how deterministic lockstep games keep state identical (fixed-point or integer simulation: k, e.g. the Age of Empires and Planetary Annihilation lockstep talks) and how lattice-gas and integer cellular-automaton physics are conserved exactly (k). Mixtures keep a fixed-point mass per species.
+COST/RISK: M-L. Every law that does "E += flux" is rewritten with a rounding step; slow fluxes below the quantum need a carried remainder (error diffusion) so they are not lost; mix-table integer weights already exist (the quantiser) so the species side is partly there. Compare facts with the float path (twin harness).
+STATUS: NEW. (docs/engine-audit/E_ledger.txt is the ledger lane: it may take the same proposal from the bookkeeping side; the two should be one decision.)
+PRIORITY: MEDIUM (large value for "every joule booked", large cost).
+KIND: OWNER-LEVEL in part: how much conservation rigor is worth a rewrite of every flux, against booked rounding that is already below any consequence.
+
+D8. DETERMINISM IS MACHINE-BOUND; PARALLEL RUNS WILL BREAK IT
+----------------------------------------------------------------------
+CHOICE (v): hash01 draws (events.py:86) are stateless and good; world snapshots (ledgers.py) are values; goldens compare float32 bits. Heavy numpy float32 reductions (sum, dot, cumsum) and numba loops run on one thread.
+WHY: bit-exact replay, bug reproduction, the "exact always" rule (optimise-first) and the Rust rule (D4 Rust: BIT FOR BIT against the Python reference).
+REALISM COST: indirect but real for a shipped game: (k) numpy chooses SIMD paths at run time per CPU (AVX2, AVX-512, NEON), and pairwise float32 summation order and some transcendental implementations differ between builds; numba may use Intel SVML for exp and log when installed; the BLAS-free parts are fine but np.sum, np.exp and np.power can differ in the last bit across CPUs and numpy versions. So "SAME bits" holds on this machine and this install, and a saved game or a replay from another computer can diverge a few thousand ticks later (chaos amplifies a last-bit difference through every threshold in the sim). It also means the goldens are CI facts, not portable facts (u: I did not test across machines).
+BETTER:
+  a. Keep bit-exactness inside Rust kernels: Rust does not contract a*b+c into FMA or reorder float ops without being asked, so IEEE basic operations (+ - * / sqrt) are the same on all targets (k: Rust reference "floating point"; the std only guarantees exp, sin, etc. up to platform libm, so use a pinned software libm such as the libm crate or table-driven functions for those).
+  b. Fixed reduction trees: reduce in fixed-size blocks in a fixed order (what the DEEP/BLOCK structures already do for slow processes), then threads cannot change the answer.
+  c. Integer state (D7) is bit-identical everywhere by definition.
+  d. A "replay" is the event log plus the seed and the version, and the save format says which numeric kernel set made it.
+COST/RISK: L if integers; M if only Rust+fixed reduction.
+STATUS: partly scheduled (D4 Rust: bit-for-bit against Python on THIS machine); cross-machine determinism and parallel determinism are NEW.
+PRIORITY: MEDIUM now, HIGH the day anyone else runs a save.
+KIND: technical.
+
+D9. BIT-EXACT GOLDENS ARE A BRAKE ON NUMERICAL IMPROVEMENT
+----------------------------------------------------------------------
+CHOICE (v): 46 golden scenes compared bit for bit; "golden 38 declared, 0 not allowed" after 14a (decisions.md); every default-on flip is "a declared diff" (W15-Q8).
+WHY: exact refactors (sleep regions, lazy laws, crowd kernel) are proven by "same bits", a very strong check. It is why the lazy and sleep work could be done without fear.
+REALISM COST: the same strength makes every REAL improvement (f64, a different dt, an implicit conduction step, fixing a tick-dependent rule) a mass declared diff that a lane must justify scene by scene. This slows the changes D1-D7 need.
+BETTER: two kinds of golden: (a) EXACT-REFACTOR goldens (bits), kept for optimisations that claim "same answer"; (b) FACT goldens (a table of facts with budgets, like twinharness rows) for physics changes, so a deliberate improvement passes if the facts stay within their budgets and fails if they do not. The facts are the ones the owner cares about (ignition time, flame height, core temperature, drop energy).
+COST/RISK: low; the harness exists.
+STATUS: NEW (process).
+PRIORITY: MEDIUM.
+KIND: technical.
+
+
+======================================================================
+2. TIME ABOVE THE TICK: NIGHT, SLOW TWINS, SCHEDULER
+======================================================================
+
+D14. THE NIGHT JUMP ONLY WORKS WHERE THERE IS A CLOSED FORM AND A PROOF OF QUIET
+----------------------------------------------------------------------
+CHOICE (v): slowtime.py (scheduler with a heap of next events, a watch index, owner processes and shadow twins), quiet.py (the quiet proof), slowtwins.py (breath twin; body-heat twin; rc_net for a box), slowforms.py (2,080 lines of closed forms). advance() (slowtime.py:837) jumps only when "provably quiet" at tier 0 (exact) and only for the playtest at tier 1 (approx=True). A shadow folds after FOLD_AFTER = 200 ticks (5 s) outside every watch set.
+WHY: a night of ticks costs 5-10 h of compute (realism-map 4), so skip while nothing changes; "a closed form never causes a consequence" keeps the fine laws in charge.
+REALISM COST:
+  1. A night is skipped well only for the things that HAVE a twin. In 8 hours real life gives: a hearth burning down and cooling, drafts, a damp wall drying, wood creaking and cracking, mice, a neighbour's lamp, the sun coming up (light, sky temperature), rain, a smouldering coal that falls out. Each needs its twin, owner-process or hazard process; a thing without one is frozen, or forces ticks (a candle keeps the world awake, realism-map section 4).
+  2. Tier 1 (approximate) is for the playtest only, so a player "wait until dawn" in a world with a lit candle falls back to ticks and the player waits hours (max_fine_ticks is a cap, not a fix).
+  3. Rare events are not in the protocol's first use: the horizon names "a rare event (the tag names which)" (twinharness.py doc) but no hazard process is registered (u: I did not find one).
+BETTER: the twin framework is right; the gap is coverage and a default. (a) Register a twin for each slow thing as it appears (cooling mass, burn-down of a fire as a closed form to the point the fine law's own threshold would trip, drying, rot, light level), each with an EXACT or APPROXIMATE grade and a drift budget in the harness. (b) A generic hazard process: rate x time -> Poisson event drawn with hash01 keyed on (process, jump), delivered at the horizon (Gillespie 1977 for exact stochastic event times: k). (c) A rule of thumb for the DM: tier 1 allowed in play when every approximate twin has a measured budget under a stated bound, so "wait" means wait.
+COST/RISK: L overall (twins are lane work), M for the hazard process.
+STATUS: SCHEDULED in part: wave 15 batch 2 (twin framework starts with tick vs jump, shut-room star), SC5 (generalise the twin protocol to every coarse version), wave 16a (body clock), 16b (schedules). NEW: the hazard process and the tier-1-in-play rule.
+PRIORITY: HIGH (every sleep, wait, travel day and long craft depends on it).
+KIND: OWNER-LEVEL for the tier rule (how much approximation is acceptable in play, and shown to the player or not); technical for the rest.
+
+D15. TWO CLOCKS: THE VOXEL TICK (25 MS) AND THE MIND'S TURN (3-5 MINUTES)
+----------------------------------------------------------------------
+CHOICE (v): the voxel backend runs at 25 ms; the rooms backend (src/rooms, a fork of the lab inn) runs turns, 300 a night, "3 to 5 minutes per turn" (docs/family-design.md:101), with its own mood, fade and learning constants set per turn or per night (lab inn, library concern rates note: "A night is 1 day = 300 turns"; fade 0.02/night was 10-15x too fast, decisions.md Library concern rates).
+WHY: the mind work needed an affordable inn to train and judge on; the fork keeps it byte-for-byte reproducible against the lab (rooms/world.py header).
+REALISM COST: a mind trained, calibrated and selected on turns of 5 minutes is being asked, in the voxel world, to decide every few hundred milliseconds with reflex and limb jobs. Anything per turn does not transfer: learning rate per contact bout, fatigue of attention, how long a grudge or a fear lasts, how often someone checks. The Library already caught the fade rate. The rooms world is a SEPARATE program (its own authored laws: traits as ranges, mood momentum) that nothing checks against the voxel world: it is not a twin of it, and nothing says it agrees with the fine world on the facts a decision turns on (who is hungry, who saw what, how long a walk takes).
+BETTER: SECONDS ARE THE UNIT; a turn is a coarse step of a stated length (a jump in the twin sense), never a unit a rate is written in. Concretely: (a) every mind constant is stored per second or per event and converted to the step it is run at (the same rule as heat); (b) the rooms inn becomes the COARSE twin of an inn built in the voxel world, graded in the harness on facts (walk times, who was where, what was seen, hunger and sleep), to prove the learned mind's results survive the move; (c) until then, mark every lab result "per turn at 288 s" so nobody quotes it as seconds. Source for coarse-vs-fine agreement as a validation method: the twin harness itself; for time-scale separation in agent worlds, multi-timescale agent simulation (k: e.g. the Sims and Dwarf Fortress both run needs on coarse clocks and movement on fine ones).
+COST/RISK: low for (a) and (c); L for (b).
+STATUS: partly scheduled: SC4/SC5 (LOD background life; one approximation framework), Fam2 (the coarse past), K9 (offscreen knowledge, built later). The "mind rates in seconds" rule and the rooms-vs-voxel inn agreement test are NEW.
+PRIORITY: HIGH for the learned mind (a wrong time scale silently invalidates a selection run).
+KIND: OWNER-LEVEL (is the rooms inn a permanent lab abstraction or a coarse view of the real sim? The owner's SC5 answer implies the second; the decision to build the coarse twin of the inn now or later is a scope call).
+
+D16. THE WORLD CLOCK: A TICK COUNTER WITH AN OPTIONAL SHORT DAY
+----------------------------------------------------------------------
+CHOICE (v): slowtime.py:83-108 Clock(epoch_s, day_s = 86400, year_s = 31557600, dawn_s = 21600); climate.py:33-36 and its header: "day_s is data: a proof world may shorten it to 600 s and every formula still reads n and the hour, so a short day is a fast planet."
+WHY: tests of seasons and nights at a cost.
+REALISM COST: a short day is a fast planet for the climate law, but body physiology, fatigue, healing and food are in seconds, so a world with a 600 s day has people living for a few hundred days of body time per planet year and no one can tell whether a result is a physiological or a calendar one. No leap years, no precession (irrelevant at play scale).
+BETTER: forbid day_s other than 86400 outside tests (or tag the world "fast planet" and block packs and mind runs from it); keep the NOAA sun routine scheduled in realism-map as the one sun.
+COST/RISK: trivial.
+STATUS: NEW (small).
+PRIORITY: LOW.
+KIND: technical.
+
+D17. THE SCHEDULER AND THE LAW LOOP ARE TWO MACHINES
+----------------------------------------------------------------------
+CHOICE (v): slowtime.Scheduler (a heap, plain-data processes, watch index with 16-cell blocks) runs slow things; step() runs the tick laws by a fixed list and each law gates itself ("sleep_regions", "_busy", "_heat_busy", the lazy mixin's PROOFS).
+WHY: they were built in two waves for two costs. The scheduler's per-event cost is 0.5 us (realism-map 4).
+REALISM COST: a law that should sleep must know how; a law that should wake others must call the right hook (E_WRITERS list in cold.quiet_memo; matter-pure list in lazylaws). A missed writer leaves a stale "quiet" for a tick (switches.py row cold.quiet_memo is exactly this crutch). A new law (magic, mechanisms, fermentation) is correct only if it joins both machines by hand.
+BETTER: one dependency graph. Each law declares what it READS and WRITES (the BOOKS writers discipline in ledgers.py already declares who may write which term) and the scheduler derives sleep, wake, order and parallel groups from that (the entity-component-system job-graph idea: k, e.g. Unity DOTS or Bevy schedules; Naughty Dog's fiber job systems, GDC 2015). A law is skipped when none of its inputs changed (the lazy mixin's proof, generalised), so "provably quiet" is a property of the graph, not of each law. Combine with D3 (rates) and D13 (threads).
+COST/RISK: L; a rewrite of how laws register. Gains: safe new laws, automatic parallelism, a structural exact-sleep.
+STATUS: NEW (the lazy mixin and the BOOKS discipline are halves of it).
+PRIORITY: MEDIUM (large payoff for the "every law on" goal; needs the code to be quieter first).
+KIND: technical.
+
+
+======================================================================
+3. SCALE: SIZE, MEMORY, DETAIL
+======================================================================
+
+D10. THE WORLD IS ONE DENSE BOX
+----------------------------------------------------------------------
+CHOICE (v): sim.py:196-220 World(nx, ny, nz, voxel_cm): every field is a dense numpy array over the whole box; measured 51 bytes a voxel after one step (v), plus temporaries (conduction builds about 17 whole-lattice temporaries per axis, kernels.py header). One idle person cost 14.8 / 77 / 250-331 ms at 0.4 / 1.6 / 5.1 M voxels (realism-map 4), partly fixed by lazy/sleep (1.6 M now 26 ms).
+WHY: dense arrays are what numpy and numba do fast; the heat, gas, light and sight laws all want a regular grid; the first scenes were rooms.
+REALISM COST: 5 cm voxels at 1.6 M is a 6 m cube. A single inn with its yard is the largest world. Not possible: a village, a road, a field with an approaching rider, a hill that blocks sight, an arrow's flight over 60 m (bows are in wave 16), a fire spreading to the next roof, rain falling over a street, wind over a valley. At 5 cm, a 100 m x 100 m x 10 m block is 8e8 voxels, about 40 GB of fields (v, arithmetic from 51 B/voxel), against 14 GB of RAM on this laptop (v: free -g).
+BETTER: a SPARSE, CHUNKED, LEVEL-OF-DETAIL world.
+  a. Storage: fixed-size chunks (for example 32^3 voxels), allocated only where something is non-default (air at rest, stone far underground are "uniform" and cost one value); a hash from chunk coordinates to arrays. Sources: OpenVDB (Museth, ACM TOG 2013: k) for sparse hierarchical grids; Minecraft and Cubic Chunks (k); Noita's falling-sand chunks (Petri Purho, GDC 2019: k: 64x64 chunks, only awake chunks simulate).
+  b. Activity: the sleep logic exists (sleep_regions, lazy); put it at chunk granularity so a chunk with no person, no heat, no moving matter costs zero (D17).
+  c. Detail ladder (the offscreen design, SC4): L0 voxels 5 cm near people and change; L1 20 cm cells for gas and light (already how gas works: 4-voxel cells, air.py); L2 per-room/per-building records and zone models (a CFAST-style two-zone room, 5R1C room: already in realism-map 3.1 and 3.8); L3 heightmap/terrain at 0.5-1 m (realism-map "Terrain at scale"); L4 settlement statistics. The twin protocol grades each rung against the one below (D15).
+  d. Streaming: chunks materialise from procedural or record data when a person or a light, sound or fire front arrives, and condense when quiet. Bodies of water and long outdoor spans use the height-field and column stores already specified.
+COST/RISK: XL. It touches every law's indexing (windows are already used in many: `_window`, `hot_window`, so some code is ready), the seam, snapshots, routing, sight. Risk: seams between chunks conserve nothing unless fluxes at the border are exact (the flux form already is).
+STATUS: PARTLY SCHEDULED, as "later": realism-map wave table "later: World at scale: level of detail, offscreen people, wind, rain, terrain, seasons"; SC4 (LOD background life, with settlements); K9 (offscreen knowledge). The storage layer itself (sparse chunks) is not scheduled and every other item in that group depends on it. NEW as an explicit engine decision.
+PRIORITY: HIGH (it is the ceiling on what kind of world can exist).
+KIND: OWNER-LEVEL (scope: is Mark_1 an inn and its surroundings, or a district, or a region? The answer sets how soon this is needed; the storage design should be settled before more laws bake in whole-array assumptions.)
+
+D18. UNITS: SI IN THE LAWS, CELLS AND TICKS IN THE PLUMBING
+----------------------------------------------------------------------
+CHOICE (v): `0.1 * self.scale` appears about 199 times across src/voxel (grep); gravity for falling liquid is turned into cells per tick squared (fluids.py:928: GRAVITY * TICK_S**2 / (0.1 * self.scale)); splash speeds likewise (fluids.py:1430); walk speed is cells per tick (motion.py:1063); falls count voxels (support.py:100-101); the lattice stores grams and millilitres and temperature as energy above 20 C; the particle solver is metres, kilograms and pascals; the record's density is g/ml in one place and kg/m^3 in another; a switch row reads "MPM stiffness scaled by sqrt" (matter.py:439).
+WHY: speed of writing, and integer cells are how a lattice moves things; the seam handles SI for the solver.
+REALISM COST: a unit error is silent. It shows as a number that is right at 5 cm and wrong at 10 cm (the examples in D1). A named length VOX_M and an SI law with dimensions in a comment would catch it; today it is by convention.
+BETTER: (a) one definition of the cell size (VOX_M) and one of the tick (TICK_S), imported, never `0.1 * self.scale`; (b) every law's inputs and outputs tagged with units in the docstring in a machine-checked comment form (for example `# [W/m2/K]`) and a unit linter (Pint-style checks (k) in tests only, running the law on wrapped quantities on a tiny scene, not in the hot path); (c) the scale-invariance run of D1b as the end-to-end proof; (d) one density unit.
+COST/RISK: low to medium; (a) is a mechanical refactor, (b) is test time.
+STATUS: NEW.
+PRIORITY: MEDIUM.
+KIND: technical.
+
+D11. ONE RESOLUTION, 5 CM, WITH A DEAD 10 CM PATH
+----------------------------------------------------------------------
+CHOICE (v): voxel_cm is a parameter (sim.py:196), default 10, but 46 scenes use 5 and 4 use 10; the 10 cm path is carried by every law's `scale`.
+WHY: the first scenes were 10 cm; 5 cm came with persons and fire.
+REALISM COST: sub-voxel things (skin, paper, blades, cloth, a candle wick, a lock pin) must be records or overlays (thin-skin records, edge overlays: already the project's answer). A 5 cm cell cannot show a 2 mm puddle, so films are a law (fluids.py:71). A person is a few thousand voxels with joint segments; fingers and facial detail are outside the lattice. That is a resolution choice the realism domain can live with; the tension is only that the generality of `scale` costs code and tests.
+BETTER: either (a) drop 10 cm as a supported resolution except as the coarse rung of the D1 convergence harness (the one use for which a second resolution is valuable), or (b) go further and make the voxel size per chunk (a 5 cm near field and 20 cm far field) as part of D10.
+COST/RISK: low.
+STATUS: NEW (small).
+PRIORITY: LOW.
+KIND: technical.
+
+D19. THINGS FASTER THAN A CELL PER TICK
+----------------------------------------------------------------------
+CHOICE (v): a falling column drops at most FALL_SUBSTEPS = 16 voxels a tick (materials.py:506): 0.8 m a tick = 32 m/s at 5 cm, 64 m/s at 10 cm, against about 55 m/s terminal for a person and 190+ for a skydiver in head-down (k). The comment at 506-526 says "honest to about 40 m". Gas faces are capped GAS_UMAX 60 m/s (gasflow.py:109). Thrown and falling bodies go through the particle solver, which substeps by CFL (core.py ~1603).
+WHY: sweeps of the lattice are per cell per step.
+REALISM COST: bounded now (falls under 40 m). Not covered: arrows (60 m/s = 3 cells a tick, fine), bullets (300-900 m/s = 240-720 cells a tick), sword tips (15-20 m/s), a thrown rock: anything over a cell per tick passes through thin matter unless swept. Firearms and bows are wave 16 (realism-map table), and DCC and Locke cases ask for firearms (169 cases).
+BETTER: swept (continuous) collision for every fast mover: a DDA ray through the lattice (Amanatides and Woo 1987: k) for the path of the tip within a tick, with the material hit deciding the outcome (the stress law, penetration by the Poncelet or Recht-Ipson model for bullets: k), and the same for a sword tip arc. The particle solver's CFL is not the right tool for a bullet.
+COST/RISK: low, event-based.
+STATUS: NEW for the numerics; the firearms and bows lane (wave 16 "weapons") is scheduled and will need it.
+PRIORITY: MEDIUM (blocks firearms from being credible).
+KIND: technical.
+
+D20. SIGNALS ARRIVE INSTANTLY
+----------------------------------------------------------------------
+CHOICE (v): sound (senses.py) is delivered in the tick it is made: no 343 m/s propagation, no echo delay; light likewise (correct to any scale below light-seconds). 25 ms is 8.6 m of sound.
+WHY: in a house a sound crosses the room in less than a tick, so instant is right.
+REALISM COST: zero in the house; nonzero the moment the world has distance: thunder after lightning (3 s a km), a shout across a field arriving after the speaker's mouth closed, a blast's report after its flash, a distant bell. Magic is already decided to have "taking hold at a finite, information-like speed" (decisions 8.3), so the engine needs a delivery-at-a-delay queue anyway.
+BETTER: one DELAYED-EFFECT QUEUE in the scheduler: an event with a source point, a speed and a falloff is delivered to each receiver at t + d/c, with the booked loss. Sound, shock, magic and a fire-spread front all use it. The heap already exists (slowtime); this is a use of it in the fine tick.
+COST/RISK: low.
+STATUS: NEW for sound (partly implied by magic 8.3 and by the blast model "Kingery-Bulmash event" in realism-map).
+PRIORITY: LOW now, MEDIUM with D10.
+KIND: technical.
+
+D21. OFFSCREEN PEOPLE AND SPACES: FULL OR NOT AT ALL
+----------------------------------------------------------------------
+CHOICE (v): realism-map 4: "Offscreen people: simulated in full or not at all"; the rooms backend and the family design carry coarse and statistical versions of people for the lab only. The voxel world has no rooms-level run for the rest of a building.
+WHY: not built yet.
+REALISM COST: as D10 and D14: leaving a building freezes it, or pays full price.
+BETTER: SC4 as decided (full near and salient; routine-level for the rest; details materialised consistent with what was seen; coarse checked against full). Add a materialisation rule that conserves the same ledgers (the person's body heat pool, stores, location) so a person who steps back into view is the person the coarse model said they would be, and a CONSISTENCY test of one person run coarse for N hours and full for the same hours.
+COST/RISK: L.
+STATUS: SCHEDULED (SC4, SC5, K9, Fam2).
+PRIORITY: HIGH, already queued.
+KIND: owner-level already decided (SC4 (a)).
+
+D22. SNAPSHOTS, UNDO AND REWIND ARE WHOLE-WORLD COPIES
+----------------------------------------------------------------------
+CHOICE (v): ledgers.py (the world as a value, snapshot/restore); `Scheduler.__deepcopy__` copies 20,000 processes in tens of ms; the build uses base snapshots (BASE24, BASE25).
+WHY: tests, goldens and the DM's retries.
+REALISM COST: a 1.6 M voxel world is about 80 MB a snapshot (v: 51 B x 1.6 M). Time-loop and rewind magic (decisions Q21: rewind is restoration of the parts still together, not time travel) and a player's "undo" do not need full copies, and a save per night for a long game would be large.
+BETTER: delta snapshots keyed to the chunk dirty set (D10): copy only chunks that changed, share the rest by reference (copy-on-write); a keyframe plus the event log gives replay (the log is already typed deltas, per memory engine-redesign-target). Source: persistent data structures and copy-on-write (Okasaki 1998: k), and rollback netcode (GGPO, Fighting Game Rollback: k).
+COST/RISK: M; mostly free once D10 exists.
+STATUS: NEW.
+PRIORITY: LOW-MEDIUM.
+KIND: technical.
+
+
+======================================================================
+4. PERFORMANCE ARCHITECTURE: NUMPY, NUMBA, RUST, THREADS
+======================================================================
+
+D12. STIFFNESS IS PAID FOR IN TIME STEPS: SOFTENED MATERIALS AND A PIECE-SUBSTEP BUDGET
+----------------------------------------------------------------------
+CHOICE (v): mpm/matter.py:290 Matter(..., stiff=1e-4): every modulus in the particle solver is divided by ten thousand; the comments in mpm/core.py:94-170 say so and explain why: the substep count goes as the wave speed, so real wood would take "a thousand substeps per 25 ms". Strength is scaled by sqrt(stiff) to keep the breaking speed (matter.py:439, 624). bonds/store.py:56-72 gives all bonded matter a BUDGET of 2.0e5 piece-substeps a tick, softens the stiffest bonds to fit (_soften, _refit) and keeps handbook strength only for stalks and ropes; "rigid shape-keeping" (core.py _hold_shape, shape matching of Mueller et al. 2005) was the answer to "a felled trunk drooped like a hose".
+WHY: explicit time stepping has a stability limit set by the stiffest, lightest element (Courant-Friedrichs-Lewy). Wood's longitudinal wave speed is about 4,000-5,000 m/s (k: wood handbook) so at 5 cm a stable explicit step is about 10 us, 2,500 substeps a 25 ms tick.
+REALISM COST: the cost is not a missing law but the integrator. Anything that bends, rings or stores elastic energy is wrong by a made-up factor: plank sag, branch spring-back, a bow's stored energy, tree sway in wind, the frequency of a struck beam, the thunk and ring of impact (sound), the energy a thrown beam returns. The owner's decision this session (rod skeletons for slender things; elastic shape-keeping with stiffness from real moduli for everything else) fixes the MODEL; the INTEGRATOR decides whether the real moduli can run at 25 ms.
+BETTER (the integrators, with sources):
+  a. IMPLICIT or UNCONDITIONALLY STABLE steps for the stiff modes: backward Euler or implicit midpoint on the rod (Baraff and Witkin, "Large Steps in Cloth Simulation", SIGGRAPH 1998: k); Projective Dynamics (Bouaziz et al., SIGGRAPH 2014: k) which is shape-matching generalised and stable at any dt; XPBD (Macklin, Mueller, Chentanez, 2016: k): compliance is stated in SI (inverse stiffness) and the result does not depend on the step or the iteration count, which is the property the project wants; Vertex Block Descent (Chen et al., 2024: k) for stable stiff steps.
+  b. ROD SKELETONS: discrete elastic rods (Bergou et al. 2008: k) or Cosserat rods with PBD (Kugelstadt and Schoemer 2016: k), reduced-coordinate articulated bodies (Featherstone, Rigid Body Dynamics Algorithms, 2008: k) for trunks and limbs: a handful of nodes per slender object, the natural frequencies come from E I / (rho A L^4), so a tree has its real sway frequency of about 0.2-1 Hz (k: Sellier and Fourcaud 2009; Moore and Maguire 2004; James et al. 2006 on trees in wind).
+  c. SUBCYCLING PER ISLAND: each connected bonded island gets the step it needs and sleeps alone ("Bond islands" in realism-map 3.3: priority 2, before ropes and collapse). Isolating the stiff things from the rest means a rope's fine step does not tax a house.
+  d. The MPM stays for what flows or fractures (soil, snow, tearing), where stiff = 1 is not needed (E scales sound speed, not the answer, for slow loading: a CFL cost).
+COST/RISK: M-L each; implicit means a linear solve per step (a banded rod solve is O(n); a cluster solve is sparse). Risk: energy conservation of implicit integrators is not exact (numerical damping: backward Euler loses energy). XPBD and a symplectic implicit midpoint keep it better; every joule lost to the integrator must go in a ledger as heat or be shown below a bound (the project rule).
+STATUS: DECIDED in model (the owner's rod and shape-keeping choice today); islands in the realism-map wave 15 list; "ropes on XPBD" there too. The integrator choice and the ledgering of integrator damping are NEW.
+PRIORITY: HIGH.
+KIND: technical (direction decided).
+
+D13. PERFORMANCE ARCHITECTURE: ONE THREAD, NUMPY TEMPORARIES, NUMBA LOOPS, RUST UNUSED
+----------------------------------------------------------------------
+CHOICE (v): about 150 njit kernels (heat 16, kernels 16, fluids 12, outside 10, bonds 10, senses 10, routing 9, label 7, gasflow 4, lazykernels 4, mixtable 4, mpm/kernels 22: grep) and many numpy whole-array expressions; no parallel=True or prange anywhere in src (v: grep); numba imports here (0.67.0, v: python3 import; decisions.md line 73 said it was not installed, so the active environment should be checked); 16 cores and 14 GB RAM on this machine (v); Rust 1.100 installed 2026-11-21 (v: ~/.cargo/bin has cargo) and not used yet.
+WHY: numpy for dense lattice maths, numba for one-sweep fused loops; "exact always" and bit-exact goldens favoured single-thread, deterministic code.
+REALISM COST: speed IS realism here, because the owner's goal is every law on in every world at 25 ms. Every gate in switches.py is a law switched off in some worlds because it costs too much when on.
+WHERE RUST (OR NUMBA, WITH THREADS) PAYS, in order of expected gain (u: shares not profiled this session; ranked by structure):
+  1. LATTICE SWEEPS THAT TOUCH EVERY CELL EVERY TICK (heat conduction and radiation faces, o2 and smoke transport, face-environment, derived fields): memory-bound; one fused pass with f64 E (D6) and tiles; threads across z-slabs or 3-D tiles with halos; red-black or Jacobi ordering where a Gauss-Seidel sweep exists. Gain: 3-10x single-thread fused, then x cores (k).
+  2. THE GAS FLOW PCG SOLVE (gasflow.py: 400 iterations max, tolerance 1e-5): sparse matrix-free stencil, SIMD and threads; a multigrid preconditioner (Briggs, Henson, McCormick, A Multigrid Tutorial: k) cuts iterations; today numba plus numpy.
+  3. PER-PERSON LAWS ON PYTHON DICTS (balance, physiology, perception, hearing, routing, bleeding, grip): the person is a Python dict (p["blood_o2"], p["smoke"], ...), so a Rust kernel must cross the boundary per person. A structure-of-arrays person table (one array per field, one row per person) makes every per-person law a vector op or a Rust loop over a crowd (the "crowd kernel" exists, wave 15 batch 1c, exact). Gain: the per-person cost 150-300 us toward 10-20 us.
+  4. SPATIAL QUERIES: routing BFS, line-of-sight rays (sight band, light 20 cm grid), label/connected components for air and solids: all integer, branchy, ideal for Rust.
+  5. BOND AND PARTICLE SOLVERS (bonds/kernel.py, mpm/kernels.py: 32 njit kernels): already compiled; the win is threading across islands (D12c) and an implicit solver.
+  6. FLUID FLOW (fluids._law_flow settles cells in a fixed low-first order, "changes cells within a tick"): inherently serial as written; the exact sleep (realism-map 3.2) plus a numba or Rust port keeps the order and the bits; threading needs a different algorithm (a height-field or virtual-pipe model is parallel and 0.026-2.5 ms: realism-map 3.2) and declares a diff.
+WHAT IS DIFFERENT ABOUT RUST FOR THIS PROJECT (k): no JIT, so no first-run compile (numba cache=True still compiles about a hundred kernels the first time, and the cache is per machine and per Python version: u, not timed here); a distributable wheel for the player's machine (maturin and PyO3: the decision already names them); SIMD via explicit std::simd or auto-vectorisation; rayon for safe threads; no FMA contraction by default (D8). Numba's strengths: no second language, nogil, parallel=True with prange. Both are valid; the rule "behind the same Python interface, bit for bit against the Python reference, profiled first" (decision D4) is the right guard.
+THREAD DETERMINISM: use a fixed tile decomposition and a fixed reduction order so the result does not depend on thread count (D8b); give each tile its own booked flux to a border so the ledgers are exact.
+COST/RISK: M per kernel; the profile must come first (this audit did not profile).
+STATUS: SCHEDULED in direction (W15-Q8 owner: "as close to all on as we can by OPTIMIZATIONS, REWRITING STUFF IN RUST"; D4 Rust installed). NEW: threads (none used), the person SoA table, and the profile-first list above.
+PRIORITY: HIGH (it is what lets the other fixes run in real time).
+KIND: technical, with one OWNER-LEVEL piece: shipping a Rust-built extension (a toolchain dependency for anyone who builds, a wheel for anyone who plays) and whether the sim may use all cores (the GPU is reserved for the models; a CPU-only sim with 16 threads may compete with the model's host-side work and with the laptop's heat: the owner's memory notes heat as a constraint on training).
+
+
+======================================================================
+5. WHAT ELSE I LOOKED AT AND LEFT ALONE
+======================================================================
+
+ - 5 cm versus 10 cm is a resolution choice the realism map already treats with records for sub-voxel things; the cost is in D11 only.
+ - The mind's attention latch and reflex latencies (policy.py WILL, reflex.py) are body-model decisions for the bodies lane. Reflex latency is 4-5 ticks, which is well resolved.
+ - Float32 in the lattice versus float64 in the solver is a precision split with a clean seam. D6 asks only whether the lattice conserved fields should join the solver's precision.
+ - The tick count is a Python int; HORIZON_MAX = 2^31 ticks (slowtime.py:48) is 1.7 years of sim time, fine for a search window but any NUMBA kernel that carries a tick in int32 will wrap at 2^31 ticks = 1.7 years (u: I did not find one; check when adding Rust kernels: use u64).
+
+
+======================================================================
+6. SUMMARY TABLE
+======================================================================
+
+ id   item                                           scheduled?                  priority   owner-level?
+ D1   dt and dx convergence harness                  NEW (SC5 machinery exists)  HIGH       no
+ D2   delete per-tick legacy gas rules               SCHEDULED (W15-Q8)          MEDIUM     no
+ D3   multi-rate laws by timescale, staggered        partly (slow clocks)        MED-HIGH   no
+ D4   law order as a cause; alternate order          NEW                         LOW-MED    no
+ D5   real time is a mean: worst-case, slow-motion   NEW                         MEDIUM     YES (play)
+ D6   float64 conserved state                        NEW                         MED-HIGH   cost veto
+ D7   conserved by construction (integer quanta)     NEW (with lane E)           MEDIUM     YES (rigor vs rewrite)
+ D8   determinism across machines and threads        partly (D4 Rust)            MED/HIGH   no
+ D9   fact goldens beside bit goldens                NEW                         MEDIUM     no
+ D10  sparse chunked LOD world                       partly (later, SC4, K9)     HIGH       YES (world scope)
+ D11  one resolution, retire the 10 cm path          NEW                         LOW        no
+ D12  implicit/XPBD/rod integrators, no softening    model decided today         HIGH       no
+ D13  Rust, threads, person SoA, profile-first       SCHEDULED in direction      HIGH       ship and cores
+ D14  night/slow twins: coverage, hazard, tier rule  SCHEDULED in part           HIGH       YES (tier in play)
+ D15  seconds as the unit; rooms inn as coarse twin  partly (SC4/SC5/Fam2)       HIGH       YES (scope)
+ D16  real day only                                  NEW                         LOW        no
+ D17  one dependency-graph scheduler                 NEW                         MEDIUM     no
+ D18  one VOX_M, unit tags, scale-invariance test    NEW                         MEDIUM     no
+ D19  swept tests for anything over a cell per tick  NEW (firearms wave 16)      MEDIUM     no
+ D20  delayed-effect queue (sound, shock, magic)     NEW                         LOW        no
+ D21  offscreen people: full or not at all           SCHEDULED (SC4, K9)         HIGH       decided
+ D22  delta snapshots, rollback                      NEW                         LOW-MED    no
+
+RECOMMENDED ORDER (dependency-first):
+ 1. D1 + D9 + D18 (harnesses and units: tests only, no behaviour change) so every later change is measured.
+ 2. D13 profile and the person table, then D6 and D3 (precision and rate) inside the fused kernels.
+ 3. D2 (delete legacy rules) with D1 proving it.
+ 4. D12 (integrators) together with the rod and shape-keeping model, with D8 (determinism) for the Rust kernels.
+ 5. D14 + D15 (long time and the mind clock) alongside waves 15 b2 and 16b.
+ 6. D10 decided early as a design, built when the world must be bigger than a house.
+
+OWNER-LEVEL QUESTIONS COLLECTED (one at a time, as the owner prefers):
+ Q-D5   When a scene is too heavy for 25 ms, does the world SLOW DOWN, or SOFTEN (lose fidelity), or only run in paused/turn-based play?
+ Q-D7   Is exact conservation by construction (integer quanta) worth a rewrite of every flux, or are booked float roundings enough?
+ Q-D10  How big is the world: an inn and yard, a village, a district? (sets when D10 is needed)
+ Q-D14  In play, may a "wait" or sleep use approximate twins with measured budgets, and is the player told?
+ Q-D15  Is the rooms inn a permanent lab abstraction, or the coarse twin of an inn in the voxel world (and when)?
+ Q-D13  Is a Rust-built extension acceptable for distribution, and may the sim use all CPU cores?

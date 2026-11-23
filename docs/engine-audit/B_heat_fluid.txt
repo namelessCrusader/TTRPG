@@ -1,0 +1,778 @@
+ENGINE AUDIT, LANE B: HEAT, FIRE, GAS, FLUIDS, LIGHT AND SOUND
+Date: 2026-11-22. Documents only; nothing was run or edited.
+
+WHAT THIS IS
+The owner decided that rigid shape-keeping was a poor early choice and asked for ALL such
+early engine choices that could be done differently or better for realism. This is lane B.
+Each entry gives: the choice (file:line), why it was made, what realism it costs, the better
+alternatives with sources, cost and real-time risk, whether it is scheduled or NEW, a
+priority (impact over cost), and whether it is an OWNER-LEVEL choice or technical.
+
+Claim marks: (v) verified by reading the code or the owner's records in this session;
+(k) known from the literature or from memory, not re-checked this session; (u) unverified
+or an estimate. No web search was used; every (k) source is a standard reference named so
+it can be fetched through the library (Babbel) before building.
+
+Read for this lane: docs/realism-map.md, src/voxel/switches.py, decisions.md (w14), and the
+docstrings and constants of heat.py, materials.py, gasflow.py, gasmom.py, push.py, air.py,
+fluids.py, gasstore.py, psychro.py, smokeopt.py, senses.py, outside.py, thinheat.py,
+climate.py, matrec.py, rxn.py, reactions.py, fields.py.
+
+------------------------------------------------------------------------------------------
+0. THE SHORT VERSION
+------------------------------------------------------------------------------------------
+The heat, gas and fluid laws are mostly sound conservation laws on a 5 cm lattice with a
+20 cm gas grid. The early choices that still cost the most realism fall into four families:
+
+ (1) THINGS THAT ARE BUILT BUT OFF. The buoyant gas flow and its momentum are off by
+     default (air.py:15, gasflow.py GAS_MOMENTUM False), so a default world still uses the
+     old stand-ins (a capped rise, a constant ceiling jet, an eddy-conductivity term).
+     W15-Q8 already says "every law on in every world"; no batch names this flip.
+ (2) ONE-NUMBER STAND-INS WHERE A FIELD SHOULD BE. Light is one lux number per world.
+     A room is ONE radiant node. The sun heats nothing (shortwave is zero). Sound is one
+     level in one band. Smoke is one scalar for "all visible products". Convection is
+     one constant h. Ambient noise is one number per world.
+ (3) THE CELL AS THE UNIT OF SHAPE. Face area is sqrt(fill) (a rod), a curved surface is
+     counted by staircase faces, a sub-cell thing has no thickness. The thin-plate fix is
+     scheduled (W15 batch 3); the curved-surface part and the missing shape class are NEW.
+ (4) COMBUSTION AS A SURFACE FLUX, NOT A GAS-PHASE PROCESS. No fuel vapour, no flash point
+     or flammability limit, no flammable gas, no explosion, no smoulder, no sealed-room
+     pressure. Many DCC-type scenes (188 bomb and explosive cases in the map) need them.
+
+TOP FIVE (details in sections 1 to 4):
+ 1. B7  Turn on buoyant gas flow plus momentum in every world and delete the stand-ins.
+ 2. B2  Radiant exchange between all surfaces (patches and view factors), with the sun as
+        a shortwave source; remove the "room is one node" and the 500 C source floor.
+ 3. B21 A real light field (photometric, spectral bands) sharing the patch system of B2,
+        read by sight (contrast, not a flat optical-depth cut).
+ 4. B9/B13/B8 Fuel vapour and gas species (soot, CO, CO2, steam) with flash point,
+        flammability limits and sealed-room pressure: one gas-phase combustion path.
+ 5. B1  Sub-voxel shape for heat: surface-to-volume per cell (plates, rods, powder) and a
+        staircase correction for curved surfaces; the thin-plate fix is already booked.
+
+ONE-LINE TABLE (priority; status; owner-level?)
+ B1  Face area per cell (sqrt(fill), staircase)          high   part sched. (W15 b3)  tech + owner decided
+ B2  Radiation: sources, view factors, sun, one-node room high   NEW (forge cavity done) tech; band choice owner
+ B3  Heat in float32 E, explicit clipped faces            medium NEW                    tech
+ B4  Sub-voxel thin things only via records              medium part sched.            tech
+ B5  Convection: constant h, no geometry or speed         high   part (forge only)      tech
+ B6  Eddy conductivity stand-in in gas                    high   rides on B7            tech
+ B7  Gas flow and momentum default off                    high   W15-Q8, no batch       tech; cost call owner
+ B8  Gas solver: Boussinesq, no room pressure, 20 cm      high   NEW                    blast scope owner
+ B9  Combustion as surface flux, no fuel vapour           high   NEW (map P2)           scope owner
+ B10 Flame by correlation (Heskestad labels)              low    fold into B9           tech
+ B11 Fuel table: one wood, no fine fuels                  medium NEW (map P1)           tech
+ B12 Char, smoulder, embers, rekindling                   medium NEW (map P2)           tech
+ B13 Smoke as one scalar; soot and CO yields              high   part (14a R1)          tech
+ B14 Ambient pressure and boiling point fixed             low    NEW                    tech
+ B15 Liquids: no flow rate, viscosity or momentum         high   NEW (map P2)           scope owner (boats, swimming)
+ B16 Wetting, contact angle, capillarity per surface      low    NEW                    tech
+ B17 Liquid properties constant, 8 liquids                medium NEW                    tech
+ B18 Weather: no wind, rain, snow, pressure               medium NEW (wind faces done)  scope owner
+ B19 Time step: fixed 25 ms, clip not implicit            medium NEW                    tech
+ B20 Drops and splashes by tabled speeds                  low    NEW                    tech
+ B21 Light does not exist                                 high   NEW (map P1, owner)    owner (bands, cost)
+ B22 Sight: binary optical depth, no contrast or glare    high   NEW (map P1/P2)        tech
+ B23 Sound: one band, one ambient, no room acoustics      medium-high NEW/part          band count owner
+ B24 Sound sources are named guesses, unbooked            low    NEW                    tech
+ B25 The gas grid is fixed 20 cm, flame cells 5 cm        medium NEW                    tech
+ B26 Evaporation and humidity residue (edge relax etc.)   low    part (14a A done)      tech
+
+Already decided or scheduled and therefore NOT re-proposed here (v, decisions.md):
+ - humidity everywhere (14a A, done); per-species and per-grain wood soak, two-pool wood water (14a B, R3);
+ - forge cavity radiation in packed beds and the bellows (14a C), the one push law and wind faces (14a D, done);
+ - the boiling curve and the quench film collapse (W15 2f, built; unverified at the pause);
+ - the thin-plate area fix (owner YES 2026-11-22, W15 batch 3); the shared surface h (surfaceh.py);
+ - heat history, scale, temper colour (W15 S1/Q6); reaction runner (W15 S1); lime, tanning, ferment;
+ - healing and infection (W15 batch 4); the shut-room star and twin framework (W15 batch 2);
+ - smoke sight depends on ambient light (14a R1); speech loudness and Lombard (policy.py LOMBARD, done);
+ - the "all laws on in every world" goal through exact optimisation and Rust (W15-Q8, D2, D4).
+
+------------------------------------------------------------------------------------------
+1. HEAT AND RADIATION
+------------------------------------------------------------------------------------------
+
+B1. FACE AREA PER CELL (SUB-VOXEL SHAPE FOR HEAT)
+Choice: a face's heat exchange uses the cell's face area A = dx^2 times af = sqrt(fill) for a
+partly filled solid (heat.py:1161, comment at heat.py:1033: "its surface is sqrt(fill) of the
+faces, about a square rod's"). A curved or oblique surface is the sum of its axis-aligned
+exposed faces. (v)
+Why: one rule, no geometry stored; cheap; fine for sticks and coal.
+Realism cost: (a) a thin PLATE (a blade, a sheet of iron, a shield) is not a rod: its broad
+face is the whole cell face while its fill is small, so sqrt(fill) is wrong in a way the
+owner already flagged ("the lattice overstates a thin plate's air area", decisions.md 2026-11-22;
+every quench scene changes); (b) powder, straw, foliage and hair have surface-to-volume
+ratios of 10 to 1000 times a rod's, so they heat, dry and ignite too slowly; (c) a sloped
+or round surface counted by staircase faces over-counts area by 1.27 for a cylinder and up to
+1.5 to 1.73 for a plane at 45 deg (Manhattan metric: the exposed-face sum is A_true times
+(|nx|+|ny|+|nz|)); so a round pot, a sphere of iron, a person's limb and a slope shed and
+take heat too fast; (d) the sky-view and radiative coupling inherit the same stair-step.
+Alternatives: (1) store ONE extra number with a partly filled cell's matter: its shape class
+and characteristic thickness (slab t, rod d, powder grain d), from which S/V and the broad
+and edge areas follow exactly; the sub-voxel 1-D conduction already exists in thinheat.py,
+so the area and the thickness are the only missing data (v). (2) For full cells, scale an
+exposed face by the surface normal from the fill gradient: weights from the voxel surface-area
+estimation literature (Mullikin and Verbeek 1993; Lindblad 2005; (k)), so a cylinder's area
+comes out within a few percent; 1/(|nx|+|ny|+|nz|) is the simplest exact rule for a plane.
+(3) A cut-cell area (a fraction of the face open) read from the fill field, the way gas
+cut-cell solvers do (Bridson, Fluid Simulation for Computer Graphics; (k)).
+Cost and risk: a float32 per surface cell and a table; the heat face kernel is already
+numba-compiled (heat.py:205) so the change is a multiplier; golden diffs on every scene with
+a round or thin thing (declared, as the owner already accepts for the plate). Real-time risk
+low (about 0 ms).
+Status: the thin-plate part is SCHEDULED (W15 batch 3, owner YES). The staircase part (c) and
+the general shape class (b) are NEW; fold them into the same batch so every quench and forge
+scene changes once, not twice.
+Priority: high. Owner-level: no (the plate fix is owner-decided; the rest is technical).
+
+B2. RADIATION: SOURCES, VIEW FACTORS, THE SUN, THE ONE-NODE ROOM
+Choice: radiation across air is thrown only from fires (as points) and from surfaces hotter
+than 500 C (RAD_HOT = 500, heat.py:~107), the strongest 24 sources (RAD_MAX_SRC), every 6 ticks
+(RAD_EVERY), by an inverse-square law with a cos factor and optical depth along the ray; a
+receiver absorbs emissivity times what lands, and nothing is reflected. (v, heat.py:_law_radiate,
+_throw). Outdoors, a surface loses heat to an environment temperature that mixes sky and air by
+sky view; the absorbed shortwave `sw` is passed as 0.0 (outside_world.py:328 and 343; outside.py
+docstring "zero in T8"). Indoors, the room interior is ONE radiant node (outside.py header:
+"Known limit (spec 3.7): the interior of a room is ONE radiant node (mrt_star), with no view
+factors between its surfaces"). (v)
+Why: the first radiation (G7) had to give a fire its reach for a few ms; the cold world (T8)
+needed room heat balance without a view-factor matrix; the sun was left as a seam.
+Realism cost: (a) a 300 C stove, a hot kettle, an iron stove-pipe or a sun-warmed wall gives no
+radiant warmth to a person at 1 m, only through the air; real stoves warm by radiation first.
+(b) THE SUN DOES NOT HEAT ANYTHING: no solar gain through a window, no sun-warmed stone, no
+shade, no south and north walls, no greenhouse, no dark cloth versus white; sky radiation exists
+but not sunshine. (c) No reflection: a polished reflector, foil, a shiny shield, a mirror, a
+white wall bouncing firelight: none. (d) A room warmed by a wall at 40 C and a person's own
+radiant loss to cold walls (the main comfort and hypothermia path indoors) is a single mean
+radiant node, so standing by a cold window or in a cold stone church is wrong in direction and
+size. (e) Radiation is one grey band: no selective absorption (glass passes shortwave but blocks
+longwave; snow reflects sun but emits as a black body; white paint is white in light but black
+in the infrared). (f) A thing between you and a fire casts a "shadow" only through the line
+optical depth, so a person's body, a shield or a screen works, but a big wall of fire at a
+short distance is a point source (error at near field: a 3 m flame at 1 m is not a point).
+Alternatives: (1) ZONAL RADIOSITY ON 20 CM PATCHES (Hottel and Sarofim, Radiative Transfer;
+Modest, Radiative Heat Transfer; Siegel and Howell; (k)): treat exposed faces as patches grouped
+to 20 cm (same grid as the gas), compute a sparse view-factor set per room on a geometry change
+(Monte Carlo rays or hemicube, as in Cohen and Wallace's radiosity text; (k)), solve a few
+Gauss-Seidel sweeps at 1 Hz or on change; booked exactly because each patch pair conserves
+what it sends. (2) TWO BANDS, shortwave (solar and light, 0.3 to 3 um) and longwave (thermal
+IR): one absorptance column and one emissivity column per material; this is the standard
+two-band building-physics split (EnergyPlus, ASHRAE Fundamentals; (k)). The solar source is
+one directional light with the existing ray walker for shade; sky diffuse from sky view. (3)
+Keep the current point-source throw ONLY for flames (their near field needs the finite-flame
+view factor: the solid-flame model of Mudan and of Heskestad (k)), and let all other emitters
+(stoves, hot metal, walls) be patches. (4) Reflection by a few radiosity bounces (diffuse) and
+one specular term for polished metal, glass, water.
+Cost and real-time risk: patches per room 300 to 2000; the set of view factors is n^2 floats
+(about 4 MB for 1000 patches) and stored sparsely beyond 10 m; rebuild only on geometry change;
+the solve is a few ms at 1 Hz, so about 0.05 ms per tick amortised (u, to be measured). The
+solar term is one ray walk per surface patch per sun-step (every 10 sim minutes outdoors).
+Risk: the "room is one node" simplification was chosen for the cold world's cost; patches
+raise the per-room state, so use the SAME lazy-region machinery as the gas store. The two bands
+double the columns but not the loops.
+Status: forge cavity radiation in packed beds was 14a C (done, narrow). All of the above is
+NEW; the map lists "Radiant heat across air" (done as G7) but not the sun, reflection or room
+exchange. The shortwave band is also the SAME patch set as light (B21), so build them together.
+Priority: high. Owner-level: technical, except one real choice: two bands (cheap, standard) or
+the spectral bands that magic's waste light needs (decision Q1 asks for colour, so at least 3 to
+4 bands for shortwave); recommend 2 thermal plus 4 shortwave bands once, not twice.
+
+B3. HEAT STATE: FLOAT32 ENERGY ABOVE 20 C, EXPLICIT CLIPPED FACE FLUX
+Choice: E is float32 joules above 20 C (outside.py header; sim.py:256 E_dtype); every face flux
+is explicit and clipped to FACE_CLIP = 0.15 of the smaller side's heat capacity times the
+difference (materials.py:557); pending float64 arrays (reactions.py) and booked "quant" ledgers
+repair what float32 loses. (v)
+Why: speed and memory at 0.4 to 5 M voxels; the clip guarantees no cell passes its neighbour.
+Realism cost: (a) float32 loses small drains: the realism map notes "float32 loses a resting
+drain entirely" and the reaction runner needed a pending store to commit slow rows (v);
+(b) the clip changes timescales where a face is stiff: a high-h face (quench 4000 W/m2K, forge
+radiation) on a thin cell hits the clip and the flux falls below the law's value, so the first
+seconds of a quench or a forge heat are slower than the law says and depend on the tick (the
+map recorded a voxel quench about 100x too slow before 2f; the film fix hid, not removed, the
+clip); (c) heat of a tick cannot cross more than the clip, so a hot gas parcel entering a cold
+cell at 1000 K difference is under-transferred and the remainder is carried by later ticks.
+Alternatives: (1) float64 E in the active window only (the lazy-array machinery from 14a and
+W15 1a already restricts work to boxes), keeping float32 cold storage; or Kahan-compensated
+sums in the Rust kernel; (2) a semi-implicit face update where the clip bites: for a pair of
+cells the exact exponential relaxation of their difference over dt (the two-body analytic
+solution) replaces the clip, conserves energy exactly and is unconditionally stable (Patankar,
+Numerical Heat Transfer and Fluid Flow; (k)); thinheat.py already does backward Euler per
+record (v), so the lattice is the odd one out.
+Cost and risk: the two-body exponential is one expm1 per stiff face; only faces that hit the
+clip need it; Rust bit-for-bit rule applies to the clipped path, so keep the old path as
+the reference and add the new one as a declared diff. Real-time risk low to medium.
+Status: NEW (W15-Q8 Rust is a speed plan, not this). Priority: medium (high once forge and
+quench matter). Owner-level: no.
+
+B4. SUB-VOXEL THIN THINGS EXIST ONLY AS "RECORDS"
+Choice: heat through the thickness of a thing smaller than a cell is solved only for a named
+Record (thinheat.py, records_world.py), which is a readout that reconciles with the host cell
+(switches: rec.readout_only, rec.spmap iron, wood, glass only, rec.lattice_cp). (v)
+Why: the lattice cell is 5 cm; blades, hides and sheets needed true time scales.
+Realism cost: a record exists only where a scene or act declares one; any thin thing without
+a record (a leaf, a paper, a cloth, a plank of 2 cm, a wire) uses the cell's time scale, wrong
+by (50 mm / thickness)^2 (v, thinheat.py header); records hold only iron, wood, glass.
+Alternative: make "sub-voxel thickness" a property of matter in a cell (see B1's shape class)
+and run the same through-thickness solve for any cell whose shape class is thin, with the
+slab or rod chosen by the class; records then become the same thing as a cell with a class.
+One law, not a special object.
+Cost and risk: the thin solve costs 0.35 to 1.7 ms per record (v); a batch of a thousand is
+3 to 13 us a row, so cost is bounded by the number of THIN, HOT-OR-WET cells; put it in the
+lazy window. Status: partly scheduled (W15 1b shared surfaceh; records widening is not named).
+Priority: medium. Owner-level: no.
+
+B5. CONVECTION IS A CONSTANT, NOT A FUNCTION OF GEOMETRY AND FLOW
+Choice: H_CONV = 10 W/m2K to still air on every exposed face (materials.py:544); flesh alone has
+a natural-convection column (FILM_COLS hnat 2.38); the face-environment overlay lets one material
+carry its own hnat (heat.py:85 comment, faceenv.py). Forced convection from the gas flow is not
+read; a hot gas touching a wall uses the same h. (v)
+Why: h is cheap and the face law needed one number; the flow did not exist then.
+Realism cost: natural convection is h = C (dT/L)^(1/4) for a vertical plate and larger facing
+up than down (Churchill and Chu 1975; Incropera; (k)): a hot plate facing up loses heat 1.4x
+faster than the same plate facing down, a big surface loses less per area than a small one; a
+hot pot in a draught, a blade in a breeze, a forge in a bellows blast, a quenched bar in
+stirred water, a person in wind (wind chill, which matters for the cold and the burn scenes)
+all use h = 10 whatever the speed. A cooling body in a gale versus still air cools the same.
+Alternatives: h = max(h_nat(dT, L, orientation), h_forced(|u|, L)) blended as (h_nat^3 + h_forc^3)^(1/3)
+(Churchill 1977; (k)), with the local gas speed from the flow field (the face speeds exist once
+B7 is on), the characteristic length from the cell shape class (B1) and the plate orientation
+from the face normal (up, down, side, 3 cases). The same form works for liquids (a water bath
+stirred).
+Cost and risk: one cube root per exposed hot face; it lives in the numba face kernel; the
+overlay table already exists. Real-time risk low. Golden diffs on every scene with an
+exposed face away from 20 C.
+Status: bellows forced convection was in 14a C (forge only, v); the general law is NEW. Priority:
+high (it is the correct cooling law for the person, the pot and the sword). Owner-level: no.
+
+B6. EDDY CONDUCTIVITY IN HOT GAS (A STAND-IN FOR CONVECTION)
+Choice: gas to gas conductivity grows with (T-20)/EDDY, EDDY = 7500 (materials.py:553), a stand-in
+for the convection a flow would carry; it is zero where gas_momentum is on (heat.py, slownet.py,
+slowforms.py; switches gas.eddy_heat). (v)
+Realism cost: with gas_flow off, a plume loses heat by diffusing like a solid: the realism map's
+finding that a room fire at 30 s is 121 C near the floor and 28 C under the ceiling (the room is
+upside down) comes from this plus the capped rise.
+Alternative: delete it by turning the flow on (B7); its removal is the test.
+Status: folded into B7. Priority: high with B7. Owner-level: no.
+
+------------------------------------------------------------------------------------------
+2. GAS, FIRE AND SMOKE
+------------------------------------------------------------------------------------------
+
+B7. THE BUOYANT GAS FLOW AND ITS MOMENTUM ARE OFF BY DEFAULT
+Choice: air.py:15 GAS_FLOW = False; gasflow.py GAS_MOMENTUM False (switches: gas.momentum "off
+by default, only inside gas_flow"); scenes_push.py and scenes_wet.py switch them on per scene
+(v). A default world therefore runs the legacy lossy pneumatic field, `_law_rise` with its RISE_MAX
+half cap, a ceiling jet "raced by a constant", and a two-zone stir for oxygen (gasflow.py header,
+air.py header; v).
+Why: the flow arrived in wave 13 (lane 7) and wave 14a; every golden scene was recorded on the
+stand-ins; the measured cost of the box was not yet under the ceiling.
+Realism cost: the "room fire is upside down" finding of the map applies to every world that has
+not switched the flow on: no crawl low, no neutral plane at a doorway, no ceiling jet speed, no
+plume entrainment, no wind (the push law and wind faces only work inside gas_flow), no forced
+draft to a forge, no burning smoke front. Everything downstream (smoke sight, CO dose, escape
+decisions, who survives a fire) rests on it.
+Alternative: the decided one: flip it ON for every world once measured under the cost ceiling,
+declare each diff (W15-Q8), delete `_law_rise`, the smoke rise and ceiling-jet constants, the
+two-zone stir, the legacy pressure field (cold.legacy_pressure_mean crutch), body.p_follow, and
+gas.eddy_heat in one wave, because they exist only to stand in for the flow. Sources: the model
+is the standard Boussinesq plume and ceiling-jet tests (Heskestad, Alpert, Zukoski; v in the
+header of gasflow.py as "chosen against Heskestad's plume, Zukoski's filling and the doorway").
+Cost and risk: the quiet cost is the unknown; the code sleeps below GAS_QUIET_K = 0.1 K and
+works only in the active box, so a world with no fire pays about nothing (u). The risk is the
+2 to 8 substeps and a 400-iteration CG (GAS_P_ITERS) in a fire: measure with Rust or numba
+for the projection (preconditioned CG is the hot loop; (k) Rust or a multigrid V-cycle gives 5
+to 10x).
+Status: W15-Q8 names the goal, no batch names this flip. RECOMMEND scheduling it as the first
+wave 15 batch 3 item, before 16a, because 16b (knowledge) and magic (waste heat, light, qi
+transport) use the gas carrier. Priority: high. Owner-level: the cost ceiling is the owner's
+(W15-Q8 says "optimise until it fits"), the physics is not.
+
+B8. THE GAS SOLVER'S OWN EARLY CHOICES (BOUSSINESQ, NO ROOM PRESSURE, CONSTANT PROPERTIES)
+Choice (all v from the gasflow.py docstring and constants): (1) Boussinesq: density difference
+only in the buoyancy term, constant AIR_DENS 1.2 and AIR_C 1.2 J/(L K) for all gas; (2) the
+projection is incompressible: "a sealed room's pressure" is not in it (docstring: "Still not in
+it: a turbulence model ... and a sealed room's pressure"; the sealed airspace keeps no pressure);
+(3) turbulence is one constant alpha (GAS_ENTRAIN 0.03), a linear drag (GAS_DRAG 0.75, or
+GAS_DRAG_MOM 0.1 with momentum, a crutch in switches); (4) momentum advection is semi-Lagrangian
+with MacCormack (gasmom.py): stable but not momentum conserving, with a numerical viscosity of
+about u dx/2; (5) work done by surfaces on the gas is stat only (push.work_unbooked), the flow's
+kinetic energy is not on the books.
+Realism cost: (a) no sealed-room overpressure: a fire in a closed room never builds the several
+hundred Pa that bursts windows, slams doors or blows smoke out of cracks; a closed oven, a kettle
+with a blocked spout, a sealed jar of fermenting must, a cannon bore and a pressure vessel have no
+pressure; (b) no pressure waves, no blasts and no shock: a powder keg is a very fast fire (the
+map calls detonation "skip"; the DCC set has 188 bomb and explosive cases); (c) variable gas
+properties matter at a flame's 1000 K (density falls to 0.3, viscosity doubles, conductivity
+rises 3 to 4x): these set plume speed and mixing; (d) a constant alpha mixes the same at every
+speed and scale: a small flame under a metre ("a plume thinner than a cell shows as the same
+heat in twice the gas", v) and a big fire get one entrainment constant; (e) a jet along a ceiling
+mixes out a little each tick by the scheme's own viscosity (the doc: 30 percent error in
+temperature and 1.6x in speed against Alpert, v); (f) the kinetic energy of the flow is off the
+books, so "every joule booked" is broken for the largest-moving quantity (the work done by a
+bellows or a wind is booked as input and not as flow energy).
+Alternatives: (1) LOW-MACH WITH A THERMODYNAMIC PRESSURE (Rehm and Baum 1978; McGrattan et al.,
+Fire Dynamics Simulator technical reference, (k)): one background pressure p0(t) per closed
+airspace region, whose rate of change is set by net heat, inflow and leakage; the projection then
+has a divergence source that does not average to zero. This gives a sealed room's pressure, flow
+through cracks (a power-law leak per opening, from the door model already planned), and the
+pressure cook of a kettle, cheaply (one scalar per airspace; the region labelling already exists
+in air.py regions()). (2) A sub-grid model in place of a constant alpha: the Deardorff or
+Smagorinsky eddy viscosity of an LES (FDS uses Deardorff; (k)), with cell size from the actual
+cell. (3) Variable density and cp(T) from one table for air; density by the ideal gas at
+constant p0. (4) Energy-conserving advection (staggered, flux-form kinetic energy, or add a
+vorticity-confinement term; Fedkiw, Stam and Jensen 2001; (k)), or accept the loss and book the
+kinetic energy as a dissipated quantity into heat with a Kolmogorov-style loss (so every joule
+is accounted: input work equals kinetic change plus dissipation). (5) BLASTS as an event law, not
+CFD: a bounded-region energy release with a Friedlander overpressure pulse by scaled distance
+(Kingery and Bulmash, TNT equivalence; Baker et al., Explosion Hazards and Evaluation; (k))
+feeding the existing impact, fracture and body laws, in the spirit of the map's rule that
+resolving shocks at 5 cm is not affordable.
+Cost and risk: (1) is a scalar per region and one extra term in the PCG right-hand side
+(under 0.1 ms); (2), (3) are one table and a few multiplies; (4) bookkeeping only; (5) per
+event, zero per tick. The risks are the legacy-stand-in diffs (declared) and correctness of the
+leak model, which needs openings from the door and mechanism work (W15 batch 2).
+Status: NEW. The map's "sealed room builds no pressure" row in the old roadmap (voxel-roadmap.md
+line 34) was never booked into a wave. Priority: (1) high, (2)-(4) medium, (5) medium-high for
+bomb scenes. Owner-level: (5) is scope and play (does the world have explosives? at what
+realism); the rest is technical.
+
+B9. COMBUSTION IS A SURFACE FLUX; THERE IS NO FUEL VAPOUR
+Choice: `_burn_cells` (heat.py:2019): a solid that flames (PYRO) sits at its ignition temperature
+at the face and converts solid to gas at L_g per gram, up to q_fl and a per-material rate, with a
+linear oxygen factor from 25 percent above the limit down to the limit (`_o2_factor`); the
+flame temperature is a closed form of heat per gram of O2 and a mixing constant LAMBDA_FREE 1.4
+(materials.py:615, "CALIBRATED, not measured"); the flame is a cluster of cells labelled by the
+world law, with the Heskestad length (F25); the "pyrolysed fuel gas" is not a species, it heats
+cells at once. One ignition temperature per material, no pilot, no autoignition; oil is a pool
+that burns at its top, ign 250 C, 60 g/m2s (FLUID OIL row). (v)
+Why: a flux law gives a fire of the right size cheaply with no chemistry, and the world had no
+gas species field (SMOKE was "all visible products").
+Realism cost: (a) NO FLASH POINT OR FLAMMABILITY LIMIT: spirit (ethanol flash point 13 C), lamp oil
+(flash about 50 to 90 C), tallow, wine, brandy (132 wine and brandy cases in the map) and any
+liquid fuel light by one ignition number; a pool of ether or spirit in a warm room should give
+a flash fire above the pool, but here lights only where the SURFACE hits a threshold; (b) no flammable
+GAS or VAPOUR: methane, hydrogen, spirit vapour in a cellar, flour dust, a closed lamp-oil room;
+no premixed flame, no explosion limit, no backdraft (no unburnt fuel gas to accumulate and meet
+air at a door), no rollover or flashover as a gas-phase event: the map says these "emerge from gas
+velocity plus radiation", but they cannot emerge while the pyrolysis gas is booked as heat at the
+face; (c) piloted ignition and autoignition are one number, so a sunlit dry plank at 300 C lights
+without a flame; the real piloted number for wood is about 350 C and autoignition 450 to 500 C
+(Drysdale, Introduction to Fire Dynamics; Babrauskas, Ignition Handbook; (k)); (d) no
+extinction by dilution (CO2, steam), only by oxygen; a steam-filled room does not smother; (e)
+no cooling of a fire by thick wet fuel (moisture) beyond the new two-pool wood water (14a R3).
+Alternatives: ONE GAS-PHASE PATH, the one FDS uses (McGrattan; mixture fraction with a
+single-step, infinitely fast, mixing-limited reaction and the eddy-dissipation concept of
+Magnussen and Hjertager; (k)): (1) pyrolysis puts FUEL VAPOUR grams in the gas store (gasstore.py
+already holds named species; v) instead of heat; (2) a cell burns the vapour where fuel, oxygen
+and a temperature above a species-specific ignition threshold (or a pilot flame in a neighbour)
+meet, within flammability limits from a species row; the heat released is booked per gram of
+O2 (the 13.1 MJ per kg O2 rule the code already uses; v, materials.py O2_RATIO comment); (3)
+liquids: evaporation by the existing psychro surface law, so the FLASH POINT is simply where the
+vapour concentration reaches the lower flammability limit (Antoine vapour pressure, a species
+row); this replaces the oil "ignition temperature" and gives spirits for free; (4) the
+flame labelling and Heskestad height become a CHECK on the emergent flame (a test), not a law,
+which removes the double-count risk of correlation inside a flow solver; (5) piloted ignition by
+a flame or spark neighbour at a lower threshold, autoignition higher, per material (a column);
+(6) the same species path gives dust (a fine fuel suspended: LFL by concentration), methane and
+hydrogen, alcohol vapour, and the magic waste "motes and byproducts" (decision Q1) as gas species.
+Cost and risk: one more gas scalar per fuel species (about 6 ms a scalar today per the map, much
+less once B7 and the lazy gas store hold only active cells and numba or Rust carry the
+advection); the reaction is a local min of fuel and oxygen per cell per substep (cheap). Risk:
+the flame has to burn in the 20 cm gas cell, so the flame's real thickness (millimetres) is
+sub-cell: use the mixing-limited rate with the cell as the mixing scale (as FDS does at coarse
+resolution) and verify with the same acceptance tests (Heskestad length, McCaffrey plume, F-T9
+crib) the map uses. Real-time risk medium: the vapour scalar is only active near a fire.
+Status: NEW (the map lists "Smouldering, CO as its own gas" and "Ventilation, flashover" at P2 and
+"fine fuels and igniters" at P1; none is in a decided wave). Priority: high. Owner-level: YES in
+scope: how deep combustion goes (surface flux only, versus fuel vapour and explosions) is a trade
+of realism, scope and cost; recommend the single gas-phase path because it ALSO unlocks B13 and
+the explosive and magic-byproduct scenes and deletes stand-ins.
+
+B10. THE FLAME BY CORRELATION (HESKESTAD LABELS, FLAME CELLS, FLAME_PAY_MAX)
+Choice: the flame height from Q and D, flame cells paid out of the fire's own gas heat (heat.py
+FLAME_PAY_MAX "CALIBRATION"), FLAME_PASS 0.4, FLAME_WALL 0.5 (v).
+Cost: a correlation used inside a CFD-like loop double counts heat and sets the flame to the
+fire's size even when ventilation changes the real flame (under-ventilated: longer and sootier).
+Alternative and status: fold into B9 (the emergent flame; the correlation becomes a test).
+Priority: low alone. Owner-level: no.
+
+B11. FUEL TABLE: ONE WOOD, NO FINE FUELS, ONE CHAR YIELD
+Choice: fuels are wood (300 C, 16 kJ/g, rate 20, matrec.py wood row), leaf, flesh, rope, char and
+one oil; CHAR_YIELD 0.10 and CHAR_K 0.1 are constants (heat.py); the sorptivity is per species
+(14a B) but the burn row is not. A cell-thick thing of straw, paper, cloth, thatch, hay, hair, pitch,
+wax, tallow, coal, peat has no fuel row. (v)
+Realism cost: a thatched roof, a haystack, a bookshelf, a candle, a tallow lamp, a cloth on a table
+and a coal bed ignite and burn like pine or not at all; ignition time of a thin fuel scales as
+rho c delta dT / q (thermally thin) not sqrt(t) (thick), so paper catches in seconds and a log in
+minutes (Drysdale; Quintiere, Fundamentals of Fire Phenomena; (k)); heat of combustion, soot yield
+and charring differ per fuel (Tewarson's SFPE Handbook chapter, (k)).
+Alternative: fuel rows as DATA (heat of combustion, O2 ratio, ignition temperatures piloted and
+auto, char yield, soot and CO yield by fuel, thermal inertia, moisture), one per species, from the
+Tewarson and Drysdale tables; thin fuels through the B1 shape class with the thin ignition law;
+fine fuels in the thin solve of B4.
+Cost and risk: data only plus the thin law; no per-tick cost. Status: NEW (map P1 "Fine fuels and
+igniters"; igniter watts exist, materials.py IGNITER_W). Priority: medium-high (thatch, paper and
+cloth are the realistic fire spreaders). Owner-level: no.
+
+B12. CHAR, SMOULDER, EMBERS AND REKINDLING
+Choice: a burning cell turns to char at 18 percent mass (map, v from realism-map.md "Whole cell
+switches to char at 18% mass. Rope never chars"); the char layer slows burning via CHAR_K; there
+is surface "glow" combustion for charcoal at a rate that grows with temperature, and no smoulder
+of cellulose at low temperature (1.5 to 3 mm per min), no CO-rich smoulder yield, no ember that
+survives a douse and rekindles.
+Realism cost: a doused fire that was out will not "come back"; sawdust, straw and a smouldering
+mattress do not burn for hours; a thrown torch does not leave glowing wood; a hearth does not keep
+embers overnight; CO from smoulder (the leading killer in house fires at night) is absent.
+Alternative: a char-oxidation law on exposed char faces (surface oxidation, Arrhenius with an
+oxygen-limited diffusion cap; Rein, Smouldering Combustion, SFPE chapter; (k)), a heat-loss
+balance that lets it sustain below flaming, and CO as a gas species yield (B13).
+Cost: tiny, only on hot char faces. Status: NEW (map P2). Priority: medium. Owner-level: no.
+
+B13. SMOKE IS ONE SCALAR, AND THE SOOT, CO AND TOXICITY HOOKS STAY ON OLD NUMBERS
+Choice: smoke = grams of "combustion gas" per voxel with SOOT yields counting ALL visible products
+(WOOD 0.6, about 40x the true soot yield), converted to true soot by SOOT_TRUE 0.025 (u) and
+sigma_e 8.7 m2/g (u) in smokeopt.py; SEE_SMOKE_TAU 3 and SEE_LIT_SMOKE 3/8 are Jin's C values
+(u); cough, CO and Purser dose still read SMOKE_EXT 5.6 per g/L in physiology (switches
+smoke.cough_old, "the soot hooks are unwired"); the belief sweep (_look_around) ignores smoke
+(smoke.belief_ignores_smoke). (v)
+Why: a gas-species field did not exist; the sooty room had to be dim.
+Realism cost: (a) smoke yield does not depend on fuel or ventilation: flaming wood, burning oil, a
+smouldering mattress and an under-ventilated room fire differ by factors of 10 to 100 in soot
+and 5 to 50 in CO (Tewarson; Pitts; Purser, SFPE Handbook ch. 63; (k)); (b) CO, CO2, HCN and
+low O2 are not species: the toxic effect (Purser fractional effective dose) cannot be read from
+the actual gas, and CO2's breath-drive is missing; (c) the cough and exposure laws and the sight
+laws use two different calibrations of the same smoke (switches: cough_old); (d) soot deposits
+onto faces (layers.py, v) but its thermal and optical effect is unbooked (layers.soot_no_thermal);
+(e) steam and smoke mix as separate stores (mix.steam_to_gone crutch); (f) smell of smoke has no
+gas to read.
+Alternative: SPECIES: soot, CO, CO2, H2O (via the existing vapour store), fuel vapour (B9), HCN
+only if a pack needs it; yields per fuel from rows with a ventilation-dependent term (equivalence
+ratio phi: Tewarson's global equivalence ratio correlations; Pitts; (k)); sight reads soot only
+with the 8.7 m2/g extinction; the body reads CO, CO2, HCN, O2 into the FED laws (Purser; ISO
+13571, (k)). Soot deposition and its thermal film booked through the layer law.
+Cost and risk: the map's measurement of about 6 ms for a soot scalar today (v, realism-map F19)
+falls with the lazy store and the active box; CO and CO2 need one scalar each (the store holds
+them already). Real-time risk medium; mitigate by advecting species as ONE bundle of arrays in the
+same kernel pass (one limiter pass for n species), which is how FDS keeps species cost low (k).
+Status: 14a R1 (smoke sight depends on light) and the data hooks exist; the species and the
+unwiring are NEW (map F19 P1 "after gas", Purser S). Priority: high (smoke is the main killer in
+fire scenes and is what the sight, hearing and escape decisions run on). Owner-level: no.
+
+B14. AMBIENT PRESSURE AND THE BOILING POINT ARE FIXED
+Choice: BOIL = 100 C and LATENT 2260 J/g constants (materials.py:533), P_ATM a constant (matterdata);
+the gas state is p0 fixed; no weather pressure or altitude. (v)
+Cost: no mountain scenes (water boils at 90 C at 3000 m; pressure cookers; cooking times), no
+low-pressure sealed rooms, no pressure-driven boil of a sealed pot (B8).
+Alternative: P_ATM a per-world value from altitude (barometric formula) and weather, saturation
+and boil from the species rows with p (Clausius-Clapeyron; psychro.py already has Magnus and
+Wagner-Pruss; v), the sealed region's p0(t) from B8.
+Cost: near zero. Status: NEW. Priority: low. Owner-level: no.
+
+B19. TIME STEP AND THE EXPLICIT FACE CLIP: SEE B3. (Entry kept separate below with fluids and time.)
+
+B25. THE GAS GRID IS FIXED AT 20 CM (4 VOXELS); FLAME CELLS ARE 5 CM
+Choice: gas cells of 4 voxels per axis (gasflow.py; cs = 4 in _law_radiate; "20 cm cells, tens of
+thousands in a busy room" gasmom.py). (v)
+Realism cost: a candle, a lamp, breath, a pipe, a hand's thermal plume, a kettle's steam and a forge
+mouth are all smaller than a cell: the plume "shows as the same heat in twice the gas" (v); the
+flame of a small fire is mis-resolved; thin smoke layers and the neutral plane in a doorway are
+resolved to 20 cm only; sound and light reuse the grid.
+Alternatives: (1) a refinement box (nested grid, 5 cm cells) around a fire or a hot source with a
+two-way coupling (FDS multi-mesh; Berger and Colella AMR; (k)); (2) a sub-grid plume correction (a
+point source's plume with Morton, Taylor and Turner similarity inside the cell, then handed to the
+coarse cell at its virtual origin; Heskestad; (k)): cheaper and fine for small fires.
+Cost: (1) 64x per refined volume; limit to a 1 m box around a fire; (2) near zero.
+Status: NEW. Priority: medium. Owner-level: no.
+
+B26. EVAPORATION AND HUMIDITY RESIDUE (14a A IS DONE; THESE REMAIN)
+Choice: open edges relax vapour to the background at 0.5/s (wet.edge_relax); the background density
+is fixed at enable_wet from rh and t_c (wet.b0_fixed); seep moves vapour but not its heat
+(wet.seep_no_heat); mixed cells skip the surface law (wet.mixed_cells_skip); evaporation reads the
+film-diffusion law at a lattice face (psychro.py Stefan factor, v).
+Realism cost: an outdoor day's humidity and dew point do not follow the climate; rain and fog have
+no source; brine does not evaporate with a growing salt crust (a real craft: salt pans); a drying
+cloth's area is the cell face (B1) so a hung sheet dries as a 25 cm2 patch not a 1 m sheet.
+Alternative: the exact booked shift (shift_outdoor) wired to the climate dew point; the saturation
+adjustment makes mist already (v, psychro); make the exposed area the B1 shape class.
+Status: partly scheduled (14a A done; the rest is the listed residual). Priority: low. Owner: no.
+
+------------------------------------------------------------------------------------------
+3. WATER AND OTHER LIQUIDS
+------------------------------------------------------------------------------------------
+
+B15. LIQUIDS ARE A CELL AUTOMATON: NO FLOW RATE, NO MOMENTUM, NO VISCOSITY
+Choice: each cell holds a volume (fvol, ml) of one liquid; `_law_flow` and `_law_head` (fluids.py:
+1014, 1120) sweep wet cells lowest first and level neighbours down to LEVEL_TOL_M 2e-5; heavier
+over lighter swaps (the oil-fire "water slips under" rule); the sweep order, not a velocity, sets the
+speed; drops fly as ballistic parcels (deterministic, `_fly_drops`); SPLASH_UP 1.1 and SPLASH_SIDE 1.6
+m/s are "UNVERIFIED"; molten tin, lead and iron "run like water" (materials.py:126 comment). (v)
+Why: the map: "3-D water costs 10 to 1000x more"; the cellular rule is exact, books mass, and a still
+pond can sleep (fluids.py header).
+Realism cost: (a) there is no speed of flow: a spill levels in one sweep so a flood front has no
+travel time; a narrow pipe does not throttle (map: "No momentum. A narrow pipe does not throttle");
+a river has no current, so it cannot carry a body, a boat, a log or a sheet, or sweep a man off his
+feet (map "Standing in a current"); (b) no waves or sloshing: a bucket carried by a walking man
+does not slosh, a ship does not roll, a pond does not ripple; (c) viscosity is absent entirely, so
+honey, tar, oil and a molten metal pour as fast as water and a thick stream does not coil; (d)
+no hydraulic jump, no weir, no lock; flood and dam scenes have no dynamics; (e) buoyancy and drag on
+things are cell-wise (map "Buoyancy and drag on things"); (f) boats and swimming (256 boat cases;
+cold-water, drowning) are impossible.
+Alternatives: (1) THE SHALLOW-WATER (VIRTUAL PIPES) HEIGHT FIELD for open water (Mei, Decaudin and
+Hu 2007; O'Brien and Hodgins 1995; Saint-Venant; (k)): one height and flux per column pair, volume
+exact, speed from g and depth, a current to read; the map measured 0.026 to 2.5 ms for 2 to 20 m
+(v, realism-map 3.2); couple to the lattice at its edges and to the drops. (2) A per-liquid
+viscosity (Poiseuille limit on a flow) as a cap on the per-tick cell flux, so oil and tar run slowly
+and lava crawls; Torricelli outflow for vessels (map). (3) For the splash and pour: MPM already
+exists in src/mpm and is used for soil and sand (v, repo layout); use it for BOUNDED splash events
+(a short burst of particles, then demote back to cells, as the bonds and topple code does for
+rigid bodies) instead of tabled speeds, so a thrown bucket and a diving man splash from the
+impact energy. (4) A sloshing mode: one lumped mass-spring pendulum per vessel (Ibrahim,
+Liquid Sloshing Dynamics; (k)) rather than a fluid, for carried vessels.
+Cost: (1) amortised tiny and only where water is large; (2) free; (3) event-bound, tens of ms for
+a burst (u); (4) microseconds. Risks: the seam between height-field, cell liquid and drop parcels
+(conservation tests exist for drops, v); keep exact books at each seam.
+Status: NEW (map P2 "Open water as a height field", "Buoyancy and drag", "A person in water",
+"Standing in a current"; none is in a decided wave). Priority: high for any water, boat or flood
+scene; medium otherwise. Owner-level: YES in scope: does the world include rivers, boats, swimming
+and floods? Recommend (1) plus (2) first (cheap, exact) and (3) only when a scene needs it.
+
+B16. WETTING, CONTACT ANGLE AND CAPILLARITY ARE ONE VALUE PER LIQUID
+Choice: WETTING gives one (sigma, theta) per liquid "on a stone floor", "a game choice inside the
+measured ranges" (fluids.py:56); the retained film per liquid is a constant (RETAINED, "UNVERIFIED");
+wicking is a ratio against water. (v)
+Cost: wax, oiled leather, glass, wood and cloth hold water in different films and beads; a waxed
+cloak sheds water, a rag soaks; a dirty and a clean floor differ. A bubble or a dew bead has no
+shape.
+Alternative: theta per liquid and per surface pair from a small table (Young's equation with
+the solid's surface energy; capillary length per liquid exists); sorptivity per porous material
+exists for wood (14a B), extend to cloth, soil, leather, bread. Cost: data only.
+Status: NEW. Priority: low. Owner: no.
+
+B17. LIQUID PROPERTIES ARE CONSTANTS, AND THERE ARE EIGHT LIQUIDS
+Choice: FLUID rows give density, cp, k, ignition, heat, rate, transfer h as constants (materials.py:
+120); eight liquids (water, oil, acid, weak acid, tin, lead, iron, blood) plus mixture rows (13).
+(v)
+Cost: density does not change with temperature (a hot lamp-oil pool does not expand, a lake does not
+turn over: water's 4 C density maximum and so the frozen-lake behaviour is missing; convection in a
+heated liquid is the old density-swap rule only), no viscosity (B15), no alcohol and spirit, no
+vapour-pressure curve per liquid (B9), the boiling point of each is a table value not a function of
+pressure (B14).
+Alternative: property functions of T (and composition) from the mixture engine already built
+(mixwater.py, mixvle.py; v exists); add viscosity(T) (Vogel or Arrhenius; (k)), thermal expansion,
+Antoine vapour pressure per liquid and let the swap rule read density(T) so convective overturn
+and a lake's inversion fall out.
+Cost: lookups. Status: NEW. Priority: medium. Owner-level: no.
+
+B20. DROPS AND SPLASHES BY TABLED SPEEDS (see B15 (3)); no separate fix. Priority: low.
+
+B18. WEATHER: NO WIND, RAIN, SNOW OR PRESSURE SYSTEMS
+Choice: the climate gives a seasonal and daily air temperature with an AR(1) weather anomaly
+(climate.py); wind_ms is "reserved; only a hook in k_film" (climate.py:75); cloud only enters the
+sky lux; the push law gives wind faces at the edge when a scene turns the flow on (push.py). (v)
+Cost: no rain (it extinguishes fires, wets thatch, fills pots and makes mud), no snow (loads a
+roof, melts, insulates), no wind chill or wind on a fire and on smoke (needs B7), no fog
+formation from the vapour store, no thunder and lightning, no wind effect on sound and arrows. This
+overlaps the environment lane; listed here because wind and humidity feed the gas carrier.
+Alternative: the weather as events on the climate clock: fronts with wind speed, direction and
+precipitation as BOUNDARY CONDITIONS into the existing laws (rain as a drop source at the sky
+cells with a sub-voxel film law; wind as the push law's open-edge surface; snow as a deposition
+flux like frost already is; fog by the saturation adjustment). Weather generators: Markov
+precipitation, AR(1) wind speed with a diurnal cycle (k).
+Cost: per-event; near zero when calm. Status: NEW (map "rain" in environment). Priority: medium.
+Owner-level: YES in scope (how much weather play does the owner want).
+
+------------------------------------------------------------------------------------------
+4. LIGHT AND SOUND
+------------------------------------------------------------------------------------------
+
+B21. LIGHT DOES NOT EXIST
+Choice: sight checks only what blocks the view (optical depth: SEE_TAU 2, SEE_SMOKE_TAU 3,
+SEE_LIT_SMOKE 3/8); light is a single lux number read from the climate's sun for smoke sight, and
+a reference 300 lx otherwise (senses.py _ambient_lux: "The sim has no light field ... Flame and lamp
+light are not summed in (open item)"); marks.py has pure photometric functions
+(lux_from_source, luminance, legible) not wired to a field. (v)
+Why: sight was built before heat; light needs a field and rays; the map put it at P1 and L effort.
+Realism cost: every place is lit: a cellar, a cave, a night street, a shuttered room reveal
+everything; torches and lanterns do nothing for sight; stealth by darkness, hiding in shadow, a
+dark-adapted watchman, reading by a candle (marks.legible takes E_lux but is never fed one),
+being blinded by a flash, the glow of a forge through a door, seeing a lit window from far away,
+moonlit versus overcast nights, firelight on faces, colour of firelight, and the whole class
+of "haunted dim room" cues the coverage work already identified (decisions: dim featureless rooms
+plus suggestibility) are not representable. Day also does nothing: the sun lights no room.
+Alternatives: (1) LIGHT AS A FIELD ON THE SAME PATCH SYSTEM AS B2 (shortwave band): direct light from
+point and area sources (E = I cos theta / d^2 times transmittance by the existing ray walker, v
+heat.py _throw is the pattern), the sun and sky as boundary sources (sky view exists, v outside.py
+PSI_OUT and NDIR), indirect by the radiosity solve or by the cheap "lumen method" per room
+(IES Lighting Handbook; (k)); flood-fill propagation volumes are the cheap game alternative
+(Kaplanyan and Dachsbacher 2010, Light Propagation Volumes; the voxel-game block-light
+flood fill; (k)) and are acceptable where energy booking is not needed, but light is a sensing
+field, not a conserved quantity of the sim, so an approximate field with exact SIGNALS (lux at
+the eye) is the right trade. (2) PHOTOMETRY: flame, lamp and candle in lumens from the watts burning
+(luminous efficacy of a flame, the map's 0.16 to 0.3 lm/W for a candle; (v) as claimed in
+realism-map 3.5, (k) otherwise), an incandescent hot surface from Planck's law times the eye
+response (a 1000 C bar is orange and bright: the colour module heathist_colour.py already has the
+glow colour; v); lux to the eye as the sight input. (3) SPECTRAL BANDS: 3 to 4 bands so firelight is
+orange, moonlight blue-grey, magic light any colour (decision Q1: waste as light, a spectrum,
+so a COLOUR), glass and cloth selective (B2's two-band absorptance becomes per-band). (4) Mirrors
+and windows are transmittance and one specular term (B2).
+Cost and risk: the map's estimate is 0.15 to 0.25 ms a source on a 20 cm grid, cached on change,
+about 1 to 3 ms a tick amortised (v quoting the map; u as a measurement); the patch system is
+shared with B2 so the incremental cost is the source list and the sight integral. Risks: a
+second field in every room (use the lazy store: dark means zero); the sight law must be switched
+from optical depth to contrast (B22) at the same time or the field has no consumer.
+Status: NEW (map P1, marked "(owner)", not in any decided wave; 14a R1 only reads the sun). Recommend
+slotting it before 16b (knowledge uses sight as a channel: "sight models" in K3 and K4) and before
+magic light. Priority: high. Owner-level: YES: the bands (3 or 4 vs RGB), how dark is dark (the
+play effect of true night), and whether the sun is a light AND a heat source (recommended, B2).
+
+B22. SIGHT IS A BINARY OPTICAL-DEPTH CUT, NOT A CONTRAST AND ACUITY LAW
+Choice: a look penetrates optical depth SEE_TAU 2 for solids and foliage and 3 for smoke; a flame
+is seen to 8; no contrast, no acuity, no adaptation, no colour, no glare, no distance limit by
+size; the belief sweep ignores smoke and darkness (smoke.belief_ignores_smoke, v).
+Cost: a face is "seen" or not by geometry; recognising a face at 20 m in twilight, reading a
+sign across a room, spotting a dark figure against a dark wall, being dazzled by a lantern, night
+adaptation (rods, 20 to 30 min; Hecht), peripheral detection, camouflage and motion detection all
+are missing; the "detecting versus identifying" row of the map (Blackwell 1946 contrast threshold;
+a face identified at about 0.8 lux at 4 m) is unbuilt (v, map).
+Alternative: contrast threshold detection (Blackwell; CIE and the Adrian visibility model; (k)) from
+the luminance of target and background (B21), acuity by visual angle and luminance (Snellen,
+Hecht), adaptation level as a state per person (a dial plus history, matching the owner's
+"traits = dials" rule), glare by CIE disability glare (Holladay-Stiles; (k)), and the smoke path
+as a contrast loss by the soot law (already V = C/K, Jin; v).
+Cost: microseconds per look; the rays exist. Status: NEW (map P1 and P2); depends on B21.
+Priority: high with B21. Owner-level: no (the law is standard); the dial ranges are tuned.
+
+B23. SOUND: ONE BAND, ONE STRAIGHT-LINE LEVEL, A STATIC AMBIENT, NO ROOM ACOUSTICS
+Choice (v, senses.py `_level`, materials SOUND dict, policy LOMBARD): each sound is a level in dB
+at 1 m; the level at an ear is 20 log10 distance, minus the mass-law loss of the walls along the
+straight line (total mass, applied once), gaps by energy, a body 3 dB, foliage by ISO 9613-2, and
+the louder of that and a way round a corner with the ISO barrier bending cap of 20 dB; the
+wavelength is fixed at 500 Hz (wave_m 0.686); words are understood if the level beats HEAR_DB 40
+and the ambient minus 3 dB; the ambient is ONE number per world (`w.ambient_db`, default 35),
+set by a scene, not computed from sources; sounds live a couple of ticks; there is no speed of
+sound; the Lombard reflex exists (LOMBARD from 45 dB, slope 0.5, cap 100).
+Realism cost: (a) a wall's mass law is per band: a door passes bass and stops treble, so a
+muffled voice through a wall (low frequencies pass; consonants lost) and the intelligibility of
+speech (SII over 6 or 7 bands) cannot be modelled; the map's "partial understanding" (a voice but no
+words) needs it; (b) ambient noise is whatever the scene says: a loud fire, a crowd, a rain or a
+river or a forge do not mask speech unless the author sets the number; they should come from the
+sources actually running (sound power sums of every live source at the listener, with a floor);
+(c) no reverberation: a stone hall, a cave, a cathedral, a tiled bath and a padded room sound
+alike; speech intelligibility in a reverberant room falls with the reverberation time
+(Sabine, Eyring; Kuttruff, Room Acoustics; Hodgson; (k)); (d) air absorption (ISO 9613-1: 0.1
+to 3 dB per 100 m by frequency and humidity), ground effect, wind and temperature gradient
+refraction (sound carries downwind and over water at night) are absent at distances over 30 m,
+which matters for a shout across a field and a bell across a town; (e) no speed of sound: echo,
+thunder and a distant gunshot have no delay (343 m/s: 3 s per km; the tick is 25 ms so a 8.6 m
+travel is 1 tick: time of arrival is cheap to add); (f) voices are omni: a shout in front of
+the speaker is 6 dB louder than behind (directivity, Chu and Warnock; (k)); (g) impact
+sound (footsteps on floors above) transmits as structure-borne, not as the air mass law; (h)
+sound events end after two ticks, so a droning fire, a river, a forge's hammer, a crowd's murmur
+and a bell are not sustained sources (map: "Fire is silent; sounds live 2 ticks").
+Alternatives: (1) OCTAVE BANDS (125 Hz to 4 kHz, 6 bands) in the existing numba ear-pair kernel,
+per-band mass-law TL from the surface mass and a per-material coincidence dip (Sharp; the mass
+law is the standard first-order form, (k)), per-band source spectra by class (speech, impact,
+fire, water); (2) the world's AMBIENT as the energy sum of the live sustained sources per air
+region at the listener, with a floor of the quiet room; (3) a Sabine or Eyring reverberant field
+per airspace region (one number per region and band from volume and absorption; regions exist,
+v air.py regions()), added as a diffuse level and a decay time (T60 = 0.161 V / A); (4) air
+absorption by ISO 9613-1 per band from temperature and humidity (the world has both); wind
+as a speed-of-sound vector offset along the path for far listeners; (5) an arrival delay by distance
+over c, as a tick count, for echoes and thunder; (6) simple voice directivity by angle; (7) sound
+power from energy: B24.
+Cost and risk: bands multiply the ear-pair kernel by 6 (the map's batch estimate about 1 to 2 ms for
+80 pairs is the unbanded number; with 6 bands 6 to 10 ms (u), so cache by source and sleep sources
+below the audibility floor, which the scale of the lattice already helps); the Rust rule applies
+(bit for bit against the Python reference). The reverberation is per region and nearly free.
+Status: partly scheduled: speech loudness and Lombard are done (v, policy.py); 16b's channel
+model (K3, K4) relies on "the sound and sight models" but does not name these laws; the map lists
+partial understanding, sustained sounds, reverb and the hearing cost kernel at P1 with no wave.
+Priority: medium-high (every overheard plan, whisper, guard and noise decision in 16b rides on it).
+Owner-level: the band count is a small cost-versus-fidelity call; the rest is technical.
+
+B24. SOUND SOURCE LEVELS ARE NAMED GUESSES, UNBOOKED
+Choice: an impact's level is a "ring" fraction times the blow energy over 50 ms, 8 dB below a
+half-space power level, "named guesses, pinned by two anchors" (a footstep about 60 dB at 1 m, a
+pane on stone about 100); a fire is silent; flow, water and the gas jet make no noise (materials.py
+SOUND comments). (v)
+Realism cost: a bellows, a fan, a boiling pot, a pouring stream, a sword on a shield, a fire's roar
+(sound power scales with heat release; Strasberg; Rajaram and Lieuwen; (k)), a river and wind in
+leaves have no source; the level of an impact does not follow the energy and materials law
+exactly; the energy radiated is not booked (tiny, but "every joule booked" asks the share to be
+a named loss to heat).
+Alternative: sound power as a book entry: radiated acoustic power equals the energy of the event
+times a per-pair radiation efficiency (a small table) with the share moved to heat as a booked loss;
+aeroacoustic sources from the flow (Lighthill: power scales with u^8 for a jet) and combustion
+noise from the heat release rate (a standard efficiency of order 1e-6 to 1e-5; Rajaram and
+Lieuwen, (k), (u) the constant).
+Cost: tiny; fits with B23. Status: NEW. Priority: low. Owner-level: no.
+
+------------------------------------------------------------------------------------------
+5. ORDER OF WORK, DEPENDENCIES AND COST RISKS
+------------------------------------------------------------------------------------------
+Dependency order (cheapest and most unlocking first; each step deletes stand-ins):
+  1. B7 gas flow and momentum ON everywhere (deletes B6 and six crutches).
+  2. B1 shape class and staircase correction, with the booked thin-plate fix, in ONE wave so every
+     quench and forge scene changes once.
+  3. B5 convection law, then B3 exponential face update where the clip bites (both in the Rust face
+     kernel, behind the same interface, declared diffs).
+  4. B2 patch system (longwave), then the same patches carry the SHORTWAVE band and the sun; B21 light
+     and B22 sight on top; the bands chosen once with magic's waste light in mind.
+  5. B13 and B9 species and fuel vapour, with B11 fuel rows and B12 smoulder; B8 (1) room pressure
+     lands with B9 because a closed room's pressure is a gas-phase fire result.
+  6. B23 bands, reverberation, sustained sources; B24 with the ambient from sources.
+  7. B15 shallow water (and viscosity), B17 property functions, B18 weather boundary conditions; B25
+     refinement only if a scene needs it.
+Do not start any of them while the owner's pause is in force. Slots recommended: B7 and B1 into W15
+batch 3 (heat.py is with batch 3 already per decisions); B2, B21, B22 as a "light and radiant heat"
+wave before 16b; B9 and B13 as a "gas-phase fire" wave before magic slice one (the fireball from a
+gem needs the fire it hands to); B23 beside 16b; B15 later, on a scene's demand.
+
+REAL-TIME RISK SUMMARY (a 25 ms tick on one laptop)
+  - B7 on, B5, B3: the gas projection and the face kernel are the cost; both are Rust or numba candidates
+    and quiet worlds sleep. Measure first against the ceiling; the crowd timing in decisions was 7.4 ms
+    (W15 batch 1).
+  - B2 and B21 share one patch set rebuilt only on geometry change; the per-tick cost is a lookup plus a
+    few ms once a second.
+  - B9, B13: species scalars only in the active box; keep one limiter pass for all species.
+  - B23 bands: cache and sleep sub-audible sources.
+
+------------------------------------------------------------------------------------------
+6. OWNER-LEVEL CHOICES IN THIS LANE (real trade-offs)
+------------------------------------------------------------------------------------------
+  O1. Combustion depth (B9): surface flux only, or one gas-phase path with fuel vapour and flammability
+      limits (and so explosions and dust). Recommended: gas-phase; it also unlocks smoke species and the
+      magic "byproduct" gases.
+  O2. Blasts (B8 5): an event law with a Friedlander pulse, or no explosives. DCC-type scenes (188 cases)
+      want them; cost is per event.
+  O3. Light: a physical field with the sun as light and heat (B21, B2), the spectral band count (3 to 4
+      shortwave bands vs RGB), and true darkness (play effect: torches become necessary). Recommended: yes,
+      4 bands, once.
+  O4. Water scope (B15): rivers, boats, swimming, floods, currents: yes or no, and so whether the height
+      field and a person's buoyancy are built before the knowledge wave.
+  O5. Weather scope (B18): rain, snow, wind and fog as play, or the climate temperature only.
+  O6. Sound bands (B23): 6 octave bands (cost) vs 1 band plus a reverberation term (cheaper), and whether
+      the ambient is computed from sources (recommended).
+  O7. The cost ceiling for flipping the gas flow on (B7): the owner has said "optimise until it fits";
+      the decision is how much per-tick slack the fire box may use in a fire scene.
+
+------------------------------------------------------------------------------------------
+7. SOURCES TO REQUEST FROM THE LIBRARY (BABBEL) BEFORE BUILDING
+------------------------------------------------------------------------------------------
+Radiation and heat: Modest, Radiative Heat Transfer; Siegel and Howell, Thermal Radiation Heat Transfer;
+Hottel and Sarofim; Incropera, Fundamentals of Heat and Mass Transfer (natural and forced convection,
+Churchill and Chu); Patankar, Numerical Heat Transfer and Fluid Flow; ASHRAE Fundamentals and the
+EnergyPlus engineering reference (two-band solar and longwave exchange); Mullikin and Verbeek 1993 (voxel
+surface area).
+Fire and gas: McGrattan et al., Fire Dynamics Simulator Technical Reference Guide; Rehm and Baum 1978
+(low Mach); Drysdale, An Introduction to Fire Dynamics; Quintiere, Fundamentals of Fire Phenomena;
+SFPE Handbook (Tewarson on yields; Purser on toxicity; Jin on visibility; Rein on smouldering;
+Heskestad on plumes; Babrauskas); Babrauskas, Ignition Handbook; Kingery and Bulmash; Baker et al.,
+Explosion Hazards and Evaluation; Magnussen and Hjertager 1977.
+Fluids: Bridson, Fluid Simulation for Computer Graphics; Mei, Decaudin and Hu 2007 (virtual pipes);
+O'Brien and Hodgins 1995; Ibrahim, Liquid Sloshing Dynamics; Landau and Levich (drainage films).
+Light and vision: IES Lighting Handbook; Kaplanyan and Dachsbacher (light propagation volumes);
+Blackwell 1946; Hecht (dark adaptation); CIE disability glare; Wyszecki and Stiles, Color Science.
+Sound: Kuttruff, Room Acoustics; ISO 9613-1 and 9613-2; Fahy, Sound and Structural Vibration
+(mass law, coincidence); ANSI S3.5 (SII); Rajaram and Lieuwen (combustion noise); Lighthill 1952.
+All are (k): none was re-read this session.

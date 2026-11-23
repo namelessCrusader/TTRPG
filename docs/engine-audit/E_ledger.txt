@@ -1,0 +1,426 @@
+ENGINE AUDIT, LANE E: THE SWITCH LEDGER, THE CRUTCHES AND THE (u) CONSTANTS
+Date: 2026-11-22. Tree: base25 + wave 15 batch 1 (committed state of the live tree) + the unmerged batch 2 edits.
+Author: audit lane E (documents only; no code, tests, sim or git were run).
+
+Marks: (v) verified against a file I read in this tree; (k) from my own knowledge of the literature or engineering, not re-checked
+today; (u) unverified or my judgement. File:line numbers are from today's tree and may drift.
+
+WHAT WAS READ
+- src/voxel/switches.py in full: 175 rows (counts by kind below). Every row id is dealt with in section 3.
+- docs/realism-map.md (sections 1, 3.1, 3.3, 3.4 read; the rest skimmed by headings).
+- /home/nisargparikh/.cache/mark1-build/w14/decisions.md (all scheduling statements: wave 15 batches 1-4, 16a, 16b, family, healing, agreements, self-care, magic, coverage CV1-CV8).
+- Spot reads: sim.py:188-200, contact.py:78-110, gasflow.py:110, heat.py:1572-1600, materials.py (EDDY, SEE_*), matlaws.py:41-46,167, matfric.py:49-75, matrec.py:294-330, plus greps for the (u) marks.
+- (u) census (grep "(u)" src/voxel src/mpm): 566 lines in src/voxel; src/mpm has none (the only grep hit there is a loop variable). Top files by count: matrec 41, record_data 26,
+  matfric 26, switches 25, heathist_data 20, climate 18, impact 15, digestion 14, bodycontact 14, mixdata 13, matterdata 13, locks 13, exertion 13, tissue 11, thermoreg 11, bodysheet 11.
+  SAMPLED (read the lines): matrec, matfric, impact, climate, digestion, thermoreg, tissue (7 files, about 9 lines each). The rest are counted, not read.
+
+THE LEDGER BY KIND (my count of ROWS): see section 3 for the rows. About 80 crutches, 35 estimates, 28 gates, 6 permanent (rounded; I did not run counts()).
+
+-------------------------------------------------------------------------------------------------------------------------------------
+1. THE SHORT ANSWER
+-------------------------------------------------------------------------------------------------------------------------------------
+The ledger is honest and mostly well formed, but it records THE SYMPTOMS of a few early choices rather than the choices. Read as a whole it
+says six things:
+
+A. THE BIGGEST REALISM DEBT IS STILL A GATE THAT IS OFF BY DEFAULT: gas.momentum (gasflow.py:110 GAS_MOMENTUM = False). While it is off, hot air carries
+   heat by the EDDY stand-in (materials.py:553 EDDY 7500; heat.py:1599), and realism-map section 1 shows the consequence: the room fire is upside down
+   (121 C at the floor, 28 C under the ceiling at 30 s). Four more ledger rows (gas.eddy_heat, gas.drag_mom, gas.mix_mom, cold.plume_k) hang off it. It is
+   "scheduled" only in the sense of W15-Q8 (all laws on, by exact optimisation and Rust). No wave names the flip. (v) NEW as a named task.
+B. SEVERAL "CRUTCHES" ARE CONSERVATION HOLES, not shortcuts. The owner's rule is "every joule booked". Rows that break it today: cold.matter_rule_partial,
+   wet.seep_no_heat, push.work_unbooked, contact.adj_ignored, layers.temp_clip, body.work_billing, mix.steam_to_gone, layers.soot_no_thermal, heat_history.scale_unbooked.
+   Some are tiny (3e-5 of the host), but cold.matter_rule_partial and push.work_unbooked are structural. A crutch that creates or destroys energy should be
+   ranked above a crutch that merely looks wrong.
+C. THE ONE-NUMBER-PER-MATERIAL LEGACY IS STILL ALIVE in three places: friction 0.40 (contact.pivot_dry_040, mat.friction_voxel_only, materials.py:485),
+   MPM strengths inverted (stone 8 MPa below wood 10 MPa, mat.mpm_inversion), and SPAN as a veto floor (mat.span_floor). All three are "D5 unify" and none is in a
+   named wave. They are cheap (data) and visible (boulders weaker than logs, soil that slides with the wrong angle of repose).
+D. THE PERSON IS STILL A RIGID, VELOCITY-LESS THING driven by pushes: motion._v_push, contact.slip_speed, stairs.lunge, contact.step_friction (binary),
+   injury.landing_mode, injury.fractures_unread. This is the same class of early choice as the owner's rigid-voxel decision (a rigid thing standing in for a
+   compliant one). Waves 15 (stairs, grip, fall law) and 16a (primitives) touch parts of it, but nothing schedules a person with real velocity, legs and
+   compliance. That is the next "rigid shape-keeping" in the tree. (u) The structural fix is a lane for another auditor; I list the ledger evidence.
+E. FLOAT32 LATTICE ENERGY (sim.py:191-194 E_dtype float32, "and every golden hash"). A flesh voxel holds 7400 J and a float32 step there is 5e-4 J; the ledger
+   already has faintrates.fresh_band (float32 o2 field) as a symptom and layers.temp_clip (a NaN from "a stray negative E") as another possible one.
+   BodyWorld sets float64 locally. The choice made the goldens cheap; it costs real accuracy for slow warm things and hides drift behind the books' tolerance
+   (drift 0.002 g in the fuzz). NEW (not in the ledger as a row at all). OWNER-LEVEL (cost: memory bandwidth, golden rebase).
+F. The crutches whose replacement law is GENUINELY SCHEDULED are healthy: bleeding, burn faces, grip, doors, quench film, thin-plate area, shut-room star, tissue
+   repair, heat history, reaction runner. About 25 rows resolve when waves 15 batches 2-4 and 16a land. After merging batch 2 the ledger needs a sweep (section 4).
+
+TOP FIVE (details in section 2):
+  1. Flip and finish gas momentum (retire EDDY, drag_mom, plume_k, eddy_heat) and book the gas kinetic energy (push.work_unbooked).
+  2. Close the energy holes in the ledger: matter_rule_partial, seep_no_heat, temp_clip, adj_ignored, work_billing (a conservation sweep, not five features).
+  3. Unify the material record in the MPM and the pivot: friction pairs and the wood/stone strength inversion, then delete SPAN (D5).
+  4. Clothing and cold: clothing_lattice_path, pour_at_20C, b0_fixed (outdoor humidity), film_no_ice. Winter play is wrong without them and each is small.
+  5. Retire the rigid person: fractures_unread (a broken leg still bears load), slip_speed/_v_push, step_friction binary, lunge.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+2. THE CHOICES THAT MATTER (full template)
+-------------------------------------------------------------------------------------------------------------------------------------
+
+2.1 GAS MOMENTUM STILL OFF BY DEFAULT (and the four rows that depend on it)
+  Choice: gasflow.py:110 GAS_MOMENTUM = False; heat.py:1599 uses the EDDY eddy conductivity when off (zero when on); materials.py:553 EDDY 7500;
+          GAS_DRAG_MOM 0.1/s (gasflow.py:113), GAS_ENTRAIN 0.03 (gasflow.py:89, the same number used as momentum mixing, (u)); climate.plume_k 100 K (climate.py:90).
+  Why: the 20 cm gas field was lossy and pumped mass when it tried to carry O2 (realism-map 3.1); the momentum lane was built in 14a behind a gate and
+       left off while the speed and the scene regressions are measured.
+  Realism cost: buoyant plumes, ceiling jets, hot layers, doorway neutral plane, "crawl low", flashover and banking down cannot come out right; the fire
+       is hottest at the floor (v, realism-map). Wind and bellows are the push law's job but that law rides the same flow. Smoke, CO and O2 do not stratify.
+  Better: turn it on and delete the stand-ins: a low-Mach buoyant projection with limited advection (what the lane built), wall shear and a turbulence
+       closure (Smagorinsky; Pope, Turbulent Flows, 2000 (k)) instead of the linear GAS_DRAG_MOM; validate against Heskestad plume, Alpert ceiling jet,
+       McCaffrey and Zukoski filling (k) (the realism-map tests, already listed).
+  Cost/risk: the lane measured 0.7-1.25 ms with unconverged iterations; expect 2-5 ms (realism-map v). Risk: all goldens change (declared diffs). The Rust
+       port of the pressure solve is the Q8 route.
+  Scheduled?  PARTLY: Decision 4 14a lane D built it; "gate flips" are W15 batch 3c ("default-on flips") but no spec names gas.momentum, and gas.momentum's own
+       deleted_when says "gas_flow is on by default in every scene and all of them have passed with momentum on" (a condition nobody owns). Mark: NEW as an owned task.
+  Priority: HIGH (the largest single realism term for fire scenes, which are 12% of book options).
+  Owner-level?: technical, except the cost ceiling (a few ms) which is Q8 already decided.
+  deleted_when check: right, but the four dependents should be listed in ONE row's condition so they go together.
+
+2.2 ENERGY HOLES (crutches that break "every joule booked")
+  Choices (file:line from the ledger text; rows in section 3):
+    - cold.matter_rule_partial: burn, char, boil, melt, freeze, spawn and scenes.fill change capacity at fixed E; only things._unmake books it.
+    - wet.seep_no_heat: seep moves vapour grams without their heat.
+    - push.work_unbooked: push work on the gas is in a stats counter, the gas kinetic energy is not in the books.
+    - contact.adj_ignored: a hot layer moved by a foot or hand does not book its heat.
+    - layers.temp_clip: temperature clipped to [-150, 5000] C because "a stray negative E made a NaN": this silently creates energy.
+    - body.work_billing: lift, swing, throw and climb heat comes from nowhere (14b G probably retired most of this; see 4.).
+    - mix.steam_to_gone: steam of a mixed boil is booked to the gone book, not to a vapour store (water mass leaves the water cycle).
+    - heat_history.scale_unbooked: oxide scale grows without booking oxygen or iron.
+  Why: each was a lane's pragmatic cut so a law could land with the books closing at the golden tolerance.
+  Realism cost: a player never sees a joule, but long runs drift (fuzz drift 0.002 g is fine today; a month of play and a campfire in a closed room are not
+       checked), a cold-climate world with melting and freezing gains or loses heat at every phase change that is not through _unmake, and quenching or forging
+       gets energy from nowhere. More important, the owner's faithfulness test for magic ("hand-off equivalence: a deposit of Q J must give the same downstream
+       physics as an ordinary Q J source", Decision magic FAITHFULNESS) needs the books to be true: it cannot be tested on a leaky ledger.
+  Better: one invariant instead of eight fixes: every law that changes capacity, mass or species calls ONE "matter_change" gate that moves the sensible heat
+       with the matter (the C1 spec already names outside.matter_change) and the audit fails any law that writes E, mass or species outside it. See Noether-style
+       "conservation by construction" in the lattice-Boltzmann and FV literature; the practical pattern is the flux-form update (k): every transfer is a signed flux
+       between two cells, so the sum is exact. A static AST lint (writes to E/mass arrays only inside whitelisted functions) is cheap.
+  Cost/risk: runtime ~0. Work: a medium refactor (about 10 laws). Risk: golden diffs.
+  Scheduled?: matter_rule_partial says "C3 and C2 migrate them one by one": NO wave names it (W15 batches have reactions, smithing, doors, bleeding, grip, twins,
+       quench, healing). NEW as a sweep.
+  Priority: HIGH (tiny player-visible effect now, but it blocks magic faithfulness, long runs, and the owner's rule).
+  Owner-level?: technical (the owner's standing rule already decides it).
+  deleted_when check: right for each, but the real condition is the single invariant above; one row should own "the energy audit has zero exceptions".
+
+2.3 THE ONE-RECORD LEGACY: friction 0.40, MPM strengths, SPAN
+  Choice: materials.py:485 FRICTION 0.40 and contact.pivot_dry_040 (the ledge scene calibrates to it); mat.friction_voxel_only (the MPM and bonds keep 0.40);
+          mat.mpm_inversion (matrec legacy MPM rows: wood 10 MPa above stone 8 MPa); mat.span_floor (SPAN veto floor, decision D5).
+  Why: SPAN and 0.40 were the first support and friction laws; the matfric table (matfric.py:68-75, many (u) pairs) arrived in 13b and was wired only to the
+       voxel _effort and to floor_mu. The MPM is a separate solver with its own strength column.
+  Realism cost: sand, gravel and snow piles stand at the wrong angle of repose (the MPM wall friction is a constant); a boulder thrown at a log shatters first;
+       a stone arch or lintel is judged by SPAN first and only vetoed by the beam check; the crate-push and ledge scenes agree with each other by calibration, not by physics.
+       A loaded structure (a roof with people on it, snow load) can stand because SPAN says so (SPAN is load-blind; the veto is for changes only: mat.veto_changed_cells).
+  Better: one material record read by every solver (the realism-map P1 "one material record"; the matrec ingest already exists); in the MPM a per-node wall friction
+       field (Coulomb, Hu et al. MLS-MPM 2018 (k), and Klar et al. 2016 for sand with Drucker-Prager (k)); beam check for horizontal runs and arch thrust-line check
+       (Heyman 1966, thrust-line analysis (k)) to replace SPAN; unify the numbers by sourced table (Wood Handbook, Engineering Toolbox, CES; (k)).
+  Cost/risk: data lookups, a 3-6 ms layout-change check (realism-map v). Risk: golden diffs; calcite has no MPM row yet (1d bug).
+  Scheduled?: NEW as a named wave task (D5 is "one by one"; W5b is old; 2f only adds calcite). The owner's new rod/elastic decision needs this record anyway:
+       E and strength per material must be right before stiffness-from-moduli means anything. So this is the PREREQUISITE of the deformation decision.
+  Priority: HIGH (cheap, visible, and a dependency).
+  Owner-level?: technical. The SPAN retirement alone is owner-level (user wanted to review overhangs: W9 per the row).
+  deleted_when check: span_floor's condition (user retires SPAN after arch detection and a review) is right and owner-gated; friction_voxel_only's W5b is stale
+       naming (no wave 5b is in the plan); rewrite to "the MPM reads a per-node wall friction from the record".
+
+2.4 COLD AND CLOTHING (small rows, large winter effect)
+  Choice: body.clothing_lattice_path (skin still emits at skin temperature on the lattice path), cold.pour_at_20C (fluids.pour makes 20 C water), wet.b0_fixed (background
+          vapour fixed at enable_wet; outdoor shift not wired), contact.film_no_ice (contact.py:92-98 film_of called without temperature), cold.soak_last (a scene must call soak() last).
+  Why: cold (13b C1) was a switch; these are the pieces not yet wired.
+  Realism cost: a man in wool and a man naked lose the same heat on the lattice path; a bucket thrown outside in January is at 20 C; rain and fog do not change
+       the humidity the fire and the drying laws read; a puddle at -5 C does not make the floor slippery (ICED_WARM/COLD exist in matfric.py:53-54 but cannot fire);
+       a scene author who forgets soak() last gets a lattice out of step with the weather with no error.
+  Better: clothing as a per-cell emission and resistance overlay in series with the skin (ISO 9920 clo values; Gagge two-node, (k)); pour takes T (one argument);
+       floor_mu reads the cell's temperature (one line); shift_outdoor called from T8's publish; set_climate(soak=True) default so the order cannot go wrong.
+  Cost/risk: tiny each. Risk: low.
+  Scheduled?: 2e "body heat windowing plus cold (no flips)" touches cold but not these rows by name (u). pour_at_20C and soak_last and film_no_ice: NEW (S effort).
+  Priority: HIGH by realism over cost (each is under a day's work (u)).
+  Owner-level?: technical.
+
+2.5 THE RIGID PERSON (evidence in the ledger)
+  Choice: motion._v_push ("a push speed over the feet, not a rigid body in motion"); contact.slip_speed; stairs.lunge ("a rigid body needs it not to be thrown at a kerb";
+          six-riser flights still tip a rigid person); contact.step_friction (a binary grip-or-slide, bodycontact later adds Hof mechanisms but the step is binary);
+          injury.fractures_unread (a landing writes p['fractures']; nothing reads it); injury.landing_mode (cell principal axis, not per-bone contact);
+          injury.hold_hot_tag; contact.reflex_foothold; stairs.tumble_unwired.
+  Why: a person is a column of cells plus a sheet of numbers; the legs, the feet and the velocity were never modelled (realism-map 3.4 "Gait, speed, stairs": one rewrite).
+  Realism cost: a man with a broken tibia walks on it; stairs of six risers tip the person; a slip is a speed, not a foot sliding; falls hurt by cell axis not by contact;
+       the reflex does not place a foot by the floor's friction (the ledge on oil). The owner's rigid-voxel decision is the same class of problem one level up:
+       a rigid stand-in for a compliant thing.
+  Better: a simple articulated body with real foot contacts (an inverted pendulum with a foot (Hof 2005, XcoM, (k), already used), then a 2-leg
+       spring-loaded model SLIP (Geyer, Seyfarth & Blickhan 2006 (k)); bone-level load carrying and fracture (Winter segments (k), already in the G10 body numbers); a
+       broken bone's capacity read by bears/_footing from bonestate.py (the callus law exists).
+  Cost/risk: SLIP is ~10 flops per step per person; per-bone load is a table lookup. Risk: moderate (stairs, balance and fall goldens).
+  Scheduled?: PARTLY. batch 3 stairs hull (3a), 2c grip + D3 fall law, 16a primitives (limb jobs). fractures_unread (a broken bone not carrying load) is not named
+       in any wave; HL-1 healing (batch 4) only needs a fracture record to heal. NEW for the load part.
+  Priority: HIGH for fractures_unread (small), MEDIUM for the legged model (large).
+  Owner-level?: YES for the legged model (a real scope and cost choice, parallel to the rod-skeleton decision).
+
+2.6 FLOAT32 ENERGY AND THE (u)-FLOAT FIELD TRIPS
+  Choice: sim.py:191-194 E_dtype = np.float32 for every world except warm-body worlds; faintrates.FRESH_BAND 0.95 (o2 float32); layers.temp_clip; the float64-for-bodies rule.
+  Why: memory and golden-hash stability.
+  Realism cost: a resting body's energy step is 5e-4 J (comment at sim.py:191-193); slow processes (a body cooling in a night) lose small drains to rounding; fresh air
+       "reads as before within 5 percent" so a stale room's 18 percent O2 is read as 20.9 by the curve. This is a measurable but hidden error source.
+  Better: float64 E everywhere (2x memory on E; the heat sweep is bandwidth-bound so expect ~1.3-1.6x on that sweep (u)), or float32 with a compensated (Kahan) update
+       for the slow tier (k). Rust makes float64 cheaper to carry (explicit SIMD, no Python overhead).
+  Cost/risk: the owner's tick is 25 ms; the E sweep is a share of it (measure). Risk: every golden hash.
+  Scheduled?: NEW, not in the ledger.
+  Priority: MEDIUM.
+  Owner-level?: YES (a trade between memory, speed and accuracy, and it forces a base rebase).
+
+2.7 ONE OPTICAL-DEPTH THRESHOLD FOR SIGHT; ONE Cd; ONE ESTIMATE-AS-LAW
+  Choice: materials.py:694-703 SEE_TAU 2.0 and SEE_SMOKE_TAU 3.0 (a person sees until optical depth 3); push.py:49 CD_PLATE 1.2 for every patch.
+  Why: the cheap, defensible mid-range of Jin's visibility correlations and Hoerner's plate.
+  Realism cost: a dim target, a lit target and a small target are seen at the same depth (visibility depends on contrast and ambient light: Jin and Yamada,
+       K = C/sigma (k); smoke_light already adds the sun). A sphere (0.47) and a long cylinder (1.0) at 1.2 are 2.5x and 1.2x off; a sail is wrong by a shape factor.
+  Better: contrast-threshold sight (Koschmieder; Blackwell contrast thresholds (k)) with the light model that the 16/health lane builds; Cd per shape with Reynolds
+       dependence (Hoerner; Schlichting (k)).
+  Cost/risk: ~0 (a lookup).
+  Scheduled?: both rows name "the user picks another point in Jin's range" / "a patch carries Cd from its shape". NEW (S).
+  Priority: LOW to MEDIUM.
+  Owner-level?: no (technical), except the indoor light model (smoke.smoke_light deleted_when), which is a scoped feature.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+3. ROW BY ROW (every row of switches.py)
+-------------------------------------------------------------------------------------------------------------------------------------
+Key. DW = is deleted_when still the right condition: OK / STALE (a law already landed, check) / WEAK (the condition names a vague replacement) / OWNERLESS (no wave).
+SCH = scheduled: the wave or decision, or "NEW".  DMG = realism damage today: H / M / L / none.  Items are written "id | kind | DW | SCH | DMG | note".
+
+--- 13b (cold, mix, body, mat) ---
+cold.ColdWorld | gate | OK | Q8 flip + Rust (quiet scan 1.1 ms vs 0.3) | L | a perf gate, no realism lost when on.
+cold.quiet_memo | crutch | OK | perf | none | a stale quiet for one tick if a law forgets _E_WRITERS: a correctness hazard; the E-write lint (2.2) would remove it.
+cold.plume_k | crutch | WEAK | with gas.momentum (2.1) | M | 100 K threshold is a switch, not a law; entrainment (Morton-Taylor-Turner 1956 (k)) is what replaces it.
+cold.legacy_pressure_mean | crutch | WEAK | "gas_flow becomes default" (same unowned condition as 2.1) | L | a pressure mean over all voxels instead of gas cells.
+cold.matter_rule_partial | crutch | WEAK | NEW (see 2.2) | H (structural) | every phase change outside _unmake changes capacity at fixed E: an energy hole.
+cold.pour_at_20C | crutch | OK | NEW (S) | M | outdoor water at 20 C; one argument.
+cold.soak_last | crutch | OK | NEW (S) | L | an ordering trap; make set_climate(soak=True) the only entry.
+mix.mix_laws | gate | OK | Q8 | L | the 13a-state tests; clean-up.
+mix.mix_compiled | gate | OK | perf twin test | none | a twin-equality gate.
+mix.steam_to_gone | crutch | OK | NEW (with a wet vapour store) | M | brine steam leaves the water cycle: a salt-pan evaporation never rains.
+mix.crystal_mat21 | crutch | STALE? | Decisions line ~374: ids 13-26 are built as PLANNED rows (borrowed mechanics). The condition "table rows for 13-26 exist" is met: check
+   whether mat 21 now has a real row; if so delete the row, otherwise rewrite it to "mat 21's mechanics are sourced (W15 S1)". | M | a salt crystal behaving like air.
+mix.skip._law_melt | crutch | OK | M1 of C12 (brine freezing) is NOT in batches 2-4: it is in craft.missing_laws, M1 | M | brine, seawater and wet salt never freeze at their own point.
+mix.skip._burn_cells | crutch | OK | the reaction runner (1d landed, gates OFF) | M | a mixed solid or oil pool does not burn.
+mix.skip._law_skin_water | crutch | OK | NEW | L | brine in a porous skin.
+mix.skip._law_boil | crutch | OK | with mix_laws | L | clean-up.
+body.BodyWorld | gate | OK | 2e (windowing), Q8 + Rust | M | a warm body costs +18 ms at 0.4 M and +67 ms at 1.6 M against a +3 ms ceiling: the biggest cost gate in the tree.
+body.gas_busy_fallback | crutch | OK | C1 rest-relative gas test | L.
+body.reflex_out_when_asleep | crutch | OK | NEW (S) | L | balance reflex absent asleep (real: reduced, not absent: sleepers react to a lurch (k)).
+body.sleep_constants | estimate | OK | needs a data set | L.
+body.clothing_lattice_path | crutch | OK | NEW (see 2.4) | H (cold) | clothing does not insulate on the lattice path.
+body.breath_to_shed | crutch | OK | C10 RegionSink | L | about 2 W a person: small but it is breath heat into the room air.
+body.stores_injection | permanent | OK | never | none.
+body.work_billing | crutch | STALE? | 14b G/14bF "exertion from the body, paid from the books" covers kick, punch, throw, lift and haul. The row says only drag is billed. Re-check
+   whether hands.py now bills via exertion.pay_*; if so, shrink the row to climb and swing | M (conservation).
+body.p_follow | crutch | OK | gas_flow replaces the pneumatic field (2.1) | L | stability constant 0.03 in air.py:32.
+mat.mat_laws | gate | OK | Q8 | none | all five laws on.
+mat.span_floor | crutch | OK (owner-gated) | NEW named wave (see 2.3) | M | load-blind support floor.
+mat.friction_voxel_only | crutch | STALE NAME | W5b is not a planned wave; NEW (2.3) | H | MPM and bonds ignore the friction table.
+mat.veto_changed_cells | crutch | OK | scene-build audit NEW | M | a world built standing is taken to stand: hides unstable builds.
+mat.veto_static | crutch | OK | landing event with 14b contact; footfall C13 gives a walker DAF | M | no dynamic loads on structures (a crowd on a bridge; matbeam DAF 1.2/2.5 are (u)).
+mat.char_floor | crutch | OK | char cell (heat history lane) | L.
+mat.veto_constants | estimate | OK | measured audit | L.
+mat.damage_off | gate | OK | Q8; support.py sites | M | accumulated damage (fatigue of a rope or a beam) does not exist where off.
+mat.eta_impact | estimate | OK | sourced crack energy | L | ETA 0.3 in two places (matlaws.py:167, matdamage.py:33): two copies of one (u) can drift; make one.
+mat.spall_one_face | crutch | OK, perhaps ripe | Fick solids landed in 1d (gate OFF): spall with pore pressure can be built now | M | stone in a fire spalls without steam pressure.
+mat.mpm_inversion | crutch | OK | NEW (2.3) | H | stone 8 MPa below wood 10 MPa.
+
+--- 13c (wet, layers, smoke, records, injury, edge, stairs, contact, slow, craft) ---
+wet.w.wet | gate | OK | never (test hook) | none.
+wet.humid_default | gate | OK | never | none | already everywhere (14a R4).
+wet.idle_flags | crutch | OK | SCALE matter stamp | L | a scene that puts ICE by hand must call w.wet_refresh().
+wet.heat_capacity_wrapper | crutch | OK | SCALE list path | L.
+wet.seep_no_heat | crutch | OK | gas_flow default or seep carries E | M (energy) | moves grams, not their heat.
+wet.edge_relax | estimate | OK | C10 sealed sink | L | 0.5/s relaxation of vapour at open edges: an open sky; wind-dependent in reality.
+wet.b0_fixed | crutch | OK | T8 publish (not in a wave) | M-H outdoors | humidity does not follow the weather.
+wet.mixed_cells_skip | crutch | OK | M1 of C12 | M.
+wet.gasflow_hooks | permanent | OK | never | none.
+layers.surface_laws | gate | OK | Q8 | none.
+layers.soot_no_thermal | crutch | OK | an ash/wax/water layer lane | L | 3e-5 of the host.
+layers.dep_every | estimate | OK | on evidence | none | ratio 0.986 against every 8 ticks: fine.
+layers.soot_true | estimate | OK | gas species for soot | L | 0.025 g/unit (u) also Brownian and 0.5 um (u).
+layers.temp_clip | crutch | WEAK | NEW | M | a NaN fix that hides an energy bug; the condition should be "find and fix the writer of a negative E".
+layers.thin_deposit | crutch | OK | prune | none | a cost wart (6879 faces for 1.2e-4 g).
+smoke.smoke_opacity | gate | OK | Q8 | none.
+smoke.sigma_e | estimate | OK | sourced_numbers.json | L | 8.7 m2/g for flaming soot: the literature gives about 7.6 +- 1.1 m2/g (Mulholland and Croarkin 2000 (k)); 8.7 is within the 2.5-ish spread of fuels.
+smoke.cough_old | crutch | OK | smokeopt hooks | L | two smoke-extinction numbers (5.6 per g/L and 8.7 m2/g) live side by side; harmonise.
+smoke.see_tau | estimate | OK | owner's pick | L | duplicates smoke.see_smoke_tau: one row too many.
+smoke.belief_ignores_smoke | crutch | OK | perception lane | M | a man in a smoke layer still knows the room by geometry: wrong for "searching in smoke".
+rec.records | gate | OK | slice 2b | L.
+rec.rec_laws | gate | OK | slice 2b | L.
+rec.lattice_cp | crutch | OK | T9 cp(T) | M | the lattice's constant c: steel's cp grows about 1.5x from 20 to 800 C (k); forging is heat-capacity-sensitive. This is a wider early choice
+   (constant c per material in E); T9 covers records only. The lattice itself is another lane's audit item.
+rec.readout_only | crutch | OK | slice 2b + thin-plate area (batch 3, owner yes) | M | level off by 4 on a 2 mm blade.
+rec.port_bands | estimate | OK | slice 2b | L.
+rec.spmap | crutch | OK | T1 pool | M | only iron, wood and glass are counted in a record.
+rec.cure_stand_in | crutch | OK | T6 humidity feeds cure; hands pass hand force | L.
+rec.books_stand_in | crutch | OK | T1 | L | glue grams not in total_mass (a conservation tell).
+injury.burn_shock | crutch | OK | 2b burn faces (in flight, unmerged) | M | calibrated 0.2/0.45 (u).
+injury.fractures_unread | crutch | OK | NEW (2.5) | H | a broken leg bears weight.
+injury.landing_mode | crutch | OK | landing passes contact bones | M.
+injury.head_blow_constants | estimate | OK | _blow knows the weapon mass | L | 1 kg effective mass, 500 kN/m, vagal params (u).
+injury.pain_seen_adopt | crutch | OK | scenes declare history | L.
+injury.slowtwin_exclude | crutch | OK | batch 4 healing twins and 2d twin framework | L-M | injury clocks block the breath twin.
+injury.bleed_grip_unwired | crutch | STALE | 2b (bleeding.py, tests/test_bleed_wired.py) and 2c (grip.py, tests/test_grip_law.py) exist in the tree: split into "wired" and "not yet merged" after the batch 2 merge | (was H).
+injury.hold_hot_tag | crutch | OK | 16a primitives (the job layer) | M | a hot-pan grab.
+edge.edge_wound | gate | OK | with mat_laws | none.
+edge.no_eid_state | crutch | OK | tools get an eid (scene builders) | L.
+edge.temper_one | crutch | STALE? | 1e heat history landed behind a gate (OFF): the temper from the law exists. Condition "a heat-history law sets temper (M4)" is met except for the flip | M for smiths.
+edge.constants | estimate | OK | sourced | L | R_MAX 2 cm, MU_FLANK 0.4, SOFT_H 1e5 Pa (u), the whole blow's joules as wear: an energy accounting choice not physics.
+edge.filings_wait | crutch | OK | T1 contaminant place | L.
+stairs.step_range | gate | OK | BODY table | none | 30 cm up and down.
+stairs.fit_grid_union | crutch | OK | batch 3 stairs hull (3a) | L.
+stairs.look_fz | crutch | OK | batch 3 | L.
+stairs.levels_trust_flat | crutch | OK | batch 3 | L.
+stairs.lunge | crutch | OK | batch 3 + legs (2.5) | M | "six-riser flights still tip a rigid person".
+stairs.tumble_unwired | crutch | OK | wave 15 | M | a fall down stairs is a fall from the top.
+stairs.mechanism_rows | crutch | STALE-ish | 2a doors (in flight) + 16a verbs | M | verbs.yaml and tests/test_mech_menu.py are in the working tree.
+contact.contact_laws | gate | OK | Q8 | none.
+contact.walking_rcof | estimate | OK | gait table | L | 0.20 x speed ratio (u, 0.15 to 0.25 contact.py:39).
+contact.slip_speed | crutch | OK | legs (2.5) | M.
+contact.touches_verb | crutch | OK | 16a | L.
+contact.pivot_dry_040 | crutch | OK | 2.3 | M | the ledge scene depends on 0.40.
+contact.film_no_ice | crutch | OK | NEW (2.4) | M-H winter | still true at contact.py:92-98.
+contact.adj_ignored | crutch | OK | NEW (2.2) | L-M | heat adj dropped on touch.
+contact.reflex_foothold | crutch | STALE? | 14bH/E (Hof mechanisms, step_friction_needed) covers slips of a recovery step; the balance reflex's foothold reading floor_mu is exactly
+   contact.step_friction. The two rows overlap: reconcile.
+slow.airsink | gate | OK | 2d shut-room star | L.
+slow.exclude_rows | crutch | OK | quiet.py refactor | none.
+slow.region_o2_owned | crutch | OK | deletes with the sink crutch | none.
+slow.constants | estimate | OK | owner picks accuracy against speed | L | CHUNK_S 300 s, CORE_BAND (30, 40) C.
+slow.shut_room_radiation | crutch | OK | 2d shut-room star + env_radiation of a box | H for sleep | in the tick law 91 percent of a sleeper's heat leaves as shed: a shut warm room is cold.
+slow.co2_vapour_numbers | crutch | OK | gas species for CO2 and vapour | M | a closed room's CO2 is a number, not a field: stratification and door venting are missing.
+craft.missing_laws | crutch | WEAK (six laws in one row) | M3 in 1d (landed, OFF), M4 in 1e (landed, OFF), M1/M2/M5/M6 not scheduled | M | split into one row per law so each has its own deleted_when.
+golden.new_proof_cases | crutch | OK | base26 | none | process.
+
+--- 14a/14b gas, push, wood, smoke ---
+gas.momentum | gate | WEAK (unowned) | 2.1 | H.
+gas.drag_mom | crutch | OK | wall shear law (2.1) | M | GAS_DRAG_MOM 0.1/s is a linear drag for walls and canopy.
+gas.mix_mom | estimate | OK | turbulence closure | M | GAS_ENTRAIN x GAS_MIX_MOM 0.03 (u).
+push.cd_plate | estimate | OK | Cd by shape (2.7) | L-M.
+push.half_cell | estimate | OK | cut-cell treatment | L.
+push.work_unbooked | crutch | OK | ledgers gas-kinetic term | H (structural) | see 2.2.
+gas.eddy_heat | crutch | OK | with gas.momentum | H | EDDY is zero where gas_momentum is on.
+wood.species | gate | OK | never | none.
+wood.sorptivity_u | estimate | OK | capillary table | L | S_along, S_across (u).
+wood.pools | gate | OK | never | none.
+wood.bound_rates | estimate | OK | per-species table | L | GRAIN_RATIO, D_ACROSS, EA, HS0, HOT_TAU_S (u).
+smoke.smoke_light | gate | OK | indoor light model | M | a lit room under a roof is read with the sun lux or the reference light. Real: ambient lighting in a room fire is the fire itself.
+smoke.see_smoke_tau | estimate | OK | owner's pick | L | duplicate of smoke.see_tau.
+--- 14b bodies and choices ---
+mechlaw.exertion_from_body | gate | OK | flipped ON in 14bF | none | delete the False path.
+exertion.numbers | estimate | OK | strike-rig study | L | stroke lengths, training gain 0.35, z sigma 0.22 (u).
+mechlaw.KICK_M_KG_V | crutch | OK | clean-up with the flip | none | dead code: delete now.
+will.menu_batch | gate | OK | ON 4 | none.
+loop.MindConfig.batch | gate | OK | the NPC mind keeps the cut | none.
+will.MENU_CAP | crutch | OK | non-batchable policies | L-M | menu cuts hide choices (a mind never sees the 8th option): a realism-of-agency cost, not of physics.
+menu.BATCH_4 | estimate | OK | gpu-lock measure | none.
+tourney.realised_path | estimate | OK | exact bound | none.
+contact.step_friction | crutch | OK | 14bF Hof mechanisms (landed per bodycontact.body_contact gate) | M | binary grip or slide.
+faintrates.fresh_band | crutch | OK | float64 o2 (2.6) | M | hides small oxygen deficits.
+bodycontact.body_contact | gate | OK | ON; delete the False paths | none.
+bodycontact.numbers | estimate | OK | rig study | L | restitution 0.20, k 60 kN/m, A 0.03 m2, ankle 1.7 Nm/kg (u).
+motion._v_push | crutch | OK | 2.5 | M-H.
+bodycontact._reaction_cap | crutch | OK | hand reach from arm cells | L.
+exertion.reserve_u | estimate | OK | everyone has a heat record | L | W' 250 J/kg, tau 300 s (u).
+exertion.swing_torque | estimate | OK | arm cross-section table | L | stock 60 Nm.
+--- wave 15 batch 1 ---
+pathing.stance_footprint | gate | OK | batch 3 (3a) | M | stairs cause named in decisions: two drivers write one p[_path].
+chem.reaction_rows | gate | OK | batch 3c flip | M | lime, tanning, ferment off.
+chem.fick_solids | gate | OK | batch 3c flip | M.
+chem.aw_of_cell | crutch | OK | GAB isotherm (Gab 1966 (k), psychro.gab) per cell | M | food spoilage and drying use a_w: a_w is a rule not a law.
+chem.tannin_D | crutch | OK | sourced row | L | D25 5e-10 m2/s, E_D 18 kJ/mol (u).
+chem.bath | crutch | OK | finite stirred bath | L.
+chem.gas_no_cell | crutch | OK | 2c star | L | gas made with no open face goes to gas_gone: a conservation exit.
+chem.mat_keep | crutch | OK | collagen material row | L.
+heat_history.gate | gate | OK | owner flips (Q8) after ceilings | M | smithing is off by default.
+heat_history.hand_temper | crutch | OK | every steel has composition | L.
+heat_history.lever_rule | estimate | OK | Fe-C table | L | linear fg_eq between Ac1 and Ac3 (Callister, Fe-Fe3C diagram (k)).
+heat_history.grain_row | estimate | OK | per-steel fit | L.
+heat_history.cell_mean | estimate | OK | per-node columns | M | a 5 cm cell cannot show skin vs core of a blade; the slab sampler stands in.
+heat_history.no_embrittlement_band | crutch | OK | data | L.
+heat_history.no_bainite | crutch | OK | add branch | L.
+heat_history.nose_tau_u | estimate | OK | CCT per steel | L | tau 8 s fitted to 150 K/s.
+heat_history.latent_u | estimate | OK | calorimetry | L.
+heat_history.martensite_carbon | estimate | OK | lever rule carbon | L.
+heat_history.quench_film_scene | crutch | OK | 2f (in flight): film coefficient in heat.py | H smith | a voxel quench is ~100x too slow (decisions, batch 1 report).
+heat_history.wedge_local | estimate | OK | blade record conducts | L.
+heat_history.scale_unbooked | crutch | OK | book oxygen | L.
+
+Row-level DW verdicts that I would CHANGE (the condition is wrong, vague, or already met):
+  - mat.friction_voxel_only: names W5b, which does not exist. Rewrite.
+  - mix.crystal_mat21, body.work_billing, injury.bleed_grip_unwired, edge.temper_one, stairs.mechanism_rows, contact.reflex_foothold: verify and shrink after the batch 2 merge.
+  - gas.momentum, cold.legacy_pressure_mean: the condition "gas_flow is on by default" has no owner; make it a task.
+  - craft.missing_laws: split into six rows.
+  - layers.temp_clip: the condition should be "the negative-E writer is found".
+  - smoke.see_tau and smoke.see_smoke_tau, and mat.eta_impact vs matdamage.ETA_IMPACT: duplicates of one fact; dedupe.
+  - contact.pivot_dry_040: condition says "C8a friction numbers are unified": fine, but then it depends on 2.3 which has no wave.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+4. LEDGER HYGIENE FINDINGS (cheap, technical)
+-------------------------------------------------------------------------------------------------------------------------------------
+H1. No row says WHICH WAVE or decision owns a crutch; the owner field is a lane code (C6, C8a, 1d), not a schedule. Add an optional `wave` column with
+    values such as "15b3", "16a", "magic", "unscheduled": then "which crutches have no home" is one grep. Today about 18 crutches have no wave (marked NEW above).
+H2. audit() only checks that the deleted_when text is 20 characters. It cannot tell that "W5b" is a dead wave name or that a condition is already met. Add a
+    `check` probe (a callable or a source needle that must be ABSENT) so a met condition fails the test: e.g. for mix.crystal_mat21 "mat 21's row is not air-like".
+    The existing ("source", module, needle) probe only checks presence of the crutch; add an "absent" form for the cure.
+H3. The ledger has 28 gates. After W15-Q8 "all laws on in every world", every gate should have an ON date. Add `flip_when` to gates, and treat "gate off by default"
+    as a list the owner can read: today off-by-default are gas.momentum, pathing.stance_footprint, chem.reaction_rows, chem.fick_solids, heat_history.gate, mat.damage_off (v),
+    and (by decision) the 14a gates that flipped in 14bF. Six items; each is a "flip" task owned by someone.
+H4. No row covers: E_dtype float32 (2.6), the constant per-material cell heat capacity c in the lattice (rec.lattice_cp only covers records), the fixed 20 C zero of E
+    (AMBIENT at materials.py:32, climate.py:43; "the 0 C floor removed" in cold.ColdWorld means the zero stays but the floor goes), the tick of 25 ms and the 5/10/20 cm
+    grids as scale choices. They are early engine choices of exactly the kind the owner asked for; they belong to other lanes but should have rows.
+H5. The (u) marks are not in the ledger as rows except when a lane added one. 566 lines are marked (u) in src/voxel and tests/data/sourced_numbers.json lists only
+    those that were sourced. A table "(u) by module, with the realism-load" would make the sourcing queue (Babbel) concrete: see section 5.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+5. THE (u) CONSTANTS THAT BEAR REALISM LOAD (sampled)
+-------------------------------------------------------------------------------------------------------------------------------------
+Sampled: matrec.py (41 marks), matfric.py (26), impact.py (15), climate.py (18), digestion.py (14), thermoreg.py (11), tissue.py (11), plus the rows in switches.py. NOT read: the other 40+
+files with (u). Counts: 566 lines.
+
+RANK BY LOAD (what moves a play outcome most per unsourced number):
+  1. matfric.py:51-75 friction pairs: wood-rock 0.55/0.40, steel-steel 0.70/0.50 ((u), "T: 0.74/0.57"), glass-rock (u), WET_FACTOR 0.7 (an unlisted wet pair is 0.7 of dry),
+     ICED_WARM/ICED_COLD (0.05/0.12, BH). Every slip, push, climb and topple reads these; real values vary 2x with surface state (k). Source: Persson, Sliding Friction;
+     Engineering Toolbox pairs (k). Pair table: ask Babbel for a sourced pair x state table (dry, wet, greased, iced).
+  2. matrec.py:294-330 strength-retention curves of wood ((u) order of magnitude), concrete as a stand-in for stone ((u) EN 1992-1-2 siliceous), a cold gain at -20 C (u),
+     sc_perp, ductility 0.01 (u), alpha_perp 4e-5 (u): the beam check's derate in a fire and the collapse time of a loaded floor. Source: Wood Handbook ch. 4 and ch.
+     18 fire; EN 1995-1-2 for char and strength (k). The wood-stone inversion (2.3) lives in the same file.
+  3. impact.py:63-180: LEGS_N_70, CROUCH, HEAD_MASS_KG_70 4.5, KO_G 80 g (u), HIC_FATAL 2500 (u), BLEED_TAMPONADE 0.35, FALL_HEIGHT_SCALE_M 7.5. These decide "does he die".
+     HIC 1000 is the NHTSA 50 percent AIS 4 (k); 2500 as fatal is high and (u). Source: Mertz; Prasad and Mertz 1985 (k); Wang 2013 falls (v for the realism-map calibration to 5.2 m survivors).
+  4. climate.py:47-74: Parton-Logan constants, cloud base, Lewis number 0.85, K_ICE etc. (u): a minor error in daily temperature; ice cond 2.2 W/mK and L_ICE 334 kJ/kg are
+     textbook numbers (v) and the (u) on them is a formality. LOW load, easy to source.
+  5. digestion.py:44-96 Atwater 3.95 kcal/g (u), lipogenesis 23 percent (u), Hunt cap, fibre fermentation 2 kcal/g (u): the hunger and starvation clocks; the food-supply lab step
+     used 0.99 of need "from sources" but the digestion constants are (u). Atwater general factors 4/9/4 are textbook (k). MEDIUM.
+  6. thermoreg.py:36-80: neutral skin set points, SET_CORE 37.0, CORE_COLD_WEIGHT 3.0 "fitted on zone_31C" (u), sweat capacity loss 0.04 per percent dehydration (u), CIRCADIAN_K 0.3 (u):
+     the hypothermia and heat stroke timeline. Source: Gagge 1971, Stolwijk 1971, Kingma; CORE_COLD_WEIGHT is a fit, so its held-out test matters. MEDIUM.
+  7. tissue.py:39-180: central blood share 0.4, blood ml/kg 70/65 (the known 65-75, k), skin 2 mm, a table of tissue rho, c, k, q_m, w (all (u)): bleeding, shock, cooling.
+     Standard tables exist (Duck 1990, ITIS database (k)); LOW cost to source.
+  8. bodycontact.numbers / exertion.numbers / edge.constants / head_blow_constants: collision restitution, contact stiffness, ankle torque, stroke lengths: the fight lane.
+     Fight outcomes are the most noticed thing a player does; all numbers are (u). Source: a collision study (the ledger says so).
+  9. gasflow GAS_ENTRAIN 0.03 and gas.mix_mom: the plume constant; Morton-Taylor-Turner 0.09-0.16 for a round plume (k) so 0.03 is not obviously the entrainment coefficient;
+     check before the momentum flip (2.1).
+ 10. heat_history constants (nose tau 8 s, latent 16-70 J/g, grain row): smithing; being addressed by the library request 2026-11-22-mark1-steel-heat-treatment.md.
+
+THE ONE (u) I would examine first: matfric.WET_FACTOR 0.7 as a default for every unlisted wet pair. It is a rule where a law is wanted: wet wood on wet stone and wet steel on wet steel differ
+by factors of two (k); the existing LL.friction_mu thin-film model (contact.py:106, Persson-type lubrication) is available and does better. Recommend: delete the factor and read the film model for every pair. (u) judgement.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+6. HOW THESE RELATE TO THE OWNER'S DEFORMATION DECISION (rod skeletons + elastic shape-keeping)
+-------------------------------------------------------------------------------------------------------------------------------------
+Five ledger rows move or must move with it:
+  - mat.span_floor, mat.veto_changed_cells, mat.veto_static: the beam check becomes the main law; rod bending stress replaces a static veto; DAF values (matbeam.py:68-69) become dynamic.
+  - mat.mpm_inversion and friction: bending strength and E per material must come from ONE record (2.3) or the rod snaps at the wrong load. Prerequisite.
+  - mat.damage_off: elastic energy stored in a bow and fatigue of a beam both need the damage law ON.
+  - mat.char_floor / matrec derate curves: a burning beam's E drops before its strength; both curves are (u) (section 5 item 2) and now set the sag time of a burning beam.
+  - stairs.lunge, motion._v_push: a stiff person is a rigid person; a bending trunk and a rigid man on it will give wrong sway frequencies if the load is a point pusher.
+The deformation decision therefore depends on #3 of the top five. I recommend scheduling it directly after the material unification.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+7. SUMMARY TABLE OF NEW ITEMS (not in any wave) WITH PRIORITY AND OWNER-LEVEL
+-------------------------------------------------------------------------------------------------------------------------------------
+ITEM                                              | SCH     | PRIORITY | OWNER-LEVEL | COST
+own the gas momentum flip + retire EDDY, drag, plume_k  | NEW task | HIGH   | no (ceiling already Q8) | 2-5 ms, Rust
+energy-audit sweep (matter_rule_partial, seep, clip, adj, work_billing) | NEW | HIGH | no | ~0 runtime
+unify MPM/pivot/friction/strength record, then retire SPAN | NEW | HIGH | SPAN retirement yes | table lookups, 3-6 ms layout check
+winter pack: clothing overlay, pour T, outdoor vapour, film ice, soak default | NEW (S each) | HIGH | no | ~0
+fractures read by support; legged/compliant person | NEW | H (fractures) / M (legs) | legs yes | low / moderate
+E_dtype float64 for every world | NEW | MEDIUM | yes | memory + golden rebase
+water mass and brine (steam_to_gone, M1 freezing, mixed skips) | M1/M2/M5 unscheduled | MEDIUM | no | low
+indoor light model (smoke_light) | named in the row | MEDIUM | scope | small
+contrast-threshold sight, Cd by shape, WET_FACTOR to the film model | NEW | LOW-MED | no | ~0
+ledger columns wave/flip_when/absent-probe (H1-H3) | NEW | MEDIUM | no | trivial

@@ -1,0 +1,550 @@
+ENGINE AUDIT, LANE C: BODIES
+Early choices in the body, pose, balance, injury, physiology, heat and sense code that we could make differently or better for realism.
+Date 2026-11-22. Tree: live tree after wave 15 batch 1 (batch 2 partly merged, paused). Documents only: no code was edited or run.
+
+HOW TO READ THIS
+  Marks: (v) verified by me in this session by reading the repo; (k) known from the literature or from my training, NOT looked up now, so check
+  the number before building; (u) unverified guess. Every "file:line" was read. Costs are estimates (u) unless stated.
+  Fields per item: CHOICE / WHY / COSTS / BETTER / COST+RISK / SCHEDULED? / PRIORITY / OWNER-LEVEL?
+  "Scheduled" is checked against docs/realism-map.md, switches.py and w14/decisions.md: waves 15 batches 2-4, 16a (six motor primitives),
+  16b (knowledge, plan cache), family (Fam1-6), healing HL1-HL5, daily life SC1-SC7, magic (incl. MC3 use-dependent plasticity).
+
+THE ONE-PARAGRAPH VERDICT
+  The body is the most realistic part of the engine where a LAW exists (Pennes heat, Purser smoke dose, bone beam check, fuse-chain falls, vessel
+  bleeding, XcoM balance, three-compartment fatigue). Its early choices are in the SHAPE of the thing those laws act on and in what has no law at all:
+    1. The body is 11 rigid blocks of 5 cm voxels, turned by re-rasterising cells. It has no neck, spine, hand, foot or finger and no flesh stiffness.
+    2. The default person is still the 43.9 kg stick figure, and several constants are fudged to suit it.
+    3. Walking is a whole-body hop at two fixed speeds.
+    4. Consciousness and death are ONE scalar (o2) with fixed lines; there is no heart, so no shock, no pulse, no fainting on standing.
+    5. Sight has no light (every room is lit) and is a yes/no threshold; hearing is one level and one 40 dB line.
+    6. There is no pharmacology at all (the `drunk` seam is set by nothing).
+  The same lesson the owner just drew for trees and planks applies to bodies: the rigid shortcut erased how stiff things are (C1, C4, C5).
+  And the cure is the SAME primitive: one articulated rod skeleton with joint and bending stiffness, used for tree, plank, bow and bone alike.
+
+PRIORITY LIST (impact over cost; "O" = owner-level choice)
+  HIGH    C22 light for sight (unscheduled)                          C12 heart and blood pressure (shock, pulse, standing)
+          C17 one pharmacokinetic law (alcohol, poison, medicine)    C8  gait from the person, with ramp-up and leg animation
+          C3  adult default body and de-fudged constants (O)         C1/C4 articulated skeleton with joint stiffness (O)
+  MEDIUM  C5 muscle torque by posture, area and moment arm; strength scaling   C13 death and faint as processes, not one scalar
+          C14 soft tissue and organ function (O)                      C15 brain injury from head rotation
+          C7 hands as manipulator records, not voxels (O)             C10 balance strategies and a swing foot
+          C23 gaze, attention and acuity as dials                      C25 hearing spectrum, direction, ageing
+          C19 heat: transient fit, extremities, acclimation           C26 senses beyond sight and hearing (O)
+  LOW     C2 sub-voxel body occupancy   C6 kinetic chain   C9 any-angle routes   C11 falls vs a multibody reference   C16 bone detail
+          C18 breathing control   C20 O2 kinetics   C24 exact ray traversal   C27 growth, sex and ageing
+
+======================================================================================================================================
+A. SHAPE: HOW THE BODY IS BUILT AND POSED
+======================================================================================================================================
+
+C1. THE BODY IS ELEVEN RIGID NAMED VOXEL GROUPS
+  CHOICE      scenes.py:514-690 (_person): left/right shin, thigh, upper arm, forearm, torso, head = 11 "bones"; chain, joints, parent dicts at
+              scenes.py:620-677. The trunk is ONE bone with a single "lean" hinge at the hips (scenes.py:670-684, lean_max 0.8 rad, materials.py:359
+              waist_wmax). The hand rides in the forearm and the foot in the shin (anatomy.py:21); the neck rides in the head. A limb swings as ONE
+              rigid thing with the elbow locked (pose.py:30-34).
+  WHY         The lattice has no notion of a joint, so the scene that builds the body declares the cells (scenes.py:540-548). Eleven blocks was the
+              cheapest thing that gives a knee, an elbow, a lean and a crouch (scenes.py:555-566).
+  COSTS       (v) No neck: a head cannot turn, nod or be struck at the chin against the trunk. (v) No spine curve: the trunk cannot twist, so no
+              rotation of the hips and shoulders against each other, no rolling over, no curling up, no bent-over carrying with a rounded back, no
+              crawl or hands-and-knees gait. (v) No shoulder girdle: no shrug, no reaching across with the shoulder, no hanging by an arm (the
+              scapula is what lets the arm go over the head). (v) No ankle or wrist: pose.py:365-367 says "the wrist is a joint whether or not this
+              sim models one"; so no heel-to-toe roll, no tiptoe, no wrist bend while holding a tool (a held thing hangs from the fist as a stand-in).
+              (v) No pelvis: the hips are the bottom of the torso block. (v) Spine fracture, whiplash and neck injury exist only as table rows
+              (anatomy.py MEMBERS), not as motion of a spine.
+  BETTER      One ARTICULATED RIGID-BODY SKELETON in reduced coordinates (Featherstone 2008, articulated-body algorithm, O(n) in joints (k)): about
+              18-22 segments (head, neck, thorax, abdomen, pelvis, two each of clavicle/scapula, upper arm, forearm, hand, thigh, shank, foot), segment
+              masses and radii of gyration from Winter 2009 / de Leva 1996 / Dempster 1955 (k; bodysheet.py already holds Winter's fractions,
+              bodysheet.py:25-30 (v)), joint ranges from clinical ROM tables (Roaas and Andersson 1982; AAOS (k)). The lattice voxels become a SKIN
+              drawn from the skeleton each tick (see C2), as characters are skinned in graphics (linear blend skinning, Lewis 2000; dual quaternion
+              skinning, Kavan 2007 (k)).
+              SAME PRIMITIVE AS THE TREE DECISION: a rod/joint chain with stiffness and a break moment (matbeam.py is the beam check). A bone is a stiff
+              rod, a joint is a spring-damper with a stop; a branch is a soft rod. One primitive, many users: that is the "small set of primitives".
+  COST+RISK   ~20 joints x 1 body is microseconds per tick in numba or Rust (u). The risk is not the cost but the COUPLING: pose.py (1288 lines),
+              skeleton.py, hands.py, bodycontact.py, impact.py and the support law read the voxel body today (p["segs"], _limb_parts). The migration
+              needs a seam: skeleton owns the pose, the lattice is derived. Do it behind the SAME interface per the owner's standing rule.
+  SCHEDULED?  NOT scheduled. Wave 16a ("six motor primitives" with a BODY PART as the actor) will want hands and feet as parts and will hit this wall.
+              Decision to settle before 16a builds on it.
+  PRIORITY    HIGH for hands, feet, neck and spine; the rest MEDIUM.
+  OWNER-LEVEL YES: it is a representation change (skeleton owns pose; voxels are a view) and it touches the "voxel is the truth" principle.
+
+C2. THE POSE IS MADE BY RE-RASTERISING VOXELS AT 5 CM
+  CHOICE      pose.py:_swing (turns a cell set about a pivot, sweeps at 0.08 rad, pose.py:6-9); _repose; the knee crease is one cell wide
+              (pose.py:1078-1146). Limbs are two voxels (10 cm) thick (scenes.py:586-609).
+  WHY         "the renderer reads mat like everything else": a pose that only changed the picture would have no picture to change (pose.py:22-24).
+              That is sound: matter in the lattice is the truth, so a swinging arm really blocks what it occupies.
+  COSTS       (v) Angles are quantised by what the lattice can draw ("27 of 31 angles" for a 2-voxel arm; one voxel thick held 4; pose.py comments
+              at scenes.py:593-598). (v) Limb sections are 10 cm squares instead of round 8-12 cm limbs; shoulders 35 cm; mass 43.9 kg for a 1.5 m
+              person where a real one is 47 (scenes.py:540-548). (v) Flesh at a knee crease must be thickened to conserve mass (pose.py:1086-1090).
+              (v) Voxel rotation is a staircase, so inertia, reach and contact area jitter with angle.
+  BETTER      Keep matter authoritative but write the body from CAPSULES (analytic volume per cell) into the existing fractional-fill field: the
+              lattice already stores a partial fill (smass vs density, senses.py:35-38 packs a cell by fraction (v); body parts use frac 0.85-0.9,
+              scenes.py:583). Exact mass per cell from capsule-cell overlap (mass conserved to rounding by construction), smooth under rotation.
+              (Kavan skinning for the surface; exact volume overlap is a cheap per-capsule box test (k).)
+  COST+RISK   Rasterising 20 capsules into a few hundred cells per body per pose change; cheaper than the cell-set turn plus its drawability search
+              (u). Risk: everything that reads `mat == FLESH` as "this cell is a person" (about every law) must read the fraction; bit-for-bit
+              golden hashes change (declared diff).
+  SCHEDULED?  NOT scheduled. Natural to do together with C1.
+  PRIORITY    LOW alone; MEDIUM with C1 (it is what lets a hand and a finger exist).
+  OWNER-LEVEL Technical, bundled with C1.
+
+C3. THE DEFAULT PERSON IS A 43.9 KG STICK FIGURE, AND CONSTANTS ARE FUDGED FOR IT
+  CHOICE      scenes.py:514 stock figure; bodysheet.py:30-34 says wave 13 "ships on the STOCK 43.9 kg figure unless the user takes decision D7"
+              and only ONE scene builds an adult (grep: scenes.py has one hit for adult male). materials.py:295 strength_N 400; materials.py:279-286
+              hurt_J 2500 "scaled to THIS body, which is light"; materials.py:344-348 muscle_Pa 93 kPa "LOW for muscle (about 90 kPa against a real
+              300) because this body is a stick figure"; materials.py:349 arm_Nm 60. bodysheet.py:232 strength = MU_FOOT x mass x g, LINEAR in mass.
+  WHY         The first scenes were built on the stock body, every wave kept it so old results would not move, D7 was never decided.
+  COSTS       (v) The calibration targets (fall LD50 12-15 m, survivors 5.2 m, 3 m lumbar fracture, kick 115 J) are adult numbers, but the stock body
+              is 2/3 of an adult, so "calibrated" falls are calibrated on a person lighter than the data. bodysheet.py:33 says the stock figure
+              shifts every fracture height by 1-2 m. (v) A fudged muscle stress (93 vs 300 kPa) hides a geometry error inside a physics constant:
+              the engine's own principle is no stand-ins that look like laws. (v) Strength linear in mass: real maximal strength scales about as
+              mass^(2/3) (cross-section; Jaric 2002; Lietzke/Sinclair-type allometric weightlifting scaling (k)), so heavy characters are too strong
+              and light ones, children and small women too weak; and a 10 kg child-sized figure "can be picked up like a cat" (scenes.py:524-527 said
+              so about an earlier figure).
+  BETTER      (a) Take D7: the adult male and female sheets become the default builder, the stock figure kept as a test fixture only. (b) Derive
+              muscle force from physiological cross-section (PCSA) = muscle mass / (density x fibre length), specific tension 25-35 N/cm2 (Zajac
+              1989; Narici (k)); muscle mass fraction from the sheet with sex and age (Janssen et al. 2000, MRI, 468 adults (k)). That makes sex and
+              age differences (upper body about 40% weaker in women, Miller et al. 1993 (k)) EMERGE from composition rather than a 0.90 factor
+              (anatomy.py:191 "the sex factor 0.90 is applied ONCE" (v)). (c) Replace the linear-in-mass strength by area scaling.
+  COST+RISK   Zero run cost. Large declared diff: every scene and calibration re-measured (wave-sized, but mechanical). Recalibration of falls and kick
+              is a re-run of existing fit_report tools.
+  SCHEDULED?  PARTLY: Fam3 builds child sheets (docs/family-design.md); wave 14b exertion makes force depend on the person. NOT the adult default,
+              NOT PCSA, NOT allometry.
+  PRIORITY    HIGH (zero cost, touches every body number, and the family step needs it anyway).
+  OWNER-LEVEL YES (D7 is an open owner decision: every old result moves).
+
+C4. JOINTS ARE HARD STOPS PLUS A DAMPER: NO SOFT-TISSUE STIFFNESS, NO JOINT INJURY
+  CHOICE      materials.py:410-420 arm_wmax 15 rad/s, joint_damp 2.2 /s; joint angle limits are the lattice's drawability (pose.py:292, scenes.py);
+              lean_max 0.8 rad. Nothing in anatomy.py MEMBERS is a ligament, tendon, capsule or cartilage (anatomy.py:19-32 (v)).
+  WHY         Bones break by the beam check (bonestate.py); everything else in a joint was left out.
+  COSTS       (v) No sprain, dislocation, torn ligament or meniscus: the commonest real injuries of falls, twists and tackles (ankle sprain is the
+              single commonest sports injury (k)). (v) A joint cannot be "driven past its range" by a leverage act (an arm-bar, a wrist lock, a
+              kneeling joint-lock), which is half of grappling. (v) No passive stiffness: relaxed limbs do not fall limp under gravity, nor do
+              braced ones stiffen (impedance, Hogan 1985 (k)); a drunk or unconscious body lands differently from a braced one in life; here the
+              difference is a hand-set factor (BRACE_UNFORESEEN 0.3, (u), decisions D3: "no support"). (v) Falls and hits do not damage joints.
+  BETTER      Each joint carries (a) a passive torque-angle curve (exponential toward the end of range; Yoon and Mansour 1982, Riener and Edrich
+              1999 (k)), (b) active stiffness from co-contraction (impedance, set by the person's state: relaxed, alert, braced), (c) a ligament
+              record like the bone record in bonestate.py: {integrity, laxity} with a failure moment from the same beam/moment rule, so sprain =
+              partial integrity loss, dislocation = past the stop with a ligament failed. Healing: HL1's repair law applied to the ligament record.
+              This is the SAME rod-and-joint primitive as C1 and as the trees (a joint = a short soft rod).
+  COST+RISK   Per joint per tick a closed form; nothing new in the lattice. The risk is data: ligament strengths by joint are in the biomechanics
+              literature (Woo; Noyes (k)) but each number needs a source and a (u) until fitted.
+  SCHEDULED?  NOT scheduled (HL1 repairs "skin, wounds, muscle, vessels, nerves, burns" and bone, healing-design.md:11-15; no ligament or joint).
+  PRIORITY    MEDIUM-HIGH (it is what makes falls, grapples and twisting realistic and it reuses the rod primitive).
+  OWNER-LEVEL Technical (it is a missing law, not a trade-off).
+
+C5. MUSCLE IS A FEW SCALARS PER BODY, NOT A POSTURE-DEPENDENT TORQUE
+  CHOICE      exertion.py (14b): E = F_muscle x stroke x technique x z x state (exertion.py:1-30 (v)); mechlaw.py:614-620 _strength = one force for
+              lifts, hauls, drags, shoves and grips; materials.py:295, 349, 358 arm_Nm 60, back_Nm 200, legs_N 1400 / muscle_Pa; fatigue.py per
+              limb group (legs, left arm, right arm, back).
+  WHY         "Exertion comes from the body" (decision 6). One force per person is the simplest thing that varies by person and state.
+  COSTS       (v) Strength does not depend on POSTURE or on the joint angle: a person lifts the same 40 kg off the floor with a rounded back and with a
+              straight one, the same at arm's length and close in; real lifting and pushing strength varies 2-5x with posture (Chaffin and Andersson;
+              the University of Michigan 3DSSPP (k)). (v) No torque-angle-velocity relation at the joint (a muscle is weakest at the ends of range and
+              when shortening fast; Hill 1938, Anderson et al. 2007 (k)), though pose.py names "Hill" for the swing. (v) The same scalar gates grip, push
+              and lift, so a strong-legged weak-armed person (and the reverse) cannot exist. (v) Strength is linear in mass (C3).
+  BETTER      One MUSCLE-GROUP row per joint axis: peak torque = PCSA x specific tension x moment arm (C3), times a torque-angle curve (a cosine or
+              Gaussian about an optimal angle) and a force-velocity factor (Hill). A posture then fixes the torque it can make, and a lift, a push and a
+              grip are all the same inverse question (what force at the hand do these joint torques allow). Training (decisions 6, MC3) moves the
+              peak; fatigue (fatigue.py) already scales it. This is the "carrying, lifting: joint torques by posture" row of the realism map.
+  COST+RISK   Cheap per act (a few torque evaluations). Needs C1 (joints to hang the torque on) for full effect; a first slice can be done on today's
+              11 bones.
+  SCHEDULED?  PARTLY: realism-map 3.4 "Carrying, lifting" P2 (effort S); exertion (14b) done; grip (wave 15) done as a hand law. Torque by posture NOT scheduled.
+  PRIORITY    MEDIUM.
+  OWNER-LEVEL Technical.
+
+C6. A STRIKE'S ENERGY IS "FORCE x STROKE", NOT A KINETIC CHAIN
+  CHOICE      exertion.py:KINDS: E = F x stroke; effective mass is a fraction of the body (exertion.py:30-50 (v)). pose.py/_swing moves one limb with
+              one shoulder torque.
+  WHY         It fits the one published kick number (Ramakrishnan et al. 2018) and costs nothing.
+  COSTS       No trunk rotation, hip drive or step into a blow, so "power comes from the legs and hips" is not a thing; a boxer's and a wrestler's
+              technique lives only in a scalar. A throw, a sword cut and a punch share one number.
+  BETTER      Proximal-to-distal sequencing (Putnam 1993 (k)): segment speeds add along the chain (hips to trunk to arm to hand), each driven by its
+              joint torque from C5. Falls out of C1 + C5 for free with an articulated body; not worth doing on its own.
+  COST+RISK   With C1: microseconds. Without C1: no.
+  SCHEDULED?  NOT scheduled.   PRIORITY LOW (after C1).   OWNER-LEVEL Technical.
+
+C7. THE HAND IS A LUMP OF VOXELS WITH ONE "N_EFF"
+  CHOICE      hands.py (reach by king's-move cell distance, hands.py:8-40); grip.py:41 N_EFF = 2.0 opposed pads; materials.py:300 wrist_Nm 20; the hand
+              has no cells of its own (it rides in the forearm).
+  WHY         A 5 cm cell is bigger than a finger; hands as voxels is impossible, so a number stands in for them.
+  COSTS       No fingers: no pick-a-lock dexterity, knot tying, drawing a bowstring (three-finger draw), holding a pen, sewing, archery release,
+              sword grip variations, pinching a coin, or a hand with a missing finger or a burned tight hand (HL3 "the burned smith's tight hand"
+              needs somewhere to live). Grip law (wave 15) reads "a pair of surfaces and the film" but the contact geometry is the whole hand.
+  BETTER      Model the hand at its REAL level as a RECORD, like the bone record: {aperture, pad area per digit, digit strengths, dexterity, ROM,
+              injuries}, with the grasp type from the GRASP taxonomy (Feix et al. 2016) / Napier's power and precision grips (1956) (k) as a small enum
+              of contact patterns. Force closure and friction on those patterns is a few lines (grip.py already has the friction math). Dexterity is
+              a dial trained by use (MC3) and lowered by injury (HL3). The lattice only sees the held object.
+  COST+RISK   Tiny. The risk is interface: 16a's GRIP/RELEASE primitive takes "a body part (hand, hands, foot...) and HOW CAREFULLY" (decisions PA1),
+              which maps directly onto a hand record with a precision dial.
+  SCHEDULED?  PARTLY: 16a GRIP primitive and wave 15 grip law; the hand RECORD is not.
+  PRIORITY    MEDIUM (it unlocks craft: lock picking, tying, writing, archery, smithing tongs).
+  OWNER-LEVEL YES-ish: "levels" principle (a hand is a record, not voxels) is a scope and play call.
+
+======================================================================================================================================
+B. MOVEMENT AND BALANCE
+======================================================================================================================================
+
+C8. WALKING IS A WHOLE-BODY HOP AT TWO FIXED SPEEDS
+  CHOICE      policy.py:75,81 walk_mps 1.4, run_mps 2.5; motion.py:907-970 _gait returns "run" (fleeing) / "walk" / "creep"; _pace converts a speed to ticks
+              per voxel, scaled only by strength / (strength - haul) (motion.py:944-949); _stride (motion.py:950+) steps the whole body one voxel at a
+              time when a stride counter has paid for it. Legs do not swing; the body is translated.
+  WHY         Cheap and exact for routes; speeds were set to the walk-to-run transition (Hreljac 1993).
+  COSTS       (v) Speed does not depend on leg length, age, load (except haul), fatigue, slope (only by the stairs/drops branch), ground, a limp is the
+              only injury effect (bonestate gait: pace / (0.4 + 0.6 ratio)). A child, an old man, a 2.2 m giant and a fit runner all walk at 1.4 and
+              flee at 2.5 m/s. (v) No acceleration: a person starts and stops instantly (realism map "instant starts"), so you cannot "get a head
+              start" by a fraction of a second, a sprint finish, or a stop-on-a-dime slip. (v) A run is a speed flag set by `fleeing`, not an effort
+              chosen: no jog, no sprint, no pacing for distance (the metabolic cost is billed but the effort level is not a choice). (v) No leg
+              animation: others "see" a person move but no gait cycle exists to hear footfalls (impact sounds by contact pair, realism-map 3.5, P2), or
+              to carry cadence into the sound model or the stumble model.
+  BETTER      Speed as a function of the person: preferred walking speed from leg length (dimensionless speed v/sqrt(g L): Froude 0.25-0.35 for a
+              comfortable walk, walk-to-run transition at Fr 0.5; Alexander 1976 (k)), age and sex norms (Bohannon 1997; Bohannon and Williams Andrews
+              2011 (k)), cost of transport by gradient (Minetti et al. 2002 (k); Margaria 1963), cadence = f(speed, leg length) (Dean 1965; Grieve (k)).
+              A speed controller with a bounded acceleration (a <= mu g at the foot; the realism map's own rule) and a chosen EFFORT (walk, jog, run,
+              sprint) as an act parameter (16a "how hard, how fast"). Gait cycle as a timer that drives a foot-contact event stream (heel strikes) from
+              which footfall sound, slip and stumble all read. The body can still move as a cell hop in the lattice; what changes is WHEN the hop happens.
+  COST+RISK   Small: replace two constants by a function of the sheet plus an acceleration state per walker (per tick scalar). Risk: the goldens for
+              every chase and flee scene move (declared diffs); route timing in learned-mind runs changes (lab inn travel times).
+  SCHEDULED?  PARTLY: "Gait, speed, stairs ... one rewrite together with route bounding" is realism-map 3.4 P1 effort L. Stairs (2.5-D) were done in wave 13 and
+              the stairs hull is wave 15 batch 3; the SPEED law and acceleration are not named in any decision.
+  PRIORITY    HIGH (who outruns whom is the core of every chase, flee and fear scene, and children and the old are everywhere in the family step).
+  OWNER-LEVEL Technical (the numbers are measured).
+
+C9. ROUTES ARE ON AN 8-NEIGHBOUR GRID (OCTILE METRIC)
+  CHOICE      motion.py:21-23 _STEPS8: costs 70 and 99 (1 : 1.414), no any-angle moves; headings are 8 directions and gaze sweeps 8 headings (policy.py:15
+              GAZE_SWEEP).
+  WHY         Cheap exact A*; reproducible ties ("grid steps first").
+  COSTS       Octile distance overstates a straight line by up to 8% off the axes; a body walks along stair-stepped lines and turns only at 45 degrees. The
+              fix "a room at 45 degrees walked 1.41 times as far" (motion.py:97 (v)) shows this bit before. Corner cutting around door frames is
+              grid-shaped; people never "round a corner smoothly".
+  BETTER      Any-angle paths (Theta*, Daniel et al. 2010; Lazy Theta* (k)) with the same legality test, a continuous heading, and a turn-rate limit by speed
+              (v^2/r <= mu g; realism map). Keep the grid as the legality structure.
+  COST+RISK   Moderate (line-of-sight checks); exactness rules (the sim carries no die) need a deterministic tiebreak. Risk: route goldens.
+  SCHEDULED?  NOT scheduled (the realism map ties it to "route bounding").   PRIORITY LOW.   OWNER-LEVEL Technical.
+
+C10. BALANCE: ONE STEP-OR-GRAB REFLEX ON A QUASI-STATIC BODY
+  CHOICE      motion.py:541-770 hull of weight-bearing contacts, _xcom (Hof 2005) at motion.py:637; reflex.py:91 balance row (delay 90-120 ms);
+              bodycontact.py 29-37 XcoM with an ankle-torque limit (ankle_cop_m); Hof counter-rotation (14b E).
+  WHY         The margin of stability against the hull is the standard test and it is cheap; the reflex only runs "when the margin is small".
+  COSTS       (v) A walking person is always balanced unless hit or slipping; there is no gait-phase balance (single support, swing leg). (v) One
+              recovery rule: step to catch, or grab; no ankle strategy for small pushes, no hip strategy for medium, no deliberate step order (Horak and
+              Nashner 1986 (k)), no trip response (swing-foot collision, the commonest cause of elderly falls: Pavol 2001 (k)). (v) Slip reaction exists
+              via friction (14b H) but no sensory noise: no vestibular threshold, no proprioceptive loss with age, no dizziness; the balance reflex
+              does not degrade except by drunk/fatigue/sleep_debt factors that "nothing sets" (reflex.py:24-28).
+  BETTER      Keep the XcoM test as the trigger. Add (a) the SWING FOOT as a second contact during walk phases (needs C8's gait timer): trips become
+              "a contact on the swing foot", (b) a three-tier response by margin deficit (ankle -> hip -> step), each with a time and cost (Horak and
+              Nashner (k)), (c) sensory dials (vision, vestibular, proprioception, each with age and drink) that set the reflex delay and error.
+              Pratt 2006 capture point for the step target (k).
+  COST+RISK   Small; only runs when the margin is small. Risk: extends reflex.py rows; keep the one contract.
+  SCHEDULED?  PARTLY: 14b E (Hof counter-rotation, ankle limit) and H (friction); D3 fall preparation in wave 15 b2. Strategies and trips NOT scheduled.
+  PRIORITY    MEDIUM.   OWNER-LEVEL Technical.
+
+C11. FALL INJURY: A 1-D FUSE CHAIN WITH MODE TABLES TUNED TO TWO POPULATION NUMBERS
+  CHOICE      impact.py:1-45 (series elements with capacity, stroke and failure; closed form in three stages; "mode tables ... are DATA. If the random-
+              orientation targets are not met (survivors average 5.2 m, LD50 12-15 m), the table is retuned, not the law", (v)).
+  WHY         It is exact, cheap and every joule has a sink (impact.py:25-30); the calibration targets are the best published population data.
+  COSTS       (v) Orientation matters only through discrete modes (feet, side, back, shoulder, head, arms), so rolling, arm-out, a hand-first fall and a
+              slide are not separate physics (Hof's counter-rotation covers part). Tuning two population numbers can hide a wrong mode share.
+  BETTER      Use the offline MULTIBODY as a REFERENCE (owner Q14 (b), "an offline controller used ONLY as a reference test target"): a rigid multibody
+              (MuJoCo or Featherstone code in the lab) drops a C1-style skeleton at several orientations and speeds; compare peak forces per region
+              with the fuse chain and the mode shares. Keeps the sim exact and cheap and tests it against a physics that has orientation.
+              Fall preparation (D3, wave 15) grows with warning time; hand impact at 680 ms (decisions line 246) is a source.
+  COST+RISK   Lab time only; no run cost.   SCHEDULED? Owner Q14 (b) says a LOW-priority lab experiment. Fine as is.
+  PRIORITY    LOW.   OWNER-LEVEL No (already decided).
+
+======================================================================================================================================
+C. INJURY AND PHYSIOLOGY
+======================================================================================================================================
+
+C12. NO HEART: BLOOD PRESSURE IS A STRAIGHT LINE IN BLOOD VOLUME
+  CHOICE      vasculature.py:8-12: MAP_rel(f) = clip((f - 0.25)/(0.80 - 0.25), 0, 1), MAP_0 12 kPa; perfusion to the brain clip((f-0.45)/0.55)^0.56;
+              faint at 36 % lost, death at 50.4 % lost, "so these lines do not move" (vasculature.py:10-11 (v)). Heart rate does not exist.
+  WHY         The cut-vessel law needs a driving pressure; a linear map from volume fraction is the minimum that makes bleeding slow as blood drains.
+  COSTS       (v) No heart rate, so no pulse to feel (a first-aid and a "is he alive" check), no tachycardia from fear, exertion, haemorrhage or fever, no
+              resting-rate differences by fitness. (v) No compensated shock: real casualties hold pressure to about 30% loss by raising heart rate and
+              vasoconstriction, then crash (ATLS classes I-IV (k)), so the sim is too frail early (pressure falls from the first drop) and then too
+              smooth. (v) No fainting on standing (orthostasis), no vasovagal beyond the head-blow row, no heat syncope or exercise collapse from pooling
+              (blood pools in the legs on standing, so low volume plus standing matters), no cardiac arrest, no CPR, no fluid resuscitation, no
+              dehydration effect on pressure. (v) Pressure and perfusion vs posture: P_hydro exists for a wound (vasculature.py:15-16), not for the brain.
+  BETTER      A LUMPED CARDIOVASCULAR MODEL at 1 Hz (Guyton's venous-return and cardiac-output curves, 1955, 1963; Heldt et al. 2002, J Appl Physiol 92,
+              a 3-6 compartment model with baroreflex and gravity (k); Ursino 1998 baroreflex (k)): state = blood volume split into arterial, venous
+              and pooled-leg compartments, heart rate, resistance; outputs = MAP, cardiac output, brain perfusion pressure with cerebral
+              autoregulation. The outputs replace the f -> MAP line; the cut-vessel law reads MAP as before; the existing faint and death lines become
+              EMERGENT (consciousness lost when brain perfusion pressure and oxygen delivery fall under thresholds; the numbers 36%/50.4% are then checks
+              against the ATLS and field data, not inputs). Pulse and heart sounds become percepts (signs.py).
+  COST+RISK   A dozen floats per person at 1 Hz (like the thermoregulation controller), so negligible; also compact for night jumps. Risk: the faint
+              and death times move; the vessel-law calibration (wave 15 W15-Q1: bleeding on by default) has just been done and should be re-checked
+              against the new pressure (declared diff).
+  SCHEDULED?  NOT scheduled (wave 15 builds vessel bleeding on this linear map).
+  PRIORITY    HIGH.   OWNER-LEVEL Technical.
+
+C13. CONSCIOUSNESS AND DEATH ARE ONE SCALAR WITH FIXED LINES
+  CHOICE      physiology.py:693-748: faint if o2 < faint_o2 (0.55) or ko; death if o2 < death_o2 (0.25) or organ_dead; materials.py:264 faint_o2/
+              death_o2; blood loss, burn shock (_SHOCK_X/_SHOCK_Y crutch calibrated to 0.2 and 0.45, switches.py "injury.burn_shock"), pain (vagal)
+              and cold are all converted into "an o2 equivalent"; the legacy p["hurt"] integral (materials.py:279-286) still exists with hurt_J.
+  WHY         One common currency made it possible to add causes without rewriting the faint code (V3 `_law_life`, physiology.py:8-12 _HARM).
+  COSTS       (v) Death is a threshold crossing, not a process: no dying state in which acts matter and a medic can still save, no time-course by cause
+              (brain without oxygen: 3-5 min to injury, about 10 min death (u); bleeding: minutes; hypothermia: hours). (v) The causes never interact:
+              the lethal triad (cold, acid, coagulopathy; Moore 1996 (k)) is not there except clot slowing with temperature (vasculature.py:25-27).
+              (v) "Pain makes you faint" and "burn shock" are calibrated conversions with no source for the equivalence.
+  BETTER      Each cause acts on its OWN state (volume, brain perfusion, oxygen delivery, temperature, pain/arousal) and consciousness = a function of
+              brain oxygen delivery and perfusion pressure from C12, with the vasovagal and head-blow reflex as separate rows (already via reflex.py).
+              Death = organ failure integrals (brain, heart) crossing thresholds over time, with a DYING interval during which resuscitation can
+              reverse it (CPR as an act, first-aid wave 15). Keep one `o2` value only as the brain-delivery output of C12.
+  COST+RISK   Moderate refactor of physiology.py (757 lines) and faintrates.py; behaviour mostly unchanged for hypoxia (which is sourced).
+  SCHEDULED?  PARTLY: realism-map 3.4 "Death as a process" P2 (effort S); burn_shock crutch "deleted when skinburn faces replace p['burn']"
+              (switches.py), wave 15 b2 burns. NOT with C12.
+  PRIORITY    MEDIUM (do with C12).   OWNER-LEVEL Technical.
+
+C14. INJURY HAS BONES, VESSELS AND SKIN; NO TENDON, NERVE OR ORGAN FUNCTION
+  CHOICE      anatomy.py MEMBERS (load-carrying bones), VESSELS (cuttable), ORGANS (liver, heart, ... "only an impact reaches them", anatomy.py:404-411
+              (v)), SKIN_LAYERS (burn law). injury.fractures_unread (switches.py "p['fractures'] written but nothing reads it", wave 13).
+  WHY         Wave 13's T10 chose the tissues whose damage kills or disables most quickly and has sourced numbers.
+  COSTS       (v) A stab in the chest damages a vessel but a punctured lung (pneumothorax: breathlessness, collapse over minutes) does not exist; the
+              ventilation is not a function of lung state. (v) A sword cut across the back of a hand cannot cut tendons (finger loss) or a nerve (numb,
+              dropped weapon); a slashed forearm cannot paralyse the hand (cut ulnar nerve). W15-Q2 turns ischaemia into the limb law (a dead
+              forearm cannot grip), which is the right mechanism but only for blood supply. (v) Organ damage is reachable only by impact, not by a
+              piercing weapon, though the edge law cuts to vessel depth (vasculature "wound that reaches the vessel's depth across its azimuth").
+  BETTER      Give each region a small FUNCTION record per structure: {nerve: conduction, tendon: continuity, muscle: fibre fraction, lung: expandable
+              fraction, joint: C4's ligament record}. The wound's depth and extent (already computed for vessels) address them in the same rule (depth
+              reached across azimuth). Loss of function feeds EXISTING laws: nerve to grip, tendon to the muscle torque, lung to ventilation (C18), organ to the
+              o2 chain. Abbreviated Injury Scale (AIS) groups by region as the data cross-check (k). Healing: HL1.
+  COST+RISK   Data and one rule; no new loops. Risk: scope. Each structure needs a source for depth, width and tolerance.
+  SCHEDULED?  PARTLY: HL1 (repair of skin, muscle, vessels, nerves) and HL3 (what injuries leave) assume these records exist; the records themselves and
+              the piercing rule are NOT scheduled, so HL1's "nerves" has nothing to repair yet.
+  PRIORITY    MEDIUM (needed for HL1 and 16a to be meaningful for fighting).
+  OWNER-LEVEL YES (how much medical depth is play value; it is scope).
+
+C15. HEAD BLOWS USE A LINEAR SPRING; NO BRAIN KINEMATICS
+  CHOICE      switches.py "injury.head_blow_constants": 1 kg effective weapon mass and 500 kN/m spring (u), vagal median 0.6, flow drop 70%, fade 30 s,
+              (u). No head rotation or angular acceleration anywhere (grep for HIC/rotational: none).
+  WHY         Wave 13 T10: a first path to knockout via the vasovagal reflex.
+  COSTS       Concussion and knockout are driven by RotAtional acceleration of the head more than by force (Holbourn 1943; Gennarelli 1982; Rowson and
+              Duma 2013 (k)), so a glancing hook to the jaw (rotation) is far more dangerous than a straight push of the same force; helmets and
+              padding reduce linear force but little rotation (a known failure of old standards (k)). No post-concussion state (dizziness, slow
+              reflexes, light sensitivity, second-impact vulnerability); no subdural bleeding hours later (impact + bridging vein tear: death at
+              hours, a staple of fiction and real injury).
+  BETTER      Head kinematics from the contact law (14b body_contact gives a point, a force and an impulse): linear and ANGULAR acceleration of a
+              head (mass, inertia from the sheet) into BrIC/ the Takhounts 2013 criterion (k), with the threshold a per-person dial; outcome = KO duration,
+              persistent post-concussion dial applied to reflex delay (reflex.py SLOWS), and a bleed row for a bridging vein with delayed effect.
+  COST+RISK   Per blow only. Needs C1 (neck, head inertia, chin as lever) for best effect; a head-as-sphere approximation works now.
+  SCHEDULED?  NOT scheduled (14b E handles contact; knockout is realism-map 3.4 P2).
+  PRIORITY    MEDIUM.   OWNER-LEVEL Technical (and a sensitivity check under CV7, content boundaries).
+
+C16. BONE: ONE INTEGRITY NUMBER PER BONE, AGE ONLY BY A THRESHOLD
+  CHOICE      bonestate.py: record {integrity, angle, gap_m, callus, splint, peak_N}; capacity = table x bone_scale x max(integrity, residual); age
+              adjustment from AGE_BONE_START_Y = 50 (bodysheet.py:101 (u)). Healing: callus law with strain window.
+  WHY         It is a clean beam check with one capacity function used by every module (bonestate.py:6-12), exactly the right shape.
+  COSTS       Low: bone density and geometry should vary with age, sex, sex hormones and use (peak bone mass about 30; post-menopausal loss; hip fracture
+              from low-energy falls in the old, the commonest serious injury in the elderly; Robinovitch 1991; Hayes 1993 (k)). No strain-rate effect on
+              strength (fast impacts break bone at higher force: Hansen et al. 2008 (k)), no stress (fatigue) fracture from marching, no growth plate
+              injury in children, no fracture type by loading (spiral from torsion).
+  BETTER      Bone strength from a density x geometry sheet (bone_scale as a function of age and sex, Riggs 2004 trajectory (k)), plus the existing
+              beam check with a torsion term; keep the record. A small cumulative-damage term for repeated sub-failure loads gives stress fractures.
+  COST+RISK   Data only. Matters mainly when the family step brings in the old and the young.
+  SCHEDULED?  PARTLY (family step child sheets; Fam5 life course later). NOT bone density by age.   PRIORITY LOW (rises with the family step).
+  OWNER-LEVEL Technical.
+
+C17. NO PHARMACOLOGY: THE `drunk` SEAM IS SET BY NOTHING
+  CHOICE      reflex.py:137 SLOWS = {drunk 0.5, fatigue 0.3, sleep_debt 0.4}, reflex.py:24-28 "nothing sets these numbers yet"; signs.py:58-120 reads
+              p["drunk"]; digestion.py burns ethanol as fuel but no blood alcohol; physiology has CO (Purser) only; no poison, drug, venom, anaesthetic or
+              medicine exists as a body law.
+  WHY         Left for "a body-clock and alcohol laws of a later wave" (reflex.py:27-28); the old wave-16 plan (alcohol, powder) never reached the body.
+  COSTS       (v) Taverns, poisons, medicines, antidotes, drugged drinks, snake venom, anaesthetic, opiates, caffeine and magical potions (the owner's
+              alchemy) have no body to act on. This is also a hole in the coverage list (poison and intoxication are Brown's universals).
+  BETTER      ONE pharmacokinetic law for every substance (small primitive): each substance has a compartment amount, an absorption rate (gut or skin
+              or lung or injection), a distribution volume and an elimination law (first order, or Michaelis-Menten for ethanol about 0.15 g/L/h;
+              Widmark 1932; Jones 2010 (k)); an EFFECT is an Emax or Hill function of concentration (Gabrielsson and Weiner PK/PD (k)) onto a small
+              set of existing DIALS (reflex delay, ventilation, perfusion, pain threshold, consciousness, cardiac output C12, clotting) rather than onto
+              flags. Alcohol, a toxin, a venom, an antidote (competitive effect) and a potion are rows. Alchemy (magic Q coverage) and HL2 (honey, wine
+              antiseptics) read the same rows. Doses and LD50s are data (toxicology tables: (k) RTECS-like).
+  COST+RISK   A handful of floats per active substance at 1 Hz (and a closed form for a night). Risk: data volume; the one-law framing keeps it small.
+  SCHEDULED?  NOT scheduled in any wave named in decisions.md (mixtures exist; drinks and poisons were in the realism map's old wave 16).
+  PRIORITY    HIGH (an inn without drink is not an inn; poison is a standard murder route; the balance and reaction dials already wait for it).
+  OWNER-LEVEL Technical, with the CV7 content rule in mind (real poisons: keep doses abstract).
+
+C18. BREATHING IS OPEN-LOOP, NO LUNGS, NO CHEMOREFLEX
+  CHOICE      physiology.py:15-80 (BREATH: O2 store 20 ml/kg, VO2 3.5 ml/kg/min, tau 40 s); bodyair.py ventilation from metabolic rate (V_E rises with P_total,
+              bodynodes.py:570); breath-hold break point and gasp listed in the realism map P2.
+  WHY         O2 store and Purser dose already match sourced cases (B21-B24).
+  COSTS       Ventilation does not respond to CO2 or O2 (the chemoreflex, Grodins 1954; Duffin (k)): a breath-hold ends at a break point because CO2 rises
+              (not because O2 runs out), hyperventilation before diving extends it and causes shallow-water blackout, high CO2 rooms feel suffocating
+              before O2 falls (a sealed room: smoke and CO2 effects), altitude acclimatisation of breathing (hypoxic ventilatory response). No asthma, drowning
+              laryngospasm, or pneumothorax (C14).
+  BETTER      A two-gas chemoreflex ventilation law: V_E = V_E0 + S_CO2 (PaCO2 - B) + S_O2 (hypoxic drive), Grodins' simple model; the CO2 store and
+              the O2 store already exist in digestion/energetics books ("the O2 and CO2 books").
+  COST+RISK   Tiny.   SCHEDULED? Breath-hold break is P2 in the realism map; not in a named wave.   PRIORITY LOW.   OWNER-LEVEL Technical.
+
+C19. THERMOREGULATION: FITTED ONLY ON STEADY CASES; NO ACCLIMATION; EXTREMITIES AT 5 CM
+  CHOICE      bodynodes.py:60-69: the fit "on the STEADY cases only; transients, humid, hot, immersion, dehydration and corpse cases were held out"; the
+              JOS-3 oracle was not run (decision D8); thermoreg.py set points SET_SKIN fixed (u) with a 0.3 K circadian swing; "a hand at 5 cm has a CORE
+              of zero capacity" (bodynodes.py:21-23); switches.py "body.clothing_lattice_path" crutch (skin emits at skin temperature on the lattice
+              path), "body.sleep_constants" (u).
+  WHY         A single fit that matches the steady cases keeps the model honest without over-fitting; the lattice resolution is a stated limit.
+  COSTS       (v) Held-out transients and immersion and hot cases are untested, so cold-water and heat-wave scenes (BoC, cultivation tribulation, desert)
+              rest on unvalidated numbers. (v) Fingers, toes, ears and nose, where frostbite and burns start, are too coarse for a 5 cm cell: area
+              to volume of a finger is about 20x a trunk cell; the "area factor" (bodyheat.py:25, :353) may correct the face law but I did not verify it
+              covers extremities (u). (v) No acclimatisation: a person raised in a desert or a hut in snow responds the same as a clerk (sweat onset,
+              shivering threshold, cold vasodilation; Havenith (k)); no age or sex difference in vasomotor control; no heat illness stages (exhaustion,
+              stroke beyond a faint cause).
+  BETTER      (a) Run the held-out cases in the validation gate and put the result in the ledger (no new model); (b) extremity geometry as ZONE DATA (finger,
+              toe, nose, ear surface and volume from anthropometry; JOS-3 / Fiala zone areas (k)) applied in the compact path and the face law, not as
+              voxels (the "levels" principle); (c) acclimation as a use-dependent dial on set points and gains through MC3's plasticity law (not a flag);
+              (d) heat illness as outputs of C12 and C13.
+  COST+RISK   (a) none; (b) data; (c) a few dials.
+  SCHEDULED?  PARTLY: wave 15 b2 item 2e (body-heat windowing plus cold), twin framework; MC3 plasticity (general). Held-out validation and extremity geometry
+              NOT named; the thin-plate area fix (b3) is for objects, not for fingers.
+  PRIORITY    MEDIUM.   OWNER-LEVEL Technical.
+
+C20. ENERGETICS: STEADY-STATE METABOLISM, NO O2 KINETICS
+  CHOICE      energetics.py:45 ACSM VO2 = 3.5 + 0.1 v (steady); fatigue.py: Miner's rule static fatigue plus critical power W'; muscle efficiency 0.22.
+  WHY         Cheap, sourced, and right for minute-scale averages.
+  COSTS       (u) Oxygen uptake does not lag the work (time constant about 30-40 s; O2 deficit; EPOC after), so a sprint start is not paid for later,
+              the second wind and the stitch do not exist, and heart rate/ventilation do not rise with a lag (C12). No lactate/glycogen compartment
+              distinct from W', so a half-marathon and a 400 m cannot differ by more than a constant; no DOMS or overtraining; no carbohydrate-fat
+              mix by intensity (the glycogen wall at 90 min).
+  BETTER      Add a first-order VO2 lag (tau about 30 s, fit by fitness) and keep W' as the anaerobic reserve (the standard CP model); a fuel mix from intensity
+              (Brooks and Mercier crossover (k)) draws glycogen and fat in different proportions (digestion.py already holds both).
+  COST+RISK   Tiny.   SCHEDULED? NOT scheduled.   PRIORITY LOW.   OWNER-LEVEL Technical.
+
+C21. (NOT AN ITEM) ALREADY SCHEDULED, NOTHING NEW TO ADD
+  Sleep and circadian (SC1; slowforms two_process is "a library form only"), healing and infection (HL1-HL5, wave 15 b4), burn persistence (W15-Q3),
+  bleeding per vessel, tourniquet, ischaemia (W15-Q1, Q2), first aid (firstaid.py), digestion and hunger (SC1), use-dependent plasticity (MC3),
+  grip law, fall-preparation (D3), exertion from the body and body contact (14b). The reviewer should not re-propose these.
+
+======================================================================================================================================
+D. SENSES AND PERCEPTION
+======================================================================================================================================
+
+C22. SIGHT HAS NO LIGHT: EVERY PLACE IS LIT
+  CHOICE      policy.py:30 "No light term yet (row P5): this is a lit room"; senses.py:456-471 _ambient_lux: "The sim has no light field ... 300 lx
+              'until light exists'"; the sky lux from the climate sun is the only term and "Flame and lamp light are not summed in (open item)" (v).
+              _sees (senses.py:644-692) is Beer-Lambert optical depth with a single threshold tau < SEE_TAU (2.0), with no luminance.
+  WHY         Light was in the old realism map as "wave 14: Seeing and hearing" (light field 20 cm grid, 1-3 ms/tick) but the waves were renumbered
+              and the actual wave 14 was physics and bodies; I could not find the light field in decisions.md at all.
+  COSTS       (v) No darkness: a cellar, a moonless night, a mine, a smoke-filled stairwell with the lamp out are as visible as noon. So no stealth,
+              no torch, no lantern, no "I can't see in here", no sneaking past a guard with a lamp, no dark adaptation or night blindness, no glare from
+              a flame or the sun, no use of light in tactics (a lit torch betrays its bearer). Fire (already physical) emits light that nothing reads,
+              so the fire's visibility range to a viewer is a solid-angle stand-in (policy.py:23-29 flame_sr). For a D&D substitute the owner plays
+              alone (memory: why-mark1), dungeon darkness is the genre; this is the largest sensory gap.
+  BETTER      The planned light field: point and extended sources (E = I cos(theta) / d^2 x line-of-sight transmittance), sky from the climate,
+              indirect light by the lumen method; flame efficacy and lamp lumens from fire and lamp data (candle about 12 lm; candles to
+              torches 0.16-0.3 lm/W (realism map)); detection by a luminance-contrast threshold with adaptation (Blackwell 1946; Hecht curve for dark
+              adaptation, cones 10 min, rods 20-30 min; CIE disability glare; Rea 2000 (k)). Magic light as lumens declared by a pack (magic design).
+              Cost 0.15-0.25 ms per source per change on the 20 cm grid, cached on change (realism map; u).
+  COST+RISK   ~1-3 ms per tick budget as planned; the cache keeps most ticks free. Risk: sight is read by many laws (perceive, will, hearing coupling, smoke
+              sight K depends on ambient light, 14a R item), so the perceptual input to the minds changes everywhere: it is a "declared diff" wave.
+  SCHEDULED?  NOT in the current schedule (old wave 14 plan). "smoke K depends on ambient light" is a 14a refinement that uses the lux stand-in only.
+  PRIORITY    HIGH.   OWNER-LEVEL Mostly a decision already made in spirit (realism map P1); the cost and the order are the owner's.
+
+C23. SIGHT IS A YES/NO THRESHOLD, HORIZONTAL-ONLY, WITH A SCRIPTED GAZE
+  CHOICE      policy.py:46-47 fov_deg 200, focus_deg 60, know_m 1.5; senses.py:694-717 _in_cone uses only the x,y heading (the vertical is ignored); one
+              eye point `_eye` per person; GAZE_SWEEP = 8 headings stepped every 25 ticks (policy.py:15, will.py:1611); looks every 4 ticks
+              (policy.py look_every, perceive.py:143); detect and identify are two cones, not a smooth acuity.
+  WHY         Cheap; the two-zone model follows rows P1, P2, P6 of the realism references.
+  COSTS       (v) Seeing up and down is free: a man on a roof or in a pit is "in the cone" at any pitch, and an arrow from above is seen as easily as one
+              from the front. (v) No acuity by size and distance (a 1 arcmin Snellen limit; a person 200 m away is a dot, a face needs about 15 m, which
+              is a stand-in knee: policy.py:55-57 know_m); a thin object (a tripwire) is seen like a block when it is on a ray. (v) Gaze is a scripted
+              sweep, not a chosen look: attention does not go to a sound, a threat or a task; "looking at your feet when you climb", reading, or staring
+              at the fire while a thief passes are not possible (the "Limits of attention" row, realism map P3 stand-in). (v) No individual visual
+              dials: myopia, presbyopia, cataract, colour deficiency (the genetics decision says colour-vision-like axes exist for magic bands but there is
+              no ordinary colour), glare, eye closed, blink, squinting. (v) Single-eye point, so no stereo depth (a one-eyed person judges distance worse;
+              PA2 wants sight noise to set aiming accuracy).
+  BETTER      (a) Acuity law: detectable size in arcminutes against luminance contrast (Blackwell; Campbell and Robson contrast sensitivity (k)), per-person
+              acuity dial that lenses, age and injury lower (ties to the owner's "senses modelled with dials that can be broken"). (b) Gaze as an
+              act with a SALIENCY pull (Itti and Koch 2001 (k)) from motion, sound and fire, and task demand; saccade and fixation times are
+              the cadence (the 4-tick look is then a floor). (c) 3-D view cones (pitch limits). (d) Accuracy of a chosen target from the acuity and
+              distance noise (PA2), no dice.
+  COST+RISK   Small; (a) and (c) are formulas, (b) needs a gaze act in 16a's primitive set. 
+  SCHEDULED?  PARTLY: PA2 (sight-law noise sets accuracy); SV2 (acuity dial for observers). NOT the acuity law, the vertical cone, or attention.
+  PRIORITY    MEDIUM.   OWNER-LEVEL YES for (b) attention (scope and play: how much a player is told versus what the character misses).
+
+C24. SIGHT RAYS ARE SAMPLED, NOT TRAVERSED EXACTLY
+  CHOICE      senses.py:668-690: n = max(|b - a|) + 1 samples at np.linspace, rounded to the nearest cell; perceive/pathlaw use `_look_rays` (kernels.py:103).
+  WHY         Simple, vectorised.
+  COSTS       (v) Samples one cell per step along the major axis, so on a diagonal ray the line can SKIP cells that an exact grid traversal would
+              cross (a thin wall met corner-on, a window frame). The outcome is a tiny, pose-dependent leak (a seen-through-a-wall at a corner) and
+              breaks the "exact always" rule, because the visible set depends on where the ray is rounded.
+  BETTER      A supercover DDA grid traversal (Amanatides and Woo 1987 (k)) that visits every cell the ray touches, the same in numba and Rust. It is a
+              pure exact optimisation: same inputs, a better-defined answer.
+  COST+RISK   About the same time; cells visited per ray rise by at most 1.4x for diagonals. Risk: golden hashes move where an old leak existed.
+  SCHEDULED?  NOT scheduled.   PRIORITY LOW.   OWNER-LEVEL Technical.
+
+C25. HEARING IS ONE LEVEL AND ONE LINE; NO SPECTRUM, NO DIRECTION, NO AGEING
+  CHOICE      senses.py:719+ _hears(db1m), kernels.py:590 _hear_levels (one level per source-ear pair, floods around obstacles, HEAR_DB 40 where a
+              shout stops being intelligible, materials.py:739); voice effort VOICE table (policy.py:294-310; Lombard).
+  WHY         Cost: 0.27 ms per pair was brought down by a kernel (realism map 3.5); a single dBA is what the budget allows.
+  COSTS       (v) Intelligibility is yes/no at 40 dB, with no partial understanding (SII in three bands: noise, voice without words, words; realism map
+              P1; I found no such split in senses.py (u)). (v) No frequency: a wall that blocks a voice but not a drum, low rumble through floors, a
+              high whistle, an ear-splitting scream versus a thud of the same dB. (v) No direction: a sound heard from "to the north" (perceive.render) is
+              taken from the source cell, not from interaural cues with their real ambiguity (front/back confusions; Blauert 1997 (k)); no distance
+              estimation error. (v) No ageing or damage: presbycusis (ISO 7029 (k)), blast deafness, ear plugs, tinnitus. No ambient masking beyond
+              Lombard (a noisy tavern hides a whisper: the signal-to-noise form of SII is the cure).
+  BETTER      3-6 octave BANDS per sound through the same flood (the kernel is per pair; bands are a short vector), attenuation by band per
+              material, SII-style audibility = f(signal minus masker per band, threshold per band by person) (ANSI S3.5, Kryter (k)); direction
+              estimated with noise from the band-limited path (ear sees the arrival direction at the opening). Per-person threshold curve = dial
+              (age, damage).
+  COST+RISK   3-6x the sound work on top of 1-2 ms; keep the numba/Rust kernel; the exact-gate approach (a band set that reduces to today's single level
+              for a flat spectrum; golden SAME).
+  SCHEDULED?  PARTLY: realism-map "Partial understanding", "Hearing damage after a blast", "Waking over time" are P2-P1 items; none is named in the current
+              waves; sound is available to K3 (telling as perception).
+  PRIORITY    MEDIUM (cheap to start with the SII audibility and the person's threshold).   OWNER-LEVEL Technical.
+
+C26. NO SMELL, TOUCH, TEMPERATURE SENSE, PROPRIOCEPTION OR PAIN LOCATION AS PERCEPTS
+  CHOICE      perceive.py:10-40: rows are heard, saw, felt, did, looked; "smell" is a hook name in smokeopt.py:42 only; pain is one dial and a
+              burn/withdrawal reflex (reflex rows); no body-position sense.
+  WHY         The mind needs few channels at first; the realism-map items are listed as P2-P3 ("smelling smoke" P1, "heat felt" P2, "touch in the dark" P2).
+  COSTS       (v) Smoke is smelled before it is seen in real life (the earliest cue for a fire in a house), food spoil is smelled, a stranger is smelled,
+              a dog tracks a trail (animal minds need noses: realism map P3); touch in the dark (feeling for a door) is "none"; no way to know you are
+              hurt before seeing blood (pain location), no feel of body position (arms in the dark), no sense of balance ("I feel I'm falling"), no
+              hunger signalled by the body except through the drive layer.
+  BETTER      One generic CHANNEL record per sense (range, threshold, adaptation, noise) read from a physical carrier: odour as a scalar on the gas carrier
+              (about 0.05 ms per species, realism map), touch as a contact event from the contact law, proprioception and pain from the body's own
+              state with a per-person acuity dial. The owner's principle is "senses modelled with dials (can be broken)" (memory: learned-mind-
+              principles), so each channel has a dial that disease, drug (C17), age and magic can move. The percept rows already carry the event cause.
+  COST+RISK   Small per channel; risk is mind-input volume (each new percept row type is an input to the learned minds, so add under the K10 rule that
+              only what the character perceives may be used).
+  SCHEDULED?  PARTLY: K10 (player acts only on what the character perceives), SV2 (visible signs); smell, touch and body-sense are NOT named.
+  PRIORITY    MEDIUM.   OWNER-LEVEL YES (how many senses to give the character is a scope and play call; the mind's input grows).
+
+======================================================================================================================================
+E. LIFE COURSE
+======================================================================================================================================
+
+C27. THE BODY SHEET IS STATIC: NO GROWTH, SEX DIMORPHISM FROM COMPOSITION, OR AGEING
+  CHOICE      bodysheet.py: sheets ADULT_MALE/ADULT_FEMALE/STOCK as fixed dicts; anatomy.py:191 sex factor 0.90 on top of size; "age_y" used only for a
+              bone threshold (bodysheet.py:101 AGE_BONE_START_Y, :218) and bmr; Fam5 puts the full life course LATER.
+  WHY         A fixed household is enough for the inn (Fam5 (c)).
+  COSTS       Children are not smaller adults: head proportion, mass fraction in the legs, surface area per mass (a child cools twice as fast), growth of bone,
+              muscle, and heart. Ageing: sarcopenia, lower VO2 max, slower reflexes, loss of bone (C16), reduced thermoregulation, hearing (C25),
+              vision (C23). Women's dimorphism as one 0.90 factor misses mass, body fat, muscle distribution (C3).
+  BETTER      Growth curves from anthropometric tables (CDC/WHO growth charts, Preece-Baines (k)) as a function that generates a sheet at age a (geometry and
+              composition); ageing as slow drifts of the same dials (muscle_scale, bone_scale, reflex band, acuity, hearing threshold, set points), each
+              a measured trajectory (Janssen 2000; Fleg 2005 for VO2max (k)). One generator `sheet(age, sex, genome)` that feeds C3.
+  COST+RISK   Data and one function; zero run cost.
+  SCHEDULED?  PARTLY: Fam3 builds child sheets; Fam5 (c) says the FULL life course comes later with genetics. Adult/old trajectories not named.
+  PRIORITY    LOW until the family step; then MEDIUM.   OWNER-LEVEL Technical.
+
+======================================================================================================================================
+THE OWNER-LEVEL CHOICES (things that need the owner's ruling before anyone builds them)
+======================================================================================================================================
+  O1  C1/C2/C4/C7: do bodies become an articulated skeleton with voxels as a skin, hands as records? (a representation change; it is the body-side
+      twin of the rod-skeleton decision for trees; one primitive for both.) Decide BEFORE wave 16a builds six motor primitives on today's 11 blocks.
+  O2  C3: take D7 (the adult as the default body)? Every old result moves; the family step needs it anyway.
+  O3  C14: how much medical depth (tendons, nerves, lung, ligaments) is play value versus scope?
+  O4  C23: attention-mediated sight (the character can miss things); this changes what the player is told (ties to K10, CV4).
+  O5  C26: how many senses the character gets (smell, touch, proprioception) and what that does to mind input.
+  O6  C22: when the light field goes in, since it changes everything perceptual at once (a declared-diff wave).
+
+TOP FIVE RULED-IN REALISM FIXES FOR LANE C
+  1. C22 Light for sight (dark places, lamps, torches, dark adaptation); the largest sensory gap, and unscheduled.
+  2. C12 (+C13) A lumped heart, blood-pressure and brain-perfusion model, so shock, pulse, standing faints and death become processes.
+  3. C17 One pharmacokinetic law for alcohol, poison, medicine and potion; the `drunk` seam is set by nothing today.
+  4. C8 Gait from the person (leg length, age, load, fatigue, effort, acceleration, a foot-contact event stream).
+  5. C1+C3+C4 One articulated skeleton with joint stiffness and an adult default body, sharing the rod primitive with the trees (owner-level).
+
+NOTES ON METHOD AND WHAT I COULD NOT CHECK
+  - I read module headers and the specific lines cited; I did not run any code, so (v) means "read in the source", not "measured".
+  - Literature citations are from memory (k): author, year and journal are given so a library request can fetch them. Figures such as the 20x finger
+    area-to-volume ratio, the VO2 time constant, Maximum voluntary strength scaling M^(2/3), and the ATLS 30 percent figure are (k)/(u).
+  - I did not find (and so did not claim) any plan for light, vestibular or smell senses, pharmacology, ligaments or heart rate in decisions.md; if a
+    spec I did not see (WORK/w15/specs was empty here) covers one, the item is "scheduled" and this file is wrong about it.

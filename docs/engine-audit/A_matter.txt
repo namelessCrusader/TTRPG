@@ -1,0 +1,397 @@
+ENGINE REALISM AUDIT, LANE A: MATTER AND MECHANICS
+Date 2026-11-22. Documents only: no code, tests, sim or git were touched. Tree: live (batch 1 of wave 15 plus partial batch 2).
+
+READ: docs/realism-map.md, src/voxel/switches.py, w14/decisions.md, and the docstrings and top comments of src/mpm/{core,matter}.py, src/bonds/{kernel,store,materials}.py, src/voxel/{support,matbeam,matstress,matlaws,matdamage,matfric,matedge,edgewear,breaking,joinery,fasteners,matrec,fluids,clothing,contact,mechlaw}.py.
+
+Claim marks: (v) checked this session (web search of the abstract page, not the full text); (k) from my own knowledge, not re-checked; (u) unverified guess, mine or the repo's.
+Cost marks: all timings are ESTIMATES (u) unless stated; I ran nothing.
+Priority = realism impact over cost. OWNER = a real trade-off of realism, scope, play or cost for the owner to decide; TECH = a technical choice the build can make alone.
+
+====================================================================
+0. THE SHORT VERSION
+====================================================================
+
+The matter layer was built in this order: a lattice of 5 cm cells with one rigid "does it stand" rule (SPAN), then a particle solver (MPM) made affordable by SOFTENING every modulus by 1e-4, then bonds for things that must part, then a material record and a beam check on top. The early choices that cost the most realism all come from three decisions:
+
+  (1) SOLIDS ARE NOT ELASTIC. Stiff matter is either rigid (lattice, rig=1.0 projection) or rubber (softened MPM, softened bonds). Nothing stores elastic energy, nothing sways or springs back, nothing sags. The owner has already decided the cure for this (rod skeletons plus elastic shape-keeping, 2026-11-22). This audit adds what that decision must also remove, and what it leaves out.
+  (2) THE GRID IS THE ONLY GEOMETRY. A cell holds a mass fraction ("fill") but no orientation and no offset. Anything thinner than 5 cm (a plank edge, a rope of 12 mm, a twig, a blade, a pane, a shard, a thread) has no place inside its cell, and cubic cells give staircase surfaces. Rope, cloth and thin-plate heat are all this one root.
+  (3) "STANDS OR FALLS" IS A VETO, NOT AN ANALYSIS. Structures are checked by a reach law (SPAN) plus a static, per-run beam check on changed cells. Collapse is cells falling straight down as rubble. There is no lateral load, no dynamic load, no frame action, no debris flow, no granular law.
+
+What is already good and should be left alone: the creep clock (matdamage, Kachanov-Rabotnov, exact integration), Archard edge wear (matedge), Euler/Johnson buckling and brittle/ductile bending in matbeam, the weak-link breaking law (breaking.py), per-pair friction data (matfric), the bond solver's conservation by construction (kernel.py), sleep for rested matter, the one material record (matrec).
+
+TOP FIVE (details below):
+  1. A3-A6: Delete the softening and the `rig` constants: rod skeletons plus energy-storing shape-matching, and an implicit or XPBD bond solver so no bond is "softened to fit the budget". (DECIDED in part; the bond budget and the MPM softening for non-slender solids are not.)
+  2. A15-A17: A real structural model: dynamic, lateral, water and wind loads, a 3-D member-graph analysis, and collapse that hands failed members to bonds and debris to a granular law.
+  3. A11: A granular law (angle of repose, cohesion, bulking, bearing) in the lattice early, plus Drucker-Prager MPM for energetic events.
+  4. A7+A13: One material record read by lattice, bonds and MPM (isotropic MPM wood 10 MPa vs bond wood 60 MPa along the grain vs stone below wood), and pair friction and restitution in the bonds and MPM contact.
+  5. A1+A10+A20: Oriented sub-cell geometry (a normal and an offset per partial cell) and "thing below one cell" records for thin plates, rope radius and shards.
+
+====================================================================
+1. THE GRID AND ITS LIMITS
+====================================================================
+
+--------------------------------------------------------------------
+A1. A CELL IS A MASS FRACTION, NOT A SHAPE
+--------------------------------------------------------------------
+Choice: the lattice stores one material id and a mass (smass) per 5 cm cell; "fill" = grams / (density x cell volume) (store.py:97 _fill, matbeam.py:195 "one cell of fill f: bar or plate", matlaws.py MIN_FILL 0.15). src/mpm/core.py:1-20 says it plainly: "it cannot say WHERE INSIDE the cell anything sits". The fill is read as a THICKNESS in the beam check (realism-map "Fill is thickness") and as a hinge (doors are cells at fill 0.97).
+Why: cheapest possible state; every law (heat, fire, gas, sight, minds) reads the same arrays; and the 5 cm grid was chosen so a room runs in 25 ms.
+Realism it costs:
+  - A 2 cm plank, a floorboard, a pane, a blade and a plate all become "a cell with 40% fill" with no normal. Its area to air, to a hand, to wind or to a flame is unknown. The owner already found this for heat (the thin-plate area fix, w15 batch 3); the same hole is open for mechanics: contact area for friction, the section for bending about its real axis (a 2 cm x 20 cm board is stiff one way, floppy the other; "fill" gives one number), the push law's patch area, the edge of a thin blade.
+  - Two thin plates in one cell (a gap too small to pass) or a plate along one face versus the other are the same state.
+  - Shards, splinters and filings smaller than a cell can only be a cell-sized chunk or nothing.
+Better alternatives:
+  a. Oriented partial cells: store, for each partial cell, a unit normal (two small ints) and an offset (one byte), as in volume-of-fluid PLIC and cut-cell methods (k: Youngs 1982 PLIC; Hirt-Nichols 1981 VOF). Cost: 3 bytes per partial cell, written only where fill is partial. Gives exact face areas, section axes, and a surface normal for contact. Scale of work: every reader of "fill" must opt in; start with the beam check, friction and the push law.
+  b. Thing-level records for anything thinner than a cell (the thin-solid record in record.py/thinheat.py already exists for heat): a record owns the true geometry (thickness, width, length, normal) and the lattice cell only draws it. Make the same record the mechanics' source of section properties.
+  c. A sparse finer sub-grid (a 1 cm brick) only around thin solid things: more general, but the heavy option; each brick ~125 times the cells (u).
+Cost and real-time risk: a. and b. are near zero per tick (computed on change); c. is the risk. Recommend b. first (already half built) and a. for ground, walls and floors.
+Scheduled? PARTLY: the thin-plate AREA for HEAT is owner-approved in wave 15 batch 3 (decisions.md 2026-11-22 (1)). The mechanical use (section, contact area, normal) is NEW.
+Priority: HIGH (one root, many symptoms). OWNER-LEVEL: yes (scope of what a "thing below a cell" is allowed to do; how many fields every law must read).
+
+--------------------------------------------------------------------
+A2. CUBIC CELLS GIVE STAIRCASE SURFACES AND AXIS-ALIGNED EVERYTHING
+--------------------------------------------------------------------
+Choice: faces are the 6 cube faces; support, SPAN, beam runs, fall columns, route heights all work along x, y, z (support.py:35-78, matbeam "horizontal run"; matbeam.py:34 "Nothing here changes SPAN").
+Why: simplicity; every law is a stencil over axis neighbours.
+Realism it costs:
+  - A roof slope, a ramp, a hillside, a diagonal wall or a ladder leaning on a wall are staircases. A slope's friction normal and tangential split is wrong (a ball on a 5-cell staircase does not roll like one on a plane); a diagonal beam is a chain of cells with "hanging runs" that are each a cantilever.
+  - A rafter pair (a gable roof) cannot be a truss: the beam check sees horizontal runs only, so inclined members carry no axial load as such.
+  - A circle of cells has a flat wall every few cells; rolled objects hop on the steps.
+Better alternatives:
+  a. A surface normal field from the oriented partial cells (A1) or, for large smooth shapes, a signed distance field (MPM already builds an SDF, core.py SDF_MARGIN) for contacts and friction, leaving the lattice for storage and the laws that need cells.
+  b. Members as 3-D line elements (A17) so an inclined rafter is one beam with a direction, not a staircase of runs.
+Cost: a. is incremental per object; b. is part of A17.
+Scheduled? NO. NEW. Partly addressed if A1a and A17 are built.
+Priority: MEDIUM. TECH (with an OWNER-level cost note: the slope of a hill must still be buildable by hand-editing cells).
+
+====================================================================
+2. THE MPM SOFTENING AND THE SHAPE-KEEPING PROJECTION
+====================================================================
+
+--------------------------------------------------------------------
+A3. EVERY MODULUS IS SOFTENED BY 1e-4, AND STRENGTH BY sqrt(1e-4)
+--------------------------------------------------------------------
+Choice: MPM(stiff=1e-4) multiplies E by stiff (core.py:434 __init__, :844 E*self.stiff) and tensile strength by sqrt(stiff) (core.py:828) so that "the speed at which a thing breaks is preserved" for impacts (core.py:167-180). per_cell=1 particle per cell (matter.py:290).
+Why: an explicit solver's step goes as dx/c. Real wood is 23 microseconds per cell; at 25 ms ticks that is ~1000 substeps, which numpy cannot do for 1e5 particles (core.py:424-431). "Graphics MPM always softens."
+Realism it costs (the file states several):
+  - Static deflection is 1e4 times too large. Everything that must hold a shape is held by the rig projection (A4) instead, so NOTHING stores elastic energy: no bounce of a wooden board, no spring-back, no ringing (sound pitch of a struck bar), no vibration, no resonance.
+  - The sqrt scaling is exact only for impact at fixed speed. A static or slow load (a weight on a plank, a body pressed on glass) sees a strength margin shrunk by 1e-2 against self-weight: "for glass at stiff=1e-4 a factor of 36 holds; at 1e-6 it would not" (core.py:178-180). So 1e-4 is a ceiling set by this, not a free choice.
+  - Penetration depth into a floor, contact time, restitution and the sound of an impact (contact duration sets the frequency) are all off because the contact stiffness is 1e-4 of real. The bonds' restitution is then tuned by one constant ZETA_C 0.38 to land at 0.35 for a plank on stone (store.py:34-50): a fit, not a law.
+  - Wave speed is wrong by 100, so any shock or stress wave that matters (a hammer on a nail, a blow through a door) is not there.
+  - One particle per cell (per_cell=1) gives the noisy stress and numerical fracture of coarse MPM (k); 8 per cell is the usual standard (core.py add_box says 2 per axis is standard).
+Better alternatives:
+  a. Stop using MPM for stiff solids. Use rigid bodies plus bonds plus rod skeletons (A5) plus elastic shape-matching (A4) for everything that stays solid, and keep MPM only for what really flows or crumples: soft tissue, granular, mud, snow, thick liquids, debris. Softening then only touches soft materials, where it is mild (flesh E = 1e6 times 1e-4 = 100 Pa is a problem of its own: see A4 for flesh).
+  b. Implicit or semi-implicit MPM, which has no wave-speed step limit (k: Gast et al. 2015 "Optimization integrator for large-deformation elastoplasticity"; Stomakhin et al. 2013 implicit snow; Fang et al. 2019 "Silly rubber"). Cost: linear/Newton solves each step, typically 5-20 times an explicit step per substep but with 10-1000 times fewer substeps for stiff matter (u). On a 6 GB laptop budget, CPU only: risky for large worlds, fine for a few objects.
+  c. Model-order reduction: a compact stiff object (a stone, an anvil, a pot, a door) is a rigid body plus its first 3-10 vibration modes, computed once from its mesh (k: Pentland and Williams 1989 modal analysis; James and Pai 2002 ARTDEFO). This gives ringing, bounce time, and impact stress without any substeps. Cost: a modal solve per object at creation (seconds, cached by shape); runtime ~ microseconds per mode per tick.
+  d. Raise stiff only to what the substep budget allows and say so in the ledger (a crutch row mat.mpm_softening is NOT in switches.py today: the softening has no ledger row at all).
+Cost and real-time risk: a. is cheapest and agrees with the owner's decision; c. is optional and adds sound and impact realism cheaply; b. is the risk.
+Scheduled? PARTLY. The owner decision of 2026-11-22 replaces the shape-keeping constants and adds rod skeletons. The softening itself, the sqrt scaling and the missing ledger row are NOT covered.
+Priority: HIGH. OWNER-LEVEL: yes in part (how much of the solid world is "particles" at all; a. changes what MPM is for).
+
+--------------------------------------------------------------------
+A4. SHAPE-KEEPING IS AN AUTHORED FRACTION `rig`, AND IT ONLY REMOVES ENERGY
+--------------------------------------------------------------------
+Choice: the last column of MAT (core.py:109-146): wood 1.0, stone 1.0, glass 1.0, iron 0.9, flesh 0.05, lead 0.3, leaf 0.15, ash 0.0, char 1.0, tin 0.9, rope 0.05. _hold_shape (core.py:961+) projects each bound cluster's VELOCITY onto rigid motion, a fraction rig of the way, weighted by m x rig. By construction it can only lose kinetic energy (sum m rig (rig-2)|e|^2 <= 0).
+Why: shape matching of positions fought the solver's stress and produced energy from nothing (a pole flew back at 7.7 m/s, core.py:963-972); a velocity projection is stable and costs no substeps.
+Realism it costs:
+  - A bent thing cannot spring back (the projection removes the bend velocity; no elastic energy is stored to give back). Bows, springs, diving boards, a vaulting pole, a bent branch and a trampoline are impossible.
+  - rig is a taste, not a measurement: 1.0 for a 20 m trunk and for a 3 cm dowel alike. A thin plank and a thick one both "do not bend". Flesh at 0.05 is a blob.
+  - "1.0 = a thing that does not bend": a stone or a glass pane cannot flex before it breaks. A glass pane in a wind has no flex or ring.
+  - Wood at 1.0 vs lattice SPAN vs bond softening: three notions of "how stiff" that do not agree (A7).
+Better alternatives (the owner's decision, with sources):
+  - (a) Elastic shape-keeping from physics: replace rig by a stiffness derived from the real modulus and the real shape (beam theory: k = 3EI/L^3 for a cantilever, EI from the member's section), using a LATTICE or CLUSTER shape-matching with a stiffness parameter (k: Müller et al. 2005 "Meshless deformations based on shape matching"; (v) Rivers and James 2007 "FastLSM: fast lattice shape matching for robust real-time deformation", linear-time summation over overlapping regions, SIGGRAPH 2007 / ACM TOG 26(3):82). Regions of 20-40 cm give the sway of a trunk at near-zero substep cost.
+  - The essential fix to the current projection: the elastic energy must be STORED and the stored joules BOOKED (a clamp that only removes energy is what makes springs impossible). Position-based shape matching with a stiffness alpha in (0,1] keeps energy errors small if driven through an XPBD-like compliance (k: Macklin, Müller, Chentanez 2016 "XPBD: position-based simulation of compliant constrained dynamics", gives physical stiffness and a real elastic energy).
+  - Damping from a material loss factor, not from the projection (wood loss factor ~0.01-0.03 (u)); today `damp` is a fit that is "not a fudge" but is tuned to the softened world (core.py:90-96).
+Cost: shape-matching summation is linear in cells; with 100 000 cells ~1-3 ms in numba (u). Real-time risk low; the risk is validation (energy books must close: a spring-back test per material).
+Scheduled? YES: owner decision 2026-11-22 (a). NEW details: store and book elastic energy; keep the real E in the ledger; test vs analytic cantilever deflection and frequency f = (1.875^2 / 2 pi) sqrt(EI / mu L^4) (k: Euler-Bernoulli cantilever).
+Priority: HIGH. TECH inside an already-decided owner choice.
+
+--------------------------------------------------------------------
+A5. SLENDER THINGS: THE ROD SKELETON (DECIDED) AND WHAT IT MUST ALSO CARRY
+--------------------------------------------------------------------
+Choice: today a trunk is wood at rig 1.0 in MPM, or 20 cm bonded blocks joined by beams (BLOCK_M 0.2, store.py:74) whose stiffness is cut to fit BUDGET (A6). Neither gives sway.
+The owner has decided (b): a few-node bending rod per slender thing drives its voxels, built on matbeam.py. Candidate models and sources:
+  - Cosserat rods in position-based dynamics: (v) Kugelstadt and Schömer 2016, SCA, bending and torsion by quaternion constraints, over an order of magnitude faster than earlier PBD rods (k: Umetani, Schmidt, Stam 2014).
+  - Discrete Elastic Rods (k: Bergou et al. 2008), with real E, I, G, J; implicit time stepping, so stiff real wood costs nothing in substeps.
+  - Reduced-order tree models for wind (k: Habel et al. 2009 "Physically based real-time translucency"? not that: the standard is Sellier-style or "Wind-driven tree animation" by Stam 1997 modal, and engineering "Gosselin and de Langre 2009" flexible tree sway); the sway of a real tree is the first bending modes of a branching beam, 0.2-1 Hz for a large tree (k).
+Things the rod skeleton must carry that the owner's note does not list yet:
+  1. A PLASTIC HINGE for ductile things: bending beyond the yield moment M_y = sigma_y x S leaves a permanent set (a bent bar, a bent nail, a dented blade, a bent horseshoe, wire). breaking.py already has "mild steel only yields and takes a set"; the rod must keep the set as its rest shape. NEW; gives bending prison bars, which books ask for (k).
+  2. Wood failure as bending of a tapering section with knots and grain angle: snaps at the real bending strength reduced by knots and moisture (green vs dry 0.5-0.7 (k, Wood Handbook ch. 5)); the weak-link law in breaking.py already does weakest-segment and Weibull size effect; reuse it per rod segment.
+  3. Rod-to-voxel mapping: the rod drives voxels, so the lattice cells must be rasterised along the bent curve each tick for sight, fire, and minds. This is the same "draw back on the lattice" seam as matter.py rasterize (A8).
+  4. Wind through 14a's push law: canopy drag as patches of leaf area (LEAF_AREA in bonds/materials.py exists) with the push law's Cd; gust response, shed leaves when the stalk bond breaks.
+  5. Contact with persons: a hand grabbing a branch, a person on a plank (bodycontact and the load path of A15); the rod must accept point loads from a body, and give them back.
+  6. A bow or spring needs the rod's elastic energy booked into the ledger (A4): draw work in, arrow KE plus string/limb damping out.
+Cost: a rod of 5-20 nodes ~ a few microseconds per substep (u); 1000 rods ~ 1-5 ms per tick (u). Trees with 1000 branches in range are the risk; solve far branches at coarser lumps or only when wind or contact changes them (event-driven).
+Scheduled? YES (owner, 2026-11-22). The items 1-6 above are NEW design requirements.
+Priority: HIGH. OWNER-LEVEL: decided; item 1 (permanent set) and 6 (bows) are small scope additions to confirm.
+
+--------------------------------------------------------------------
+A6. BONDS ARE "SOFTENED JUST ENOUGH TO FIT" A SUBSTEP BUDGET
+--------------------------------------------------------------------
+Choice: store.py:56-72, BUDGET 2.0e5 piece-substeps per tick, NSUB_MAX 4000, SAFETY 0.8, `_soften`: "real wood at 5 cm would take thousands a tick", so the stiffest bonds are softened; matter bonds also lower strength by sqrt(softening); stalks and ropes keep handbook strength. Bonds are rigid pieces of 20 cm blocks (BLOCK_M), leaves/pane/rope/debris one cell per piece. The kernel is symplectic Euler (kernel.py header).
+Why: explicit integration pays for its stiffest, lightest bond; a crown of 2700 sprays cannot afford real stiffness.
+Realism it costs: crowns are floppier than real; sway frequency is wrong; a bond's break load (strength) is "scaled like matter" for blocks, which is only right for impact, not for a static load (same error as A3); the budget makes behaviour depend on how many other bonded things are in the world (the same trunk is stiffer alone than in a forest): a hidden non-locality that breaks "every law on in every world". Rope links are one cell (5 cm) per link (A20).
+Better alternatives:
+  a. Implicit or position-based integration of the bond network: XPBD / projective dynamics / vertex block descent give unconditional stability, so real E costs no substeps (k: Macklin 2016 XPBD; Bouaziz et al. 2014 "Projective dynamics"; Chen et al. 2024 "Vertex block descent", all (k)). Contact with the lattice stays as it is.
+  b. Island decomposition (realism-map: "Bond islands, one global substep and one sleep"): each connected group gets its own substep count, so a forest does not set the pace for a rope.
+  c. Hierarchical resolution: lump far or small things (leaf sprays) into one piece with the sum of their drag and mass until something touches them.
+Cost and risk: a. changes the integrator (a rewrite of kernel.py's inner loop) but keeps conservation if the constraint projection is momentum-preserving (position-based methods are, by symmetric correction; angular momentum is kept for orientation constraints, k); energy is dissipated by the iteration, which must be booked as heat. Risk: lose the current "exact by construction" ledger property (kernel.py: "adds no momentum and no angular momentum ... exactly in arithmetic"); must re-prove with a test.
+Scheduled? PARTLY: wave 15 "bond islands; ropes on XPBD" (realism-map section 7 / wave 15 row). The BUDGET softening is NOT named for deletion. NEW: make the budget crutch a ledger row (switches.py has no row for it) with deleted_when "bonds are implicit".
+Priority: MEDIUM-HIGH. TECH, with the exactness trade-off flagged to the owner (conservation by arithmetic vs by constraint).
+
+--------------------------------------------------------------------
+A7. THREE SOLVERS, THREE SETS OF MATERIAL NUMBERS (AND WOOD HAS NO GRAIN IN MPM)
+--------------------------------------------------------------------
+Choice: matrec.py is "one row per material", but the legacy views reproduce the old disagreement through LEGACY OVERRIDES: MPM wood E 1.1e10 and tensile strength 1.0e7 (isotropic, core.py:110) versus bond wood along the grain 6.0e7 and across 3.0e6 (bonds/materials.py WOOD_L, WOOD_T, Hankinson), versus the lattice's TOUGH and SPAN and matrec's flexural strengths. Stone is 8 MPa in MPM but wood is 10 MPa: stone below wood (switch mat.mpm_inversion). Friction is 0.40 in the bonds and the MPM and per pair only in the lattice (mat.friction_voxel_only). MPM "wood" has no grain, no species, no moisture; the lattice's per-cell species and grain (wood.species gate) are not read.
+Why: building the record first moved no number (C8a "building the views moves no number"); each override is removed "on purpose, one declared change at a time" (matrec.py docstring).
+Realism it costs: the same oak plank breaks at three different loads depending on which solver carries it at that moment (lattice veto, bond, particle); a log splits across the grain as easily as along it in MPM; a stone anvil is weaker than a wooden stick when it is a particle. Stone, brick and glass: one tensile strength and no compressive crush in MPM (compression failure of stone and masonry is the main failure mode (k)).
+Better alternative: delete the legacy overrides: the MPM, the bonds and the lattice read the same record with these conversions: strength to the softened world only through ONE function (A3), grain and species per member, and orthotropic E for wood (Hankinson already exists in bonds/materials.py; (k) Wood Handbook ch. 5). Add compressive strength and a crush criterion to MPM (a Mohr-Coulomb or Drucker-Prager cap for stone and masonry (k)).
+Cost: data work plus re-fit of golden scenes (declared diffs). Real-time: none.
+Scheduled? PARTLY: "D5: the numbers are unified one by one, wood and stone first" (ledger mat.mpm_inversion), no wave named.
+Priority: MEDIUM-HIGH. TECH; OWNER sign-off on the declared scene changes.
+
+--------------------------------------------------------------------
+A8. A MOVING THING IS ONE RIGID, SAME-MATERIAL CLUSTER; ONCE PROMOTED IT NEVER RETURNS
+--------------------------------------------------------------------
+Choice: _law_torque / _topple (support.py:516-600) tip "a connected cluster of same-material solid voxels" about a pivot and promote it through the seam; decision 3 forbids demotion (realism-map solids row); a resting piece sleeps (REST 3 ticks, matter.py:113) but stays particles and is drawn on the lattice each tick, positions quantised at rasterize. A body in the air that is someone's person keeps the old path (support.py:523-531).
+Why: the particle solver cannot be stopped from carrying a thing once it is a thing of particles without a demotion protocol that was judged risky.
+Realism it costs: a composite object (a wooden chair with an iron nail, a barrel with iron hoops) is not one cluster ("same-material"); a thing resting in a tilt (a plank leaning on a stone) is drawn as stair-stepped cells; objects stay in the particle solver forever, costing memory (lazy arrays saved ~330 MB in w15 batch 1) and every law that reads the lattice sees the quantised draw. Heavy things do not re-enter the "standing structure" check, so a boulder that rolled onto a bridge is not a load for the beam check (A15).
+Better alternative: a demotion rule with a quiescence test and an exact, mass-conserving write back (the thing becomes lattice cells plus an oriented-fill record from A1 and a thing-level pose), only when it has slept for N ticks and nothing is in contact that is moving; loads from resting particle things join the structural load path (A15).
+Cost: demotion check per sleeper ~ microseconds; risk: bit-exact books at the round trip (mass, heat, fluid, edge, eid ride in `CARRIED`).
+Scheduled? NO (decision 3 forbids). NEW question for the owner.
+Priority: LOW-MEDIUM. OWNER-LEVEL: yes (decision 3 is a standing design rule).
+
+====================================================================
+3. BONDS, FRACTURE AND CONTACT
+====================================================================
+
+--------------------------------------------------------------------
+A9. LATTICE FALL AND IMPACT: ENERGY FROM A STORED DROP HEIGHT, PER CELL
+--------------------------------------------------------------------
+Choice: a falling cell column drops in whole voxels per sweep at a drag-limited speed (support.py:79-104 _fall_speed, FALL_SUBSTEPS 16 in materials.py:506), carries a drop height `fallh`, and on landing "cashes" m g h against the material's toughness (support.py:323 _cash_impacts); brittle things shatter into cell-sized pieces.
+Why: cheap, exact in books; needs no solver.
+Realism it costs:
+  - The impact energy is the drop height, not the real contact: a heavy falling load that lands on a floor beam applies m g h to the cell it lands on, not to a beam that deflects (dynamic amplification is absent: A15). A fast sideways impact (a thrown thing) goes through the particle solver or the blow code, with a separate toughness number: three paths for "something hit something".
+  - Thresholds are per reference voxel (SPAN in "10 cm reference voxels, converted by scale", support.py:19-20): a world at 5 cm and at 10 cm break differently unless the scale conversion is exact. The realism-map records a voxel-size-dependent fracture ("depends on code path and voxel size").
+  - Fall drag uses one voxel face as the area and Cd 1.1 whatever the shape (support.py:84-96): a long thin column falls as a flat slab.
+Better alternative: ONE impact law: momentum and energy exchange at a contact event with the pair's restitution and an energy-to-damage rule: impact stress ~ rho c dv against strength (core.py already uses it), fed from the real speed of whatever hit. Calibrated on the existing tests (S-T1, S-T4, EN 12600 glass impact, realism-map). Fragment SIZE from an energy law (A10).
+Scheduled? PARTLY: realism-map "Fracture, impact stress rho c dv against strength from the one record" (P2, M), no wave named.
+Priority: MEDIUM. TECH.
+
+--------------------------------------------------------------------
+A10. FRAGMENTS ARE CELL-SIZED; NO FRACTURE ENERGY, NO SUB-CELL DEBRIS
+--------------------------------------------------------------------
+Choice: a shattered pane breaks "into pieces exactly as big as the pane's own cells" (core.py:6-8) or one cell (5 cm) per shard (support.py:398 _shatter, bonds PANE claim "glass at most 2 cells thick"). `matdamage` holds a scalar D per cell (no crack direction). breaking.py prices a CUT at G_c x area (fracture energy booked), but a shatter is priced by a threshold.
+Why: the cell is the smallest thing.
+Realism it costs: no shards, splinters or slivers (the cause of cut feet, glass in a wound, a splinter in a hand); no dust; no sharp edges on stone chips (knapping); the sound of breaking is one event; wood does not split along the grain (a log splits in long strips; MPM wood has no grain).
+Better alternatives:
+  a. Fragment size from energy: mean fragment size from the Grady (1982) / Mott (1947) laws, or for glass the known size vs stress relation (tempered glass dices; annealed glass breaks in large sharp pieces) (k). Pieces smaller than a cell go into a SURFACE LAYER of "debris" on the floor (the layers system in layers.py already holds soot; a "glass shards" layer with mass per face, edge sharpness, and a slip and cut effect). Cheap: no particles.
+  b. Grain-aware splitting: split wood along the grain direction (the lattice already has wood_grain arrays) at G_c-priced rates.
+Cost: a. ~ microseconds per breakage; b. per chop (chopping is scheduled wave 15).
+Scheduled? NO. NEW.
+Priority: MEDIUM. OWNER-LEVEL: yes in scope (how much harm from debris the world models; also a cap on what the debris layer becomes: legal/sensitivity limits are not at issue here).
+
+--------------------------------------------------------------------
+A11. GRANULAR MATTER: NO FLOW LAW IN THE LATTICE, NO GRANULAR CONSTITUTIVE IN MPM
+--------------------------------------------------------------------
+Choice: sand (id 15), soil (27), ash (5), char, rubble and "heaps" are cells with a SPAN row (support.py, matrec rows with bearing numbers sc 2.9e5, 2.2e5, wave 14a lane F). The lattice has no angle-of-repose law: a poured or dropped pile falls straight down and stacks as a column; excavated walls stand to any height until SPAN says otherwise. MPM kinds are elastic with a yield strain (MAT rows, core.py:109-146); ash is "a heap that keeps no shape"; there is no Drucker-Prager (core.py:765 mentions "sand instead of breaking" as an accident). Friction class "granular" 0.50/0.45 (matfric.py:87): "a heap's angle really lives in L5g" (matfric comment).
+Why: the first world was rooms and fire; granular was out of scope (realism-map "Soil, digging, heaps" row P2).
+Realism it costs: no sandpiles, no spoil heaps, no cave-ins of a pit or a trench, no grain pouring through a hole (a sack cut open, an hourglass), no rubble cone after a collapse, no avalanches or sinking in soft ground, no bulking (dug soil is 20-30% bigger (k, Das)), no dust. Wet sand, clay and mud differ by cohesion; here they are the same cell.
+Better alternatives:
+  a. Lattice slump rule (cellular, exact in mass): a cell with a free lower side neighbour and a slope above the material's angle of repose moves grain down; angle from the friction angle (tan phi) with cohesion c giving a Rankine critical height H_c = 4c / (gamma) for a vertical cut (k; the repo's composite-events.md already lists Rankine, bulking, Bekker, Terzaghi). Cost ~ near 0 when idle, sweep only on active cells. Exact books.
+  b. Drucker-Prager elastoplastic MPM for ENERGETIC granular events (a landslide, thrown sand, debris of a collapse, a person falling into a heap): (v) Klár et al. 2016 "Drucker-Prager elastoplasticity for sand animation", ACM TOG 35(4), MPM discretisation; wet sand extension Tampubolon 2017 (v). It needs the demotion protocol of A8 to hand back to the lattice (a heap at rest becomes cells).
+  c. Heightfield granular (k: Sumner 1999) for large open sand fields offscreen: cheap but 2.5-D.
+Cost: a. small (u 0.5 ms with 1000 active cells); b. 5-50 ms per tick for 1e4-1e5 particles (u).
+Scheduled? PARTLY: W17 (soil and digging, lattice slump rule). The realism map ranks it P2; but the COLLAPSE debris (A16), the spill of powders (black powder, flour, scheduled "powder" rows) and any dig depend on it, so its dependency position looks late.
+Priority: HIGH (impact: digging, collapse, spill; cost: low for a.). OWNER-LEVEL: yes (whether digging and cave-in are in the base game or a pack; a. versus b. conflicts with decision 3).
+
+--------------------------------------------------------------------
+A12. SNOW, ICE AND FROZEN GROUND AS MECHANICS
+--------------------------------------------------------------------
+Choice: ICE (id 12) is a row (icephase); snow is only a thermal/ environment store (realism-map "Snow; 2-D snow store", P3); frozen ground is not a mechanical state (soil is fixed cohesion).
+Realism it costs: snow does not compact, pack, slide off a roof, load a roof (snow load ~ 1-2 kPa common, k), drift or bear a footprint; ice has no thickness-strength law for walking on a frozen pond (k: 'ice bears a person at ~5-10 cm (u)').
+Better alternative: snow depth per column with density and age (a 2-D store, as in the map) feeding (i) roof load into the structural check (A15), (ii) friction class, (iii) a slump/avalanche rule at the slope (A11), and an ice-thickness bearing check using the existing beam check on the ice slab. Stomakhin 2013 MPM snow (k) only for events.
+Scheduled? Yes, P3 (environment). Priority: LOW. TECH.
+
+--------------------------------------------------------------------
+A13. CONTACT AND FRICTION: ONE mu IN TWO SOLVERS, ONE RESTITUTION CONSTANT, NO ROLLING RESISTANCE
+--------------------------------------------------------------------
+Choice: bonds MU = 0.4 (store.py:30), MPM friction=0.4 parameter (core.py:434), toppling pivot dry 0.40 (switch contact.pivot_dry_040); per-pair static/kinetic and film values exist only in matfric.py and are used only by the lattice pushes (switch mat.friction_voxel_only). Bond contact is a penalty spring with damping ZETA_C 0.38 (store.py:34, fitted so a plank on stone restitutes 0.35); a face counts as one contact whatever number of members touch it; each member is a SPHERE half a cell across against lattice cells (kernel.py header: "one sphere per piece let a felled trunk roll like a string of beads", and members are still spheres).
+Why: friction and a damped contact spring are the minimum for stability; per-pair data came later.
+Realism it costs: no ice, oil or wet-wood slip for anything that is a particle or a bonded piece (a thrown or toppled thing slides the same on ice and stone); static equals kinetic in these solvers (no stick-slip, no stiction break-away); no rolling resistance (a barrel or a wheel or a sphere rolls for ever on a flat floor until air drag; carts, scheduled wave 15, need it); one restitution for every pair (a ball on stone, glass on stone, lead on wood all fitted by one number; real restitution depends on materials and falls with impact speed (k: Hunt and Crossley 1975; Hertz contact)); a round bead member on a flat floor has bead-like rolling with a 2.5 cm radius.
+Better alternatives:
+  a. Read the per-pair mu (static, kinetic, film) from matfric in the bonds and the MPM contact (the data exist). Coulomb friction with a static/kinetic switch and a small slip tolerance (k: standard).
+  b. Contact as Hunt-Crossley (Hertz stiffness with a velocity-dependent damper) or an implicit soft contact (k: Catto 2019 "soft step" in Box2D v3; XPBD contact), with restitution taken from a per-pair table (the lattice has `ring` and impact data).
+  c. Rolling resistance as a torque c_rr N r, or a small rolling friction coefficient per pair (k: wheel on road 0.01-0.03, iron wheel on rail 0.001).
+  d. Members as boxes (or capsule/box hulls) against a lattice SDF rather than spheres.
+Cost: a.-c. are table lookups and a few flops per contact (u +10%); d. replaces sphere tests with box-vs-SDF ones (u 1.5x per contact).
+Scheduled? PARTLY: wave 15 "friction and loose rigid objects" (rows in the realism-map and the wave 15 list). The restitution constant and the sphere members are NOT named.
+Priority: MEDIUM-HIGH. TECH.
+
+====================================================================
+4. THE BEAM CHECKS, STRUCTURAL LOADS AND COLLAPSE
+====================================================================
+
+--------------------------------------------------------------------
+A15. STATIC, VERTICAL-ONLY, CHANGED-CELLS-ONLY: THE BEAM CHECK IS A VETO
+--------------------------------------------------------------------
+Choice: matlaws.py wires matbeam as a VETO under the old SPAN law (switch mat.span_floor, mat.veto_changed_cells, mat.veto_static, mat.veto_constants): it checks every 10 ticks (VETO_EVERY, 40 when something structural is hot), only cells within TOUCH 4 of a change or heat, static loads only ("no walker DAF, no landing"), and it can only make a thing fall, never let one stand that SPAN drops. A world built standing "is taken to stand".
+Why: cost (3-6 ms per layout change), safety (never destabilise old scenes), and nothing else existed.
+Realism it costs:
+  - LOADS: only gravity plus people-as-extra_N. No wind pressure on walls and roofs (14a's push law could supply it), no water or earth pressure on a wall or door (a flood, a cellar wall, a dam, a dug trench), no snow (A12), no thrust of a roof or an arch on the walls it sits on (a roof of rafters spreads the walls out; a barrel vault needs buttresses (k)), no earthquake, no ram or kick as a dynamic impulse on a door or wall, no crowd on a balcony, no dynamic amplification: a load dropped suddenly doubles the static stress (k: DAF = 2 for a suddenly applied load; footfall DAF 1.2-1.5 (u)).
+  - NO AUDIT AT BUILD: an author's house that is over-spanned stands until something changes. A "full-structure audit at scene build" is noted as the cure (matlaws).
+  - FOUNDATIONS: soil is a row with a bearing capacity but a wall on soft ground does not settle or tilt (bearing data exist: sand 2.9e5, soil 2.2e5; the check is not wired as a load path to the ground).
+  - CONNECTIONS: joinery.py and fasteners.py compute joint capacity (nails, screws, glue, mortar, withdrawal) but the structural veto does not ask whether a joint, not the member, fails first. Real timber structures fail at connections more often than in the member (k).
+  - TIME: only the creep clock handles duration of load; no cyclic loading, no rot or rust weakening of a member over seasons beyond D (A21).
+Better alternative: raise the check to a LOAD-CASE analysis on events: (i) dead load; (ii) live load (people, furniture, stored things from the record of things); (iii) wind from the push law's pressure on exposed faces; (iv) fluid and soil pressure on wall faces from the fluid head and the soil row (hydrostatic p = rho g h exists in fluids._law_head); (v) impulsive load at a contact event with the DAF; (vi) the thrust of arches and roofs through the member graph (A17). Run once at scene build (full audit) and on any change, with a cache by layout hash (the existing memo is already stated).
+Cost: unchanged order (3-6 ms per layout change, u 2x for more load cases); events are rare.
+Scheduled? PARTLY: the C13 footfall and "landing event still to come" are named in the ledger (mat.veto_static); wind and fluid loads on structure are NEW; collapse (A16) is a realism-map item without a wave in the wave 15 list; "retire SPAN after arch detection" is W9 owner choice.
+Priority: HIGH. OWNER-LEVEL: yes in part (building audit at scene build changes standing scenes; whether wind and floods can bring houses down is a scope question).
+
+--------------------------------------------------------------------
+A16. COLLAPSE IS CELLS FALLING STRAIGHT DOWN
+--------------------------------------------------------------------
+Choice: a member over strength becomes a PIECE (`rubble`, `_rub_gen` bumped) which "the existing support law already knows how to drop" (matlaws docstring); columns of cells fall one by one (support.py:194-320), rubble has no strength (SPAN 0), shards one cell. Large chunks falling free are promoted to the seam (support.py:194 _free_fall_to_seam) only if every cell of the cluster is unsupported and touches nothing supported.
+Why: simple, books exact.
+Realism it costs: a wall does not topple as a slab, a roof collapses onto the room (that case works as a column) but not as a progressive failure: load redistributes only inside SPAN; a floor that fails drops its load onto the floor below as a dynamic impact (A15), which should overload it and pancake (k). No debris cone or spread, no dust cloud, no trapped person under a slab (person is a lattice body), no pull of an unbraced wall by a rope.
+Better alternative: failed members hand over to the bond solver as 20 cm pieces (realism-map "Collapse": 30-60 ms/tick for 1-3 s with ~500 pieces; offscreen, a debris cone at the angle of repose), with the impact load on the next level fed back to the check of A15, and the debris as a granular heap via A11. Progressive-collapse practice: alternate load path analysis (k: GSA 2013 / UFC 4-023-03 guidelines).
+Cost: 30-60 ms per tick for a short burst (the map's number), risk to the 25 ms tick during the burst (the sim has "slow-motion" budget exceptions? not stated).
+Scheduled? NOT in the wave 15 list; the map ranks it P2, effort L.
+Priority: MEDIUM-HIGH. OWNER-LEVEL: yes (a collapse must be allowed to run past 25 ms, or play in slow ticks).
+
+--------------------------------------------------------------------
+A17. THE ANALYSIS MODEL: HORIZONTAL RUNS, NOT A 3-D MEMBER GRAPH; DEFLECTION NOT USED
+--------------------------------------------------------------------
+Choice: matbeam finds layer-by-layer vertical load paths with "hanging runs" (pinned on two supports, effective span n h + h/2, or a cantilever), stacked runs share load by EI; masonry walls over openings arch by the 45-degree triangle; columns by Euler/Johnson; deflection formulas exist (deflection_pinned_uniform, :279-291) but sag is not a state (the realism-map's "sag" is a stated goal, not wired: matbeam.py:422 mentions d_body in series).
+Why: a closed-form analysis per run is cheap and local; a global FEM per tick is 229-333 ms for the house (realism-map).
+Realism it costs: continuous beams over several supports, frames with rigid joints (portal frames, a door lintel framed into posts), two-way slabs, trusses, walls as shear walls under lateral load, openings in walls (a window weakens a wall; a lintel-less opening), cantilevers from wall stubs, and inclined members are not modelled as such (A2). Planks do not visibly sag (the owner's list); floors do not creak; a bridge does not bounce.
+Better alternative: a sparse member-graph (direct stiffness) analysis on layout change: nodes at cell junctions, line elements for beams and columns, shell/membrane elements or equivalent struts for walls and slabs; solve K u = f by sparse Cholesky or conjugate gradient; cache by layout hash. A house of 5-20 thousand members ~ 10-100 ms on change (u), 0 otherwise. This also gives the deflection that drives the elastic shape-matching of A4 (sag, sway) from one source. Sources (k): any structural-analysis text (direct stiffness method, Euler-Bernoulli and Timoshenko elements); Whiting et al. 2009 "Procedural modeling of structurally-sound masonry buildings" (rigid-block equilibrium by linear programming, (k)) for masonry where tension is not carried.
+Cost and risk: the realism-map rejects "per-tick elasticity (FEM)": that remains right; the proposal is event-driven coarse beams, not per-tick FEM. Real-time risk low if only on change and offloaded.
+Scheduled? NO. NEW.
+Priority: MEDIUM. OWNER-LEVEL: yes (scope: is a structure's behaviour a "thing a player can engineer"?).
+
+====================================================================
+5. LIQUIDS, CLOTH AND ROPE
+====================================================================
+
+--------------------------------------------------------------------
+A18. LIQUIDS AS MATTER: CELL VOLUMES WITH NO MOMENTUM
+--------------------------------------------------------------------
+Choice: fluids.py: fall, spread, head equalisation within a connected body (rate fixed: "a narrow pipe does not yet throttle", :1015-1020), ballistic drops "(the Noita trick)", soaking, splashes. A liquid cell holds up to the cell's capacity (125 ml per 5 cm cell). Surface tension and viscosity appear as per-liquid constants in film height and soaking (fluids.py:52, :84). No velocity field.
+Why: exact mass books, sleep when still (scheduled fix), cheap.
+Realism it costs: no flow speed (a river current, flood front, a hydraulic jump, wave, bore); a narrow pipe, a gap under a door or a tap does not throttle the flow; no force of water on a wall, a person or a bonded piece (floods knocking down doors, a bucket's slosh), no wading drag (scheduled), no standing in a current (scheduled), no boat hull dynamics. Cup-scale liquid (below one cell) needs a vessel record (scheduled). Viscosity: oil, honey and water flow the same way.
+Better alternatives (from the map, with sources): (a) virtual-pipes shallow-water model for open water, 0.026-2.5 ms per tick measured (the map); (b) orifice and Torricelli outflow for vessels and pipes: v = Cd sqrt(2 g h); (c) a velocity per liquid column for dynamic loads on structures (feeds A15 (iv)); (d) viscosity as a rate factor in the spread rule (Poiseuille-like scaling) for thick liquids (k).
+Cost: as measured in the map. Scheduled? YES: the realism-map rows (virtual pipes, buoyancy and drag, pour/fill/drink, wading, standing in a current); the WAVE for the shallow-water model is not in the wave 15 list.
+Priority: MEDIUM (floods and rivers are play events; the hydrostatic part works). TECH; OWNER for the wave.
+
+--------------------------------------------------------------------
+A19. CLOTH HAS NO MECHANICS
+--------------------------------------------------------------------
+Choice: clothing.py is thermal only (insulation, wetness, wind pumping). There is no CLOTH material row for sheets; no cloth solver (realism-map: "Cloth drape: no decision depends on folds" and a P3 "Cloth as a material: CLOTH row as a thin sheet, a covers relation, smothering through O2, sheets tied into a rope").
+Why: cost judged against play value.
+Realism it costs: no sails or banners in wind, no tent or awning loading its poles (and tearing), no cloak caught in a door, no net, no blanket thrown over a fire to smother it, no hanging a sheet, no knot of sheets as a rope escape, no bandage that is a physical strip, no wrapping a bundle, no cloth cut and sewn. Cloth tearing (tensile strength by weave, tear propagation) is absent. Real-world cases the books ask for: climbing down tied sheets, smothering fire, sail handling (256 boat cases).
+Better alternatives:
+  a. A sparse XPBD cloth on demand only while something moves it or wind acts (k: Müller et al. 2007 "Position based dynamics"; Macklin 2016 XPBD), 200-2000 particles per sheet, ~0.1-0.5 ms per cloth in numba (u); sleeping when still, then a "covers" record.
+  b. Cloth as a thin-solid RECORD (the record system) with a tensile strength, a mass per area, and a covers relation, without drape, for the common cases (a blanket on a fire, a bundle wrap); sail force from the lift/drag of a sheet of area A and trim angle (a closed form) rather than a solved sheet.
+  c. Cloth rope: a sheet tied into a rope turns into a rope record with the cloth's tensile strength and a knot loss (45-55% (map)).
+Cost: b. ~0, a. bounded by the number of cloths awake. Scheduled? P3 in the map; boats (sail force) are P2 L, no wave named.
+Priority: LOW-MEDIUM; OWNER-LEVEL (scope: how much cloth play).
+
+--------------------------------------------------------------------
+A20. ROPE: ONE 5 CM LINK PER CELL, A 12 MM ROPE
+--------------------------------------------------------------------
+Choice: a rope's cells are single-cell pieces (BLOCK_M logic: "rope one cell to a piece"), links with ROPE_BEND 1e-3 (a chain of ball joints, store.py:77), no tie, cut, climb or friction; measured 7.1 ms per tick for 1 m, never sleeps (realism-map); strength 12 mm manila 10.6 kN and 10% stretch at break (bonds/materials.py ROPE, flagged UNVERIFIED in the same file); knots at 45-55% strength in the map but not in code.
+Why: a rope fits the particle/bond system without new machinery.
+Realism it costs: a rope 12 mm thick cannot wrap round a 3 cm pole or pass through a 2 cm ring because its links are 5 cm cells; so no knots, hitches, belay, pulley, windlass or capstan (friction on a post T2/T1 = e^(mu theta) (k: Euler 1769 capstan law): this holds boats at a bollard and a climber on a branch with a small force); no coil, no fray, no wet-rope strength change (manila loses strength wet? (u)); a slack rope behaves as a chain with real stiffness (ROPE_BEND 1e-3 is a fit).
+Better alternatives:
+  a. A rope as a CURVE with a radius, a mass per length and a tension-only axial law with stretch (manila 10% at break), simulated by PBD/XPBD distance constraints at its own node spacing (say 5-10 cm of rope length but 1-2 cm contact radius), contact with the lattice through the SDF at that radius (k: Müller et al. 2007; Macklin 2016; Cosserat/DER rods (v) Kugelstadt and Schömer 2016 for twist).
+  b. Capstan friction for wraps around posts and branches, as a closed form on the wrapped angle, and a hitch/knot as a record (type, strength factor, holds under a load of N) rather than a simulated tangle.
+  c. Sleep when the tension is quasi-static; islands (A6b).
+Cost: <0.5 ms (the map's estimate (u); measure first).
+Scheduled? YES: wave 15 "ropes on XPBD; tie, cut or climb". The sub-cell radius and capstan wrap are NEW.
+Priority: MEDIUM. TECH, with a note: the rope radius belongs to A1 (sub-cell geometry).
+
+====================================================================
+6. WEAR, FATIGUE AND DAMAGE
+====================================================================
+
+--------------------------------------------------------------------
+A21. NO CYCLIC FATIGUE, NO ABRASION OF ROPE OR CLOTH, NO MECHANICAL WEAR OF SURFACES
+--------------------------------------------------------------------
+Choice: matdamage has the slow-overload (creep) clock and a scalar D from impact, decay, fire and frost; matedge has Archard wear and rolling of an edge; edgewear glues it to a blow. No S-N (Basquin) fatigue, no Miner sum over load cycles, no fretting.
+Realism it costs: a bow that is drawn thousands of times does not weaken; a hinge, a spring, a chain link, a wire bent back and forth does not fail by fatigue (a paperclip bent 20 times breaks; (k) low-cycle fatigue); a rope chafing on a rock edge does not fray; stair treads, a doorstep and a path do not wear; a nail or screw in repeated loads works loose; cloth and boot soles wear out (the books mention shoes and clothes wearing).
+Better alternatives: Basquin's law N = (sigma_f' / sigma_a)^(1/b) with Miner's linear damage sum for CYCLE counts, where cycles come from the rod skeleton (A5) or the member's load history (k: Basquin 1910; Palmgren 1924 and Miner 1945 for linear damage; the creep clock's exact path-independent form is a good template: damage rate as a function of the current amplitude only). Wear: Archard for abrasion of ropes, soles and tread surfaces (matedge generalised from edges to faces); fraying as damage in the rope record (A20).
+Cost: a per-member counter updated at the rod's own events; ~0 per tick. Scheduled? NO. NEW.
+Priority: LOW-MEDIUM. TECH (cycle counting rides on A5).
+
+--------------------------------------------------------------------
+A22. DAMAGE IS A SCALAR PER CELL WITH NO CRACK GEOMETRY
+--------------------------------------------------------------------
+Choice: `dmg` is one float32 per cell, "one writer, one combine rule" (matlaws docstring, matdamage.py:1-20).
+Realism it costs: a pre-cracked pane or a split plank looks and breaks like a weakened cell; the direction of a crack (a plank split along the grain stays a plank); a crack's tip concentration (Griffith; a nick in a blade is a stress raiser); a notched branch breaks at the notch (the weak-link law does this per segment for a rod).
+Better alternative: for rods and thin things, per-segment damage with location (the rod nodes); for sheets (panes), a crack record (a line with length and tip) and a stress-intensity factor K = Y sigma sqrt(pi a) against K_Ic (breaking.py already has this FLAW test; extend from "segment" to "pane crack line") (k: Griffith 1921; Irwin).
+Cost: records exist only on damaged things. Scheduled? NO. NEW.
+Priority: LOW. TECH.
+
+--------------------------------------------------------------------
+A23. PROJECTILE PENETRATION AND PIERCING (a missing law rather than an early choice)
+--------------------------------------------------------------------
+Choice: wounds and cuts use the `edge` and `wound` laws on a swing; there is no depth-of-penetration law for arrows, bolts, bullets or thrown knives into wood, flesh or armour (grep finds only passing mentions in breaking.py, joinery.py and the MPM docstring).
+Realism it costs: the books carry 169 firearm cases; whether a shot goes through a door, a table, or a person and what remains is decided by authored numbers if at all.
+Better alternative: Poncelet / Recht-Ipson depth laws as closed forms on the material record (strength, density), a single "blow with a point" event: energy deposited per path length (k: Poncelet 1829; Recht and Ipson 1963; Walters 1992), booked energy to heat and damage. Gunpowder is scheduled; this complements it.
+Cost: ~0. Scheduled? NOT SEEN in the decisions I read. NEW (confirm against the gunpowder and weapons plan).
+Priority: MEDIUM. OWNER-LEVEL: yes (weapons depth is a scope call).
+
+====================================================================
+7. SUMMARY TABLE
+====================================================================
+id  choice                                     sched          prio     owner/tech
+A1  cell = mass fraction, no geometry          partly (heat)  HIGH     OWNER
+A2  cubic staircase surfaces                   no             MEDIUM   TECH
+A3  MPM softening 1e-4, strength sqrt          partly         HIGH     OWNER (in part)
+A4  authored rig, only removes energy          yes (owner)    HIGH     TECH
+A5  rod skeletons + plastic hinge, bows        yes (owner)    HIGH     OWNER (small adds)
+A6  bond budget softening, explicit solver     partly (w15)   MED-HIGH TECH
+A7  3 solvers, 3 material sets, no grain       partly (D5)    MED-HIGH TECH
+A8  one rigid same-material cluster, no demote no            LOW-MED  OWNER
+A9  lattice fall/impact via drop height        partly         MEDIUM   TECH
+A10 cell-sized fragments, no debris layer      no             MEDIUM   OWNER
+A11 no granular law                            partly (w17)   HIGH     OWNER
+A12 snow, ice as mechanics                     yes (P3)       LOW      TECH
+A13 mu 0.4 / one restitution / spheres         partly (w15)   MED-HIGH TECH
+A15 static vertical veto only                  partly         HIGH     OWNER (in part)
+A16 collapse = falling cells                   not in w15     MED-HIGH OWNER
+A17 runs, not a member graph                   no             MEDIUM   OWNER
+A18 liquids without momentum                   map items      MEDIUM   TECH
+A19 cloth has no mechanics                     P3             LOW-MED  OWNER
+A20 rope as 5 cm links                         yes (w15)      MEDIUM   TECH
+A21 no cyclic fatigue/abrasion                 no             LOW-MED  TECH
+A22 scalar damage, no crack geometry           no             LOW      TECH
+A23 no penetration law                         no             MEDIUM   OWNER
+(A14 left blank on purpose: contact-sphere members are folded into A13.)
+
+====================================================================
+8. DEPENDENCY ORDER I SUGGEST (not scheduled; for the owner)
+====================================================================
+  1. A7 one record in all solvers (data; no new physics), and add ledger rows for the MPM softening and the bond budget so every crutch has a deleted_when.
+  2. A1b/A1a sub-cell geometry (thing-level records first), because rods (A5), rope radius (A20), pane cracks (A22) and shards (A10) all lean on it.
+  3. A5+A4 rod skeletons and energy-storing shape-matching, with A6a (implicit bonds) so no budget softening remains.
+  4. A13 pair friction/restitution into bonds and MPM; A9 one impact law.
+  5. A15 more load cases + A17 member graph + A16 collapse to bonds; A11 granular in the lattice must land before A16, or collapse leaves no heap.
+  6. A19, A21, A22, A23 as owner scope allows.
+
+====================================================================
+9. SOURCES
+====================================================================
+(v) Kugelstadt T, Schömer E. Position and Orientation Based Cosserat Rods. SCA 2016, pp 169-178. https://diglib.eg.org/handle/10.2312/sca20161234
+(v) Klár G, Gast T, Pradhana A, Fu C, Schroeder C, Jiang C, Teran J. Drucker-Prager elastoplasticity for sand animation. ACM TOG 35(4), 2016. https://math.ucdavis.edu/~jteran/papers/KGPSJT16.pdf ; Tampubolon et al. 2017 wet sand: https://math.ucdavis.edu/~jteran/papers/PGKFTJM17.pdf
+(v) Rivers AR, James DL. FastLSM: fast lattice shape matching for robust real-time deformation. ACM TOG 26(3):82, 2007. https://dblp.dagstuhl.de/rec/journals/tog/RiversJ07.html
+(k) Müller M, Heidelberger B, Teschner M, Gross M. Meshless deformations based on shape matching. SIGGRAPH 2005. Müller et al. Position based dynamics. 2007.
+(k) Macklin M, Müller M, Chentanez N. XPBD: position-based simulation of compliant constrained dynamics. MIG 2016.
+(k) Bergou M et al. Discrete elastic rods. SIGGRAPH 2008. Umetani N, Schmidt R, Stam J. Position-based elastic rods. SCA 2014.
+(k) Gast T et al. Optimization integrator for large-deformation elastoplasticity. 2015. Stomakhin A et al. A material point method for snow simulation. 2013. Bouaziz S et al. Projective dynamics. 2014. Chen AH et al. Vertex block descent. 2024.
+(k) Pentland A, Williams J. Good vibrations: modal dynamics for graphics and animation. 1989. James DL, Pai DK. ARTDEFO. 2002.
+(k) Hunt KH, Crossley FRE. Coefficient of restitution interpreted as damping in vibroimpact. 1975. Catto E. Solver2D / soft step. 2019.
+(k) Grady DE. Local inertial effects in dynamic fragmentation. 1982. Mott NF. Fragmentation of shell cases. 1947.
+(k) Basquin 1910; Miner 1945; Griffith 1921; Irwin; Poncelet 1829; Recht and Ipson 1963; Euler capstan 1769.
+(k) USDA Wood Handbook ch. 5 (mechanical properties, green vs dry); Das, Principles of Geotechnical Engineering (Rankine, bulking, bearing); GSA 2013 / UFC 4-023-03 (progressive collapse); Whiting E et al. 2009 (structurally sound masonry).
+(u) every cost figure in this file that is not copied from the realism map.
