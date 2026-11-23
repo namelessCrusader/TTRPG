@@ -112,6 +112,22 @@ def plan(w, b, struck):
     return i, a, H_t, tip
 
 
+def _law_temper_thing(w, eid, hand):
+    """The temper of a thing's edge: from the heat-history law when the world has it on and the
+    thing has a composition (the cell that carries the tip), else the hand-set number
+    (ledger row heat_history.hand_temper: the override that retires when the law is the default)."""
+    if getattr(w, "heat_history", False):
+        t = w.heat_temper(eid, edge=True)
+        if t is not None:
+            return t
+    return hand
+
+
+def _law_temper(w, b, i, hand):
+    eid = int(b["eids"][i]) if "eids" in b else 0
+    return _law_temper_thing(w, eid, hand) if eid else hand
+
+
 def after_blow(w, b, struck, joules, pl):
     """Wear and roll the striking edge for a blow of `joules` on `struck` cells.
     Called once at the end of `_spend`, so the wound it just made was dealt by
@@ -125,6 +141,7 @@ def after_blow(w, b, struck, joules, pl):
     g = geom_of(w, b, i, a)
     H = _hard()
     temper = float(holder.get("temper", 1.0)) if holder is not b else 1.0
+    temper = _law_temper(w, b, i, temper)
     m_tool = int(b["mats"][i])
     H_e = float(H[m_tool]) * temper
     r1, V = ME.wear(g, joules, H_e, H_t, MU_FLANK)
@@ -202,7 +219,7 @@ def hone_thing(w, eid, strokes, force_N, stroke_m, H_abrasive, grit_m):
         st = None
     g = ME.EdgeGeom(st["L"], st["theta"], st["r"]) if st else ME.geom_from_area(a)
     m_tool = int(w.mat.ravel()[idx[pos[0]]])
-    H_e = float(_hard()[m_tool]) * float(t.get("temper", 1.0))
+    H_e = float(_hard()[m_tool]) * _law_temper_thing(w, eid, float(t.get("temper", 1.0)))
     r2, V = ME.hone(g, strokes, force_N, stroke_m, H_e, H_abrasive, grit_m)
     st = st or {"L": g.L_m, "theta": g.theta_rad, "r": g.r_m, "A_w": a, "r_w": g.r_m, "owed_g": 0.0}
     st["r"] = float(r2)

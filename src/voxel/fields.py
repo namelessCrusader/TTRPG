@@ -4,6 +4,9 @@ import weakref
 import numpy as np
 from .kernels import HAVE_NUMBA, _diff4
 from .window import box_volume
+from . import lazyaudit as _audit
+from . import lazymemo as _memo
+from .lazykernels import any_nz, nz_box, same4
 from .materials import (AIR, AIR_C, AMBIENT, FLUID, MISCIBLE, NOFLUID, OIL, SOLID, _CSOLID_ARR, _DENS_ARR, _FC_ARR, _FDENS_ARR, _REACTIVE)
 
 
@@ -120,6 +123,62 @@ class FieldsMixin:
         return self.skip_quiet and getattr(self, "sleep_regions", True)
 
     def _matter_moved(self):
+        """Has any matter changed since the derived fields were last built? The
+        question of `_matter_scan`, answered at once when it can be.
+
+        THE MEMO OF THE LAZY LAWS (wave 15, S4-3b; `lazy_exact`, lazylaws.py).
+        The scan compares four whole arrays (about 1.2 ms at 1.6 M voxels) and
+        the laws ask it ten times a tick. In a tick of a lazy world, once a
+        scan has said the kept copy is the matter, the answer stays "no" until a
+        law that can write matter has run (`lazymemo`): the laws that cannot
+        (conduction, buoyancy, the air) leave it standing, every other one
+        switches it off while it runs and ends it. A "no" from the memo is
+        exactly what the scan would have said: the audit mode (MARK1_AUDIT_LAZY=1)
+        runs the scan beside every memo answer and raises when they differ."""
+        st = _memo.get(self)
+        if st is None or not st.live:
+            return self._matter_scan()
+        if st.mm == 2 and not self.mixes_live:
+            if _audit.enabled():
+                _audit.check("matter_moved", False, self._matter_differs)
+            return False
+        moved = self._matter_scan()
+        if st.mm == 1:
+            st.mm = 2
+        return moved
+
+    def _same_as_key(self, k):
+        """Are the four arrays the kept copy `k`? `np.array_equal` four times, or
+        (a lazy world) one compiled pass over all four that stops at the first
+        difference: the same answer with no temporaries (audited)."""
+        if (getattr(self, "lazy_exact", False) and HAVE_NUMBA
+                and all(a.shape == b.shape and a.dtype == b.dtype and a.flags.c_contiguous
+                        and b.flags.c_contiguous for a, b in zip(k, (self.mat, self.smass, self.fl, self.fvol)))):
+            now = (self.mat, self.smass, self.fl, self.fvol)
+            same = bool(same4(now[0].reshape(-1), k[0].reshape(-1), now[1].reshape(-1), k[1].reshape(-1),
+                              now[2].reshape(-1), k[2].reshape(-1), now[3].reshape(-1), k[3].reshape(-1)))
+            return _audit.check("matter_same", same, lambda: self._same_as_key_np(k))
+        return self._same_as_key_np(k)
+
+    def _same_as_key_np(self, k):
+        return (np.array_equal(k[0], self.mat) and np.array_equal(k[1], self.smass)
+                and np.array_equal(k[2], self.fl) and np.array_equal(k[3], self.fvol))
+
+    def _matter_differs(self):
+        """Would `_matter_scan` find matter that moved? Asks and changes
+        nothing (the audit's full answer)."""
+        k = self._cap_key
+        if k is None:
+            return True
+        if self.mixes_live:
+            mk = self.__dict__.get("_mix_key")
+            if not (mk is not None and np.array_equal(mk[0], self.scomp)
+                    and np.array_equal(mk[1], self.fcomp)):
+                return True
+        return not (np.array_equal(k[0], self.mat) and np.array_equal(k[1], self.smass)
+                    and np.array_equal(k[2], self.fl) and np.array_equal(k[3], self.fvol))
+
+    def _matter_scan(self):
         """Has any matter changed since the derived fields were last built? If
         it has, throw them away and remember the new state.
 
@@ -149,10 +208,7 @@ class FieldsMixin:
             mk = self.__dict__.get("_mix_key")
             mix_same = (mk is not None and np.array_equal(mk[0], self.scomp)
                         and np.array_equal(mk[1], self.fcomp))
-        if (mix_same and k is not None and np.array_equal(k[0], self.mat)
-                and np.array_equal(k[1], self.smass)
-                and np.array_equal(k[2], self.fl)
-                and np.array_equal(k[3], self.fvol)):
+        if mix_same and k is not None and self._same_as_key(k):
             return False
         if (k is not None and not self.mixes_live
                 and self.fused and HAVE_NUMBA and self._sleeps()
@@ -279,12 +335,21 @@ class FieldsMixin:
         round the heat (and the skin's) is looked at, and the rest is False:
         the same cells as the sum over the lattice, which was six masks over
         1.6 M voxels in a room where nothing was warm."""
+        if getattr(self, "lazy_exact", False):
+            got = self._lz_burning()                 # (lazylaws: the same cells, from the heat summary)
+            if got is not None:
+                return got
+        return self._burning_scan()
+
+    def _burning_scan(self):
+        """`burning`, as it always was."""
         T, box = self._T_in(fill=False)
         s = getattr(self, "skin", None)              # fuel burns at its SURFACE
         skin = s is not None and s.shape == self.shape   # (`_surfaces`): the skin's
         whole = box is not None and box[0] == slice(None)   # temperature, not
         if skin and not whole and self._windows_on():       # the cell's
-            there = self._window(s != 0, 0)
+            there = (self._nz_window(s, 0) if getattr(self, "lazy_exact", False)
+                     else self._window(s != 0, 0))
             if there is not None:
                 box = there if box is None else tuple(
                     slice(min(a.start, c.start), max(a.stop, c.stop))
@@ -645,7 +710,23 @@ class FieldsMixin:
         `pad`, or None if all of it is; and why, a list of words that is empty
         here. At the old rest (every cell at 20 °C, E == 0) that is the window
         of `E != 0` and no reasons, which is `_hot_window`'s old answer."""
+        if self.skip_quiet and getattr(self, "lazy_exact", False):
+            # one pass over E for the box of the non-zero cells, with no
+            # whole-lattice temporary (lazykernels.nz_box); the same box
+            box = self._nz_window(self.E, pad)
+            return _audit.check("unsettled", box, lambda: self._window(self.E != 0, pad)), []
         return self._window(self.E != 0, pad), []
+
+    def _nz_window(self, a, pad):
+        """`_window(a != 0, pad)` for a lazy world: the same box, found by one
+        compiled pass (numpy's `!=` and three reductions otherwise)."""
+        if not HAVE_NUMBA or a.ndim != 3:
+            return self._window(a != 0, pad)
+        lo, hi = nz_box(a)
+        if hi[0] < 0:
+            return None
+        return tuple(slice(max(int(lo[ax]) - pad, 0), min(int(hi[ax]) + 1 + pad, self.shape[ax]))
+                     for ax in range(3))
 
     def _rest_cell(self):
         """The E a settled cell holds, in kelvin above 20 °C: 0 everywhere.
@@ -761,4 +842,10 @@ class FieldsMixin:
         stale answer would leave that smoke sitting still for a tick."""
         if not self.skip_quiet:
             return True
+        if getattr(self, "lazy_exact", False) and HAVE_NUMBA:
+            # a compiled `any` that stops at the first non-zero block (a warm body near the
+            # start of the lattice ends it at once); the same answer (audited)
+            busy = any(bool(any_nz(f.reshape(-1))) if f.flags.c_contiguous else bool(f.any())
+                       for f in fields)
+            return _audit.check("busy", busy, lambda: any(bool(f.any()) for f in fields))
         return any(bool(f.any()) for f in fields)

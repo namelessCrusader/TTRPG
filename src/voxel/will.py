@@ -1,10 +1,13 @@
 """Menus, decisions, traces: the seam where a policy picks what each limb does."""
+import math
 import numpy as np
+from . import mechanisms as mech
 from . import seam
 from .beliefs import HARM, view
 from .events import _Pending
 from .materials import (AIR, AMBIENT, BODY, FLESH, GRAVITY, LEAF, MATNAME, SOUND, TICK_S)
 from src.mind.tourney import merge
+from . import routing
 from .policy import (ACTS, ANSWERS, CUES, FLINCH_ON, GAZE_SWEEP, LIMBS, LINES, MEANS, LINE_VOICE, MENU_BATCH, MENU_CAP, ORIENTING, PREMOVE_MIN_S, PREMOVE_ON, REFLEXES, VOICE, WANDER, WILL, rank, sheet)
 
 
@@ -22,6 +25,17 @@ class WillMixin:
     # script keeps the old cut): a menu of B rows or fewer is picked as before, a
     # longer one is a tournament (`_merged_pick`).
     menu_batch = MENU_BATCH
+
+    # DOORS IN THE MENU (wave 15, S3 item 1). `mech_menu`: a body next to a
+    # door, lid or bar is offered rows for it (open or close, turn a key, work
+    # the lock, seat or lift a bar, put a shoulder to it, kick it), and a row
+    # to walk to one it has seen. `door_route`: a CLOSED door the body has not
+    # found stuck is a passable edge of the route planner, with the cost of
+    # opening it (the swing law), and the row that walks to the door says what
+    # lies beyond it. Both are off in a world with no mechanism; `add_door`
+    # turns them on (the ledger rows mech_menu and door_route).
+    mech_menu = False
+    door_route = False
 
     def _menu(self, p, cells, percept, limb, chosen, cap=None):
         """Everything ONE PART of this body could actually do, right now.
@@ -65,8 +79,14 @@ class WillMixin:
             leaps = self._leap_targets(p, cells, fit, self._leap_speed(cells, p)) \
                 if ground and self.tick - p.get("_landed", -999) \
                 >= self._gather_ticks(p) else []
+            # THE FEET OF THE CLOSED DOORS ARE ASKED IN THE SAME SWEEP as the
+            # places (one more target each, so no other route moves)
+            doorplan = self._door_plan(p, cells, fit) \
+                if self.mech_menu and self.door_route and self.__dict__.get("mechs") \
+                else None
             routes = self._routes(cells, [pl["xy"] for pl in places]
-                                  + [lp["xy"] for lp in leaps],
+                                  + [lp["xy"] for lp in leaps]
+                                  + ([] if doorplan is None else doorplan["targets"]),
                                   p, fit=fit)
             # you cannot push off thin air, and you cannot push off at all
             # until the legs have gathered from the last landing
@@ -109,6 +129,9 @@ class WillMixin:
                     row["who"] = pl["who"]    # whom it is for, and that it is
                     row["mid"] = True         # where the MIDDLE is to stand
                 menu.append(row)
+            if self.mech_menu and self.__dict__.get("mechs"):
+                menu += self._door_rows(p, cells, fit, places, routes, ground,
+                                        doorplan)
         elif limb == "hands":
             # WHAT IT IS CALLED, said to this body: a named thing by its name
             # ("the haft of the axe"), anything else by its material, as it
@@ -236,6 +259,8 @@ class WillMixin:
                     e = self.entity_at(*ob["cell"])
                     if e and e in named:
                         continue
+                    if e and self._hinged(e):
+                        continue          # a door on its hinges is not a thing to take up
                     named.add(e)
                     takes.append({"key": "take hold of "
                                   + self.name(e, f"the {ob['label']}", p),
@@ -278,6 +303,9 @@ class WillMixin:
                                "what": {k: ob[k] for k in ("cell", "mat", "label")}}
                         menu.append(row)
                     row["tag"] = "take:dear"
+            if self.mech_menu and self.__dict__.get("mechs"):
+                menu += [r for r in self.mech_affords(p, cells=cells)
+                         if r["verb"] in ("operate", "shoulder")]
         elif limb == "eyes":
             # THE SWEEP IS THE NULL ACT. A body that decides nothing goes on
             # turning its head, which is what it did before eyes were a limb —
@@ -404,6 +432,163 @@ class WillMixin:
                 got.add(o["tag"])
             menu = ([head] + keep + first + later)[:cap]
         return menu
+
+    # ── doors ───────────────────────────────────────────────────────────────
+    def _hinged(self, e):
+        """Is thing `e` a leaf or a frame of a mechanism (a door on its
+        hinges, in its jambs)? It is worked (`mech_affords`), not carried off."""
+        tabs = self.__dict__.get("mechs")
+        return bool(tabs) and any(e in (r["leaf"], r["frame"]) for r in tabs.values())
+
+    def _door_plan(self, p, cells, fit):
+        """The closed doors this body has seen and the spots to stand at to work
+        each (routing.door_spots), before the routes are swept: {"doors":
+        {mid: (rec, columns)}, "names", "spots": {mid: ((x, y), ...)},
+        "targets": [(x, y), ...]} or None when there is no such door."""
+        d = self._d()
+        reach_c = max(1, int(round(0.5 / d)))
+        known = p["known"]
+        here = {m for _d, m, _r in self.mech_near(p, cells=cells)}
+        doors = {}
+        for mid, rec in self.mechs.items():
+            if abs(rec["joints"][0].get("theta", 0.0)) > 1e-9:
+                continue
+            lc = self._cells_of(rec["leaf"])
+            if lc is None or not known[lc[:, 0], lc[:, 1]].any():
+                continue
+            doors[mid] = (rec, np.unique(lc[:, :2], axis=0))
+        if not doors:
+            return None
+        at = (float(cells[:, 0].mean()), float(cells[:, 1].mean()))
+        names = self.mech_names(p, list(doors), at=at)
+        spots = {}
+        for mid, (rec, lc) in doors.items():
+            if mid in here:
+                continue                  # at it: the hands' rows are the way
+            xy = routing.door_spots(fit, lc, reach_c, rec["swing_n"], rec["pivot2"])
+            if xy:
+                spots[mid] = xy
+        return {"doors": doors, "names": names, "spots": spots, "here": here, "at": at,
+                "targets": [s for mid in sorted(spots) for s in spots[mid]]}
+
+    def _door_rows(self, p, cells, fit, places, routes, ground, plan):
+        """The legs' rows for the mechanisms: a kick at one in reach (a body
+        on its feet), and a walk to the foot of each CLOSED door it has seen and
+        is not yet at. The walk carries what the planner knows: `cost_ticks`,
+        the walk plus the opening (the swing law, mechlaw `_open_time_s`),
+        and `beyond`, the places that have a route only through this door, or a
+        cheaper one with the opening counted (routing.beyond_door). A door the
+        body has found stuck (its own memory) is not priced as a way through:
+        for this body it is a wall until it tries again. No row says locked."""
+        rows = []
+        if ground:
+            near = self.mech_near(p, cells=cells)
+            names = self.mech_names(p, [m for _d, m, _r in near],
+                                    at=(float(cells[:, 0].mean()), float(cells[:, 1].mean())))
+            for dd, mid, rec in near:
+                if mid in names:
+                    rows.append({"key": "kick %s" % names[mid], "tag": "kick",
+                                 "verb": "kick", "mid": mid, "op": "kick",
+                                 "away": round(dd, 4)})
+        if plan is None:
+            return rows
+        d = self._d()
+        doors, names, spots = plan["doors"], plan["names"], plan["spots"]
+        to_spot = routes
+        lim = self.push_limit(p, cells)       # this body's push, asked once
+        # the planner with every closed door a way through (not the ones this
+        # body has found stuck), against the plain one
+        open_cols = {}
+        for mid, (rec, lc) in doors.items():
+            if mid in names and not self._door_memory(p["pid"], rec):
+                for c in lc.tolist():
+                    open_cols[(c[0], c[1])] = mid
+        thru, start = {}, (int(round(float(cells[:, 0].mean()))),
+                           int(round(float(cells[:, 1].mean()))))
+        if open_cols and places:
+            q, fit_o = self._open_view(p, cells, open_cols)
+            thru = self._routes(cells, [pl["xy"] for pl in places], q, fit=fit_o)
+        beyond = {}
+        for pl in places:
+            path = thru.get(pl["xy"])
+            if not path:
+                continue
+            mid, k = routing.first_door(path, open_cols)
+            if mid is None:
+                continue
+            t_open = self._open_time_s(p, doors[mid][0], lim)
+            pen = routing.open_cost_units(t_open, WILL["walk_mps"], d)
+            if routing.beyond_door(routes.get(pl["xy"]), path, start, pen):
+                beyond.setdefault(mid, []).append((pl["label"], pl["tag"]))
+        p["_door_beyond"] = {"t": self.tick, "by": {m: tuple(v) for m, v in beyond.items()}}
+        for mid in sorted(spots):
+            best = None
+            for xy in spots[mid]:
+                r = to_spot.get(xy)
+                if r is None:
+                    continue
+                c = routing.path_units(r, start)
+                if best is None or c < best[0]:
+                    best = (c, xy, r)
+            if best is None or not best[2]:
+                continue
+            c, xy, r = best
+            t = c / 70.0 * d / WILL["walk_mps"] + self._open_time_s(p, doors[mid][0], lim)
+            rows.append({"key": "go(to %s)" % names[mid], "tag": "go:door",
+                         "verb": "go", "goal": xy, "route": r,
+                         "door": mid, "away": float(len(r)),
+                         "cost_ticks": int(np.ceil(t / TICK_S)) if np.isfinite(t) else 10 ** 9,
+                         "beyond": tuple(b[0] for b in beyond.get(mid, ())),
+                         "beyond_tags": tuple(b[1] for b in beyond.get(mid, ())),
+                         "danger": 0.0})
+        return rows
+
+    def _open_view(self, p, cells, open_cols):
+        """(q, fit): this body as the planner would see it if the given door
+        columns (a {(x, y): mid}) were open: a copy of the person whose flat
+        belief holds them standable, and, where it plans over levels, a level
+        at its own sole height in those columns (a closed leaf shows only its
+        top, which is no floor). The question is 'could this body get through
+        if the door were open?'. The person itself is not touched."""
+        free = p.get("free")
+        free = (self._walkable(cells) if free is None else free).copy()
+        for x, y in open_cols:
+            free[x, y] = True
+        q = dict(p)
+        q["free"] = free
+        if any(self._step_range(p)):
+            q["fz"] = self._levels_for(cells, p)
+        return q, self._fit_grid(cells, q)[0]
+
+    def _open_time_s(self, p, rec, lim=None):
+        """How long this body's push takes to swing a closed leaf a quarter
+        turn (mechanisms.swing_time_closed, from its own push limit, the leaf's
+        inertia and the hinge's friction)."""
+        cells = self._cells_of(rec["leaf"])
+        I, mass = self._leaf_I(rec, cells)
+        arm = min(0.8, rec["W"] * self._d() - 0.1)
+        lim = self.push_limit(p) if lim is None else lim
+        tau = lim * arm - self._hinge_friction(rec, mass)
+        if tau <= 0.0:
+            return float("inf")
+        return float(mech.swing_time_closed(I, tau, math.pi / 2.0))
+
+    def _do_door(self, p, row):
+        """Carry out a mechanism row: the body's hands (or shoulder) on it. The
+        law answers; a refusal is a 'jams' event with the person as actor, and
+        the person remembers it (mechlaw `_learn_door`)."""
+        mid, op = row["mid"], row["op"]
+        if mid not in self.mechs:
+            return None
+        if row["verb"] == "shoulder":
+            return self.shoulder(p, mid)
+        held = self.things.get(self._held_eid(p)) if p.get("held") else None
+        kw = None
+        if op == "key" and held and "key" in held:
+            kw = {"key": held["key"]}
+        elif op.startswith("pick:") and held and "tool" in held:
+            kw = {"tool": held["tool"]}
+        return self.operate(p, mid, op, lockkw=kw)
 
     def _room(self, p, cells):
         """THE ROOM A BODY STANDS IN: what an idle body wanders within.
@@ -900,6 +1085,8 @@ class WillMixin:
                                        "the " + (p.get("held") or {}).get("label", "thing"))
                                       if got else "cannot hold what is coming, and it goes past"),
                               to=p, site="decide:catch")
+            elif hands["verb"] in ("operate", "shoulder"):
+                self._do_door(p, hands)
             elif hands["verb"] == "let_go":
                 p["dragging"], p["held"] = None, None
                 self.emit("releases", actor=p["pid"],
@@ -912,6 +1099,10 @@ class WillMixin:
             self.emit("jumps", actor=p["pid"],
                       text=f"{p['name']} jumps",
                       to=p, site="decide:jump")
+        elif legs is not None and legs["verb"] == "kick":
+            p["goal"] = None
+            if legs["mid"] in self.mechs:
+                self.kick(p, legs["mid"])
         elif legs is not None and legs["verb"] == "go":
             # FLEEING means driven, not merely walking. Every `go` used to set
             # it, which was harmless while the only reason to walk was an

@@ -28,7 +28,8 @@ A CUT VESSEL (a wound that reaches the vessel's depth across its azimuth):
   P_ext is the largest of a press (hand force over contact area, attenuated by
   depth), a bandage's hoop pressure T / (r w), tissue tamponade, and a
   tourniquet's cuff pressure for wounds DISTAL to it (an artery is occluded
-  only when the cuff reaches AOP = SBP (1 + 0.1 circumference / width)).
+  only when the cuff reaches AOP; AOP falls with cuff width and SATURATES, see
+  `aop_pa`: wave 15 replaced the old 1 + 0.1 circ / width fit, which does not).
 
 THE OLD CAPILLARY LAW STAYS in physiology (400 ml/s per m2 of cut plane, clot
 1.7e-6 m2 a second). Nothing here replaces it: these flows are ADDED for
@@ -69,7 +70,16 @@ SPASM_TAU_S = 30.0
 HOLD_PA_MM = 14.0e3            # P_hold x d_open at full maturity
 CLOT_TAU_S = 180.0
 PRESS_DEPTH_M = 0.04           # a press fades with depth: exp(-depth / 0.04 m)
-TQ_AOP_K = 0.1                 # AOP = SBP (1 + 0.1 circumference / width)
+# AOP = SBP (1 + TQ_K (circ / 0.5 m)^2 exp(-width / TQ_WS)), fitted in wave 15 (u after the
+# fit: the four rows below, each with its own spread, not a re-read of the papers):
+#   thigh, circ 0.58 m: narrow (about 4.5 cm) 235-259 mmHg, wide (13.5 cm) 144 mmHg
+#   (Loenneke 2012 and the 2024 strap study, 256 and 259 mmHg at 3.8 and 5.1 cm);
+#   upper arm, circ 0.30 m: 145 mmHg at 5 cm, 120 mmHg at 12 cm; SBP taken 120 mmHg.
+# The model gives 1.87 SBP-excess at the thigh narrow end, 1.2 SBP at 13.5 cm, 1.26 and 1.07 SBP
+# on the arm, and 1.09 SBP at 18 cm (little change between 13 and 18 cm: the saturation).
+TQ_K = 1.87                    # (u) the excess pressure ratio at 5 cm, scaled by (circ / 0.5)^2
+TQ_CIRC_REF_M = 0.5
+TQ_WS_M = 0.0533               # (u) the width scale of the saturation, metres
 ISCH_SCALE_S = 8.0 * 3600.0
 POOL_TAU_S = 1800.0
 SPLINT_TAMPONADE = 0.5         # a full splint slows pooling by half (u)
@@ -120,6 +130,49 @@ def hydro_pa(z_rel_m, mrel):
     wound (negative for a wound above the heart), scaled by min(1, MAP_rel/0.3)
     so an empty circulation has no column."""
     return RHO_B_G * z_rel_m * min(1.0, mrel / 0.3)
+
+
+# ── which region a bone is in (a table, not code) ────────────────────────────
+# Bone name (the sheet layouts' own, and the segment names bodysheet uses) -> the anatomy
+# region of anatomy.VESSELS / D_ADULT_MM. A bone with no vessel row (a hand, a foot) is
+# None. "torso" is None here: the caller reads it as the chest or the abdomen by height.
+REGION_OF_PART = {"head": "head", "torso": "chest", "trunk": "chest",
+                  "upper arm": "upper arm", "upperarm": "upper arm", "forearm": "forearm",
+                  "thigh": "thigh", "shin": "shin", "shank": "shin",
+                  "hand": None, "foot": None}
+# How far down a limb a part is: a cuff or a cut is "distal" to another when its
+# (order + position along the part) is larger, on the SAME limb. Hand and foot ride in
+# the forearm's and the shin's bones (bodysheet.BONE_PARTS).
+PROX_ORDER = {"thigh": 0.0, "shin": 1.0, "upper arm": 0.0, "forearm": 1.0}
+
+
+def _part_of(bone):
+    return bone.split(" ", 1)[1] if bone[:5] in ("left ", "right") else bone
+
+
+def region_of_bone(bone):
+    """The vessel region of a bone name ('left thigh' stays 'left thigh', the
+    side is read by `crosses`), or None for a bone that has no vessel row."""
+    part = _part_of(bone)
+    if part not in REGION_OF_PART or REGION_OF_PART[part] is None:
+        return None
+    reg = REGION_OF_PART[part]
+    return bone if bone[:5] in ("left ", "right") else reg
+
+
+def limb_of_bone(bone):
+    """'left arm', 'right leg', ... for a limb bone (a cuff and a cut must be
+    on the same limb), else None."""
+    part = _part_of(bone)
+    kind = "leg" if part in ("thigh", "shin", "shank") else \
+        "arm" if part in ("upper arm", "upperarm", "forearm") else None
+    return f"{bone.split(' ', 1)[0]} {kind}" if kind and bone[:5] in ("left ", "right") else None
+
+
+def limb_along(bone, along):
+    """A position on the whole limb: the part's order (thigh 0, shin 1; upper arm
+    0, forearm 1) plus the position 0-1 along the part from its proximal end."""
+    return PROX_ORDER.get(_part_of(bone), 0.0) + float(along)
 
 
 # ── what a wound crosses ─────────────────────────────────────────────────────
@@ -230,9 +283,14 @@ def hoop_pa(T_N, r_m, w_m):
 
 
 def aop_pa(sbp, circ_m, width_m):
-    """Arterial occlusion pressure of a cuff: SBP (1 + 0.1 circumference / width)
-    (a fit, u). A 4 cm strap on a 55 cm thigh needs 2.4 x SBP; a 10 cm band 1.5."""
-    return sbp * (1.0 + TQ_AOP_K * circ_m / width_m)
+    """Arterial occlusion pressure of a cuff, Pa:
+        AOP = SBP (1 + TQ_K (circ / 0.5 m)^2 exp(-width / 5.33 cm))
+    Rises with the limb's circumference (more soft tissue to compress), falls
+    with the cuff's width and SATURATES past about 13 cm (the old fit
+    1 + 0.1 circ / width kept falling). A 4.5 cm strap on a 58 cm thigh needs
+    about 2.1 SBP; a 13.5 cm cuff 1.2 SBP; a 12 cm band on a 30 cm arm 1.07 SBP
+    (the rows in the constants' note; (u))."""
+    return sbp * (1.0 + TQ_K * (circ_m / TQ_CIRC_REF_M) ** 2 * math.exp(-width_m / TQ_WS_M))
 
 
 def tourniquet_pext(cut, tq, sbp=MAP_0 * 1.33, circ_m=0.4):

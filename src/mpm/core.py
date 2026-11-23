@@ -32,6 +32,8 @@ of the way into the fourth 10 cm cell and both representations agree about
 where it is.
 """
 
+import os
+
 import numpy as np
 
 from . import kernels as _k
@@ -50,6 +52,9 @@ DMG_YIELD = 0.02
 # so a wall further off than this cannot change how anything moves. The seam
 # watches the lattice this far around the particles and no further.
 SDF_MARGIN = 4
+
+# Audit mode: every lazy answer is also computed in full and compared.
+_AUDIT_LAZY = os.environ.get("MARK1_AUDIT_LAZY") == "1"
 
 # How many cells further the distance field's window reaches so that a
 # particle up to SDF_MARGIN deep inside a wall reads exact distances around
@@ -476,15 +481,15 @@ class MPM:
         self.wall = np.zeros(self.shape, bool)
         # The distance to it over the WHOLE world, built only when asked for
         # (`_build_sdf`): the definition the solver's window is tested
-        # against. The solver itself reads `_near_walls`. These four arrays
-        # are 64 bytes a cell that nothing in the solver reads any more; they
-        # stay only because tools/golden.py hashes every attribute and counts
-        # a REMOVED one as a change in every world. Drop them when the golden
-        # base is next recorded.
-        self.phi = np.full(self.shape, 1e9)        # signed distance to it
-        self.pgrad = np.zeros(self.shape + (3,))   # ...and its gradient
-        self.phi_node = np.full(self.shape, 1e9)   # the same two, read at the
-        self.pgrad_node = np.zeros(self.shape + (3,))   # momentum grid's nodes
+        # against. The solver itself reads `_near_walls`, never these four
+        # (64 bytes a cell: 332 MB at 5.1 M cells), so they are None until
+        # `_build_sdf` is called. (Wave 15 S4-3d; before it they were always
+        # allocated because tools/golden.py counted a removed name as a
+        # change; golden.py now has an IGNORE list for them.)
+        self.phi = None            # signed distance to it
+        self.pgrad = None          # ...and its gradient
+        self.phi_node = None       # the same two, read at the
+        self.pgrad_node = None     # momentum grid's nodes
         # ...and the same field over the window the particles can reach:
         # [lo, hi) in cells, the walls it was built from, distance, direction
         # out, distance at the nodes, and whether it holds any wall at all
@@ -671,7 +676,39 @@ class MPM:
                                        for a in range(3)],
                                      indexing="ij"), -1).reshape(-1, 3)
         node = self._sample(phi, nodes, lo).reshape(tuple(int(n) for n in hi - lo))
-        return (lo, hi, sub, phi, pgrad, node, near[6])
+        built = (lo, hi, sub, phi, pgrad, node, near[6])
+        if _AUDIT_LAZY:
+            self._audit_window(built)
+        return built
+
+    def _audit_window(self, near):
+        """AUDIT MODE (env MARK1_AUDIT_LAZY=1): the lazy window must give the
+        whole-world definition's own bits wherever its nearest wall is in the
+        window (see `_near_walls`): cells within SDF_MARGIN - 1 of a surface
+        and at least 4 cells from a window edge that is not the world's.
+        Raises on a mismatch. The four whole-world arrays are dropped again."""
+        had = self.phi is not None
+        keep = (self.phi, self.pgrad, self.phi_node, self.pgrad_node)
+        self._build_sdf()
+        lo, hi, phi = near[0], near[1], near[3]
+        dense = self.phi[_box(lo, hi)]
+        ok = np.abs(dense) <= (SDF_MARGIN - 1) * self.dx
+        shp = np.array(self.shape)
+        for a in range(3):
+            n = hi[a] - lo[a]
+            idx = np.arange(n).reshape([-1 if i == a else 1 for i in range(3)])
+            if lo[a] > 0:
+                ok = ok & (idx >= 4)
+            if hi[a] < shp[a]:
+                ok = ok & (idx < n - 4)
+        bad = ok & (phi != dense)
+        if had:
+            self.phi, self.pgrad, self.phi_node, self.pgrad_node = keep
+        else:
+            self.phi = self.pgrad = self.phi_node = self.pgrad_node = None
+        if bad.any():
+            raise AssertionError(f"lazy distance window differs from the world "
+                                 f"field in {int(bad.sum())} cells")
 
     def _sample(self, field, pts, lo=None):
         """Trilinear lookup of a grid field at world positions. With `lo`,

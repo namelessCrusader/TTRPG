@@ -938,6 +938,12 @@ class MixTable:
         i2, m2, ap = self._edit(ids, mass, cell_i, key, -np.asarray(grams, np.float64))
         return (i2, m2, -ap) if return_taken else (i2, m2)
 
+    def apply(self, ids, mass, cell_i, key, dg):
+        """Signed gram changes dg of components `key` on lumps cell_i, in ONE edit (the
+        reaction runner's commit, wave 15 S1): several requests for one lump add up, a
+        removal stops at what the lump holds. Returns (ids', mass', applied dg)."""
+        return self._edit(ids, mass, cell_i, key, dg)
+
     def put(self, ids, mass, cell_i, key, grams):
         """Add `grams` of component `key` to lump `cell_i`."""
         i2, m2, _ap = self._edit(ids, mass, cell_i, key, np.asarray(grams, np.float64))

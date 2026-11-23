@@ -1,6 +1,6 @@
 """Body geometry: bones, chains, joints, transforms, spans, fists, reach (reads, never moves)."""
 import numpy as np
-from .materials import (BODY, FLESH, _SIX)
+from .materials import (BODY, CHEST0, FLESH, _SIX)
 
 
 class SkeletonMixin:
@@ -388,6 +388,117 @@ class SkeletonMixin:
         span = c.max(axis=0) - c.min(axis=0) + 1
         return float(np.sort(span)[0]) * 0.1 * self.scale
 
+    def _bone_frame(self, p, bone):
+        """One bone's own frame, in lattice cells (wave 15, S2 A): where a cut
+        on it is, ALONG it and AROUND it, in a way that stays true when the
+        limb is swung.
+
+        Returns a dict: o (centroid), axis (unit, proximal to distal: away
+        from the trunk), f (the bone's anterior, the body's rest facing carried
+        through the swing that took the rest axis to the present one), e2
+        (the medial direction, 90 degrees around from the anterior), t0 and t1
+        (the bone's extent along the axis, cells), trunk (the trunk's centroid)
+        and z_heart (the heart's height in cells: three quarters up the
+        trunk). None when the body has no such bone.
+
+        Measured from the bone's own cells (the first principal axis); the
+        swing is the minimal rotation from the rest cells' axis (`p["rest"]`)
+        to the present one, which is the whole of what a swing and a spread do
+        to a limb that does not twist. A bone of one cell has the vertical for
+        its axis."""
+        if not p.get("segs") or bone not in p["segs"]:
+            return None
+        parts = self._bone_parts(p, [bone, "torso"]) if "torso" in p["segs"] \
+            else self._bone_parts(p, [bone])
+        if not parts or not len(parts[0]):
+            return None
+        cells = parts[0].astype(np.float64)
+        trunk = parts[1].astype(np.float64) if len(parts) > 1 and len(parts[1]) else None
+        c0 = cells.mean(axis=0)
+        ct = trunk.mean(axis=0) if trunk is not None else c0 + np.array([0.0, 0.0, 1.0])
+        down = np.array([0.0, 0.0, -1.0])
+
+        def axis_of(c, cen, ctr):
+            d = c - cen
+            if len(c) > 1:
+                u, sv, vt = np.linalg.svd(d, full_matrices=False)
+                a = vt[0] if sv[0] > 1e-9 else down.copy()
+            else:
+                a = down.copy()
+            away = float(a @ (cen - ctr))
+            if away < -1e-9 or (abs(away) <= 1e-9 and float(a @ down) < 0.0):
+                a = -a
+            return a / max(float(np.linalg.norm(a)), 1e-12)
+
+        a1 = axis_of(cells, c0, ct)
+        rest = p.get("rest") or {}
+        a0, f0, med0 = a1, None, None
+        fx, fy = p.get("chest", CHEST0)        # the way the chest faces (not the way it walks)
+        f0 = np.array([float(fx), float(fy), 0.0])
+        if bone in rest and len(rest[bone]) > 1:
+            base = np.asarray(self._claim_cells(p, *self._person_cells(p))).min(axis=0)
+            r = np.asarray(rest[bone], np.float64) + base
+            rt = (np.asarray(rest["torso"], np.float64) + base) if "torso" in rest else None
+            rc = r.mean(axis=0)
+            # `rest` holds only the limbs that were posed: the trunk that stayed is the trunk now
+            rct = rt.mean(axis=0) if rt is not None else ct
+            a0 = axis_of(r, rc, rct)
+            med0 = rct - rc
+        # the swing that took the rest axis a0 to the present axis a1
+        v = np.cross(a0, a1)
+        cdot = float(a0 @ a1)
+        if cdot > -0.999999:
+            vx = np.array([[0.0, -v[2], v[1]], [v[2], 0.0, -v[0]], [-v[1], v[0], 0.0]])
+            R = np.eye(3) + vx + vx @ vx / (1.0 + cdot)
+        else:                                  # a half turn: about any axis square to a0
+            k = np.cross(a0, [1.0, 0.0, 0.0])
+            if np.linalg.norm(k) < 1e-6:
+                k = np.cross(a0, [0.0, 1.0, 0.0])
+            k = k / np.linalg.norm(k)
+            R = 2.0 * np.outer(k, k) - np.eye(3)
+        f = R @ f0
+        f = f - (f @ a1) * a1
+        if np.linalg.norm(f) < 1e-9:
+            f = np.cross(a1, [1.0, 0.0, 0.0]) if abs(a1[0]) < 0.9 else np.cross(a1, [0.0, 1.0, 0.0])
+        f = f / np.linalg.norm(f)
+        e2 = np.cross(a1, f)
+        # which way is MEDIAL at rest: toward the trunk, square to the axis
+        if med0 is None:
+            med0 = ct - c0
+        fr = R.T @ f                            # the anterior at rest, in the rest frame
+        m = med0 - (med0 @ a0) * a0
+        if np.linalg.norm(m) > 1e-9 and float(np.cross(a0, fr) @ m) < 0.0:
+            e2 = -e2
+        t = (cells - c0) @ a1
+        zs = trunk[:, 2] if trunk is not None else cells[:, 2]
+        z_heart = float(zs.min()) + 0.75 * float(zs.max() - zs.min() + 1.0)
+        return {"o": c0, "axis": a1, "f": f, "e2": e2, "t0": float(t.min()) - 0.5,
+                "t1": float(t.max()) + 0.5, "trunk": ct, "z_heart": z_heart}
+
+    @staticmethod
+    def _frame_az_along(fr, cell):
+        """(az degrees in the bone's own frame, along 0-1 from the proximal end)
+        of a lattice cell, read in `_bone_frame`'s frame. A cell on the bone's
+        axis (within a third of a cell) has no side of its own: az 0."""
+        v = np.asarray(cell, np.float64) - fr["o"]
+        t = float(v @ fr["axis"])
+        along = (t - fr["t0"]) / max(fr["t1"] - fr["t0"], 1e-9)
+        perp = v - t * fr["axis"]
+        if float(np.linalg.norm(perp)) < 0.34:
+            return 0.0, min(max(along, 0.0), 1.0)
+        az = float(np.degrees(np.arctan2(perp @ fr["e2"], perp @ fr["f"]))) % 360.0
+        return az, min(max(along, 0.0), 1.0)
+
+    def _isch_dead(self, p, bones):
+        """The share of these bones' tissue that a tourniquet has killed (0-1),
+        the mean over the bones (S2 A, Q2): the limb law reads it, so a dead
+        forearm cannot grip and a dead leg cannot bear weight. 0.0 for a body
+        that never wore a cuff."""
+        isch = p.get("isch")
+        if not isch or not bones:
+            return 0.0
+        return sum(isch.get(b, {}).get("dead", 0.0) for b in bones) / len(bones)
+
     def _cut_section(self, p, bones):
         """How much of these bones' muscle section is CUT, in m^2.
 
@@ -506,6 +617,9 @@ class SkeletonMixin:
         area = (len(c) / tall) * vox_m * vox_m     # mean section, in m^2
         leg_bones = [b for k in legs for b in self._bones(p, k)]
         area = max(area - self._cut_section(p, leg_bones), 0.0)
+        dead = self._isch_dead(p, leg_bones)       # a dead leg bears no weight (S2 A, Q2)
+        if dead > 0.0:
+            area *= 1.0 - dead
         return area * BODY["muscle_Pa"]
 
     def _torque_of(self, p, limb, fallback):
@@ -530,6 +644,9 @@ class SkeletonMixin:
         tall = max(float(c[:, 2].max() - c[:, 2].min() + 1), 1.0)
         area = (len(c) / tall) * vox_m * vox_m
         area = max(area - self._cut_section(p, bones), 0.0)
+        dead = self._isch_dead(p, bones)           # dead muscle makes no torque (S2 A, Q2)
+        if dead > 0.0:
+            area *= 1.0 - dead
         return area * BODY["muscle_Pa"] * (tall * vox_m) * BODY["lever_frac"]
 
     @staticmethod
@@ -594,8 +711,10 @@ class SkeletonMixin:
         """What that hand can put out. The other one is weaker, which is most
         of what having a dominant hand MEANS."""
         full = self._strength(p)
-        return full if arm == str(p.get("handed", "right")) + " arm" \
+        full = full if arm == str(p.get("handed", "right")) + " arm" \
             else full * BODY["off_hand"]
+        dead = self._isch_dead(p, self._bones(p, arm)[-1:])   # a dead forearm cannot grip (S2 A, Q2)
+        return full * (1.0 - dead) if dead > 0.0 else full
 
     def _fist_of(self, p, name, own):
         """The HAND at the end of one arm: the voxel of the last bone furthest

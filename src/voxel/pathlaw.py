@@ -47,6 +47,16 @@ _FTAB = {}
 WADE_FRAC = 0.5
 
 
+def _candidates(up, dn, kmax):
+    """The steps a body may try, in the order the first success wins: flat,
+    then each rise r = 1.. (up before down), each over k = 1..kmax cells."""
+    order = [(0, 1)]
+    for r in range(1, max(up, dn) + 1):
+        for dz in ((r,) if r <= up else ()) + ((-r,) if r <= dn else ()):
+            order += [(dz, k) for k in range(1, kmax + 1)]
+    return order
+
+
 class PathingMixin:
     # The world-wide defaults of the step range (m). None = read BODY, whose
     # entries phase B adds; a person's own p["step_up_m"] wins over both.
@@ -211,12 +221,27 @@ class PathingMixin:
         top[slot, xs, ys] = z
 
     # ── the planner ─────────────────────────────────────────────────────────
+    # The shape the 2.5-D planner fits to the levels. False (the default) is the
+    # whole shadow of the body, as always; True is its stance (soles and trunk
+    # column: `routing.stance_footprint`), so a pose with the arms out does not
+    # widen the route. OFF until the walk's own clearance test and the pose
+    # agree on what the body occupies (S2 item 4a, the trace harness
+    # tools/stairs_trace.py: H1). A world attribute, flipped as a declared diff.
+    stance_footprint = False
+
+    # the clear-and-supported scan for all candidates, in one call (S4-3c)
+    _step_clear = staticmethod(routing.step_clear)
+
+    def _plan_footprint(self, cells):
+        return (routing.stance_footprint(cells) if self.stance_footprint
+                else routing.footprint(cells))
+
     def _fit_grid(self, cells, p=None):
         up, dn = self._step_range(p)
         if up == 0 and dn == 0:
             return super()._fit_grid(cells, p)
         top = self._levels_for(cells, p)
-        fox, foy = routing.footprint(cells)
+        fox, foy = self._plan_footprint(cells)
         # THE PLANE THE FLAT READERS GET (the menu's places, the leap's
         # landings) is the flat plane, plus the columns that fit at a level
         # OTHER than the soles' own and within the step range of it. It never
@@ -246,7 +271,7 @@ class PathingMixin:
                          int(round(float(cells[:, 1].mean()))))
             return routing.routes_flat(fit, start, targets)
         top = self._levels_for(cells, p)
-        fox, foy = routing.footprint(cells)
+        fox, foy = self._plan_footprint(cells)
         cx = int(round(float(cells[:, 0].mean())))
         cy = int(round(float(cells[:, 1].mean())))
         zlo = int(np.asarray(cells)[:, 2].min())
@@ -294,67 +319,37 @@ class PathingMixin:
         if (base[:, 0] < 0).any() or (base[:, 0] >= nx).any() \
                 or (base[:, 1] < 0).any() or (base[:, 1] >= ny).any():
             return None
-        own = set(map(tuple, cells.tolist()))
         if self.moving[tuple(cells.T)].any():
             return None
-        order = [(0, 1)]
-        for r in range(1, max(up, dn) + 1):
-            for dz in ((r,) if r <= up else ()) + ((-r,) if r <= dn else ()):
-                order += [(dz, k) for k in range(1, kmax + 1)]
+        order = _candidates(up, dn, kmax)
+        # the cells a step could enter (the body's box grown by the longest
+        # reach and the rise), judged once: moving, packed past the push, or a
+        # real puddle
+        ex = kmax * abs(sx)
+        ey = kmax * abs(sy)
+        rz = max(up, dn)
+        lo = np.maximum(cells.min(axis=0) - (ex, ey, rz), 0)
+        hi = np.minimum(cells.max(axis=0) + (ex, ey, rz) + 1, (nx, ny, nz))
+        bx = tuple(slice(int(a), int(b)) for a, b in zip(lo, hi))
+        packed = self.smass[bx] / np.maximum(
+            _DENS_ARR[self.mat[bx]] * self.vox_l, 1e-9)
+        blk = (self.moving[bx] | (packed >= PUSH_THROUGH)
+               | (self.fvol[bx] > WADE_FRAC * self.cap))
+        own = np.zeros(blk.shape, np.bool_)
+        own[cells[:, 0] - lo[0], cells[:, 1] - lo[1], cells[:, 2] - lo[2]] = True
+        # ONE call tells which candidates are inside the world, clear and
+        # supported, in the order above; the first that is also balanced wins
+        cdz = np.array([o[0] for o in order], np.int64)
+        ck = np.array([o[1] for o in order], np.int64)
+        okc = self._step_clear(cells, cdz, ck, sx, sy, self.shape, blk, own,
+                               lo, self.mat)
         ghost = None
-        own_lin = None
-        blk = None
-        for dz, k in order:
-            if k > 1:
-                base = cells.copy()
-                base[:, 0] += sx * k
-                base[:, 1] += sy * k
-                if (base[:, 0] < 0).any() or (base[:, 0] >= nx).any() \
-                        or (base[:, 1] < 0).any() or (base[:, 1] >= ny).any():
-                    continue
-            else:
-                base = cells.copy()
-                base[:, 0] += sx
-                base[:, 1] += sy
-            tgt = base.copy()
+        for i in np.flatnonzero(okc).tolist():
+            dz, k = order[i]
+            tgt = cells.copy()
+            tgt[:, 0] += sx * k
+            tgt[:, 1] += sy * k
             tgt[:, 2] += dz
-            if (tgt[:, 2] < 0).any() or (tgt[:, 2] >= nz).any():
-                continue
-            sh = self.shape
-            lin = (tgt[:, 0] * sh[1] + tgt[:, 1]) * sh[2] + tgt[:, 2]
-            if own_lin is None:
-                own_lin = (cells[:, 0] * sh[1] + cells[:, 1]) * sh[2] + cells[:, 2]
-            fresh = ~np.isin(lin, own_lin)
-            ent_a = tgt[fresh]
-            ent_t = tuple(ent_a.T)
-            if len(ent_a):
-                if blk is None:
-                    # the cells a step could enter (the body's box grown by
-                    # the longest reach and the rise), judged once: moving,
-                    # packed past the push, or a real puddle
-                    ex = kmax * abs(sx)
-                    ey = kmax * abs(sy)
-                    rz = max(up, dn)
-                    lo = np.maximum(cells.min(axis=0) - (ex, ey, rz), 0)
-                    hi = np.minimum(cells.max(axis=0) + (ex, ey, rz) + 1,
-                                    (nx, ny, nz))
-                    bx = tuple(slice(int(a), int(b)) for a, b in zip(lo, hi))
-                    packed = self.smass[bx] / np.maximum(
-                        _DENS_ARR[self.mat[bx]] * self.vox_l, 1e-9)
-                    blk = (self.moving[bx] | (packed >= PUSH_THROUGH)
-                           | (self.fvol[bx] > WADE_FRAC * self.cap))
-                bad_ = blk[tuple((ent_a - lo).T)].any()
-                if bad_:
-                    continue
-            zmin = int(tgt[:, 2].min())
-            if zmin > 0:
-                low = tgt[tgt[:, 2] == zmin]
-                bz = (low[:, 2] - 1,)
-                below = (low[:, 0], low[:, 1], bz[0])
-                lo_lin = (low[:, 0] * sh[1] + low[:, 1]) * sh[2] + bz[0]
-                if not ((self.mat[below] != AIR)
-                        & ~np.isin(lo_lin, own_lin)).any():
-                    continue
             if dz and kmax > 1 and p is not None:
                 if ghost is None:
                     ghost = dict(p, held=None, dragging=None, _v=None,
@@ -362,10 +357,11 @@ class PathingMixin:
                                  _ghost_kg=self.smass[tuple(cells.T)].copy())
                 if self._overbalanced(ghost, tgt) is not None:
                     continue
+            own_s = set(map(tuple, cells.tolist()))
             new = set(map(tuple, tgt.tolist()))
-            entered = ent_a
+            ent = tuple(tgt[[tuple(c) not in own_s
+                             for c in tgt.tolist()]].T)
             vacated = [c for c in map(tuple, cells.tolist()) if c not in new]
-            ent = ent_t
             vac = tuple(np.array(vacated, np.int64).reshape(-1, 3).T)
             body = self._lift(tuple(cells.T))
             shoved = self._lift(ent)

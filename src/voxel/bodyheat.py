@@ -48,8 +48,11 @@ from . import bodynodes as BN
 from . import digestion as DG
 from . import energetics as EN
 from . import thermoreg as TR
+from . import shutroom as SR
 from . import tissue as TI
 from .airsink import OpenWorldSink, deliver
+from .heat import _mix_pick
+from .materials import TICK_S, _FEMISS_ARR
 
 try:                                     # clothes are optional: a nude body needs none
     from . import clothing as CL
@@ -144,6 +147,79 @@ class _WorldSink(OpenWorldSink):
 # ================================================================= mixin ====
 class BodyHeatMixin:
     work_out = 0.0                        # joules of mechanical work given to the world
+    shut_room_star = True                 # a SEALED room (detected, shutroom.py) radiates through its own node;
+                                          # False gives the old law (every surface to the fixed 20 C world)
+
+    # ------------------------------------------------- the shut room (S4-1) --
+    def _env_radiation(self, u, eps, sl):
+        """The seam of heat._law_conduct: what the surfaces of the window radiate TO. In a detected sealed room
+        (a region sink whose box has no gas leaving it) the faces that look into the room exchange through the
+        room's radiant node and nothing leaves the world (shutroom.star_loss); everywhere else it is the law of
+        the class below (the open world's fixed 20 C, or the cold world's own star)."""
+        room = SR.room_of(self)
+        if room is None:
+            return super()._env_radiation(u, eps, sl)
+        rad_from = (u.solid | u.wet) & (u.n_gas > 0)
+        sel = np.flatnonzero(rad_from)              # the surfaces only: a few thousand cells of a quarter million
+        loss = np.zeros(rad_from.shape, self.E.dtype)
+        if sel.size == 0:
+            return loss
+        fc = self._mix_window(sl)[1]
+        fl = u.fl.ravel()[sel]
+        e = np.where(u.solid.ravel()[sel], eps.ravel()[sel],
+                     _mix_pick(self.mixes, "eps", _FEMISS_ARR[fl], None if fc is None else fc.ravel()[sel]))
+        g = lambda a: a.ravel()[sel]                # noqa: E731
+        dx = 0.1 * self.scale
+        ls, tmr, _ = SR.star_loss(g(u.Ts), e, g(u.af), g(room.n_in[sl]), g(u.n_gas), dx * dx, TICK_S,
+                                  g(u.Csur), g(self._star_bodies(sl)))
+        loss.ravel()[sel] = ls
+        if tmr is not None:
+            self._bh_cache()["star_tmr"] = (int(self.tick), tmr)
+        return loss
+
+    def _star_bodies(self, sl=None):
+        """Bool mask of the cells of every body with a heat record (they are not members of the room's pool), in
+        the window `sl` or in the whole world."""
+        if sl is None:
+            sl = tuple(slice(0, n) for n in self.shape)
+        off = np.array([s.start or 0 for s in sl])
+        shape = np.array([s.stop - (s.start or 0) for s in sl])
+        m = np.zeros(tuple(shape), bool)
+        for p in self.persons:
+            h = p.get("heat")
+            if h is None:
+                continue
+            c = np.asarray(h["cells"], np.int64) - off
+            c = c[((c >= 0) & (c < shape)).all(axis=1)]
+            m[tuple(c.T)] = True
+        return m
+
+    def _star_ref(self, room, fresh=False):
+        """T_mr of the shut room in C: the value the last tick law computed (no older than a body second), else
+        a scan of the room. `fresh` always scans (the night jump, once per chunk and tick)."""
+        c = self._bh_cache()
+        got = c.get("star_tmr")
+        if not fresh and got is not None and int(self.tick) - got[0] <= self._bh_period():
+            return got[1]
+        scan = c.get("star_scan")
+        if scan is not None and scan[0] == int(self.tick) and scan[1] == getattr(self, "_matter_gen", None):
+            return scan[2]
+        t = SR.full_tmr(self, room, self._star_bodies())
+        t = T_INF if t is None else t
+        c["star_scan"] = (int(self.tick), getattr(self, "_matter_gen", None), t)
+        return t
+
+    def _star_credit(self, h, ent, J):
+        """Put J joules (negative = take) into the wall cells this body's rays hit, shared by ray count, so the
+        radiant exchange of a body in a shut room is booked on the walls it is with. False when no ray hit a wall
+        (the caller then leaves the heat to the air as before)."""
+        kind, val, _ = self._bh_rays(h, ent)
+        hit = val[kind == 2]
+        if len(hit) == 0:
+            return False
+        idx, cnt = np.unique(hit, return_counts=True)
+        np.add.at(self.E, np.unravel_index(idx, self.shape), J * cnt / cnt.sum())
+        return True
 
     # ---------------------------------------------------------------- setup -
     def _bh_cache(self):
@@ -450,8 +526,10 @@ class BodyHeatMixin:
         face_a = self._bh_dx() ** 2 * af
         # per face: T^4 of what that face sees (6 normal groups per zone)
         t4 = Tmrt4[zs]                                       # (m, 6) in K^4
-        gain4 = ((t4 - (T_INF + 273.15) ** 4) * od).sum(axis=1) * face_a * a_z[zs]
-        h_r = BA.h_r(Ts_s, T_INF, BA.EMISS_SKIN * BN.RAD_VIEW, 1.0)
+        room = SR.room_of(self)
+        ref_c = T_INF if room is None else self._star_ref(room)      # what the lattice radiates to (C)
+        gain4 = ((t4 - (ref_c + 273.15) ** 4) * od).sum(axis=1) * face_a * a_z[zs]
+        h_r = BA.h_r(Ts_s, ref_c, BA.EMISS_SKIN * BN.RAD_VIEW, 1.0)
         # bare: the lattice radiates eps sigma (Ts^4 - Tinf^4); add eps sigma (Tmrt^4 - Tinf^4)
         q_rad = np.where(bare, BA.EMISS_SKIN * BN.RAD_VIEW * SIGMA * gain4, 0.0)
         # clothed: the series conductance carries the radiative share h_r/h of the linearised flux
@@ -460,9 +538,15 @@ class BodyHeatMixin:
             hc_s = hn
             hh = hc_s + h_r
             ser = As * (h_r / np.maximum(hh, 1e-9)) / (R_cl[zs] + 1.0 / (f_cl[zs] * np.maximum(hh, 1e-9)))
-            q_rad = np.where(bare, q_rad, ser * (Tm_eff - T_INF) * (od.sum(axis=1) > 0))
+            q_rad = np.where(bare, q_rad, ser * (Tm_eff - ref_c) * (od.sum(axis=1) > 0))
         Qs += q_rad
         gain_J += float(Q_forced.sum() + q_rad.sum()) * dt
+        # in a shut room the radiative exchange is with the WALLS the rays hit, not the air
+        rad_walls = 0.0
+        if room is not None:
+            rad_walls = float(q_rad.sum()) * dt
+            if not self._star_credit(h, ent, -rad_walls):
+                rad_walls = 0.0
         # dermal perfusion with the vessel reflex
         w_skin = np.array([zp[z].w_b_skin for z in TI.ZONES])
         vess = np.array([h["ctl"]["vessel"][z] for z in TI.ZONES])
@@ -496,7 +580,7 @@ class BodyHeatMixin:
         sink = self._airsink()
         ins_g = br["water_g_s"] * dt
         st["water_ml"] -= sweat_made + diffuse_g + ins_g
-        deliver(sink, vapour_g=vap_g, latent_J=lat_J, sensible_J=-gain_J,
+        deliver(sink, vapour_g=vap_g, latent_J=lat_J, sensible_J=-(gain_J - rad_walls),
                 o2_l=0.0, co2_l=0.0, where=None)
         book = h["work"]                    # the gas of the acts billed since the last second
         act_o2, act_co2 = book.pop("o2_L", 0.0), book.pop("co2_L", 0.0)
@@ -679,12 +763,18 @@ class BodyHeatMixin:
         e = self._bh_env(p) if env is None else env
         R_cl, f_cl = self._bh_clothing(h, e.get("v", 0.0))
         e = dict(e)
+        room = SR.room_of(self)
+        if room is not None:                       # the radiant node of the shut room (shutroom.py)
+            e["T_rad"] = self._star_ref(room, fresh=True)
         e["zones"] = {TI.ZONES[z]: {"R_cl": float(R_cl[z]), "f_cl": float(f_cl[z])} for z in range(BN.NZ)}
         out = BN.advance(h, nodes, g, e, dt, met=h["met"] if met is None else met)
         self.bh_from_nodes(p, nodes)
         h["drip_g"] = h.get("drip_g", 0.0) + out["drip_g"]      # the same book the ticks write
+        rad_walls = 0.0
+        if room is not None and self._star_credit(h, self._bh_cache()[h["pid"]], out["rad_J"]):
+            rad_walls = out["rad_J"]               # what the body radiated went to the walls it sees
         deliver(self._airsink(), vapour_g=out["vapour_g"], latent_J=out["latent_J"],
-                sensible_J=out["sensible_J"], o2_l=-out["o2_l"], co2_l=out["co2_l"])
+                sensible_J=out["sensible_J"] - rad_walls, o2_l=-out["o2_l"], co2_l=out["co2_l"])
         self.shed += 0.0
         h["tick_last"] = int(self.tick)
         return out

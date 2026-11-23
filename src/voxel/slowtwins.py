@@ -30,6 +30,21 @@ THE TWIN PROTOCOL
 A jump goes to k - 2 at most (the margin covers rounding) and the tick law
 does the rest.
 
+THE TWIN FRAMEWORK (wave 15, owner SC5; twinharness.py). The protocol above is
+the contract of EVERY coarse version of the sim (night jumps, the coarse past,
+offscreen knowledge, background life, speed-ups):
+  applicable   may this person, room or world be coarsened at all, and why not;
+  horizon      when fine detail is needed again: a threshold about to flip, an
+               OBSERVER, a rare event (the tag names which);
+  advance      go there coarsely with ALL LEDGERS BOOKED (the returned fluxes
+               and the world's own books say where every joule and gram went);
+  grade        EXACT (bit for bit with the tick law, to float rounding) or
+               APPROXIMATE (checked on FACTS within a stated `budget`).
+`grade` and `budget` are class attributes; a twin registered by another file
+may be graded in the GRADES and BUDGETS tables below. `twinharness.compare`
+runs a coarse version against the full law and prints the drift against the
+budget: the ONE validation harness.
+
 SLOT: the T7 body_heat twin (STEP class, implicit steps of 30-300 s) is
 registered under "body_heat" by the body-heat lane with `register_twin`. Its
 flux dict is {("E","heat","room"): J, ("mass","h2o","room"): g,
@@ -110,11 +125,19 @@ def delivered_o2(p):
     return _PRED._delivered_o2(p)
 
 
+EXACT = "exact"
+APPROX = "approximate"
+
+
 class Twin:
     """Base class and protocol. Plain class: found by NAME in TWINS, never
-    stored in a snapshot."""
+    stored in a snapshot. `grade` is EXACT or APPROX; an APPROX twin states
+    its `budget`: {fact name: (relative, absolute)} the facts it is checked on
+    (twinharness.Fact) may drift by."""
     name = "twin"
     keys = ()
+    grade = EXACT
+    budget = {}
 
     def applicable(self, w, p):
         return False, "not implemented"
@@ -151,6 +174,8 @@ class BreathTwin(Twin):
     discrete recurrences of `physiology._breathe`."""
     name = "breath"
     keys = ("blood_o2", "met", "smoke", "cohb")
+    grade = EXACT                   # the tick law's own discrete factor: 1.8e-12 over 432,000 ticks (docstring)
+    budget = {k: (1e-9, 1e-12) for k in keys}
 
     def applicable(self, w, p):
         if not p["alive"] or p["safe"]:
@@ -163,6 +188,8 @@ class BreathTwin(Twin):
             return False, "awake"
         if p.get("skin", 0.0) > BODY["hurt_T"] or p["burn"] >= 1.0:
             return False, "burn integral rising"
+        if any(f.get("warm") for f in ((p.get("body") or {}).get("skin") or {}).values()):
+            return False, "a skin face is still settling"
         if (p.get("ko_until", 0) > w.tick or p.get("organ_dead")
                 or p.get("vagal") or p.get("pain_acute") or p.get("pool_left_ml")):
             return False, "an injury clock is running"
@@ -266,6 +293,25 @@ class ConstSourceTwin(Twin):
         return {("E", "heat", "room"): self.watts * s,
                 ("mass", "o2", "room"): -self.o2_l_min / 60.0 * s * 1.429,
                 ("mass", "co2", "room"): self.co2_l_min / 60.0 * s * 1.977}
+
+
+# Twins registered by a file that is not this one are graded here until they carry the attributes themselves.
+# body_heat (slowbody.BodyHeatTwin, with the thermal net and the shut room's star): APPROXIMATE in WHERE the heat
+# goes and how fast a body cools against the room, to these budgets (measured in tests/test_twin_star.py):
+# the columns of "where the heat went" within 15 percent, the room air's rise within 25 percent, a core within
+# 0.15 K, a mean skin within 0.4 K (the budgets the jump has always been checked against, now written once).
+GRADES = {"body_heat": APPROX}
+BUDGETS = {"body_heat": {"air_J": (0.15, 5.0), "wall_J": (0.15, 5.0), "shed_J": (0.15, 5.0),
+                         "air_rise_K": (0.25, 0.02), "core_C": (0.0, 0.15), "skin_C": (0.0, 0.4)}}
+
+
+def grade_of(twin):
+    """EXACT or APPROX: the table entry for the twin's name, else its own attribute."""
+    return GRADES.get(getattr(twin, "name", ""), getattr(twin, "grade", EXACT))
+
+
+def budget_of(twin):
+    return BUDGETS.get(getattr(twin, "name", ""), getattr(twin, "budget", {}))
 
 
 TWINS = {"breath": BreathTwin()}

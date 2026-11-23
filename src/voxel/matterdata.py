@@ -99,9 +99,9 @@ BACKGROUND = {"CO2": FRESH_CO2_G_M3}
 # D25: diffusivity in water at 25 C, m2/s (u). E_D: activation, J/mol (u):
 # about 18 kJ/mol for small solutes, factor 1.6 from 20 to 40 C (c).
 D25 = {"NaCl": 1.61e-9, "sucrose": 5.2e-10, "glucose": 6.7e-10,
-       "ethanol": 1.2e-9, "H2O": 2.3e-9}
+       "ethanol": 1.2e-9, "H2O": 2.3e-9, "tannin": 5e-10}
 E_D = {"NaCl": 18000.0, "sucrose": 18000.0, "glucose": 18000.0,
-       "ethanol": 18000.0, "H2O": 18000.0}
+       "ethanol": 18000.0, "H2O": 18000.0, "tannin": 18000.0}
 # Tortuosity factor (D_eff = D_water * tau) in tissue hosts (u); soil and stone use
 # Millington-Quirk from the pore volume instead, see transport.host_D.
 TORTUOSITY = {

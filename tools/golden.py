@@ -94,6 +94,13 @@ KNOWN = None
 # differs from run to run, the world does not. wetworld.WetState._cap_key (wave 13c C3).
 CACHE_TOKENS = {"_cap_key"}
 
+# PATHS that are not hashed, on either side of a check. Wave 15 S4-3d: the MPM's
+# four whole-world distance arrays are lazy now (None until `_build_sdf`), and
+# nothing in play reads them. A base recorded before then holds them, so without
+# this list their removal would DIFFER in every world. Delete this list once a
+# base is recorded from a tree without them (base26).
+IGNORE_PATHS = {"matter.mpm." + n for n in ("phi", "pgrad", "phi_node", "pgrad_node")}
+
 
 def _keep(path):
     NAMES.add(path)
@@ -150,6 +157,8 @@ def _enc(obj, h, world, stack, at):
                     if k in CACHE_TOKENS:            # an identity token, not state
                         continue
                     sub = at + "." + k
+                    if sub in IGNORE_PATHS:          # not state (see above)
+                        continue
                     if not _keep(sub):
                         continue
                 else:

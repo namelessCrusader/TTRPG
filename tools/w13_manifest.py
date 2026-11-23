@@ -142,6 +142,9 @@ _LANES = (
       "tests/test_pathlaw.py"]),
     # wave 13c: a module the books name as a writer or via, built after phase A (C7, 2026-11-01)
     ("C7", "T10", 7, ["src/voxel/injury.py"], []),
+    # wave 15 batch 1: new modules the books name as a writer or via (2026-11-22)
+    ("W15-T9", "T9", 8, ["src/voxel/heathist_world.py"], []),
+    ("W15-T6", "T6", 8, ["src/voxel/reactions.py"], []),
     ("A-X", "X", 6,
      ["tests/test_w13_cross.py", "tools/w13_audit.py", "tools/w13_manifest.py"],
      ["tests/test_w13_cross.py"]),
@@ -225,7 +228,7 @@ BOOKS = (
          shared=False, parts=()),
     dict(name="dissolved_J", topic="T4", writers=("mixsol", "mixtures"), via=(), kind="energy",
          shared=False, parts=()),
-    dict(name="made", topic="T6", writers=("rxn",), via=(), kind="mass+energy", shared=False,
+    dict(name="made", topic="T6", writers=("rxn",), via=("reactions",), kind="mass+energy", shared=False,
          parts=("water", "latent")),
     dict(name="mech_in", topic="T11", writers=("mechanisms",), via=(), kind="energy",
          shared=False, parts=(), note="only for releases with NO actor (one-flow rule)"),
@@ -248,6 +251,8 @@ BOOKS = (
          kind="energy", shared=False, parts=()),
     dict(name="slow_residual", topic="T5", writers=("slowtime", "slownet"), via=(),
          kind="energy", shared=False, parts=()),
+    dict(name="phase_J", topic="T9", writers=("heathist_world",), via=(), kind="energy",
+         shared=False, parts=()),
 )
 
 BOOK_NAMES = tuple(b["name"] for b in BOOKS)

@@ -313,10 +313,19 @@ def test_press_hoop_and_aop_formulas():
     assert V.press_pa(40.0, 1e-3, 0.03) > 15e3                           # a firm hand stops the femoral
     assert V.hoop_pa(30.0, 0.05, 0.04) == pytest.approx(30.0 / (0.05 * 0.04))
     sbp = 16e3
-    assert V.aop_pa(sbp, 0.55, 0.04) == pytest.approx(sbp * 2.375)           # 4 cm strap, 55 cm thigh
-    assert V.aop_pa(sbp, 0.55, 0.10) == pytest.approx(sbp * 1.55)            # a 10 cm band
-    assert V.aop_pa(sbp, 0.60, 0.05) > V.aop_pa(sbp, 0.40, 0.05)             # rises with circumference
-    assert V.aop_pa(sbp, 0.50, 0.10) < V.aop_pa(sbp, 0.50, 0.04)             # falls with width
+    # WAVE 15: the width term SATURATES (the old fit 1 + 0.1 circ / width kept falling, which
+    # the thigh and arm cuff studies do not: little change between 13 and 18 cm). The rows
+    # the fit is held to (SBP 120 mmHg): thigh (58 cm) narrow 235-259 mmHg, wide (13.5 cm)
+    # 144 mmHg; upper arm (30 cm) 145 mmHg at 5 cm and 120 mmHg at 12 cm.
+    mmhg = 133.322
+    assert 225 <= V.aop_pa(sbp, 0.58, 0.045) / mmhg <= 275        # narrow strap, thigh
+    assert 135 <= V.aop_pa(sbp, 0.58, 0.135) / mmhg <= 155        # wide cuff, thigh
+    assert 135 <= V.aop_pa(sbp, 0.30, 0.05) / mmhg <= 155         # 5 cm on the arm
+    assert 115 <= V.aop_pa(sbp, 0.30, 0.12) / mmhg <= 130         # 12 cm on the arm
+    assert V.aop_pa(sbp, 0.58, 0.13) - V.aop_pa(sbp, 0.58, 0.18) < 0.15 * sbp   # saturates
+    assert V.aop_pa(sbp, 0.58, 0.18) > sbp                         # never below the systolic
+    assert V.aop_pa(sbp, 0.60, 0.05) > V.aop_pa(sbp, 0.40, 0.05)   # rises with circumference
+    assert V.aop_pa(sbp, 0.50, 0.10) < V.aop_pa(sbp, 0.50, 0.04)   # falls with width
 
 
 def test_a_tourniquet_acts_only_distal_to_the_cuff():

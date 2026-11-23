@@ -59,7 +59,7 @@ BOOKS = (
          shared=False, parts=(), sign="joules freezing gave out"),
     dict(name="dissolved_J", topic="T4", writers=("mixsol", "mixtures"), via=(), kind="energy",
          shared=False, parts=(), sign="signed joules of the heat of solution"),
-    dict(name="made", topic="T6", writers=("rxn",), via=(), kind="mass+energy", shared=False,
+    dict(name="made", topic="T6", writers=("rxn",), via=("reactions",), kind="mass+energy", shared=False,
          parts=("water", "latent"),
          sign="signed grams of water, and joules of latent heat, a reaction row made or ate"),
     dict(name="mech_in", topic="T11", writers=("mechanisms",), via=(), kind="energy",
@@ -88,6 +88,9 @@ BOOKS = (
     dict(name="slow_residual", topic="T5", writers=("slowtime", "slownet"), via=(),
          kind="energy", shared=False, parts=(),
          sign="signed joules and grams a skip could not place"),
+    dict(name="phase_J", topic="T9", writers=("heathist_world",), via=(), kind="energy",
+         shared=False, parts=(),
+         sign="joules held in the steel's state (positive = stored as austenite or martensite enthalpy); total_energy() + phase_J is conserved"),
 )
 BOOK_NAMES = tuple(b["name"] for b in BOOKS)
 

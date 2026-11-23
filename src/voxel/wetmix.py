@@ -33,7 +33,7 @@ report's ledger with its deleting condition):
     warm air it comes with.
 
 NOT HERE (the report says so): frost on a cold pane (needs face layers, T3), Fick
-transport INSIDE a solid (SCALE's list), sorption into DRY cells, mixed liquids (they
+transport INSIDE a solid (fick_solids.py, gated off), sorption into DRY cells, mixed liquids (they
 keep the legacy skip, D6: brine boils in heatmix and its steam is booked there).
 """
 import numpy as np

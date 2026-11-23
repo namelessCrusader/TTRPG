@@ -55,6 +55,7 @@ import math
 
 import numpy as np
 
+from . import shutroom as SR
 from . import slowforms as F
 from .heat import FILM, RISE_MAX
 from .materials import (AIR, AIR_C, AMBIENT, BOIL, EDDY, EPS_GAS, FLUID, FREEZE, GRAVITY,
@@ -76,10 +77,13 @@ class NetResult:
     """The coarse-grained region. Plain data (numpy arrays), not stored in w."""
     __slots__ = ("box", "spec", "node_of", "T0", "Cn", "kind", "spread_lo", "spread_hi",
                  "ncell", "B", "refusals", "cell_C", "cell_T", "layer", "clusters",
-                 "owned_cells", "tb", "cluster_id", "alpha", "dx", "skip", "skip_node")
+                 "owned_cells", "tb", "cluster_id", "alpha", "dx", "skip", "skip_node", "rad_star",
+                 "star_why")
 
     def __init__(self):
         self.refusals = []
+        self.rad_star = None            # (n,) W/K^4 of the radiative links of the shut room's star, or None
+        self.star_why = ""              # why a sealed room is NOT run as a star ("" = it is, or there is none)
 
 
 def _neighbours_any(mask):
@@ -328,7 +332,7 @@ def _DYN_CONSTS(dx, momentum=False):
 
 
 def thermal_net(w, region=None, B=None, max_nodes=2000, sources=(), tb=AMBIENT,
-                horizon_s=DEFAULT_HORIZON_S, skip=None):
+                horizon_s=DEFAULT_HORIZON_S, skip=None, star="auto"):
     """Coarse-grain the lattice heat law of the box `region` (default: the hot
     window grown by the diffusion pad of `horizon_s`) into a NetResult, or
     return one whose `refusals` says why not. `sources`: [(cell (x, y, z) or an
@@ -340,7 +344,13 @@ def thermal_net(w, region=None, B=None, max_nodes=2000, sources=(), tb=AMBIENT,
     touch, the flesh of the bodies a body-heat twin carries. Each skipped cell
     is its own node (kind 500) with no link, no radiation and no source: it
     holds its energy exactly, and the air next to it sees an insulated wall
-    (the twin gives the room the body's heat as a source instead)."""
+    (the twin gives the room the body's heat as a source instead).
+
+    `star` (wave 15, S4-1): "auto" asks `shutroom.room_of(w)`, the DETECTED sealed room of a world that has the
+    law (`w.shut_room_star`). The radiative links of the faces that look into that room are then NOT links to
+    the boundary but members of the room's radiant star (`res.rad_star`, advanced by `_star_advance`); None
+    leaves every radiative link to the boundary, as before. A sealed room that does not lie wholly inside the
+    region, or whose region has gas faces onto the boundary, is not a star here and `res.star_why` says why."""
     res = NetResult()
     if region is None:
         region = default_region(w, horizon_s=horizon_s)
@@ -471,7 +481,20 @@ def thermal_net(w, region=None, B=None, max_nodes=2000, sources=(), tb=AMBIENT,
         np.concatenate([cat(d_c, float), cat(e_c, float)]),
         np.concatenate([cat(d_side, bool), cat(e_side, bool)]),
         _DYN_CONSTS(res.dx, bool(w.gas_momentum)))
+    a_star = None
+    room = SR.room_of(w) if star == "auto" else star
+    if room is not None:
+        if not room.contained_in(sl):
+            res.star_why = "the shut room is not wholly inside the region"
+        elif e_node:
+            res.star_why = "the region has gas faces onto its boundary"
+        else:
+            f_in = np.minimum(room.n_in[sl], u.n_gas) / np.maximum(u.n_gas, 1)
+            a_star = a_i * f_in
+            a_i = a_i - a_star
     rad = np.bincount(node_of, a_i.ravel(), n)
+    if a_star is not None:
+        res.rad_star = np.bincount(node_of, a_star.ravel(), n)
     q = np.zeros(n)
     for cell, watts in sources:
         cells = np.asarray(cell, np.int64).reshape(-1, 3)
@@ -776,6 +799,73 @@ def write_back(w, res, T1, sched=None, snap=True, tb=None, t_s=0.0):
             "snapped": snapped, "cells_snapped": nsnap}
 
 
+def star_tmr(rad_star, T):
+    """T_mr in C of the shut room's radiant node at node temperatures T (C): the T^4 mean of its members, the
+    weights the radiative links rad_star (W/K^4)."""
+    W = float(rad_star.sum())
+    if W <= 0.0:
+        return None
+    tk = np.asarray(T, float) + K0
+    return float(np.dot(rad_star, tk ** 4) / W) ** 0.25 - K0
+
+
+def _star_advance(res, t0, t1):
+    """The net of a shut room from tick t0 to t1: the heat law's own steps (spec.at, _nl_piece's implicit
+    steps, the step halved when a conductance moves more than NL_REL) with the room's star added. In each
+    Picard pass the node T_mr is read from the MID-STEP temperatures and the secant of the star's links is
+    taken against it, so the star's net radiation over the step is the zero-sum form to the Picard tolerance
+    (1e-6 K): the star neither makes nor loses a joule, and it needs no time step of its own (it is implicit
+    like every other link). The links to the boundary at tb (conduction to the ring, the faces onto the world,
+    if any) are the net's own. Returns (T1, fluxes, T_mr at the end in C); the fluxes are the ones
+    rc_advance_arrays gives."""
+    spec, rs, tb = res.spec, res.rad_star, res.tb
+    T = np.asarray(res.T0, float).copy()
+    E0 = spec.stored(T)
+    use_eigen = spec.n <= F.EIGEN_MAX
+    src_J = float(spec.q.sum()) * (t1 - t0) * TICK_S
+    ta = t0
+    hold = max(F.NL_MIN_TICKS, int(round(F.NL_H0_S / TICK_S)))
+    while ta < t1:
+        step_t = int(min(t1 - ta, hold))
+        while True:
+            h = step_t * TICK_S
+            Tend = T
+            for _ in range(F.NL_PICARD):
+                Tm = 0.5 * (T + Tend)
+                bs = star_tmr(rs, Tm)
+                sp = spec.at(Tm, tb)
+                g_gh = F._rad_secant(spec.rad, Tm, tb)
+                g_st = F._rad_secant(rs, Tm, bs)
+                f = sp.Gb * tb + spec.q + g_gh * tb + g_st * bs
+                Tn = F._step_with_extra(sp, T, f, f, h, g_gh + g_st, use_eigen)
+                moved = float(np.max(np.abs(Tn - Tend)))
+                Tend = Tn
+                if moved < 1e-6:
+                    break
+            g0 = F._nodal_g(spec.at(T, tb)) + F._rad_secant(spec.rad, T, tb) + F._rad_secant(rs, T, star_tmr(rs, T))
+            g1 = (F._nodal_g(spec.at(Tend, tb)) + F._rad_secant(spec.rad, Tend, tb)
+                  + F._rad_secant(rs, Tend, star_tmr(rs, Tend)))
+            r = float(np.max(np.abs(g1 - g0) / np.maximum(0.5 * (g0 + g1), 1e-300)))
+            if r > F.NL_REL and step_t > F.NL_MIN_TICKS:
+                step_t = max(F.NL_MIN_TICKS, step_t // 2)
+                continue
+            break
+        T = Tend
+        cut_short = step_t < hold and ta + step_t == t1 and r <= F.NL_REL
+        ta += step_t
+        if cut_short:
+            continue
+        if r < F.NL_REL / 6.0:
+            hold = hold * 2
+        elif r > F.NL_REL:
+            hold = max(F.NL_MIN_TICKS, step_t)
+        else:
+            hold = step_t
+    E1 = spec.stored(T)
+    return (T, {("E", "boundary", "sink"): src_J - (E1 - E0), ("E", "source", "twin"): -src_J},
+            star_tmr(rs, T))
+
+
 def advance_region(w, n, sched=None, sources=(), region=None, drives=None, o2_used_g=None,
                    max_nodes=2000, skip=None):
     """The whole tier-1 jump of the thermal region over n ticks from w.tick:
@@ -793,7 +883,10 @@ def advance_region(w, n, sched=None, sources=(), region=None, drives=None, o2_us
         return False, {"refusals": ref}
     drv = dict(drives or {})
     drv.setdefault("Tb", F.ConstDrive(res.tb))
-    T1, fl = F.rc_advance_arrays(res.spec, res.T0, drv, w.tick, w.tick + n)
+    if res.rad_star is not None and not (drives or {}):
+        T1, fl, tmr1 = _star_advance(res, w.tick, w.tick + n)
+    else:
+        T1, fl, tmr1 = *F.rc_advance_arrays(res.spec, res.T0, drv, w.tick, w.tick + n), None
     ref = refusals(w, res, sched, T1=T1, t_s=n * TICK_S)
     if ref:
         return False, {"refusals": ref}
@@ -816,5 +909,6 @@ def advance_region(w, n, sched=None, sources=(), region=None, drives=None, o2_us
         sched.sinks[("E", "source", "twin")] = sched.sinks.get(("E", "source", "twin"), 0.0) \
             + fl[("E", "source", "twin")]
     stats.update({"boundary_J": out, "nodes": res.spec.n, "B": res.B,
-                  "source_J": -fl[("E", "source", "twin")]})
+                  "source_J": -fl[("E", "source", "twin")], "star": res.rad_star is not None,
+                  "star_tmr_C": tmr1, "star_why": res.star_why})
     return True, stats

@@ -255,11 +255,18 @@ class MatRec:
                    sc=out(self.sc * ks * c), sf=out(self.sf_eff() * ks * t),
                    tau=out(self.tau * ks * t), sy=sy, H=H)
 
-    def brittle_at(self, T_C):
+    def brittle_at(self, T_C, tough=1.0):
         """(ductility, gimp) at T_C: iron falls off a ductile-to-brittle step
         centred on dbtt_C[0] with the stated width in kelvin (below it the
         ductility is 0.02 and gimp 0.1 of the warm value); everything else is
-        flat."""
+        flat.
+
+        `tough` is the heat-history multiplier (heathist.toughness_factor: fresh hard
+        martensite is brittle, tempering restores it, a coarse grain lowers it). It scales
+        both numbers; at the default 1.0 the answer is the old one bit for bit."""
+        if tough != 1.0:
+            d, g = self.brittle_at(T_C)
+            return d * tough, g * tough
         if self.dbtt_C is None:
             return self.ductility, self.gimp
         t0, w = self.dbtt_C

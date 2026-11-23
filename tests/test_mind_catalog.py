@@ -44,8 +44,12 @@ def test_the_SHIPPED_catalog_passes_every_check():
     c = load()
     assert c.null_act.id == "wait"
     assert c.backends == ("rooms", "voxel")
+    # (wave 15, S3 item 1: the door and mechanism verbs run on voxel only,
+    # except `open`, which the inn also has)
     assert set(c.runnable("voxel")) == {"walk_to", "flee_to", "take", "drop", "strike",
-                                        "shout_fire", "wait"}
+                                        "shout_fire", "wait", "open", "close_door",
+                                        "use_key", "pick_lock", "bar_door",
+                                        "unbar_door", "kick_in"}
     # a verb with no program anywhere is in the catalog for its words, and is never offered
     assert "cut" not in c.runnable("rooms") + c.runnable("voxel")
 

@@ -276,33 +276,83 @@ def prep_of(t_air_s, aware=True):
     return min(max((t_air_s - PREP_T0_S) / PREP_RAMP_S, 0.0), 1.0)
 
 
-# ── preparation from the body's state (wave 14a refinement, lane F) ──────────
+# ── preparation from the body's state: THE FALL-PREPARATION LAW (wave 15, owner decision D3) ──
 # Preparation is a law of what the person knew and how long they had, never a flag on a scene.
 #   * A fall they CHOSE or foresaw (a jump: the leap stamp, `intended`) is prepared at take-off.
-#   * Any other fall is noticed only once it has begun. The person can start to react after
-#     their own reaction time (a dial on the sheet, `react_s`): human simple reaction time is
-#     0.2 to 0.3 s (Woods 2015, doi:10.3389/fnhum.2015.00131: 0.20 s for vision in healthy
-#     adults; Kosinski's compilation of simple reaction times 0.19 to 0.28 s), so 0.25 s (u: the
-#     middle). The legs then need PREP_RAMP_S to be ready, as before.
-#   * A surprised faller (a trip, a push from behind) does not time a brace to the ground:
-#     the pre-landing muscle activation that softens a drop is timed from knowing the time to
-#     contact (Santello and McDonagh 1998, Santello, McDonagh and Challis 2001, J Appl Physiol:
-#     it is lost or mistimed when the height is unknown), so only a share, BRACE_UNFORESEEN, of
-#     the planned brace is reached, by reflex after contact and by stiffening at the notice (u).
-REACT_S = 0.25                 # s, simple reaction time: the sheet's `react_s` replaces it
-BRACE_UNFORESEEN = 0.3         # share of a prepared landing a faller reaches who did not foresee the fall (u)
+#   * Any other fall is noticed once it has begun. The legs get ready as a RAMP of the time in
+#     the air, from the first muscle onset to full readiness:
+#         leg brace = BRACE_U * clip((t_air - t0) / BRACE_RAMP_S, 0, 1)
+#     t0 is the earliest muscle onset after a sudden drop: 64 to 126 ms (Sanders et al. 2019,
+#     doi:10.1016/j.jbiomech.2019.05.005, Table 1: 64-100 ms young, 75-107 ms old; arm onset
+#     120-126 ms in doi:10.1016/j.jbiomech.2019.109569), so 0.125 s, the middle. Nothing
+#     responds before 0.06-0.13 s (Le Goic et al. 2018, doi:10.3389/fneur.2018.00986).
+#     The ramp is full near 0.40 s: unexpected 30, 45 and 60 cm drops (0.25, 0.30, 0.35 s of
+#     air) land at 1.80, 1.54 and 1.31 times the prepared force, a line that reaches 1.0 at
+#     0.42 s (Zhang et al. 2017, doi:10.1515/hukin-2017-0018). Ramp 0.275 s gives 0.40 s.
+#   * An unforeseen fall keeps a residual: +14 to +26 percent force on a standing drop
+#     (Sanders 2019), +15 to +20 percent with a 0.3-0.4 s cue (doi:10.3389/fnhum.2021.683909).
+#     BRACE_U is the share of the planned brace a surprised faller reaches, fitted so that the
+#     chain gives 1.15 to 1.25 times the prepared force at the 3 m fall (0.30 gives 1.23,
+#     0.45 gives 1.20; the lower value is kept because the lumbar yield sits between 0.30 and 0.35). It
+#     replaces the old flat 0.3 cap, which nothing supported.
+#   * The person's reaction dial (`react_s` on the sheet) moves the onset: older bodies start
+#     8 to 15 ms later (Sanders 2019) while their simple reaction time is about 50 ms
+#     longer, so 0.25 of the dial (u).
+#   * RE-ORIENTATION (a roll, a recovery step, turning feet-first) is a slower, separate ramp:
+#     a normal curve centred 0.68 s, SD 0.17 s (trip recovery, Smeesters, Hogervorst et al. 2001,
+#     doi:10.1016/s0021-9290(01)00005-7), complete by 0.85 s (cutting preparation, doi:10.1080/
+#     02640414.2013.876508: +4 percent at 0.85 s, not significant). `reorient_share`.
+#   * THE LOWER BOUND: hand impact comes 680 +/- 116 ms after the start of a fall, and the
+#     pelvis lands at 2.6 m/s against 4.2 m/s in free fall, so even an UNPREPARED standing fall
+#     sheds 1 - (2.6/4.2)^2 = 62 percent of the energy (Hsiao and Robinovitch 1998,
+#     doi:10.1016/s0021-9290(97)00114-0, second hand through the library note of 2026-11-22).
+#     `shed_floor`.
+REACT_S = 0.25                 # s, simple reaction time: the dial's reference value
+BRACE_T0_S = 0.125             # s, first muscle onset (0.10 to 0.15)
+BRACE_RAMP_S = 0.275           # s, to full readiness at 0.40 s
+BRACE_U = 0.30                 # share of the planned brace an unforeseen faller reaches (1.23x force at 3 m; 0.30-0.45 all fit 1.15-1.25)
+ONSET_PER_REACT = 0.25         # (u) the onset follows the reaction dial by this factor
+ONSET_MIN_S = 0.06
+REORIENT_MU_S = 0.68
+REORIENT_SD_S = 0.17
+REORIENT_DONE_S = 0.85
+SHED_PELVIS_MS, SHED_FREE_MS = 2.6, 4.2
+
+
+def brace_onset_s(react_s=REACT_S):
+    """The first muscle onset (s) of a person with that reaction time."""
+    return max(ONSET_MIN_S, BRACE_T0_S + ONSET_PER_REACT * (float(react_s) - REACT_S))
 
 
 def prep_from_body(t_air_s, aware=True, foreseen=False, react_s=REACT_S):
     """Preparation of the legs for a landing, 0..1, from the body's state.
-    Unconscious: 0. Foreseen (chosen): 1. Otherwise BRACE_UNFORESEEN times the ramp that
-    starts at the person's reaction time: clip((t_air - react_s) / PREP_RAMP_S, 0, 1)."""
+    Unconscious: 0. Foreseen (chosen): 1. Otherwise BRACE_U * clip((t_air - t0) / ramp)."""
     if not aware:
         return 0.0
     if foreseen:
         return 1.0
-    ramp = min(max((t_air_s - react_s) / PREP_RAMP_S, 0.0), 1.0)
-    return BRACE_UNFORESEEN * ramp
+    ramp = min(max((t_air_s - brace_onset_s(react_s)) / BRACE_RAMP_S, 0.0), 1.0)
+    return BRACE_U * ramp
+
+
+def reorient_share(t_air_s, aware=True):
+    """The share of surprised fallers who have turned feet-first or into a roll by `t_air_s`:
+    the normal curve of mean 0.68 s and SD 0.17 s, scaled to reach exactly 1 at 0.85 s (the
+    end of the ramp) and 0 for the unconscious. The landing code may use it as the odds of choosing
+    the orientation (mode choice reads it; the chain itself does not)."""
+    if not aware:
+        return 0.0
+    if t_air_s >= REORIENT_DONE_S:
+        return 1.0
+    def cdf(t):
+        return 0.5 * (1.0 + math.erf((t - REORIENT_MU_S) / REORIENT_SD_S / math.sqrt(2.0)))
+    return max(cdf(t_air_s), 0.0) / cdf(REORIENT_DONE_S)
+
+
+def shed_floor():
+    """The least share of the fall's energy even an unprepared faller sheds before the
+    pelvis lands: 1 - (2.6 / 4.2)^2 = 0.62 (hand impact first, at 680 ms)."""
+    return 1.0 - (SHED_PELVIS_MS / SHED_FREE_MS) ** 2
 
 
 def contact_energy(m_kg, v_n, r_cross_n=0.0, I_kgm2=None):

@@ -25,7 +25,10 @@ import weakref
 import numpy as np
 
 from . import climate as K
+from . import lazyaudit as audit
+from . import lazykernels as LK
 from . import outside as O
+from .kernels import HAVE_NUMBA
 from .materials import AIR, AMBIENT, SMOKE_STILL, TICK_S
 from .window import box_volume
 
@@ -35,6 +38,7 @@ _OUT = weakref.WeakKeyDictionary()      # world -> its outdoor caches (cls, face
 
 
 class OutsideMixin:
+    lazy_exact = True                    # S4-3: the exact speedups of lazylaws.py (a cold or warm-body world)
     _uns_quiet = None                   # the memo of a QUIET answer: (tick, reasons), while a tick runs
     _in_step = False
     CLIMATE_EVERY = 40                  # ticks (1 s) between reads of T_out
@@ -412,6 +416,9 @@ class OutsideMixin:
         kept, because a busy world's laws change E all the time."""
         c = self._clim()
         if c is None:
+            up = getattr(super(), "_unsettled", None)    # fields: `_window(E != 0, pad)`, windowed in a lazy world
+            if up is not None:                           # (a stub host in a test has no World behind it)
+                return up(pad)
             return self._window(self.E != 0, pad), []
         if not self.skip_quiet:
             return (slice(None), slice(None), slice(None)), ["whole"]
@@ -419,7 +426,22 @@ class OutsideMixin:
             return None, list(self._uns_quiet[1])
         cache = self._env_refresh()
         why = O.driven_reasons(K.rest_temp(c), self.t_out, self.t_sky)
-        box, reasons = O.unsettled_box(self.E, self.heat_capacity(), cache["cls"], self._rest_k(),
+        C = self.heat_capacity()
+        if not why and self.lazy_exact and HAVE_NUMBA:
+            # THE QUIET SCAN (S4-3a): a world nothing drives and nothing has moved in needs
+            # no box, only "is every cell at its rest?": one pass with no bounding box to
+            # keep (lazykernels.all_settled; the same arithmetic as `O._box_nb`).
+            quiet = bool(LK.all_settled(np.ascontiguousarray(self.E), np.ascontiguousarray(C),
+                                        np.ascontiguousarray(cache["cls"]), np.float32(self._rest_k()),
+                                        np.float32(self._th_out()), np.float32(O.SETTLE_K)))
+            audit.check("cold_settled", quiet, lambda: O.unsettled_box(
+                self.E, C, cache["cls"], self._rest_k(), self._th_out(), O.SETTLE_K,
+                exposed=cache["exposed"], driven=why, pad=pad)[0] is None)
+            if quiet:
+                if self._in_step:
+                    self._uns_quiet = (self.tick, ())
+                return None, []
+        box, reasons = O.unsettled_box(self.E, C, cache["cls"], self._rest_k(),
                                        self._th_out(), O.SETTLE_K, exposed=cache["exposed"],
                                        driven=why, pad=pad)
         if box is None and self._in_step:

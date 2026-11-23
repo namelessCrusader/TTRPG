@@ -151,7 +151,8 @@ def _snap(w, ps):
     return {"T_air": s.mean_temp(), "o2": s.o2_mass_g(), "co2": s.co2_l, "vap": s.vapour_g + s.condensed_g,
             "core": p["heat"]["T_pool"], "skin": BN.mean_skin(w.bh_to_nodes(p), w._bh_geom(p, p["heat"])),
             "room_J": float(E[~body].sum()) + s.latent_J, "shed": float(w.shed),
-            "air_J": float(E[(w.mat == AIR)].sum())}
+            "air_J": float(E[(w.mat == AIR)].sum()),
+            "wall_J": float(E[(w.mat != AIR) & ~body].sum())}
 
 
 def test_a_jump_agrees_with_ticking_on_the_body_the_gases_and_how_much_heat_the_room_gets():
@@ -176,11 +177,17 @@ def test_a_jump_agrees_with_ticking_on_the_body_the_gases_and_how_much_heat_the_
     qa = (sa["room_J"] - a0["room_J"]) + (sa["shed"] - a0["shed"])
     qb = (sb["room_J"] - s0["room_J"]) + (sb["shed"] - s0["shed"])
     assert abs(qa - qb) < 0.20 * abs(qa), (qa, qb)
-    # WHERE it goes differs, and the reason is the tick law's, not the jump's: the lattice lets every surface
-    # that looks onto gas radiate to the WORLD (heat.py `_env_radiation`, booked in shed), also in a shut room.
-    # The jump keeps the body's heat in the room. Said here so nobody reads the room temperature as agreement.
-    assert (sb["shed"] - s0["shed"]) < (sa["shed"] - a0["shed"])
-    assert (sb["air_J"] - s0["air_J"]) > (sa["air_J"] - a0["air_J"])
+    # WHERE it goes AGREES (wave 15, S4-1): a shut room is detected and both laws radiate through its star
+    # (shutroom.py), so nothing of a sealed room's radiation leaves as `shed` in either path. Before the star the
+    # tick law sent about 91 percent of a sleeper's heat out of the room (shed) while the jump kept it in: air rise
+    # 0.32 K against 1.78 K. The where-columns now agree within 15 percent and the air's rise within 25 percent.
+    da, db = sa["air_J"] - a0["air_J"], sb["air_J"] - s0["air_J"]
+    wa, wb = sa["wall_J"] - a0["wall_J"], sb["wall_J"] - s0["wall_J"]
+    assert abs(sa["shed"] - a0["shed"]) < 1.0 and abs(sb["shed"] - s0["shed"]) < 1.0
+    assert abs(da - db) < 0.15 * abs(da), (da, db)
+    assert abs(wa - wb) < 0.15 * abs(wa), (wa, wb)
+    ra, rb = sa["T_air"] - a0["T_air"], sb["T_air"] - s0["T_air"]
+    assert abs(ra - rb) < 0.25 * abs(ra), (ra, rb)
 
 
 def test_a_jump_is_exact_in_how_much_energy_the_books_hold():

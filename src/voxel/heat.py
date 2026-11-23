@@ -126,6 +126,18 @@ DT_LEID = 130.0                  # Nukiyama): wall superheat in K where the
 Q_CHF = 1.1e6                    # critical heat flux (W/m²) is reached, where the
 H_FILM = 250.0                   # film boiling takes over, and the film's
 H_NUC = 1500.0                   # convective h (W/m²K) and the plain wet h
+# THE VAPOUR BLANKET OF A COLD BATH COLLAPSES (wave 15, lane 2f). The curve above is Nukiyama's
+# for water near its boiling point. Steel dropped in water far below it never holds a steam
+# blanket for long: the cold water condenses it (Kobasko's quench work; the quenchant handbooks,
+# Totten) and a quench averages h of about 3000-4000 W/m²K (Grossmann severity H of about 1 per
+# inch is h = 2 k H of about 3000; the handbook row for a still water bath is 4000 at 900 °C,
+# heathist_data.H_QUENCH). So with the liquid colder than QUENCH_SUB0 below its boiling point
+# the film flux is blended toward H_COLLAPSE, fully at QUENCH_SUB0 + QUENCH_SUB_FULL K of
+# subcooling. QUENCH_SUB0 = 40 K keeps the H27 case (a 60 °C bath) on the plain curve.
+# The three numbers are fitted to those handbook averages, not read from a table (u).
+H_COLLAPSE = 4000.0
+QUENCH_SUB0 = 40.0
+QUENCH_SUB_FULL = 40.0
 
 
 _F_NUC, _F_FILM = np.float32(H_NUC), np.float32(H_FILM)
@@ -133,6 +145,8 @@ _F_QCHF, _F_CHF, _F_LEID = np.float32(Q_CHF), np.float32(DT_CHF), np.float32(DT_
 _F_BOIL = np.float32(BOIL)
 _F_QMIN = np.float32(H_FILM * DT_LEID)
 _F_QPEAK = np.float32(H_NUC * DT_CHF + Q_CHF)
+_F_HCOL, _F_SUB0, _F_SUBF = (np.float32(H_COLLAPSE), np.float32(QUENCH_SUB0),
+                             np.float32(QUENCH_SUB_FULL))
 
 
 @njit(cache=True)
@@ -169,7 +183,13 @@ def _hboil_t(h, tw, tl, es, el, e, foursig, k0, tbo):
         tk = tc + k0
         sk = tbo + k0
         q = _F_FILM * dT + e * (foursig * np.float32(0.25)) * ((tk * tk + sk * sk) * (tk + sk)) * dT
-        return q / (tw - tl)
+        hf = q / (tw - tl)
+        wc = (tbo - tl - _F_SUB0) / _F_SUBF            # a cold bath: the blanket collapses
+        if wc <= np.float32(0.0):
+            return hf
+        if wc > np.float32(1.0):
+            wc = np.float32(1.0)
+        return hf + wc * (_F_HCOL - hf) if _F_HCOL > hf else hf
     hb = q / (tw - tl)              # bubbles only ever add to the plain wet coefficient:
     return hb if hb > h else h      # a wall that can't heat its interface (wood) keeps `h`
 
@@ -1655,6 +1675,8 @@ class HeatMixin:
                                  _F_QPEAK + (_F_QMIN - _F_QPEAK) * ((dT - _F_CHF) / (_F_LEID - _F_CHF)),
                                  _F_FILM * dT + ew * (_FOURSIG * f32(0.25)) * ((tk * tk + sk * sk) * (tk + sk)) * dT))
                     hb = q / np.where(boil, tw - tl, f32(1.0))
+                    wc = np.clip((tbo - tl - _F_SUB0) / _F_SUBF, f32(0.0), f32(1.0))
+                    hb = np.where(dT >= _F_LEID, np.where(_F_HCOL > hb, hb + wc * (_F_HCOL - hb), hb), hb)
                     hb = np.where(dT < _F_LEID, np.maximum(hb, hh), hb)   # (see `_hboil`)
                     hh = np.where(boil & (dT > f32(0.0)), hb, hh)
                 Gw = hh * A * af[a] * af[b]

@@ -1,7 +1,7 @@
 """Grip, hold, carry, haul, shove, catch: what hands can reach and move."""
 import numpy as np
-from . import contact, matlaws
-from .materials import (AIR, BODY, FLESH, FRICTION, GRAVITY, MATNAME)
+from . import contact, grip as _grip, matfric, matlaws
+from .materials import (AIR, BODY, FLESH, FRICTION, GRAVITY, MATNAME, TICK_S)
 from .label import flood, label
 
 
@@ -35,6 +35,11 @@ def _reach_distance(rel, cells, origin, shape, R):
 
 
 class HandsMixin:
+    # THE GRIP LAW (wave 15, lane 2c; grip.py). Off: a hand holds what its owner's strength
+    # >= the weight, and nothing tires. On: the squeeze is read against the pair of surfaces and
+    # the film, the hand's fatigue clock runs (fatigue.py) and a grip that fails lets go.
+    # Default off for one wave: the flip to every world is a declared diff (wave 15, Q8).
+    grip_law = False
 
     def _resist(self, q, cells):
         """What it costs to move a body that would rather not be moved, in
@@ -448,7 +453,10 @@ class HandsMixin:
         if float(cluster[:, 2].min()) >= float(own[:, 2].max()):
             return False
         w_N, _ = self._effort(cluster)
-        if w_N > self._strength(p):
+        if self.grip_law:
+            if not _grip.holds(p, self._grip_arm(p), w_N, self._grip_mu(cluster)):
+                return False
+        elif w_N > self._strength(p):
             return False
         # THE FIST IS AT THE END OF AN ARM, not wherever two bodies happen to
         # press together — measured against the nearest touching cell, a man
@@ -462,6 +470,75 @@ class HandsMixin:
         com_z = float((cluster[:, 2] * kg).sum() / max(float(kg.sum()), 1e-9))
         lever_m = max(0.0, com_z - touch_z) * 0.1 * self.scale
         return w_N * lever_m <= BODY["wrist_Nm"]
+
+    def _grip_arm(self, p):
+        """The arm that closes on the load: the held thing's, else the dominant one."""
+        held = p.get("held")
+        return (held.get("arm") if held else None) or _grip.dominant_arm(p)
+
+    def _grip_mu(self, cells, kinetic=False):
+        """Static (or kinetic) friction of skin against the cells held, with the film that is
+        on them (matfric: one table, the same one a floor uses): the mean over the cells."""
+        c = np.asarray(cells, np.int64).reshape(-1, 3)
+        at = tuple(c.T)
+        wet = np.asarray(self.fvol[at]) > 0.05 * self.cap
+        film = matfric.film_of(np.where(wet, self.fl[at], 0))
+        mu = np.atleast_1d(matfric.mu_pair(np.full(len(c), FLESH), self.mat[at], film, kinetic=kinetic))
+        return float(mu.mean())
+
+    def _grip_load(self, cells):
+        """What the hand must carry: the weight if nothing the thing touches below holds it up,
+        else nothing (a thing resting on a table is only touched)."""
+        c = np.asarray(cells, np.int64).reshape(-1, 3)
+        kg = float(self.smass[tuple(c.T)].sum()) / 1000.0
+        low = c[c[:, 2] == c[:, 2].min()]
+        below = low.copy()
+        below[:, 2] -= 1
+        if int(below[0, 2]) < 0:
+            return 0.0
+        mine = {tuple(int(v) for v in x) for x in c}
+        for b in below:
+            if tuple(int(v) for v in b) not in mine and int(self.mat[tuple(b)]) != AIR:
+                return 0.0
+        return kg * GRAVITY
+
+    def _grip_clock(self):
+        """THE HAND'S CLOCK (grip_law on): each holder squeezes with a margin over the least that
+        holds, the limb tires by Rohmert's endurance (fatigue.step_static), and a grip that no
+        longer holds lets go; the thing then falls by the ordinary laws."""
+        for p in self.persons:
+            who = p.get("dragging")
+            if who and p["alive"] and p["awake"]:
+                # a hand on a body: the same clock; `_grip_holds` (the support law's test) reads
+                # the fatigue this writes
+                q = next((r for r in self.persons if r["name"] == who), None)
+                comp, sl = self._person_cells(q) if q is not None else (None, None)
+                if comp is not None and comp.any():
+                    cl = self._claim_cells(q, comp, sl)
+                    arm = _grip.dominant_arm(p)
+                    load = self._grip_load(cl)
+                    r = _grip.step(p, arm, load, self._grip_mu(cl), TICK_S)
+                    if load > 0.0 and not r["holds"]:
+                        p["dragging"] = None
+                        self.emit("releases", actor=p["pid"], target=("person", q["pid"]),
+                                  result="slip", to=p, site="law_grips:slip",
+                                  text=f"{p['name']}'s grip fails and {who} slips away")
+                        continue
+            held = p.get("held")
+            if not held or not p["alive"]:
+                continue
+            cells = self._held_cells(p)
+            if cells is None or not len(cells):
+                continue
+            arm = self._grip_arm(p)
+            mu = self._grip_mu(cells)
+            load = self._grip_load(cells)
+            ok = p["awake"] and _grip.step(p, arm, load, mu, TICK_S)["holds"]
+            if not ok:
+                label = held.get("label", "thing")
+                p["held"] = None
+                self.emit("releases", actor=p["pid"], to=p, site="law_grips:slip",
+                          text=f"{p['name']}'s grip fails and the {label} slips from the hand")
 
     def _grip_cells(self):
         """Every cell a HAND is holding up, for the support law. A grip is an
@@ -683,6 +760,8 @@ class HandsMixin:
 
         Whether an arm still reaches is a question about now. Nothing about it
         is about stepping."""
+        if self.grip_law:
+            self._grip_clock()
         for p in self.persons:
             who = p.get("dragging")
             if not who:

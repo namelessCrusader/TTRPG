@@ -1,6 +1,6 @@
 """Blows and wounds, bleeding, perfusion, breath, burns, faint and death."""
 import numpy as np
-from . import injury as IJ, matedge as ME
+from . import bleeding as BL, injury as IJ, matedge as ME, skinworld as SW
 from .faintrates import o2_target
 from .materials import (AIR, BLEED, BLOOD, BODY, FLESH, GRAVITY, O2_PER_L,
                         SMOKE_EXT, TICK_S, WOUND)
@@ -91,6 +91,17 @@ BREATH = {
 
 
 class PhysiologyMixin:
+    # W15-Q1: BLEEDING PER VESSEL, ON BY DEFAULT (src/voxel/bleeding.py). A wound that
+    # crosses a vessel bleeds at that vessel's rate and clots by the clot law, and
+    # pressure, a bandage and a tourniquet act on the same law. False runs the old
+    # capillary rate only, bit for bit, for one wave (switch row bleeding.vessel_bleed_gate).
+    vessel_bleed = True
+    # W15-Q3: BURNS PER SKIN FACE AND DEPTH (src/voxel/skinworld.py). A burn is a record on the
+    # faces of the body that were hot; it persists (only a revival resets it); p["burn"] is a
+    # written view of the shock the faces calculate. False runs the old body-wide scalar and
+    # its shock curve, bit for bit, for one wave (switch row skinworld.skin_faces_gate).
+    skin_faces = True
+    skin_stride = True       # faces step every SKIN_STRIDE ticks with dt x stride (cost ceiling); False = every tick
 
     def _blow(self, p, cell, joules, area, tip=None):
         """A blow of `joules` arriving on `area` square metres at `cell`.
@@ -146,6 +157,8 @@ class PhysiologyMixin:
                          length_m=a / WOUND["edge_w_m"], open=True,
                          through=bool(depth >= thick))
             self._blood0(p)                     # it has blood to lose now
+            if self.vessel_bleed:
+                BL.make_cuts(self, p, wound, cell)   # where on the bone, which vessels
         # WHATEVER IT DID, IT HURT. The tissue-damage integral is unchanged —
         # the same bruise threshold per contact area the fall law uses — so a
         # club and a blade of the same energy leave the same bruise budget and
@@ -331,22 +344,39 @@ class PhysiologyMixin:
         for p in self.persons:
             if not p["alive"] or p["safe"]:
                 continue
-            open_ = [w for w in (p.get("wounds") or ()) if w.get("open")]
+            if self.vessel_bleed and p.get("tourniquets"):
+                BL.tourniquets_step(self, p, dt)    # a closed cuff kills what is under it
+            # a wound with cuts is kept in the loop after it seals: a plug can reopen
+            open_ = [w for w in (p.get("wounds") or ()) if w.get("open") or w.get("cuts")]
             if not open_:
                 continue
             b0 = self._blood0(p)
             pressure = max(p["blood_ml"] / b0, 0.0)
+            frames = {}                         # the bone frames read this tick
             for w in open_:
+                cuts = w.get("cuts")
                 plane = w["depth_m"] * w["length_m"]
-                w["clot_m2"] = min(w.get("clot_m2", 0.0)
-                                   + BLEED["clot_m2_s"] * dt, plane)
-                gap = max(plane - w["clot_m2"], 0.0)
-                if gap <= 0.0:
-                    w["open"] = False            # sealed: it has stopped
-                    continue
-                if w.get("pressed"):             # a hand on it
-                    gap *= 0.1
-                ml = min(BLEED["ml_s_m2"] * gap * pressure * dt, p["blood_ml"])
+                ml = 0.0
+                cap_open = False
+                # THE CAPILLARY OOZE: every open wound, as it always was. (A wound
+                # with cuts whose plane has long since clotted has nothing left of it.)
+                if w.get("open") and (not cuts or w.get("clot_m2", 0.0) < plane):
+                    w["clot_m2"] = min(w.get("clot_m2", 0.0)
+                                       + BLEED["clot_m2_s"] * dt, plane)
+                    gap = max(plane - w["clot_m2"], 0.0)
+                    if gap <= 0.0:
+                        w["open"] = False            # sealed: it has stopped
+                    else:
+                        cap_open = True
+                        if w.get("pressed"):         # a hand on it
+                            gap *= 0.1
+                        ml = min(BLEED["ml_s_m2"] * gap * pressure * dt, p["blood_ml"])
+                if cuts:
+                    # THE NAMED VESSELS: one flow law, whatever made the pressure
+                    owed = sum(x.get("_owe", 0.0) for x in p["wounds"])
+                    v_circ = max(p["blood_ml"] - p.get("pooled_ml", 0.0) - owed, 0.0)
+                    ml += BL.step_wound_cuts(self, p, w, v_circ, dt, frames)
+                    w["open"] = cap_open or any(not c["sealed"] for c in cuts)
                 if ml <= 0.0:
                     continue
                 w["_owe"] = w.get("_owe", 0.0) + ml
@@ -360,6 +390,12 @@ class PhysiologyMixin:
     def _spill_from(self, p, bone, fluid, ml):
         """Pour `ml` out of a body at the outside of `bone`. Returns what fit."""
         parts = self._bone_parts(p, [bone]) if bone else None
+        if (not parts or not len(parts[0])) and self.vessel_bleed:
+            # A BODY THAT HAS FALLEN has no bones to find (its segments are the standing
+            # ones), but it still bleeds: pour at its own flesh, lowest first.
+            comp, sl = self._person_cells(p)
+            if comp is not None and comp.any():
+                parts = [np.argwhere(comp) + np.array([s.start or 0 for s in sl])]
         if not parts or not len(parts[0]):
             return 0.0
         c = parts[0][np.argsort(parts[0][:, 2])]    # lowest first: it runs down
@@ -612,7 +648,10 @@ class PhysiologyMixin:
             bad_air = sm > 0.0 or frac < BAD_AIR
             p["skin"] = float(T[sl][flesh].max())   # what the body can FEEL
             hot = np.clip(T[sl][flesh] - BODY["hurt_T"], 0.0, 400.0)
-            p["burn"] = min(p["burn"] + BODY["burn_gain"] * float(hot.mean()), 1.0)
+            if self.skin_faces:
+                SW.step(self, p, T, flesh, sl)
+            else:
+                p["burn"] = min(p["burn"] + BODY["burn_gain"] * float(hot.mean()), 1.0)
             if bad_air or hot.max() > 0.0:
                 fire = self._fire_near(p["_eye"])
                 if fire is not None:

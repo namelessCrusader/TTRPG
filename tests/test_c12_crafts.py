@@ -184,10 +184,11 @@ def test_salt_water_freezes_below_its_own_freezing_point():
     assert w.ice_grams() > 1.0
 
 
-@pytest.mark.xfail(strict=True, reason="MISSING LAW: a SORPTION / reaction row runner in the lattice "
-                   "(rows of rxn.py are pure; the world runs none) plus a wash that moves only "
-                   "DISSOLVED species out of a solid. Needed for tannin DISSOLVED + collagen BOUND "
-                   "-> tannin BOUND (T1 P5) and for germination.")
 def test_washing_a_tanned_hide_keeps_the_bound_tannin():
+    """THE LAW LANDED (wave 15, S1): the reaction and sorption row runner (reactions.py) binds the
+    dissolved tannin to the collagen (rxn row tan_vegetable, a Langmuir sorption row) and Fick
+    transport in solids (fick_solids.py) lets a wash carry only the DISSOLVED part out. The full
+    proof is tests/test_fick_solids.py::test_washing_a_tanned_hide_keeps_the_bound_tannin; this is
+    the catalogue half of the old strict xfail (the row exists)."""
     from src.voxel.rxn import catalogue
-    assert any("tann" in k or "sorb" in k for k in catalogue())
+    assert any(k.startswith("tan") for k in catalogue())

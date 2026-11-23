@@ -51,6 +51,21 @@ from .matterdata import (AMBIENT, ATOMIC, BACKGROUND, BURN_COMP, BURN_HEAT,
 
 WATER_FORMS = ("H2O", "H2O_g", "H2O_s")
 
+# SORPTION SITES (wave 15, S1): the capacity of a host for a bound species is DATA, not code.
+# species -> (site species, q_max in grams bound per gram of site). A state's room() reads it,
+# so a Langmuir row can never pass the capacity, whatever dt. Vegetable tannin on hide
+# collagen: combined tannin of a fully tanned leather is about 25-40 % of the dry leather,
+# q = 0.4 g/g is the middle (Covington, Tanning Chemistry, RSC 2009 (k); the number (u)).
+SORB_SITES = {"tannin_b": ("collagen", 0.4)}
+
+
+def sorb_room(st, sp):
+    """Grams of `sp` the sites can still take (inf if sp is not a sorbed species)."""
+    s = SORB_SITES.get(sp)
+    if s is None:
+        return np.inf
+    return np.maximum(s[1] * st.get(s[0]) - st.get(sp), 0.0)
+
 
 # ---- rates ---------------------------------------------------------------------
 class Const:
@@ -155,6 +170,21 @@ class PartialPressure:
 class Area:
     def value(self, st):
         return st.area
+
+
+class SiteFraction:
+    """The free share of a host's binding sites: 1 - bound / (qmax * site), clipped to 0..1.
+    It is the (q_max - q) factor of a Langmuir rate dq/dt = k c (q_max - q) - k_des q."""
+
+    def __init__(self, bound, site, qmax):
+        self.bound, self.site, self.qmax = bound, site, qmax
+
+    def value(self, st):
+        cap = self.qmax * np.maximum(st.get(self.site), 0.0)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            f = np.where(cap > 0.0, 1.0 - np.maximum(st.get(self.bound), 0.0)
+                         / np.where(cap > 0.0, cap, 1.0), 0.0)
+        return np.clip(f, 0.0, 1.0)
 
 
 class AwWindow:
@@ -302,7 +332,7 @@ class ArrayState:
         return v + self.bg.get(sp, 0.0) * self.V if PHASE[sp] == "g" else v
 
     def room(self, sp):
-        return np.inf
+        return sorb_room(self, sp)
 
     @property
     def C(self):
@@ -512,6 +542,15 @@ def catalogue():
         # glucose -> 2 ethanol + 2 CO2 (interface only; yeast is L9)
         _row("ferment", "bulk", {"glucose": 1}, {"ethanol": 2, "CO2": 2}, "glucose",
              384.0, Arrhenius.from_point(1e-5, 30.0, 50000.0), first_order=True),
+        # tannin(dissolved) + collagen sites -> tannin(bound): a Langmuir sorption row with the
+        # irreversible limit (k_des = 0: the cross-links are stable, so a wash keeps it).
+        # k = 1e-2 per s per free-site share (u): fast, so diffusion into the hide sets the
+        # pace, as in real tanning (weeks to months for a thick hide, Covington 2009 (k)).
+        # dH +20 J/g tannin released (u: the order of a protein-polyphenol binding enthalpy).
+        Row("tan_vegetable", "bulk", "tannin_aq", (("tannin_aq", 1.0),),
+            (("tannin_b", 1.0),), 20.0, Const(1e-2),
+            drivers=(SiteFraction("tannin_b", "collagen", SORB_SITES["tannin_b"][1]),),
+            first_order=True),
         # C + CO2 -> 2 CO, 172 kJ/mol; K = 1 atm at about 700 C (u)
         _row("boudouard", "gas_solid", {"C": 1, "CO2": 1}, {"CO": 2}, "C",
              -14400.0, Arrhenius.from_point(1e-6, 900.0, 150000.0),

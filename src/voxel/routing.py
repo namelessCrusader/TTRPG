@@ -413,15 +413,63 @@ def surfaces(mat, smass, vox_l, h, K=2, box=None, own=None, numba=None):
 
 
 # ── footprint, step costs ───────────────────────────────────────────────────
+_FOOT = {}
+
+
 def footprint(cells):
     """The body's footprint as offsets from its centre column, (0, 0) left out
-    (a node is its own centre). `cells` is the body's flesh, (n, 3)."""
+    (a node is its own centre). `cells` is the body's flesh, (n, 3).
+
+    The answer depends only on the cell offsets from the centre column, so it
+    is remembered per body shape (S4-3c): the key is those offsets' bytes, the
+    value what the python set-and-sort gave, so a hit and a miss are the same
+    arrays. The arrays are shared and read-only."""
     c = np.asarray(cells)
     cx = int(round(float(c[:, 0].mean())))
     cy = int(round(float(c[:, 1].mean())))
-    offs = sorted({(int(a) - cx, int(b) - cy) for a, b in c[:, :2]} - {(0, 0)})
+    rel = np.ascontiguousarray(c[:, :2], np.int64) - (cx, cy)
+    key = rel.tobytes()
+    hit = _FOOT.get(key)
+    if hit is not None:
+        return hit
+    offs = sorted({(int(a), int(b)) for a, b in rel} - {(0, 0)})
     fo = np.array([o[0] for o in offs], np.int64)
     fy = np.array([o[1] for o in offs], np.int64)
+    fo.flags.writeable = False
+    fy.flags.writeable = False
+    if len(_FOOT) >= 256:
+        _FOOT.clear()
+    _FOOT[key] = (fo, fy)
+    return fo, fy
+
+
+def stance_footprint(cells):
+    """The STANCE footprint: the columns a body stands on, as offsets from its
+    centre column, (0, 0) left out: the columns of its lowest layer (the
+    soles) and the column of its centre of mass (the trunk). The reflex pose's
+    raised arms and a leaning head are not in it. `footprint` takes the whole
+    shadow; the two differ only for a body whose limbs are out of its stance
+    (S2 item 4a: 12 cells wide on a 6-cell tread made the planner find no fit).
+    Cached by shape like `footprint`; the arrays are shared and read-only."""
+    c = np.asarray(cells)
+    cx = int(round(float(c[:, 0].mean())))
+    cy = int(round(float(c[:, 1].mean())))
+    rel = np.ascontiguousarray(c[:, :], np.int64) - (cx, cy, 0)
+    key = b"S" + rel.tobytes()
+    hit = _FOOT.get(key)
+    if hit is not None:
+        return hit
+    zlo = int(rel[:, 2].min())
+    cols = {(int(a), int(b)) for a, b, z in rel if z == zlo}
+    cols.add((0, 0))
+    offs = sorted(cols - {(0, 0)})
+    fo = np.array([o[0] for o in offs], np.int64)
+    fy = np.array([o[1] for o in offs], np.int64)
+    fo.flags.writeable = False
+    fy.flags.writeable = False
+    if len(_FOOT) >= 256:
+        _FOOT.clear()
+    _FOOT[key] = (fo, fy)
     return fo, fy
 
 
@@ -792,3 +840,161 @@ def routes25(top, start, r_up, r_dn, fox, foy, ftab, targets, fit2d=None,
         paths[key] = path[::-1][1:]
         costs[key] = int(bc)
     return paths, costs
+
+
+# ── the blocked-step candidate scan, in one call (S4-3c, crowd kernel) ──────
+@njit(cache=True)
+def step_clear_nb(cells, cdz, ck, sx, sy, nx, ny, nz, blk, own, lo, mat, air, ok):
+    """For every candidate step (dz, k), in the caller's order, whether it is
+    inside the world, its arriving cells are clear, and its soles are supported.
+    ok[i] = 1 if so. Exactly the tests `_step_to_k` made one candidate at a time
+    (bounds, `blk` over the cells that are not the body's own, the cell under
+    the lowest arriving cells is not air and not the body's own); the balance
+    test and the move stay with the caller. `blk` and `own` are boxes whose
+    corner is `lo`; the body's own cells are all inside the box."""
+    n = cells.shape[0]
+    bx, by, bz = blk.shape
+    for i in range(cdz.shape[0]):
+        dz = cdz[i]
+        k = ck[i]
+        good = True
+        zmin = 1 << 30
+        for j in range(n):
+            x = cells[j, 0] + sx * k
+            y = cells[j, 1] + sy * k
+            z = cells[j, 2] + dz
+            if x < 0 or x >= nx or y < 0 or y >= ny or z < 0 or z >= nz:
+                good = False
+                break
+            if z < zmin:
+                zmin = z
+            a = x - lo[0]
+            b = y - lo[1]
+            c = z - lo[2]
+            if a < 0 or a >= bx or b < 0 or b >= by or c < 0 or c >= bz:
+                continue
+            if own[a, b, c]:
+                continue
+            if blk[a, b, c]:
+                good = False
+                break
+        if not good:
+            ok[i] = 0
+            continue
+        if zmin > 0:
+            sup = False
+            for j in range(n):
+                z = cells[j, 2] + dz
+                if z != zmin:
+                    continue
+                x = cells[j, 0] + sx * k
+                y = cells[j, 1] + sy * k
+                if mat[x, y, z - 1] == air:
+                    continue
+                a = x - lo[0]
+                b = y - lo[1]
+                c = z - 1 - lo[2]
+                if 0 <= a < bx and 0 <= b < by and 0 <= c < bz and own[a, b, c]:
+                    continue
+                sup = True
+                break
+            if not sup:
+                ok[i] = 0
+                continue
+        ok[i] = 1
+
+
+def step_clear(cells, cdz, ck, sx, sy, shape, blk, own, lo, mat, numba=None):
+    """The candidates' clear-and-supported mask (bool array). Plain python is
+    the definition (the kernel's own source run uncompiled); numba is the
+    speed."""
+    if numba is None:
+        numba = HAVE_NUMBA
+    ok = np.zeros(len(cdz), np.uint8)
+    fn = step_clear_nb if numba else step_clear_nb.py_func
+    fn(np.ascontiguousarray(cells, np.int64), cdz, ck, int(sx), int(sy),
+       int(shape[0]), int(shape[1]), int(shape[2]), blk, own,
+       np.asarray(lo, np.int64), mat, int(AIR), ok)
+    return ok.view(np.bool_)
+
+
+# ── a closed door as a route edge (wave 15, S3 item 1; owner W15-Q5) ─────────
+# A closed door is a passable edge of the planner with the cost of opening it.
+# The planner itself is unchanged: a plan is made once with the door columns
+# passable and once without, and `beyond_door` says whether the way through the
+# door is shorter once the opening is paid for. A route that crosses a door
+# column ends, for the walk, at the foot of the door: the person opens it
+# (an 'operate' act of the hands) and plans again.
+def path_units(path, start):
+    """The cost of a route in the sweep's own units (70 along an axis, 99 on a
+    diagonal), from `start`, a list of (x, y) as `_routes` returns it."""
+    px, py = start
+    u = 0
+    for x, y in path:
+        u += 99 if (x != px and y != py) else 70
+        px, py = x, y
+    return u
+
+
+def open_cost_units(open_s, walk_mps, vox_m):
+    """The time to open a door, as the walking it would buy: units of 70 per
+    voxel at `walk_mps`. An infinite time (a push that cannot turn the leaf)
+    is an infinite cost."""
+    if not np.isfinite(open_s):
+        return 1 << 40
+    return int(round(float(open_s) * float(walk_mps) / float(vox_m) * 70.0))
+
+
+def first_door(path, door_cols):
+    """(mid, index) of the first column of the route that is a door column
+    (`door_cols`: {(x, y): mid}), or (None, -1)."""
+    for i, c in enumerate(path):
+        m = door_cols.get((int(c[0]), int(c[1])))
+        if m is not None:
+            return m, i
+    return None, -1
+
+
+def beyond_door(plain, through, start, penalty_units):
+    """True when the way THROUGH a closed door is the better way, with the
+    opening paid for: there is no plain route, or the route through the door
+    costs less by more than `penalty_units`."""
+    if not through:
+        return False
+    if not plain:
+        return True
+    return path_units(through, start) + int(penalty_units) < path_units(plain, start)
+
+
+def door_spots(fit, leaf_cols, reach_c, swing_n, pivot2, per_side=1):
+    """Where a body could stand to work a door: of the fit cells within
+    `reach_c` cells (Chebyshev) of the leaf's columns, the one nearest the leaf
+    (then nearest its middle) on each side of the wall. `swing_n` is the unit
+    vector of the side the leaf swings to; a cell is on that side when its
+    offset from the hinge pivot has a positive dot with it. Returns a tuple of
+    (x, y), the swing side first. Deterministic."""
+    lc = np.asarray(leaf_cols, np.int64)
+    nx, ny = fit.shape
+    x0, x1 = max(int(lc[:, 0].min()) - reach_c, 0), min(int(lc[:, 0].max()) + reach_c + 1, nx)
+    y0, y1 = max(int(lc[:, 1].min()) - reach_c, 0), min(int(lc[:, 1].max()) + reach_c + 1, ny)
+    sub = np.argwhere(fit[x0:x1, y0:y1]) + (x0, y0)
+    if not len(sub):
+        return ()
+    cheb = np.abs(sub[:, None, :] - lc[None, :, :]).max(axis=2).min(axis=1)
+    keep = (cheb >= 1) & (cheb <= reach_c)
+    sub, cheb = sub[keep], cheb[keep]
+    if not len(sub):
+        return ()
+    mid = lc.mean(axis=0)
+    dmid = np.hypot(sub[:, 0] - mid[0], sub[:, 1] - mid[1])
+    side = ((sub[:, 0] - pivot2[0] / 2.0) * swing_n[0]
+            + (sub[:, 1] - pivot2[1] / 2.0) * swing_n[1]) > 0
+    out = []
+    for s in (True, False):
+        m = side == s
+        if not m.any():
+            continue
+        idx = np.flatnonzero(m)
+        k = idx[np.lexsort((sub[idx, 1], sub[idx, 0], dmid[idx], cheb[idx]))[:per_side]]
+        out += [(int(sub[i, 0]), int(sub[i, 1])) for i in k]
+    return tuple(out)

@@ -419,14 +419,19 @@ def skin_loss(Ts, e, area, f_self, T_self, sweat_g, film_g, dt):
     eps = BA.EMISS_SKIN * RAD_VIEW
     if R <= 0.0:
         hc = max(hc_nat, float(BA.h_c_forced(e["v"])))
-        dry = hc * area * (Ts - Ta) + eps * SIGMA * area * ((Ts + 273.15) ** 4 - (Tr + 273.15) ** 4)
+        rad = eps * SIGMA * area * ((Ts + 273.15) ** 4 - (Tr + 273.15) ** 4)
+        dry = hc * area * (Ts - Ta) + rad
     else:
         hc = hc_nat
         hr = float(BA.h_r(Ts, Tr, eps, 1.0))
         h = hc + hr
         Top = (hc * Ta + hr * Tr) / h
-        dry = area * (Ts - Top) / (R + 1.0 / (e["f_cl"] * h))
+        fh = e["f_cl"] * h
+        dry = area * (Ts - Top) / (R + 1.0 / fh)
+        d_out = dry / (area * fh) if area > 0.0 else 0.0           # outer surface minus the operative temperature
+        rad = dry * hr * (Top + d_out - Tr) / (h * d_out) if abs(d_out) > 1e-12 else dry * hr / h
     ev = evap_zone(Ts, e, area, hc, sweat_g, film_g, dt)
+    ev["rad_w"] = float(rad)                          # the radiative part of dry_W (the night jump gives it to the walls)
     return dry, ev["latent_w"], ev
 
 
@@ -487,6 +492,8 @@ def advance(heat, nodes, geom, env, dt, met=1.0, hour=12.0, sub=SUB_S, act_zone_
       vapour_g    water that left as vapour (negative = condensed from the air)
       latent_J    its latent heat (leaves the body with it)
       sensible_J  convection + radiation + breath, to the room
+      rad_J       the radiative part of sensible_J alone (positive = the body gave it): in a shut room it goes to
+                  the walls the body sees, not to the air (shutroom.py)
       heat_J      latent_J + sensible_J: what the sink adds
       o2_l, co2_l gas drawn from / added to the air (positive numbers each)
       drip_g      sweat that ran off (the pour topic places it)
@@ -501,7 +508,7 @@ def advance(heat, nodes, geom, env, dt, met=1.0, hour=12.0, sub=SUB_S, act_zone_
     st = heat["stores"]
     T_all = temps(nodes)
     C = nodes["C"]
-    out = {"vapour_g": 0.0, "latent_J": 0.0, "sensible_J": 0.0, "heat_J": 0.0, "o2_l": 0.0,
+    out = {"vapour_g": 0.0, "latent_J": 0.0, "sensible_J": 0.0, "rad_J": 0.0, "heat_J": 0.0, "o2_l": 0.0,
            "co2_l": 0.0, "drip_g": 0.0, "zone_W": {z: 0.0 for z in ZONES}, "events": [],
            "stores_J": 0.0, "metabolic_J": 0.0, "breath_water_g": 0.0, "sweat_g": 0.0,
            "tef_J": 0.0, "unmet_J": 0.0}
@@ -666,6 +673,7 @@ def _substep(heat, nodes, geom, env, dt, met, hour, zp, sheet, mass, prm, st, ou
     evap_tot = diffuse_tot = 0.0
     lat_J = 0.0
     sens_J = 0.0
+    rad_J = 0.0
     drip = 0.0
     new_film = film.copy()
     for z in range(NZ):
@@ -683,6 +691,7 @@ def _substep(heat, nodes, geom, env, dt, met, hour, zp, sheet, mass, prm, st, ou
         diffuse_tot += ev["diffuse_g"]
         lat_J += lat * dt
         sens_J += dry * dt
+        rad_J += ev["rad_w"] * dt
         out["zone_W"][ZONES[z]] += (dry + lat) * dt
         new_film[z] = ev["film_g"]
         drip += ev["drip_g"]
@@ -696,6 +705,7 @@ def _substep(heat, nodes, geom, env, dt, met, hour, zp, sheet, mass, prm, st, ou
     out["vapour_g"] += evap_tot + diffuse_tot + ins_g
     out["latent_J"] += lat_J + br["lat_w"] * dt
     out["sensible_J"] += sens_J + br["sens_w"] * dt
+    out["rad_J"] += rad_J
     out["drip_g"] += drip
     out["zone_W"][ZONES[0]] += (br["sens_w"] + br["lat_w"]) * dt
 

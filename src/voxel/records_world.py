@@ -11,8 +11,8 @@ WHAT IS ON (spec 10, slices):
               `records_owned`, `records_audit_world()`, split with the host, death with
               the host, snapshot and restore (the pools are plain arrays).
   2a HEAT.    A declared SECTION or SHEET runs the thin enthalpy solve with ports on the
-              host's own surroundings (air, or water on a neighbour face; h from
-              `thinheat.h_conv`). The result is a READOUT: surface and core temperature
+              host's own surroundings (air, or water on a neighbour face; h from `surfaceh`:
+              convection, boiling curve, radiation). The result is a READOUT: surface and core temperature
               and the cooling rate. The lattice's own two-capacity cell law still moves
               the host's heat; the record's total follows the host through `reconcile`,
               and what reconcile had to move is metered (`records.meter`). 2b (the record
@@ -37,7 +37,7 @@ import numpy as np
 
 from . import joinery as JN
 from . import record as R
-from . import thinheat as TH
+from . import surfaceh as SH
 from .materials import AIR, GLASS, IRON, TICK_S, WATER, WOOD, _CSOLID_ARR
 from .record_data import JOIN_KINDS, NS, SP, SP_NAMES
 
@@ -220,8 +220,9 @@ class RecordsMixin:
 
     def _port_env(self, eid, rid, p, row):
         """(h W/m2K, T C) of what surrounds thing `eid`: the six neighbours of its cells
-        that are not it. Water on a face wets the record (h by Churchill-Chu and the flat
-        plate law, from the FLUID row); otherwise air."""
+        that are not it. Water on a face wets the record (h from surfaceh: Churchill-Chu and the
+        flat plate law, then the boiling curve above 100 C); air faces get convection plus
+        radiation. Each medium has its own h, mixed by face count."""
         at = self._thing_cells().get(eid)
         if at is None or not len(at):
             return None
@@ -245,15 +246,12 @@ class RecordsMixin:
         n = int(p.a["nn"][row])
         Ts = float(self._record_T(p, row)[n - 1])
         Lc = max(float(p.a["seg_len"][row]), 1e-3)
-        if len(wet_T):                          # a face in water wets it (if any are wet)
-            Te = float(wet_T.mean())
-            h = float(TH.h_conv(0.0, Lc, Ts - Te, "water"))
-        elif len(air_T):
-            Te = float(air_T.mean())
-            h = float(TH.h_conv(0.0, Lc, Ts - Te, "air"))
-        else:
-            return None
-        return h, Te
+        faces = []                              # each medium its own h (S4-2): water faces get
+        if len(wet_T):                          # the boiling curve, air faces convection + radiation
+            faces.append((len(wet_T), float(wet_T.mean()), True))
+        if len(air_T):
+            faces.append((len(air_T), float(air_T.mean()), False))
+        return SH.port_of(Ts, faces, Lc, int(self.mat[x[0], y[0], z[0]]))
 
     # ------------------------------------------------------------------ with the host
     def _records_split(self, e, born, masses):

@@ -58,6 +58,12 @@ LEAK_CLEAR_MM = {"side": 3.0, "top": 3.0, "under": 12.0}   # a real leaf's fit
 MAX_LEAF_CELL_M = 0.060  # a leaf one cell thick: 4.5 cm real; refuse beyond this
 WAIT_TICKS = 80         # a redraw waits this long for the solver to let go of a cell
 REACH_M = 0.7            # a mechanism within an arm's length of a body is in reach
+# THE TENSION A PERSON CHOOSES when working a lock with picks (locks.py: the
+# bind window is TAU_BIND 0.01 N m to tau_max 0.071 N m, `locks.window_Nm()`;
+# a light turn is in the lower half of it, a firm one in the upper half).
+# (u): the two named tensions; the window is the law's, the names are a choice.
+_ORDINAL = ("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth")
+PICK_TENSION_NM = {"light": 0.03, "firm": 0.05}
 # the heat of a stop or a slam is spread over the cells that took it
 _HEAT_MAX_CELLS = 12
 
@@ -72,6 +78,24 @@ _K_DEAD = {"shear": 4.0e6, "keeper": 3.0e6, "strike": 5.0e5, "split": 4.0e5}
 
 def _tuplify(v):
     return tuple(int(x) for x in v)
+
+
+def _cols(a):
+    """The distinct (x, y) columns of a set of cells, as an (n, 2) int array
+    (a leaf is 40 cells tall over 20 columns: the gap needs only the columns).
+    Sorted by (x, y), and found on one integer key, which is much faster than
+    a unique over rows."""
+    a = np.asarray(a, np.int64)
+    k = np.unique(a[:, 0] * 65536 + a[:, 1])
+    return np.stack((k // 65536, k % 65536), -1)
+
+
+def _gap_cells(a, b):
+    """The smallest horizontal (Chebyshev) gap, in cells, between two sets of
+    cells: the same number as a pairwise min over every cell of each, taken
+    over their distinct columns only."""
+    ca, cb = _cols(a), _cols(b)
+    return int(np.abs(ca[:, None, :] - cb[None, :, :]).max(axis=2).min())
 
 
 class MechanismsMixin:
@@ -230,6 +254,10 @@ class MechanismsMixin:
         self.things[leaf_e]["mech"] = mid
         self.things[frame_e]["mech"] = mid
         self._mech_watch_update(rec)
+        # a world with a door gives its people the rows for it, and plans
+        # through it (will.py `mech_menu`, `door_route`; ledger rows of the same names)
+        self.mech_menu = True
+        self.door_route = True
         return mid
 
     # geometry of the default load paths -----------------------------------
@@ -386,7 +414,7 @@ class MechanismsMixin:
         rec["links"] += links
         rec["bar"] = {"eid": be, "brackets": brackets, "cleats": cleat,
                       "path": [lk["id"] for lk in links], "z": zb,
-                      "n": len(cells)}
+                      "n": len(cells), "home": [list(c) for c in cells]}
         self.things[be]["mech"] = rec["mid"]
 
     def bar_seated(self, rec):
@@ -424,6 +452,32 @@ class MechanismsMixin:
             self._put(tuple(np.array(vac, np.int64).T), shoved)
         self._torque_solid = None
         return dst
+
+    def seat_bar(self, mid):
+        """Put the bar back in its brackets (the inverse of `lift_bar`): the
+        bar's cells go to their home cells, matter and all, if those cells hold
+        only air (the swing side of the wall must be clear: a leaf standing
+        open there, or a body, refuses it). Returns True when it is seated."""
+        rec = self.mechs[mid]
+        b = rec["bar"]
+        if not b or self.bar_seated(rec):
+            return bool(b)
+        cells = self._cells_of(b["eid"])
+        home = np.array(b["home"], np.int64)
+        if cells is None or len(cells) != len(home):
+            return False
+        order = np.lexsort((cells[:, 2], cells[:, 1], cells[:, 0]))
+        src = cells[order]
+        dst = home[np.lexsort((home[:, 2], home[:, 1], home[:, 0]))]
+        src_set = {tuple(c) for c in src.tolist()}
+        ent = [tuple(c) for c in dst.tolist() if tuple(c) not in src_set]
+        for c in ent:
+            if self.mat[c] != AIR or self.rubble[c] or self.moving[c]:
+                return False
+        body = self._lift(tuple(src.T))
+        self._put(tuple(dst.T), body)
+        self._torque_solid = None
+        return True
 
     def add_gravity_latch(self, mid, blocked_by, push_Nm=None, z=None):
         """A catch held up by matter (an ice block, a wax plug): engaged while
@@ -618,6 +672,48 @@ class MechanismsMixin:
             m_s *= sc               # an unpaid part is not delivered (same speed)
         return self.blow(mid, cell=cell, m_s=m_s, v_s=v_s, actor=p, side=side,
                          verb="kicks")
+
+    def shoulder(self, p, mid, cell=None, side=None):
+        """The other way to force a door: the body's shove (exertion.strike
+        "shove", about 120 J, a real spread) put into the leaf through the same
+        blow law as a kick, paid for from the actor's own books the same way
+        (`_pay_strike`). The event is 'forces'."""
+        k = _EX.strike(p, "shove")
+        m_s, v_s = k["m_kg"], k["v_ms"]
+        sc = self._pay_strike(p, 0.5 * m_s * v_s * v_s, "shove")
+        if sc <= 1e-9:
+            return {"result": "spent", "failed": [], "swing": False}
+        return self.blow(mid, cell=cell, m_s=m_s * sc, v_s=v_s, actor=p, side=side,
+                         verb="forces")
+
+    def _work_bar(self, p, rec):
+        """Seat a bar the person holds, or lift a seated one out (the person
+        must be within reach of the bar). The bar thing is the matter: nothing
+        here says 'barred'; the door is held while the bar's cells are in the
+        brackets (bar_seated)."""
+        b = rec.get("bar")
+        if not b:
+            return {"result": "no bar"}
+        cells = self._person_cells_of(p)
+        bc = self._cells_of(b["eid"])
+        if cells is None or bc is None:
+            return {"result": "no bar"}
+        d = self._d()
+        if _gap_cells(bc, cells) * d > REACH_M:
+            return {"result": "out of reach"}
+        if self.bar_seated(rec):
+            self.lift_bar(rec["mid"])
+            ev = self.emit("unlocks", actor=p["pid"], target=("thing", rec["leaf"]),
+                           result="bar lifted", text="")
+            return {"result": "lifted", "event": ev}
+        in_hand = bool(p.get("held")) and self._held_eid(p) == b["eid"]
+        if not self.seat_bar(rec["mid"]):
+            return {"result": "blocked"}
+        if in_hand:
+            p["held"] = None                  # the bar is in its brackets, not in the hand
+        ev = self.emit("locks", actor=p["pid"], target=("thing", rec["leaf"]),
+                       result="bar seated", text="")
+        return {"result": "seated", "event": ev}
 
     def blow(self, mid, cell=None, m_s=KICK_M_KG, v_s=KICK_V_MPS, actor=None,
              side=None, e_c=E_C_FOOT, k_c=K_CONTACT, verb="kicks",
@@ -935,6 +1031,8 @@ class MechanismsMixin:
             c = tuple(int(v) for v in block[0])
             if not rec.get("jammed"):
                 rec["jammed"] = True
+                if actor is not None:
+                    self._learn_door(actor["pid"], rec, "blocked", None)
                 self._ev("jams", actor=None if actor is None else actor["pid"],
                          target=("thing", rec["leaf"]), place=c, result="blocked",
                          cause=why, text="", data=(("by", int(self.eid[c])),))
@@ -948,6 +1046,7 @@ class MechanismsMixin:
                         "tau_f": self._hinge_friction(rec, mass),
                         "ke0": float(ke0), "elapsed": 0.0, "work": {},
                         "kick_actor": None if kick_actor is None else kick_actor["pid"],
+                        "pusher": self._top_pusher(rec),
                         "w_total": 0.0, "stalled": False, "normal": normal}
         j["omega"] = float(omega0)
         self._mech_tables()
@@ -1110,7 +1209,11 @@ class MechanismsMixin:
             for c in rec["catches"]:
                 if c.get("blocked_by") is None and c["kind"] == "latchbolt":
                     c["x_mm"] = c["throw_mm"]        # handle released: bolt out
-            self._ev("opens" if opening else "closes", target=("thing", rec["leaf"]),
+            who = self._swing_actor(sw)
+            if who is not None and self._door_memory(who, rec):
+                self._learn_door(who, rec, "", None)       # it gave: not stuck now
+            self._ev("opens" if opening else "closes", actor=who,
+                     target=("thing", rec["leaf"]),
                      place=at, result="open" if opening else "shut", cause=why,
                      dur=sw["elapsed"], text="",
                      data=(("t_s", round(sw.get("t_hit", sw["elapsed"]), 6)),
@@ -1122,7 +1225,12 @@ class MechanismsMixin:
             if outcome == "aborted" and block is not None and len(block):
                 self._blow_obstacle(rec, tuple(int(v) for v in block[0]), ke_end, d)
             self._swing_books(rec, None, tgt, ke_end)
-            self._ev("jams", target=("thing", rec["leaf"]),
+            who = self._swing_actor(sw)
+            if who is not None:
+                self._learn_door(who, rec, "blocked" if outcome == "aborted"
+                                 else "stalled", None)
+            self._ev("jams", actor=who,
+                     target=("thing", rec["leaf"]),
                      place=sw.get("blocker"), result=("blocked" if outcome
                                                       == "aborted" else "stalled"),
                      cause=why, text="", data=(("ke", round(ke_end, 6)),))
@@ -1132,6 +1240,45 @@ class MechanismsMixin:
         rec["pushes"] = []
         rec["jammed"] = False
         self._mech_active.discard(rec["mid"])
+
+    @staticmethod
+    def _top_pusher(rec):
+        """The pid of the person whose held push has the most torque on the leaf
+        (F x arm), or None (a spring, a kick with nobody pushing)."""
+        best, who = 0.0, None
+        for q in rec["pushes"]:
+            if q.get("pid") is not None and q["F"] * q["arm"] > best:
+                best, who = q["F"] * q["arm"], q["pid"]
+        return who
+
+    def _swing_actor(self, sw):
+        """Who did a swing: the pusher with the most torque when it started,
+        else the one who kicked it. This is what lets a mind see that ITS push
+        worked (the 'opens' event names the actor)."""
+        who = sw.get("pusher")
+        return who if who is not None else sw.get("kick_actor")
+
+    def _learn_door(self, pid, rec, why, ev):
+        """A person who tried a door and could not get it to give KNOWS that, as
+        a belief of its own (beliefs.py `_believe`, how 'did'): the event that
+        taught it, and the word the law gave ('locked', 'barred', 'held', 'blocked').
+        It is never read for anyone else, and it stays until the person tries
+        again or the belief store forgets it (the oldest key goes first at
+        BEL_CAP), so it can be wrong once someone unlocks the door."""
+        try:
+            self._believe(pid, ("jam", ("thing", rec["leaf"])), why,
+                          None if ev is None else ev.id, "did")
+        except (KeyError, IndexError, TypeError, AttributeError):
+            pass                          # a body with no mind keeps no belief
+
+    def _door_memory(self, pid, rec):
+        """The word a person remembers of the last time it tried this door and
+        failed ('' if it has not, or has since got it open)."""
+        try:
+            b = self.minds[pid].bel.get(("jam", ("thing", rec["leaf"])))
+        except (KeyError, IndexError, TypeError, AttributeError):
+            return ""
+        return "" if b is None else str(b[0])
 
     def _stop_end_cells(self, rec, dirn):
         cells = self._cells_of(rec["leaf"])
@@ -1241,9 +1388,16 @@ class MechanismsMixin:
                 if not self._static_overload(rec, side, F, arm):
                     return
                 # the load beat the weakest link: it let go
+                top = self._top_pusher(rec)
+                if top is not None:
+                    self._ev("forces", actor=top, target=("thing", rec["leaf"]),
+                             result=side, text="")
         if tau <= self._hinge_friction(rec, mass):
             return
-        self._start_swing(rec, dirn, omega0=0.0, actor=None, why=None)
+        top = self._top_pusher(rec)
+        who = None if top is None else next(
+            (q for q in self.persons if q["pid"] == top), None)
+        self._start_swing(rec, dirn, omega0=0.0, actor=who, why=None)
 
     def _static_overload(self, rec, side, F, arm):
         """A held push of F at lever arm `arm` on a leaf that is held: break
@@ -1322,10 +1476,10 @@ class MechanismsMixin:
                  data=(("link", lk["id"]),))
 
     # ── acts ────────────────────────────────────────────────────────────────
-    def push_limit(self, p):
+    def push_limit(self, p, cells=None):
         """A push is limited by the foot: F <= mu_foot m g (68 kg at 0.6 gives
-        400 N = BODY strength)."""
-        cells = self._person_cells_of(p)
+        400 N = BODY strength). `cells`: the body's flesh, if the caller has it."""
+        cells = self._person_cells_of(p) if cells is None else cells
         kg = float(self._mass_kg(cells).sum()) if cells is not None else 68.0
         return min(float(BODY.get("strength_N", 400.0)), MU_FOOT * kg * GRAV)
 
@@ -1352,6 +1506,19 @@ class MechanismsMixin:
             return {"result": "released"}
         if op in ("key", "pick"):
             return self._work_lock(p, rec, op, **(lockkw or {}))
+        if op == "bar":
+            return self._work_bar(p, rec)
+        if op.startswith("pick:"):
+            # the tension is a choice the person makes (locks.py: light or
+            # firm); the skill is the person's own dial (`skill_pick`)
+            tension = PICK_TENSION_NM.get(op[5:])
+            if tension is None:
+                return {"result": "no such op"}
+            kw = dict(lockkw or {})
+            kw.setdefault("tension", tension)
+            return self._work_lock(p, rec, "pick", **kw)
+        if op not in ("open", "close", "push"):
+            return {"result": "no such op"}   # never a push by default (the old fall-through)
         if rec["swing"] is not None:
             return {"result": "busy"}
         j = rec["joints"][0]
@@ -1365,6 +1532,7 @@ class MechanismsMixin:
             if held:
                 ev = self.emit("jams", actor=pid, target=("thing", rec["leaf"]),
                                result=held, text="")
+                self._learn_door(pid, rec, held, ev)
                 return {"result": "jammed", "why": held, "event": ev}
             for c in rec["catches"]:
                 if c["kind"] == "latchbolt" and c["x_mm"] > 0.0 \
@@ -1442,50 +1610,122 @@ class MechanismsMixin:
             return "barred"
         return ""
 
-    def mech_affords(self, p):
-        """Rows for the menu: per mechanism in reach, nearest first. Hands:
-        open or close, and (only when a held thing carries the record) turn
-        the key, bar or lift the bar, work the lock with picks. Legs: kick.
-        One row per act, typically 2-4 rows per door."""
+    def mech_names(self, p, mids, at=None):
+        """{mid: words} for the doors a body can see, as that body would say
+        them: "the door to the east", from where it stands, by bearing
+        (the same words `mindlink._doors` uses), never by id. Two that would be
+        called alike are told apart by which is nearer ("the first door to the
+        east"), never in metres. No word says what state a door is in."""
+        ax, ay = self._actor_center(p) if at is None else at
+        got = []
+        for mid in mids:
+            lc = self._cells_of(self.mechs[mid]["leaf"])
+            if lc is None:
+                continue
+            cx, cy = float(lc[:, 0].mean()), float(lc[:, 1].mean())
+            way = self._bearing(cx - ax, cy - ay)
+            got.append((max(abs(cx - ax), abs(cy - ay)), mid,
+                        "the door " + ("here" if way == "here" else "to the " + way)))
+        count = {}
+        for _, _, n in got:
+            count[n] = count.get(n, 0) + 1
+        out, nth = {}, {}
+        for _dist, mid, n in sorted(got):
+            if count[n] > 1:
+                k = nth[n] = nth.get(n, 0) + 1
+                n = n.replace("the door", "the %s door" % _ORDINAL[min(k, len(_ORDINAL)) - 1], 1)
+            out[mid] = n
+        return out
+
+    def mech_near(self, p, reach_m=None, cells=None):
+        """[(distance_m, mid, rec)], nearest first: the mechanisms whose leaf
+        has a cell within `reach_m` of the body (cells, horizontally)."""
+        reach_m = REACH_M if reach_m is None else reach_m
         tabs = self.__dict__.get("mechs")
         if not tabs:
             return []
-        cells = self._person_cells_of(p)
+        cells = self._person_cells_of(p) if cells is None else cells
         if cells is None:
             return []
         d = self._d()
+        cb = _cols(cells)
+        reach_c = reach_m / d
+        lo, hi = cb.min(axis=0), cb.max(axis=0)
         near = []
         for mid, rec in tabs.items():
+            # A LEAF TURNS ABOUT ITS PIVOT, so it is always within W cells of
+            # it: a body farther than the reach from that box is out of reach
+            # and the leaf's cells need not be read (exact, only a prefilter)
+            px, py = rec["pivot2"][0] / 2.0, rec["pivot2"][1] / 2.0
+            r = rec["W"] + 1
+            if lo[0] - (px + r) > reach_c or (px - r) - hi[0] > reach_c \
+                    or lo[1] - (py + r) > reach_c or (py - r) - hi[1] > reach_c:
+                continue
             lc = self._cells_of(rec["leaf"])
             if lc is None:
                 continue
-            dd = np.abs(lc[:, None, :2] - cells[None, :, :2]).max(axis=2).min() * d
-            if dd <= REACH_M:
+            dd = int(np.abs(_cols(lc)[:, None, :] - cb[None, :, :]).max(axis=2).min()) * d
+            if dd <= reach_m:
                 near.append((float(dd), mid, rec))
         near.sort(key=lambda t: (t[0], t[1]))
+        return near
+
+    def mech_affords(self, p, cells=None):
+        """Rows for the menu: per mechanism in reach, nearest first.
+
+        What is offered is what the body can KNOW from where it stands: a door
+        it can reach is something to open (or, standing open, to close), to put
+        a shoulder to, to kick; a held key is something to turn; a held pick,
+        something to work the lock with; a bar it holds, something to seat; a
+        bar it can see in its brackets, something to lift. Never a word of
+        'locked' or 'barred' or 'stuck': the same rows for a door that gives
+        and one that does not (a person learns by trying, and what it learned
+        is its own memory: `_door_memory`).
+
+        Each row: key, tag, verb, mid, op, away (m). The hands' rows have
+        verb 'operate' (op: open, close, key, bar, pick:light, pick:firm) or
+        'shoulder'; the legs' row has verb 'kick'."""
+        cells = self._person_cells_of(p) if cells is None else cells
+        if cells is None:
+            return []
+        near = self.mech_near(p, cells=cells)
+        if not near:
+            return []
+        names = self.mech_names(p, [m for _d, m, _r in near],
+                                at=(float(cells[:, 0].mean()), float(cells[:, 1].mean())))
         held = None
         if p.get("held"):
             held = self.things.get(self._held_eid(p))
+        he = self._held_eid(p) if p.get("held") else 0
         rows = []
-        for _dd, mid, rec in near:
-            nm = self.things[rec["leaf"]]["called"]
+        for dd, mid, rec in near:
+            nm = names.get(mid)
+            if nm is None:
+                continue
+            away = round(dd, 4)
             op = "close" if abs(rec["joints"][0].get("theta", 0.0)) > 1e-9 else "open"
-            rows.append({"key": "open or close %s" % nm, "tag": "operate",
-                         "verb": "operate", "mid": mid, "op": op})
+            memo = " (it would not give when you tried)" \
+                if self._door_memory(p["pid"], rec) else ""
+
+            def row(key, tag, verb, op_):
+                rows.append({"key": key, "tag": tag, "verb": verb, "mid": mid,
+                             "op": op_, "away": away})
+            row("%s %s%s" % (op, nm, memo), "operate", "operate", op)
             if held and "key" in held:
-                rows.append({"key": "turn the key in %s" % nm, "tag": "operate",
-                             "verb": "operate", "mid": mid, "op": "key"})
-            if held and held.get("kind") == "bar" and rec.get("bar"):
-                rows.append({"key": "bar or lift the bar from %s" % nm,
-                             "tag": "operate", "verb": "operate", "mid": mid,
-                             "op": "bar"})
+                row("turn the key in %s" % nm, "operate", "operate", "key")
+            b = rec.get("bar")
+            if b and he == b["eid"] and not self.bar_seated(rec):
+                row("seat the bar across %s" % nm, "operate", "operate", "bar")
+            elif b and he != b["eid"] and self.bar_seated(rec):
+                bc = self._cells_of(b["eid"])
+                if bc is not None and _gap_cells(bc, cells) * self._d() <= REACH_M:
+                    row("lift the bar from %s" % nm, "operate", "operate", "bar")
             if held and "tool" in held:
                 for tension in ("light", "firm"):
-                    rows.append({"key": "work the lock with the picks, %s tension"
-                                 % tension, "tag": "operate", "verb": "operate",
-                                 "mid": mid, "op": "pick:" + tension})
-            rows.append({"key": "kick %s" % nm, "tag": "kick", "verb": "kick",
-                         "mid": mid, "op": "kick"})
+                    row("work the lock of %s with the picks, %s tension"
+                        % (nm, tension), "operate", "operate", "pick:" + tension)
+            row("put a shoulder to %s" % nm, "shoulder", "shoulder", "shoulder")
+            row("kick %s" % nm, "kick", "kick", "kick")
         return rows
 
     # ── the _spend seam ─────────────────────────────────────────────────────

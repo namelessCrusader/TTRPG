@@ -52,7 +52,7 @@ backends:
             bandage, defend, hide, search, open, play, wait]
   voxel:
     limbs: [legs, hands, mouth, waist, eyes]          # src/voxel/sim.py LIMBS
-    step_tests: [arrived, in_reach, took, swung, said, wake]
+    step_tests: [arrived, in_reach, took, swung, said, wake, operated]
 
 # A CAPABILITY is a test on a thing (or, with self: true, on the actor), and
 # the words that a chooser reads. Each backend has its own test, or null.
@@ -80,7 +80,7 @@ capabilities:
   openable:
     says: "something closed to open"
     rooms: {prop: chest}
-    voxel: null
+    voxel: {mech_in_reach: true}        # a door, lid or gate with a mechanism record, in reach or seen
   free_hand:
     says: "a free hand"
     self: true
@@ -193,11 +193,88 @@ verbs:
     hint: openable
     text: "open {target}"
     told: "{actor} opened {target}"
-    duration: {rooms: 3}
+    duration: {rooms: 3, voxel: 40}
     interrupt_on: [harm_to_me, violence_seen, alarm_heard]
     backends:
       rooms: {verb: "open"}
-      voxel: null
+      # walk to the foot of the door (a step the backend leaves out when the
+      # door is already in reach), then work it with the hands. The step is
+      # over when this body's own act on it is on the record (an 'opens',
+      # 'jams' ...): a door that did not give ends the job FAILED with the
+      # law's word, and the mind chooses again (force, another way, wait, call).
+      voxel: [{limb: legs, match: goal, until: arrived},
+              {limb: hands, match: {tag: operate}, until: operated}]
+
+  - id: close_door
+    group: handle
+    roles: {target: {kind: thing, cap: openable}}
+    text: "close {target}"
+    told: "{actor} closed {target}"
+    duration: {voxel: 40}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    backends:
+      rooms: null
+      voxel: [{limb: hands, match: {tag: operate}, until: operated}]
+
+  - id: use_key
+    group: handle
+    roles: {target: {kind: thing, cap: openable}}
+    text: "turn the key in {target}"
+    told: "{actor} turned a key in {target}"
+    duration: {voxel: 40}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    backends:
+      rooms: null
+      voxel: [{limb: hands, match: {tag: operate}, until: operated}]
+
+  - id: pick_lock
+    group: handle
+    roles: {target: {kind: thing, cap: openable}}
+    text: "pick the lock of {target}"
+    told: "{actor} worked the lock of {target}"
+    duration: {voxel: 120}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    backends:
+      rooms: null
+      voxel: [{limb: hands, match: {tag: operate}, until: operated}]
+
+  - id: bar_door
+    group: handle
+    roles: {target: {kind: thing, cap: openable}}
+    text: "bar {target}"
+    told: "{actor} barred {target}"
+    duration: {voxel: 60}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    backends:
+      rooms: null
+      voxel: [{limb: hands, match: {tag: operate}, until: operated}]
+
+  - id: unbar_door
+    group: handle
+    roles: {target: {kind: thing, cap: openable}}
+    text: "lift the bar from {target}"
+    told: "{actor} lifted the bar from {target}"
+    duration: {voxel: 60}
+    interrupt_on: [harm_to_me, violence_seen, alarm_heard]
+    backends:
+      rooms: null
+      voxel: [{limb: hands, match: {tag: operate}, until: operated}]
+
+  # FORCE: a kick put into the leaf (the blow law and the body's own kick). A
+  # loud act; nothing says it should be tried, that is the person's own score.
+  - id: kick_in
+    group: handle
+    roles: {target: {kind: thing, cap: openable}}
+    text: "kick {target}"
+    told: "{actor} kicked {target}"
+    told_start: "{actor} kicked at {target}"
+    duration: {voxel: 40}
+    interrupt_on: [harm_to_me]
+    flags: [loud, physical]
+    backends:
+      rooms: null
+      voxel: [{limb: legs, match: goal, until: arrived},
+              {limb: legs, match: {tag: kick}, until: operated}]
 
   - id: steal
     group: handle

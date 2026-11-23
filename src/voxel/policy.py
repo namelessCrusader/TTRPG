@@ -161,6 +161,12 @@ ACTS = {"go":     {"limb": "legs",  "null": False},
         "catch_who": {"limb": "hands", "null": False},
         "take":   {"limb": "hands", "null": False},
         "reach":  {"limb": "hands", "null": False},
+        # A DOOR, a lid, a bar, a lock (mechlaw.mech_affords): worked by the
+        # hands, forced by the shoulder, or kicked with the legs. Offered only
+        # where a mechanism is in reach, the same rows whether it gives or not.
+        "operate": {"limb": "hands", "null": False},
+        "shoulder": {"limb": "hands", "null": False},
+        "kick":   {"limb": "legs",  "null": False},
         "pull_in": {"limb": "hands", "null": False},
         "say":    {"limb": "mouth", "null": False},
         "quiet":  {"limb": "mouth", "null": True},

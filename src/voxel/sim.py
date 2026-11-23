@@ -157,9 +157,13 @@ from .perceive import PerceiveMixin
 from .mechlaw import MechanismsMixin
 from .layers_world import LayersMixin
 from .wetmix import HumidMixin
+from .heathist_world import HeatHistoryMixin
+from .reactions import ReactionMixin
+from .fick_solids import FickSolidsMixin
+from .lazylaws import LazyLawsMixin
 
 
-class World(HumidMixin, LayersMixin, MechanismsMixin, FieldsMixin, FluidsMixin, HeatMixin, AirMixin, SupportMixin,
+class World(LazyLawsMixin, HeatHistoryMixin, ReactionMixin, FickSolidsMixin, HumidMixin, LayersMixin, MechanismsMixin, FieldsMixin, FluidsMixin, HeatMixin, AirMixin, SupportMixin,
             BodiesMixin, SkeletonMixin, PoseMixin, PersonsMixin,
             PhysiologyMixin, SensesMixin, MotionMixin, HandsMixin, WillMixin,
             LedgersMixin, ThingsMixin, EventsMixin, PerceiveMixin):

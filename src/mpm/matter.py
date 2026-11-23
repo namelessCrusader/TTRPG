@@ -38,8 +38,19 @@ from ..voxel.materials import ASH as _ASH, LEAF, ROPE, WOOD
 # solid has a row; a material with no row cannot leave the lattice, which is
 # an error to raise, not a case to paper over.
 _NAMES = {1: "wood", 2: "stone", 3: "iron", 4: "flesh", 5: "ash", 6: "glass",
-          7: "leaf", 8: "char", 9: "tin", 10: "lead", 11: "rope"}
+          7: "leaf", 8: "char", 9: "tin", 10: "lead", 11: "rope",
+          16: "calcite"}
 AIR = 0
+
+# CALCITE (limestone, marble; voxel id 16) HAD NO PARTICLE ROW, so a loose lump that fell raised
+# ValueError in `promote` (wave 15, lane 1d found it). Its own constitutive row, same seven fields
+# as MAT: density 2710 kg/m3 (calcite, Deer-Howie-Zussman; the registry's matrec row);
+# Young's modulus 55 GPa (marble and dense limestone 40-70, Goodman, Introduction to Rock
+# Mechanics 1989; the crystal is about 84), Poisson 0.27 (0.2-0.3, same); no yield (brittle,
+# it breaks, it does not flow); damping 0.5 and shape 1.0 as the stone row, a rock that rings
+# and keeps its shape; tensile strength 7 MPa (limestone 4-10, marble 7-10, Goodman; the stone
+# row's 8). Stone was the stand-in for its mechanics in matrec; this row states the numbers.
+MAT.setdefault("calcite", (2710.0, 5.5e10, 0.27, None, 0.50, 7.0e6, 1.00))
 
 # below this speed, for the ledgers and the minds, a particle is not "in the
 # air": it has landed and is lying there. m/s.

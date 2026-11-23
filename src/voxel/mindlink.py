@@ -151,7 +151,25 @@ LEAVE = frozenset({"walk_to", "flee_to"})       # every walk the link offers is 
 # The event that says a step's act was carried out, by the tag (or verb) of
 # the row the step matches: the swing was swung, the thing taken.
 ACT = {"take": "takes", "swing": "swings", "let_go": "releases",
-       "say:fire": "says", "go": "goes", "go:seek": "goes"}
+       "say:fire": "says", "go": "goes", "go:seek": "goes",
+       # a door is worked, or kicked (mechlaw: the events a mechanism raises
+       # with the body as actor). 'jams' is the law's refusal: it is an answer too.
+       "operate": ("opens", "closes", "locks", "unlocks", "picks", "forces", "jams"),
+       "kick": ("kicks", "jams")}
+# What an 'operated' step counts as done: this body's own act on a mechanism is
+# on the record. 'jams' is not among them: it FAILS the step, with the law's
+# word (locked, held, barred, blocked) as the reason.
+OPERATED = frozenset({"opens", "closes", "locks", "unlocks", "picks", "forces", "kicks"})
+# THE RULE SCORES OF WORKING A DOOR (the person's taste, (u): ordered, not
+# measured). A way out that lies through a door the body has not found stuck
+# is worth what any way out is (safety). A body that has tried a door and been
+# refused scores the replies to that refusal against the other ways it has
+# (flee_to another exit scores safety x (1 - danger), up to 1; a wait 0.2):
+# the right key first, then a kick, then the picks (which take long). With
+# nothing to fear, or no refusal to answer, working a door is NO_REASON.
+DOOR_REPLY = {"use_key": 0.9, "kick_in": 0.6, "pick_lock": 0.4}
+_DOOR_VERBS = frozenset({"open", "close_door", "use_key", "pick_lock", "bar_door",
+                         "unbar_door", "kick_in"})
 # The limbs each stage of a reaction asks (will.py `_decide`): a flinch the
 # eyes, the "go" after a pre-movement the legs and hands. While a body still
 # makes sense of an alarm ("premove") its legs stay where they are.
@@ -552,6 +570,8 @@ class VoxelBackend:
                     ticks = max(1, int(math.ceil(len(r["route"]) * vox_m / (mps * TICK_S))))
                     add(verb, {"place": place}, {"goal": xy, "danger": float(r.get("danger", 0.0))},
                         duration=ticks)
+            if w.mech_menu and w.__dict__.get("mechs"):
+                self._door_options(p, cells, add)
             holds = self._holds(p)
             # A FREE HAND TAKES (the catalog's `free_hand`), whatever the
             # other one holds; which things it is offered is the hands'
@@ -596,6 +616,52 @@ class VoxelBackend:
         self._bound[who] = (w.tick, tuple(opts), pay)
         return tuple(opts)
 
+    def _door_options(self, p, cells, add):
+        """An option for each mechanism the body can work: those in reach, by
+        the rows its hands and legs would be offered (`mech_affords`: the same
+        rows whether the door gives or not), and each closed door it has seen
+        and could walk to (the `go:door` rows of the legs' menu), with the
+        walk first. Only facts filter; what it wants is its rule scores."""
+        w = self.w
+        near = {mid: rec for _d, mid, rec in w.mech_near(p)}
+        names = w.mech_names(p, [m for m, r in w.mechs.items()
+                                 if (lc := w._cells_of(r["leaf"])) is not None
+                                 and p["known"][lc[:, 0], lc[:, 1]].any()])
+        verbs = {"open": "open", "close": "close_door", "key": "use_key",
+                 "pick:light": "pick_lock", "kick": "kick_in"}
+        legs = self._rows(p, cells, "legs")       # (also writes what lies beyond each door)
+        db = p.get("_door_beyond") or {}
+        db = db["by"] if db.get("t") == w.tick else {}
+        for r in w.mech_affords(p):
+            if r["verb"] == "shoulder" or r["mid"] not in names:
+                continue
+            op = r["op"]
+            if op == "bar":
+                verb = "unbar_door" if w.bar_seated(w.mechs[r["mid"]]) else "bar_door"
+            else:
+                verb = verbs.get(op)
+            if verb is None:
+                continue
+            rec = w.mechs[r["mid"]]
+            ref = Ref("thing", f"e{rec['leaf']}", names[r["mid"]])
+            add(verb, {"target": ref}, {"mid": r["mid"], "op": op, "near": True,
+                                        "goal": None,
+                                        "beyond": tuple(b[0] for b in db.get(r["mid"], ())),
+                                        "beyond_tags": tuple(b[1] for b in db.get(r["mid"], ()))},
+                duration=self.cat.verbs[verb].duration(NAME))
+        for r in legs:
+            if r["tag"] != "go:door" or r["door"] in near or r["door"] not in names:
+                continue
+            rec = w.mechs[r["door"]]
+            ref = Ref("thing", f"e{rec['leaf']}", names[r["door"]])
+            pay = {"mid": r["door"], "op": "open", "near": False,
+                   "goal": tuple(r["goal"]), "beyond": tuple(r["beyond"]),
+                   "beyond_tags": tuple(r.get("beyond_tags", ()))}
+            add("open", {"target": ref}, pay,
+                duration=r["cost_ticks"] + self.cat.verbs["open"].duration(NAME))
+            add("kick_in", {"target": ref}, dict(pay, op="kick"),
+                duration=r["cost_ticks"] + self.cat.verbs["kick_in"].duration(NAME))
+
     def _payload(self, who, option):
         when, _, pay = self._bound.get(who, (None, (), {}))
         if when != self.w.tick or option.key not in pay:
@@ -632,6 +698,8 @@ class VoxelBackend:
                 s = NO_REASON
             elif v == "shout_fire" and not safety:
                 s = NO_REASON
+            elif v in _DOOR_VERBS:
+                s = self._door_score(p, v, pay, safety)
             elif v == "take":
                 s = 0.8 * max((drive.get(d, 0.0) for d in self._armed), default=0.0) \
                     if pay["weapon"] else 0.0
@@ -650,6 +718,23 @@ class VoxelBackend:
         prior = tuple(out)
         return prior, prior, (0.0,) * len(prior)
 
+    def _door_score(self, p, verb, pay, safety):
+        """The score of working a door. See DOOR_REPLY. The refusal a body is
+        answering is its OWN memory of the door (`_door_memory`), never the
+        door's state."""
+        w = self.w
+        rec = w.mechs[pay["mid"]]
+        refused = bool(w._door_memory(p["pid"], rec))
+        if not safety:
+            return NO_REASON
+        if verb == "open":
+            # a way out that goes through a door it has not found stuck
+            return safety if (not refused and any(
+                t == "go:exit" for t in pay.get("beyond_tags", ()))) else NO_REASON
+        if verb in DOOR_REPLY and refused:
+            return DOOR_REPLY[verb] * safety
+        return NO_REASON
+
     # ------------------------------------------------------------ a job
     def start(self, who, option, why, menu=None, probs=None, probs_avg=None):
         """Start `option` as `who`'s job. It is checked again against the
@@ -663,7 +748,10 @@ class VoxelBackend:
         if menu is not None and option not in menu.options:
             raise ValueError(f"{option.text!r} is not on the menu its chooser saw")
         dur = option.duration
-        steps = [self._step(p, option, pay, st, dur) for st in self.cat.program(option.verb, NAME)]
+        prog = list(self.cat.program(option.verb, NAME))
+        if pay.get("near") and prog and prog[0].get("match") == "goal":
+            prog = prog[1:]           # a door in reach needs no walk to it
+        steps = [self._step(p, option, pay, st, dur) for st in prog]
         if pay.get("approach"):
             steps.insert(0, self._approach(w.persons[pay["pid"]]))
         state = {"steps": steps, "i": 0, "checked": w.tick, "starts": len(self.starts),
@@ -743,7 +831,7 @@ class VoxelBackend:
         m, limb = st.get("match"), st["limb"]
         if m is not None and m not in ("goal", "cell") and not isinstance(m, dict):
             raise ValueError(f"voxel steps match no {m!r} yet")
-        if st["until"] not in ("arrived", "took", "swung", "said", "wake"):
+        if st["until"] not in ("arrived", "took", "swung", "said", "wake", "operated"):
             raise ValueError(f"voxel has no step test {st['until']!r} yet")
         want = take = None
         if m == "goal":
@@ -752,6 +840,9 @@ class VoxelBackend:
             take = pay["eid"] or pay["cell"]
             want = {"tag": "take", "eid": pay["eid"]} if pay["eid"] else \
                 {"tag": "take", "cell": pay["cell"]}
+        elif m is not None and "mid" in pay:
+            # a mechanism row, matched by what it is about (mechlaw row fields)
+            want = {"tag": m["tag"], "mid": pay["mid"], "op": pay["op"]}
         elif m is not None:
             want = m["tag"]
         aim = option.role(st["aim"]) if st.get("aim") else None
@@ -812,6 +903,13 @@ class VoxelBackend:
             if st["i"] >= len(st["steps"]):
                 self._end(p, job, "done")
 
+    def _pushing(self, me):
+        """Is this body's push on a mechanism going on now (a swing takes
+        longer than a decide period, and its 'opens' comes at the end)?"""
+        tabs = self.w.__dict__.get("mechs")
+        return bool(tabs) and any(q.get("pid") == me for rec in tabs.values()
+                                  for q in rec["pushes"])
+
     def _done(self, p, step):
         """(done, why it failed or ""): the step test, read off the body's own
         events since its limb was first asked."""
@@ -836,11 +934,19 @@ class VoxelBackend:
                 return False, ""
             mine = [ev for ev in w.events.since(step["from"]) if ev.actor == me]
             if not step["acted"]:
-                step["acted"] = any(ev.verb == step["act"] for ev in mine)
+                act = step["act"]
+                act = act if isinstance(act, (tuple, list)) else (act,)
+                step["acted"] = any(ev.verb in act for ev in mine) or (
+                    until == "operated" and self._pushing(me))
             if not step["acted"]:
                 return False, ""
         else:
             mine = ()
+        if until == "operated":
+            for ev in mine:
+                if ev.verb == "jams":
+                    return False, str(ev.result or "jammed")
+            return any(ev.verb in OPERATED for ev in mine), ""
         if until == "wake":
             return w.tick >= step["ends"], ""
         if until == "took":
