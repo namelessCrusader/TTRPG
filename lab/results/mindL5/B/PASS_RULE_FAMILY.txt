@@ -1,0 +1,25 @@
+MINDL5 STAGE B: PASS RULES, written 2026-11-23 BEFORE any stage B run.
+THE POPULATION: all seven people of the family inn (Jon, Mara, Pip, Gran, lodgers Tom, Sir Ada, Oren) run the learned mind with the cn2 concerns and
+ the kin rule, bonds from the coarse pre-history of stage A (NOT validated: stage A gate (i) was not met; stated, not repaired). Nothing says who is kin.
+ARMS: rules (the rules-cast household, the null), off (learned minds, no concerns), past (learned minds, cn2, coarse pre-history).
+SEEDS: 30 per arm (11-40). Seeds 11-16 of the care-flow runs are those of stage A (same code, kept).
+WORLDS: care flow: the family inn, not lethal, 45 nights (as stage A). Survival: the same inn WITH lethal and perma (the food-step world plus the family),
+ 90 nights, reserves recorded each turn. A long horizon is not affordable (about 36 min a 730-night run); 90 nights is stated as a limit.
+MEASURES (reported against field data; Fam6: reported, never tuned). Family = Jon, Mara, Pip, Gran; lodgers = Tom, Sir Ada, Oren. Help acts = the done acts
+ give, help up, bandage, defend, serve, tend, person to person.
+ (a) KIN CARE: for the four family actors, acts at the 3 other family members against acts at the 3 lodgers (3 targets each, so the ratio is per target):
+     SHARE = family acts / all acts at those 6 (pooled and mean per seed with a t interval), RATIO = family acts / lodger acts (pooled, seed bootstrap
+     2,000 draws). Also lodgers as actors: acts at the 4 family against the 2 other lodgers, per target. Reported with field data: Ache reciprocity about
+     6x steeper for close kin; need-based help mainly between kin (library). Reciprocity slope: help i>j on help j>i over ordered pairs, kin pairs and
+     other pairs (reported; pairs are few, so wide intervals).
+     PASS (a): in arm past the pooled ratio is above 1 with the bootstrap interval excluding 1, AND past minus rules and past minus off in the per-seed
+     share, paired by seed, have t intervals excluding 0 (the effect is the concerns, not the structure of the inn).
+ (b) IT PAYS: in the lethal inn, per life DEPLETION = mean over nights of 1 - f, f = the lowest reserve fraction of the night (dead night = 1), plus
+     reserve burned a night, extreme-hunger turns a night, and the share dead at the end. Family mean minus lodger mean, paired by seed, per arm.
+     PASS (b): in arm past, family minus lodger depletion below 0 with the t interval and the bootstrap interval both excluding 0. (Confound stated: the
+     child and the elder differ in need and work; a family-lodger gap in arm rules shows what the structure alone gives.)
+ (c) THE OWNER'S BAR (AQ4): the learned household against the rules household. BEATS THE RULES only if ALL hold: past minus rules in whole-household
+     depletion is below 0 (t and bootstrap intervals exclude 0), share dead at 90 nights is not higher, and (a) passes. Reported with it: the same for
+     burn and extreme-hunger turns, and for arm off (does the learned mind without concerns already lose?).
+FAILURE ATTRIBUTION is given, not gated: the world (no exposure: all arms near zero), the mind (learners die or hoard against rules), or the past
+ (saturated weights, stage A cause).

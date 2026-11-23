@@ -1,0 +1,35 @@
+MINDL5 STAGE A: PASS RULES, written 2026-11-23 BEFORE any twin or controlled-past run.
+
+GATE (i), coarse pre-history against a full run (SC5 twin rule: an approximate twin with a stated drift budget).
+ Setups: A = from the pre-history state at the start of play (36 years of coarse past), B = from strangers (everyone arrives at the start).
+ Full runs: seeds 1, 2, 3, 730 nights each (2 simulated years), snapshots at night 365 and 730. The coarse run uses exposure rates measured in
+ SEPARATE passive-concern runs (seeds 101-103, nights 31-90), never from the run it is checked against. Dials are the same per (seed, person).
+ Quantities, per ordered pair of the 7 people (42 pairs per seed), coarse minus full at 1 year and at 2 years:
+   T1  mean |w_coarse - w_full| <= 0.10   (a third of a friend's ceiling 0.30), and no seed above 0.15
+   T2  closeness order: mean Kendall tau-b over persons and seeds between the order of the other six by w in the two runs >= 0.60
+   T3  kin estimate: mean |khat_coarse - khat_full| <= 0.10
+ PASS = T1, T2 and T3 all hold at both times in both setups. Reported with them: the same measures between two FULL runs of different seeds
+ (the noise floor of the thing being approximated), the mean w of each, and the drift at step sizes 30, 91 and 182 nights.
+ A failure is reported as a finding with its cause, not retuned away.
+
+GATE (ii), the kin cues work as in humans, in CONTROLLED pasts (same exposure for every pair; only who lived with whom and who was seen caring
+ differs); 30 draws (the dials and the sampling noise of the counts), paired, 95% t intervals:
+   ii-a  an adopted child raised with the family: w(child to parent) and w(parent to child) for the adopted and the biological child differ by
+         under 10% in the mean (no kin flag exists, so the two are alike by construction), and the adopted child's w is above the late lodger's
+         with the interval excluding 0.
+   ii-b  a sibling raised apart: the child's w for the sibling raised together exceeds that for the sibling raised apart, interval excluding 0,
+         and the khat for the sibling raised apart is below 0.35.
+   ii-c  SCRAMBLED cues (the cue records dealt at random among the people they were recorded for): the kin-minus-non-kin w gap of the child's
+         ties (child to parents and siblings, against child to the lodger) is above 0 with the interval excluding 0 in the real past, and the
+         scrambled gap's interval includes 0.
+GATE (iii), the controls:
+   placebo   a co-resident who is present but never acted at or with: w <= 0.02 for everyone; (the synthetic law test in test_kin: placebo 0.001)
+   swap      swapping two minds' tables flips the order of the choice term (test_kin, and for two household members here)
+   rules null  a rules-cast family inn has no learned concerns: table empty, kin gap exactly 0 (checked), and its help flows are the structural baseline
+Reported, never gated: care flows to family against to lodgers (Fam6 4), survival (Fam6 5, needs the lethal hard inn: not run here).
+
+CLARIFICATION written before the controlled pasts were run (2026-11-23): in ii-b the sibling raised apart (S) joins the household in the LAST SEASON
+ of the controlled past (0.25 years before the check); the dose curve of joining 0.25, 1, 2, 4 and 8 years before the check is REPORTED, not gated.
+ In ii-c the kin ties are those with cues in the history (the child's ties to the parents and to the sibling raised together), against the child's
+ tie to the late lodger. Controlled household: parents P1, P2 (together 14 years), B born in the house, A adopted at age 2 (in the house for 8
+ years, same age as B), S the sibling raised apart, L a lodger who arrived 1 year ago, PL a placebo adult present for 5 years and never acted at or with.

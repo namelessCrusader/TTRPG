@@ -132,6 +132,9 @@ KINDS = {  # the type's trait means, and how the others see it
     "thief": ("a traveller", dict(bravery=.50, greed=.90, pride=.40, kindness=.25, temper=.40)),
     "cook": ("the cook", dict(bravery=.45, greed=.40, pride=.50, kindness=.60, temper=.60)),
     "bandit": ("a bandit", dict(bravery=.80, greed=.90, pride=.50, kindness=.10, temper=.80)),
+    "innkeeper": ("the innkeeper", dict(bravery=.50, greed=.40, pride=.45, kindness=.55, temper=.45)),
+    "child": ("a child", dict(bravery=.30, greed=.30, pride=.25, kindness=.55, temper=.40)),
+    "elder": ("an old woman", dict(bravery=.40, greed=.30, pride=.55, kindness=.60, temper=.35)),
 }
 SPREAD, STATE_SPREAD = 0.12, 0.08
 
@@ -453,6 +456,13 @@ NATURE = {
                  wealth=(0.0, 1.0), rest=(0.9, .35), curiosity=(0.4, .45)),
     "bandit": dict(energy=(0.8, .35), safety=(0.6, .35), company=(0.1, .70), standing=(0.6, .30),
                    wealth=(1.4, .10), rest=(0.5, .50), curiosity=(0.5, .40)),
+    # family inn (flag `family`; only the family cast uses these three)
+    "innkeeper": dict(energy=(0.9, .30), safety=(0.9, .20), company=(0.9, .30), standing=(0.8, .30),
+                      wealth=(0.0, 1.0), rest=(0.8, .40), curiosity=(0.4, .50)),
+    "child": dict(energy=(1.1, .25), safety=(1.3, .15), company=(1.0, .25), standing=(0.2, .50),
+                  wealth=(0.0, 1.0), rest=(0.8, .40), curiosity=(0.9, .30)),
+    "elder": dict(energy=(0.9, .30), safety=(1.1, .20), company=(0.9, .30), standing=(0.5, .40),
+                  wealth=(0.0, 1.0), rest=(0.9, .35), curiosity=(0.3, .50)),
 }
 WANT = {"merchant": 13, "thief": 6, "bandit": 6}      # held value that meets the wealth need
 # drift per turn, when nothing serves the need (hunger and thirst keep their own)
@@ -478,6 +488,30 @@ HOSTILE = {"strike": .6, "shove": .5, "threaten": .4, "steal": .4, "insult": .25
            "search": .25, "refuse": .1, "give": -.3, "help up": -.3, "bandage": -.3, "defend": -.2,
            "praise": -.1, "accept": -.1, "serve": -.3, "tend": -.3}
 START_ROOM = {n: room for n, _, room, _ in CAST}
+
+# ---------------------------------------------------------------- family (2026-11-23, mindL5 stage A; docs/family-design.md Fam3)
+# A family-run inn with lodgers: an innkeeper couple (the wife is the cook), a child, an elderly parent (the wife's mother) and three unrelated lodgers.
+# Nothing here says who is kin: the world holds ages and body sheets only. The household's PAST (who lived with whom, who cared for whom) lives in
+# lab/mindL/household.py. With the flag off nothing here is read and the old inn is bit for bit as before.
+FAMILY_FLAGS = ("family",)
+FAMILY_CAST = [("Jon", "innkeeper", "the main room", ["the club"]),
+               ("Mara", "cook", "the kitchen", ["the ladle"]),
+               ("Pip", "child", "the main room", []),
+               ("Gran", "elder", "the kitchen", []),
+               ("Tom", "peasant", "the main room", ["the copper coin"]),
+               ("Sir Ada", "knight", "the main room", ["the sword"]),
+               ("Oren", "merchant", "the main room", ["the purse of silver", "the lute"])]
+FAMILY_AGE = {"Jon": 38, "Mara": 36, "Pip": 7, "Gran": 66, "Tom": 28, "Sir Ada": 45, "Oren": 40}
+# Body sheets by age class, each a multiplier on the adult's. ALL (u): from memory, not re-checked against the library; a request goes to it (report, needs).
+#   metab    ration: FAO/WHO/UNU 2004 energy requirements, about 1,700 kcal a day at 7 years and about 2,000 at 60+ against an adult's 2,400 here -> 0.70, 0.83.
+#   work     share of an adult's food-getting (the catch, work at the counter): children's foraging returns are a small fraction of an adult's until the
+#            teens, and returns fall in old age (Kaplan 1994; Gurven and Kaplan 2006 on Tsimane and Hadza returns by age) -> 0.15 and 0.5.
+#   strength share of an adult's blow (grip strength at 7 is about a third of an adult's, at 70 about 0.7) -> 0.35, 0.7.
+#   ill      the chance that a healthy person falls ill on a night, times (morbidity rises with age: Tsimane, Gurven et al.) -> elder 2.0.
+#   ill_len  an episode's length, times (slower recovery) -> elder 1.5.   recov: a tending takes this share of the usual off an ailment -> elder 0.7.
+FAMILY_BODY = {"child": dict(metab=0.70, work=0.15, strength=0.35, ill=1.0, ill_len=1.0, recov=1.0),
+               "elder": dict(metab=0.83, work=0.50, strength=0.70, ill=2.0, ill_len=1.5, recov=0.7)}
+FAMILY_ADULT = dict(metab=1.0, work=1.0, strength=1.0, ill=1.0, ill_len=1.0, recov=1.0)
 
 
 LAID_UP_BARRED = frozenset(EXERT) | {"work", "buy"}
@@ -559,6 +593,9 @@ class Person:
         self.last_kind = None      # labour: the kind of the last ration eaten tonight
         self.reserve = dict(LETHAL_RESERVE)   # lethal: days left before each need kills
         self.cause = None          # lethal: the need that killed it
+        self.age = 30.0            # family: years (a body datum; the old inn never reads it)
+        self.metab = self.work = self.strength = self.ill = self.ill_len = self.recov = 1.0    # family: the body sheet (FAMILY_BODY); 1.0 = the adult of the old inn
+        self.work_acc = 0.0        # family: work at the counter is made in whole rations; the fraction carries
 
     @property
     def public(self):
@@ -579,7 +616,7 @@ class World:
         self.flags = frozenset(BASE_FLAGS if flags == "all" else FLAGS if flags == "all2" else
                                ALL3 if flags == "all3" else ALL4 if flags == "all4" else
                                ALL5 if flags == "all5" else ALL6 if flags == "all6" else flags)
-        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS) - set(LETHAL_FLAGS) - set(LETHAL2_FLAGS) - set(FIELD_FLAGS)
+        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS) - set(LETHAL_FLAGS) - set(LETHAL2_FLAGS) - set(FIELD_FLAGS) - set(FAMILY_FLAGS)
         assert not bad, f"unknown flags {sorted(bad)}"
         self.night = night
         self.full = PORTION if "field" in self.flags else FULL     # field: a meal is a whole ration, eaten only when the hunger left can take it (no partial meal is wasted)
@@ -587,13 +624,21 @@ class World:
         rng = self.rng
         self.t = 0
         self.people = {}
-        for name, kind, room, held in CAST:
+        self.family = "family" in self.flags
+        self.cast = FAMILY_CAST if self.family else CAST
+        self.start_room = {n: room for n, _, room, _ in self.cast}
+        for name, kind, room, held in self.cast:
             self.people[name] = Person(name, kind, room, rng)
+            if self.family:
+                b = {**FAMILY_ADULT, **FAMILY_BODY.get(kind, {})}
+                q = self.people[name]
+                q.age = float(FAMILY_AGE[name])
+                q.metab, q.work, q.strength, q.ill, q.ill_len, q.recov = (b[k] for k in ("metab", "work", "strength", "ill", "ill_len", "recov"))
         self.things = {}
         for name, (at, props, value) in THINGS.items():
             self.things[name] = {"at": at, "props": set(props), "value": value, "owner": None,
                                  "hidden": False}
-        for name, kind, room, held in CAST:
+        for name, kind, room, held in self.cast:
             for th in held:
                 self.things[th].update(at=name, owner=name)
         for a in self.people.values():
@@ -607,7 +652,7 @@ class World:
         self.n = 0
         # A bandit comes in from the road in about 60% of the nights.
         if bandit is None:
-            bandit = rng.random() < (field_bandit_p() if "field" in self.flags else 0.6)
+            bandit = rng.random() < (field_bandit_p(len(self.cast)) if "field" in self.flags else 0.6)
         self.bandit_at = rng.randint(turns // 3, 2 * turns // 3) if bandit else None
         if carry:                       # the same cast as last night: no random draw here
             for name, c in carry.items():
@@ -698,18 +743,23 @@ class World:
         if "field" in self.flags:            # the mean catch that meets the demand (see FIELD above); the variance is the hard world's
             mean = field_catch_mean(v, n_prod=len(people), n=len(self.people), counter=sum(COOK_MAKES.values())) * supply
         rng = random.Random(f"luck/{seed}")
+        fam_m = None
+        if self.family and "field" in self.flags:    # family: supply = demand with each person's own ration (metab) and share of work: m per unit of work
+            demand = NEED_RATIONS * sum(q.metab for q in self.people.values())
+            fam_m = (demand - sum(COOK_MAKES.values())) / ((1.0 - HARD_PREVALENCE) * sum(q.work for q in people))
         for p in people:
+            mean_p = mean if fam_m is None else field_catch_mean(v, target=fam_m * p.work) * supply
             if v == 0:
-                got = mean
+                got = mean_p
             else:
-                got = 0.0 if rng.random() < v else rng.gammavariate(LUCK_SHAPE, 1 / LUCK_SHAPE) * mean / (1 - v)
+                got = 0.0 if rng.random() < v else rng.gammavariate(LUCK_SHAPE, 1 / LUCK_SHAPE) * mean_p / (1 - v)
             when = 0
             if "lumpy" in self.flags:        # a hit brings everything in one package, at a turn of the night (own generator)
                 lr = lumps.setdefault("r", random.Random(f"lump/{seed}"))
                 hit, when = lr.random() < (1 - v if self.hard else LUMP_P), lr.randint(LUMP_T0, LUMP_T1)
-                got = mean / LUMP_P if hit else 0.0
+                got = mean_p / LUMP_P if hit else 0.0
                 if self.hard:                # hard: the package is a Gamma(2) size with the mean kept (CV 1.37 with the 0.48 empty)
-                    got = lr.gammavariate(LUCK_SHAPE, 1 / LUCK_SHAPE) * mean / (1 - v) if hit else 0.0
+                    got = lr.gammavariate(LUCK_SHAPE, 1 / LUCK_SHAPE) * mean_p / (1 - v) if hit else 0.0
             if p.name in self.laid or p.name in self.gone:   # hard: a laid-up person brings nothing (nor does a dead one) (the draws above are still made: same streams)
                 got = 0.0
             k = int(got + 0.5)
@@ -753,8 +803,8 @@ class World:
             c = (carry or {}).get(p.name, {}).get("ill")
             if c and c[0] > 0:
                 self.laid[p.name], p.ail = c[0], c[1]
-            elif u0 < h:
-                self.laid[p.name], p.ail = hard_duration_draw(u1, u2, z), lv
+            elif u0 < h * p.ill:
+                self.laid[p.name], p.ail = max(1, int(hard_duration_draw(u1, u2, z) * p.ill_len + 0.5)), lv
 
     def _raid_plan(self, seed, p_raid):
         """allies: whether a raid comes tonight and when (own generator, seed only; the same for every chooser)."""
@@ -875,8 +925,8 @@ class World:
 
     def carry_out(self, names=None):
         """What each cast member takes into the next night (lifetime.py)."""
-        names = names or [n for n, _, _, _ in CAST]
-        cast = set(n for n, _, _, _ in CAST)
+        names = names or [n for n, _, _, _ in self.cast]
+        cast = set(n for n, _, _, _ in self.cast)
         out = {}
         for n in names:
             p = self.people[n]
@@ -1247,7 +1297,7 @@ class World:
             return b[0] if b else self.start_at.get(n)
         things = [n for n in self.things if at(n) == room]
         people = [q for q in self.people.values() if q is not p
-                  and p.seen_at.get(q.name, START_ROOM.get(q.name)) == room]
+                  and p.seen_at.get(q.name, self.start_room.get(q.name)) == room]
         food = any("food" in self.things[n]["props"] for n in things)
         drink = any(self.things[n]["props"] & {"ale", "ale_source", "water_source", "water"} for n in things)
         foe = max([p.anger.get(q.name, 0) for q in people] + [0])
@@ -1333,7 +1383,7 @@ class World:
         return max(0.0, 1.0 - usable / self.portions[item])
 
     def _drift(self, p):
-        p.hunger = min(1.0, p.hunger + 0.003)
+        p.hunger = min(1.0, p.hunger + 0.003 * p.metab)
         p.thirst = min(1.0, p.thirst + 0.004)
         p.fear *= 0.98
         p.drunk *= 0.995
@@ -1468,6 +1518,7 @@ class World:
                 return True, {"result": "missed"}
             dmg = WEAPON.get(o, 1) if d["f"].get("armed") else 1
             dmg *= (1 + 0.5 * anger) * self.rng.uniform(0.3, 0.8)
+            dmg *= p.strength
             victim.hp -= dmg
             victim.fear = min(1, victim.fear + 0.15 * (1.2 - victim.traits["bravery"]))
             res = {"result": f"hit {victim.name}", "damage": round(dmg, 1)}
@@ -1537,9 +1588,9 @@ class World:
             self._rested(p, 0.6)
             return True, {}
         if v == "tend":                                      # tend: another person's care takes the ailment down
-            q.ail = max(0.0, q.ail - TEND_RELIEF)
+            q.ail = max(0.0, q.ail - TEND_RELIEF * q.recov)
             q.aff[p.name] = min(1, q.aff.get(p.name, 0) + 0.4)
-            return True, {"relief": TEND_RELIEF}
+            return True, {"relief": TEND_RELIEF * q.recov}
         if v == "fend off":                                  # allies: one blow at the raid; the raid is gone when it is spent
             th = self.threat
             if th is None or th["room"] != p.room:
@@ -1606,7 +1657,12 @@ class World:
                 return False, {"why": "none left"}
             if "stock" in self.flags and o in COOK_MAKES:        # the counter is refilled by work
                 cap = int(STOCK_CAP * self.stock[o])
-                self.portions[o] = min(cap, self.portions[o] + WORK_YIELD)
+                put = WORK_YIELD
+                if self.family:                              # family: a child's or an elder's work puts back less (whole rations; the fraction carries)
+                    p.work_acc += WORK_YIELD * p.work
+                    put = int(p.work_acc + 1e-9)
+                    p.work_acc -= put
+                self.portions[o] = min(cap, self.portions[o] + put)
                 self.things[o]["at"] = q.name
             p.fatigue = min(1.0, p.fatigue + WORK_TIRE)
             self._rested(q, CHORE_RELIEF)
@@ -2010,7 +2066,7 @@ class World:
             for name in list(p.seen_at):
                 if p.seen_at[name] == p.room and name not in here:
                     p.seen_at[name] = None           # gone, p does not know where
-            for name, room in START_ROOM.items():    # not here, where the night started
+            for name, room in self.start_room.items():    # not here, where the night started
                 if room == p.room and name not in here and name != p.name and name not in p.seen_at:
                     p.seen_at[name] = None
 

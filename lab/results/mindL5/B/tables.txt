@@ -1,0 +1,34 @@
+MINDL5 STAGE B TABLES (CIs 95%)
+(a) KIN CARE (non-lethal family inn, 45 nights)
+  rules  n=30 seeds  family acts 29039, lodger acts 27615; family actors: mean share +0.5151 [+0.4964, +0.5337]; pooled ratio 1.05 [0.98, 1.13]; lodger actors' per-target share to family +0.5301 [+0.4863, +0.5740]
+         reciprocity slope kin +0.360 (se 0.049, n 360), other +0.491 (se 0.029, n 900)
+  off    n=30 seeds  family acts 5404, lodger acts 4357; family actors: mean share +0.5500 [+0.4981, +0.6018]; pooled ratio 1.24 [1.01, 1.52]; lodger actors' per-target share to family +0.5562 [+0.5040, +0.6083]
+         reciprocity slope kin +0.189 (se 0.052, n 360), other +0.056 (se 0.033, n 900)
+  past   n=30 seeds  family acts 7215, lodger acts 4937; family actors: mean share +0.5918 [+0.5338, +0.6498]; pooled ratio 1.46 [1.19, 1.82]; lodger actors' per-target share to family +0.4761 [+0.4048, +0.5473]
+         reciprocity slope kin +0.274 (se 0.051, n 360), other +0.253 (se 0.032, n 900)
+  share past minus rules, paired: +0.0767 [+0.0157, +0.1378] (n 30)
+  share past minus off, paired: +0.0419 [-0.0410, +0.1247] (n 30)
+(b)/(c) SURVIVAL (lethal + perma family inn, 90 nights)
+  rules  depletion                      family 0.0088  lodgers 0.0203  all 0.0137  family-lodger -0.0116 [-0.0264, +0.0033] boot [-0.0274, +0.0001] (n 30)
+  rules  burn (reserve days a night)    family 0.1008  lodgers 0.1906  all 0.1393  family-lodger -0.0898 [-0.1081, -0.0715] boot [-0.1075, -0.0737] (n 30)
+  rules  extreme-hunger turns a night   family 29.4550  lodgers 56.4160  all 41.0097  family-lodger -26.9610 [-32.1615, -21.7606] boot [-31.9510, -21.9894] (n 30)
+  rules  dead at 90 nights              family 0.0083  lodgers 0.0111  all 0.0095  family-lodger -0.0028 [-0.0317, +0.0261] boot [-0.0333, +0.0250] (n 30)
+         deaths 2 in 30 runs of 7; first-death night median 90; mean run seconds 46
+  off    depletion                      family 0.7543  lodgers 0.6756  all 0.7206  family-lodger +0.0787 [-0.0093, +0.1668] boot [-0.0041, +0.1681] (n 30)
+  off    burn (reserve days a night)    family 0.2052  lodgers 0.2650  all 0.2308  family-lodger -0.0597 [-0.1189, -0.0005] boot [-0.1149, -0.0045] (n 30)
+  off    extreme-hunger turns a night   family 61.6975  lodgers 84.8601  all 71.6243  family-lodger -23.1626 [-34.0776, -12.2477] boot [-34.1527, -12.8992] (n 30)
+  off    dead at 90 nights              family 0.8417  lodgers 0.8222  all 0.8333  family-lodger +0.0194 [-0.0825, +0.1214] boot [-0.0722, +0.1194] (n 30)
+         deaths 175 in 30 runs of 7; first-death night median 4; mean run seconds 62
+  past   depletion                      family 0.7887  lodgers 0.7487  all 0.7716  family-lodger +0.0400 [-0.0466, +0.1266] boot [-0.0437, +0.1216] (n 30)
+  past   burn (reserve days a night)    family 0.1781  lodgers 0.2365  all 0.2031  family-lodger -0.0584 [-0.1117, -0.0051] boot [-0.1092, -0.0087] (n 30)
+  past   extreme-hunger turns a night   family 56.6569  lodgers 79.2459  all 66.3379  family-lodger -22.5891 [-31.5530, -13.6252] boot [-30.7495, -14.6206] (n 30)
+  past   dead at 90 nights              family 0.8750  lodgers 0.8778  all 0.8762  family-lodger -0.0028 [-0.0887, +0.0831] boot [-0.0861, +0.0806] (n 30)
+         deaths 184 in 30 runs of 7; first-death night median 4; mean run seconds 38
+  household depletion       past minus rules paired +0.7579 [+0.7075, +0.8083] boot [+0.7065, +0.8011] (n 30)
+  household burn            past minus rules paired +0.0638 [+0.0294, +0.0983] boot [+0.0317, +0.0947] (n 30)
+  household extreme-hunger  past minus rules paired +25.3281 [+12.8577, +37.7986] boot [+13.1843, +36.1186] (n 30)
+  household dead share      past minus rules paired +0.8667 [+0.8225, +0.9108] boot [+0.8238, +0.9095] (n 30)
+  household depletion       past minus off   paired +0.0510 [-0.0161, +0.1181] boot [-0.0116, +0.1091] (n 30)
+  household burn            past minus off   paired -0.0277 [-0.0608, +0.0055] boot [-0.0570, +0.0044] (n 30)
+  household extreme-hunger  past minus off   paired -5.2865 [-17.1401, +6.5672] boot [-16.4611, +6.3890] (n 30)
+  household dead share      past minus off   paired +0.0429 [-0.0301, +0.1159] boot [-0.0238, +0.1095] (n 30)

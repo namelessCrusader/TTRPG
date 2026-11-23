@@ -1,0 +1,50 @@
+MINDL5 STAGE B: THE POPULATION   2026-11-23
+
+VERDICT
+(a) KIN CARE EMERGES: NOT MET as pre-registered. Family actors do help family more than lodgers in the learned household (ratio 1.46), but the cn2 concerns do not cause it: learned minds with no concerns give 1.24, and past minus off is not distinguishable from 0.
+(b) IT PAYS: NOT TESTABLE in the learned arms. 84 to 88 percent of the learners are dead at night 90 (median first death night 4), so family against lodgers measures nothing. In the rules household the gap points the right way on burn and extreme hunger, but not on depletion.
+(c) THE OWNER'S BAR: NOT MET, by a wide margin. The learned household does not beat the rules. It dies of thirst. Rules: 2 deaths in 30 households (210 lives). Learned: 184 deaths in 210 lives.
+What the failure points at: the MIND (learners do not drink). Not the concerns (the arm without concerns dies the same), not the past, not the world (rules live in the same world).
+
+SETUP (as pre-registered in lab/mindL/PASS_RULE_FAMILY.txt, written before any run)
+7 people (Jon, Mara, Pip, Gran, lodgers Tom, Sir Ada, Oren), 30 seeds (11-40) per arm. Arms: rules (null), off (learned minds, no concerns), past (learned minds, cn2 concerns, kin rule, coarse pre-history). Seeds 11-16 of the care-flow arms are from stage A (same code).
+Care flow: family inn, not lethal, 45 nights. Survival: same inn with lethal and perma, 90 nights, reserves read every turn. The 90-night horizon is a stated limit (a 730-night run costs about 36 minutes).
+The coarse pre-history is NOT validated (stage A gate (i) not met). It was used as is.
+
+1. (a) KIN CARE (help acts: give, help up, bandage, defend, serve, tend; 95% intervals)
+arm     family actors' share to family (3 family vs 3 lodger targets)   pooled ratio family/lodger (bootstrap)   lodgers' per-target share to family
+rules   0.515 [0.496, 0.534]    1.05 [0.98, 1.13]    0.530 [0.486, 0.574]
+off     0.550 [0.498, 0.602]    1.24 [1.01, 1.52]    0.556 [0.504, 0.608]
+past    0.592 [0.534, 0.650]    1.46 [1.19, 1.82]    0.476 [0.405, 0.547]
+Paired by seed, share: past minus rules +0.077 [+0.016, +0.138] (concerns plus learning beat the structure of the rules inn). Past minus off +0.042 [-0.041, +0.125] (the concerns add nothing detectable over learned minds without them).
+PASS (a) needed both differences to exclude 0: NOT MET.
+Counts: rules 29,039 family acts, 27,615 lodger acts; off 5,404 and 4,357; past 7,215 and 4,937. The learned minds act about 5 times less than the rules.
+Reciprocity slope (help i to j on help j to i, ordered pairs; kin, other): rules 0.36 and 0.49; off 0.19 and 0.06; past 0.27 and 0.25. Ratio kin to other: rules 0.7, off 3.4, past 1.1. Field data: Ache about 6x steeper for close kin. Only the off arm shows a steeper kin slope (3.4x, wide: se 0.05 and 0.03), and the past arm does not. Pairs are few (360 kin, 900 other), so these are weak.
+Field comparison (reported, not tuned): need-based help mainly between kin. Here the family share is 0.59 against 0.5 by chance (equal targets): a weak tilt, much weaker than "mainly".
+Why: stage A already found the cause. In the past arm ties saturate (weights near 1.0 for lodgers too: Tom's weight to Jon 1.0 after the past), so the concerns do not separate kin from lodgers. The kin rule works in the controlled pasts (stage A gate ii) but the dense inn washes it out. This is the PAST (saturation), not the world.
+
+2. (b) and (c) SURVIVAL (lethal and perma, 90 nights, 30 seeds; reserve fraction f = lowest of hunger and thirst; depletion = mean of 1 - f, dead night = 1)
+arm     depletion family / lodgers / all      burn a night all   extreme-hunger turns a night all   dead at night 90
+rules   0.0129 / 0.0304 / 0.0204              0.139              41.0                               0.95 percent (2 of 210)
+off     0.754 / 0.676 / 0.721                0.231              71.6                               83.3 percent (175 of 210)
+past    0.789 / 0.749 / 0.772                0.203              66.3                               87.6 percent (184 of 210)
+Causes of death: past 177 thirst, 7 hunger; off 174 thirst, 1 hunger; rules 2 thirst. First deaths cluster at nights 5 to 15 (thirst reserve is 5 days).
+(b) family minus lodger, paired by seed, t interval and bootstrap:
+ rules: depletion -0.0175 [-0.062, +0.027]; burn -0.090 [-0.108, -0.072]; extreme-hunger turns -27.0 [-32.2, -21.8]; dead -0.003 [-0.032, +0.026]
+ off:   depletion +0.079 [-0.009, +0.167]; burn -0.060 [-0.119, -0.001]; extreme -23.2 [-34.1, -12.2]
+ past:  depletion +0.040 [-0.047, +0.127]; burn -0.058 [-0.112, -0.005]; extreme -22.6 [-31.6, -13.6]; dead -0.003 [-0.089, +0.083]
+ PASS (b) (past depletion gap below 0 with both intervals excluding 0): NOT MET (the interval includes 0 and the point is positive). Burn and extreme hunger favour family, in rules and learned arms alike, so this is mostly the child and the elder (lower need, no work) and the cook with the food, not family bonds. The learned arms are floored by mass death.
+(c) past minus rules, household, paired: depletion +0.758 [+0.708, +0.808]; burn +0.064 [+0.029, +0.098]; extreme hunger +25.3 [+12.9, +37.8]; dead share +0.867 [+0.823, +0.911]. Past minus off: depletion +0.051 [-0.016, +0.118]; dead +0.043 [-0.030, +0.116]. No detectable difference.
+BEATS THE RULES: NO. Every measure is worse, and the depletion and death differences exclude 0 by a large margin.
+
+3. WHAT THE FAILURES POINT AT
+- THE MIND: all learners die of thirst by about night 5 to 15, with and without concerns. The learned mind has not learned a drink-before-the-reserve-runs-out policy in its own life of this world (naive learners; matches stage A: 6 of 7 dead within 41 nights, old inn 3 of 5 within 16). The rules have a self-care law the learners lack or learn too slowly. This is the thing AQ4 asked about, and it is the first blocker: no concern, kin rule or bond can matter if the person is dead by night 15. A warm start (pre-trained drink and eat policy) or the self-care law as a prior on the learned mind is the next step; per the owner's rule it must be a general drive mechanism, not a special case.
+- THE PAST: the concerns saturate (stage A), so even when minds live the kin tilt is weak (0.59) and not due to the concerns.
+- NOT THE WORLD: the rules household lives in it (0.95 percent dead), with a clean food supply (field flag).
+
+4. LIMITS
+Survival horizon 90 nights, not 730 (cost). Learned-arm care flows are from a non-lethal inn; the survival measures from the lethal inn; the two are not the same runs. Family against lodgers in survival is confounded by age (Pip 7, Gran 66) and by the cook. No kin flag, no tuning, no sources changed. The onlookers' ages and rations are still from memory (stage A: a library request is needed).
+No suites re-run: the only code change is an optional read-only reserve recorder (res=False by default) in lab/mindL/household.py; flags-off paths are not touched.
+
+FILES
+lab/mindL/{family_b,analyze_b}.py, PASS_RULE_FAMILY.txt (written before the runs); household.py (res option). Results lab/results/mindL5/B/ (tables.txt, tables.json, logs). Scratch /home/nisargparikh/.cache/mark1-build/mindL5/B/ (raw runs). Nothing left running.

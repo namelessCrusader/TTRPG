@@ -1,0 +1,146 @@
+{
+ "hall_hours": {
+  "94": {
+   "turns": 1176,
+   "F": 0.328
+  },
+  "164": {
+   "turns": 2052,
+   "F": 0.5
+  },
+  "219": {
+   "turns": 2739,
+   "F": 0.604
+  }
+ },
+ "placebo": {
+  "helper": 0.626,
+  "placebo": 0.0013,
+  "a_placebo": 0.0001
+ },
+ "extinction": {
+  "peak": 0.0462,
+  "nights_to_half_up": 5,
+  "nights_to_half_down": 17,
+  "end_over_peak": 0.27
+ },
+ "fade_17_months": {
+  "friend_kept": 0.92,
+  "long_history_kept": 0.998,
+  "old_rule_kept": 3e-05
+ },
+ "habituation": {
+  "set_point_reached": 0.35,
+  "recovered_21d_time": 0.23,
+  "recovered_21d_variety": 0.79
+ },
+ "effort": {
+  "mild_count": 0.0,
+  "severe_count_after_3": 3.0,
+  "EJ_after_43": 1.0
+ },
+ "observed_care": {
+  "cared_carer": 0.952,
+  "indifferent_carer": 0.0
+ },
+ "kin_estimate": {
+  "khat_15y_from_birth": 0.95,
+  "khat_15y_adult": 0.0,
+  "khat_8y_from_2": 0.781,
+  "khat_8y_from_10": 0.699,
+  "start_weight_age0": 1.0,
+  "start_weight_age20": 0.5,
+  "start_weight_age40": 0.25
+ },
+ "swap": {
+  "before": [
+   0.117,
+   0.012
+  ],
+  "after": [
+   0.012,
+   0.117
+  ],
+  "null": 0.0
+ },
+ "options": {
+  "old": "RWConcerns",
+  "cn2": "KinConcerns",
+  "old_fade": 0.02,
+  "new_fade0": 0.0014
+ },
+ "coarse_vs_fine": {
+  "1": {
+   "w": [
+    0.65,
+    0.645
+   ],
+   "F": [
+    0.988,
+    0.988
+   ],
+   "H": [
+    0.049,
+    0.049
+   ],
+   "a": [
+    0.018,
+    0.017
+   ]
+  },
+  "7": {
+   "w": [
+    0.65,
+    0.645
+   ],
+   "F": [
+    0.988,
+    0.988
+   ],
+   "H": [
+    0.049,
+    0.049
+   ],
+   "a": [
+    0.018,
+    0.017
+   ]
+  },
+  "30": {
+   "w": [
+    0.65,
+    0.645
+   ],
+   "F": [
+    0.988,
+    0.988
+   ],
+   "H": [
+    0.049,
+    0.049
+   ],
+   "a": [
+    0.018,
+    0.017
+   ]
+  },
+  "91": {
+   "w": [
+    0.65,
+    0.645
+   ],
+   "F": [
+    0.988,
+    0.988
+   ],
+   "H": [
+    0.049,
+    0.049
+   ],
+   "a": [
+    0.018,
+    0.017
+   ]
+  }
+ }
+}

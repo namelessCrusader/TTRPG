@@ -119,3 +119,13 @@ def cue(o):
     if tg in ROOMS:
         return tg
     return o["obj"]
+
+
+def use_cast(cast):
+    """Point the reader at another cast (the family inn): PEOPLE, TARGETS, TI, NT, RAW. Call before any mind is made. use_cast(CAST) restores the old inn."""
+    global PEOPLE, TARGETS, TI, NT, RAW
+    PEOPLE = tuple(n for n, _, _, _ in cast) + ("the bandit",)
+    TARGETS = PEOPLE + ("room", "none")
+    TI = {t: i for i, t in enumerate(TARGETS)}
+    NT = len(TARGETS)
+    RAW = NV + NT + NK + ND

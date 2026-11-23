@@ -50,6 +50,7 @@ from lab.mindL import drives as H
 from lab.mindL import reader
 from lab.mindL.actor_critic import ActorCritic
 from lab.mindL.concerns import RWConcerns, StepObs, need_of
+from lab.mindL.concerns2 import CARE_VERBS, KinConcerns, StepObs2
 from lab.mindL.curiosity import Curiosity
 from lab.mindL.effects import Did, DeltaMeanings, Flush, Got, State, Tick, error_drop
 from lab.mindL.episodic import Episodic
@@ -208,8 +209,13 @@ class Mind(Agent):
         self.ac.lam = c["lam"] if c["traces"] else 0.0
         self.cn = None
         self._rd: dict = {}
-        if c["concerns"]:
+        self._got: frozenset = frozenset()
+        self._cw, self._cptr = None, 0
+        if c["concerns"] == "cn2":           # mindL5 stage A: the second constants and the kin rule (concerns2.py)
+            self.cn = KinConcerns(name=name, seed=seed, **(c["cn"] or {}))
+        elif c["concerns"]:
             self.cn = RWConcerns(**(c["cn"] or {}))
+        if self.cn is not None:
             for verb, b in (c["cn_fx_prior"] or {}).items():
                 self.cn.set_prior(verb, b.get("rho", 0.0), b.get("eta", 0.0), b.get("n0", 3))
 
@@ -328,6 +334,15 @@ class Mind(Agent):
         if self.cn is not None:
             self._rd = self._readings(w, w.people[self.name])
             self.cn.observe_read(w.t, self._rd)
+            if isinstance(self.cn, KinConcerns):             # cn2: the care I saw others give (the observed-care cue)
+                if w is not self._cw:
+                    self._cw, self._cptr = w, 0
+                me = w.people[self.name]
+                for e in w.log[self._cptr:]:
+                    if (e["done"] and e["action"] in CARE_VERBS and e.get("target") and e["actor"] != self.name and e["target"] != self.name
+                            and e["id"] in me.perceived and e["target"] in reader.PEOPLE):
+                        self.cn.observe_care(e["actor"], e["target"], e["t"])
+                self._cptr = len(w.log)
         if self.fx is not None:
             need = H.needs(w, w.people[self.name])
             tref, need0 = (self.step.t, self.step.need) if self.step is not None else (w.t, need)
@@ -345,6 +360,7 @@ class Mind(Agent):
         r = H.reward(st.E, E)
         dt = max(1, w.t - st.t)
         if self.cn is not None:
+            self._got = frozenset(e["actor"] for e in evs)
             r += self.cn_learn(st, r, dt)
         # V: the cues present over the step
         cues = {"ctx": 1.0}
@@ -382,12 +398,19 @@ class Mind(Agent):
         helped = 0.0
         if aimed is not None and aimed in st.cn:
             helped = self.cn.relief(o["verb"], st.cn[aimed])
+        if isinstance(self.cn, KinConcerns):
+            return self.cn.learn(StepObs2(r_h, st.cn, self._rd, tuple(st.cn), o["verb"], aimed, helped, dt, self._got))
         return self.cn.learn(StepObs(r_h, st.cn, self._rd, tuple(st.cn), o["verb"], aimed, helped, dt))
 
     def night_end(self, w, p):
         self.finish(w, p)
         if self.cn is not None:
             self.cn.flush()
+            if isinstance(self.cn, KinConcerns):
+                self.cn.set_household([q for q in w.people if q != self.name and q in reader.PEOPLE and q != "the bandit"
+                                       and q not in getattr(w, "gone", ())])
+                if self.cn.nrs == 0:
+                    self.cn.age = float(getattr(p, "age", 30.0))
             self.cn.night()
         if self.fx is not None:
             for partner, err in self.fx.update(Flush(w.t, H.needs(w, p))):

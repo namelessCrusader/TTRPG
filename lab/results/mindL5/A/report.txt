@@ -1,0 +1,58 @@
+MINDL5 STAGE A: THE MECHANISM   2026-11-23
+
+VERDICT
+Built: the cn2 concern constants from the sources, the kin rule (no kin flag), the family inn, a coarse pre-history on the same law.
+Gate (ii) kin cues: ii-a and ii-b met; ii-c NOT MET as pre-registered (a small residual, understood). Gate (iii) controls: met.
+Gate (i) coarse against full: NOT MET at every setting. Cause found: in the full run every weight saturates, so there is nothing to rank.
+Not retuned. The old concerns option and all lab suites are unchanged.
+
+1. RETUNED CONSTANTS (lab/mindL/concerns2.py, option concerns="cn2"; concerns=True is bit for bit the old RWConcerns, fade 0.02)
+- Familiarity F = 1 - exp(-hours/236.6) from ENGAGED contact hours (Hall 2018: 94/164/219 h). Test: 94 h = 1,176 turns F 0.33; 164 h = 2,052 turns F 0.50; 219 h = 2,739 turns F 0.60. Mere presence is not contact: a placebo in the room has w 0.001.
+- Anchors for the size (Madsen 2007): best friend 0.25, r=.5 kin 0.5, self 1. W_ATT 0.30.
+- a_T learned per contact BOUT, lr 0.07 (Eckstein 2022 slowest fitted rate), cues share one prediction.
+- Extinction 0.3 of acquisition and a floor at 27% of the peak (Gershman 2013: 24-30% left). Test: half-life up 5 nights, down 17, end at 0.27 of peak.
+- Fade 0.0014/(1+age/1y)/(1+history years/2) x dial x (1 - contact). Over 17 months with no contact: a friend keeps 0.92, a 15-year tie 0.998, the old rule 0.00003. Roberts and Dunbar's friends lost about 16% of closeness: ours lose 8%, so friends fade somewhat too slowly (the library formula gives this).
+- Habituation per feature, set point 0.35, 4.5% a bout; recovery in 21 days 23% by time and 79% with variety (Galak). Tested.
+- Effort justification a threshold (2 RMS step-rewards, unsourced; Aronson and Mills): below it nothing, above it counts, capped at doubling (Norton 2012). Tested.
+- Unsourced and marked: CONTACT_HOLD 30 turns, H0 2 years, RHO_OBS 0.02, EJ threshold, habituation set point, early-start floor.
+- Rescorla recovery rate stays unsourced (as the library said).
+
+2. THE KIN RULE
+- History H = 1 - exp(-N/(5 years)) of early-start-weighted co-residence nights; it slows fade and scales the reciprocity coupling (x6 at full history, the Ache slope).
+- Earlier start counts more: each night weighted max(0.25, 1 - 0.025 x my age at the start), no hard window.
+- Observed-care cue: seeing someone I care about (weight 0.30 to 0.50) care for T raises my kin cue for T.
+- Kin estimate khat = 1 - (1-k_y)(1-k_c): k_y from years lived with T under 18 (95% at 15 years, the 14-18 crossing), k_c the care cue. It multiplies the friendship weight by 1 + 0.70 x capacity dial x khat. Capacity, learning-rate and fade dials are per person (12% slow-fade tail).
+- Tests (test_kin, 11 pass): 15 years from birth khat 0.95; 15 years as an adult 0; start at 2 gives 0.78 against 0.70 at 10; a cared-about carer moves the cue to 0.95, an indifferent one to 0.
+
+3. THE HOUSEHOLD (flag "family" in lab/world2/world.py; off = old inn exactly)
+- Jon (innkeeper), Mara (cook, his wife), Pip (child 7), Gran (Mara's mother, 66), lodgers Tom, Sir Ada, Oren. World holds ages and body sheets only.
+- Child: ration 0.70 of an adult, work 0.15, blow 0.35. Elder: ration 0.83, work 0.5, blow 0.7, falls ill twice as often, episodes 1.5 times longer, tending takes 0.7 as much off. ALL from memory (u), not re-checked: a library request is needed (FAO energy by age, work by age, morbidity by age). Food supply = demand with each person's ration and work share.
+- FINDING that shaped the run: all-learner minds in the LETHAL inn die of thirst (old inn 3 of 5 within 16 nights; family inn 6 of 7 within 41 nights). So stage A runs the family inn without lethal and perma. A learned mind does not yet beat the rules at staying alive. This matters for AQ4.
+
+4. COARSE PRE-HISTORY
+- Season steps (91 nights) from a timeline of who lived where and when (Mara's childhood with Gran, the marriage, Pip's birth, the lodgers arriving), same law in closed form (concerns2.coarse_advance), exposures measured per pair in separate passive-concern runs (seeds 101-103) and by kind of pair for pasts where the house differed. Law check on a scripted life: coarse at S = 1, 7, 30, 91 against night by night gives w 0.650 against 0.645.
+- The hybrid works (coarse past loaded into minds, then full nights): used in the care-flow runs.
+
+5. GATE TABLE
+(i) coarse against full, seeds 1-3, 730 nights, 95% rules in lab/mindL/PASS_RULE_A.txt (written first). Mean |dw| (limit 0.10) / Kendall tau (limit 0.60) / mean |dkhat| (limit 0.10); noise floor = two full runs of different seeds:
+  A 1 year   0.154 / 0.42 / 0.196   floor 0.149 / 0.33 / 0.148   NOT MET
+  A 2 years  0.129 / 0.09 / 0.177   floor 0.112 / 0.32 / 0.097   NOT MET
+  B 1 year   0.298 / 0.01 / 0.440   floor 0.279 / 0.03 / 0.360   NOT MET
+  B 2 years  0.226 / 0.12 / 0.341   floor 0.200 / 0.03 / 0.126   NOT MET
+  Drift is the same at step 30, 91 and 182 nights (0.15, 0.15, 0.15 for A 1y): the closed form is not the cause. The drift is about the size of the difference between two full runs of different seeds, so the coarse run sits inside the full system's own spread, but not inside the stated tolerance.
+  Cause (decomposition at 2 years): mean weight in the full runs is 0.85-0.99 of a ceiling of 1. F is 0.89-0.99, effort justification 0.74-0.96, khat 0.90-0.99 for EVERY pair, so all ties saturate and the order among them is noise (tau near 0). Coarse is lower on khat (0.6-0.8 against 0.9-0.99) because the care-cue exposure was measured early, when weights were small, and cares less than the full run's weights later give; and its a is 5 times smaller. Two design faults, not tuning: (1) effort count and kin cue saturate for everyone, so they do not tell kin from lodgers in the full run; (2) exposures measured with small weights miss the feedback of weights on care.
+(ii) controlled pasts, 30 draws, 95% t intervals:
+  ii-a adopted against biological: child to parent 0.478 against 0.480 (ratio 0.997); parent to child 0.700 against 0.714 (0.98). Adopted minus late lodger: child view +0.196 [+0.187, +0.204], parent view +0.417 [+0.413, +0.421]. MET.
+  ii-b sibling raised together against apart (apart arrives the last season): 0.506 against 0.166, difference +0.340 [+0.327, +0.353]; khat apart 0.195. MET. Dose of joining late: after 1 year khat 0.56, 2 years 0.82, 4 years 0.96, so a late joiner turns kin-like within about 2 years, faster than Anderson's 2.5% a year suggests: the care-cue rate RHO_OBS is unsourced and probably too high.
+  ii-c scrambled cues: kin-minus-lodger gap real +0.181 [+0.175, +0.187], scrambled +0.024 [+0.007, +0.041]. NOT MET (interval excludes 0). Diagnostic made after the rule was scored: the leftover is the lodger's shorter time in the house (F gap 0.082 x 0.3 = 0.025). Cue component of the gap: real +0.153 [+0.147, +0.160], scrambled -0.004 [-0.021, +0.013]. So the cues carry the kin effect and scrambling removes it; the pre-registered control did not equalise time in the house.
+  Dose without the care cue: care rises with years co-resided, 0.25 at 1 year, 0.41 at 4, 0.48 at 8, 0.49 at 16. r = 0.70 (humans 0.41): our law has no other causes, so only the shape counts.
+(iii) controls: placebo (present, never engaged) max w 0.004 (limit 0.02); swap of two bonds flips the choice term (P1 0.248 against L 0.151, after swap 0.151 against 0.248); rules cast: no learned concerns, table empty, gap exactly 0. MET.
+REPORTED (care flows to family against lodgers, family actors only, 3 family and 3 lodger targets, 6 seeds x 45 nights, 95% intervals not computed): rules ratio 0.90; minds without concerns 1.32; minds with the coarse past 1.27. The coarse past did NOT raise family care over minds without concerns. Fam6 4 is not shown. Fam6 5 (survival) not run (needs the lethal inn).
+
+6. SUITES with the options off (lab.lock, nice 19): test_world 92 passed; test_mind 30 passed (golden traces); test_tournament 17 passed; test_effects, test_concerns, test_survival 3, test_food passed; new test_kin 11 passed.
+
+7. NEEDS
+- Library: energy, work, strength and morbidity by age (child 7, elder 66); rate at which late joiners become kin-like; an effort-justification threshold in persons.
+- Next fix (stage B): make EJ and the care cue not saturate (count relative to the other ties, or per-act decay); take exposures from the full run at a later date and let weights feed back into care; keep lethal off until minds learn to drink.
+
+Files: lab/mindL/{concerns2,household,gate_kin,family_a,analyze_a,test_kin}.py, PASS_RULE_A.txt; lab/world2/world.py (family flag); lab/mindL/{mind,reader}.py (cn2 hooks, use_cast). Results lab/results/mindL5/A/. Scratch /home/nisargparikh/.cache/mark1-build/mindL5/A/.
