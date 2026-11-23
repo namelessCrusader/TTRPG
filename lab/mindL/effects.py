@@ -85,8 +85,10 @@ def sig(z):
     return 1.0 / (1.0 + np.exp(-np.clip(z, -30.0, 30.0)))
 
 
-def error_drop(kind, need, delta):
-    """The worth of a predicted change `delta` of my needs: the drop of my weighted drive error."""
+def error_drop(kind, need, delta, dm=None):
+    """The worth of a predicted change `delta` of my needs: the drop of my weighted drive error (dm: a drives2.Drives2, else the old linear error)."""
+    if dm is not None:
+        return float(dm.drop(kind, need, delta))
     from lab.mindL import drives as H
     return float(H.errors(kind, need).sum() - H.errors(kind, np.clip(need + delta, 0.0, 1.0)).sum())
 
@@ -116,6 +118,7 @@ class _Cr:
 
 class DeltaMeanings(ActMeanings):
     def __init__(self, ndrives, nx=7, lr_pred=0.3, credit=CREDIT, window=WINDOW, floor=FLOOR, keep_log=False, turn_drift=False):
+        self.cap = 1.0                           # upper bound of a need (drives2: the felt need goes to 2; the mind sets a vector)
         self.nd, self.nx, self.lr_pred, self.credit, self.window, self.floor = ndrives, nx, lr_pred, credit, window, floor
         self.turn_drift = turn_drift             # step 3 fix (option fx_fix): the drift is a per-TURN rate, not a mean over ticks
         self.sd, self.st = np.zeros(ndrives), 0.0
@@ -203,7 +206,7 @@ class DeltaMeanings(ActMeanings):
         need = np.asarray(state.need, float)
         if e is None:
             return np.zeros(self.nd)
-        return np.clip(need + e[0], 0.0, 1.0) - need
+        return np.clip(need + e[0], 0.0, self.cap) - need
 
     def raw_effect(self, partner, their_act):
         """The stored estimate, before the state clips it (None if never seen)."""

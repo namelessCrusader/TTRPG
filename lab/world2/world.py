@@ -243,6 +243,9 @@ ALL6 = ALL5 + LUMPY_FLAGS                                                # "all6
 # about it (hearsay, the knowledge layer) is a HOOK, not built: World.perceived_need is the one place it would be added. The flag adds
 # the function and the dials and nothing else: it changes no choice and draws nothing from the world's own random generator.
 SIGNS_FLAGS = ("signs",)
+# drives2 (mindL6 stage A): with `signs`, the visible signs also carry THIRST (what an observer reads of another person's thirst), so a mind can learn by watching a person drink.
+# Nothing else changes with the flag: the body and the laws are the same.
+DRIVES2_FLAGS = ("drives2",)
 # hard (2026-11-21, the realistically hard inn, owner decision (A)): the hardships set FROM THE SOURCE RATES instead of by taste. Source:
 # the Library answer "responses/2026-11-21-mark1-preindustrial-hardship-rates.md" (S1 to S6). One night is one day. With the flag off nothing
 # here is read. With it on, `ill`, `luck` and `raid` given to World() are ignored: the source rates below are used.
@@ -616,7 +619,7 @@ class World:
         self.flags = frozenset(BASE_FLAGS if flags == "all" else FLAGS if flags == "all2" else
                                ALL3 if flags == "all3" else ALL4 if flags == "all4" else
                                ALL5 if flags == "all5" else ALL6 if flags == "all6" else flags)
-        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS) - set(LETHAL_FLAGS) - set(LETHAL2_FLAGS) - set(FIELD_FLAGS) - set(FAMILY_FLAGS)
+        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS) - set(LETHAL_FLAGS) - set(LETHAL2_FLAGS) - set(FIELD_FLAGS) - set(FAMILY_FLAGS) - set(DRIVES2_FLAGS)
         assert not bad, f"unknown flags {sorted(bad)}"
         self.night = night
         self.full = PORTION if "field" in self.flags else FULL     # field: a meal is a whole ration, eaten only when the hunger left can take it (no partial meal is wasted)
@@ -906,6 +909,8 @@ class World:
         if o is None or t is None or t.dead or o is t or o.room != t.room or not o.acts() or self.asleep(o):
             return None
         state = {"hurt": max(min(1.0, max(0.0, (10 - t.hp) / 10)), t.ail), "fear": t.fear, "hunger": t.hunger}
+        if "drives2" in self.flags:                              # thirst shows too (the last key: the other signs' noise draws are unchanged)
+            state["thirst"] = t.thirst
         r = random.Random(f"sign/{self._sg_seed}/{self.t}/{obs}/{tgt}")
         sd = SIGN_NOISE / getattr(o, "acuity", ACU_MEAN)
         ex = getattr(t, "express", EXPR_MEAN)

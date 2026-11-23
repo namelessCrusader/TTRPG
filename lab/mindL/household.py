@@ -64,7 +64,8 @@ def make_policy(seed, passive=False, cn=None, **extra):
     return make_mind(seed, **cfg)
 
 
-def run_full(seed, nights, *, arm="cn2", init=None, ages=None, snaps=(), tele=None, flows=True, extra=None, turns=300, lethal=False, res=False):
+def run_full(seed, nights, *, arm="cn2", init=None, ages=None, snaps=(), tele=None, flows=True, extra=None, turns=300, lethal=False, res=False,
+             wflags=(), drinks=False, pol_hook=None):
     """A lifetime of the family inn. arm: 'cn2' (concerns steer), 'passive' (concerns learn, do not steer), 'off' (no concerns), 'rules'.
     init: {name: state} loaded into each mind's concerns at the start (the coarse past), ages: {name: age at start}.
     snaps: nights after which the concern states are kept. tele: (a, b): the telemetry between night a and night b.
@@ -85,10 +86,14 @@ def run_full(seed, nights, *, arm="cn2", init=None, ages=None, snaps=(), tele=No
                     a.cn.nrs = 1
                 return a
             pol.make = mk
-    carry, out = None, dict(snaps={}, tele=None, flows={}, deaths={}, care_by_night=[], res=[])
+    if (extra or {}).get("drives2") and "drives2" not in wflags:      # a drives2 mind needs the world to show thirst in the signs
+        wflags = tuple(wflags) + ("drives2",)
+    if pol_hook is not None:
+        pol_hook(pol)
+    carry, out = None, dict(snaps={}, tele=None, flows={}, deaths={}, care_by_night=[], res=[], drinks=[])
     t0 = time.perf_counter()
     for n in range(nights):
-        w = World(seed=night_seed(seed, n), flags=FLAGS_L if lethal else FLAGS, carry=carry, night=n, turns=turns)
+        w = World(seed=night_seed(seed, n), flags=(FLAGS_L if lethal else FLAGS) + tuple(wflags), carry=carry, night=n, turns=turns)
         hook(pol, "night_start", w, n)
         dead = set(w.gone)
         if res:   # stage B (read only): the lowest reserve fraction of the night, reserve burned, nights at the need cap
@@ -119,6 +124,12 @@ def run_full(seed, nights, *, arm="cn2", init=None, ages=None, snaps=(), tele=No
         if res:
             out["res"].append({m: dict(min=0.0 if w.people[m].dead else round(rc[m]["min"], 4), burn=round(rc[m]["burn"], 4), caph=rc[m]["caph"],
                                        dead=int(w.people[m].dead)) for m in NAMES})
+        if drinks:
+            dr = {m: 0 for m in NAMES}
+            for e in w.log:
+                if e["done"] and e["action"] == "drink" and e["actor"] in dr:
+                    dr[e["actor"]] += 1
+            out["drinks"].append(dr)
         if flows:
             for e in w.log:
                 if e["done"] and e["action"] in CARE and e.get("target") in NAMES and e["actor"] in NAMES and e["actor"] != e["target"]:
@@ -215,17 +226,18 @@ def rows_from_state(st):
     for T, s in st.items():
         r = rows[T] = _Row2()
         r.a, r.a_max, r.hrs, r.hn, r.ky, r.kc, r.ejn = (s[k] for k in ("a", "a_max", "hrs", "hn", "ky", "kc", "ejn"))
+        r.kn = s.get("kn", 0.0)
         r.nights, r.first_age, r.hab = s["nights"], s["first_age"], dict(s["hab"])
     return rows
 
 
-def state_from_rows(rows, dial):
-    cn = KinConcerns(name="z", seed=0, dial=dial)
+def state_from_rows(rows, dial, params=None):
+    cn = KinConcerns(name="z", seed=0, dial=dial, params=params)
     cn.rows = rows
     return cn.state()
 
 
-def prehistory(seed, E, spans=SPANS, birth=BIRTH, t0=None, t1=0.0, step=SEASON, who=None, expo_fn=None, noise=False, rows0=None, scramble=None):
+def prehistory(seed, E, spans=SPANS, birth=BIRTH, t0=None, t1=0.0, step=SEASON, who=None, expo_fn=None, noise=False, rows0=None, scramble=None, params=None):
     """The years before play, in steps of `step` nights, the same law at each step (concerns2.coarse_advance). Returns ({name: state}, {name: rows})."""
     who = who or NAMES
     CM = classmeans(E) if E else {}
@@ -240,11 +252,11 @@ def prehistory(seed, E, spans=SPANS, birth=BIRTH, t0=None, t1=0.0, step=SEASON, 
         here = [n for n in who if present(spans, n, mid)]
         for i in here:
             expo = {j: fn(i, j, mid) for j in here if j != i}
-            coarse_advance(rows[i], expo, nights, mid - birth[i] - nights / 730.0, dl[i], noise=rng[i])
+            coarse_advance(rows[i], expo, nights, mid - birth[i] - nights / 730.0, dl[i], c={**CN2, **(params or {})}, noise=rng[i])
         t += nights / 365.0
     if scramble is not None:
         scramble(rows, seed)
-    return {n: state_from_rows(rows[n], dl[n]) for n in who}, rows
+    return {n: state_from_rows(rows[n], dl[n], params) for n in who}, rows
 
 
 def scramble_cues(rows, seed, who=None):

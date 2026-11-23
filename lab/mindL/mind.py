@@ -57,8 +57,9 @@ from lab.mindL.episodic import Episodic
 from lab.mindL.habit import Habit
 from lab.mindL.partners import HARM, KIND, PartnerModels, features
 from lab.mindL.valence import Valence
-from lab.mindL.world_model import WorldModel
-from lab.world2.world import DRIVES
+from lab.mindL.drives2 import DEFAULT_LETTERS, IE, IT, ND2, Drives2
+from lab.mindL.world_model import WorldModel, WorldModelP
+from lab.world2.world import DRIVES, DUR, ROOMS
 
 # Settings: chosen from short runs on SEED 0 (40 nights; Tom, Oren, Fenn; the
 # grids are in the L0 report). The test runs use other seeds.
@@ -86,7 +87,13 @@ DEFAULT = dict(modules="AKVWPEC", tau=0.01, gamma=0.98,
                # drop of the target's need as perceived through signs. lab/mindL/concerns.py. cn: RWConcerns settings;
                # cn_things: held and loose things (value >= 1) are targets too; b_concern: its weight in the choice (1: the
                # same units as the world-model lookahead, a predicted drop of error).
-               concerns=False, cn=None, cn_things=True, b_concern=1.0, cn_fx_prior=None)
+               concerns=False, cn=None, cn_things=True, b_concern=1.0, cn_fx_prior=None,
+               # DRIVES2 (mindL6 stage A, lab/mindL/drives2.py; off so every older run reproduces): True = "SCFD"; letters S separate thirst, C convex drive
+               # (Keramati and Gutkin), F felt depletion, D need by destination, W learning by watching. d2: Drives2 settings (n, m, felt_gain).
+               # wm_prior: {verb: dict(const={drive: x}, slope={drive: x}, n0=3)}, a prior on the world model of my own acts (what being TOLD writes).
+               # w_obs: the weight of a watched act against my own experience (u), copy_kin and copy_succ: dials that raise it for kin and for the
+               # successful (u, 0). b_dest: weight of the destination's expected relief in a walk option's score (u, 1: the units of the lookahead).
+               drives2=False, d2=None, wm_prior=None, w_obs=0.3, copy_kin=0.0, copy_succ=0.0, b_dest=1.0)
 # THE FIXES (user, 2026-10-29), "mind2" in lab/mindL/experiments.py: the partner models weigh in the
 # choice (the one-step lookahead gets four times the weight, and the person's recent treatment of me
 # is part of its valence: kind acts toward one who treats me well pull more, harsh acts toward one
@@ -121,6 +128,7 @@ class Agent:
         self.step = None
         self._w, self._ptr = None, 0
         self.decisions = 0
+        self.D = H                   # the drive model: the module drives (old) or a drives2.Drives2
         self.err_fn = H.error        # the error whose drop is the reward (L4 swaps in a designer's)
 
     def _sync(self, w):
@@ -139,12 +147,12 @@ class Agent:
     def decide(self, w, p, opts):
         self._sync(w)
         evs = self.perceived_at_me(w, p)
-        need = H.needs(w, p)
-        E, s = self.err_fn(w, p), H.state(w, p, need)
+        need = self.D.needs(w, p)
+        E, s = self.err_fn(w, p), self.D.state(w, p, need)
         self.observe(w, evs)
         if self.step is not None:
             self.learn(w, p, evs, need, E, s, terminal=False)
-        menu = reader.encode(opts, need)
+        menu = self.make_menu(w, p, opts, need)
         a, pi = self.pick(w, p, opts, menu, need, s)
         o = opts[a]
         self.step = Step(menu=menu, a=a, pi=pi, E=E, need=need, s=s, t=w.t, act=reader.key(o),
@@ -159,9 +167,12 @@ class Agent:
         evs = self.perceived_at_me(w, p)
         self.observe(w, evs)
         if self.step is not None:
-            need = H.needs(w, p)
-            self.learn(w, p, evs, need, self.err_fn(w, p), H.state(w, p, need), terminal=self.ends_life(p))
+            need = self.D.needs(w, p)
+            self.learn(w, p, evs, need, self.err_fn(w, p), self.D.state(w, p, need), terminal=self.ends_life(p))
             self.step = None
+
+    def make_menu(self, w, p, opts, need):
+        return reader.encode(opts, need)
 
     def ends_life(self, p):
         """Is the step closed by finish() the last one of this life? Always, for a chooser that
@@ -192,10 +203,27 @@ class Mind(Agent):
         assert not bad, f"unknown settings {sorted(bad)}"
         c = self.cfg = {**DEFAULT, **cfg}
         self.mods = set(c["modules"])
-        self.ac = ActorCritic(reader.NV, reader.ZDIM, reader.NT, H.SDIM, c["lr_actor"], c["lr_critic"], c["gamma"])
+        self.letters = (DEFAULT_LETTERS if c["drives2"] is True else (c["drives2"] or ""))
+        self.use_dest, self.use_watch = "D" in self.letters, "W" in self.letters
+        if self.letters:
+            self.D = Drives2(self.letters, **(c["d2"] or {}))
+            self.err_fn = self.D.error
+            zdim = 1 + reader.NK + self.D.ND + int(self.use_dest)
+        else:
+            assert not c["wm_prior"], "wm_prior needs drives2"
+            zdim = reader.ZDIM
+        self.zdim = zdim
+        self.gamma_walk = c["gamma"] ** DUR["walk to"]
+        self.ac = ActorCritic(reader.NV, zdim, reader.NT, self.D.SDIM, c["lr_actor"], c["lr_critic"], c["gamma"])
         self.habit = Habit(c["lr_habit"], c["habit_fade"])
         self.val = Valence(c["lr_val"])
-        self.wm = WorldModel(reader.NV, len(DRIVES), reader.ZDIM, c["lr_wm"])
+        self.wm = (WorldModelP if self.letters else WorldModel)(reader.NV, len(self.D.DRIVES), zdim, c["lr_wm"])
+        for verb, b in (c["wm_prior"] or {}).items():
+            dix = {d: i for i, d in enumerate(self.D.DRIVES)}
+            self.wm.set_prior(reader.VI[verb], {dix[d]: x for d, x in b.get("const", {}).items()}, {dix[d]: x for d, x in b.get("slope", {}).items()},
+                              b.get("n0", 3.0), reader.NK)
+        self._aff: dict = {}         # drives2 D: room -> {act: (verb, z, strongest need then)}: what I have seen on offer there
+        self._ww, self._wptr, self._sign0, self.watched = None, 0, {}, 0
         self.pm = PartnerModels(c["lr_partner"], forget=c["pm_forget"], detect=c["pm_detect"])
         self.ep = Episodic(c["k_episodes"], c["cap"])
         self.cur = Curiosity(c["hab"])
@@ -203,9 +231,10 @@ class Mind(Agent):
         self.fx = None
         if c["effects"]:
             assert not c["b_trust"], "the effects arm uses no KIND/HARM labels: b_trust must be 0"
-            self.fx = DeltaMeanings(len(DRIVES), nx=len(features({})), keep_log=c["fx_log"], turn_drift=c["fx_fix"])
+            self.fx = DeltaMeanings(self.D.ND, nx=len(features({})), keep_log=c["fx_log"], turn_drift=c["fx_fix"])
+            self.fx.cap = self.D.cap if self.letters else 1.0
             for act, b in (c["fx_prior"] or {}).items():
-                self.fx.set_prior(act, [b["delta"].get(d, 0.0) for d in DRIVES], b.get("n0", 3), b.get("p"))
+                self.fx.set_prior(act, [b["delta"].get(d, 0.0) for d in self.D.DRIVES], b.get("n0", 3), b.get("p"))
         self.ac.lam = c["lam"] if c["traces"] else 0.0
         self.cn = None
         self._rd: dict = {}
@@ -221,6 +250,118 @@ class Mind(Agent):
 
     def ends_life(self, p):
         return bool(p.dead) or not self.cfg["traces"]
+
+    # ------------------------------------------------------------ drives2: need by destination (D)
+    MOVES = ("walk to", "flee to")
+
+    def make_menu(self, w, p, opts, need):
+        if not self.use_dest:
+            return reader.encode(opts, need)
+        menu = reader.encode(opts, need, extra=1)
+        self._remember(p.room, opts, menu, need)
+        rel: dict = {}
+        for i, o in enumerate(opts):
+            if o["verb"] in self.MOVES and o["target"] in ROOMS:
+                if o["target"] not in rel:
+                    rel[o["target"]] = self.relief_at(o["target"], p.kind, need)
+                menu.Z[i, -1] = rel[o["target"]]
+        return menu
+
+    def _remember(self, room, opts, menu, need):
+        """What I see on offer here, kept for what it could do for me later (not movement: a place is what can be DONE in it)."""
+        if room not in ROOMS:
+            return
+        mem = self._aff.setdefault(room, {})
+        nmax = float(max(need[IE], need[IT]))
+        for i, o in enumerate(opts):
+            if o["verb"] not in self.MOVES:
+                mem[reader.key(o)] = (int(menu.v[i]), menu.Z[i].copy(), nmax)
+
+    def relief_at(self, room, kind, need):
+        """The relief my OWN world model expects from the best act I know is on offer in `room`, for my CURRENT needs: the drop of the drive
+        (a one-step lookahead over known affordances, every need, no rule about thirst). A remembered option's numbers are read again for now:
+        the needs columns are my needs now, and its own `need` number scales with how needy I am now against then (u: a general stand-in for
+        recomputing the option's numbers, which only the world can do)."""
+        mem = self._aff.get(room)
+        if not mem:
+            return 0.0
+        vs = np.array([x[0] for x in mem.values()])
+        Z = np.array([x[1] for x in mem.values()])
+        then = np.array([x[2] for x in mem.values()])
+        c0 = 1 + reader.NK
+        nd = self.D.ND
+        Z[:, c0:c0 + nd] = need
+        Z[:, -1] = 0.0
+        k = reader.KI["need"]
+        Z[:, k] *= np.clip(float(max(need[IE], need[IT])) / np.maximum(then, 0.1), 0.0, 4.0)
+        pred = np.einsum("ndz,nz->nd", self.wm.M[vs], Z)
+        return float(max(0.0, self.D.drop(kind, need, pred).max()))
+
+    # ------------------------------------------------------------ drives2: learning by watching (W)
+    def _watch(self, w, p):
+        """Another person's act that I perceived, and the change in their signs (hunger, thirst, hurt or fear) between my last reading of them and
+        now, teach my world model for that act at weight w_obs (u) of an own experience, on the needs I can see only. Only an act that is
+        the only one of that person in the interval counts (a clean credit); a reading is as noisy as the world's signs. Lossy by design."""
+        c, me = self.cfg, self.name
+        if w is not self._ww:
+            self._ww, self._wptr, self._sign0 = w, 0, {}
+        new = w.log[self._wptr:]
+        self._wptr = len(w.log)
+        now = {}
+        for q in w.here(p):
+            if q.name != me:
+                sg = w.perceived_need(me, q.name)
+                if sg is not None:
+                    now[q.name] = sg
+        by: dict = {}
+        for e in new:
+            if e["done"] and e["actor"] != me and e["actor"] in reader.PEOPLE and e["id"] in p.perceived and e["action"] in reader.VI:
+                by.setdefault(e["actor"], []).append(e)
+        for X, es in by.items():
+            if len(es) != 1 or X not in now or X not in self._sign0:
+                continue
+            t0, s0 = self._sign0[X]
+            if es[0]["t"] >= t0 and w.t - t0 <= 40:
+                self._learn_watched(es[0], s0, now[X], X)
+        self._sign0.update({X: (w.t, sg) for X, sg in now.items()})
+
+    def _learn_watched(self, e, s0, s1, X):
+        nd, c0 = self.D.ND, 1 + reader.NK
+        dv, mask, z = np.zeros(nd), np.zeros(nd), np.zeros(self.zdim)
+        z[0] = 1.0
+        for d, key in ((IE, "hunger"), (IT, "thirst")):
+            if key in s0 and key in s1:
+                dv[d], mask[d], z[c0 + d] = s1[key] - s0[key], 1.0, s0[key]
+        sf0, sf1 = max(s0["hurt"], s0["fear"]), max(s1["hurt"], s1["fear"])
+        dv[1], mask[1], z[c0 + 1] = sf1 - sf0, 1.0, sf0
+        c = self.cfg
+        wt = c["w_obs"]
+        if c["copy_kin"] and self.cn is not None and X in getattr(self.cn, "rows", {}) and hasattr(self.cn, "khat"):
+            wt *= 1.0 + c["copy_kin"] * self.cn.khat(self.cn.rows[X])
+        if c["copy_succ"]:
+            wt *= 1.0 + c["copy_succ"] * max(0.0, 1.0 - 0.5 * (s1.get("hunger", 0.0) + s1.get("thirst", 0.0)))
+        self.wm.update(reader.VI[e["action"]], z, dv, scale=min(1.0, wt), mask=mask)
+        self.watched += 1
+
+    # ------------------------------------------------------------ save and load (the whole learner)
+    PARTS = ("ac", "habit", "val", "wm", "pm", "ep", "cur", "fx", "cn", "_aff", "_sign0", "decisions", "watched", "_rd", "_got")
+
+    def dump(self):
+        """The whole learner as bytes (actor, critic, world model with its priors, effects, concerns, valence, habit, partner models, memory, curiosity,
+        the generator): a primed childhood can be cached per seed and loaded into an adult. Call between nights (no open step)."""
+        import pickle
+        assert self.step is None, "save between nights: the open step is not kept"
+        return pickle.dumps({"name": self.name, "kind": self.kind, "parts": {k: getattr(self, k) for k in self.PARTS},
+                             "rng": self.rng.bit_generator.state})
+
+    def load(self, blob):
+        import pickle
+        d = pickle.loads(blob)
+        assert d["name"] == self.name and d["kind"] == self.kind, "a learner is loaded into the same person"
+        for k, v in d["parts"].items():
+            setattr(self, k, v)
+        self.rng.bit_generator.state = d["rng"]
+        self.step, self._w, self._ptr, self._ww, self._wptr = None, None, 0, None, 0
 
     # ------------------------------------------------------------ choosing
     def terms(self, w, p, opts, menu, need):
@@ -244,7 +385,12 @@ class Mind(Agent):
                         tr[i] = t if o["verb"] in KIND else -max(0.0, t)
                 T["valence"] = T["valence"] + c["b_trust"] * tr
         if "W" in m:
-            T["world"] = c["b_wm"] * self.wm.lookahead(menu, H.grad(p.kind, need))
+            if self.letters:                       # drives2: the exact predicted drop of the drive (D is convex: a gradient overstates a big relief)
+                T["world"] = c["b_wm"] * self.D.drop(p.kind, need, self.wm.predict(menu))
+            else:
+                T["world"] = c["b_wm"] * self.wm.lookahead(menu, H.grad(p.kind, need))
+        if self.use_dest:
+            T["dest"] = c["b_dest"] * self.gamma_walk * np.array([menu.Z[i, -1] if o["verb"] == "walk to" else 0.0 for i, o in enumerate(opts)])
         if "P" in m and self.fx is not None:
             T["partner"] = c["b_partner"] * self.fx_term(opts, need, p.kind)
         elif "P" in m:
@@ -285,7 +431,7 @@ class Mind(Agent):
             for a, pa in self.fx.predict(who, o["verb"], State(features(o["f"]), need)).items():
                 k = (who, a)
                 if k not in worth:
-                    worth[k] = error_drop(kind, need, self.fx.effect(who, a, State(None, need)))
+                    worth[k] = error_drop(kind, need, self.fx.effect(who, a, State(None, need)), self.D if self.letters else None)
                 x[i] += pa * worth[k]
         return x
 
@@ -331,6 +477,8 @@ class Mind(Agent):
         return rd
 
     def observe(self, w, evs):
+        if self.use_watch:
+            self._watch(w, w.people[self.name])
         if self.cn is not None:
             self._rd = self._readings(w, w.people[self.name])
             self.cn.observe_read(w.t, self._rd)
@@ -344,7 +492,7 @@ class Mind(Agent):
                         self.cn.observe_care(e["actor"], e["target"], e["t"])
                 self._cptr = len(w.log)
         if self.fx is not None:
-            need = H.needs(w, w.people[self.name])
+            need = self.D.needs(w, w.people[self.name])
             tref, need0 = (self.step.t, self.step.need) if self.step is not None else (w.t, need)
             for e in evs:
                 self.fx.update(Got(e["actor"], e["action"], e["t"], tref, need0))
@@ -357,7 +505,7 @@ class Mind(Agent):
 
     def learn(self, w, p, evs, need, E, s, terminal):
         st = self.step
-        r = H.reward(st.E, E)
+        r = self.D.reward(st.E, E)
         dt = max(1, w.t - st.t)
         if self.cn is not None:
             self._got = frozenset(e["actor"] for e in evs)
@@ -413,7 +561,7 @@ class Mind(Agent):
                     self.cn.age = float(getattr(p, "age", 30.0))
             self.cn.night()
         if self.fx is not None:
-            for partner, err in self.fx.update(Flush(w.t, H.needs(w, p))):
+            for partner, err in self.fx.update(Flush(w.t, self.D.needs(w, p))):
                 self.cur.p.observe(partner, err)
         for partner, err in self.pm.close_all():
             self.cur.p.observe(partner, err)
@@ -449,7 +597,21 @@ class PerCharacter:
         a = self.agents.get(p.name)
         if a is None:
             a = self.agents[p.name] = self.make(p.name, p.kind)
+            blob = getattr(self, "preload", {}).get(p.name)
+            if blob is not None:
+                a.load(blob)
         return a
+
+    def save(self):
+        """{name: the whole learner as bytes} (Mind only), between nights."""
+        return {n: a.dump() for n, a in self.agents.items() if hasattr(a, "dump")}
+
+    def load(self, blobs):
+        """Learners to load into each person the first time they choose (or now, if they already exist)."""
+        self.preload = dict(blobs)
+        for n, a in self.agents.items():
+            if n in self.preload:
+                a.load(self.preload[n])
 
     def probs(self, w, p, opts):
         i = self.agent(p).decide(w, p, opts)

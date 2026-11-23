@@ -25,6 +25,7 @@ import numpy as np
 from lab.world2.world import DRIVES, NATURE, ROOMS
 
 ROOMLIST = tuple(ROOMS)
+ND = len(DRIVES)
 TURNS = 300
 SDIM = 1 + 2 * len(DRIVES) + len(ROOMLIST) + 4
 

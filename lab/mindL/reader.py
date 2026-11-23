@@ -72,14 +72,15 @@ def _num(k, x):
     return max(-2.0, min(2.0, float(x)))
 
 
-def encode(opts, need):
-    """The options as a Menu. `need` is the chooser's drive needs (DRIVES order)."""
+def encode(opts, need, extra=0):
+    """The options as a Menu. `need` is the chooser's drive needs (DRIVES order; drives2 gives more: z is as wide as the needs). `extra`: columns
+    of zeros after the needs that the chooser fills in (drives2: the destination's relief)."""
     n = len(opts)
     v = np.empty(n, dtype=np.int64)
     t = np.empty(n, dtype=np.int64)
-    Z = np.zeros((n, ZDIM))
+    Z = np.zeros((n, 1 + NK + len(need) + extra))
     Z[:, 0] = 1.0
-    Z[:, 1 + NK:] = need
+    Z[:, 1 + NK:1 + NK + len(need)] = need
     for i, o in enumerate(opts):
         v[i] = VI[o["verb"]]
         t[i] = TI[target_name(o["target"])]

@@ -1,0 +1,224 @@
+MINDL6 STAGE A: THE MECHANISM (drives2). REPORT, 2026-11-23.
+Plain text. Intervals are 95% unless said. Nothing was tuned after a run. No git was used.
+
+HEADLINE
+All eight mechanism pieces are built behind the mind option "drives2" and tested (20 tests in test_drives2, all pass; every older suite passes).
+The new drives ALONE do not fix thirst in the lethal family inn. Verdict (pre-registered): PARTIAL.
+Thirst deaths by night 90: old learner 89% [81, 95], drives2 learner 67% [59, 75], rules 2% [0, 5]. Stage B (childhood, being told, watching) is needed.
+The relative grading fixes the saturation of the concern weights, but gate (i) still FAILS its pre-registered limits (limits unchanged).
+
+HOW THIS REPORT WAS FINISHED
+The laptop shut down at 15:13 during an earlier fix round. All long runs (gate (i) 6 of 6, diagnostic 45 of 45) had finished and were not re-run.
+In this round I re-ran all the suites on the current files, read the full diffs, ran mutations on a copy, and wrote this report.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+1. THE PIECES (each: what, source or (u), test)
+Constants without a source are marked (u). The library request (requests/2026-11-23-mark1-drives-and-cultural-learning.md) is still OPEN: no answer
+file exists, so every (u) below stays (u).
+
+P1 SEPARATE DRIVES (letter S). lab/mindL/drives2.py. Thirst is its own drive beside hunger; energy = hunger only. The drive vector is the old seven plus thirst.
+   Weight and set point of thirst = hunger's, for each kind (u: no source for a difference; the two needs differ in the body's reserve, 5 days against 45).
+   Tests: test_thirst_is_its_own_drive_and_a_drink_pays_when_hunger_is_higher (old drive: the same drink earns exactly 0; new: it pays),
+   test_thirst_above_hunger_does_not_leak_into_the_energy_need (added this round), test_thirst_weight_and_set_point_are_hungers_for_each_kind.
+
+P2 CONVEX HOMEOSTATIC DRIVE (letter C). Keramati and Gutkin 2014, eLife, doi:10.7554/eLife.04811: D = (sum |h* - h|^n)^(1/m), n > m > 1, reward = D(t) - D(t+1).
+   Exponents n = 4, m = 3 are (u): from memory of the paper's simulations, NOT confirmed against the text (the page would not load). The condition n > m > 1
+   is enforced in code. The deficit of each drive is the old weighted error above its set point. The mind uses the exact drop D(now) - D(after), not the gradient.
+   Alliesthesia (Cabanac 1971): the same relief is worth more at greater deficit. Tests: test_alliesthesia_relief_is_worth_more_at_greater_deficit (at least
+   1.3 times, three kinds), test_the_larger_deficit_wins_when_two_compete (both ways round), test_exponents_obey_keramati_gutkin_condition.
+
+P3 FELT DEPLETION (letter F). The body's reserve reaches the mind. dep = 1 - reserve / full reserve (0..1), read from p.reserve only. The felt need is
+   need + FELT_GAIN * dep, so it goes up to 2 when the need is at its cap and the reserve drains. It is in the state needs (so in the drive and the reward)
+   and in two extra state channels (dep_thirst, dep_hunger). FELT_GAIN = 1 (u) and the linear time course (u). Real anchors from memory (u): thirst at 1 to 2
+   percent of body water lost, cognition drops at 2 to 5 percent, collapse near 10, death near 15 to 20 (Adolph 1947; Sawka et al. 2007). A library answer on
+   dehydration symptoms by percent lost would replace the linear course.
+   Tests: test_felt_depletion_grows_with_the_reserve_lost_and_reads_only_the_body, test_felt_urgency_beats_the_unfelt_drive_near_death.
+
+P4 CULTURAL CHANNEL 1, OWN-ACT PRIORS. lab/mindL/world_model.py WorldModelP and mind option wm_prior; drives2.told is the telling. A prior is a matrix with n0
+   pseudo-counts; step of a verb = lr (cnt+1)/(cnt+1+n0), so the weight of the prior after n experiences is n0/(n0+n): experience overrides it. n0 = 0 is exactly
+   the old rule. Being told: lossy by design (K design). Constants all (u): T_CHANCE 0.6 (take-up chance; own experience = 1), N0_TOLD 3 (own experience counts 1
+   each, no cap), T_NOISE 0.25 (relative sd of the error in what is passed on), MIN_KNOWN 3 (a teller passes on only what it has had 3 experiences of).
+   Tests: test_prior_is_used_then_overridden_by_experience, test_no_prior_is_the_old_world_model_bit_for_bit, test_told_is_lossy_and_lighter_than_experience.
+
+P5 CULTURAL CHANNEL 2, LEARNING BY WATCHING (letter W). The world flag "drives2" (with signs) adds a THIRST sign to the visible signs, as the last key so the
+   other signs' noise draws are unchanged. When I perceive another person's act, and it is the only act of that person since my last reading of them, the change in
+   their signs (hunger, thirst, hurt, fear) updates my own world model for that act at weight w_obs = 0.3 (u) of an own experience, on the needs I can see only
+   (a mask). Optional dials copy_kin and copy_succ (default 0, u). The reading is as noisy as the world's signs. Lossy by design.
+   Tests: test_watching_updates_my_model_at_a_weight_below_my_own, test_watching_in_the_world_teaches_a_mind_that_never_drank.
+   Not used in the diagnostic (letter W off: the diagnostic is the naive adult).
+
+P6 NEED BY DESTINATION (letter D). A walk or flee option carries one extra feature: the relief my OWN world model expects from the best act I remember being
+   on offer in the destination room, for my CURRENT needs (a one-step lookahead over remembered affordances; every need, same law). It is also a score term
+   (b_dest = 1, u: the units of the lookahead). A remembered option's "need" number is rescaled by how needy I am now against then, capped at 4 (u, a general
+   stand-in for recomputing the option's numbers).
+   Tests: test_walk_carries_the_relief_my_model_expects_at_the_destination_for_any_need (thirsty: the water room; tired: the other room; no need: 0; ignorant mind: 0),
+   test_the_walk_option_gets_the_feature_and_the_term, test_walk_option_carries_destination_relief_in_the_menu (added this round).
+
+P7 SAVE AND LOAD. Mind.dump / Mind.load and PerCharacter.save / load: actor, critic, world model with priors, effects, concerns, valence, habit, partner models,
+   memory, curiosity, the generator. Call between nights. Test: test_save_load_round_trip_gives_identical_choices (save, load, identical choices on a fixed world,
+   over 100 decisions).
+
+P8 CONCERN SATURATION FIX. concerns2 option params={"rel": True} (off: mindL5 bit for bit). Effort justification and the observed-care cue are graded by their
+   share of the strongest tie of mine (unsaturated counts kn, ejn): EJ_T = min(1, step n_T) n_T / max n, kc_T = kc_T N_T / max N. No new constant.
+   Result in the full 1-year runs: the weights stay ordered. Setup A: family 0.74, lodgers 0.58 (before: 0.98 and 0.86). Setup B: family 0.53, lodgers 0.46
+   (before: 0.74 and 0.78, no order). Mean w of a full run: A 0.62 (before 0.88), B 0.47 (before 0.75).
+   Tests: test_relative_grading_keeps_ties_ordered_where_the_absolute_one_saturates, test_rel_off_is_mindL5_and_coarse_agrees_with_the_same_law.
+   Anchors (best friend 0.25, r = .5 kin 0.5; Madsen 2007): the best tie keeps its full effect by construction. Caveat: the mean weights in the full runs
+   (0.62 and 0.47) are still well above those anchors, so the anchors are not reproduced in the full runs; only the order is.
+
+OFF IS EXACTLY AS BEFORE. test_off_is_the_old_mind, test_no_prior_is_the_old_world_model_bit_for_bit, flag_off in test_effects and test_concerns, and the golden
+traces in test_mind all pass with the options off.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+2. THE TESTS (re-run on the CURRENT files, this round, under lab.lock; log: mindL6/A/suites2.log)
+   lab.world2.test_world      92 passed
+   lab.mindL.test_mind        30 passed (golden traces included)
+   lab.mindL.test_tournament  17 passed
+   lab.mindL.test_effects     passes (flag_off true)
+   lab.mindL.test_concerns    passes (explicit off equals default: true)
+   lab.mindL.test_survival    3 passed
+   lab.mindL.test_food        passed
+   lab.mindL.test_kin         failures: 0
+   lab.mindL.test_drives2     20 passed (18 before; 2 added this round to close two gaps the mutation check found, see section 6)
+Note: test_drives2 was edited after suites2.log was written (the two new tests); it was re-run after the edit: 20 passed. The other suites do not import it.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+3. GATE (i) RE-RUN (piece 8): coarse past against a full run, seeds 1-3, ONE year (night 365), both setups, limits UNCHANGED from mindL5 PASS_RULE_A.txt
+   Limits: T1 mean |dw| <= 0.10 and no seed above 0.15; T2 mean Kendall tau >= 0.60; T3 mean |d khat| <= 0.10.
+   Files: scratch full_rel_{A,B}_{1,2,3}.json; summary lab/results/mindL6/A/gate_i_rel.json. PASS_i = false.
+
+                                   setup A (36-year coarse past)          setup B (from strangers)
+                                   measured   floor   limit  met           measured   floor   limit  met
+   T1 mean |dw| coarse vs full     0.138      0.168   0.10   no            0.230      0.228   0.10   no
+      max seed mean |dw|           0.149      -       0.15   yes (just)    0.234      -       0.15   no
+   T2 Kendall tau                  0.573      0.520   0.60   no            0.048      0.124   0.60   no
+   T3 mean |d khat|                0.176      0.230   0.10   no            0.256      0.323   0.10   no
+   (floor = the same measure between two FULL runs with different seeds, the noise of the thing being approximated)
+
+   OLD (absolute) inputs against REL inputs, mean over the full runs:
+                    w       F       EJ      khat
+   A old            0.878   0.939   0.805   0.873
+   A rel            0.616   0.933   0.348   0.469
+   B old            0.754   0.825   0.699   0.705
+   B rel            0.473   0.762   0.285   0.287
+   Weight spread (sd over pairs): A old 0.158, A rel 0.228; B old 0.217, B rel 0.204. Family against lodger: A 0.98 vs 0.86 old, 0.74 vs 0.58 rel.
+
+   WHY IT STILL FAILS. The saturation is fixed: EJ and khat no longer sit near 1 for every pair, and the ties are ordered. But the coarse past is still about as far
+   from a full run as two full runs with different seeds are from each other. In setup A the coarse past is closer than the floor on |dw| and |dk| (0.138 against
+   0.168; 0.176 against 0.230) and a little above it on tau (0.573 against 0.520, the limit is 0.60). In setup B it is at the floor on |dw| and below it on tau.
+   So the limits (0.10, 0.60, 0.10) are tighter than the run-to-run noise of the system itself. A coarse approximation cannot be expected to be closer to one
+   full run than a second full run is. This is a finding about the yardstick: a fairer gate would compare the coarse past with the full runs' noise (for
+   instance: coarse-minus-full inside the floor), not with fixed limits. I did NOT change the limits or retune. The gate is reported as FAILED. If the owner
+   agrees, the new yardstick must be pre-registered before the next run. Caveat: in setup B the measured tau 0.048 is well below the floor 0.124, so setup B
+   is a miss even against the noise.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+4. THE DIAGNOSTIC (piece 9). PASS_RULE_A6.txt was written 2026-11-23 13:30:25, BEFORE the diagnostic started (13:30:30). Gate (i) runs started earlier
+   (13:29:51) but the rule file does not apply to gate (i), whose limits are mindL5's. Lethal family inn, flags of mindL5 stage B plus the world flag drives2
+   for the drives2 arm; 90 nights; 15 seeds (11-25); 7 people a household = 105 lives an arm. Same seeds in all arms. Files: diag_{old,drives2,rules}_{11..25}.json;
+   summary lab/results/mindL6/A/diag_a6.json. Arms: old (mindL5 'off' learner), drives2 (SCFD, no childhood, no culture, no watching, no concerns), rules.
+   Reproducibility: old and rules reproduce mindL5's deaths for the same seeds, 15 of 15 seeds identical.
+
+   M1 share of lives ended by night 90, by cause (95% bootstrap over seeds, 2,000 draws):
+                    dead of thirst        dead of hunger   other   all dead
+   old              0.886 [0.81, 0.95]    0.000            0.000   0.886   (93 of 105)
+   drives2          0.667 [0.59, 0.75]    0.076            0.010   0.752   (70 thirst, 8 hunger, 1 other of 105)
+   rules            0.019 [0.00, 0.05]    0.000            0.000   0.019   (2 of 105)
+   Paired by seed: old minus drives2, thirst 0.219 [0.124, 0.314]; all causes 0.133 [0.048, 0.238]. Both exclude 0.
+   M2 median first death night per household (no death = 91): old 5, drives2 4, rules 91. First deaths come on night 4 to 5 in both learner arms.
+   M3 drinks per living person (a sum over the window), windows nights 0-9, 10-29, 30-89:
+                    0-9      10-29    30-89    stable drinkers (drank on EVERY night 20-29, among those alive at night 30)
+   old              8.5      15.7     14.4     0.64 (21 of 33)
+   drives2          9.1      10.6     8.9      0.73 (43 of 59)
+   rules            4.7      4.3      4.2      0.76 (80 of 105)
+   Reserve burned a night (as mindL5): old 0.234, drives2 0.309, rules 0.138.
+
+   PRE-REGISTERED VERDICT: "drives alone fix thirst" needs M1(drives2) <= 0.05 AND stable drinkers >= 0.90. Neither holds (0.667; 0.73). PARTIAL needs M1 lower than
+   old with the paired interval excluding 0: it does. VERDICT = PARTIAL. Per the rule file, this means the drives help, the learner is still ignorant of drinking
+   for some people (a naive learner has no exploration drive), and a childhood, being told and watching are needed.
+
+   Does a naive drives2 learner learn to drink? Partly at best. Drinks per living person do NOT rise over the windows for drives2 (9.1, 10.6, 8.9): a flat line,
+   so there is no sign of learning over the 90 nights among the survivors. The windows are different lengths (10, 20, 60 nights) and the sum is per person
+   alive, so read them with that in mind; I did not compute a per-night curve.
+   Check I added (not pre-registered, reported, not gated; from the same files): of the 70 thirst deaths in the drives2 arm, 24 people never drank at all before
+   they died and 46 drank at least once and still died. In the old arm 19 of 93 never drank. Rules: 0 of 2. So about two thirds of the drives2 thirst deaths are
+   people who drank but not enough or not in time; the drives did not make drinking reliable.
+   Another cost: hunger deaths appear (8% against 0%): the two needs now compete, which was impossible when thirst hid behind hunger.
+   I reproduced the headline arithmetic from the raw per-seed files: drives2 thirst deaths 70 of 105 = 0.667, bootstrap over seeds [0.60, 0.74] (my draw; the
+   summary has [0.59, 0.75]: the same within resampling noise).
+   Note: rules drink LESS than the learners (4.3 against 8.9 to 15.7 per window) and live. Counting drinks measures the amount, not the timing. The learners drink
+   more often and still die, which hints at timing (when and where), not at the count. This is a hypothesis; I did not test it and did not tune anything.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+5. WHAT IS LEFT FOR STAGE B
+   - A primed CHILDHOOD in the safe inn (same learner, same laws), cached per seed with save/load (P7), loaded into the adult. The test is whether a learner that
+     has already lived through thirst and its relief in a safe place learns timing before the lethal inn.
+   - TOLD priors from elders (P4: told() with the (u) take-up chance, noise and n0), written into the world model of the child before the lethal inn.
+   - WATCHING parents and others (P5, letter W): the diagnostic ran with W off. Needs the dial values for w_obs, copy_kin, copy_succ (all u).
+   - Then the population against rules in the lethal inn (the owner's bar, AQ4: the learned mind is default once it beats the rules). Today it does not.
+   - Library answers still open (request D-a..D-g): the exponents of Keramati and Gutkin (n, m), the dehydration time course by percent lost, w_obs and the
+     take-up rates of told knowledge. Until then these stay (u).
+   - The gate (i) yardstick: decide whether to compare against the run-to-run noise. Pre-register before any new run.
+   - Open question the diagnostic raises: why do drinkers still die (timing)? A trace of the days of one dying drinker (what it chose when thirst was high)
+     would show whether it walked away from water, was blocked, or valued something else more. This is analysis, not a mechanism change.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+6. CHECKS THE VERIFIER COULD NOT DO
+
+6a. SUITES re-run on the current files: section 2. All pass.
+
+6b. ACT-LEVEL HAND RULES: I read the full diffs of world.py, mind.py, reader.py, effects.py, world_model.py, drives.py, concerns2.py, household.py, and the whole
+    of drives2.py. Result: no rule of the form "if thirsty then drink", and no act named in the drive, the reward or the score. Where acts, drives or verbs are named:
+      - world.py: the only change adds thirst to the visible signs under the flag (a sign of the body, no act).
+      - drives2.py: thirst enters as a drive, a body-read depletion channel and the reward. depletion() reads p.reserve only.
+      - mind.py relief_at / _remember: reads "walk to" and "flee to" (the movement verbs, to know which options are destinations) and the need columns. It uses
+        max(need[energy], need[thirst]) to RESCALE a remembered option's "need" number (u). This names two needs, not an act. It is a stand-in for recomputing the
+        option's numbers; a general form would use the option's own need column. Flagged as the one place two drive names appear in the mind. Not an act rule.
+      - mind.py _learn_watched: uses the sign keys hunger, thirst, hurt, fear because those are the signs the world shows. Which act it credits is whatever act
+        was seen. No act is named.
+      - concerns2 and household: relative grading and bookkeeping; no acts except the existing CARE_VERBS set (already in mindL5).
+      - effects.error_drop: swaps in the Drives2 drop when given. No act.
+    Residual flag: the constants marked (u) above.
+    Also seen: git status now lists modified files under src/voxel. I did not touch src; they are not part of this work.
+
+6c. MUTATIONS, on a COPY (lab/__init__.py, lab/mindL, lab/world2, src; copy deleted after each run; the live tree was not touched). Each mutation was run against
+    test_drives2 only (the run stops at the first failure):
+      P1 thirst folded into energy (v[IE] = max(hunger, thirst)): NOT caught by the original 18 tests (the test used hunger > thirst, where the max equals hunger).
+         Gap found. I added test_thirst_above_hunger_does_not_leak_into_the_energy_need. Re-run: CAUGHT by it.
+      P2 convex drive off (self.convex = False): CAUGHT (test_exponents_obey_keramati_gutkin_condition stops with "n < m must be refused"; the alliesthesia test would
+         also fail: the drop at deficit 0.45 and 0.95 is 0.150 for both, checked directly outside the copy).
+      P3 felt depletion removed from the thirst need: CAUGHT by test_felt_depletion_grows_with_the_reserve_lost_and_reads_only_the_body (needs all 1.0).
+      P4 prior never overridden (the (cnt+1)/(cnt+1+n0) factor removed): CAUGHT by test_prior_is_used_then_overridden_by_experience.
+      P5 watched act counts as own (scale ignored): CAUGHT by test_watching_updates_my_model_at_a_weight_below_my_own (0.1098 for a watched act against 0.1222
+         for own: the check "0 < watched < own" failed).
+      P6 destination relief zeroed in the menu: NOT caught by the original tests (they checked relief_at directly and the "dest" term and zdim, not the number in the
+         menu). Gap found. I added test_walk_option_carries_destination_relief_in_the_menu. Re-run: CAUGHT by it.
+      P7 world model left out of the save: CAUGHT by test_save_load_round_trip_gives_identical_choices.
+      P8 relative grading ignores the reference tie: CAUGHT by test_relative_grading_keeps_ties_ordered_where_the_absolute_one_saturates (EJ 1.0 for both ties).
+    Eight mutations, one per piece; six caught at once, two caught only after I added one test each. Logs: mindL6/A/mut.log and mut2.log. (My first mutation run
+    broke on a path with a space and ran nothing; the live tree was untouched; I fixed the quoting and re-ran.)
+
+------------------------------------------------------------------------------------------------------------------------------------------
+7. FIX ROUND (answers to the verifier)
+ 1. HIGH, no results and no report. Fixed. Gate (i) 6 of 6 and the diagnostic 45 of 45 finished; this report exists in scratch and in lab/results/mindL6/A/.
+    Check 3 (reproduce a number and the CI arithmetic): done in section 4 (70 of 105 = 0.667; bootstrap [0.60, 0.74]; summary [0.59, 0.75]).
+ 2. HIGH, background jobs left running. They finished; nothing is running and no lock is held. This round ran each long step in the foreground under
+    flock lab.lock and cap.sh, then waited for it to end. No pgrep -f pattern was used.
+ 3. MEDIUM, verdict UNDECIDED. Now decided: diagnostic PARTIAL (pre-registered rule), gate (i) FAIL (limits unchanged). The stage is NOT a pass of the owner's bar:
+    the learned mind does not beat the rules. It is a mechanism stage; the stage B work is open.
+ 4. LOW, the pass rule predates the diagnostic only narrowly. Agreed: PASS_RULE_A6.txt 13:30:25, diagnostic start 13:30:30, so the rule came first by 5 seconds.
+    The rule's content is fixed and the verdict follows it literally. Gate (i) used mindL5's limits, written earlier (PASS_RULE_A.txt), so the order did not matter
+    there. Stated here so a reader can discount it if 5 seconds worry them.
+ 5. INFO, not done: checks 1, 2 and 4 are now done: suites (section 2), diffs read for hand rules (6b), mutations (6c). Two test gaps found by the mutations were
+    closed with two new tests.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+FOR THE USER
+ - The new drives help but do not fix thirst. 89% of learners died of thirst before; 67% do now. The rules lose 2%. The pre-registered verdict is PARTIAL.
+ - Many of the dead did drink at least once (46 of 70). The learners drink more often than the rules and still die, so the problem looks like timing, not
+   only ignorance (a hypothesis, not tested). Stage B (childhood, being told, watching) is still needed.
+ - A few now die of hunger (8%): the two needs compete, which was not possible before.
+ - The concern-weight saturation is fixed (family 0.74, lodgers 0.58). The coarse-past check still fails its limits, but the limits are tighter than the noise
+   between two full runs. I did not change them. Your decision: pre-register a noise-relative yardstick?
+ - Constants without a source are marked (u): the exponents (n 4, m 3), felt gain, take-up and told weights, watch weight. The library request is still open.
+ - Two test gaps found and closed by mutation checks. All suites pass. Nothing was committed.

@@ -1,0 +1,27 @@
+MINDL6 STAGE A, PIECE 9: PASS RULE for "do the evolved drives ALONE fix thirst", written 2026-11-23 BEFORE the diagnostic was run.
+
+THE RUN. The lethal family inn (flags of mindL5 stage B: family, field, hard, lethal, perma, signs; plus the world flag drives2 for the drives2 arm, which
+changes only what the signs show), 90 nights, 15 seeds (11-25), 7 people a household = 105 lives an arm. Arms:
+  old     the mindL5 learner, no concerns (mindL5 stage B arm "off")
+  drives2 the same learner with drives2 = SCFD (separate thirst, convex drive, felt depletion, need by destination). NO childhood, NO told priors,
+          NO watching (letter W off), NO concerns: nothing cultural, nothing primed: the naive adult.
+  rules   the scripted household (the null; the bar)
+Same seeds in all arms. The old and rules arms are re-run (not reused) so that drinks a night are recorded; their deaths are compared with mindL5's
+file for the same seeds as a reproducibility check (reported, not gated).
+
+MEASURES (pooled over the 105 lives of an arm; 95% intervals by bootstrap over seeds, 2,000 draws; paired by seed for differences):
+  M1 share dead of thirst by night 90 (and by hunger and by other causes);
+  M2 median first death night per household (a household with no death is censored at 91);
+  M3 drinks a night per living person, in the windows nights 0-9, 10-29, 30-89 (done acts "drink"), and the share of people alive at night 30 who
+     drank on EVERY one of nights 20-29 ("a stable drinker").
+
+VERDICT FOR "DRIVES ALONE FIX THIRST" (decided by M1 and M3 only, fixed here):
+  YES      M1(drives2) <= 0.05 (rules lose 0.01 in mindL5), AND the share of stable drinkers among those alive at night 30 is >= 0.90.
+  PARTIAL  M1(drives2) lower than M1(old) with the paired seed bootstrap interval of old - drives2 excluding 0, but not YES.
+  NO       otherwise (no paired improvement, or a worse one).
+What each verdict means for stage B: YES = culture and a childhood are not needed for thirst (still for the rest); PARTIAL = the drives help, the
+learner is still ignorant of drinking for some people (an act never tried is never learned: a naive learner has no exploration drive, only
+softmax noise), so a childhood, being told and watching are needed; NO = the mechanism is not the cause alone.
+Reported with them, never gated: deaths by cause for each arm, M2, M3 per window, reserve burned a night (as mindL5), whether the drinks per night rise
+or fall over nights for the drives2 arm (a naive learner that learns shows a rise).
+Nothing is tuned after the run: a PARTIAL or NO is a finding.

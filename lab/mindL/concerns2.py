@@ -70,8 +70,16 @@ CN2 = dict(
     ej_step=0.25, ej_theta=2.0,
     fade0=0.0014, tau_f=1.0, h0=2.0, contact_hold=30.0,
     hab_f=0.045, h_set=0.35, rec_time=1.0 - (1.0 - 0.23) ** (1.0 / 21), rec_var=1.0 - (1.0 - 0.79) ** (1.0 / 21),
+    rel=False,                            # mindL6 (off: mindL5 bit for bit): effort justification and the observed-care cue graded RELATIVE to my other ties
     gain=20.0, ceil=1.0, lr_base=0.05, dis=0.05, helped_min=JND,
 )
+# RELATIVE GRADING (mindL6, option params={"rel": True}; mindL5's cause of the saturation of every weight in a full run). Two inputs were absolute
+# and saturating: the effort count (EJ = min(1, 0.25 n): four costly acts for anyone double the weight) and the observed-care cue (kc moves up by
+# RHO_OBS x w a hundred times a year: 0.9-0.99 for every pair, lodgers included). A cue to kinship and a sign of what I have paid for are worth
+# something only against what I have seen and paid for OTHERS: a person's ties are ranked by them. So each is graded by its share of the
+# strongest tie of mine: EJ_T = min(1, step n_T) * n_T / max_j n_j ; kc_T = kc_T * N_T / max_j N_j, N the unsaturated count of care episodes seen
+# for T (care-gated, w_c each). The best-paid-for tie keeps its full effect (a best friend, a kin at r = .5 anchors as before: Madsen 2007), the
+# others are in proportion to what they were. Nothing here has a new constant: the relative form is the only change.
 CARE_VERBS = frozenset({"give", "help up", "bandage", "defend", "serve", "tend"})     # the world's HELPED set: what a witness reads as care
 
 # a step as cn2 sees it: StepObs plus `got`, the people whose acts at me I perceived during the step
@@ -79,10 +87,10 @@ StepObs2 = namedtuple("StepObs2", "r before after contact act aimed helped dt go
 
 
 class _Row2:
-    __slots__ = ("a", "a_max", "hrs", "hn", "ky", "kc", "ejn", "e", "hab", "first_age", "nights", "t_eng", "t_con", "t_feat")
+    __slots__ = ("a", "a_max", "hrs", "hn", "ky", "kc", "ejn", "e", "hab", "first_age", "nights", "t_eng", "t_con", "t_feat", "kn")
 
     def __init__(self):
-        self.a = self.a_max = self.hrs = self.hn = self.ky = self.kc = self.ejn = self.e = 0.0
+        self.a = self.a_max = self.hrs = self.hn = self.ky = self.kc = self.ejn = self.e = self.kn = 0.0
         self.hab: dict = {}
         self.first_age = None
         self.nights = 0.0
@@ -115,6 +123,24 @@ def fade_rate(age_years, hist_years, dial, protect, c=CN2):
     return c["fade0"] / ((1.0 + age_years / c["tau_f"]) * (1.0 + hist_years / c["h0"])) * dial * (1.0 - protect)
 
 
+def refs(rows, c):
+    """The strongest of my person ties by the unsaturated counts (kn, ejn), or None when grading is absolute."""
+    if not c.get("rel"):
+        return None
+    pr = [r for T, r in rows.items() if not T.startswith("thing:")]
+    return (max((r.kn for r in pr), default=0.0), max((r.ejn for r in pr), default=0.0))
+
+
+def graded(r, c, ref):
+    """(kc, EJ) of a row, absolute or relative to ref."""
+    ej = min(1.0, c["ej_step"] * r.ejn)
+    kc = r.kc
+    if ref is not None:
+        kc = kc * (r.kn / ref[0] if ref[0] > 0 else 0.0)
+        ej = ej * (r.ejn / ref[1] if ref[1] > 0 else 0.0)
+    return kc, ej
+
+
 class KinConcerns(RWConcerns):
     def __init__(self, name="?", seed=0, age=30.0, params=None, dial=None, **kw):
         super().__init__(**{k: v for k, v in kw.items() if k in ("effects",)})
@@ -135,25 +161,26 @@ class KinConcerns(RWConcerns):
     def _Hn(self, r):
         return 1.0 - math.exp(-r.hn / (self.c["tau_h"] * 365.0))
 
-    def khat(self, r):
+    def khat(self, r, ref=None):
         ky = 1.0 - math.exp(-r.ky / (self.c["tau_k"] * 365.0))
-        return 1.0 - (1.0 - ky) * (1.0 - r.kc)
+        return 1.0 - (1.0 - ky) * (1.0 - graded(r, self.c, ref)[0])
 
-    def ej(self, r):
-        return min(1.0, self.c["ej_step"] * r.ejn)
+    def ej(self, r, ref=None):
+        return graded(r, self.c, ref)[1]
 
-    def _wr(self, r, T):
+    def _wr(self, r, T, ref=None):
         if T.startswith("thing:"):
             return min(self.ceil, self.gain * max(r.a, 0.0) + r.e)
-        base = self.c["w_att"] * self._F(r) * (1.0 + self.c["g_k"] * self.dial["cap"] * self.khat(r)) + self.gain * max(r.a, 0.0)
-        return min(self.ceil, base * (1.0 + self.ej(r)) + r.e)
+        base = self.c["w_att"] * self._F(r) * (1.0 + self.c["g_k"] * self.dial["cap"] * self.khat(r, ref)) + self.gain * max(r.a, 0.0)
+        return min(self.ceil, base * (1.0 + self.ej(r, ref)) + r.e)
 
     def pull(self, target):
         r = self.rows.get(target)
-        return self._wr(r, target) if r is not None else 0.0
+        return self._wr(r, target, refs(self.rows, self.c)) if r is not None else 0.0
 
     def table(self):
-        return {T: self._wr(r, T) for T, r in self.rows.items()}
+        ref = refs(self.rows, self.c)
+        return {T: self._wr(r, T, ref) for T, r in self.rows.items()}
 
     def set_table(self, table):
         self.rows, self.bouts = {}, {}
@@ -163,8 +190,9 @@ class KinConcerns(RWConcerns):
 
     def state(self):
         """The inspectable state per target (the coarse check reads and loads this)."""
-        return {T: dict(w=self._wr(r, T), a=r.a, a_max=r.a_max, hrs=r.hrs, F=self._F(r), hn=r.hn, H=self._Hn(r), ky=r.ky, kc=r.kc,
-                        khat=self.khat(r), ejn=r.ejn, EJ=self.ej(r), nights=r.nights, first_age=r.first_age, hab=dict(r.hab))
+        ref = refs(self.rows, self.c)
+        return {T: dict(w=self._wr(r, T, ref), a=r.a, a_max=r.a_max, hrs=r.hrs, F=self._F(r), hn=r.hn, H=self._Hn(r), ky=r.ky, kc=r.kc, kn=r.kn,
+                        khat=self.khat(r, ref), ejn=r.ejn, EJ=self.ej(r, ref), nights=r.nights, first_age=r.first_age, hab=dict(r.hab))
                 for T, r in self.rows.items() if not T.startswith("thing:")}
 
     def load_state(self, st):
@@ -173,6 +201,7 @@ class KinConcerns(RWConcerns):
             r = self.rows.setdefault(T, _Row2())
             r.a, r.a_max, r.hrs, r.hn, r.ky, r.kc, r.ejn = (s[k] for k in ("a", "a_max", "hrs", "hn", "ky", "kc", "ejn"))
             r.nights, r.first_age, r.hab = s["nights"], s["first_age"], dict(s["hab"])
+            r.kn = s.get("kn", 0.0)
 
     # ------------------------------------------------------------ what the mind sees
     def observe_care(self, carer, target, t=None):
@@ -183,6 +212,7 @@ class KinConcerns(RWConcerns):
         wc = min(1.0, max(0.0, (self.pull(carer) - c["care_lo"]) / (c["care_hi"] - c["care_lo"])))
         r = self.rows.setdefault(target, _Row2())
         r.kc += c["rho_obs"] * wc * (1.0 - r.kc)
+        r.kn += wc
         tl = self._tele(target)
         tl["obs"] += 1
         tl["obs_by"][carer] = tl["obs_by"].get(carer, 0) + 1
@@ -357,16 +387,17 @@ def _poisson(rng, lam):
         k += 1
 
 
-def _wr_plain(r, c, dial):
+def _wr_plain(r, c, dial, ref=None):
     """A row's weight as KinConcerns computes it, without the mind (the coarse step has only rows)."""
     F = 1.0 - math.exp(-r.hrs / c["h_f"])
     ky = 1.0 - math.exp(-r.ky / (c["tau_k"] * 365.0))
-    kh = 1.0 - (1.0 - ky) * (1.0 - r.kc)
+    kc, ej = graded(r, c, ref)
+    kh = 1.0 - (1.0 - ky) * (1.0 - kc)
     base = c["w_att"] * F * (1.0 + c["g_k"] * dial["cap"] * kh) + c["gain"] * max(r.a, 0.0)
-    return min(c["ceil"], base * (1.0 + min(1.0, c["ej_step"] * r.ejn)) + r.e)
+    return min(c["ceil"], base * (1.0 + ej) + r.e)
 
 
-def coarse_advance(rows, expo, S, age, dial, c=CN2, noise=None):
+def coarse_advance(rows, expo, S, age, dial, c=CN2, noise=None):   # c: the constants (CN2, or {**CN2, 'rel': True})
     """Advance one mind's rows (name -> _Row2; persons only) by S nights, given expo (name -> Expo-like dict of per-night rates), the mind's age
     (years, at the step's start) and dial. The same law as KinConcerns, in closed form. `noise`: a random.Random; the counts of the step are
     then Poisson draws around the rates (so a controlled past has sampling noise). Mutates rows; returns the new age."""
@@ -400,8 +431,10 @@ def coarse_advance(rows, expo, S, age, dial, c=CN2, noise=None):
             cr = rows.get(carer)
             if cr is None or rate <= 0:
                 continue
-            wc = min(1.0, max(0.0, (_wr_plain(cr, c, dial) - c["care_lo"]) / (c["care_hi"] - c["care_lo"])))
-            r.kc = 1.0 - (1.0 - r.kc) * (1.0 - c["rho_obs"] * wc) ** (draw(rate) * S)
+            wc = min(1.0, max(0.0, (_wr_plain(cr, c, dial, refs(rows, c)) - c["care_lo"]) / (c["care_hi"] - c["care_lo"])))
+            k_eps = draw(rate) * S
+            r.kc = 1.0 - (1.0 - r.kc) * (1.0 - c["rho_obs"] * wc) ** k_eps
+            r.kn += wc * k_eps
         # ---- fade at the step's middle
         mid_age = (r.nights + S / 2) / 365.0
         f = fade_rate(mid_age, r.hn / 365.0, dial["fade"], min(1.0, eng / c["contact_hold"]), c)
