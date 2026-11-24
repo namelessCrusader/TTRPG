@@ -18,6 +18,7 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 - **A3. Every joule booked.** Magic hands off to the existing laws, and a magic joule acts like any other joule.
 - **A4. A spell is a mechanism on existing fields** (MS3): for example, "isolate the flammable gas x metres away in direction y and spark it z seconds later". It is never "the mana bar went down, the enemy went boom".
 - **A5. Realism by default; game rules as packs.**
+- **A6. Magic only allows change that could exist without it** (owner, 2026-11-23, with Q0). Every end state is a lawful physical state that some ordinary process could reach, and every step balances (Q0). Magic changes WHICH lawful change happens, and where, when and how fast. It never adds to the set of lawful states. This is the catalyst principle: a catalyst opens a pathway and changes a rate, never the equilibrium. Teleport is a pack doorway because the end state is lawful but no ordinary path is instant; true creation of mass is ruled out.
 
 ## 2. Decisions so far
 
@@ -26,6 +27,7 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 - MS3: signatures ride whichever channel carries the tell. The tell and waste go to any physical channel. Spells are mechanisms (A4).
 - MS4: every object resonates by its real body. No object is a focus by type; nobody needs a staff.
 - MS5: engravings multiplexed by wavelength. Crosstalk later.
+- Q0 (the frame), 2026-11-23: **(b)**, a CONSTRAINT LAYER over the mechanism. A spell is possible if and only if every conserved quantity balances for the whole system (energy including M, momentum, angular momentum, centre of mass, charge, particle number) and the information it needs is held by the pattern, the caster or the surroundings. The pattern is a catalyst that wears. The One Change stays as the mechanism. The owner: "we don't know what makes magic possible yet, but it can only allow change that can exist without it in some way" (axiom A6).
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
