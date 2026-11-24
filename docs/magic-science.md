@@ -29,6 +29,7 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 - MS5: engravings multiplexed by wavelength. Crosstalk later.
 - Q0 (the frame), 2026-11-23: **(b)**, a CONSTRAINT LAYER over the mechanism. A spell is possible if and only if every conserved quantity balances for the whole system (energy including M, momentum, angular momentum, centre of mass, charge, particle number) and the information it needs is held by the pattern, the caster or the surroundings. The pattern is a catalyst that wears. The One Change stays as the mechanism. The owner: "we don't know what makes magic possible yet, but it can only allow change that can exist without it in some way" (axiom A6).
 - Q1.1 (what kind of quantity M is), 2026-11-23: **(b), ENERGY WITH A PHASE.** Each voxel holds an amplitude and a phase; energy is the amplitude squared. Interference, standing waves, coherence and resonance are native: a counterspell is a wave in opposite phase, and casters working in step add up. The density still spreads, leaks and refills. Several components are a pack option; a no-store pure-control field is a low-magic pack (it would reverse the sources decision).
+- Q1.2 (where M comes from), 2026-11-23: **(d).** (a) NATURAL FLOWS make it by default: sunlight, life's metabolism, the planet's inner heat and storms each turn a tiny share of their own energy into M, booked as taken from them. It stays out of equilibrium because it is pumped where those flows are strong and leaks to heat everywhere, so MC5's cycles follow. Plus (b) ANCIENT CONCENTRATIONS as places and materials (nodes, crystals of fossil M) that can be mined and run out. Plus (c) INFLOW from other worlds or beings as a pack, booked as an import. The owner: it makes magic "a finite resource more than just a fixed number": rich places, mineable deposits, regional over-use.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -100,6 +101,9 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C24 | Someone tries to teleport with no doorway | Impossible in the base world; with a doorway pack, potential energy and momentum are conserved | Q0, Q10 |
 | C25 | A villager is sure a charm works, and it does nothing physical | Only a placebo effect, unless they cast, when belief lowers their noise (MC6) | Q7, MC6 |
 | C26 | A novice tries a 0.9 GJ effect from the body alone | Delivers only what the body supplies (about 0.37 GJ of fat at most), and harms the body | Q6, A3 |
+| C27 | A sealed cave with no sources | The field slowly leaks away to heat, and magic fades there | Q1.2, Q1.3 |
+| C28 | A city over-uses its region's field for generations | Regional depletion, a tragedy of the commons; people go farther, or mine deposits | Q1.2, Q6 |
+| C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
 
