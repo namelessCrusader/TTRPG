@@ -67,6 +67,12 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - THE THOUGHT LEVEL: the grammar is how minds compose and hold a spell.
   - THE CAUSAL LEVEL: what acts is a designed WAVEFORM (frequencies, phases across space, timing) meeting matter's carriers. It SELECTS by resonance (each substance's magic absorption lines, in the material record, the absorption side of MS3's lines), PUSHES by momentum transfer, HEATS by absorption, and SENSES by reflection.
   - THE SIMULATION executes the grammar's operations (fast), with each operation's selectivity, cost, precision and errors taken from the wave physics. Errors land on the substance with the NEAREST resonance. A substance whose signature the caster does not know cannot be targeted (Q0's information requirement).
+- Q3.2 (what intent is; what fills the unspecified parts), 2026-11-23: **(d).**
+  - INTENT IS A GOAL, as in motor control: the caster intends an outcome, and the mind's LEARNED INVERSE MODEL of how its own field affects the world turns the goal into a pattern, as reaching turns "cup in hand" into muscle commands. The model's quality is MS1's intrinsic skill, grown by practice; it is the same machinery as the learned mind's model of its own acts.
+  - EXPLICIT OVERRIDES: writing specific parts yourself is MS1's explicit skill (the player's game of skill).
+  - CULTURE AND GIFTED SPELLS supply ready-made models for common goals, so "fire" works for someone taught it.
+  - NOISE fills only what neither the model nor the caster settles.
+  - So the frightened child (clear goal, poor model) gets a huge crude result; the untrained adult (no model) gets little or nothing; the trained mage gets a precise one.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -168,6 +174,9 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C55 | A caster tries to target a substance they have never studied | Cannot, until they learn its signature | Q3.1, Q0 |
 | C56 | Probing a sealed jar's resonances | Identifies what is inside: magical spectroscopy | Q3.1, Q4.3 |
 | C57 | Two substances with identical resonances | Cannot be separated by magic, a lawful limit | Q3.1 |
+| C58 | A skilled caster overrides their habitual fireball's timing | Works, at an effort cost | Q3.2 |
+| C59 | Someone taught "light" tries "dim light" | Easy light, but dim light needs new learning | Q3.2, Q9 |
+| C60 | A caster aims at a goal they cannot picture (curing an illness they do not understand) | Fails or goes astray | Q3.2, Q5.4 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
