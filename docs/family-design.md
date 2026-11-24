@@ -58,6 +58,7 @@ Scoped with the owner on 2026-11-21 (decisions Fam1-Fam6). This is the learned m
 
 GATES (the build is correct):
 1. The coarse pre-history and the full simulation reach similar bonds over a short span (one or two simulated years), within a set tolerance.
+   - The tolerance is NOISE-RELATIVE (owner, 2026-11-23): the coarse past may be no further from a full run than two full runs with different seeds are from each other, plus a stated margin. The first fixed limits (mean weight error 0.10, Kendall tau 0.60) were tighter than the full simulation's own run-to-run noise, so even a perfect coarse past could not pass them.
 2. The kin cues work as in humans, in controlled pasts:
    - an adopted child raised together gets kin-like care;
    - a sibling raised apart does not;
