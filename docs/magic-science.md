@@ -422,3 +422,28 @@ What H1 already explains: Q1.1 (c) stable field states (= phases); dead zones an
 What H1 does not yet say: why the medium has these couplings (the brute fact moves one level down); which phase each place is in; how organised matter, minds included, binds and aligns carriers; the numbers.
 
 **Testing H1:** a library survey of the phases, dualities and dynamics of these media (and anything H1 misses); toy simulations of a classical compact U(1) lattice gauge theory with matter and inertia (Monte Carlo for phases, Hamiltonian dynamics for waves), measuring phases, the force law, waves and flux tubes; then the target list R0 and the case bank.
+
+## 10. R0: the target list (2026-11-24)
+
+Every candidate medium, and H1 in particular, must reproduce these in its effective (macro) limit. Each line names the decision it comes from. A candidate that fails one is wrong or incomplete; a target that turns out to be impossible in every candidate is reopened explicitly.
+
+| id | target | from |
+|---|---|---|
+| T1 | A conserved magic charge, exactly (by symmetry or topology); charges appear and vanish only in opposite pairs | Q1.1, A3, FQ1 |
+| T2 | A long-range field in ordinary regions (Coulomb-like at a distance), unless a region's phase screens or confines it | Q1.1, Q1.2, H1 |
+| T3 | Travelling waves with a phase (interference, coherence, resonance), fast enough to be light-like in air at casting frequencies, with speed set by medium and frequency | Q1.1, Q4.2, MS2 |
+| T4 | Neutral, disordered bulk matter is silent: only organised moments of carriers couple | A2, Q1.1 |
+| T5 | Material classes from how carriers respond: index, absorption, conduction and screening, remanence with a critical temperature, switching | MS2, Q2.2 |
+| T6 | Exactly three portals to ordinary physics: binding (force on and energy shifts of matter), weak mixing with electromagnetism, energy exchange (pairs created by dissipation, recombination to heat) | Q5.1, RQ3 |
+| T7 | Sources and large-scale structure: natural flows make field; a planetary, dynamo-like field with lines, poles, drift and rare reversals | Q1.2 |
+| T8 | Fluctuation and dissipation from one friction: whatever absorbs magic emits magical noise at its temperature (the casting threshold) | Q3.3 |
+| T9 | Static field stress as force at a distance (a grip like a magnet's), paid in setup energy and losses, not running power | Q5.5 (reopened) |
+| T10 | Distinct, stable kinds of region (ordinary, dead or screened, others), with boundaries, that can change when pushed hard | Q1.1 (c), H1 |
+| T11 | The zero-magic limit: with the couplings off, the engine's ordinary physics exactly | A8 |
+| T12 | Energy and momentum conserved including the medium; entropy never decreases | A3, Q0, GENERIC |
+| T13 | Only lawful end states; any catalysis pays by wear or correlation | A6 |
+| T14 | An effective layer that runs on 5 cm voxels at 25 ms ticks (a quasi-static near-field solve plus ray-marched pulses, or an implicit solve) | S4.1 of the frameworks answer |
+| T15 | Macro effects that appear classical, from a quantum deeper theory | RQ2 |
+| T16 | Every case in the case bank, as an emergence test at the effective level | A7 |
+
+Wanted but not required (to be discovered, not imposed): self-sustaining packets (R8), field memory (R5), ley lines as strings or quantised flux tubes, places that harden with use, mirror cross-effects (a magical thermocouple).
