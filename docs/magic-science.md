@@ -78,6 +78,7 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - COLLECTIVE RITUAL works by SYNCHRONY: drives in phase add (Q1.1), so many people chanting in unison reach what none could alone, and out-of-step wishes cancel.
 - Q3.4 (magic without deliberate intent), 2026-11-23: **(c) for INTRINSIC magic.** Any strong goal casts, conscious or not (accidental magic in children and strongly coupled untrained adults under extreme emotion); training includes emotional control; practised patterns become automatic reflexes (a startled mage's ward). Accidental magic fades through adolescence as emotional regulation matures. Dreams stay below the noise for almost everyone.
   - The owner's open conflict: if magic is change in existing fields, how does a goal such as "escape" map onto them? Is intent thematic, with the fields needing it clearer? Is it people's understanding? Taken up as Q3.5.
+- Q2.4 (does the field act back on the mind), 2026-11-24: **(d).** (b) A WEAK LOOP for every coupled mind, like ephaptic coupling (the brain's own weak field nudges neural timing; Anastassiou 2011, Frohlich and McCormick 2010): a mostly SUBCONSCIOUS felt sense (mood, unease, pressure, intuition) that training can make conscious; technique acts inward; places affect thought; minds entrain one another; shared belief bends the field; strong raw pulses stun or disorder nearby minds; the mind stays in the brain. PLUS an optional evolved DEDICATED SENSE ORGAN (some beasts, rarely people), clear and directional like a bird's magnetic compass. (c) THE MIND PARTLY MADE OF THE FIELD (ghosts, possession, places remembering people) is a later extension, weighed with R5 and R8; spirits need only R8.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -242,6 +243,13 @@ The tree above gives the ORDER; the owner noted that decisions are interconnecte
 | C65 | A trained mage is startled | Raises a ward before thinking | Q3.4 |
 | C66 | A child's accidental magic through adolescence | Fades as emotional control matures | Q3.4 |
 | C67 | A mage on calming herbs | Leaks less and casts more weakly | Q3.4, MC6 |
+| C68 | A sensitive near a powerful node | Feels uneasy without knowing why | Q2.4 |
+| C69 | Two mages work side by side | They fall into step; group casting gets easier | Q2.4, Q3.3 |
+| C70 | A sensitive in a dead zone | Feels flat or dull | Q2.4 |
+| C71 | Years of training | The vague feeling becomes a conscious, directional sense | Q2.4, MS1 |
+| C72 | A powerful caster's raw pulse | Stuns or disorders the people nearby | Q2.4 |
+| C73 | A widow feels her dead husband's presence at home | Grief and memory by default; a faint imprint only if R5 is adopted; real only under the later (c) | Q2.4, R5 |
+| C74 | A beast with a field-sensing organ | Tracks a mage by their field | Q2.4, Q2.3 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
