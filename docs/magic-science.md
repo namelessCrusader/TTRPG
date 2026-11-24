@@ -96,7 +96,11 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - Q3.2 What intent is in a mind, and what fills the parts left unspecified (priors, habits, noise).
   - Q3.3 How specific intent must be. Is thinking "fire" enough?
   - Q3.4 Emotion, arousal, the unconscious and sleep. A child's intent; accidental magic.
-  - Q3.5 Must the caster understand the physics?
+  - Q3.5 Must the caster understand the physics? (OPEN, the owner is thinking, 2026-11-23.) The owner: it depends on WHAT AN INTERFACE IS, whether it is intrinsic to sapient beings, and whether people can FEEL the field, or whether magic is like a science where specific shaping of the field makes it work. All of these are interconnected, and the answer affects the rest. The owner's versions:
+    - V1 PHYSICAL CHANGES MOVE THE FIELD (magic as a science). This is the CURRENT position: Q1.1 carriers are particles, Q2.1 synchronised brain activity physically moves them, Q2.2 engravings are circuits; the mind is special only as a fine, self-reshaping arrangement (R2). Choosing it reopens nothing.
+    - V2 THE MIND SHAPES THE FIELD DIRECTLY. The mind would be something beyond its brain's physics. It would reopen Q1.1 and Q2.1 and loosen A2, so it suits a pack (a spirit or dualist setting) better than the default.
+    - V3 THE MIND IS PARTLY MADE OF MAGIC (the middle). It can be added to V1 as a FEEDBACK LOOP. Real analogue: ephaptic coupling, where the brain's own electric field slightly affects its neurons. Then people can FEEL the field (the inner sense, MS1's intrinsic part); posture, breath, chant and ritual act INWARD (they change the caster's own field and so the caster's state) as well as outward; strong ambient fields affect thought (unease or intoxication near nodes).
+    - The choice is mainly whether to ADD V3's loop to V1, and whether V2 exists as a pack. Q3.5's reach question (understanding only; the field finds a way; understanding plus a crude evolved default plus a small paid search) and Q4.3 (sensing) depend on it.
 - **Q4. Steering: how a pattern moves the flow.**
   - Q4.1 What "steer" means physically: a valve or catalyst, Maxwell's demon, Landauer's cost per bit.
   - Q4.2 Range, aim and timing: c_M, the index (MS2), diffraction, near and far field.
@@ -118,6 +122,10 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - Q9.2 Gifted spells and taking them apart (MS1's cultural path).
   - Q9.3 How magical knowledge spreads, errs and is lost (the knowledge design).
 - **Q10. Beyond the One Change:** doorways and teleport, rewind, conjure, planes. Earlier owner decisions apply: bounded versions now, unbounded after a playable MVP, true creation off by default.
+
+## 3b. Dependency map (to build)
+
+The tree above gives the ORDER; the owner noted that decisions are interconnected. Each decision will list the earlier decisions it RELIES ON, so a changed answer shows at once which others move. To fill in when Q3.5 is settled.
 
 ## 4. The case bank (first 26; expectations are PROVISIONAL until the questions they test are settled)
 
