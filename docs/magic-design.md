@@ -911,3 +911,5 @@ Five candidate rules came from the survey: a per-material magic index, line spec
     - as a PATTERN HOLDER (an engraving casts at trigger speed, its cost paid at carving time);
     - as a MEMORY AID or through BELIEF (lower anxiety and noise, MC6), a small real effect a culture may misattribute.
   - Where none applies (for example kilometre wavelengths), a staff is a walking stick, and a culture that uses one carries a habit, possibly with a wrong theory of why it works.
+- MS5 ENGRAVINGS BY WAVELENGTH, OWNER: (b) NOW: one carving holds several patterns, each answering a different pulse wavelength (as a grating does), within the same capacity limit; how much fits depends on the substrate (MS2). Hidden functions are lawful (a ward with a second job at the right frequency). LATER EXTENSION: crosstalk between the patterns (a probe at an unexpected frequency half-triggers another).
+  - It led the owner to the first FUNDAMENTALS question: are engravings, formulae, words and gestures one language or many; why are some symbols magical and English not; why do some things work and not others? (Scoped next.)
