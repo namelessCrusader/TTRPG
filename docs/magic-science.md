@@ -149,6 +149,25 @@ Each model is consistent on its own; a hybrid is a choice of which one carries t
   - (8) is allowed only as an in-world fact (the earlier CV decision).
 - WHERE MARK1 SITS (2026-11-23): (1) as the spine with (7) as its ledger; (4) through real beings; (6) reachable by adding V3's loop; (2), (3), (5) and (8) are packs. The open blend is how much of (6), and whether any of (3).
 
+## 3c. The generative stack (owner direction, 2026-11-23; the derivation is PROPOSED, to confirm)
+
+The owner: the pure models are not rivals. There is a version where each builds on the others. Magic is intrinsic to how the world works (1); that is what magic is and where it resides. The mind can be an interface, harder to use because it is flexible, maybe subconscious; that is how it is reached. Magic must be interfaceable like code; that is how it is specified. Relationships, belief, storage, exchange and Systems come from composition. Keep some mysticism while staying explainable.
+
+Three axes: SUBSTANCE (what magic is), ACCESS (how it is reached), SPECIFICATION (how it is written). Composition builds the rest. The proposed derivation, bottom up:
+1. SUBSTANCE, magic as physics (model 1): the field and its carriers (Q1.1). Ordinary matter cancels, so NOTHING HOLDS MAGIC BY DEFAULT; holding is an achievement.
+2. EXCHANGE (model 7) follows: conservation and the budget (Q0).
+3. HOLDING: aligned carriers hold magic (lodestones, Q1.1). People can learn to align their own, a practised skill; that IS inner energy (model 6): cultivation is training the body into a charged material.
+4. ACCESS THROUGH MATTER: engravings and devices, precise but fixed (Q2.2).
+5. ACCESS THROUGH MINDS: synchronised activity couples (Q2.1), mostly SUBCONSCIOUSLY through the learned model (Q3.2), which its owner cannot see into. Flexible but noisy, so precise mind-casting is harder than a carving. Model 2 appears weakened: the mind shapes magic, through its brain.
+6. SPECIFICATION, code (model 3): the grammar is the language; formulae are source code a mind interprets; engravings are code compiled into matter that runs whoever carved it.
+7. RELATIONSHIP (model 4): any beings that hold social constructs and move magic make animism by themselves (bonds, offerings, pacts).
+8. BELIEF (model 5): shared belief synchronises many minds (ritual, Q3.3), and with the V3 loop their coupled patterns bias the local field, so near believers reality bends toward the consensus, within the budget, never against physics.
+9. SYSTEMS (model 8) by composition: a vast compiled pattern that ordinary minds use through simple thoughts (menus, classes, levels). Gifted spells (MS1) are a small one; a LitRPG System is a huge one; it can be wrong because it is an artefact.
+10. SPIRITS AND GODS: if minds can be partly made of magic, minds made wholly of self-sustaining field patterns (R8) are possible, so animism's beings emerge too.
+- Other families beyond the eight also fall out: correspondence ("like affects like", R10 shared modes) and probability or luck (Q0 layer 2). Narrative magic stays a pack.
+- NEW INGREDIENTS this needs beyond what is decided: (i) the V3 FEEDBACK LOOP (the mind's own field and the ambient field act back on thought), needed for the inner sense, subconscious access, belief bending the field, and spirits; (ii) self-sustaining computing field patterns (only for field-native beings, later).
+- MYSTICISM lives in KNOWLEDGE AND COMPLEXITY, not in the laws: exact in the engine, known to no one in the world (cultures hold competing, partly wrong theories, MC2; characters see only what they could know, MC7); access is subconscious, so it feels like intuition; the loop of minds, beliefs and field is chaotic; the deepest layer is a brute fact (why the field exists), with layers no culture has found yet. Explainable, but not explained to anyone in the world.
+
 ## 3b. Dependency map (to build)
 
 The tree above gives the ORDER; the owner noted that decisions are interconnected. Each decision will list the earlier decisions it RELIES ON, so a changed answer shows at once which others move. To fill in when Q3.5 is settled.
