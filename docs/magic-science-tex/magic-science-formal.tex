@@ -1,0 +1,611 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{booktabs,longtable,array,tabularx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\setlist{itemsep=1pt,topsep=3pt}
+\numberwithin{equation}{section}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{postulate}{Postulate}
+\theoremstyle{plain}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{corollary}[definition]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+\newtheorem{example}[definition]{Example}
+
+\newcommand{\kB}{k_{\mathrm B}}
+\newcommand{\cM}{c_{M}}
+\newcommand{\dd}{\mathrm d}
+\newcommand{\ii}{\mathrm i}
+\newcommand{\E}{\mathbb E}
+\newcommand{\R}{\mathbb R}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\definecolor{tag}{RGB}{110,110,110}
+\newcommand{\tagD}{\textcolor{tag}{\textsf{[D]}}}
+\newcommand{\tagR}{\textcolor{tag}{\textsf{[R]}}}
+\newcommand{\tagA}{\textcolor{tag}{\textsf{[A]}}}
+\newcommand{\tagU}{\textcolor{tag}{\textsf{[u]}}}
+
+\title{A Formal Theory of Magic for MARK1\\[4pt]
+\large Postulates, field equations, admissibility conditions and derived limits}
+\author{The MARK1 project}
+\date{Working draft, 24 November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent We give a mathematical formulation of the theory of magic adopted for the MARK1 simulation. Magic is modelled as an effective classical field theory: a dispersive wave field sourced by a conserved ``magical charge'' carried by particles, whose coherent organisation in matter and in nervous tissue allows patterned structures to steer energy and momentum at a distance. We state eight postulates, define when a spell is admissible through five conditions (symmetry, thermodynamic budget with information as fuel, causal reach, computation, mechanism), and derive the main consequences: why ordinary matter shows no magical effect; resonance selectivity and its failure modes; a noise threshold for casting with coherent gain for synchronised groups; the energy accounting of valves, triggers and Maxwell demons; dispersion limits that make complex spells short-ranged; a radar-type asymmetry that makes active sensing detectable from farther than it can see; and the real costs of gathering, copying and transmutation. Agents are coupled to the field only through generic observation, action and body-state channels, so that magical behaviour is learned rather than coded, and the theory reduces exactly to ordinary physics when the field is absent. A companion document gives the same material in plain prose.
+\end{abstract}
+
+\tableofcontents
+
+%=====================================================================
+\section{Introduction}
+
+\subsection{Scope}
+MARK1 simulates a physical world at the level of classical continuum physics (heat transfer, fluid flow, solid mechanics, reaction kinetics), with properties of matter taken as data from modern physics. Magic is added as an \emph{effective field theory} at the same level (Postulate~\ref{post:level}). A deeper \emph{generating theory}, never simulated, is required only to fix the effective parameters consistently.
+
+\subsection{Status of statements}
+Each claim carries a tag:
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\tagD & a design decision made by the owner;\\
+\tagR & established physics or measurement, used as an analogue or a bound;\\
+\tagA & a modelling assumption of this document (a choice of functional form);\\
+\tagU & an unsourced number, to be replaced by sourced data.
+\end{tabular}
+\end{center}
+Decision labels (Q0, Q1.1, MS2, \dots) refer to the decision record \texttt{docs/magic-science.md}. Numerical examples are illustrative.
+
+\subsection{Notation}
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+Symbol & Meaning\\
+\midrule
+$\Omega\subset\R^3$, $t$ & spatial domain of the world, time\\
+$\phi(\bm x,t)$ & the magical field (real); $\hat\phi(\bm x,\omega)$ its temporal Fourier transform\\
+$\psi = A e^{\ii\varphi}$ & complex envelope of a narrow-band wave; $A$ amplitude, $\varphi$ phase\\
+$u_M$ & energy density of the field (J\,m$^{-3}$)\\
+$\rho_q$, $\bm P$ & free magical-charge density; polarisation (moment density) of bound carriers\\
+$\cM$ & reference wave speed of the field; $n(\omega,\bm x)$ refractive index; $k(\omega)$ wavenumber\\
+$\chi(\omega)$, $\varepsilon(\omega)=1+\chi(\omega)$ & susceptibility and permittivity of a material for the field\\
+$\omega_j,\gamma_j,\Omega_j^2$ & resonance frequency, damping and strength of carrier species $j$\\
+$M(\bm x,t)$ & slowly varying background field store (J\,m$^{-3}$)\\
+$S$, $k$, $D$, $U$ & source, leak rate, spreading coefficient, local use of the background store\\
+$T$, $\kB$ & temperature, Boltzmann's constant\\
+$I$ & information (bits); $\kB T\ln 2$ the Landauer energy per bit\\
+$F=E-TS$ & Helmholtz free energy\\
+$r e^{\ii\Psi}$ & Kuramoto order parameter of a population of neural oscillators\\
+$\mathcal K$ & a mind's coupling to the field\\
+$w$ & a pattern (designed waveform); $g$ a goal; $\mathcal G$ the spell grammar\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+%=====================================================================
+\section{Postulates}
+
+\begin{postulate}[Field and mechanism; A1]\label{post:field}
+There exists a real field $\phi$ on $\Omega\times\R$ with a conserved energy functional, sourced by a conserved magical charge carried by a subset of particles. A structure whose carriers are organised can exchange energy and momentum with distant matter through $\phi$. The structure acts as a catalyst for the exchange: it changes which process occurs and its rate, and supplies no energy itself. \tagD
+\end{postulate}
+
+\begin{postulate}[Arrangement, not bulk; A2]\label{post:arrangement}
+The coupling of a body to $\phi$ depends on the \emph{coherent} organisation of its carriers. A body whose carriers are disordered exerts and experiences no macroscopic effect beyond passive refraction, weak absorption and the weak electromagnetic mixing of Section~\ref{sec:mixing}. \tagD\ (Motivated by the argument that the only loophole in the completeness of everyday physics is an arrangement-dependent coupling \cite{carroll}. \tagR)
+\end{postulate}
+
+\begin{postulate}[Conservation; A3]\label{post:conservation}
+Every unit of energy transferred through $\phi$ is booked against a named store and, once delivered, obeys the ordinary laws. \tagD
+\end{postulate}
+
+\begin{postulate}[Mechanism; A4]\label{post:mechanism}
+A spell is a physical operation on the existing fields of the world (Definition~\ref{def:spell}); its effects are those of the energy, momentum and information it delivers. \tagD
+\end{postulate}
+
+\begin{postulate}[Realism; A5]\label{post:realism}
+Default parameters model real physics where an analogue exists. Non-physical rules exist only as optional packs that change named parameters or named symmetries. \tagD
+\end{postulate}
+
+\begin{postulate}[Lawful end states; A6]\label{post:lawful}
+Let $\Sigma$ be the set of physically lawful states of the world without magic. Every state reachable with magic lies in $\Sigma$. Magic changes which trajectory through $\Sigma$ is realised and its rate, never $\Sigma$ itself. \tagD
+\end{postulate}
+
+\begin{postulate}[Emergence; A7]\label{post:emergence}
+No law refers to a particular case. Every behaviour in the case bank must follow from the general laws (Definition~\ref{def:emergence}). \tagD
+\end{postulate}
+
+\begin{postulate}[Zero-magic limit; A8]\label{post:limit}
+If $\phi\equiv 0$, or if every carrier coupling vanishes, all dynamics, including the dynamics of minds, coincide exactly with the non-magical dynamics of the engine. \tagD
+\end{postulate}
+
+\begin{postulate}[Level of description; Q1.0]\label{post:level}
+Magic is simulated as an effective classical field theory at the engine's level of description. Its parameters ($\cM$, the resonance tables, coupling constants, source strengths) are fixed by a written generating theory that is checked for consistency but not simulated. \tagD
+\end{postulate}
+
+%=====================================================================
+\section{Admissibility of a spell}\label{sec:admissible}
+
+\begin{definition}[Spell]\label{def:spell}
+A \emph{spell} is a tuple $\sigma = (w, \mathcal S, V, \tau)$ where $w$ is a pattern (a designed waveform, Section~\ref{sec:pattern}), $\mathcal S$ a set of energy stores it draws on, $V\subset\Omega$ its region of effect and $\tau$ its time window. Its \emph{outcome} is the change of world state $X\mapsto X'$ it produces.
+\end{definition}
+
+\begin{definition}[Admissibility; Q0]\label{def:admissible}
+A spell is \emph{admissible} if and only if the following five conditions hold. \tagD
+\begin{enumerate}[label=(L\arabic*)]
+\item \textbf{Symmetry.} For every continuous symmetry kept in the region, the corresponding Noether charge \cite{noether} is conserved over the whole system (world, stores and field). By default all are kept: energy, linear and angular momentum, centre of mass motion, charge and particle numbers. A pack may remove a named symmetry on a named region $R\subset\Omega$.
+\item \textbf{Budget.} With $I$ the information (in bits) that the pattern and its sources hold about the degrees of freedom it acts on,
+\begin{equation}\label{eq:budget}
+W_{\text{needed}} \;\le\; -\Delta F_{\text{stores}} \;+\; \kB T\, I\ln 2 \;-\; W_{\text{loss}},
+\end{equation}
+where $W_{\text{needed}}$ is the work required to produce $X'$ and $\Delta F_{\text{stores}}$ the free-energy change of the stores drawn on. This is the generalised second law for feedback control \cite{sagawa}. \tagR
+\item \textbf{Reach.} There is a propagation path from the source to $V$ whose channel capacity, integrated over $\tau$, carries the bits the effect requires (Shannon, $C = B\log_2(1+\mathrm{SNR})$ \cite{shannon}). \tagR
+\item \textbf{Computation.} The operations and erasures the pattern performs are within its holder's resources; each erased bit costs at least $\kB T\ln 2$ \cite{landauer}. \tagR
+\item \textbf{Mechanism.} The outcome is produced by the dynamics of Sections~\ref{sec:field}--\ref{sec:matter}. \tagD
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Improbability has a price]\label{prop:improb}
+For fixed energy change, an outcome that lowers entropy by $\abs{\Delta S}$ requires at least $T\abs{\Delta S}$ more work than one that does not. \tagR
+\end{proposition}
+\begin{proof}
+$W_{\text{needed}}\ge \Delta F = \Delta E - T\Delta S$ for a process at temperature $T$; with $\Delta S<0$ the bound increases by $T\abs{\Delta S}$.
+\end{proof}
+
+\begin{proposition}[Postulate~\ref{post:lawful} from (L1)--(L2)]
+If (L1) keeps all default symmetries and (L2) holds, the end state of an admissible spell is a state reachable by an ordinary process with the same energy and momentum exchanges.
+\end{proposition}
+\begin{proof}[Sketch]
+(L1) fixes the conserved quantities of $X'$ to values an ordinary process could produce with the same exchanges, and (L2) bounds the work by what ordinary stores and feedback could supply. The magical field only supplies the path, as a catalyst supplies a reaction pathway without altering the equilibrium constant.
+\end{proof}
+
+\begin{remark}[The size of the information term]\label{rem:landauer}
+At $T=300$\,K, $\kB T\ln 2\approx 2.9\times10^{-21}$\,J per bit. The thermodynamic price of information is therefore negligible at human scales. In practice the cost of an information-heavy effect (loading dice, finding a person) is dominated by (L3) and (L4) and by the energy of the physical intervention, not by the term $\kB T I\ln 2$ in \eqref{eq:budget}. \tagR
+\end{remark}
+
+%=====================================================================
+\section{The field}\label{sec:field}
+
+\subsection{Field equations}
+In a linear, locally isotropic medium we take the field to obey a sourced, dispersive wave equation. In the frequency domain,
+\begin{equation}\label{eq:helmholtz}
+\nabla\cdot\big(\nabla\hat\phi\big) + \frac{\omega^2}{\cM^2}\,\varepsilon(\omega,\bm x)\,\hat\phi = -\,g\,\hat\rho_q(\bm x,\omega),
+\end{equation}
+with coupling constant $g$ and the free charge density $\rho_q$ as source. Bound carriers enter through $\varepsilon$ and through the polarisation $\bm P$ of organised matter, which contributes an effective source $-\nabla\cdot\bm P$. \tagA
+
+\begin{remark}
+Decision Q1.1 asks for a field ``built like electromagnetism''. A vector field would add polarisation and fix the sign of static forces between like charges; a scalar field suffices for every effect used here and for the engine's ray march. The choice between them belongs to the generating theory (Postulate~\ref{post:level}). \tagA
+\end{remark}
+
+\subsection{Constitutive law: carriers as damped oscillators}\label{sec:lorentz}
+Each carrier species $j$ in a material responds as a damped oscillator (the Lorentz model of optics \cite{jackson}). The susceptibility is
+\begin{equation}\label{eq:lorentz}
+\chi(\omega)=\sum_j \frac{\Omega_j^2}{\omega_j^2-\omega^2-\ii\gamma_j\omega},\qquad
+\varepsilon=1+\chi,\qquad n(\omega)=\sqrt{\varepsilon(\omega)},
+\end{equation}
+where $\omega_j$ is the species' resonance (its \emph{magical absorption line}), $\gamma_j$ its width and $\Omega_j^2\propto N_j$ its strength, proportional to the number density of carriers. \tagA\ This single law produces four decided properties:
+\begin{enumerate}[label=(\roman*)]
+\item \emph{index and refraction} (MS2): $\operatorname{Re}n(\omega)$;
+\item \emph{absorption as heat} (Q1.3): the absorption coefficient $\alpha(\omega)=2\omega\operatorname{Im}n(\omega)/\cM$, with time-averaged absorbed power density $p_{\text{abs}}\propto \omega\,\operatorname{Im}\chi(\omega)\,\abs{\hat\phi}^2$, which is positive for $\omega>0$;
+\item \emph{dispersion} (Q4.2): the dependence of speed on frequency (Section~\ref{sec:prop});
+\item \emph{resonance selectivity} (Q3.1): near $\omega_j$, $\operatorname{Im}\chi$ is a Lorentzian of full width $\gamma_j$ (Section~\ref{sec:select}).
+\end{enumerate}
+
+\subsection{Energy and the background store}
+For the propagating part of the field we take the energy density and flux
+\begin{equation}
+u_M = \tfrac12\varepsilon_M\big(\partial_t\phi\big)^2 + \tfrac12\kappa_M\abs{\nabla\phi}^2,\qquad
+\partial_t u_M + \nabla\cdot\bm J_M = -p_{\text{abs}} + p_{\text{src}},
+\end{equation}
+with $\varepsilon_M/\kappa_M = \cM^{-2}$. For a narrow-band wave, $u_M\propto \omega^2 A^2$, so energy goes as the squared amplitude and waves carry phase (Q1.1). \tagA
+
+The slowly varying background store obeys the reaction--diffusion law of the design document,
+\begin{equation}\label{eq:store}
+\partial_t M = D\nabla^2 M + S(\bm x,t) - kM - U(\bm x,t),
+\end{equation}
+whose local relaxation after a draw is $M(t)=S/k+\big(M(0)-S/k\big)e^{-kt}$. A draw that empties a region creates a crater that refills on the timescale $k^{-1}$ and by diffusion from its edges (cases C11, C27). \tagD
+
+\subsection{Sources}
+\begin{definition}[Sources; Q1.2]\label{def:sources}
+The source term is $S = S_{\text{dyn}} + S_{\text{loc}}$, where $S_{\text{dyn}}$ is generated by the motion of carriers in the planet's convecting core (a dynamo, as for the geomagnetic field) and $S_{\text{loc}}$ by local organisation of carriers (crystal growth, living tissue, charge separation in storms). Each source term is debited from the energy of the process that drives it. For regions not simulated in detail, $S = \epsilon_d\,P_{\text{diss}}$ with $P_{\text{diss}}$ the local dissipated power and $\epsilon_d\ll 1$. \tagD\ ($\epsilon_d$ \tagU)
+\end{definition}
+The dynamo implies large-scale field lines (\emph{ley lines}), poles, secular drift and rare reversals, as for the geomagnetic field. \tagR\ (analogue)
+
+\subsection{Why ordinary matter shows nothing}
+\begin{proposition}[Coherent and incoherent sums]\label{prop:coherence}
+Let a body hold $N$ carriers with moments $\bm m_i$ of equal magnitude $m$. If the orientations are independent and uniformly distributed, $\E\abs{\sum_i \bm m_i}^2 = N m^2$; if they are aligned, $\abs{\sum_i\bm m_i}^2=N^2m^2$. The ratio of emitted amplitudes is $\sqrt N$.
+\end{proposition}
+\begin{proof}
+$\E\abs{\sum_i\bm m_i}^2=\sum_i\E\abs{\bm m_i}^2+\sum_{i\ne k}\E[\bm m_i\cdot\bm m_k]$, and the cross terms vanish for independent isotropic orientations. For aligned moments every cross term equals $m^2$.
+\end{proof}
+\begin{corollary}[Postulate~\ref{post:arrangement} explained]
+For $N\sim10^{20}$ the organised body emits with $10^{10}$ times the amplitude of a disordered one. Ordinary matter is therefore magically silent while retaining a passive index (\ref{eq:lorentz}). \tagD
+\end{corollary}
+
+\subsection{Charged materials and the critical temperature}
+A material with an interaction that favours alignment holds a spontaneous moment below a critical temperature $T_c$, as a ferromagnet does \cite{kittel}:
+\begin{equation}
+m(T)\propto (1-T/T_c)^{\beta}\quad (T<T_c),\qquad m(T)=0\quad (T\ge T_c),
+\end{equation}
+with $\beta=\tfrac12$ in mean-field theory. A ``charged'' gem stores no field; it is a body of aligned carriers that emits, and heating it above $T_c$ erases the charge (case C36). \tagR\ (analogue) \tagD
+
+\subsection{Mixing with electromagnetism}\label{sec:mixing}
+We allow a small linear mixing of the magical field with the electromagnetic field, as proposed for hypothetical ``dark photons'' \cite{holdom}. For a two-state system with mixing angle $\theta\approx\chi_{\gamma}\ll1$, the probability that a wave of one kind is found as the other after a distance $L$ is
+\begin{equation}
+P(L)=\sin^2(2\theta)\,\sin^2\!\Big(\frac{\Delta k\,L}{2}\Big)\le 4\chi_{\gamma}^2 .
+\end{equation}
+Because the converted electromagnetic amplitude scales with the magical amplitude, the effect is observable only for strong fields: wires spark and nerves conduct currents near powerful casting, lightning feeds the local field, compass needles twitch (Q5.1). Postulate~\ref{post:arrangement} constrains $\chi_\gamma$ to be small. \tagD\ ($\chi_\gamma$ \tagU)
+
+%=====================================================================
+\section{Coupling}\label{sec:coupling}
+
+\subsection{Organised matter}
+\begin{definition}[Material classes; Q2.2]
+A material is characterised by its magical conductivity $\sigma_M$ (free carriers), susceptibility $\chi$ (bound carriers), remanent moment $m_r$ (aligned carriers) and, for switchable materials, a conductivity that depends on a control field, $\sigma_M=\sigma_M(\phi_{\text{ctrl}})$. Conductors ($\sigma_M$ large) carry currents and screen (a closed conducting shell excludes the field, as a Faraday cage does); insulators set the index; magnet-class materials store aligned moments; switchable materials implement logic. An engraving is a network of conducting traces on a substrate, and its function is determined by its geometry. \tagD
+\end{definition}
+Living tissue maintains carrier order by active processes. After death the order decays with a time constant $\tau_{\text{decay}}$ unless fixed by a process (curing, tanning, firing) that sets $\tau_{\text{decay}}\to\infty$. \tagD\ ($\tau_{\text{decay}}$ \tagU)
+
+\subsection{Minds}
+A brain region is modelled as a population of $N$ neural oscillators with phases $\theta_j$. Its synchrony is the Kuramoto order parameter \cite{kuramoto}
+\begin{equation}
+r e^{\ii\Psi}=\frac1N\sum_{j=1}^N e^{\ii\theta_j},\qquad 0\le r\le1 .
+\end{equation}
+\begin{definition}[Coupling of a mind; Q2.1]\label{def:coupling}
+The coupling of a mind to the field is $\mathcal K = n_c\, a\, r$, where $n_c$ is the density of carriers in neural tissue (inherited), $a\in[0,1]$ the alignment of cortical geometry (developmental) and $r$ the instantaneous synchrony (state- and training-dependent). The emitted drive amplitude scales as $\mathcal K N$ (Proposition~\ref{prop:coherence}); the body contributes a smaller term from its own carriers. \tagD
+\end{definition}
+\begin{remark}
+This is the mechanism by which electroencephalography is possible: aligned cortical neurons firing in synchrony produce fields that add instead of cancelling. \tagR
+\end{remark}
+
+\subsection{The field acts back on the mind}
+\begin{definition}[Weak feedback; Q2.4]
+The phases obey a forced Kuramoto model
+\begin{equation}\label{eq:kuramoto}
+\dot\theta_j=\omega_j+\frac{\kappa}{N}\sum_{k=1}^N\sin(\theta_k-\theta_j)+\lambda A_{\text{ext}}\sin(\Omega t+\varphi_{\text{ext}}-\theta_j)+\xi_j(t),
+\end{equation}
+where $A_{\text{ext}}$, $\Omega$ and $\varphi_{\text{ext}}$ are the amplitude, frequency and phase of the local field, $\lambda\ll\kappa$ is the feedback strength and $\xi_j$ is noise. \tagD\ (form \tagA)
+\end{definition}
+This is the magical analogue of ephaptic coupling, by which the brain's own weak electric fields modulate neuronal timing \cite{anastassiou,frohlich}. \tagR
+\begin{proposition}[Entrainment by a place]\label{prop:entrain}
+In the mean-field reduction, the population phase $\Psi$ locks to an ambient field of frequency $\Omega$ when
+\begin{equation}
+\abs{\bar\omega-\Omega}\le \lambda A_{\text{ext}},
+\end{equation}
+with $\bar\omega$ the population's natural frequency (Adler's locking condition \cite{adler}).
+\end{proposition}
+\begin{proof}[Sketch]
+The phase difference $\Delta=\Psi-\Omega t$ obeys $\dot\Delta=(\bar\omega-\Omega)-\lambda A_{\text{ext}}\sin\Delta$, which has a fixed point if and only if $\abs{\bar\omega-\Omega}\le\lambda A_{\text{ext}}$.
+\end{proof}
+Hence strong places alter mental state (unease or elation near nodes, flatness in dead zones), casters working together entrain one another, and a sufficiently strong pulse ($\lambda A_{\text{ext}}$ large compared with the network's own coupling) disorders the population, producing a stun. A dedicated sense organ is a further channel with its own acuity. \tagD
+
+\subsection{The agent interface}\label{sec:agent}
+Characters are learning agents. We write the agent as a partially observed decision process with body state $\bm b$, observations $o_t$, actions $a_t\in\mathcal A$, policy $\pi(a\mid h_t)\propto\exp(Q(h_t,a)/\tau)$ and reward $R_t=R(\bm b_t,\bm b_{t+1})$ given by homeostatic drive reduction.
+\begin{definition}[Ports; Q2.5]\label{def:ports}
+Magic enters the agent only through:
+\begin{enumerate}[label=(\roman*)]
+\item an observation channel $o_t^M = h(u_M,\phi)\,+\,\eta$, $\eta\sim\mathcal N(0,s_{\text{acuity}}^2)$;
+\item an action family $\mathcal A_{\text{cast}}\subset\mathcal A$, whose effects the agent learns with its existing forward model;
+\item body-state variables already moved by emotion, fatigue and drugs (arousal, policy temperature $\tau$, precision), plus the synchrony $r$, which evolve under (\ref{eq:kuramoto});
+\item perception of others' casting through its physical signatures.
+\end{enumerate}
+In particular $\partial R/\partial\phi = \partial R/\partial u_M = 0$: the field has no direct route to reward or to beliefs. \tagD
+\end{definition}
+\begin{proposition}[Zero-magic limit for minds]\label{prop:limit}
+If $u_M\equiv0$ or $n_c=0$, then $o_t^M$ is uninformative, actions in $\mathcal A_{\text{cast}}$ have no effect, and the body-state dynamics do not depend on the field. The agent's optimal and learned behaviour coincide with those of the agent without magic (Postulate~\ref{post:limit}).
+\end{proposition}
+\begin{proof}[Sketch]
+Under either condition each port reduces to a constant or to a no-op, so the transition and observation kernels, and the reward, equal those of the non-magical process; learning on identical processes with identical random draws gives identical trajectories.
+\end{proof}
+
+\subsection{Aptitude}
+The inherited factor is polygenic, $\log n_c = \sum_\ell \beta_\ell g_\ell + \epsilon$, with narrow-sense heritability $h^2=\sigma_A^2/\sigma_P^2\approx 0.5$ \tagU, plus rare variants of large effect. Trained synchrony follows a power law of practice, $r_{\max}(n)=r_\infty-(r_\infty-r_0)\,n^{-b}$ \cite{newell}, with plasticity decreasing with age. \tagD\ (form \tagA)
+
+\subsection{Why access exists}
+Access arises at three levels: all organised matter couples (Proposition~\ref{prop:coherence}); evolution tuned coupling in nervous tissue; and \emph{interfaces} (notations, chants, carvings) are cultural technologies selected for producing patterns that the field responds to and a mind can hold, as writing systems were shaped to fit vision \cite{dehaene}. \tagD
+
+%=====================================================================
+\section{Patterns, intent and thresholds}\label{sec:pattern}
+
+\subsection{Two levels}
+\begin{definition}[Pattern; Q3.1]
+A \emph{pattern} is a space--time waveform
+\begin{equation}
+w(\bm x,t)=\operatorname{Re}\sum_{\ell} a_\ell\, e^{\ii(\bm k_\ell\cdot\bm x-\omega_\ell t+\varphi_\ell)}
+\end{equation}
+emitted by a structure. A \emph{spell expression} is a term of the grammar $\mathcal G$ (operations such as deliver heat, move matter, delay, repeat), and a compilation map $\mathcal C:\mathcal G\to\mathcal W$ sends expressions to patterns. Minds compose in $\mathcal G$; causation is the physics of $w$. The simulation executes the operations of $\mathcal G$ directly, with selectivity, cost, precision and error taken from the physics of $\mathcal C(\cdot)$. \tagD
+\end{definition}
+
+\subsection{Selectivity}\label{sec:select}
+The energy that species $j$ absorbs from a pattern with spectrum $\hat w(\omega)$ is
+\begin{equation}\label{eq:absorb}
+E_j=\int_0^\infty \abs{\hat w(\omega)}^2\,\Omega_j^2\, L_j(\omega)\,\dd\omega,\qquad
+L_j(\omega)=\frac{\gamma_j/2\pi}{(\omega-\omega_j)^2+\gamma_j^2/4}.
+\end{equation}
+\begin{proposition}[Selectivity and its failure]\label{prop:select}
+For a narrow-band pattern centred on $\omega_i$ with bandwidth $B\ll\gamma_i$, the ratio of energy absorbed by species $j$ to species $i$ (equal strengths) is
+\begin{equation}
+\frac{E_j}{E_i}\approx\frac{\gamma_j}{\gamma_i}\,\frac{\gamma_i^2/4}{(\omega_i-\omega_j)^2+\gamma_j^2/4}.
+\end{equation}
+Consequently (a) the most likely unintended target is the species with the nearest line; (b) species with $\omega_i=\omega_j$ and equal widths cannot be separated by any pattern; (c) a species whose $\omega_j$ is unknown to the caster cannot be targeted except by broad-band, wasteful patterns.
+\end{proposition}
+\begin{proof}
+Evaluate (\ref{eq:absorb}) with $\abs{\hat w}^2$ concentrated at $\omega_i$; (a)--(c) follow from the Lorentzian form.
+\end{proof}
+
+\subsection{Information and casting time}
+The information content of an expression is $I(\sigma)=\sum_{\text{nodes}}-\log_2 P(\text{choice}\mid\text{context})$ under the caster's prior, and the casting time through a medium of rate $R_m$ is $t_{\text{cast}}=I(\sigma)/(R_m\,\text{skill})$. \tagD
+
+\subsection{Intent}
+\begin{definition}[Intent; Q3.2]\label{def:intent}
+An \emph{intent} is a goal $g$ in outcome space. The mind holds a learned forward model $f_\theta:(s,w)\mapsto \hat s'$ and an inverse model $g_\vartheta:(s,g)\mapsto w$, trained so that $f_\theta(s,g_\vartheta(s,g))\approx g$ (a distal teacher \cite{jordan}). The emitted pattern is
+\begin{equation}
+w = \mathbb 1_{E}\odot w_{\text{explicit}}+\mathbb 1_{\bar E}\odot\big(g_\vartheta(s,g)\ \text{or a sample from the cultural prior}\big)+\zeta,
+\end{equation}
+where $E$ indexes components the caster writes explicitly and $\zeta$ is noise on components neither the model nor the caster fixes. The quality of $g_\vartheta$ is intrinsic skill; the ability to write $w_{\text{explicit}}$ is explicit skill. \tagD
+\end{definition}
+\begin{remark}[Implicit and explicit understanding; Q3.5]
+$g_\vartheta$ is reliable only near its training distribution and may be confidently wrong outside it. Explicit composition in $\mathcal G$ reaches effects never tried, at first with low efficiency. Exploration (trying variations of $w$) is ordinary learning, paid in time, energy and mishaps. No mechanism searches outcome space for the caster, so wishes are not admissible. Copying a symbol without understanding emits a degraded version of its pattern through the body's carriers or through matter geometry. \tagD
+\end{remark}
+
+\subsection{Efficiency}
+\begin{definition}[Practice and efficiency; MS1]
+The useful-work fraction of a pattern is $\eta_{\text{work}}(w)=\eta_{\max}\exp\!\big(-d(w,\mathcal W_{\text{prac}})^2/2\ell^2\big)$, where $d$ is a metric on physical effect space and $\mathcal W_{\text{prac}}$ the set of practised patterns. The remainder is released as waste heat at the site of effect. \tagD\ (form \tagA, $\ell$ \tagU)
+\end{definition}
+
+\subsection{The noise threshold and coherent gain}
+\begin{proposition}[Threshold; Q3.3]
+A pattern produces a reliable effect on a target only if its signal-to-noise ratio against the target's thermal noise exceeds a critical value,
+\begin{equation}
+\mathrm{SNR}=\frac{P_{\text{signal}}}{\kB T_{\text{sys}}\,B}\gtrsim \mathrm{SNR}_{\min},
+\end{equation}
+where $T_{\text{sys}}$ includes the target's temperature and the ambient field's noise. No threshold parameter is introduced. \tagR\ (form) \tagD
+\end{proposition}
+\begin{proposition}[Coherent gain of groups]\label{prop:ritual}
+$N$ casters each emitting amplitude $A$ with phases $\varphi_j$ deliver power proportional to $\abs{\sum_j Ae^{\ii\varphi_j}}^2 = N^2A^2 r_g^2$, where $r_g$ is the group's order parameter. For independent random phases the expectation is $NA^2$.
+\end{proposition}
+A synchronised group therefore gains a factor $N r_g^2$ over an unsynchronised one: ritual, chant and drumming work by synchronising their participants, and a crowd wishing silently achieves nothing (cases C61, C62).
+
+\subsection{Involuntary casting}
+Arousal $\alpha$ raises synchrony, $r=r(\alpha)$ increasing, while increasing the noise $\zeta$ of unspecified components, so power rises and precision falls. An inhibitory control gain $c(\text{age})$ that matures through adolescence suppresses emission when no goal is endorsed; practised patterns become reflexes with low latency. Hence accidental magic is crude, occurs mainly in children and strongly coupled untrained adults, and fades with age. \tagD\ (forms \tagA)
+
+%=====================================================================
+\section{Energy accounting}\label{sec:energy}
+
+\begin{definition}[Three routes; Q4.1]
+The energy an admissible spell delivers decomposes as
+\begin{equation}
+E_{\text{out}} = E_{\text{valve}}+E_{\text{trig}}+E_{\text{demon}},
+\end{equation}
+\begin{itemize}
+\item $E_{\text{valve}}\le$ the free energy of the named stores (field in the reach volume, the body, charged materials);
+\item $E_{\text{trig}}=-\Delta G$ of a metastable process (fuel, strain, a poised mass, a reaction) released by a nudge that crosses its barrier $E_a$;
+\item $E_{\text{demon}}\le \kB T I\ln 2$ obtained by sorting with information (with the heat moved, not destroyed).
+\end{itemize}
+The caster pays $C = E_{\text{valve}}/\eta + E_{\text{nudge}} + E_{\text{control}} + \kB T\ln2\, I_{\text{erased}}$. \tagD
+\end{definition}
+\begin{corollary}[Working with nature is cheap]
+The cost per delivered joule satisfies $C/E_{\text{out}}\approx E_{\text{nudge}}/(-\Delta G)\ll1$ for triggers, and $C/E_{\text{out}}\ge 1/\eta\ge1$ for valves. A caster who knows where the world stores free energy delivers more for the same reserves.
+\end{corollary}
+\begin{example}
+The design estimate for a large fireball is $0.9$\,GJ \tagU; the chemical energy of all body fat is about $0.37$\,GJ. A fireball through the valve from the body alone is not admissible. Through a trigger (igniting gathered fuel gas), the caster pays only the gathering and the ignition, and the energy is chemical.
+\end{example}
+
+%=====================================================================
+\section{Propagation, range and aim}\label{sec:prop}
+
+\subsection{Dispersion and speed}
+From (\ref{eq:helmholtz}) the dispersion relation is $k(\omega)=n(\omega)\,\omega/\cM$, with phase and group velocities
+\begin{equation}
+v_p=\frac{\cM}{\operatorname{Re}n},\qquad v_g=\frac{\cM}{\operatorname{Re}n+\omega\,\dd\operatorname{Re}n/\dd\omega}.
+\end{equation}
+Speed therefore depends on medium and frequency (Q4.2): waves are slower in dense, strongly coupled matter and near resonances. \tagD
+
+\subsection{Recoil}
+A pulse of energy $E$ propagating at speed $v$ carries momentum $p=E/v$ (exact for $v=c$ in vacuum; we use it as the effective law, the ambiguity in media being immaterial in air). \tagR\ (form) \tagA
+\begin{example}
+$E=1$\,MJ at $v=300$\,m/s gives $p\approx3.3\times10^3$\,kg\,m/s, which would move a 70\,kg caster at about 48\,m/s. At $v=10^7$\,m/s, $E=0.9$\,GJ gives $p=90$\,kg\,m/s (a shove). Strong magic must therefore be fast, and a pack with slow magic must book recoil to the ground.
+\end{example}
+
+\subsection{Interfaces between media}
+Refraction obeys Snell's law $n_1\sin\theta_1=n_2\sin\theta_2$, and the reflectance at normal incidence is $\mathcal R=\big((n_1-n_2)/(n_1+n_2)\big)^2$. Shields are index steps or absorbers; a core of higher index guides waves (a waveguide, MS2). \tagR
+
+\subsection{Attenuation, spreading and the near field}
+Intensity falls as $I(x)=I_0e^{-\alpha x}$ along a path (Beer--Lambert) and as $1/r^2$ beyond the near field, $r\gtrsim\lambda/2\pi$. Inside the near field the coupling is reactive: efficient and weakly radiating, so touch spells are cheap and hard to detect. \tagR
+
+\subsection{Aim}
+The smallest spot a pattern can address at range is $\delta\approx\lambda/(2\,\mathrm{NA})$ \cite{abbe}, and an aperture of effective area $A_e$ has gain $G=4\pi A_e/\lambda^2$. A rod near half a wavelength long, $L\approx\lambda/2=\pi v/\omega$, is a resonant dipole antenna. \tagR
+
+\subsection{Complexity limits range}
+\begin{proposition}[Dispersion length]\label{prop:disp}
+Let a pattern carry information in symbols of duration $T_0$, so that its bandwidth is $\Delta\omega\sim T_0^{-1}$. In a medium with group-velocity dispersion $\beta_2=\dd^2k/\dd\omega^2$, the symbols broaden by a factor $\sqrt2$ over the dispersion length
+\begin{equation}
+L_D=\frac{T_0^2}{\abs{\beta_2}} .
+\end{equation}
+For fixed medium, the reliable range of a pattern falls as the square of its information rate.
+\end{proposition}
+\begin{proof}
+The standard result for Gaussian pulses in a dispersive medium \cite{agrawal}; the information rate is $\propto T_0^{-1}$, so $L_D\propto R^{-2}$.
+\end{proof}
+Hence simple spells carry far and intricate spells work best at short range (Q4.2, case C99).
+
+\subsection{Modes of bodies}
+\begin{definition}[Modes; MS4]
+Every body has a set of vibrational modes $\{(f_n,Q_n)\}$ determined by its shape and material. For a slender rod free at both ends (Euler--Bernoulli),
+\begin{equation}
+f_n=\frac{(\beta_nL)^2}{2\pi L^2}\sqrt{\frac{EI}{\rho A}},\qquad \beta_nL\approx4.730,\ 7.853,\ 10.996,\dots
+\end{equation}
+so $f_1:f_2:f_3\approx1:2.76:5.40$, not a harmonic series. Energy stored in mode $n$ decays as $E_n(t)=E_n(0)e^{-2\pi f_n t/Q_n}$. Damage changes $EI$ and shifts every $f_n$. \tagR\ \tagD
+\end{definition}
+No body is a focus by type; a body assists casting only as an antenna, a resonator, a store, a pattern holder or a memory aid. \tagD
+
+\subsection{Multiplexed engravings}
+A periodic engraving of spacing $d$ diffracts wavelength $\lambda$ into angles satisfying $d\sin\theta_m=m\lambda$, so one engraving can respond to several wavelengths with distinct functions (MS5), subject to $\sum_k C_k\le C_{\text{total}}$, the substrate's channel capacity. \tagR\ \tagD
+
+%=====================================================================
+\section{Sensing}\label{sec:sensing}
+
+\begin{definition}[Passive and active sensing; Q4.3]
+Passive sensing receives fields emitted by others. Active sensing emits a probe of power $P_t$ and receives its echo. A target of effective cross-section $\Sigma$ at range $R$ returns power (the radar equation \cite{skolnik})
+\begin{equation}
+P_r=\frac{P_tG_tG_r\lambda^2\Sigma}{(4\pi)^3R^4},
+\end{equation}
+while a passive observer at the target receives the probe directly with power
+\begin{equation}
+P_i=\frac{P_tG_tG_i\lambda^2}{(4\pi R)^2}.
+\end{equation}
+\end{definition}
+\begin{proposition}[Pinging reveals the pinger]\label{prop:intercept}
+With equal detection thresholds $P_{\min}$, the prober detects the target out to $R_a\propto P_t^{1/4}$, while the target detects the probe out to $R_p\propto P_t^{1/2}$. For any probe strong enough to be useful, $R_p>R_a$: the target learns of the prober before the prober finds the target.
+\end{proposition}
+\begin{proof}
+Set $P_r=P_{\min}$ and $P_i=P_{\min}$ and solve for $R$.
+\end{proof}
+Detection requires $\mathrm{SNR}=P/(\kB T_{\text{sys}}B)$ above threshold, and the noise temperature near a strong node is high, so a ley line hides its occupants (case C107). \tagD
+
+\paragraph{Forensic traces.} A strong field writes a remanent moment $m_r\propto H_w$ into nearby magnet-class material, which then decays as $m_r(t)=m_r(0)\,e^{-t/\tau_N}$ with the N\'eel--Arrhenius time $\tau_N=\tau_0\exp\!\big(K V/\kB T\big)$ \cite{neel}. Traces therefore persist in cool, stable materials and are erased by heat, as thermoremanent magnetisation records the geomagnetic field in cooled rock and fired clay. \tagR\ (analogue) \tagD
+
+%=====================================================================
+\section{Channels and matter}\label{sec:matter}
+
+\subsection{Branching of delivered energy}
+For each transducer, delivered energy divides among channels with fractions satisfying
+\begin{equation}
+\eta_{\text{heat}}+\eta_{\text{push}}+\eta_{\text{light}}+\eta_{\text{chem}}+\eta_{\text{sound}}+\eta_{\text{EM}}=1 .
+\end{equation}
+Light arises from radiative relaxation of excited carriers with yield $\Phi=k_{\text{rad}}/(k_{\text{rad}}+k_{\text{nonrad}})$, as in fluorescence, so light without heat has efficiency at most $\Phi$. Chemistry arises from selective excitation of a bond; it competes with intramolecular vibrational energy redistribution, which spreads energy within picoseconds, so bond-selective chemistry requires fast, resonant delivery and is limited in practice. \tagR\ \tagD
+
+\subsection{Signatures}
+The tell of a cast carries spectral features fixed by the structure of its pattern, shifted by the source's velocity: $\Delta f/f\approx v/\cM$ (MS3). \tagD
+
+\subsection{Gathering}
+\begin{proposition}[Minimum work of gathering; Q5.2]
+Extracting $n$ moles of a component present at mole fraction $x$ in an ideal mixture at temperature $T$ requires at least $W_{\min}=nRT\ln(1/x)$.
+\end{proposition}
+\begin{example}[Water from desert air]
+For water vapour at relative humidity $0.3$ and $T=300$\,K, one litre ($55.5$\,mol) needs $W_{\min}\approx55.5\times8.31\times300\times\ln(3.33)\approx1.7\times10^5$\,J, plus moving the latent heat of condensation elsewhere. Saturated air at 300\,K holds about $26$\,g of vapour per cubic metre, so at relative humidity $0.3$ one litre requires processing about $130$\,m$^3$ of air: conjured water in a desert is slow and humidity-limited (case C115). \tagR
+\end{example}
+
+\subsection{Copying}
+An exact copy of an unknown quantum state is impossible (the no-cloning theorem \cite{wootters}). A copy at resolution $\delta$ requires information $I_\delta$ equal to the object's entropy at that resolution, so a pure crystal is cheap to copy and an exact copy of a person is not admissible. \tagR\ \tagD
+
+\subsection{Transmutation}
+\begin{example}[Lead to gold]
+The nuclear binding energies are $B(^{208}\mathrm{Pb})\approx1636$\,MeV and $B(^{197}\mathrm{Au})\approx1559$\,MeV, so removing three protons and eight neutrons costs about $77$\,MeV per atom. One gram of gold contains $3.06\times10^{21}$ atoms, giving
+\begin{equation}
+E\approx 77\,\text{MeV}\times3.06\times10^{21}\approx3.8\times10^{10}\ \text{J per gram},
+\end{equation}
+about nine tonnes of TNT per gram, forty times the design's large fireball. The products include radioactive isotopes. Transmutation is admissible but practically out of reach, and hazardous in ways not visible to the world's inhabitants. Small quantities of gold have in fact been made from bismuth in particle accelerators \cite{aleklett}. \tagR\ \tagD
+\end{example}
+\begin{remark}
+The coupling of the field to nuclei belongs to the generating theory. A candidate is nuclear resonance at gamma-ray energies, $\hbar\omega\sim1$\,MeV, i.e.\ $\omega\sim10^{21}$\,s$^{-1}$, which would require very high energy densities, consistent with the estimate above. \tagA
+\end{remark}
+
+%=====================================================================
+\section{Derived models of magic}\label{sec:stack}
+
+The classical families of magical systems are realised as consequences or compositions of the theory. \tagD\ (the derivation is proposed)
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.26\textwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Model & Realisation in this theory\\
+\midrule
+Naturalist (magic as physics) & Postulates \ref{post:field}--\ref{post:arrangement}; Section~\ref{sec:field}\\
+Transactional (exchange) & Definition~\ref{def:admissible}, (L1)--(L2)\\
+Vitalist (inner energy) & Aligned carriers in the body, trained (a body as magnet-class material)\\
+Mind (idealist, weakened) & Coupling $\mathcal K=n_c a r$ and the inverse model; the mind acts through its brain\\
+Linguistic (code) & The grammar $\mathcal G$ and compilation $\mathcal C$; engravings as compiled patterns\\
+Animist (relationship) & Other agents with coupling, bonds and exchanges between agents\\
+Constructivist (belief) & Synchronised believers (Proposition~\ref{prop:ritual}) biasing the local field through (\ref{eq:kuramoto})\\
+Systemic (a ``System'') & A large compiled pattern operated through simple intents; fallible as an artefact\\
+Correspondence & Shared mode sets between bodies (later)\\
+Probability (luck) & Outcome bias under (L2)--(L4)\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+%=====================================================================
+\section{Emergence tests and open problems}
+
+\begin{definition}[Emergence test]\label{def:emergence}
+A \emph{case} is a pair $c=(X_c,\mathcal O_c)$ of an initial condition and an outcome predicate. A set of laws $\mathcal L$ \emph{passes} $c$ if simulations from $X_c$ under $\mathcal L$, with no code referring to $c$, satisfy $\mathcal O_c$ with probability at least $p_c$ over random seeds. The case bank of Appendix~\ref{app:cases} is the acceptance suite for the theory. \tagD
+\end{definition}
+
+\paragraph{Open problems.}
+\begin{enumerate}
+\item Magic acting on other minds (built on Proposition~\ref{prop:entrain}), resistance and consent.
+\item Healing as acceleration of the body's repair laws.
+\item The library's candidate cost laws and guards: upkeep at the relaxation rate of a held effect, per-region draw caps, prepaid trigger chains, link strength in bits, capacity bounded by pattern size, runaway coupling, storage saturation.
+\item Interfaces: channel rates and noise of media; notation and working memory.
+\item Whether sounds and gestures can couple by physical form alone in the default world.
+\item Learning, transmission and loss of magical knowledge.
+\item Operations beyond the One Change (doorways, rewind, planes), which require named extra capabilities.
+\item Parameters: the resonance tables, $\cM$ and $\chi_\gamma$, the feedback strength $\lambda$, the efficiency length $\ell$, and the source fraction $\epsilon_d$, to be fixed by the generating theory and by data.
+\item Later extensions: stable field states, density-dependent index, persistent imprints, self-sustaining field packets.
+\end{enumerate}
+
+%=====================================================================
+\begin{thebibliography}{99}\small
+\bibitem{carroll} S.~M. Carroll, ``The quantum field theory on which the everyday world supervenes'', arXiv:2101.07884 (2021).
+\bibitem{noether} E.~Noether, ``Invariante Variationsprobleme'', \emph{Nachr. Ges. Wiss. G\"ottingen} (1918).
+\bibitem{sagawa} T.~Sagawa and M.~Ueda, ``Generalized Jarzynski equality under nonequilibrium feedback control'', \emph{Phys. Rev. Lett.} 104, 090602 (2010).
+\bibitem{landauer} R.~Landauer, ``Irreversibility and heat generation in the computing process'', \emph{IBM J. Res. Dev.} 5, 183 (1961).
+\bibitem{shannon} C.~E. Shannon, ``A mathematical theory of communication'', \emph{Bell Syst. Tech. J.} 27, 379 (1948).
+\bibitem{jackson} J.~D. Jackson, \emph{Classical Electrodynamics}, 3rd ed. (Wiley, 1999).
+\bibitem{kittel} C.~Kittel, \emph{Introduction to Solid State Physics}, 8th ed. (Wiley, 2005).
+\bibitem{holdom} B.~Holdom, ``Two U(1)'s and $\epsilon$ charge shifts'', \emph{Phys. Lett. B} 166, 196 (1986).
+\bibitem{kuramoto} Y.~Kuramoto, \emph{Chemical Oscillations, Waves, and Turbulence} (Springer, 1984).
+\bibitem{anastassiou} C.~A. Anastassiou, R.~Perin, H.~Markram and C.~Koch, ``Ephaptic coupling of cortical neurons'', \emph{Nat. Neurosci.} 14, 217 (2011).
+\bibitem{frohlich} F.~Fr\"ohlich and D.~A. McCormick, ``Endogenous electric fields may guide neocortical network activity'', \emph{Neuron} 67, 129 (2010).
+\bibitem{adler} R.~Adler, ``A study of locking phenomena in oscillators'', \emph{Proc. IRE} 34, 351 (1946).
+\bibitem{newell} A.~Newell and P.~S. Rosenbloom, ``Mechanisms of skill acquisition and the law of practice'', in \emph{Cognitive Skills and Their Acquisition} (Erlbaum, 1981).
+\bibitem{dehaene} S.~Dehaene, \emph{Reading in the Brain} (Viking, 2009).
+\bibitem{jordan} M.~I. Jordan and D.~E. Rumelhart, ``Forward models: supervised learning with a distal teacher'', \emph{Cognitive Science} 16, 307 (1992).
+\bibitem{abbe} E.~Abbe, ``Beitr\"age zur Theorie des Mikroskops und der mikroskopischen Wahrnehmung'', \emph{Arch. Mikrosk. Anat.} 9, 413 (1873).
+\bibitem{agrawal} G.~P. Agrawal, \emph{Nonlinear Fiber Optics}, 5th ed. (Academic Press, 2013).
+\bibitem{skolnik} M.~I. Skolnik, \emph{Introduction to Radar Systems}, 3rd ed. (McGraw-Hill, 2001).
+\bibitem{neel} L.~N\'eel, ``Th\'eorie du tra\^inage magn\'etique des ferromagn\'etiques en grains fins'', \emph{Ann. G\'eophys.} 5, 99 (1949).
+\bibitem{wootters} W.~K. Wootters and W.~H. Zurek, ``A single quantum cannot be cloned'', \emph{Nature} 299, 802 (1982).
+\bibitem{aleklett} K.~Aleklett, D.~J. Morrissey, W.~Loveland, P.~L. McGaughey and G.~T. Seaborg, ``Energy dependence of $^{209}$Bi fragmentation in relativistic nuclear collisions'', \emph{Phys. Rev. C} 23, 1044 (1981).
+\end{thebibliography}
+\noindent\textit{Citations are given from memory and are to be verified by the research library before any number derived from them enters the engine.}
+
+%=====================================================================
+\appendix
+\section{Parameters}
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
+\toprule
+Parameter & Role & Status\\
+\midrule
+$\cM$ & reference speed; light-like at casting frequencies in air by default & \tagD\ \tagU\\
+$\omega_j,\gamma_j,\Omega_j^2$ & resonance table per substance (the material record) & \tagA\ \tagU\\
+$g$ & source coupling in (\ref{eq:helmholtz}) & \tagU\\
+$D,k,S$ & spreading, leak and sources of the background store & \tagD\ \tagU\\
+$\epsilon_d$ & fraction of dissipated power that becomes field (distant regions) & \tagU\\
+$\chi_\gamma$ & mixing with electromagnetism; small by Postulate~\ref{post:arrangement} & \tagU\\
+$\lambda$ & strength of the field's feedback on neural phases & \tagU\\
+$h^2$ & heritability of carrier density, about $0.5$ & \tagU\\
+$b$ & exponent of the power law of practice & \tagA\ \tagU\\
+$\ell$ & width of practised neighbourhoods in effect space & \tagU\\
+$T_c$ & critical temperature of each magnet-class material & \tagU\\
+$\tau_{\text{decay}}$ & loss of order in dead tissue & \tagU\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Case bank}\label{app:cases}
+Generated from \texttt{docs/magic-science.md}. Expected outcomes are provisional until every question a case tests is settled.
+
+{\small\input{cases.tex}}
+
+\end{document}
