@@ -1,0 +1,486 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,longtable,array,tabularx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\definecolor{dec}{RGB}{30,70,140}
+\newcommand{\decision}[3]{\par\smallskip\noindent{\color{dec}\textbf{Decision #1}} \textit{(#2)}: \textbf{#3}\par}
+\newcommand{\case}[1]{\textsf{#1}}
+\newcommand{\kB}{k_{\mathrm B}}
+
+\title{The Science of Magic in MARK1\\[4pt]\large A working theory: axioms, decisions and test cases}
+\author{Worked out by the owner and Claude, 23--24 November 2026}
+\date{State as of 24 November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent MARK1's magic is meant to be an exact science: something the world does for physical reasons, that people inside the world can discover, misunderstand and use, and that never needs a special rule for any one effect. This document collects everything settled so far in one place. It states the axioms, then walks through the decisions in the order they depend on each other, giving the reason for each and the physics behind it. It then shows how the classic kinds of magic (physics, mind, code, spirits, belief, inner energy, exchange and game Systems) can all be built on one foundation, and lists what is still open. An appendix holds the bank of 117 test cases that every answer must explain.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{How this was worked out}
+
+The method is simple, and it is what keeps the theory honest.
+\begin{itemize}
+  \item \textbf{One question at a time}, in an order where later questions can rely on earlier answers. Each question gets options, a recommendation and its consequences.
+  \item \textbf{A bank of test cases} (Appendix~\ref{app:cases}). Every answer must give a sensible result on every case it touches. An answer that makes a case silly is wrong or incomplete. The cases are \emph{emergence tests}: each must come out of the laws, never out of code written for that case.
+  \item \textbf{Nothing changes silently.} If a later answer conflicts with an earlier one, the earlier one is reopened on purpose. This has already happened twice (the frame, Section~\ref{sec:frame}, and the nature of the field, Section~\ref{sec:field}).
+  \item \textbf{Real science first.} Where physics, neuroscience or other magic systems can inform a question, the research library is asked. Where a law can be simulated, it is tested in a small prototype before it enters the engine.
+\end{itemize}
+
+{\sloppy The decisions are recorded with dates in \texttt{docs/magic-science.md}, which this document follows. Earlier design decisions (named MS1--MS5, MC1--MC8 and FM1) come from \texttt{docs/magic-design.md}.\par}
+
+%=====================================================================
+\section{The axioms}
+
+Eight statements sit underneath everything else.
+
+\begin{description}[style=nextline,leftmargin=1.2em]
+  \item[A1. The One Change.] A patterned structure can move energy and momentum at a distance through a finite, conserved, out-of-equilibrium field, called $M$ here (mana, qi or any other name is lore). The pattern steers a flow; it never makes energy.
+  \item[A2. Arrangement, not bulk.] The field couples only through structures whose effect depends on their \emph{arrangement}: a brain, a carving, a tuned crystal. It never acts as a bulk force on ordinary matter, or everyday physics would already have found it. This is the one loophole the physicist Sean Carroll allows in his argument that the physics of everyday life is complete: a force that treats a human brain differently from a cantaloupe \cite{carroll}.
+  \item[A3. Every joule booked.] Magic hands its energy to the existing laws, and a magic joule then behaves like any other joule.
+  \item[A4. A spell is a mechanism.] A spell is a physical operation on the world's existing fields, for example: \emph{isolate the flammable gas ten metres away to the north, and spark it two seconds later}. It is never ``the mana bar went down and the enemy went boom''.
+  \item[A5. Realism by default.] The default world models real life as closely as it can. Game-like rules exist only as optional packs.
+  \item[A6. Magic only allows change that could exist without it.] Every end state is a lawful physical state that some ordinary process could reach. Magic changes \emph{which} lawful change happens, and where, when and how fast; it never adds a new kind of state. This is the principle of a catalyst, which opens a pathway and changes a rate but never the final balance. So teleport needs a special ``doorway'' (the end state is lawful, but no ordinary path is instant), and the creation of mass from nothing is ruled out.
+  \item[A7. Cases emerge; they are never coded.] In the owner's words: ``if we implement it right, all these things would naturally arise from the structure of the simulation.''
+  \item[A8. The zero-magic limit.] With no field, or no coupling, every law reduces \emph{exactly} to the engine's ordinary laws. A person with no magical capacity, or anyone in a world without magic, has a mind that works exactly as a real mind does. Magic is an addition to real life, never a requirement of it. This is the same rule physics uses when a new theory must reproduce the old one in the old one's domain. It is directly testable: with magic switched off, every existing test of the minds must give bit-for-bit the same results.
+\end{description}
+
+%=====================================================================
+\section{The level of the theory}\label{sec:level}
+
+\decision{Q1.0}{24 Nov}{An effective theory that is simulated, plus a deeper theory that is written but never simulated.}
+
+Real physics is layered. Engineers design bridges with Newton and circuits with Maxwell's equations, not with quantum field theory, yet everything stays consistent with the deeper theory. Each layer is an \emph{effective theory}: correct at its own scale, with its numbers set by the layer below. The deeper layer explains why the numbers are what they are: why copper conducts, why each gas has its spectral lines.
+
+MARK1 already works like this. It simulates classical continuum physics (heat flow, fluids, mechanics, chemistry as rates), which is correct at human scales, and takes modern physics in as data (enthalpies, conductivities, strengths). Magic is simulated at the same level. Separately, a \textbf{generating theory} is written once and checked for consistency. It produces the effective numbers: why the field's carriers exist, why each substance has the magical resonances it has, how fast the field travels, and why the planet makes a field at all.
+
+Real physics offers a template for the generating theory: physicists' proposals for hidden ``fifth forces'', new weak forces carried by a new kind of charge, some designed to hide themselves inside dense matter (``chameleon'' fields \cite{chameleon}). The generating theory is also where the one brute fact lives, \emph{why the field exists at all}, and so it is one of the homes of mystery. It gives science inside the world a path: folk lore, then effective laws (a Newton of magic), then the deeper theory, which perhaps only great scholars or the gods have found. A pack may swap the deeper theory for another.
+
+%=====================================================================
+\section{The frame: what makes a spell possible}\label{sec:frame}
+
+\decision{Q0}{23 Nov, revised}{Five layers, each a real branch of physics or information theory.}
+
+The first answer to this question was a checklist: a spell is possible if every conserved quantity balances. It was replaced by a richer frame of five layers, with the checklist as the first layer's default.
+
+\begin{enumerate}
+  \item \textbf{Symmetries decide what is conserved.} In physics every conservation law comes from a symmetry (Noether's theorem \cite{noether}): energy is conserved because the laws do not change over time, momentum because they are the same everywhere. By default every symmetry holds, so energy (including the field's), momentum, angular momentum, the centre of mass, charge and the number of particles are all conserved. A pack may break a \emph{named} symmetry in a \emph{named} place. For example, if momentum were not conserved inside a ley line, levitation there would need nothing to push against, but only there.
+
+  \item \textbf{A thermodynamic budget decides whether it is affordable, with information as fuel.} Physics has an exact law for what a ``Maxwell's demon'' can do with information. A process that holds $I$ bits about the system it acts on can extract work up to
+  \begin{equation}
+    W \;\le\; -\Delta F + \kB T\, I \ln 2,
+  \end{equation}
+  where $\Delta F = \Delta E - T\Delta S$ is the change in free energy and $T$ the temperature \cite{sagawa}. So improbable outcomes cost extra, because creating order lowers entropy and raises the free energy needed. This is the exact form of axiom A6. Erasing a bit of information costs at least $\kB T \ln 2$ (Landauer's limit \cite{landauer}), about $3\times10^{-21}$\,J at room temperature.
+
+  \textit{A caution found while writing this up:} the thermodynamic floor for information is tiny. Biasing a throw of dice by magic costs almost nothing \emph{at this layer}. The real cost of loading dice comes from layers 3 to 5: locating the die, predicting its chaotic tumble, and physically nudging it. Case \case{C33} should be read that way.
+
+  \item \textbf{Causal reach decides whether it can get there.} A signal path from the pattern to the target must carry enough information in time, within the field's speed and the channel's capacity (Shannon's limit, $C = B\log_2(1+S/N)$ \cite{shannon}). You cannot act on something your signal cannot reach or cannot specify.
+
+  \item \textbf{Computation decides what the thinking costs.} A pattern is also a computation: bits held, operations performed, bits erased. Searching and divination pay for the bits needed to single out the answer: finding one person in a city costs the information that distinguishes them, and a name, a link or a trace cuts the cost. Complexity is a real limit: forecasting the weather a month ahead is out of reach at any power, because the weather is chaotic.
+
+  \item \textbf{The One Change is how it happens:} the mechanism the simulation actually runs, described in the rest of this document.
+\end{enumerate}
+
+The owner's statement of A6, ``it can only allow change that can exist without it in some way'', follows from layers 1 and 2. The pattern is a catalyst, and like any catalyst it wears with use.
+
+%=====================================================================
+\section{The field}\label{sec:field}
+
+\subsection{What the field is, and what carries it}
+
+\decision{Q1.1}{23 Nov, revised}{A field built like electromagnetism, carried by particles with a small magical charge. Its waves have a phase.}
+
+In real physics a field always has something that produces it: electric fields come from charges, magnetic fields from moving charges and from aligned atoms. MARK1's field works the same way. Some particles carry a small \textbf{magical charge} or \textbf{magical moment}, as electrons carry electric charge and atoms carry magnetic moments.
+
+\paragraph{Why ordinary matter shows nothing (A2 explained).} In ordinary matter the carriers point every which way, and their effects cancel, as most matter is not magnetic even though its atoms are tiny magnets. The arithmetic makes the point. If $N$ carriers each contribute a unit $m$, then
+\begin{equation}
+  \Bigl|\sum_{i=1}^{N} \mathbf m_i\Bigr| \approx
+  \begin{cases}
+    \sqrt N\, m & \text{random orientations (ordinary matter)},\\[2pt]
+    N\, m & \text{aligned or organised carriers}.
+  \end{cases}
+\end{equation}
+For $N \sim 10^{20}$ the organised sum is $10^{10}$ times the random one. So only aligned or organised carriers couple noticeably: A2 is explained rather than assumed.
+
+\paragraph{What organises carriers:} a crystal lattice (a natural ``magic magnet''), an organ evolved for it, the geometry of an engraving, and the synchronised activity of a brain.
+
+\paragraph{No material stores a field.} The owner pointed out that physics never stores a field in a material. A ``charged'' gem holds aligned carriers that emit their own field, as a lodestone does. Heating it past a critical temperature scrambles the alignment and erases the charge, as heat demagnetises a magnet.
+
+\paragraph{Waves with a phase.} The field at each point has an amplitude and a phase, $\psi = A e^{i\varphi}$, and its energy density goes as $A^2$. Interference, standing waves, coherence and resonance are then native physics. A counterspell is a wave in opposite phase, and two casters working in step add up to more than either alone.
+
+\paragraph{Absorption and the index.} A passing wave jostles carriers, and the jostling ends as warmth. How easily a material's carriers respond sets its \emph{index} for the field (decision MS2, Section~\ref{sec:range}), as glass's index for light comes from how its electrons respond.
+
+\paragraph{Later extension.} The field may have stable \emph{states} (normal, dead, wild), separated by walls, which flip when pushed hard enough, as water freezes. Not now.
+
+\subsection{Where the field comes from}
+
+\decision{Q1.2}{23 Nov, revised}{Made wherever carriers are moved or organised, above all by the planet's churning core; ancient deposits are natural lodestones.}
+
+A field spread out evenly and at rest can do no work, as evenly warm air cannot run an engine. Magic needs the field concentrated somewhere and replenished from somewhere. Each source takes its energy from a real process, and the energy is booked as taken from it.
+\begin{itemize}
+  \item \textbf{The planet's core is a dynamo}, as Earth's magnetic field comes from its churning molten core. So the world's \textbf{ley lines are the planet's own field lines}, mappable like magnetic north. There are poles, a slow drift over centuries (a famous ley line moves off its ancient temples, and the offset dates them), and rare reversals, world-scale magical upheavals.
+  \item \textbf{Local sources add to it}: growing crystals, living organs, storms separating charge.
+  \item \textbf{Ancient deposits} are natural magical lodestones: crystals whose carriers were aligned long ago. They can be mined, they run out, and heat erases them.
+  \item \textbf{Distant regions} use a cheap estimate: a fixed small share of the energy dissipated there becomes field. This is the coarse ``twin'' for places the player is not watching.
+  \item \textbf{Inflow from other worlds or beings} exists only as a pack.
+\end{itemize}
+This makes magic a finite, geographic resource, ``more than just a fixed number'' as the owner put it: rich places, mineable deposits, and regions drained by over-use as fisheries are overfished.
+
+\subsection{Why everyday life does not notice}
+
+This question was folded into the two above. Ordinary matter cancels (Q1.1), absorption ends only as a tiny warming far below anyone's notice, and the weak link to electromagnetism (Q5.1) shows only near strong fields. So a careful natural philosopher with a good thermometer, or a compass, could find a ley line before believing in magic.
+
+%=====================================================================
+\section{Coupling: what can touch the field, and why we can}\label{sec:coupling}
+
+\subsection{Minds}
+
+\decision{Q2.1}{23 Nov}{Coupling through synchronised brain activity, with a small share from the body.}
+
+There is a close real analogue. An EEG can read brain activity from outside the skull only because millions of neurons in the cortex lie parallel and fire in step, so their tiny electric fields add instead of cancelling. That is exactly A2's rule, already at work in real brains.
+
+A person's coupling is a product of three things:
+\begin{equation}
+  \text{coupling} \;=\; \underbrace{n_c}_{\text{carriers (inherited)}} \times \underbrace{a}_{\text{alignment of brain geometry (development)}} \times \underbrace{s}_{\text{synchrony (trainable)}}.
+\end{equation}
+So concentration helps; strong emotion raises synchrony but blurs the pattern (power against precision); fatigue and drugs disrupt it; meditation-like training raises it. The body holds a few carriers too, so trained breath, posture and movement help a little, and gestures matter a little physically, without any magic language. Beasts may evolve dedicated organs, like an electric eel's; humans have none, only natural variation in carrier density and brain geometry. Deep sleep is highly synchronised but carries no pattern, so at most it gives diffuse warmth. Animals couple less, plants make field slowly but cannot cast, and a machine of crystal circuits could couple in principle.
+
+\decision{Q2.3}{23 Nov}{Coupling is inherited like real human aptitudes.}
+
+Built like musical or mathematical talent: moderate heritability (about half, spread over many genes), rare variants of large effect (the prodigy born to ordinary parents), development (childhood is more plastic, so early training reaches further), and practice with diminishing returns. Magical bloodlines exist only statistically: mage families average higher, with a wide spread.
+
+\subsection{Matter}
+
+\decision{Q2.2}{23 Nov}{Four material classes, like electronics; engravings are circuits; living matter couples best.}
+
+\begin{itemize}
+  \item \textbf{Conductors} have free carriers and carry currents of field: traces in engravings, and shields (a cage of conductor blocks spells, like a Faraday cage).
+  \item \textbf{Insulators} have bound carriers that respond without letting the field through; they set the index.
+  \item \textbf{``Magnets''} have aligned carriers: lodestones and charged gems, which emit.
+  \item \textbf{Switchable materials} conduct or not depending on a control field, as semiconductors do. They are the basis of engraved logic gates.
+\end{itemize}
+An \textbf{engraving is a real circuit}: conductor traces cut or inlaid into a substrate. Purity and fewer lattice defects mean less loss. A correct rune cut into plain granite does nothing; the same rune inlaid with a conductor ore works. \textbf{Charging} writes a pattern of aligned carriers, as data is written to magnetic tape; it takes energy and a strong field, and heat or a strong pulse erases it. \textbf{Living matter} actively organises its carriers, so living wood, bone and blood couple better than dead. The order that life built fades after death unless a craft (curing, tanning, firing) fixes it: a dragon-bone wand weakens over decades unless it was cured.
+
+\subsection{The field acts back on the mind}
+
+\decision{Q2.4}{24 Nov}{A weak feedback loop for every coupled mind, plus an optional dedicated sense organ.}
+
+Real neurons are slightly affected by the brain's \emph{own} weak electric field: fields of a few millivolts per millimetre nudge the timing of their firing (``ephaptic coupling'' \cite{anastassiou,frohlich}). Carried over to magic:
+\begin{itemize}
+  \item \textbf{People can feel the field}, but mostly subconsciously: as mood, unease, pressure or intuition rather than a clear sense. Training can make it conscious, as people can learn to feel their own heartbeat.
+  \item \textbf{Technique works inward}: breath, posture, chant and ritual change the caster's own field, and so the caster's state.
+  \item \textbf{Places affect thought}: unease or elation near a powerful node, flatness in a dead zone.
+  \item \textbf{Minds entrain one another}: mages working together fall into step, and crowd emotion spreads faster near strong fields.
+  \item \textbf{Shared belief bends the field} through many coupled minds holding the same pattern (Section~\ref{sec:stack}).
+  \item \textbf{Strong pulses disturb thought}: a raw, powerful pulse stuns or disorders nearby minds, as strong brain stimulation can. Mind-affecting magic therefore has a physical basis rather than being a separate kind.
+  \item \textbf{The mind stays in the brain}: damage the brain and the mind is damaged.
+\end{itemize}
+Separately, some beasts (and rarely people) may evolve a \textbf{dedicated sense organ}: a clear, directional sense of the field, as birds sense Earth's magnetic field. A stronger version, \emph{the mind partly made of the field} (ghosts, possession, places remembering their people), is kept as a later extension.
+
+\subsection{Where magic touches the mind, so behaviour stays emergent}
+
+\decision{Q2.5}{24 Nov}{Magic touches the learned mind only through the ports every other physical thing uses.}
+
+MARK1's characters are run by a learned mind: one learner with drives, concerns and a model of what its own acts do, whose behaviour is meant to emerge, never to be coded. Magic must not get its own cognition. It enters through exactly four ports:
+\begin{enumerate}
+  \item \textbf{Sense:} the field is one more sensory channel with acuity dials; the dedicated organ is a sharper channel. The mind learns what the feelings mean, as it learns any sign.
+  \item \textbf{Act:} casting is one more family of acts. The mind's existing model of what its own acts do learns what casting does, and that model \emph{is} the ``inverse model'' of Section~\ref{sec:intent}. Costs are paid through the body's existing drives.
+  \item \textbf{Body state:} field nudges move only the variables that emotion, fatigue and drugs already move (arousal, choice noise, precision), plus one new variable, synchrony. They never touch reward or beliefs directly.
+  \item \textbf{Others:} other people's casting is perceived through its tells, like any act.
+\end{enumerate}
+Everything else must emerge from the same learner: fear of mages from seeing harm, magical addiction only if casting or nodes actually serve a drive through the body, guilds from the pay-offs of cooperating, superstitions from mistaken causal beliefs. Learning magic is the same machinery as learning to drink in the lab's family inn: children raised by people who cast are taught, sent to practise and watch others, and their childhoods are saved into the adults.
+
+\subsection{Why sapient beings have access, and why interfaces work}
+
+\decision{Q2.6}{24 Nov}{Three layers: physics, biology, culture.}
+
+Reading is the real analogue. Evolution never built the brain to read (writing is about 5{,}000 years old); reading works because a culture invented a technology that fits machinery the brain already had, and the brain's visual areas are repurposed by learning \cite{dehaene}.
+\begin{itemize}
+  \item \textbf{Physics:} all organised matter couples a little.
+  \item \textbf{Biology:} evolution tuned it, strongly in some beasts and weakly in humans (the felt sense and some coupling), with a natural spread between people.
+  \item \textbf{Culture:} interfaces are \emph{technologies} built on that capacity. Spells, notations, chants and formulae work because generations refined them by trial and error to produce patterns the field responds to and that a mind can hold. Failures died out; superstitions survived where feedback was too noisy to judge. In the default world, the gods' gifts (Section~\ref{sec:intent}) started this cultural layer.
+\end{itemize}
+So some symbols are ``magical'' the way good tools are useful: by selection. No special magic language is needed, and English is not magical because no language is. The world gets a history of magical technology: competing schools, lost techniques, reinventions, regional styles.
+
+\subsection{What makes a symbol work}
+
+\decision{FM1}{23 Nov}{Minds work by meaning; shaped matter works by geometry.}
+
+A mind works with any notation it \emph{understands}, so a translated spellbook still works for its reader. Matter works by its \emph{shape}, like a circuit, so an illiterate mason who copies a rune precisely gets a working ward and a scholar who copies it sloppily gets nothing. Voice and gesture are channels for a mind, not powers of their own. Whether certain sounds and gestures work by their physical form alone (so that a recording could cast) is still open: default or pack (Section~\ref{sec:open}).
+
+%=====================================================================
+\section{Patterns and intent}\label{sec:intent}
+
+\subsection{Two levels: thought and wave physics}
+
+\decision{Q3.1}{23 Nov}{The grammar happens in sentient thought; what moves things is wave physics.}
+
+In the owner's words: ``the grammar happens by sentient thought, but what's moving and making things happen is pure wave physics.''
+
+The \textbf{thought level} is a grammar of physical operations (deliver this heat, move this gas, delay, repeat), which is how minds compose and hold a spell. The \textbf{causal level} is a designed \emph{waveform} (which frequencies, which phases across space, when) meeting matter's carriers. The real analogue is spectroscopy and laser physics: each molecule absorbs only at its own frequencies, so a laser tuned to one molecule can heat, push or trap it and leave its neighbours alone.
+\begin{itemize}
+  \item A waveform \textbf{selects} by resonance: each substance has its own magical absorption lines, stored in the material record.
+  \item It \textbf{pushes} by momentum transfer, \textbf{heats} by absorption, and \textbf{senses} by reflection.
+\end{itemize}
+The simulation executes the grammar's operations directly, so it stays fast, but each operation's selectivity, cost, precision and errors come from the wave physics. An error lands on the substance with the \emph{nearest} resonance, so grabbing methane might also grab ethane. A substance whose resonances the caster does not know cannot be targeted, and two substances with identical resonances cannot be separated by magic at all.
+
+\subsection{Intent is a goal}
+
+\decision{Q3.2}{23 Nov}{Intent is a goal, turned into a pattern by the mind's learned model; explicit overrides; culture for common goals; noise for the rest.}
+
+Nobody consciously specifies every frequency and phase. The real analogue is reaching for a cup: you intend ``cup in hand'', and your brain's learned model of your body works out the muscle commands (neuroscience calls this an \emph{inverse model}). Skill is largely having a good one.
+\begin{itemize}
+  \item The caster intends an \textbf{outcome}, and the mind's learned model of how its own field affects the world turns it into a pattern. That model's quality is the \emph{intrinsic} part of skill.
+  \item \textbf{Explicit shaping}: writing parts of the pattern yourself, overriding what the model would choose. This is the \emph{explicit} part of skill, and the player's own game of skill.
+  \item \textbf{Culture and gifted spells} supply ready-made models for common goals, so thinking ``fire'' works for someone taught it.
+  \item \textbf{Noise} fills only what neither the model nor the caster settles.
+\end{itemize}
+So a frightened child (clear goal, poor model) gets a huge, crude result; an untrained adult thinking ``fire'' (no model) gets little or nothing; a trained mage gets a precise result.
+
+\decision{MS1}{23 Nov}{Practice raises efficiency: an unfamiliar pattern wastes more of its energy as heat.}
+
+A clumsy pattern converts worse, so more of the drawn energy leaks as waste heat at the site; the useful share rises with practice on \emph{physically nearby} effects (a hotter fireball is near a fireball; a frost cone is far from it). A novice's first fireball is therefore dangerous to the caster's surroundings, as a beginner's forge work is. A pack may instead add a game-like ``aspect'' system with an explicit surcharge.
+
+\paragraph{The layers and the gods.} Magic is intrinsically very low level: the field and its grammar of physical operations. On top sit interfaces and many kinds of formulae, each compiling down to the grammar; the more complex a spell, the more specific it can be. The default world's history: early on, powerful minds (``gods'') gave people \emph{thematic spells straight into memory}, as compiled patterns. They are intuitive and cheap to cast (their design cost was paid by their maker, as a carving's is), but opaque: complex dials built to the gods' own understanding, impossible to change on a whim. Taking them apart by study is the road from gifted spells to low-level magic. The mechanism is general: any mind can give another a compiled pattern through a bond.
+
+\subsection{The threshold comes from noise}
+
+\decision{Q3.3}{23 Nov}{No hand-set threshold: every effect must beat the thermal noise of what it acts on.}
+
+People think ``fire'' and daydream all the time without effect. Coupling is continuous, but an incoherent intent produces a drive too weak and jumbled to rise above the thermal noise of the matter it would act on, as the brain's own real electric field is far too weak to move anything. Fear's high synchrony lifts a child's drive above the noise.
+
+\paragraph{Ritual works by synchrony.} Because the field's waves have phase, drives in step add their amplitudes, growing with the number of people $N$, while drives out of step grow only as $\sqrt N$ and mostly cancel (the same arithmetic as the carriers). So a hundred people chanting in unison can reach an effect none could alone, while a hundred people silently wishing for rain achieve nothing. Rituals, chants and drums work because they \emph{synchronise} people, which rhythm really does.
+
+\subsection{Magic without deliberate intent}
+
+\decision{Q3.4}{23 Nov}{Any strong goal casts, conscious or not; practised patterns become reflexes.}
+
+Intense emotion carries a goal (fear: escape; anger: strike) and drives synchrony up, so the learned model can act without a decision. Accidental magic happens in children and in strongly coupled untrained adults under extreme emotion; training includes emotional control, which gives mage training a real social reason. Practised patterns become automatic, so a startled mage raises a ward before thinking. Emotional regulation matures through adolescence into the twenties, so accidental magic fades with age on its own. Dreams stay below the noise for almost everyone.
+
+A goal like ``escape'' is not a field: goals live only at the thought level. The mind's learned model is the bridge to concrete changes, and an untrained model knows only the crudest one (a burst pushing outward, or heat). That is why accidental magic looks like things flying away or catching fire, never anything clever.
+
+\subsection{Understanding}
+
+\decision{Q3.5}{24 Nov}{The implicit model is enough; explicit theory extends reach. Copying symbols without understanding has a weak effect too.}
+
+Understanding comes in two kinds. \textbf{Implicit} understanding is the learned model: fast, intuitive, partly subconscious, reliable only within experience and confidently wrong outside it, as a child throws a ball well without knowing any physics. \textbf{Explicit} understanding is theory and written formulae: slow, but able to design effects nobody has tried. The first attempt at a designed effect is rough and wasteful until practice catches up (MS1). New effects come either by \emph{exploration}, trying variations, paid in time, energy and mishaps, or by \emph{theory}. There are no wishes. Two kinds of mage arise on their own: the intuitive practitioner (skilled, fast, narrow, possibly superstitious) and the scholar (slow, versatile, inventive).
+
+The owner added that \textbf{pattern-matching magic symbols without understanding has some effect}. It emerges three ways: a \emph{drawn or carved} copy is matter geometry and works as far as its material and precision allow; a symbol \emph{traced by gesture or chanted} moves the body's small share of carriers in its shape; a symbol \emph{held in mind} partly organises the brain's activity into its shape. All give weak, imprecise versions; understanding adds precision and flexibility. This is also how learning starts: watching teaches the movement far more than the outcome (the library found effect sizes of 0.77 against 0.17), so apprentices copy first and understand later.
+
+%=====================================================================
+\section{Steering, range and sensing}\label{sec:range}
+
+\subsection{Where a spell's energy comes from}
+
+\decision{Q4.1}{24 Nov}{One accounting of three routes: the valve, the trigger and the demon.}
+
+\begin{itemize}
+  \item \textbf{The valve (uphill):} the pattern opens a channel from a store (the field, the body, a charged material) to the target. Every joule is paid from the store.
+  \item \textbf{The trigger (downhill):} the pattern tips a system already holding energy: lighting fuel, cracking a strained beam, nudging a poised boulder, starting a reaction. The world pays; the spell pays only for the nudge and the information.
+  \item \textbf{The demon (sorting):} the pattern uses information to sort what is already there, fast molecules here, slow ones there, cooling one place and warming another, bounded by the budget of Section~\ref{sec:frame} and paid in bits and waste heat.
+\end{itemize}
+Working with nature is cheap and working against it is expensive. Lighting a stove costs a few joules; heating a room with no fuel costs the full heat. Knowing where the world stores energy makes a mage far stronger for the same reserves, so a mage who knows where the gas line runs beats a stronger one who does not. The fireball of axiom A4 is mostly trigger and demon, and barely any valve.
+
+\subsection{Speed, range and aim}
+
+\decision{Q4.2}{24 Nov}{Speed set by medium and frequency.}
+
+A wave pulse of energy $E$ moving at speed $v$ carries momentum
+\begin{equation}
+  p = E/v .
+\end{equation}
+So \textbf{slow magic means huge recoil}. A 1\,MJ pulse at 300\,m/s carries about $3{,}300$\,kg\,m/s, enough to throw a 70\,kg caster backwards at nearly 50\,m/s. That is a lawful reason why strong magic must be fast.
+
+Each frequency travels at its own speed in each material, $v = c_M/n(f)$, as light does in glass. In the default world, typical casting frequencies move light-like in air, so strong strikes are fast and recoil is small. Waves are slower in dense, strongly coupled matter, so a spell through a stone wall arrives late and weakened. Low frequencies crawl, so wards and hums spread slowly. A complex spell contains many frequencies that drift apart with distance, so it smears out; simple spells carry far. A pack may make air slow, for visible, dodgeable bolts with real recoil.
+
+\decision{MS2}{23 Nov}{A magic index per material.}
+
+Pulses bend at boundaries by Snell's law, $n_1 \sin\theta_1 = n_2\sin\theta_2$, partly reflect at index steps (a shield is such a step), and are trapped in slower cores (waveguides). So lenses, mirrors, waveguides and leaky barriers are just shaped materials, and a ley line with a slow core guides magic like an optical fibre. How much a material matters depends on the interface: along the path every pulse reads the index of what it crosses, while the medium that holds a pattern matters strongly for engravings and written formulae and little for voice and gesture. A later extension may let the index rise with the field's density, so that dense magic bends pulses toward itself.
+
+\paragraph{Range and aim} follow existing physics:
+\begin{itemize}
+  \item spreading with distance ($1/r^2$ beyond the near field) and absorption, $I = I_0 e^{-\mu x}$ (Beer--Lambert);
+  \item the near field: inside about a wavelength, coupling is efficient, quiet and nearly undetectable, so touch spells are cheap and ranged ones lossy and visible;
+  \item the diffraction limit on aim: the smallest spot is about $\lambda/(2\,\mathrm{NA})$ \cite{abbe}, so fine aim at range needs short wavelengths and a large aperture, where antennas earn their place (gain $G = 4\pi A/\lambda^2$);
+  \item information: you can only aim at what you can locate, by sight, a link, a name or a trace.
+\end{itemize}
+
+\decision{MS4}{23 Nov}{Every object resonates by its real body; nobody needs a staff.}
+
+Every object has a set of vibration modes (bending, twisting, lengthwise), each with its own frequency $f_n$ and quality factor $Q_n$, computed from its real shape and material. A passive enchantment is energy stored in one mode, leaking at that mode's rate; damage shifts the modes and detunes it. No object is a ``focus'' by type. An object helps only where physics makes it help: as an antenna (a body-length staff near half a typical wavelength), a resonator (stored energy builds to about $Q$ times the drive), a store, a pattern holder, or a memory aid that steadies the caster through belief. Where none applies, a staff is a walking stick, and a culture that carries one keeps a habit, perhaps with a wrong theory of why it works.
+
+\subsection{Sensing}
+
+\decision{Q4.3}{24 Nov}{Passive and active sensing, with reciprocity: whatever can send can sense, and sending reveals you.}
+
+\begin{itemize}
+  \item \textbf{Passive} sensing (feeling fields, reading others' tells) is silent.
+  \item \textbf{Active} sensing sends a pulse and reads its reflections, like radar: location, shape and material. Every ping is itself a tell, so anyone sensitive nearby learns you are there. Stealth against sight is a real tactical choice, as with a submarine's passive and active sonar.
+  \item \textbf{Detection is limited by noise}: the sensor's coupling, the signal's strength and the background. Near a strong node the background is loud, so ley lines are good places to hide.
+  \item \textbf{Quiet casting} (short range, low power, the near field) hides the tell at the cost of reach.
+  \item \textbf{Forensics emerges}: a strong spell writes a faint pattern into nearby magnet-class materials, as cooling lava records Earth's magnetic field (archaeologists already date ancient hearths this way). Investigators can read a spell's trace in an iron gate weeks later, fading with time and heat.
+\end{itemize}
+
+%=====================================================================
+\section{What magic changes in the world}
+
+\subsection{How magic hands its energy over}
+
+\decision{Q5.1}{24 Nov}{Through the carriers' resonances, plus a tiny link to ordinary electromagnetism.}
+
+Every channel has a physical route from matter's resonant absorption:
+\begin{itemize}
+  \item \textbf{heat}: absorption ending as jostling;
+  \item \textbf{push}: momentum delivered;
+  \item \textbf{light}: excited carriers relaxing and giving off ordinary light, as fluorescence does, so a mage can make light without heat, at a limited efficiency;
+  \item \textbf{chemistry}: exciting one specific chemical bond until it breaks or reacts, as a tuned laser can drive one reaction and not its neighbours, so a spell can rust an iron lock through and leave the wooden door untouched;
+  \item \textbf{sound}: pressure from rapid pushes.
+\end{itemize}
+In addition, magic waves convert into ordinary electromagnetic waves and back at a tiny rate, as physicists propose for hypothetical ``dark photons'' \cite{holdom}. Strong pulses make nearby wires spark and push currents through nerves (the stunning pulse of Q2.4, now with a mechanism); lightning's huge surge raises the local field a little (why storms feed magic); and a compass needle twitches beside a powerful casting, a crude detector that in-world science could find. The mixing is one constant, tiny enough that ordinary electrical experiments see nothing.
+
+\decision{MS3}{23 Nov}{A cast leaves a signature on whichever channel carries its tell.}
+
+A spell's tell and waste are not always light: each transducer splits its energy across all channels (useful work, heat, light, sound, motion, waves in the field itself). Whatever channel carries the tell also carries a \textbf{signature}: lines or tones set by the spell's structure, shifted by the pulse's speed (a Doppler shift, $\Delta f/f \approx v/c_M$), as each chemical element has its own spectral lines. Reading signatures is a learned, fallible skill. A gifted spell carries its maker's signature, so its lines can reveal its origin.
+
+\decision{MS5}{23 Nov}{One engraving can hold several patterns, one per wavelength.}
+
+Like a diffraction grating that sends each colour a different way, one carving can answer different pulse wavelengths with different patterns, within the same overall capacity limit, and with more capacity in fine-grained crystal than in coarse wood. That allows hidden functions: a ward that does its second job only when pulsed at the right frequency. Crosstalk between the patterns is a later extension.
+
+\subsection{Matter, conjuring and transmutation}
+
+\decision{Q5.2}{24 Nov}{Magic can reach the nucleus, at the real nuclear cost and with the real hazards.}
+
+\begin{itemize}
+  \item \textbf{Conjuring is gathering} (A6): water from the air, metal from ore, paid as sorting and energy. Conjuring water in a desert is slow, limited by the humidity.
+  \item \textbf{Copying} is gathering plus information: an exact copy costs the full information of the original. A pure crystal is cheap to copy; an exact copy of a person is impossible.
+  \item \textbf{Transmutation} of elements is lawful, because gold is a lawful end state, but it pays the real nuclear price. Nuclear energies are about a million times chemical ones, and the products are radioactive. It is real: in 1980 physicists made a few thousand atoms of gold from bismuth in a particle accelerator \cite{seaborg}.
+\end{itemize}
+So transmutation is possible in principle, out of reach in practice except with vast stores, and dangerous in a way nobody in the world understands: an alchemist who truly succeeds sickens and dies of something invisible. Everyday alchemy is chemistry, because chemistry is affordable, not because of a rule, and a density test still exposes a swindler's gilded alloy.
+
+\textit{How magic reaches the nucleus} belongs to the deeper theory (Section~\ref{sec:level}). A candidate is nuclear resonance at gamma-ray-like frequencies; nuclei really do absorb and re-emit at their own sharp energies (``nuclear resonance fluorescence''). That would need enormous energy densities, which is consistent with transmutation being nearly out of reach.
+
+%=====================================================================
+\section{One foundation for every kind of magic}\label{sec:stack}
+
+\subsection{The classic pure models}
+
+Each of these is consistent on its own terms. They differ in where the cause of magic lives.
+
+\begin{center}\small
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}p{0.2\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.22\textwidth}@{}}
+\toprule
+& \textbf{Model} & \textbf{The cause lives in} & \textbf{Examples}\\
+\midrule
+1 & Naturalist: magic as physics & Matter: the right physical arrangement moves the field & qntm's \emph{Ra}; Sanderson's Allomancy\\
+2 & Idealist: magic as mind & The will: minds shape the field directly & Psionics; the Force\\
+3 & Linguistic: magic as code & Correct symbols and true names & Earthsea\\
+4 & Animist: magic as relationship & Other beings acting for you & Shamanism; clerics; warlocks\\
+5 & Constructivist: magic as belief & Collective belief & \emph{Mage: The Ascension}; Pratchett's gods\\
+6 & Vitalist: magic as inner energy & A cultivated life energy & Cultivation novels\\
+7 & Transactional: magic as exchange & A strict ledger & \emph{Fullmetal Alchemist}\\
+8 & Systemic: the rules are the physics & An adjudicating System & LitRPG; \emph{Dungeon Crawler Carl}\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+These are the common families, not all of them. Others include narrative magic (reality follows story logic, Pratchett's ``narrativium''), correspondence (like affects like; Frazer's sympathetic magic), probability magic (luck and fate), magic as someone else's technology, and magic drawn from another layer of reality.
+
+\subsection{The generative stack}
+
+The owner's point is that these need not be rivals: there is a version in which each is built on the others. The question splits along three axes: \emph{what} magic is and where it resides (substance), \emph{how} it is reached (access), and \emph{how} it is written (specification). Composition builds the rest. The proposed derivation, from the bottom up:
+
+\begin{enumerate}
+  \item \textbf{Substance, magic as physics} (model 1): the field and its carriers. Ordinary matter cancels, so \emph{nothing holds magic by default}; holding it is an achievement.
+  \item \textbf{Exchange} (model 7) follows at once from conservation and the budget.
+  \item \textbf{Holding:} aligned carriers hold magic, as lodestones do. People can learn to align their own, a practised skill, and that \emph{is} inner energy (model 6): cultivation is training the body to become a charged material.
+  \item \textbf{Access through matter:} engravings and devices, precise but fixed.
+  \item \textbf{Access through minds:} mostly subconscious, through the learned model, which its owner cannot see into. Flexible but noisy, so precise casting by mind is harder than by carving. Model 2 appears in weakened form: the mind does shape magic, but through its brain.
+  \item \textbf{Specification, code} (model 3): the grammar is the language; formulae are source code that a mind interprets; engravings are code compiled into matter, which runs whoever carved it.
+  \item \textbf{Relationship} (model 4): any beings that hold social constructs and can move magic create animism on their own: bonds, offerings and pacts are minds dealing with minds.
+  \item \textbf{Belief} (model 5): shared belief synchronises many minds, as in ritual, and through the feedback loop their coupled patterns bias the local field. Near believers, reality bends toward the consensus, within the budget and never against physics.
+  \item \textbf{Systems} (model 8), by composition: a vast compiled pattern that ordinary minds use through simple thoughts (menus, classes, levels). The gods' gifted spells are a small one; a LitRPG System is a huge one, and it can be wrong because it is an artefact.
+  \item \textbf{Spirits and gods}: minds made entirely of self-sustaining field patterns are possible, so animism's beings can emerge too.
+\end{enumerate}
+Correspondence and luck also fall out (shared vibration modes; the budget's price per bit). Narrative magic stays a pack. Two ingredients are needed beyond what is settled: the feedback loop, now decided (Q2.4), and self-sustaining field patterns that compute, needed only for field-native beings, later.
+
+\subsection{Where the mystery lives}
+
+The theory is explainable, but nobody inside the world has the explanation. Mystery lives in knowledge and complexity, not in the laws:
+\begin{itemize}
+  \item the laws are exact in the engine but known to no one in the world; cultures hold competing, partly wrong theories, and characters see only what they could know;
+  \item access is subconscious, so to a caster it feels like intuition or grace;
+  \item the loop of minds, beliefs and field is chaotic: lawful, but unpredictable in practice, like weather;
+  \item the deepest layer stays a brute fact (why the field exists), and there can be layers no culture has found yet.
+\end{itemize}
+
+%=====================================================================
+\section{What is still open}\label{sec:open}
+
+\paragraph{Next questions in the tree.}
+\begin{itemize}
+  \item \textbf{Q5.3 Minds:} magic that affects other minds (built on the stunning pulse and the feedback loop), resistance, and consent.
+  \item \textbf{Q5.4 Life:} healing by speeding the body's own repair laws within their limits.
+  \item \textbf{Q6 Costs and limits:} the library's eight candidate laws (upkeep at the rate a held effect relaxes; cheap tipping of delicate systems; a per-place draw cap; downhill cheap and uphill needing a store; prepaying a triggered chain; link strength in bits; capacity capped by pattern size; materials never acting on materials directly as a design test) and five guards (every drained store booked; at least $\kB T\ln 2$ per bit of bias; a free doorway is a perpetual-motion machine, so a doorway carries potential energy and momentum; runaway coupling when many patterns work close together; storage saturation).
+  \item \textbf{Q7 Interfaces:} media as channels (rate, noise, tell); notations and working memory (a mind holds only a few chunks, so intricate spells need writing, as long division needs paper); engravings and devices.
+  \item \textbf{Q8.4:} do sounds and gestures that work by their physical form exist in the default world, or only in a pack?
+  \item \textbf{Q9 Learning and culture:} skill, gifted spells and taking them apart, and how magical knowledge spreads, errs and is lost.
+  \item \textbf{Q10 Beyond the One Change:} doorways and teleport, rewind, conjuring, other planes. Earlier decisions apply: bounded versions now, unbounded after a playable first version, true creation off by default.
+\end{itemize}
+
+\paragraph{Richer answers kept for later.}
+\begin{itemize}
+  \item R2: one law of coupling by arrangement for minds and matter alike.
+  \item R5: the field remembers: strong patterns leave faint imprints (haunted places, echoes of rituals).
+  \item R6: minds and worship as sources of field (it needs a guard against perpetual motion).
+  \item R7: richer materials: direction-dependent indexes that split a spell in two; prisms that sort spells by frequency.
+  \item R8: self-sustaining packets: stable lumps of field (will-o'-the-wisps, standing spells).
+  \item R9: a personal accent in signatures, which identifies casters and can be forged.
+  \item R10: sympathy from shared vibration modes, a physical basis for ``like affects like''.
+\end{itemize}
+R1 (the price of improbability) and R4 (luck) are already part of the frame, and R3 (the field from dissipation) is the cheap estimate for distant regions.
+
+\paragraph{Research and prototypes.} A library request is waiting for the owner's go. It covers how EEG fields are made and synchrony, meditation training, electric organs, magnetic recording and critical temperatures, planetary dynamos, information thermodynamics, working memory and notation, and how specific intentions are. Three prototypes are planned: a toy field with sources, leaks and pulses through materials; a pattern acting as a valve with a cost per bit; and an intent completed from a learned prior or from noise.
+
+\paragraph{A dependency map.} Each decision will list the earlier ones it relies on, so that changing one shows at once which others move.
+
+%=====================================================================
+\begin{thebibliography}{99}\small
+\bibitem{carroll} S.~M. Carroll, ``The quantum field theory on which the everyday world supervenes'', arXiv:2101.07884 (2021).
+\bibitem{chameleon} J.~Khoury and A.~Weltman, ``Chameleon fields: awaiting surprises for tests of gravity in space'', \emph{Phys. Rev. Lett.} 93, 171104 (2004).
+\bibitem{noether} E.~Noether, ``Invariante Variationsprobleme'', \emph{Nachr. Ges. Wiss. G\"ottingen} (1918).
+\bibitem{sagawa} T.~Sagawa and M.~Ueda, ``Generalized Jarzynski equality under nonequilibrium feedback control'', \emph{Phys. Rev. Lett.} 104, 090602 (2010).
+\bibitem{landauer} R.~Landauer, ``Irreversibility and heat generation in the computing process'', \emph{IBM J. Res. Dev.} 5, 183 (1961).
+\bibitem{shannon} C.~E. Shannon, ``A mathematical theory of communication'', \emph{Bell Syst. Tech. J.} 27 (1948).
+\bibitem{anastassiou} C.~A. Anastassiou, R.~Perin, H.~Markram and C.~Koch, ``Ephaptic coupling of cortical neurons'', \emph{Nat. Neurosci.} 14, 217 (2011).
+\bibitem{frohlich} F.~Fr\"ohlich and D.~A. McCormick, ``Endogenous electric fields may guide neocortical network activity'', \emph{Neuron} 67, 129 (2010).
+\bibitem{dehaene} S.~Dehaene, \emph{Reading in the Brain} (Viking, 2009).
+\bibitem{abbe} E.~Abbe, on the diffraction limit of the microscope (1873).
+\bibitem{holdom} B.~Holdom, ``Two U(1)'s and $\epsilon$ charge shifts'', \emph{Phys. Lett. B} 166, 196 (1986).
+\bibitem{seaborg} K.~Aleklett, D.~J. Morrissey, W.~Loveland, P.~L. McGaughey and G.~T. Seaborg, ``Energy dependence of $^{209}$Bi fragmentation in relativistic nuclear collisions'', \emph{Phys. Rev. C} 23, 1044 (1981).
+\end{thebibliography}
+\noindent\textit{The citations above are from memory and are to be checked by the research library before any number from them enters the engine.}
+
+%=====================================================================
+\appendix
+\section{The case bank}\label{app:cases}
+
+Each case must come out of the laws with no code written for it (axiom A7). The expected outcomes are provisional until every question a case tests is settled. The last column names those questions. This table is generated from \texttt{docs/magic-science.md}.
+
+{\small\input{cases.tex}}
+
+\end{document}
