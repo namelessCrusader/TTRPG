@@ -76,6 +76,8 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 - Q3.3 (is there a line below which nothing happens), 2026-11-23: **(c), THE LINE COMES FROM NOISE.** Coupling is continuous, but every effect must beat the THERMAL NOISE of the matter it acts on (Q0 layer 2: each bit costs at least a temperature-set minimum). An incoherent intent is lost in the noise, as the brain's own real electric field is far too weak to move anything. There is no hand-set threshold.
   - Idle thoughts and daydreams never leak. Fear's high synchrony lifts a child's drive above the noise.
   - COLLECTIVE RITUAL works by SYNCHRONY: drives in phase add (Q1.1), so many people chanting in unison reach what none could alone, and out-of-step wishes cancel.
+- Q3.4 (magic without deliberate intent), 2026-11-23: **(c) for INTRINSIC magic.** Any strong goal casts, conscious or not (accidental magic in children and strongly coupled untrained adults under extreme emotion); training includes emotional control; practised patterns become automatic reflexes (a startled mage's ward). Accidental magic fades through adolescence as emotional regulation matures. Dreams stay below the noise for almost everyone.
+  - The owner's open conflict: if magic is change in existing fields, how does a goal such as "escape" map onto them? Is intent thematic, with the fields needing it clearer? Is it people's understanding? Taken up as Q3.5.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -183,6 +185,10 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C61 | A crowd each silently wishes for rain | Nothing (each drive is below the noise and out of phase) | Q3.3 |
 | C62 | A hundred people chant in unison | A small effect none could reach alone | Q3.3, Q1.1 |
 | C63 | One person daydreams | No measurable effect | Q3.3 |
+| C64 | A strongly coupled untrained adult in a rage | A rare flare | Q3.4 |
+| C65 | A trained mage is startled | Raises a ward before thinking | Q3.4 |
+| C66 | A child's accidental magic through adolescence | Fades as emotional control matures | Q3.4 |
+| C67 | A mage on calming herbs | Leaks less and casts more weakly | Q3.4, MC6 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
