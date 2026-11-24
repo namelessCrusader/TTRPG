@@ -63,6 +63,10 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - LIVING MATTER actively organises carriers, so living wood, bone and blood couple better than dead. Creature materials carry order built by life, which FADES after death unless a craft fixes it (curing, tanning, firing).
   - The owner: these consequences should arise from the simulation's structure (A7).
 - Q2.3 (where a person's coupling comes from), 2026-11-23: **(b), LIKE REAL HUMAN APTITUDES.** Moderate heritability (about half, over many genes, the genetics layer's model), plus rare large-effect variants (prodigies born to ordinary parents), plus development (childhood more plastic; MC3 critical periods), plus practice (training raises synchrony, with diminishing returns). Bloodlines show up only STATISTICALLY; a pack may raise heritability. Beasts' organs are species data built from the same laws and materials; evolving species over deep time belongs to world-history generation later.
+- Q3.1 (what a pattern is, physically), 2026-11-23: **(c), BOTH LEVELS.** The owner: "the grammar happens by sentient thought, but what's moving and making things happen is pure wave physics."
+  - THE THOUGHT LEVEL: the grammar is how minds compose and hold a spell.
+  - THE CAUSAL LEVEL: what acts is a designed WAVEFORM (frequencies, phases across space, timing) meeting matter's carriers. It SELECTS by resonance (each substance's magic absorption lines, in the material record, the absorption side of MS3's lines), PUSHES by momentum transfer, HEATS by absorption, and SENSES by reflection.
+  - THE SIMULATION executes the grammar's operations (fast), with each operation's selectivity, cost, precision and errors taken from the wave physics. Errors land on the substance with the NEAREST resonance. A substance whose signature the caster does not know cannot be targeted (Q0's information requirement).
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -160,6 +164,10 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C51 | A gifted child born to non-mage parents | Happens rarely (a large-effect variant) | Q2.3 |
 | C52 | Someone who starts training as an adult | Reaches less than someone trained from childhood | Q2.3 |
 | C53 | An eel-like beast's field organ | Species data from ordinary laws and materials, paid by its body | Q2.3 |
+| C54 | Isolating one gas from a mix of similar gases | Errors grab the gas with the nearest resonance | Q3.1 |
+| C55 | A caster tries to target a substance they have never studied | Cannot, until they learn its signature | Q3.1, Q0 |
+| C56 | Probing a sealed jar's resonances | Identifies what is inside: magical spectroscopy | Q3.1, Q4.3 |
+| C57 | Two substances with identical resonances | Cannot be separated by magic, a lawful limit | Q3.1 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
