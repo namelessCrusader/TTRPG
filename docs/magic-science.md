@@ -82,6 +82,8 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - The owner's open conflict: if magic is change in existing fields, how does a goal such as "escape" map onto them? Is intent thematic, with the fields needing it clearer? Is it people's understanding? Taken up as Q3.5.
 - Q2.4 (does the field act back on the mind), 2026-11-24: **(d).** (b) A WEAK LOOP for every coupled mind, like ephaptic coupling (the brain's own weak field nudges neural timing; Anastassiou 2011, Frohlich and McCormick 2010): a mostly SUBCONSCIOUS felt sense (mood, unease, pressure, intuition) that training can make conscious; technique acts inward; places affect thought; minds entrain one another; shared belief bends the field; strong raw pulses stun or disorder nearby minds; the mind stays in the brain. PLUS an optional evolved DEDICATED SENSE ORGAN (some beasts, rarely people), clear and directional like a bird's magnetic compass. (c) THE MIND PARTLY MADE OF THE FIELD (ghosts, possession, places remembering people) is a later extension, weighed with R5 and R8; spirits need only R8.
 - Q2.5 (where the interface touches the mind), 2026-11-24: **(b), ONLY THE MIND'S EXISTING GENERIC PORTS.** The learned mind stays one learner; magic touches it through SENSE (one more channel with acuity dials; the organ is a sharper channel), ACT (casting is one more act family; the mind's world model of its own acts IS Q3.2's inverse model; costs through the body's drives), BODY STATE (field nudges move only the variables emotion, fatigue and drugs already move: arousal, choice noise, precision; plus one new variable, SYNCHRONY; never reward or beliefs directly) and OTHERS (casting perceived through its tells). Fear of mages, addiction, guilds and superstitions must EMERGE; learning magic is the same machinery as lab stage B's childhood. No field-to-reward link.
+- Q3.5 (must a caster understand the physics), 2026-11-24: **(b), THE IMPLICIT MODEL IS ENOUGH; EXPLICIT THEORY EXTENDS REACH.** Understanding is mostly IMPLICIT (the learned world model of one's own acts, Q2.5: fast, partly subconscious, reliable only within experience, confidently wrong outside it); EXPLICIT theory and formulae are slow but can design effects never tried, roughly and wastefully at first (MS1). New effects come by EXPLORATION (trying variations, paid in time, energy and mishaps through the same learner) or by THEORY. No wishes (a wish pack only). A strong drive with a poor model gives a crude noisy release on its own, so no coded crude default is needed. Two kinds of mage emerge: the intuitive practitioner and the scholar.
+  - THE OWNER'S ADDITION: PATTERN-MATCHING MAGIC SYMBOLS WITHOUT UNDERSTANDING HAS SOME EFFECT TOO. It emerges three ways: a DRAWN OR CARVED copy is matter geometry and works as far as its substrate and precision allow (C06, C46); a symbol TRACED BY GESTURE OR CHANTED moves the body's small carrier share in its shape (Q2.1), a weak physical effect; a symbol HELD IN MIND partly organises neural activity into its shape, a weak, imprecise version. Understanding adds precision and flexibility on top. This is also how learning starts: watching teaches the movement far more than the outcome (library: 0.77 against 0.17 SD), so apprentices copy symbols first and understand later.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -183,7 +185,7 @@ The tree above gives the ORDER; the owner noted that decisions are interconnecte
 | C01 | A frightened 6-year-old cornered by a dog | If the child couples at all: a big, crude, unaimed release (the curtains catch, or the dog is thrown back), then exhaustion | Q2.1, Q3.4 |
 | C02 | An untrained adult thinks "fire" hard | Usually nothing; with some coupling, a weak, wasteful, wild flicker | Q3.2, Q3.3 |
 | C03 | A trained mage thinks "fire" | Works, efficiently, for the practised case only | Q3.2, Q9.1 |
-| C04 | A parrot recites a spell perfectly | Nothing (FM1 (b)) | Q2.1, Q8.4 |
+| C04 | A parrot recites a spell perfectly | Nothing measurable: a parrot couples weakly, and rote sound moves only the body's small carrier share (revised with Q3.5) | Q2.1, Q3.5, Q8.4 |
 | C05 | A recording of a chant is played | Nothing in the default world; perhaps something in a resonant-sound pack | Q8.4 |
 | C06 | An illiterate mason copies a ward rune precisely | The ward works | Q2.2, Q7.3 |
 | C07 | A scholar copies the same rune sloppily | It fails, or misfires as a neighbouring pattern | Q2.2, Q7.3 |
@@ -259,6 +261,13 @@ The tree above gives the ORDER; the owner noted that decisions are interconnecte
 | C78 | A child in a casting family | Learns to feel and cast through the same childhood learning as drinking | Q2.5, Q9.1 |
 | C79 | A person with no carriers | Untouched by field nudges: magically deaf | Q2.5, A8 |
 | C80 | People and nodes | Node-seeking emerges only if nodes serve a drive through the body | Q2.5 |
+| C81 | An illiterate village healer with decades of practice | Excellent within her practice; fails on a new kind of injury | Q3.5 |
+| C82 | A scholar who has never cast designs a new effect on paper | The first cast works roughly and wastefully | Q3.5, MS1 |
+| C83 | A caster tries variations on a known spell | Slow progress toward a new effect, with occasional mishaps | Q3.5 |
+| C84 | A caster believes a gesture is necessary because it once coincided with success | It does nothing, except through their confidence | Q3.5 |
+| C85 | A desperate parent wishes their child cured, with no model of the illness | Nothing useful, or something crude and harmful | Q3.5, Q0 |
+| C86 | An apprentice traces a master's symbol by rote | A weak, imprecise version of the effect | Q3.5 |
+| C87 | A symbol drawn in sand versus inlaid in conductor ore | The sand copy does very little; the inlaid one works | Q3.5, Q2.2 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
