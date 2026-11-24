@@ -123,6 +123,32 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - Q9.3 How magical knowledge spreads, errs and is lost (the knowledge design).
 - **Q10. Beyond the One Change:** doorways and teleport, rewind, conjure, planes. Earlier owner decisions apply: bounded versions now, unbounded after a playable MVP, true creation off by default.
 
+## 3a. The canonical pure models (reference for hybrids; owner asked 2026-11-23)
+
+Each model is consistent on its own; a hybrid is a choice of which one carries the weight. They are sorted by where the cause lives.
+
+| # | Model | The cause lives in | What an interface is | Can you feel it? | A parrot recites a spell | Examples |
+|---|---|---|---|---|---|---|
+| 1 | Naturalist: magic as physics | Matter; the right physical configuration moves the field | Any physical setup: brains, engravings, devices | Only through organs or instruments that couple | Nothing, unless its sounds are physically right | qntm's Ra; Sanderson's Allomancy |
+| 2 | Idealist: magic as mind | The will; minds shape the field directly | Aids to focus; optional | Yes, directly | Nothing | Psionics; the Force |
+| 3 | Linguistic: magic as code | Information; reality responds to correct symbols and true names | The language itself; correctness is everything | Not needed | Works if exact | Earthsea; the naming in The Name of the Wind |
+| 4 | Animist: magic as relationship | Other beings act for you | Social: asking, offering, naming, bonding | You perceive the beings | Only if the spirit is fooled or amused | Shamanism; clerics; warlocks |
+| 5 | Constructivist: magic as belief | Collective belief; reality bends to consensus | A paradigm | As certainty | Nothing | Mage: The Ascension; Pratchett's gods |
+| 6 | Vitalist: magic as inner energy | A cultivated life energy in the body | The body: breath, posture, stages | Yes, as a bodily sense | Nothing | Cultivation novels; Beware of Chicken |
+| 7 | Transactional: magic as exchange | A strict ledger | Whatever pays the price | Not needed | Only if it pays | Fullmetal Alchemist |
+| 8 | Systemic: the rules are the physics | An adjudicating System | Menus, classes, levels | Through the interface | Whatever the System allows | LitRPG; Dungeon Crawler Carl |
+
+- What each pure form breaks in our axioms and cases:
+  - (1) breaks none; it is the current spine.
+  - (2) breaks A2.
+  - (3) breaks FM1's translation case (C08) and the parrot case (C04).
+  - (4) is lawful when the beings are real minds in the world (MC4).
+  - (5) breaks A5 (reality depends on opinion).
+  - (6) is lawful if its energy is real; it is V3's neighbour and the cultivation pack's model.
+  - (7) is a constraint, not a source of causes (Q0 layer 2).
+  - (8) is allowed only as an in-world fact (the earlier CV decision).
+- WHERE MARK1 SITS (2026-11-23): (1) as the spine with (7) as its ledger; (4) through real beings; (6) reachable by adding V3's loop; (2), (3), (5) and (8) are packs. The open blend is how much of (6), and whether any of (3).
+
 ## 3b. Dependency map (to build)
 
 The tree above gives the ORDER; the owner noted that decisions are interconnected. Each decision will list the earlier decisions it RELIES ON, so a changed answer shows at once which others move. To fill in when Q3.5 is settled.
