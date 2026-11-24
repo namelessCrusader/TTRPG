@@ -62,6 +62,7 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - CHARGING and some engravings work by WRITING a pattern of aligned carriers (like magnetic tape). Writing takes energy and a strong local field; heat or a strong pulse erases it.
   - LIVING MATTER actively organises carriers, so living wood, bone and blood couple better than dead. Creature materials carry order built by life, which FADES after death unless a craft fixes it (curing, tanning, firing).
   - The owner: these consequences should arise from the simulation's structure (A7).
+- Q2.3 (where a person's coupling comes from), 2026-11-23: **(b), LIKE REAL HUMAN APTITUDES.** Moderate heritability (about half, over many genes, the genetics layer's model), plus rare large-effect variants (prodigies born to ordinary parents), plus development (childhood more plastic; MC3 critical periods), plus practice (training raises synchrony, with diminishing returns). Bloodlines show up only STATISTICALLY; a pack may raise heritability. Beasts' organs are species data built from the same laws and materials; evolving species over deep time belongs to world-history generation later.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -155,6 +156,10 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C47 | A dragon-bone wand over decades | Weakens unless it was cured | Q2.2 |
 | C48 | A switchable crystal in an engraving | Acts as a logic gate | Q2.2, Q7.3 |
 | C49 | A strong magical pulse near written enchantments | Wipes them, like erasing a tape | Q2.2 |
+| C50 | Children of two strong mages | Above average on the whole, widely spread; some ordinary | Q2.3 |
+| C51 | A gifted child born to non-mage parents | Happens rarely (a large-effect variant) | Q2.3 |
+| C52 | Someone who starts training as an adult | Reaches less than someone trained from childhood | Q2.3 |
+| C53 | An eel-like beast's field organ | Species data from ordinary laws and materials, paid by its body | Q2.3 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
