@@ -102,6 +102,15 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - The field must be a VECTOR (spin-1) field: a scalar (spin-0) field couples to all matter with one sign, contradicting A2. The formal write-up's scalar is to be replaced.
   - Q4.2 "light-like in air" holds only with a quasi-static field solve plus ray-marched pulses, or an implicit solver: an explicit update on 5 cm voxels at 25 ms is stable only up to about 1.15 m/s.
   - Q5.5 can reopen: a static grip is field stress (paid in setup energy and losses), not radiated power; the 5 GW figure is for radiated push only.
+- SOURCED REFINEMENTS from the library's science answer (2026-11-24, Library responses/2026-11-23-mark1-magic-science-foundations.md):
+  - Q2.1 REDEFINED: coupling uses band-limited STRUCTURED coherence, not raw synchrony amplitude. Coherent sources add as N and random ones as sqrt(N) (Nunez: 1% of cortical columns in step outweigh the other 99% about 3 to 1; a synchronous group wins once it exceeds sqrt(N_total), about 0.3%). Anaesthesia and deep sleep RAISE raw amplitude while destroying structure, so they cannot cast. Numbers: 0.2-1 nA m per mm2 of cortex; 6-20 cm2 of synchronous cortex is visible at the scalp.
+  - Q2.4: ephaptic entrainment at 0.74 mV/mm at 1 Hz but 5.58 mV/mm at 30 Hz (a frequency penalty); making neurons fire needs 25-50x more, so a stun needs fields of several V/m.
+  - Q2.3: training grows with the LOG of practice hours (meditation gamma d about 0.4-0.8, r about 0.33 with log hours; neurofeedback g about 0.3; some people never learn).
+  - Organs (C21, C53): one stacking law (cells in series set voltage, columns in parallel set current; an eel about 6,000 cells of 0.1 V); weakly electric fish spend 3-22% of metabolism; evolved at least six times from muscle; sensors limited by thermal noise and integration time (sharks: 5 nV/cm).
+  - Charged materials (Q1.1, Q2.2, Q4.3): a stored state lasts tau0 exp(E/kT) (E/kT about 40 for ten years); writing needs a field above a coercivity that falls with temperature; ONE erasure law with three routes (past the Curie point, slow thermal decay, a strong or alternating field); Curie points iron 1,043 K, magnetite 858 K, nickel 627 K.
+  - Dynamo (Q1.2): 25-65 microtesla analogue; westward drift about 0.2 degrees a year; poles move 0-60 km a year; about 2.2 reversals per million years (Poisson, with long quiet superchrons), each 1-10 thousand years; excursions drop the field to about 6% for under a thousand years; 0.1-5 TW of loss fed by 5-16 TW of core heat.
+  - Information: kT ln2 = 2.87 zJ per bit at 300 K; fast erasure pays extra; real demons reach 28-98.5% of the bound; 1 kJ would need 3.5e23 bits, so information governs order and luck, never energy budgets (C33).
+  - Q3.2 strengthened: motor noise grows with command size and is left uncorrected where the goal does not care (minimal intervention). Q7.2: working memory holds about 4 chunks per level; experts enlarge chunks; notation is external storage and adds no power. Q3.4 corrected: the best arousal FALLS as the task gets harder (the original Yerkes-Dodson data), so intricate spells need calm.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -242,7 +251,7 @@ The tree above gives the ORDER; the owner noted that decisions are interconnecte
 | C41 | A global field reversal | A rare, world-scale upheaval in magic | Q1.2 |
 | C42 | A mage with a head injury | Keeps power but loses fine control (damaged geometry) | Q2.1 |
 | C43 | Months of meditation-style training | Coupling rises (synchrony is trainable) | Q2.1 |
-| C44 | A mage under deep anaesthesia | Cannot cast (synchrony is disrupted) | Q2.1 |
+| C44 | A mage under deep anaesthesia | Cannot cast: raw synchrony rises but structured coherence is destroyed (revised with the library's science answer) | Q2.1 |
 | C45 | A crystal-circuit machine with organised currents tries to cast | Possible in principle; to be decided with Q2.2 and devices | Q2.1, Q2.2 |
 | C46 | A correct rune cut into plain granite, and the same rune inlaid with conductor ore | The granite one does nothing; the inlaid one works | Q2.2 |
 | C47 | A dragon-bone wand over decades | Weakens unless it was cured | Q2.2 |
