@@ -49,6 +49,12 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - (b) THE CHEAP ESTIMATE for distant regions (the coarse twin, SC5): a fixed small share of local dissipation becomes field (R3).
   - ANCIENT DEPOSITS are NATURAL MAGIC LODESTONES (carriers aligned long ago), mineable, and erased by heat.
   - INFLOW from other worlds or beings stays a pack.
+- Q2.1 (what lets a brain organise its carriers), 2026-11-23: **(d), A BLEND**, "the most sensible for now" (owner).
+  - CORE, NEURAL SYNCHRONY: the brain holds a trace of carriers, and organised, synchronised activity moves them coherently, as aligned, synchronous cortical neurons make the field an EEG reads. Coupling = carrier count (inherited) x the alignment of neural geometry (development) x synchrony (trainable).
+  - So concentration helps; strong emotion raises synchrony but blurs the pattern (MC6); fatigue and drugs disrupt it; meditation-style training raises it.
+  - THE BODY ADDS A LITTLE: some carriers in the body, so trained movement and breath help modestly; gestures matter a little physically by default, without a magic language.
+  - BEASTS evolve dedicated organs (C21). In humans there is no special organ, only natural variation in carrier density and brain geometry (the genetics layer's dial).
+  - Predictions: deep sleep gives at most diffuse warmth; dreams give small wild leaks; animals couple less; plants make field slowly and cannot cast; a crystal-circuit machine could couple in principle (later).
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -134,6 +140,10 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C39 | A lodestone crystal on a pivot | Points along the field: a magical compass for navigation | Q1.2 |
 | C40 | A famous ley line over centuries | Drifts off its ancient temples; the offset dates them | Q1.2 |
 | C41 | A global field reversal | A rare, world-scale upheaval in magic | Q1.2 |
+| C42 | A mage with a head injury | Keeps power but loses fine control (damaged geometry) | Q2.1 |
+| C43 | Months of meditation-style training | Coupling rises (synchrony is trainable) | Q2.1 |
+| C44 | A mage under deep anaesthesia | Cannot cast (synchrony is disrupted) | Q2.1 |
+| C45 | A crystal-circuit machine with organised currents tries to cast | Possible in principle; to be decided with Q2.2 and devices | Q2.1, Q2.2 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
