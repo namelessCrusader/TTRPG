@@ -18,6 +18,7 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 - **A3. Every joule booked.** Magic hands off to the existing laws, and a magic joule acts like any other joule.
 - **A4. A spell is a mechanism on existing fields** (MS3): for example, "isolate the flammable gas x metres away in direction y and spark it z seconds later". It is never "the mana bar went down, the enemy went boom".
 - **A5. Realism by default; game rules as packs.**
+- **A7. Cases emerge; they are never coded** (owner, 2026-11-23: "if we implement it right, all these things would naturally arise from the structure of the simulation"). The case bank is a set of EMERGENCE TESTS: each case must arise from the laws, with no case-specific code.
 - **A6. Magic only allows change that could exist without it** (owner, 2026-11-23, with Q0). Every end state is a lawful physical state that some ordinary process could reach, and every step balances (Q0). Magic changes WHICH lawful change happens, and where, when and how fast. It never adds to the set of lawful states. This is the catalyst principle: a catalyst opens a pathway and changes a rate, never the equilibrium. Teleport is a pack doorway because the end state is lawful but no ordinary path is instant; true creation of mass is ruled out.
 
 ## 2. Decisions so far
@@ -55,6 +56,12 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - THE BODY ADDS A LITTLE: some carriers in the body, so trained movement and breath help modestly; gestures matter a little physically by default, without a magic language.
   - BEASTS evolve dedicated organs (C21). In humans there is no special organ, only natural variation in carrier density and brain geometry (the genetics layer's dial).
   - Predictions: deep sleep gives at most diffuse warmth; dreams give small wild leaks; animals couple less; plants make field slowly and cannot cast; a crystal-circuit machine could couple in principle (later).
+- Q2.2 (what lets matter couple; how an engraving works), 2026-11-23: **(d), ALL THREE.**
+  - THE BASE is four MATERIAL CLASSES, like electronics: CONDUCTORS (free carriers; traces, shields), INSULATORS (bound carriers that respond; they set the index), "MAGNETS" (aligned carriers; lodestones and charged gems that store and emit) and SWITCHABLE materials (like semiconductors; the basis of engraved logic).
+  - An ENGRAVING is a real CIRCUIT: conductor traces cut or inlaid into a substrate. Purity and fewer lattice defects mean less loss and a higher Q.
+  - CHARGING and some engravings work by WRITING a pattern of aligned carriers (like magnetic tape). Writing takes energy and a strong local field; heat or a strong pulse erases it.
+  - LIVING MATTER actively organises carriers, so living wood, bone and blood couple better than dead. Creature materials carry order built by life, which FADES after death unless a craft fixes it (curing, tanning, firing).
+  - The owner: these consequences should arise from the simulation's structure (A7).
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -144,6 +151,10 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C43 | Months of meditation-style training | Coupling rises (synchrony is trainable) | Q2.1 |
 | C44 | A mage under deep anaesthesia | Cannot cast (synchrony is disrupted) | Q2.1 |
 | C45 | A crystal-circuit machine with organised currents tries to cast | Possible in principle; to be decided with Q2.2 and devices | Q2.1, Q2.2 |
+| C46 | A correct rune cut into plain granite, and the same rune inlaid with conductor ore | The granite one does nothing; the inlaid one works | Q2.2 |
+| C47 | A dragon-bone wand over decades | Weakens unless it was cured | Q2.2 |
+| C48 | A switchable crystal in an engraving | Acts as a logic gate | Q2.2, Q7.3 |
+| C49 | A strong magical pulse near written enchantments | Wipes them, like erasing a tape | Q2.2 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
