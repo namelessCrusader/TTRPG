@@ -41,7 +41,14 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - MS2's INDEX comes from how easily a material's carriers respond to the field.
   - ABSORPTION jostles carriers, and the jostling ends as warmth (Q1.3).
   - (c) LATER EXTENSION: stable field STATES (normal, dead, wild regions separated by walls, which can flip when pushed hard).
-- Q1.2 (where M comes from), 2026-11-23: **(d).** (a) NATURAL FLOWS make it by default: sunlight, life's metabolism, the planet's inner heat and storms each turn a tiny share of their own energy into M, booked as taken from them. It stays out of equilibrium because it is pumped where those flows are strong and leaks to heat everywhere, so MC5's cycles follow. Plus (b) ANCIENT CONCENTRATIONS as places and materials (nodes, crystals of fossil M) that can be mined and run out. Plus (c) INFLOW from other worlds or beings as a pack, booked as an import. The owner: it makes magic "a finite resource more than just a fixed number": rich places, mineable deposits, regional over-use.
+- Q1.2 (where the field comes from), REVISED 2026-11-23: **(d)**, "coming towards something more doable" (owner). It keeps the first answer (natural flows, ancient deposits, inflow as a pack) and gives each part a physical cause.
+  - (c) THE PHYSICS, A LAW OF CARRIER MOTION: field is made wherever carriers are moved or organised (crystals growing, living organs working, storms separating charge) and above all by THE PLANET'S CHURNING CORE, a dynamo like Earth's magnetic one. The energy is taken from each process and booked.
+    - LEY LINES are the planet's own field lines, mappable like magnetic north.
+    - There are POLES, a SLOW DRIFT over centuries, and rare REVERSALS.
+    - Local sources (life, storms, crystals) add to the global field.
+  - (b) THE CHEAP ESTIMATE for distant regions (the coarse twin, SC5): a fixed small share of local dissipation becomes field (R3).
+  - ANCIENT DEPOSITS are NATURAL MAGIC LODESTONES (carriers aligned long ago), mineable, and erased by heat.
+  - INFLOW from other worlds or beings stays a pack.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -124,6 +131,9 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C36 | A charged crystal is heated in a forge | It loses its charge past a critical temperature (its carriers scramble) | Q1.1 |
 | C37 | A cage of a material whose carriers move freely | Blocks spells, like a Faraday cage | Q1.1, Q4.2 |
 | C38 | Why one person couples strongly and another barely | How well a brain can organise its own carriers: biology, development and practice, not a flag | Q1.1, Q2.1 |
+| C39 | A lodestone crystal on a pivot | Points along the field: a magical compass for navigation | Q1.2 |
+| C40 | A famous ley line over centuries | Drifts off its ancient temples; the offset dates them | Q1.2 |
+| C41 | A global field reversal | A rare, world-scale upheaval in magic | Q1.2 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
