@@ -51,6 +51,8 @@ Bodies carry their histories: the veteran's limp, the burned smith's tight hand,
 
 There is no raising the dead unless a pack adds it.
 
+Refined 2026-11-24 (magic-science Q5.4): route 2 is PATTERN GUIDANCE of the body's own regeneration by positional signals (the real analogue: bioelectric patterning, Levin's lab). The body supplies cells, food and time, and speed is capped by cell division. The template comes from the surrounding healthy tissue, the mirror-image part, or the healer's knowledge. Forcing growth without a good pattern gives a disordered, tumour-like lump.
+
 ## HL5. When
 
 - WAVE 15 BATCH 4, after batch 3:
