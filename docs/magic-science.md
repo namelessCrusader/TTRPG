@@ -154,6 +154,7 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 - Q3.4: arousal against precision, emotion regulation in children, and acting in sleep.
 - Q2.1 and Q2.3: biological sensing and emitting organs as analogues (electroreception, electric organs, magnetoreception), and their energy costs.
 - Done: the survey of about 50 magic principles (Library surveys/2026-11-23-magic-principles.md).
+- SENT 2026-11-23: requests/2026-11-23-mark1-magic-science-foundations.md (F-a to F-i: EEG field generation and synchrony, meditation training, biological field organs, magnetic recording and Curie points, planetary dynamos, information thermodynamics, working memory and notation, intention specificity and arousal). It waits for the owner's go.
 
 ## 6. Lab prototypes (to test candidate laws numerically)
 
