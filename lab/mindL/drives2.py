@@ -23,6 +23,8 @@ THE LETTERS of the option (drives2 = True means "SCFD"):
     D  need by destination (mind.py): a walk option carries the relief the mind's OWN world model expects from what it knows is on offer at the
        destination, for its CURRENT needs (a one-step lookahead over known affordances; every need, no thirst rule).
     W  learning by watching (mind.py / world_model.py): see another person's act and the change in their signs.
+    B  (stage B1, needs the world flag body2 to mean what it says) the felt need follows the STAGED LADDER by body mass lost (world.WATER_RUNGS, FOOD_RUNGS: steps at
+       1.5, 2, 5, 8 percent, from the library answer D-b) instead of F's linear course; the reserve is mapped onto percent lost by world.water_lost_pct. B implies F.
     (priors, channel 1: the option wm_prior; being told: drives2.told.)
 
 THE CONSTANTS. Thirst takes the SAME weight and set point as hunger for each kind (u: no source for a difference; the two needs are
@@ -32,7 +34,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from lab.world2.world import DRIVES, LETHAL_RESERVE, NATURE, ROOMS
+from lab.world2.world import DRIVES, FOOD_RUNGS, LETHAL_RESERVE, NATURE, ROOMS, WATER_RUNGS, food_lost_pct, rung, water_lost_pct
 
 DRIVES2 = tuple(DRIVES) + ("thirst",)
 ND2 = len(DRIVES2)
@@ -40,6 +42,18 @@ IE, IT = DRIVES2.index("energy"), DRIVES2.index("thirst")
 ROOMLIST = tuple(ROOMS)
 TURNS = 300
 N_EXP, M_EXP = 4.0, 3.0            # Keramati and Gutkin 2014: n > m > 1 (values u, from memory)
+# B1: the exponents are per-person DIALS (the library, D-a: "treat both as dials"; the only value in a card is (4, 2)). Spread (u): m uniform on [1.5, 3.0], n = m + a gap
+# uniform on [0.5, 2.5], so n runs from 2.0 to 5.5 and n > m > 1 always. For one drive relief at deficit e is worth e^(n/m - 1) per unit (urgency); for two drives a unit of
+# thirst relief is worth (e_T/e_H)^(n-1) units of hunger relief: at thirst half of hunger that is 0.5 (n=2) down to 0.044 (n=5.5): partial competition, never the max().
+M_RANGE, GAP_RANGE = (1.5, 3.0), (0.5, 2.5)
+
+
+def exponent_dials(seed, name):
+    """A person's exponents (n, m): fixed for the person (a function of the run seed and the name), n > m > 1."""
+    import zlib
+    r = np.random.default_rng([seed, zlib.crc32(name.encode()), 4242])
+    m = float(r.uniform(*M_RANGE))
+    return float(m + r.uniform(*GAP_RANGE)), m
 FELT_GAIN = 1.0                    # (u) the felt need grows by this much over the whole reserve
 DEFAULT_LETTERS = "SCFD"
 
@@ -63,7 +77,8 @@ class Drives2:
 
     def __init__(self, letters=DEFAULT_LETTERS, n=N_EXP, m=M_EXP, felt_gain=FELT_GAIN):
         self.letters = set(letters)
-        self.convex, self.felt = "C" in self.letters, "F" in self.letters
+        self.convex, self.ladder = "C" in self.letters, "B" in self.letters
+        self.felt = "F" in self.letters or self.ladder
         self.n, self.m, self.felt_gain = n, m, felt_gain
         assert not self.convex or n > m > 1, "Keramati and Gutkin: n > m > 1"
         self.DRIVES, self.ND = DRIVES2, ND2
@@ -79,14 +94,24 @@ class Drives2:
         r = getattr(p, "reserve", None) or {}
         return (min(1.0, max(0.0, 1.0 - r.get(k, LETHAL_RESERVE[k]) / LETHAL_RESERVE[k])) for k in ("thirst", "hunger"))
 
-    def needs(self, w, p):
+    @staticmethod
+    def raw_needs(w, p):
+        """The needs without the felt depletion: what the world's options speak of (an option's own `need` number is hunger for an eat, thirst for a drink)."""
         d = w.drives(p)
         v = np.array([d[k] for k in DRIVES] + [p.thirst])
         v[IE] = p.hunger
+        return v
+
+    def needs(self, w, p):
+        v = self.raw_needs(w, p)
         if self.felt:
             dt, dh = self.depletion(p)
-            v[IT] += self.felt_gain * dt
-            v[IE] += self.felt_gain * dh
+            if self.ladder:                                  # B: steps by body mass lost (the body's ledger, world.py), not a slope
+                v[IT] += self.felt_gain * rung(water_lost_pct(p.thirst, dt), WATER_RUNGS)
+                v[IE] += self.felt_gain * rung(food_lost_pct(dh), FOOD_RUNGS)
+            else:
+                v[IT] += self.felt_gain * dt
+                v[IE] += self.felt_gain * dh
         return v
 
     # ---------------------------------------------------------------- the drive
@@ -150,7 +175,22 @@ T_NOISE = 0.25      # (u) relative sd of the error in what is passed on (the K d
 MIN_KNOWN = 3.0     # a teller passes on only what it has had at least this much experience of
 
 
-def told(speaker_wm, listener_wm, verbs, rng, d_cols, chance=T_CHANCE, n0=N0_TOLD, noise=T_NOISE):
+# B1, watching by age (the library, D-d). The observation meta-analyses give a gain of 0.77 SD on the movement and 0.17 on the outcome for adults (Ashford 2006), and +0.48 on the
+# outcome against +0.24 on the form for children (Ste-Marie/Weeks 2006 abstracts). Neither is a learning rate. The weight of a watched outcome against one's own is taken as the
+# ratio outcome gain / form gain (u: a mapping, not a measurement): adult 0.17/0.77 = 0.22, child 0.48/0.80 = 0.60 (the adult's form gain 0.80 in the child paper). It falls
+# linearly with age from the child's to the adult's value at 18. No imitation at birth (Oostenbroek 2016: none up to 9 weeks, 106 infants): the weight is 0 up to 9 weeks and rises
+# linearly to its full value at one year (u).
+W_ADULT, W_CHILD, W_ADULT_AGE = 0.22, 0.60, 18.0
+WATCH_ZERO_AGE, WATCH_FULL_AGE = 9.0 / 52.0, 1.0
+
+
+def watch_weight(age):
+    """The weight of a watched act against an own experience at `age` years: 0 at birth, the child's outcome weight, falling to the adult's."""
+    gate = min(1.0, max(0.0, (age - WATCH_ZERO_AGE) / (WATCH_FULL_AGE - WATCH_ZERO_AGE)))
+    return gate * (W_ADULT + (W_CHILD - W_ADULT) * max(0.0, 1.0 - age / W_ADULT_AGE))
+
+
+def told(speaker_wm, listener_wm, verbs, rng, d_cols, chance=T_CHANCE, n0=N0_TOLD, noise=T_NOISE, n0_max=None):
     """THE TELLING. A speaker tells a listener what an act does to the needs: for each verb index in `verbs` the speaker has experience of
     (count >= MIN_KNOWN), with probability `chance` the listener takes up the speaker's effect, as a prior of weight n0 (experience overrides it),
     with a multiplicative error (sd `noise`) on each number. The effect passed is what the model says at the bias and at the need columns
@@ -164,6 +204,9 @@ def told(speaker_wm, listener_wm, verbs, rng, d_cols, chance=T_CHANCE, n0=N0_TOL
         for d, col in enumerate(d_cols):
             P[d, col] = speaker_wm.M[v][d, col]
         P *= 1.0 + noise * rng.standard_normal(P.shape)
-        listener_wm.set_prior_matrix(v, P, n0)
+        add = n0 if n0_max is None else max(0.0, min(n0, n0_max - listener_wm.n0[v]))     # n0_max: the weight of what is told never grows without bound (B1)
+        if add <= 0:
+            continue
+        listener_wm.set_prior_matrix(v, P, add)
         out.append(v)
     return out

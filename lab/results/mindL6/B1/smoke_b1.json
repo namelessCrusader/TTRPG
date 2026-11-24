@@ -1,0 +1,246 @@
+{
+ "arms": {
+  "naive": {
+   "lives": 21,
+   "dead": 8,
+   "causes": {
+    "None": 1,
+    "thirst": 7
+   },
+   "dead_share": 0.381,
+   "dead_wilson": [
+    0.208,
+    0.591
+   ],
+   "thirst_share": 0.333,
+   "thirst_wilson": [
+    0.172,
+    0.546
+   ],
+   "drinks_per_living_night": 10.29,
+   "first_death_night": [
+    1,
+    4,
+    4
+   ],
+   "loaded": {
+    "persons": 24,
+    "with_drink_experience": 0,
+    "with_told_priors": 0,
+    "mean_drink_cnt": 0.0
+   },
+   "exps_n_m": [
+    [
+     3.24,
+     1.88
+    ],
+    [
+     3.41,
+     1.97
+    ],
+    [
+     3.75,
+     1.99
+    ],
+    [
+     2.83,
+     2.24
+    ],
+    [
+     4.23,
+     2.76
+    ],
+    [
+     5.22,
+     2.74
+    ],
+    [
+     3.95,
+     1.61
+    ]
+   ],
+   "seconds": 115.8
+  },
+  "p30": {
+   "lives": 21,
+   "dead": 1,
+   "causes": {
+    "thirst": 1
+   },
+   "dead_share": 0.048,
+   "dead_wilson": [
+    0.008,
+    0.227
+   ],
+   "thirst_share": 0.048,
+   "thirst_wilson": [
+    0.008,
+    0.227
+   ],
+   "drinks_per_living_night": 9.63,
+   "first_death_night": [
+    17,
+    31,
+    31
+   ],
+   "loaded": {
+    "persons": 24,
+    "with_drink_experience": 21,
+    "with_told_priors": 21,
+    "mean_drink_cnt": 392.9
+   },
+   "exps_n_m": [
+    [
+     3.24,
+     1.88
+    ],
+    [
+     3.41,
+     1.97
+    ],
+    [
+     3.75,
+     1.99
+    ],
+    [
+     2.83,
+     2.24
+    ],
+    [
+     4.23,
+     2.76
+    ],
+    [
+     5.22,
+     2.74
+    ],
+    [
+     3.95,
+     1.61
+    ]
+   ],
+   "seconds": 226.7
+  },
+  "p90": {
+   "lives": 21,
+   "dead": 2,
+   "causes": {
+    "thirst": 2
+   },
+   "dead_share": 0.095,
+   "dead_wilson": [
+    0.027,
+    0.289
+   ],
+   "thirst_share": 0.095,
+   "thirst_wilson": [
+    0.027,
+    0.289
+   ],
+   "drinks_per_living_night": 9.6,
+   "first_death_night": [
+    4,
+    4,
+    31
+   ],
+   "loaded": {
+    "persons": 24,
+    "with_drink_experience": 21,
+    "with_told_priors": 21,
+    "mean_drink_cnt": 1149.3
+   },
+   "exps_n_m": [
+    [
+     3.24,
+     1.88
+    ],
+    [
+     3.41,
+     1.97
+    ],
+    [
+     3.75,
+     1.99
+    ],
+    [
+     2.83,
+     2.24
+    ],
+    [
+     4.23,
+     2.76
+    ],
+    [
+     5.22,
+     2.74
+    ],
+    [
+     3.95,
+     1.61
+    ]
+   ],
+   "seconds": 258.7
+  },
+  "rules": {
+   "lives": 21,
+   "dead": 0,
+   "causes": {},
+   "dead_share": 0.0,
+   "dead_wilson": [
+    0.0,
+    0.155
+   ],
+   "thirst_share": 0.0,
+   "thirst_wilson": [
+    0.0,
+    0.155
+   ],
+   "drinks_per_living_night": 4.92,
+   "first_death_night": [
+    31,
+    31,
+    31
+   ],
+   "loaded": {
+    "persons": 0,
+    "with_drink_experience": 0,
+    "with_told_priors": 0,
+    "mean_drink_cnt": null
+   },
+   "exps_n_m": [],
+   "seconds": 42.1
+  }
+ },
+ "childhoods": {
+  "30": {
+   "n": 21,
+   "episodes_per_hour": 7.02,
+   "share_via_child": 0.75,
+   "taken_per_night": 2.67,
+   "errands_per_night": 0.37,
+   "given_serves_total": 16.76,
+   "drinks_first_quarter": 4.86,
+   "drinks_last_quarter": 14.31,
+   "drink_cnt": 449.05,
+   "watched": 1919.57,
+   "decisions": 2582.38,
+   "seconds_each": 23.67,
+   "never_drank_in_childhood": 0
+  },
+  "90": {
+   "n": 21,
+   "episodes_per_hour": 7.01,
+   "share_via_child": 0.75,
+   "taken_per_night": 1.0,
+   "errands_per_night": 0.35,
+   "given_serves_total": 52.86,
+   "drinks_first_quarter": 6.58,
+   "drinks_last_quarter": 11.86,
+   "drink_cnt": 1313.45,
+   "watched": 5988.95,
+   "decisions": 8514.19,
+   "seconds_each": 71.71,
+   "never_drank_in_childhood": 0
+  }
+ }
+}

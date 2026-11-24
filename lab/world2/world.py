@@ -246,6 +246,69 @@ SIGNS_FLAGS = ("signs",)
 # drives2 (mindL6 stage A): with `signs`, the visible signs also carry THIRST (what an observer reads of another person's thirst), so a mind can learn by watching a person drink.
 # Nothing else changes with the flag: the body and the laws are the same.
 DRIVES2_FLAGS = ("drives2",)
+# body2 (mindL6 stage B1, 2026-11-23): the library's body numbers (responses/2026-11-23-mark1-drives-and-cultural-learning.md, D-a to D-e). Off: nothing here is read.
+#   WATER LEDGER. The need (0..1) covers thirst ONSET: 0..1 percent of body mass lost (the answer: "the need covers only about 0.8-1.3 percent"). The RESERVE
+#   (LETHAL_RESERVE days, drawn down at the cap) covers everything from there to death. Death is at 15-20 percent of body WATER (Tipton and Montgomery 2025,
+#   doi:10.1113/ep093194); body water is 55-75 percent of body mass (adult 60 percent, u: between the elder's 55 and the infant's 75), so death is at 17.5 x 0.60 = 10.5
+#   percent of body mass (u: the middle of both ranges). The reserve maps LINEARLY onto the loss: lost_pct = 1.0 x need + (10.5 - 1.0) x dep, dep = 1 - reserve/full (u: linear).
+#   Anchors by percent of body MASS lost: first symptoms 1.4-1.6 (headache, concentration; Ganio 2011, Armstrong 2012, Johnson 2014 cards), cognition -0.28 SD above 2
+#   (Wittbrodt and Millard-Stafford 2018), headache and irritability above 5, weakness and faintness at 8-10 (Craig and Cummings 1966 via Tipton), death 10.5 (this mapping).
+#   FELT LADDER (STEPS, not a slope: the answer, L3). Rung heights are (u); the thresholds are the anchors. The top rung is 1.0 = FELT_GAIN.
+WATER_LOSS_NEED_PCT, WATER_LOSS_END_PCT = 1.0, 10.5
+WATER_RUNGS = ((1.5, 0.15), (2.0, 0.30), (5.0, 0.60), (8.0, 0.85), (10.0, 1.00))
+#   FOOD LEDGER. Death in complete starvation at 40-60 days (the 45 days stays). Body WEIGHT lost at death 40 percent (u: Keys' men kept living at over 25 percent; the
+#   fatal loss is not in the library). Linear in dep. Anchors by percent of body weight lost: no cognitive loss to 6, capacity falls past 10, fatigue, apathy, irritability and
+#   extreme weakness at over 25 (Tipton and Montgomery 2025; Keys 1950 via Franklin 2005). Rung heights (u).
+FOOD_LOSS_END_PCT = 40.0
+FOOD_RUNGS = ((6.0, 0.10), (10.0, 0.30), (25.0, 0.70), (40.0, 1.00))
+#   REPAYMENT. A 24 h water deficit was gone within 20 minutes of drinking (Rolls 1980). A turn is 4.8 minutes (a night is a day of 300 turns): the thirst reserve is
+#   repaid in REPAY_TURNS = 20 / 4.8 turns once the need is below its cap. Hunger keeps the old give-back (a day a day: no card number, u).
+REPAY_TURNS = 20.0 / 4.8
+#   EATING. (1) A meal raises thirst: EAT_THIRST per ration (u: the human size is in no card; mouse thirst neurons rise from the first bite, Zimmerman 2016; booked from the
+#   meal's water cost: about 22 percent of water intake comes from food, a ration of about 600 kcal costs about 0.07 L, 0.05 of the thirst scale where a drink of 0.85 L is 0.5).
+#   (2) The dehydrated eat less: at 2.9 percent of body mass lost men ate 0.65 of their rehydrated intake (Perez-Luco 2019): a ration relieves hunger by factor
+#   1 - 0.35 x lost_pct / 2.9, never below EAT_FLOOR (u). The ration is used up (the pot is in whole rations): the rest is waste (u).
+EAT_THIRST, EAT_ANOREXIA, EAT_REF_PCT, EAT_FLOOR = 0.05, 0.35, 2.9, 0.35
+#   INNATE SET. CRY: a graded sign = CRY_GAIN x the sum of unmet needs (hunger and thirst above their usual level, hurt, fear), times a gain that halves a year after
+#   CRY_AGE = 2 (u). CARERS CANNOT HEAR ITS CAUSE (35 percent against 33 chance, Parsons/Ahrens-Leuchter 2023): below CRY_CAUSE_AGE (u) the hunger and thirst signs are hidden and only
+#   the cry shows; the carers' serve options for a DEPENDENT (under DEPENDENT_AGE = 4 (u): the youngest age children are sent for water, Stieglitz 2012) are driven by the cry.
+#   TASTE: sweet-good, bitter-bad (Berridge 2000): a signed taste for what is consumed, read by the mind as a first valence (a prior with a pseudo-count). Values (u): ale -0.5
+#   (bitter), food +0.4, water 0.
+CRY_GAIN, CRY_AGE, CRY_CAUSE_AGE, DEPENDENT_AGE = 1.0, 2.0, 2.0, 4.0
+TASTE_ALE, TASTE_FOOD, TASTE_WATER = -0.5, 0.4, 0.0
+BODY2_FLAGS = ("body2",)
+#   BODY SHEETS (D-e, L8): elder work 0.50 -> 0.85 (Tsimane men 10-20 percent below peak at 60+, women flat; grandfathers' net food giving peaks in their 60s); child metab 0.70 kept
+#   (1,738-1,811 kcal a day at 8 against 2,400 is 0.72-0.75). Elder ill, ill_len and recov stay (u: no morbidity-by-age card; frailty is 10.7 percent at 65+, a check, not an input).
+BODY2_SHEET = {"elder": dict(work=0.85)}
+
+
+def water_lost_pct(need, dep):
+    """Percent of body mass lost to water, from the thirst need (0..1) and the reserve fraction lost (dep, 0..1)."""
+    return WATER_LOSS_NEED_PCT * min(1.0, max(0.0, need)) + (WATER_LOSS_END_PCT - WATER_LOSS_NEED_PCT) * min(1.0, max(0.0, dep))
+
+
+def food_lost_pct(dep):
+    """Percent of body weight lost to hunger, from the reserve fraction lost."""
+    return FOOD_LOSS_END_PCT * min(1.0, max(0.0, dep))
+
+
+def rung(pct, rungs):
+    """The felt level (a step) at `pct` lost: the height of the highest rung whose threshold is reached."""
+    lvl = 0.0
+    for thr, h in rungs:
+        if pct >= thr:
+            lvl = h
+    return lvl
+
+
+def cry_gain(age):
+    return CRY_GAIN * (0.5 ** max(0.0, age - CRY_AGE))
+
+
+def cry_level(hunger, thirst, hurt, fear, age):
+    """The cry (0..1): graded by the sum of unmet needs, the same whatever the cause."""
+    unmet = max(0.0, hunger - LETHAL_START) + max(0.0, thirst - LETHAL_START) + hurt + fear
+    return min(1.0, cry_gain(age) * unmet)
 # hard (2026-11-21, the realistically hard inn, owner decision (A)): the hardships set FROM THE SOURCE RATES instead of by taste. Source:
 # the Library answer "responses/2026-11-21-mark1-preindustrial-hardship-rates.md" (S1 to S6). One night is one day. With the flag off nothing
 # here is read. With it on, `ill`, `luck` and `raid` given to World() are ignored: the source rates below are used.
@@ -599,6 +662,7 @@ class Person:
         self.age = 30.0            # family: years (a body datum; the old inn never reads it)
         self.metab = self.work = self.strength = self.ill = self.ill_len = self.recov = 1.0    # family: the body sheet (FAMILY_BODY); 1.0 = the adult of the old inn
         self.work_acc = 0.0        # family: work at the counter is made in whole rations; the fraction carries
+        self.tasted = None         # body2: the last thing consumed (what is on the tongue: the sense of taste reads the world's signed taste of it)
 
     @property
     def public(self):
@@ -615,11 +679,11 @@ class Person:
 
 class World:
     def __init__(self, seed=0, bandit=None, turns=300, flags=(), carry=None, night=0, supply=1.0, luck=0.3,
-                 ill=AIL_P, raid=RAID_P):
+                 ill=AIL_P, raid=RAID_P, young=None):
         self.flags = frozenset(BASE_FLAGS if flags == "all" else FLAGS if flags == "all2" else
                                ALL3 if flags == "all3" else ALL4 if flags == "all4" else
                                ALL5 if flags == "all5" else ALL6 if flags == "all6" else flags)
-        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS) - set(LETHAL_FLAGS) - set(LETHAL2_FLAGS) - set(FIELD_FLAGS) - set(FAMILY_FLAGS) - set(DRIVES2_FLAGS)
+        bad = self.flags - set(FLAGS) - set(NEW_FLAGS) - set(LUCK_FLAGS) - set(NEED_FLAGS) - set(LUMPY_FLAGS) - set(SIGNS_FLAGS) - set(HARD_FLAGS) - set(LETHAL_FLAGS) - set(LETHAL2_FLAGS) - set(FIELD_FLAGS) - set(FAMILY_FLAGS) - set(DRIVES2_FLAGS) - set(BODY2_FLAGS)
         assert not bad, f"unknown flags {sorted(bad)}"
         self.night = night
         self.full = PORTION if "field" in self.flags else FULL     # field: a meal is a whole ration, eaten only when the hunger left can take it (no partial meal is wasted)
@@ -636,6 +700,11 @@ class World:
                 b = {**FAMILY_ADULT, **FAMILY_BODY.get(kind, {})}
                 q = self.people[name]
                 q.age = float(FAMILY_AGE[name])
+                if "body2" in self.flags:                      # body2: the library's sheets (elder work up)
+                    b = {**b, **BODY2_SHEET.get(kind, {})}
+                if young and name in young:                    # a childhood: this person is a child of that age (years): the child body sheet
+                    b = {**FAMILY_ADULT, **FAMILY_BODY["child"]}
+                    q.age = float(young[name])
                 q.metab, q.work, q.strength, q.ill, q.ill_len, q.recov = (b[k] for k in ("metab", "work", "strength", "ill", "ill_len", "recov"))
         self.things = {}
         for name, (at, props, value) in THINGS.items():
@@ -911,6 +980,11 @@ class World:
         state = {"hurt": max(min(1.0, max(0.0, (10 - t.hp) / 10)), t.ail), "fear": t.fear, "hunger": t.hunger}
         if "drives2" in self.flags:                              # thirst shows too (the last key: the other signs' noise draws are unchanged)
             state["thirst"] = t.thirst
+        if "body2" in self.flags:                                # body2: the cry (graded, cause blind); an infant's hunger and thirst are not readable, only its cry
+            state["cry"] = cry_level(t.hunger, t.thirst, state["hurt"], t.fear, t.age)
+            if t.age < CRY_CAUSE_AGE:
+                del state["hunger"]
+                state.pop("thirst", None)
         r = random.Random(f"sign/{self._sg_seed}/{self.t}/{obs}/{tgt}")
         sd = SIGN_NOISE / getattr(o, "acuity", ACU_MEAN)
         ex = getattr(t, "express", EXPR_MEAN)
@@ -1234,11 +1308,15 @@ class World:
             if d and laid:
                 continue
             for q in awake:
-                if q.name not in self.laid or q.thirst <= FULL:
+                dep = self.dependent(q)
+                if dep:                                     # body2: a dependent is brought WATER when it cries (cause blind: whether or not it is thirst)
+                    if "ale" in self.things[n]["props"] or "ale_source" in self.things[n]["props"] or self.seen_need_of(q, q.thirst) <= 0.0:
+                        continue
+                elif q.name not in self.laid or q.thirst <= FULL:
                     continue
                 r = p.requests.get(q.name, {})
                 o = add("serve", f"bring {q.name} a drink from {n}", target=q.name, obj=n,
-                        asked=float(r.get("thing") == n and r.get("pay") is None), seen_need=q.thirst if q.thirst > 0.6 else 0.0,
+                        asked=float(r.get("thing") == n and r.get("pay") is None), seen_need=self.seen_need_of(q, q.thirst) if dep else (q.thirst if q.thirst > 0.6 else 0.0),
                         own=p.thirst, left=1.0, like=max(0, p.aff.get(q.name, 0)), distrust=self.distrust(p, q.name))
                 o["dur"] = DUR["serve"] + 2 * d * DUR["walk to"]
         if laid and p.thirst > FULL:
@@ -1259,7 +1337,7 @@ class World:
                 r = p.requests.get(q.name, {})
                 asked = float(r.get("thing") == n and r.get("pay") is None)
                 add("serve", f"serve {q.name} a portion of {n}", target=q.name, obj=n, asked=asked,
-                    seen_need=q.hunger if q.hunger > 0.6 else 0.0, own=p.hunger, left=left,
+                    seen_need=self.seen_need_of(q, q.hunger), own=p.hunger, left=left,
                     like=max(0, p.aff.get(q.name, 0)), distrust=self.distrust(p, q.name), **extra)
         pay = [m for m in self.held(p) if PAYABLE[0] <= W[m]["value"] <= PAYABLE[1] and m not in self.portions]
         for q in awake:
@@ -1416,7 +1494,8 @@ class World:
                         p.doing, p.cause = None, k
                         break
                 else:
-                    p.reserve[k] = min(LETHAL_RESERVE[k], p.reserve[k] + dt)
+                    back = LETHAL_RESERVE[k] / REPAY_TURNS if (k == "thirst" and "body2" in self.flags) else dt     # body2: water is repaid in about 20 minutes
+                    p.reserve[k] = min(LETHAL_RESERVE[k], p.reserve[k] + back)
         if p.requests:                  # a request not answered in 30 turns lapses
             p.requests = {k: r for k, r in p.requests.items() if r["t"] >= self.t - 30}
 
@@ -1676,8 +1755,41 @@ class World:
             return True, {}
         raise ValueError(v)
 
+    def body_loss(self, person):
+        """body2: (percent of body mass lost to water, percent of body weight lost to hunger) from the need and the reserve (the ledger above)."""
+        dt = 1.0 - person.reserve["thirst"] / LETHAL_RESERVE["thirst"]
+        dh = 1.0 - person.reserve["hunger"] / LETHAL_RESERVE["hunger"]
+        return water_lost_pct(person.thirst, dt), food_lost_pct(dh)
+
+    def eat_factor(self, person):
+        """body2: the share of a ration's relief a person gets: 1 when hydrated, 0.65 at 2.9 percent of body mass lost, never below EAT_FLOOR."""
+        m = self.body_loss(person)[0]
+        return max(EAT_FLOOR, 1.0 - EAT_ANOREXIA * m / EAT_REF_PCT)
+
+    def dependent(self, q):
+        """body2: a person who cannot yet fetch for itself and is brought what it needs (a young child)."""
+        return "body2" in self.flags and q.age < DEPENDENT_AGE
+
+    def seen_need_of(self, q, own):
+        """The urgency a carer reads off q. A dependent shows only its cry (the cause is not heard); everyone else shows the need itself, above 0.6."""
+        if self.dependent(q):
+            c = cry_level(q.hunger, q.thirst, max(min(1.0, max(0.0, (10 - q.hp) / 10)), q.ail), q.fear, q.age)
+            return c if c > 0.6 else 0.0
+        return own if own > 0.6 else 0.0
+
+    def taste(self, item):
+        """body2: the signed taste of what is consumed (sweet and savoury good, bitter bad, water neutral)."""
+        props = self.things.get(item, {}).get("props", ())
+        if "ale" in props or "ale_source" in props:
+            return TASTE_ALE
+        if "food" in props:
+            return TASTE_FOOD
+        return TASTE_WATER
+
     def _sip(self, person, item, ale):
         """One drink (the same effect whether it is drunk or brought): thirst down; ale also makes drunk and a mug is used up."""
+        if "body2" in self.flags:
+            person.tasted = item
         person.thirst = max(0, person.thirst - 0.5)
         if ale:
             person.drunk = min(1, person.drunk + 0.3)
@@ -1698,6 +1810,20 @@ class World:
         if "field" in self.flags and person.hunger < self.full:      # a person whose hunger cannot take a whole ration does not eat: the portion stays in the pot (nothing is wasted on the satiated)
             return 0
         self.portions[item] -= n
+        if "body2" in self.flags:        # body2: the dehydrated eat less of a ration, and a meal raises thirst
+            f = self.eat_factor(person)
+            person.tasted = item
+            person.thirst = min(1.0, person.thirst + EAT_THIRST * n)
+            if "labour" in self.flags:
+                k = self.kind_of.get(item, STAPLE)
+                for _ in range(n):
+                    person.hunger = max(0.0, person.hunger - PORTION * f * (LABOUR_REPEAT if person.last_kind == k and "field" not in self.flags else 1.0))
+                    person.last_kind = k
+            else:
+                person.hunger = max(0.0, person.hunger - PORTION * n * f)
+            if self.portions[item] <= 0:
+                self.things[item]["at"] = None
+            return n
         if "labour" in self.flags:       # sensory-specific satiety: the same kind again relieves less
             k = self.kind_of.get(item, STAPLE)
             for _ in range(n):

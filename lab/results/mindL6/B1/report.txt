@@ -1,0 +1,58 @@
+MINDL6 STAGE B1: THE MECHANISM AND THE CHILDHOOD. REPORT, 2026-11-23.
+Plain text. Intervals 95% unless said. Rules: lab/mindL/PASS_RULE_B1.txt (written 16:04, before any run it judges, never edited). No git. src/ and tests/ untouched.
+B1 gives NO verdict on "the learned mind beats the rules" (that is B2).
+
+HEADLINE
+All pieces are built behind the drives2 option (new letter B, dials, age gates) and the world flag body2. Off is exactly as before (all lab suites pass).
+19 new tests (lab/mindL/test_b1.py), all pass. 24 of 24 mutations caught (incl. the 3 stage A survivors).
+Gate (i): the ABSOLUTE yardstick still fails; the NOISE-RELATIVE yardstick passes in both setups. The owner chooses.
+Stepparent test: the kin rule FAILS it, and slowing TAU_K does not fix it (ratio 0.99 at 17 years, target 0.72 / 0.59). TAU_K not changed.
+Smoke (3 seeds, 30 nights, lethal inn): all runs complete, all 21 people per arm loaded from their childhood. Thirst deaths: naive 7 of 21, primed-30 1 of 21, primed-90 2 of 21, rules 0 of 21. NOT judged.
+
+1. STAGE A GAPS CLOSED (mind.py)
+ - Dest term, felt-need cap, watch mask: three tests added (test_dest_score_term..., test_felt_need_cap..., test_watch_mask...). All three old survivors now caught.
+ - Rescale of a remembered option now reads the option's OWN need column (the need its own number equals), never max(energy, thirst). Test: expected relief computed exactly; the old rescale is caught (mutation G2).
+ - The destination feature goes to ANY option whose target is a place other than here (it moves me), not by verb name. The score term uses each option's own duration. Tested with flee to, sit down and look around. (Flee options now get the term; before they did not.)
+2. DRIVE NUMBERS (library answer; (u) = unsourced)
+ - Exponents n, m: per-person dials, m uniform [1.5, 3.0], n = m + gap uniform [0.5, 2.5] (u: spread). n > m > 1 always. Only value in a card is (4, 2). Tests: a large n (60, 59) brings the max() back (smaller relief below 0.001 of larger); for all 60 draws a unit of thirst relief at half the hunger deficit is worth 0.02 to 0.6 of a hunger unit (partial competition); a drink pays at any hunger.
+ - Felt ladder (letter B): steps by percent of body mass lost, not a slope. Water: 1.5, 2, 5, 8, 10 percent (anchors from the answer), rung heights 0.15, 0.30, 0.60, 0.85, 1.0 (u). Mapping: lost% = 1.0 x need + 9.5 x reserve-fraction-lost; death at 10.5% of body mass = 17.5% of body water at 60% water (u: middle of 15-20 and 55-75). Linear in the reserve (u). Food: death at 40% of body weight (u), rungs 6, 10, 25, 40 percent, heights (u). The capacity penalty (attention SD) and the elder thirst dial were NOT built.
+ - World body2: water repaid in 20 min = 4.17 turns (Rolls 1980); eating raises thirst 0.05 a ration (u); the dehydrated eat 1 - 0.35 x lost%/2.9 of a ration (0.65 at 2.9%, Perez-Luco 2019), floor 0.35 (u), the ration is used up (waste, u); hunger give-back and the 45 days unchanged. A resting person who never drinks dies in 3.5 to 10.5 days (test passes; the model gives about 5). Heat death in 3 days: no heat law, not tested.
+   Note on rule A4(e): after ONE sip the eat factor is 0.94 (0.5% still lost), just under 0.95. The test uses a drink taken to the usual level (two sips): 0.95+ within 5 turns. Said here because the rule text said "a drink".
+ - Innate set: graded cry = gain x (hunger and thirst above 0.325, hurt, fear), gain halves a year after age 2 (u). Cause blind: under age 2 hunger and thirst signs are hidden; carers' serve options for a dependent (under 4, u) are driven by the cry; a classifier on the cry alone recovers cause at 0.25-0.41 (chance 0.33). Taste: the world has a sense (person.tasted, set when anything is consumed, eaten, drunk or served); the mind starts the valence of what it tasted at taste_gain (0.3, u) x signed taste (ale -0.5, food +0.4, water 0; u); experience overrides: with no contrast the prior is washed to under 5% in 15 experiences, with contrast it flips in 10. No imitation at birth: watched weight is 0 up to 9 weeks, rises to full at one year (u), outcome weight adult 0.22 (0.17/0.77), child 0.60 (0.48/0.80), falling to adult at 18 (a mapping of SD gains, not a measured rate, u).
+   Not tested: infant crying minutes a day (117-133 min) and the 75% first-try fix: no infancy run.
+ - Body sheets (body2): elder work 0.50 -> 0.85; child metab 0.70 kept; elder ill, ill_len, recov unchanged (u). Child work 0.15 and strength 0.35 unchanged.
+3. THE PRIMED CHILDHOOD (lab/mindL/childhood.py)
+ Same learner (SCBDW, dials, watch by age, taste), safe family inn (no lethal, no perma), child body (world argument young), age 1 to 12 over the childhood. Carers = the other six, cast as the RULES policy, the previous generation (u: no source). Gives: dependents are brought water or rations by the cry (world, body2); from 4 (girls) and 9 (boys) the child is SENT for water: chance of an errand a night = 0.83 / 0.79 at the peak age, bell width 3 years (u), none under 4; an errand replaces the child's choice by steps toward the well and is learned as its own act. Teaching 7 an hour (6-8), 75% through another child (two lossy hops, 2 peers), 25% from a carer, through told() with a cap of 9 pseudo-counts a verb (u) so experience always overrides; each carer's teachable knowledge is a shadow world model trained on its own acts. Watching on. Measured in the 42 childhoods: 7.0 episodes an hour, 0.75 via children. Lengths 30 and 90 nights (u; a night is a day). Cached per seed, person, length; saved with Mind.dump and loaded with PerCharacter.load (new preload argument of household.run_full; default unchanged).
+ Childhood numbers (mean of 21): length 30: own drinks a night first quarter 4.9, last quarter 14.3; carers' gifts to the child 16.8 in all; errands 0.37 a night; no child failed to learn to drink. Length 90: 6.6 then 11.9; gifts 52.9; errands 0.35 a night; none failed.
+ Caveats: the childhood is days, not years; the errand and gift rules are the culture's practice (a harness and world rule, not a mind rule); no act-level rule exists in the mind: the mind only reads the world's senses and menu.
+4. TWO YARDSTICKS FOR GATE (i) (stage A full runs, night 365, seeds 1-3; no new run; the rule says plainly the numbers were seen before the rule was written)
+                          setup A                  setup B
+   coarse-full |dw|       0.138 (floor 0.168)      0.230 (floor 0.228)
+   Kendall tau            0.573 (floor 0.520)      0.048 (floor 0.124)
+   coarse-full |dkhat|    0.176 (floor 0.230)      0.256 (floor 0.323)
+   Y1 absolute (0.10, 0.60, 0.10; worst seed 0.15): FAIL in both setups, all three.
+   Y2 noise-relative (R1 1.10 x floor and worst seed 1.30 x floor; R2 tau >= floor - 0.10; R3 1.10 x floor): PASS in both setups.
+   Cautions: setup B tau passes narrowly (0.048 against 0.024) and its floor swings from -0.09 to 0.39 between pairs, so tau says almost nothing there. Per-seed pairs are in gate_i_b1.json. OWNER CHOOSES.
+5. STEPPARENT TEST (30 draws, same exposure for both parents, only duration differs; ratio of the child's weight for the stepparent to that for the biological parent)
+   years together   0.25 y     5 y        17 y
+   ratio w          0.29       0.795      0.991 [0.990, 0.992]
+   target (pract/emot) 0.43/0.43  0.51/0.47  0.72/0.59
+   Verdict: FAIL, and large (above 0.90). After 17 years the kin rule treats a stepparent as a parent. Probe: TAU_K = TAU_H = 24 and 52 years (the answer's two time constants) give 0.978 and 0.980: the weight is carried by hours together and learned concern, which are equal for both parents; slowing the kin-estimate cue cannot open the gap. So TAU_K is NOT changed (no code changed; tau_k stays a parameter). The answer's reading (b) is the candidate: the gap comes from unequal investment (stepparents invest less), a world effect that the controlled test removed by design. For B2: have the world give stepparents less investment and test that.
+6. SMOKE (not a verdict; lethal family inn, 30 nights, seeds 91-93, 21 lives an arm; Wilson intervals, households correlated, read as indicative)
+   arm      dead   thirst   first death night (seeds)   drinks per living night
+   naive    8/21   7 [0.17, 0.55]    1, 4, 4              10.3
+   primed 30   1/21   1 [0.01, 0.23]   17, 31(none), 31(none)   9.6
+   primed 90   2/21   2 [0.03, 0.29]   4, 4, none        9.6
+   rules    0/21   0 [0, 0.16]        none               4.9
+   Every one of the 21 people per primed arm was loaded with drink experience and told priors (naive: none). Not judged. A naive mind in the body2 world still dies of thirst (7 of 21, as stage A), a primed one mostly does not; the two lengths do not differ in a way 21 lives can show.
+7. TESTS AND MUTATIONS
+   test_b1 19, test_drives2 20, test_world 92, test_mind 30 (golden traces), test_tournament 17, test_effects 10, test_concerns 12, test_survival 3, test_food, test_kin 0 failures: all pass (logs mindL6/B1/suites_final.log).
+   Mutations on a copy (deleted): 24 of 24 caught (mut.log): dest term, felt cap, watch mask, destination by verb name, rescale by max(energy, thirst), negative gap, dials not per person, linear drive, linear ladder, slow repayment, no anorexia, no meal thirst, cry ignores hunger, cause not hidden, carers read cause, imitation at birth, no taste prior, taste not sensed, teaching twice as often, peer share 0.5, errand before dependent age, unbounded told weight, elder work, young body.
+   Two earlier survivors (rescale, eat-thirst) were test weaknesses, fixed and re-run.
+
+FOR THE USER
+ - Built: staged felt ladder, per-person exponent dials, the body2 world (water repaid in 20 min, eating costs water, the dehydrated eat 0.65), the cry and taste senses, age-dependent watching, and a primed childhood in the safe inn with gifts, errands and teaching. 19 tests, 24 of 24 mutations caught, old suites unchanged.
+ - Smoke: primed people died of thirst far less than naive ones in 30 lethal nights (1 or 2 of 21 against 7 of 21; rules 0). Only 3 seeds: not a verdict, B2 decides.
+ - Your choice: gate (i) fails the old absolute limits and passes a noise-relative yardstick (coarse as close to full as two full runs are to each other). Pick one.
+ - Stepparent: the kin rule makes a 17-year stepparent equal to a parent (0.99, human 0.59-0.72). Slowing the cue does not help. Needs unequal investment in the world; TAU_K left alone.
+ - Unsourced (u): the ladder rung heights, death at 10.5% mass, meal-thirst 0.05, rule-cast carers, childhood of days, errand bell width, told cap 9, taste values.

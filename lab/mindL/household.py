@@ -65,7 +65,7 @@ def make_policy(seed, passive=False, cn=None, **extra):
 
 
 def run_full(seed, nights, *, arm="cn2", init=None, ages=None, snaps=(), tele=None, flows=True, extra=None, turns=300, lethal=False, res=False,
-             wflags=(), drinks=False, pol_hook=None):
+             wflags=(), drinks=False, pol_hook=None, preload=None):
     """A lifetime of the family inn. arm: 'cn2' (concerns steer), 'passive' (concerns learn, do not steer), 'off' (no concerns), 'rules'.
     init: {name: state} loaded into each mind's concerns at the start (the coarse past), ages: {name: age at start}.
     snaps: nights after which the concern states are kept. tele: (a, b): the telemetry between night a and night b.
@@ -88,6 +88,8 @@ def run_full(seed, nights, *, arm="cn2", init=None, ages=None, snaps=(), tele=No
             pol.make = mk
     if (extra or {}).get("drives2") and "drives2" not in wflags:      # a drives2 mind needs the world to show thirst in the signs
         wflags = tuple(wflags) + ("drives2",)
+    if preload is not None:             # B1: whole learners (Mind.dump), from a childhood, loaded into each person at its first choice
+        pol.load(preload)
     if pol_hook is not None:
         pol_hook(pol)
     carry, out = None, dict(snaps={}, tele=None, flows={}, deaths={}, care_by_night=[], res=[], drinks=[])

@@ -57,7 +57,7 @@ from lab.mindL.episodic import Episodic
 from lab.mindL.habit import Habit
 from lab.mindL.partners import HARM, KIND, PartnerModels, features
 from lab.mindL.valence import Valence
-from lab.mindL.drives2 import DEFAULT_LETTERS, IE, IT, ND2, Drives2
+from lab.mindL.drives2 import DEFAULT_LETTERS, IE, IT, ND2, Drives2, exponent_dials, watch_weight
 from lab.mindL.world_model import WorldModel, WorldModelP
 from lab.world2.world import DRIVES, DUR, ROOMS
 
@@ -93,7 +93,12 @@ DEFAULT = dict(modules="AKVWPEC", tau=0.01, gamma=0.98,
                # wm_prior: {verb: dict(const={drive: x}, slope={drive: x}, n0=3)}, a prior on the world model of my own acts (what being TOLD writes).
                # w_obs: the weight of a watched act against my own experience (u), copy_kin and copy_succ: dials that raise it for kin and for the
                # successful (u, 0). b_dest: weight of the destination's expected relief in a walk option's score (u, 1: the units of the lookahead).
-               drives2=False, d2=None, wm_prior=None, w_obs=0.3, copy_kin=0.0, copy_succ=0.0, b_dest=1.0)
+               drives2=False, d2=None, wm_prior=None, w_obs=0.3, copy_kin=0.0, copy_succ=0.0, b_dest=1.0,
+               # B1 (mindL6 stage B1; all off so every older run reproduces): d2={"dial": True} gives each person its own exponents n > m > 1 (drives2.exponent_dials);
+               # the letter B of drives2 is the staged felt ladder; watch_age: the weight of a watched act follows the watcher's AGE (drives2.watch_weight: 0 at birth,
+               # the child's outcome weight, falling to the adult's) instead of w_obs; taste: the first valence of what is consumed is the world's signed taste (sweet good,
+               # bitter bad) times taste_gain (u), a prior that experience overrides at the valence's own rate.
+               watch_age=False, taste=False, taste_gain=0.3)
 # THE FIXES (user, 2026-10-29), "mind2" in lab/mindL/experiments.py: the partner models weigh in the
 # choice (the one-step lookahead gets four times the weight, and the person's recent treatment of me
 # is part of its valence: kind acts toward one who treats me well pull more, harsh acts toward one
@@ -103,6 +108,10 @@ FIXES = dict(b_partner=2.0, b_trust=1.0, pm_forget=0.02, pm_detect=True)
 # the acts toward a person that open a partner-model window
 SOCIAL = {"give", "praise", "insult", "threaten", "strike", "shove", "search", "accuse", "tell", "gossip", "ask",
           "offer", "accept", "refuse", "help up", "bandage", "defend", "steal"}
+
+
+def c_taste(cfg):
+    return bool(cfg.get("taste"))
 
 
 def softmax(x):
@@ -206,14 +215,17 @@ class Mind(Agent):
         self.letters = (DEFAULT_LETTERS if c["drives2"] is True else (c["drives2"] or ""))
         self.use_dest, self.use_watch = "D" in self.letters, "W" in self.letters
         if self.letters:
-            self.D = Drives2(self.letters, **(c["d2"] or {}))
+            d2 = dict(c["d2"] or {})
+            if d2.pop("dial", False):
+                d2["n"], d2["m"] = exponent_dials(seed, name)
+            self.D = Drives2(self.letters, **d2)
             self.err_fn = self.D.error
             zdim = 1 + reader.NK + self.D.ND + int(self.use_dest)
         else:
             assert not c["wm_prior"], "wm_prior needs drives2"
             zdim = reader.ZDIM
         self.zdim = zdim
-        self.gamma_walk = c["gamma"] ** DUR["walk to"]
+        self.gamma_walk = c["gamma"] ** DUR["walk to"]      # (kept: older callers; the dest term uses each option's own duration)
         self.ac = ActorCritic(reader.NV, zdim, reader.NT, self.D.SDIM, c["lr_actor"], c["lr_critic"], c["gamma"])
         self.habit = Habit(c["lr_habit"], c["habit_fade"])
         self.val = Valence(c["lr_val"])
@@ -252,48 +264,66 @@ class Mind(Agent):
         return bool(p.dead) or not self.cfg["traces"]
 
     # ------------------------------------------------------------ drives2: need by destination (D)
-    MOVES = ("walk to", "flee to")
+    @staticmethod
+    def moves_me(o, room):
+        """An option moves me by its EFFECT: its target is a place other than the one I am in (not by the name of its verb: walk to, flee to, or any other)."""
+        return o["target"] in ROOMS and o["target"] != room
 
     def make_menu(self, w, p, opts, need):
         if not self.use_dest:
             return reader.encode(opts, need)
         menu = reader.encode(opts, need, extra=1)
-        self._remember(p.room, opts, menu, need)
+        raw = self.D.raw_needs(w, p)
+        self._remember(p.room, opts, menu, need, raw)
         rel: dict = {}
         for i, o in enumerate(opts):
-            if o["verb"] in self.MOVES and o["target"] in ROOMS:
+            if self.moves_me(o, p.room):
                 if o["target"] not in rel:
-                    rel[o["target"]] = self.relief_at(o["target"], p.kind, need)
+                    rel[o["target"]] = self.relief_at(o["target"], p.kind, need, raw)
                 menu.Z[i, -1] = rel[o["target"]]
         return menu
 
-    def _remember(self, room, opts, menu, need):
-        """What I see on offer here, kept for what it could do for me later (not movement: a place is what can be DONE in it)."""
+    def _remember(self, room, opts, menu, need, raw=None):
+        """What I see on offer here, kept for what it could do for me later (not movement: a place is what can be DONE in it). Each entry keeps the option's own
+        need number then and the column of MY needs it is about (the need it equals: an eat is about hunger, a drink about thirst, any act the same way), so that
+        the number can be read again for how needy I am now in THAT need."""
         if room not in ROOMS:
             return
         mem = self._aff.setdefault(room, {})
-        nmax = float(max(need[IE], need[IT]))
+        raw = need if raw is None else raw
+        k = reader.KI["need"]
         for i, o in enumerate(opts):
-            if o["verb"] not in self.MOVES:
-                mem[reader.key(o)] = (int(menu.v[i]), menu.Z[i].copy(), nmax)
+            if not self.moves_me(o, room):
+                own, col = float(menu.Z[i, k]), None
+                if own > 1e-9:
+                    diff = np.abs(np.asarray(raw) - own)
+                    j = int(np.argmin(diff))
+                    col = j if diff[j] < 1e-6 else None
+                mem[reader.key(o)] = (int(menu.v[i]), menu.Z[i].copy(), own, col)
 
-    def relief_at(self, room, kind, need):
+    def relief_at(self, room, kind, need, raw=None):
         """The relief my OWN world model expects from the best act I know is on offer in `room`, for my CURRENT needs: the drop of the drive
         (a one-step lookahead over known affordances, every need, no rule about thirst). A remembered option's numbers are read again for now:
-        the needs columns are my needs now, and its own `need` number scales with how needy I am now against then (u: a general stand-in for
-        recomputing the option's numbers, which only the world can do)."""
+        the needs columns are my needs now, and its own `need` number scales with how needy I am now against then in the need it is ABOUT (its own need column;
+        u: a general stand-in for recomputing the option's numbers, which only the world can do). An entry with no such column is not rescaled."""
         mem = self._aff.get(room)
         if not mem:
             return 0.0
-        vs = np.array([x[0] for x in mem.values()])
-        Z = np.array([x[1] for x in mem.values()])
-        then = np.array([x[2] for x in mem.values()])
+        raw = need if raw is None else raw
+        ents = list(mem.values())
+        vs = np.array([x[0] for x in ents])
+        Z = np.array([x[1] for x in ents])
         c0 = 1 + reader.NK
         nd = self.D.ND
         Z[:, c0:c0 + nd] = need
         Z[:, -1] = 0.0
         k = reader.KI["need"]
-        Z[:, k] *= np.clip(float(max(need[IE], need[IT])) / np.maximum(then, 0.1), 0.0, 4.0)
+        scale = np.ones(len(ents))
+        for r, x in enumerate(ents):
+            col = x[3] if len(x) > 3 else None
+            if col is not None:
+                scale[r] = np.clip(float(raw[col]) / max(float(x[2]), 0.1), 0.0, 4.0)
+        Z[:, k] *= scale
         pred = np.einsum("ndz,nz->nd", self.wm.M[vs], Z)
         return float(max(0.0, self.D.drop(kind, need, pred).max()))
 
@@ -322,10 +352,10 @@ class Mind(Agent):
                 continue
             t0, s0 = self._sign0[X]
             if es[0]["t"] >= t0 and w.t - t0 <= 40:
-                self._learn_watched(es[0], s0, now[X], X)
+                self._learn_watched(es[0], s0, now[X], X, age=getattr(p, "age", 30.0) if c["watch_age"] else None)
         self._sign0.update({X: (w.t, sg) for X, sg in now.items()})
 
-    def _learn_watched(self, e, s0, s1, X):
+    def _learn_watched(self, e, s0, s1, X, age=None):
         nd, c0 = self.D.ND, 1 + reader.NK
         dv, mask, z = np.zeros(nd), np.zeros(nd), np.zeros(self.zdim)
         z[0] = 1.0
@@ -335,7 +365,9 @@ class Mind(Agent):
         sf0, sf1 = max(s0["hurt"], s0["fear"]), max(s1["hurt"], s1["fear"])
         dv[1], mask[1], z[c0 + 1] = sf1 - sf0, 1.0, sf0
         c = self.cfg
-        wt = c["w_obs"]
+        wt = c["w_obs"] if age is None else watch_weight(age)
+        if wt <= 0.0:
+            return
         if c["copy_kin"] and self.cn is not None and X in getattr(self.cn, "rows", {}) and hasattr(self.cn, "khat"):
             wt *= 1.0 + c["copy_kin"] * self.cn.khat(self.cn.rows[X])
         if c["copy_succ"]:
@@ -390,7 +422,8 @@ class Mind(Agent):
             else:
                 T["world"] = c["b_wm"] * self.wm.lookahead(menu, H.grad(p.kind, need))
         if self.use_dest:
-            T["dest"] = c["b_dest"] * self.gamma_walk * np.array([menu.Z[i, -1] if o["verb"] == "walk to" else 0.0 for i, o in enumerate(opts)])
+            T["dest"] = c["b_dest"] * np.array([c["gamma"] ** o.get("dur", DUR.get(o["verb"], 1)) * menu.Z[i, -1] if self.moves_me(o, p.room) else 0.0
+                                                for i, o in enumerate(opts)])
         if "P" in m and self.fx is not None:
             T["partner"] = c["b_partner"] * self.fx_term(opts, need, p.kind)
         elif "P" in m:
@@ -521,6 +554,7 @@ class Mind(Agent):
         for cue in (st.cue, st.room):
             if cue is not None and cue not in cues:
                 cues[cue] = 0.5
+        self._taste_prior(w, p)
         self.val.update(cues, r)
         # W: what the act did to my needs
         v, z = st.menu.v[st.a], st.menu.Z[st.a]
@@ -537,6 +571,18 @@ class Mind(Agent):
         # E: one shot, and tonight's steps for replay
         self.ep.store(st.act, z, delta)
         self.ep.tonight.append((st.menu, st.a, st.pi, st.s, s, r, dt, terminal, st.room, st.act))
+
+    def _taste_prior(self, w, p):
+        """A first taste: what was just on my tongue (the world's sense of taste: person.tasted, set when something is consumed, however it came to me) starts with
+        the world's signed taste (sweet and savoury good, bitter bad) times taste_gain as its valence, an innate prior that the next updates override at the valence's
+        own rate (about 1/lr_val = 5 experiences). It reads the sense, not the name of any act."""
+        item = getattr(p, "tasted", None)
+        if item is None or not c_taste(self.cfg):
+            return
+        p.tasted = None
+        tf = getattr(w, "taste", None)
+        if tf is not None and item not in self.val.v:
+            self.val.v[item] = self.cfg["taste_gain"] * tf(item)
 
     def cn_learn(self, st, r_h, dt):
         """The concerns learn from the step that closes (st.cn: what I read at its start; self._rd: what I read now) and return the

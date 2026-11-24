@@ -1,0 +1,41 @@
+MINDL6 STAGE B2: PASS RULE, written BEFORE any run it judges, never edited after. Plain text. Intervals 95%, bootstrap over SEEDS (2,000 draws, fixed generator), differences paired by seed.
+The library answer is responses/2026-11-23-mark1-drives-and-cultural-learning.md. (u) = unsourced.
+
+THE RUN. The lethal family inn (flags of mindL5 stage B: family, field, hard, lethal, perma, signs; plus the world flag body2 in EVERY arm; plus the world flag drives2 for drive2 minds, which only
+adds the thirst sign), 90 nights, 15 seeds (11-25), 7 people a household = 105 lives an arm. The SAME seeds and nights for every arm. Care flows (help acts) are recorded in the same lethal runs.
+ARMS
+  rules      the scripted household (the null; the bar).
+  naive      drives2 SCBD (separate thirst, convex drive, felt ladder, need by destination) with per-person exponent dials and the innate taste prior. No childhood. No told priors. No watching.
+             (Stage A's learner now with body2. The staged ladder B replaces stage A's linear felt letter F: B1 built it; B1 smoke used it.)
+  child      naive + a primed childhood: the SAME learner (SCBD, dials, taste) lives 30 nights (u: a night is a day; B1 saw no difference between 30 and 90 in 21 lives; 30 keeps the run
+             in budget) in the safe family inn in a child body (age 1 to 12); the carers are the rules; dependents are given water and food by their cry, children are sent for water. NO teaching
+             (no told priors), NO watching. Then the whole learner is saved and loaded into the adult.
+  full       THE FULL MIND: child + culture: the letter W (watching, weight by age of the watcher) in the childhood and the adult, and teaching in the childhood (7 episodes an hour, 75 percent
+             through another child, told cap 9; all from childhood.py, unchanged).
+  oldchild   the OLD learner (mindL5 "off": no drives2, no concerns) with the same primed childhood (gifts, errands, safe inn; nothing told, nothing watched: the old learner has neither).
+             Asks: does experience alone rescue the old drives?
+No concerns (cn2) in any arm (the arms are as the owner listed them). Nothing is tuned after a run.
+
+MEASURES (pooled over 105 lives an arm unless a per-seed value is said)
+ M1 deaths by cause (share of 105) and the median first-death night of the 15 households (no death = censored at 91); the thirst-death share per seed, with the seed bootstrap interval; paired
+    differences (arm minus rules) and between arms (naive to child, child to full, child minus oldchild) for the thirst share and for the total dead share.
+ M2 the food step, from the reserve recorder (res=True): DEPLETION = mean over person-nights of (1 - the night's lowest reserve fraction), a dead night counts 1 (as mindL5 B); BURN = reserve
+    burned a night per living person-night; EXTREME NEED: X1 = turns a night at the hunger cap per living person-night, X2 = share of living person-nights whose lowest reserve fraction fell below
+    0.5 (u: the half-way mark). Per-household means, paired by seed, arm minus rules and between arms as in M1. A seed is the unit.
+ M3 kin care (mindL5 (a)): care acts = give, help up, bandage, defend, serve, tend, between the 7 people (FAMILY = Jon, Mara, Pip, Gran; LODGERS = Tom, Sir Ada, Oren). For family actors: the
+    share of their care that goes to family (3 family targets against 3 lodger targets, equal by chance: 0.5), mean over seeds with the seed interval, and the pooled ratio family acts to lodger acts
+    with its seed bootstrap interval. Reported for every arm. Paired share, arm minus rules, by seed. NOT TESTABLE for an arm with fewer than 500 pooled family-actor care acts (then said so;
+    the care of the dead is not made up). The lethal inn is used (the mindL5 care run was non-lethal): deaths cut care short; this is a stated confound.
+ M4 stated plainly if present: a seed's household that all died.
+
+THE OWNER'S BAR (AQ4). The FULL MIND BEATS THE RULES only if ALL THREE hold:
+  B-DEP  depletion lower than the rules': paired (full minus rules) interval of household depletion entirely BELOW 0;
+  B-DEAD deaths not higher: the paired (full minus rules) interval of the household dead share has its LOWER bound at or below 0 (does not exclude 0 from above);
+  B-KIN  kin care emerges in the full mind: family actors' pooled ratio family/lodger has its interval entirely above 1 AND the mean share has its interval entirely above 0.5, AND M3 is testable.
+  Verdict: YES if all three, NO otherwise, and the report says which failed. A PARTIAL for an arm is not a pass of the bar.
+INGREDIENT READING (not gated): childhood buys what = (child - naive); culture buys what = (full - child); the drives under a childhood = (child - oldchild); experience alone for the old drives =
+ (oldchild minus rules) read against stage A's old arm (89 percent thirst dead at night 90 WITHOUT body2, different world: indicative only). An ingredient "buys" something when the paired
+ interval of the difference excludes 0 on thirst share, deaths or depletion.
+WHAT FAILURES POINT AT (stated in the report from the numbers): the WORLD if the rules also fail in this world (they do not: 2 percent in mindL5); the MIND if learned arms die with plenty of food and
+ water in reach and the childhood did not change it; the PAST if the learned arms live but a thing that needs history (kin care) does not appear.
+RUN HYGIENE. Arm by arm, on lab.lock, 2 workers, foreground. Childhoods are cached per (variant, seed, person) in scratch. Flags off = as before: the lab suites are re-run after any code edit.
