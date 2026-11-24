@@ -34,7 +34,13 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   4. COMPUTATION decides WHAT THE THINKING COSTS: bits held, operations, and Landauer's minimum per erased bit. Searching and divination pay the bits needed to single out the answer; complexity is a real limit (a long chaotic forecast is out of reach at any power).
   5. THE ONE CHANGE is HOW IT HAPPENS: the mechanism the simulation runs.
   - The owner's A6 ("it can only allow change that can exist without it in some way") stands, and follows from layers 1-2. The pattern is a catalyst that wears.
-- Q1.1 (what kind of quantity M is), 2026-11-23: **(b), ENERGY WITH A PHASE.** Each voxel holds an amplitude and a phase; energy is the amplitude squared. Interference, standing waves, coherence and resonance are native: a counterspell is a wave in opposite phase, and casters working in step add up. The density still spreads, leaks and refills. Several components are a pack option; a no-store pure-control field is a low-magic pack (it would reverse the sources decision).
+- Q1.1 (what the field is and what carries its charge), REVISED 2026-11-23: **(b) NOW, (c) LATER.** It merges the first Q1.1 answer (energy with a phase, kept as the waves' property) with the reframed Q1.3.
+  - (b) BUILT LIKE ELECTROMAGNETISM: some particles carry a small MAGIC CHARGE or MAGIC MOMENT. In ordinary matter the carriers point every which way and cancel, so A2 is EXPLAINED (only aligned or organised carriers couple), not assumed.
+  - What organises carriers: a crystal lattice, an evolved organ, an engraving's geometry, a brain's activity patterns (R2).
+  - CHARGED MATERIALS store nothing: their carriers are aligned and emit their own field, as a lodestone does. Heating past a critical temperature scrambles them and erases the charge.
+  - MS2's INDEX comes from how easily a material's carriers respond to the field.
+  - ABSORPTION jostles carriers, and the jostling ends as warmth (Q1.3).
+  - (c) LATER EXTENSION: stable field STATES (normal, dead, wild regions separated by walls, which can flip when pushed hard).
 - Q1.2 (where M comes from), 2026-11-23: **(d).** (a) NATURAL FLOWS make it by default: sunlight, life's metabolism, the planet's inner heat and storms each turn a tiny share of their own energy into M, booked as taken from them. It stays out of equilibrium because it is pumped where those flows are strong and leaks to heat everywhere, so MC5's cycles follow. Plus (b) ANCIENT CONCENTRATIONS as places and materials (nodes, crystals of fossil M) that can be mined and run out. Plus (c) INFLOW from other worlds or beings as a pack, booked as an import. The owner: it makes magic "a finite resource more than just a fixed number": rich places, mineable deposits, regional over-use.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
@@ -115,6 +121,9 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C33 | A gambler loads dice by magic | Possible, at a minimum energy per bit of bias; heavy bias over many throws costs a lot | Q0 layer 2 |
 | C34 | Finding one hidden person in a city by divination | Costs the bits needed to single them out; a link, a name or a trace cuts the cost | Q0 layers 3-4 |
 | C35 | Forecasting the weather a month ahead by magic | Out of reach at any power (chaos and computation) | Q0 layer 4 |
+| C36 | A charged crystal is heated in a forge | It loses its charge past a critical temperature (its carriers scramble) | Q1.1 |
+| C37 | A cage of a material whose carriers move freely | Blocks spells, like a Faraday cage | Q1.1, Q4.2 |
+| C38 | Why one person couples strongly and another barely | How well a brain can organise its own carriers: biology, development and practice, not a flag | Q1.1, Q2.1 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
