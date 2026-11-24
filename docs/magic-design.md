@@ -879,3 +879,17 @@ Research: docs/magic-research/costs_{europe,world,theory,fiction,synthesis}.txt 
   - numbers ONLY TO THE PRECISION THE CHARACTER COULD KNOW (introspective acuity, training, instruments);
   - a LitRPG "System" is an in-world source that can be wrong.
 - MC8 CULTURES: invented by default, mixing and drawing inspiration from real ones; real traditions named only where public, ancient and well documented; never living sacred practice as mechanics.
+
+## Addendum (2026-11-23): magic scoping MS1-MS5 (from the library's survey of the Gorilla of Destiny channel)
+
+Five candidate rules came from the survey: a per-material magic index, line spectra, aspect costs, mode sets, and wavelength read-out. The owner decides them one by one.
+
+- MS1 UNFAMILIAR EFFECTS, OWNER: (b), PRACTICE RAISES EFFICIENCY, extended into a game of skill and a layered system.
+  - THE LAW: a clumsy or unfamiliar pattern converts worse, so more of the drawn energy leaks as waste heat at the site. The work share rises with practice on PHYSICALLY NEARBY effects (a hotter fireball is near a fireball; a frost cone is far). This uses the existing practice law and the work, light and heat split, with no new basis. A pack may add an explicit aspect basis with a distance surcharge (the survey's system) as a pack option.
+  - TWO PARTS OF SKILL (owner):
+    - an INTRINSIC sense of shaping and control: a per-person dial that changes over time through use, disuse and misuse (MC3 plasticity);
+    - EXPLICIT SHAPING: a caster (and the player) can deliberately write the pattern in more detail. More bits buy more specific effects and a better match to the target (impedance matching, resonance, focus geometry), so a well-written spell wastes less. The player's own skill at writing spells then matters, as a game of skill.
+  - LAYERS (owner): magic is intrinsically very LOW LEVEL, the field and the grammar of physical leaves (section 3.5). On top of it sit INTERFACES that each model a part of it, and MANY KINDS OF FORMULAE (notations) in which people write intricate spells; each compiles to the grammar. The more complex a spell, the more specific it can be.
+  - A CULTURAL PATH (owner's default history; the mechanism is general): early on, powerful minds ("gods") gave people THEMATIC SPELLS STRAIGHT INTO MEMORY, as compiled patterns. They are easy to cast and intuitive to use, but they are complex dials built to the gods' own understanding, held as one opaque unit, and they CANNOT BE CHANGED ON A WHIM. Taking one apart (study, experiment, a scholarly tradition) reveals its dials, the road from gifted spells to low-level magic.
+    - Mechanism: any mind with a pattern store can give a compiled pattern to another through a bond (as a patron lends patterns, section 4). Casting it costs the holder few bits, because its design cost was paid by its maker, like a carving. Its efficiency is whatever its maker built in, so it may be poor for the case at hand.
+    - The gods' history is world data for the default world. Packs may replace it.
