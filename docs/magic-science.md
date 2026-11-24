@@ -19,6 +19,7 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 - **A4. A spell is a mechanism on existing fields** (MS3): for example, "isolate the flammable gas x metres away in direction y and spark it z seconds later". It is never "the mana bar went down, the enemy went boom".
 - **A5. Realism by default; game rules as packs.**
 - **A7. Cases emerge; they are never coded** (owner, 2026-11-23: "if we implement it right, all these things would naturally arise from the structure of the simulation"). The case bank is a set of EMERGENCE TESTS: each case must arise from the laws, with no case-specific code.
+- **A8. The zero-magic limit** (2026-11-24, with Q2.5): with no field (M = 0) or no coupling, every law reduces EXACTLY to the engine's non-magic laws (a correspondence principle). A mind with no carriers, or in a world without magic, works exactly as a real mind; magic is an addition to real life, never a requirement of it. Test: with magic off, the lab's mind tests and golden traces are bit for bit unchanged.
 - **A6. Magic only allows change that could exist without it** (owner, 2026-11-23, with Q0). Every end state is a lawful physical state that some ordinary process could reach, and every step balances (Q0). Magic changes WHICH lawful change happens, and where, when and how fast. It never adds to the set of lawful states. This is the catalyst principle: a catalyst opens a pathway and changes a rate, never the equilibrium. Teleport is a pack doorway because the end state is lawful but no ordinary path is instant; true creation of mass is ruled out.
 
 ## 2. Decisions so far
@@ -79,6 +80,7 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 - Q3.4 (magic without deliberate intent), 2026-11-23: **(c) for INTRINSIC magic.** Any strong goal casts, conscious or not (accidental magic in children and strongly coupled untrained adults under extreme emotion); training includes emotional control; practised patterns become automatic reflexes (a startled mage's ward). Accidental magic fades through adolescence as emotional regulation matures. Dreams stay below the noise for almost everyone.
   - The owner's open conflict: if magic is change in existing fields, how does a goal such as "escape" map onto them? Is intent thematic, with the fields needing it clearer? Is it people's understanding? Taken up as Q3.5.
 - Q2.4 (does the field act back on the mind), 2026-11-24: **(d).** (b) A WEAK LOOP for every coupled mind, like ephaptic coupling (the brain's own weak field nudges neural timing; Anastassiou 2011, Frohlich and McCormick 2010): a mostly SUBCONSCIOUS felt sense (mood, unease, pressure, intuition) that training can make conscious; technique acts inward; places affect thought; minds entrain one another; shared belief bends the field; strong raw pulses stun or disorder nearby minds; the mind stays in the brain. PLUS an optional evolved DEDICATED SENSE ORGAN (some beasts, rarely people), clear and directional like a bird's magnetic compass. (c) THE MIND PARTLY MADE OF THE FIELD (ghosts, possession, places remembering people) is a later extension, weighed with R5 and R8; spirits need only R8.
+- Q2.5 (where the interface touches the mind), 2026-11-24: **(b), ONLY THE MIND'S EXISTING GENERIC PORTS.** The learned mind stays one learner; magic touches it through SENSE (one more channel with acuity dials; the organ is a sharper channel), ACT (casting is one more act family; the mind's world model of its own acts IS Q3.2's inverse model; costs through the body's drives), BODY STATE (field nudges move only the variables emotion, fatigue and drugs already move: arousal, choice noise, precision; plus one new variable, SYNCHRONY; never reward or beliefs directly) and OTHERS (casting perceived through its tells). Fear of mages, addiction, guilds and superstitions must EMERGE; learning magic is the same machinery as lab stage B's childhood. No field-to-reward link.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -250,6 +252,12 @@ The tree above gives the ORDER; the owner noted that decisions are interconnecte
 | C72 | A powerful caster's raw pulse | Stuns or disorders the people nearby | Q2.4 |
 | C73 | A widow feels her dead husband's presence at home | Grief and memory by default; a faint imprint only if R5 is adopted; real only under the later (c) | Q2.4, R5 |
 | C74 | A beast with a field-sensing organ | Tracks a mage by their field | Q2.4, Q2.3 |
+| C75 | A world with no magic | Every mind behaves exactly as without the magic laws | A8 |
+| C76 | A sensitive and a node that unsettles them | Learns to avoid it from experience, not code | Q2.5 |
+| C77 | A village that has seen mages cause harm | Fear of mages emerges, with no coded prejudice | Q2.5 |
+| C78 | A child in a casting family | Learns to feel and cast through the same childhood learning as drinking | Q2.5, Q9.1 |
+| C79 | A person with no carriers | Untouched by field nudges: magically deaf | Q2.5, A8 |
+| C80 | People and nodes | Node-seeking emerges only if nodes serve a drive through the body | Q2.5 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
