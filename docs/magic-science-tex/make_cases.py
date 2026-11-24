@@ -15,7 +15,8 @@ for line in md.splitlines():
     if m:
         rows.append((int(m.group(1)), [esc(x.strip()) for x in m.group(2, 3, 4)]))
 rows.sort()
-out = [r"\begin{longtable}{@{}p{0.06\textwidth}p{0.32\textwidth}p{0.40\textwidth}p{0.12\textwidth}@{}}",
+R = r">{\raggedright\arraybackslash}"
+out = [r"\begin{longtable}{@{}" + "".join(f"{R}p{{{w}\\textwidth}}" for w in (0.06, 0.32, 0.40, 0.12)) + "@{}}",
        r"\toprule \textbf{Id} & \textbf{Case} & \textbf{A sensible outcome} & \textbf{Tests}\\ \midrule \endfirsthead",
        r"\toprule \textbf{Id} & \textbf{Case} & \textbf{A sensible outcome} & \textbf{Tests}\\ \midrule \endhead",
        r"\bottomrule \endfoot"]
