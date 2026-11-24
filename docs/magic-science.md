@@ -73,6 +73,9 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
   - CULTURE AND GIFTED SPELLS supply ready-made models for common goals, so "fire" works for someone taught it.
   - NOISE fills only what neither the model nor the caster settles.
   - So the frightened child (clear goal, poor model) gets a huge crude result; the untrained adult (no model) gets little or nothing; the trained mage gets a precise one.
+- Q3.3 (is there a line below which nothing happens), 2026-11-23: **(c), THE LINE COMES FROM NOISE.** Coupling is continuous, but every effect must beat the THERMAL NOISE of the matter it acts on (Q0 layer 2: each bit costs at least a temperature-set minimum). An incoherent intent is lost in the noise, as the brain's own real electric field is far too weak to move anything. There is no hand-set threshold.
+  - Idle thoughts and daydreams never leak. Fear's high synchrony lifts a child's drive above the noise.
+  - COLLECTIVE RITUAL works by SYNCHRONY: drives in phase add (Q1.1), so many people chanting in unison reach what none could alone, and out-of-step wishes cancel.
 - FM1 (what makes a symbol work), 2026-11-23: **(b) by default.** Minds work by MEANING (any notation that is understood); shaped matter works by GEOMETRY (like circuits); voice and gesture are channels for a mind. (c), sounds and gestures that work by their physical form, is open: default or pack (Q8.4).
 
 ## 3. The question tree (dependency order)
@@ -177,6 +180,9 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 | C58 | A skilled caster overrides their habitual fireball's timing | Works, at an effort cost | Q3.2 |
 | C59 | Someone taught "light" tries "dim light" | Easy light, but dim light needs new learning | Q3.2, Q9 |
 | C60 | A caster aims at a goal they cannot picture (curing an illness they do not understand) | Fails or goes astray | Q3.2, Q5.4 |
+| C61 | A crowd each silently wishes for rain | Nothing (each drive is below the noise and out of phase) | Q3.3 |
+| C62 | A hundred people chant in unison | A small effect none could reach alone | Q3.3, Q1.1 |
+| C63 | One person daydreams | No measurable effect | Q3.3 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
 ## 5. Research to request (library)
