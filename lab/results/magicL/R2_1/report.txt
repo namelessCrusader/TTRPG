@@ -1,0 +1,86 @@
+R2.1 REPORT: first toy experiment for H1 (classical compact U(1) lattice gauge theory + matter, with inertia)
+Date 2026-11-24. Code: lab/magicL/ (lgt.py, euclid4d.py, experiments.py). Pre-registration: lab/magicL/PASS_RULE_R2_1.txt (written before any run).
+Raw JSON: lab/results/magicL/R2_1/. Python: numpy+numba. No git. About 40 minutes of compute used (budget was 3 h), nice 19 under lab.lock and cap.sh, 900M cap.
+Nothing was tuned to favour H1. Two changes were made after seeing data; both are stated below (marked CHANGE).
+
+1. MODEL AND CHECKS
+H = sum E^2/2 + K sum_p (1-cos theta_p) + sum pi^2/(2 chi) - J sum cos(phi_i - phi_j - theta_ij), periodic cubic lattice, T=1 unless said.
+Source: Kogut and Susskind 1975 (Hamiltonian form), Fradkin and Shenker 1979 (matter), classical real-time lattice gauge practice.
+Leapfrog kick-drift-kick. Gauss law: G = div E + pi - rho_ext. Static test charges are the fixed value of rho_ext.
+Gauss law check: max |G - G0| = 1e-13 over 6e4 steps (8^3), and 2e-13 over 1.6e5 steps (16^3). Passes (limit 1e-9). It is exact by construction.
+Energy (8^3, t=600, three time steps, charges present): relative fluctuation at dt=0.02 is 1.7e-5 (pure gauge) and 3.8e-5 (with matter).
+It falls 4x for each halving of dt (O(dt^2)). Secular drift at dt=0.02: -1e-5 and +1.8e-5 per 1e5 steps. Passes (limit 1e-4).
+All production runs used dt=0.02. The thermostat refreshes (E, pi) from the Gaussian conditioned on Gauss law (exact projection), so it keeps Gauss law.
+Seeds 11, 22, 33. Errors are the larger of the seed spread and the blocked error. Lattices 8, 12, 16 (24 was not needed; skipped).
+
+2. TWO EXACT RESULTS FOUND WHILE BUILDING (they change what the force-law test can mean)
+(i) The Coulomb part of E cannot feel the gauge field. Pure gauge: the part of E fixed by Gauss law has zero curl, so it never enters the plaquette force.
+A test charge pair therefore gives exactly the Coulomb field, whatever K, T or the monopole density. The amplitude A = <E,E_c>/<E_c,E_c> is identically 1.
+CHANGE 1: A is a code check, not a physical test, so I replaced it by the local mean field (axial field between the charges, induced matter charge).
+(ii) In classical equilibrium E and pi are Gaussian and decouple from theta and phi. The static potential is exactly U = (1/2) rho (-Laplacian + chi)^-1 rho.
+It is Coulomb for chi=0 and Yukawa with screening length 1/sqrt(chi) for chi>0, with NO dependence on K, J, T or phase.
+With the equilibrium charge insertion, paired runs (same seed, with and without charges) agree to 1e-10 in axial field and induced charge, and plaquette and Higgs link change by <1e-3 (consistent with zero).
+This is an exact symmetry (a time-dependent gauge rotation), not a statistical result.
+
+3. OBSERVABLES AND VERDICTS
+(a) WAVES. SUPPORTS (with one important limit).
+Pure gauge, 16^3: omega = c * 2 sin(k/2) for n=1,2,3 with c constant to 0.1%. c = sqrt(K <cos theta_p>) to within 1%:
+ K=2: c=1.25 (pred 1.27). K=4: 1.908 (1.913). K=8: 2.770 (2.770). K=16: 3.960 (3.959). K=4,T=0.25: 1.979 (1.980). Errors on c are below 0.003.
+So c grows as sqrt(K) at weak coupling (K/T >= 2). The pre-registered limits (linear, 10% in n, 15% in c^2) are met.
+LIMIT: at K/T <= 1 (plaquette <= 0.48, monopole density 0.19 per cube) there is no propagating peak (K=1,T=1; K=4,T=4; K=0.5): the spectrum has only a low-frequency hump near omega < 0.15, where mean-field gives 0.35-0.7. The waves die in the disordered regime.
+With matter: omega^2 = m^2 + c^2 k^2, with the photon gap m^2 = J <cos d> to 0.5%: J=2: gap 1.322 (pred 1.328); J=8: 2.772 (2.772). c^2 from the n=1 mode at J=2 is 1.70 vs K<cos theta_p>=1.705.
+Gap grows as sqrt(J). At J=0.5 (K=2) the gap is 0.20+-0.03 vs 0.42 predicted, so the simple formula fails near the matter transition (disordered matter). Supports the Higgs-gap picture.
+(b) FORCE LAW. Coulomb SUPPORTED, screening SUPPORTED, confinement REFUTED in this model.
+Pure gauge, K = 0.25, 1, 4: mean axial field equals the Coulomb prediction (paired: exact). Unpaired values: K=4: 0.222+-0.005, 0.128+-0.005, 0.091+-0.005, 0.072+-0.005 at r=2,4,6,8; prediction 0.210, 0.116, 0.079, 0.060 (the small excess is the shared sampling noise; the paired result is exact). A string would give 1 at every r.
+At K=0.25 the unpaired noise is large (0.2-0.5) because the field is dominated by thermal fluctuations; the paired result is still exact.
+Potential (16^3 torus, exact values, r=2,4,6,8): pure: 0.2097, 0.2317, 0.2376, 0.2390. Fits: c - a/r with a=0.0806 (1/(4 pi)=0.0796), rms 0.001; linear slope 0.0047 with rms 0.005 (worse by 5x), so the string tension is 0 within 0.005.
+With matter chi=0.25: 0.1941, 0.2082, 0.2104, 0.2108: Yukawa with kappa=0.5 fits with rms 0.00013; the Coulomb form rms 0.0012; linear rms 0.0036.
+Screening dynamics (charges inserted bare, matter must move): induced screening charge reaches 1.00+-0.01 of the equilibrium cloud within t<1 for J=2 and J=8 at K=0.5, 2, 8 (r=4,8). At J=0 it is exactly 0 (charges frozen, no hopping). At J=0.5 it is unclear (the paired signal is noisy, 0.3-1.9 over t=1-800). chi=0.04: same result, longer screening length (0.11345 vs 0.1159 bare at r=4).
+So in the classical model, screening of a static charge is Debye-like with length 1/sqrt(chi), set by matter compressibility, not by J or the phase. Confinement of electric charge needs quantised electric flux (a quantum effect); see the 4D control below.
+(c) CONFINEMENT AND MONOPOLES. 3D classical: monopoles SUPPORTED as a crossover; the force part is REFUTED (see b). 4D control: SUPPORTS H1's confinement, in the quantum (Euclidean) version.
+3D classical, pure gauge, 12^3, monopole density per cube vs K (T=1): 0.40 (K=0.25), 0.34 (0.5), 0.27 (0.75), 0.19 (1), 0.054 (1.5), 5.3e-3 (2), 1.9e-5 (3), 2.6e-7+-2.6e-7 (4).
+ln(density) falls smoothly: slope -2.3 per unit K between 1.5 and 2, -5.7 between 2 and 3. Density and plaquette susceptibility do not depend on L (8, 12, 16 at K=0.5, 1, 1.5), so no transition sharpens (Polyakov: always a crossover in 3D).
+Matter suppresses monopoles at fixed K: K=0.5: 0.34 (J=0), 0.34 (J=0.5), 0.068 (J=2); K=1: 0.19, 0.19, 0.0080.
+4D Euclidean control (8^4, Metropolis, 3 seeds): Creutz ratio chi(2,2) = 1.23, 0.89, 0.69, 0.30, 0.123, 0.106, 0.086, 0.061, 0.042 at beta = 0.6, 0.8, 0.9, 1.0, 1.05, 1.1, 1.2, 1.5, 2.0. Errors below 0.01 except 1.0 (0.009).
+chi(3,3) = 2.2, 1.4, 0.61, 0.16, 0.040, 0.033, 0.028, 0.020, 0.014. Monopole density per dual link: 0.31, 0.24, 0.19, 0.091, 0.023, 0.013, 0.005, 4e-4, 1e-5.
+A string tension (chi > 0.1 and growing with R^0) appears for beta <= 1.0, with proliferated monopoles, and drops steeply near beta=1.0-1.05 (Creutz, Jacobs and Rebbi: 1.01). Above it chi(R,R) falls as 1/R^2 (Coulomb: 0.042 to 0.014 from R=2 to 3 is a ratio 3, consistent with 1/R^2 within 8^4 finite-size effects). Matches the known transition.
+So the confining phase of H1 exists in the 4D quantum-type version, not in the classical Hamiltonian version (b).
+(d) SCREENING AND FLUX TUBES. Static screening SUPPORTED (b). Quantised tubes SUPPORTED at low J; at J >= K the tubes become thinner than the lattice and are invisible.
+Flux 2 pi n_f, n_f=4, K=1, 16^3, damped relaxation after anneal, 3 seeds (all 3 agree unless stated):
+ J=0.1: 4 vortices, 0 antivortices, flux in 3x3 around vortex 0.23+-0.01 of 2 pi, participation ratio 1.13.
+ J=0.25: 4 vortices exactly, 0.37+-0.01, ratio 1.77.
+ J=0.5: visible flux quanta 2, 0, 1 (seeds): vortex count always equals the visible flux; 0.48 of 2 pi in the 3x3 block.
+ J=1, J=4: visible flux 0 in every seed (plaquette 1.000, higgs 1.000).
+Vortex number equals the visible flux quantum count in every run. SUPPORTS quantisation and tube formation (flux gathers as J grows).
+NOTE (not a bug, but a lattice and compactness effect): once the penetration depth sqrt(K/J) is below one lattice spacing, a 2 pi flux in one plaquette costs no energy (cos is periodic) and is invisible to B and to vortex counting. "Flux expelled" at J >= 1 means the flux went to sub-lattice tubes. The model cannot tell expulsion from sub-lattice tubes. J=0 vortex counts (about 0.3 per plaquette) are random phases and mean nothing.
+CHANGE 2 (made after seeing the first flux and map results): J=0.1 and 0.5 were added to the flux test, and the sharpening test was run on the K=4 line (J 0.3-0.7) instead of K=1.
+(e) PHASE MAP (12^3, 2 seeds, T=1, chi=0.25; JSON map.json has every point). Order parameters: plaquette, monopole density, Higgs link, vortex density, photon gap omega(0).
+Regions found (using the pre-registered labels):
+ Weak, Coulomb-like (plaquette > 0.8, Higgs link < 0.5): K >= 2 with J <= 0.5. Examples K=4,J=0: plaquette 0.913, higgs 0, gap 0, c=1.9.
+ Higgs (Higgs link > 0.7): J >= 1 at K >= 1, and J >= 2 at K=0.25 to 0.5. Gap = sqrt(J <cos d>): 1.3 (J=2), 1.9 (J=4), 2.8 (J=8).
+ Strong, disordered (plaquette < 0.5, Higgs link < 0.5): K <= 1 with J <= 0.5. Examples K=0.5,J=0: plaquette 0.24, monopoles 0.34, no waves.
+ Crossover: elsewhere (for example K=0.25,J=2: plaquette 0.40, higgs 0.75, monopole 0.15).
+Sharpening test along K=4 (J=0.3 to 0.7, L=8,12,16): the Higgs-link susceptibility peaks near J=0.5 at 3.2, 3.1, 2.5 (L=8,12,16): no growth with L. Plaquette susceptibility is flat.
+Verdict: three distinct regions are seen, but the boundaries are crossovers that do not sharpen with size up to 16^3. UNCLEAR as phases (as pre-registered). The K=infinity limit is the 3D XY transition at J about 0.45, which is where the peak sits; the peak is energy-like and not expected to diverge.
+
+4. WHAT SURPRISED ME
+- The force-law test I pre-registered cannot discriminate in classical Hamiltonian dynamics: Coulomb or Yukawa, exactly, in every phase (two exact results above).
+- The photon gap is exactly J<cos d> and the speed is exactly sqrt(K<cos theta_p>): the dispersion is a clean order-parameter readout.
+- Waves vanish at K/T <= 1 while monopoles are at 19%: the disordered region is "no light" even though the Coulomb field of a charge is still exact.
+- The compact lattice hides 2 pi flux tubes, so "dead zone expels field" and "flux enters as thin tubes" cannot be told apart below one lattice spacing.
+- Matter suppresses monopoles (a Higgs region is monopole-poor).
+
+5. H1 SCORECARD
+Holds: Coulomb-phase waves with linear dispersion and c^2 = K<cos>; photon mass in the Higgs regime (m^2 = J<cos d>); screened static field (Yukawa); quantised vortex tubes with integer count; monopole proliferation at strong coupling; three regimes by order parameters; the 4D Euclidean version has the confinement transition at beta about 1.0.
+Fails or is changed: confinement of static electric charge does not exist in the classical Hamiltonian-with-inertia model (exact, not statistical); the screening length is set by chi, not by J; the regime boundaries are crossovers in 3D classical; flux expulsion cannot be separated from sub-lattice tubes on the lattice.
+H1 missed: (1) classical electric flux is continuous, so confinement needs quantised E (quantum or a discrete-flux classical variant); (2) the disordered regime is a different kind of region (no waves, no confinement of static charge) and may be the real "dead zone"; (3) matter mobility J is a separate dial from matter number chi: J=0 means frozen charges and no screening ever.
+NEXT EXPERIMENT (R2.2): quantised electric flux. A classical model with integer electric flux (a Z-valued or finite-spin quantum-link / Villain Hamiltonian, with Gauss law kept) at finite temperature, plus the 3+1D quantum rotor ground state by small exact or QMC methods, to test whether confinement and the string tension return, and how the string tension depends on monopole density. Also add a second matter species so the dead-zone phase can be tested without the sub-lattice flux issue, and a 24^3 or 32^3 scan of the Higgs line for a true transition.
+SKIPPED: 24^3 lattices (not needed, results are size-independent); J=0.5 screening dynamics was not resolved (needs longer runs or more seeds); no thermostat-temperature scan beyond K=4 at T=0.25, 1, 4 (equilibrium depends only on K/T and J/T, so the K scan covers it).
+
+6. NUMBERS FOR MARK1'S EFFECTIVE LAYER (lattice units a, lattice time a/c0; T=1)
+1. Wave speed per lattice unit: c = sqrt(K <cos theta_p>): 1.27 (K=2), 1.91 (K=4), 2.77 (K=8), 3.96 (K=16), uncertainty <1%. Scaling: in the world, c_world = c * a_medium / tau; set it by choosing the medium spacing a so that c_world is light-like (a few times 1e8 m/s) for casting frequencies.
+2. Photon gap in screened regions: m^2 = J <cos d>: 1.32 (J=2), 1.9 (J=4), 2.77 (J=8), error <0.5%. Mass scales as 1/a; a region with J large has a cutoff frequency m c_world / a, so low-frequency magic does not enter dead zones.
+3. Electric screening length: 1/sqrt(chi) lattice units (2.0 for chi=0.25, 5 for chi=0.04), exact, J-independent. In the world: xi = a/sqrt(chi).
+4. String tension: 0 within 0.005 (classical). In the 4D control, Creutz chi(2,2)=0.30 at beta=1.0 and 0.89 at beta=0.8 (lattice units). Does not map until R2.2 gives a quantised-flux value.
+5. Monopole density per cube: 0.19 (K=1), 0.054 (1.5), 5e-3 (2), 2e-5 (3), 3e-7 (4); falling about e^(-5.7 K) at K=2-3. Matter at J=2 lowers it 10-80x at K=0.5-2. It sets the width of the disordered regime: it becomes unimportant (below 1e-3) at K/T about 2.7.
+Scaling to the world: the medium parameters K/T and J/T are dimensionless, the lengths scale with the medium spacing a (unknown, to be fixed by the target c and the screening length), and the effective-layer cell (5 cm) averages over about (5 cm / a)^3 sites, so the effective layer sees only c(K,T), m(J), xi, and the regime map, as local material properties.
