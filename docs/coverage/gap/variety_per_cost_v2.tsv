@@ -1,0 +1,13 @@
+addition	cost	rows	families	kinds	only_rows	only_families	only_kinds	families_per_cost	kinds_per_cost	rows_per_cost	only_families_per_cost
+A1	12	1381	335	12	804	235	12	27.92	1.0	115.1	19.58
+A2	4	0	0	0	0	0	0	0.0	0.0	0.0	0.0
+A3	5	0	0	0	0	0	0	0.0	0.0	0.0	0.0
+A4	6	0	0	0	0	0	0	0.0	0.0	0.0	0.0
+A5	3	11	9	7	7	6	5	3.0	2.33	3.7	2.0
+A6	3	100	56	10	72	43	10	18.67	3.33	33.3	14.33
+A7	4	246	116	12	214	107	11	29.0	3.0	61.5	26.75
+A8	4	258	116	8	246	110	8	29.0	2.0	64.5	27.5
+A9	4	0	0	0	0	0	0	0.0	0.0	0.0	0.0
+A10	2	0	0	0	0	0	0	0.0	0.0	0.0	0.0
+A7 strict only	4	19	14	3	17	12	3	3.5	0.75	4.8	
+A7 owner rows only	4	227	108	12	197	100	11	27.0	3.0	56.8	

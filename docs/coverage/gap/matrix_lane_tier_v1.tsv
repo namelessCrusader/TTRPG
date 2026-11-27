@@ -1,0 +1,14 @@
+key	rows	T0	T1	T2	T3	X	U	T1+T2	share_T0	share_T1+T2
+cyberpunk_transhumanism_postapoc_mecha	452	287	93	42	24	6	0	135	0.635	0.299
+folklore	411	255	71	66	11	8	0	137	0.62	0.333
+superpowers	392	160	140	32	47	13	0	172	0.408	0.439
+dreams_fairy_tales_and_liminal	390	152	56	16	68	29	69	72	0.39	0.185
+mythology_pantheons_religion	345	173	66	43	22	41	0	109	0.501	0.316
+litrpg_cultivation	337	125	94	21	35	62	0	115	0.371	0.341
+videogame_mechanics_and_loops	325	115	85	9	57	59	0	94	0.354	0.289
+scp	311	123	55	85	30	18	0	140	0.395	0.45
+horror	292	183	36	53	12	8	0	89	0.627	0.305
+scifi	285	184	51	7	29	14	0	58	0.646	0.204
+creepypasta	277	199	9	39	24	6	0	48	0.718	0.173
+bestiaries	260	159	53	37	8	3	0	90	0.612	0.346
+weirdfiction	235	130	28	49	18	10	0	77	0.553	0.328

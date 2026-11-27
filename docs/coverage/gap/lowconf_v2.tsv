@@ -1,0 +1,835 @@
+entry	family	lanes	tier	label	needs	bounded	classifier	rules	reason
+SCP-6713 Boltzmann's Folly	AI/probability	scp	T0				3		a thermal fluctuation mind is a statistical-mechanics curiosity
+AT 700 Thumbling	AT index	dreams_fairy_tales_and_liminal	T0				7		a tale type of small persons
+Cloning	Absorb	superpowers	T0				1		Genetic cloning is real; exact copies of persons are impossible.
+Abiku	Africa	folklore	T0				1		Rebirth is a belief or repeated family loss; no mechanism needed.
+Nyami Nyami	Africa	folklore	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Tentacle aliens	Aliens and bio	scifi	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Wheeled aliens	Aliens and bio	scifi	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Winged aliens	Aliens and bio	scifi	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Sisimite	Americas	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Thunderbird	Americas	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Trauco	Americas	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Wampus cat	Americas	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Wendigo	Americas	creepypasta|folklore|horror	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Yacumama	Americas	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+The Mandela Catalogue	Analog horror	creepypasta	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+WNUF Halloween Special	Analog horror	creepypasta	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Kraina Grzybow TV	Analog horror	dreams_fairy_tales_and_liminal	T0				7		a broadcast
+Late Night with the Devil	Analog horror	dreams_fairy_tales_and_liminal	T0				7		a hoax broadcast
+Andersen: Thumbelina	Andersen	dreams_fairy_tales_and_liminal	T0				7		a very small person is a biology question
+Andersen: The Goblin and the Grocer	Andersen	dreams_fairy_tales_and_liminal	T0				7		a household spirit as folk belief
+Partygoers	Backrooms Entities	creepypasta	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Skin-Stealers	Backrooms Entities	creepypasta	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Smilers	Backrooms Entities	creepypasta	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Wretches	Backrooms Entities	creepypasta	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Entity 1 (Backrooms)	Backrooms entities	dreams_fairy_tales_and_liminal	T0				7		a hostile creature or mimic
+Entity 3A Skin-Stealer variant	Backrooms entities	dreams_fairy_tales_and_liminal	T0				7		a hostile creature or mimic
+Boundless Torturer	Backrooms entities	dreams_fairy_tales_and_liminal	T0				7		a pain-based predator or a person
+Forgotten Dentist	Backrooms entities	dreams_fairy_tales_and_liminal	T0				7		a pain-based predator or a person
+The Extras	Backrooms entities	dreams_fairy_tales_and_liminal	T0				7		a crowd of people or creatures
+Behemoth (Backrooms)	Backrooms entities	dreams_fairy_tales_and_liminal	T0				7		a huge creature, a size question
+The Death Locomotive	Backrooms entities	dreams_fairy_tales_and_liminal	T0				7		a train-shaped predator, a machine
+Backrooms: Hounds	Backrooms entities	dreams_fairy_tales_and_liminal	T0				7		a hostile animal
+Kalthoff Rifles	Backrooms objects	dreams_fairy_tales_and_liminal	T0				7		rifles
+Cadaver Asada	Backrooms objects	dreams_fairy_tales_and_liminal	T0				7		a food item
+Sleipnir	Beasts	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+The Man Whom the Trees Loved	Blackwood	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Vampire Physiology	Body	superpowers	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Wereboar Physiology	Body	superpowers	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Zombie Physiology	Body	superpowers	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Chaos Spawn	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Uncontrolled mutation is ordinary genetics at extreme.
+Taotie	China	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Xiezhi	China	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Xingtian	China	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Zhulong	China	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Turn Undead	Class features	videogame_mechanics_and_loops	T0				7	R4	induced percepts or fear signals frighten; whether undead exist is a separate matter
+Trapped in the Backlogs	Computers	creepypasta	T0			-	4		Ordinary engineering or known physics.
+Talking animals	Computers, AI, minds	scifi	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Nodens	Cosmic	horror|weirdfiction	T0				3		an agent character; its powers would be judged separately
+Shoggoth	Cosmic	horror|weirdfiction	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Smile Dog	Creepypasta	creepypasta|horror	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Shadowhound	Critters (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Camouflage by skin, material or display is ordinary optics and biology.
+Death personified	Cross-motif	folklore	T0				1		Death as social personification.
+Sleeping hero under the mountain	Cross-motif	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Nuckelavee	Cryptid	creepypasta|horror	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Siren Head	Cryptid	creepypasta|horror	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+The Rake	Cryptid	creepypasta	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Pill cloud	Cultivation concepts	litrpg_cultivation	T0			-	5		Vapour display of a reaction.
+Black ICE	Cyberpunk	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Lethal shock through a brain interface is ordinary electricity.
+Cyberbrain	Cyberpunk	cyberpunk_transhumanism_postapoc_mecha	T0			-	6	R4	Reading or writing neural signals at a distance is sensing and induced percepts by A1; memory or beliefs are not written.
+Thermoptic camouflage	Cyberpunk	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Camouflage by skin, material or display is ordinary optics and biology.
+Dominator (Psycho-Pass)	Cyberpunk	cyberpunk_transhumanism_postapoc_mecha	T0			-	6	R4	A sensor reading mental state from the brain is sensing at a distance by A1.
+RoboCop (Murphy, Directives)	Cyberpunk	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Ordinary biology, implants or lore; no field needed.
+Nanopunk	Cyberpunk subgenres	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Molecular assemblers are allowed by known physics, limited by engineering.
+Breathe Underwater Benefit	DCC benefits	litrpg_cultivation	T0			-	5		Gill-like gas exchange is engineered biology.
+Crawler	DCC system mechanics	litrpg_cultivation	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Sponsors	DCC system mechanics	litrpg_cultivation	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Celestial Ascendency	DCC system mechanics	litrpg_cultivation	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Missing Time	Disappearances	creepypasta	T0				2		Lost hours explained by memory, drugs or abduction by people.
+Wyvern	Dragons	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Zmey Gorynych	Dragons	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Lobotomy Corporation (contain entities)	Dungeons	videogame_mechanics_and_loops	T0				7		staff and creatures, ordinary containment
+The Tall Man	Faceless stalkers	creepypasta	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Fairy food taboo	Fairies	dreams_fairy_tales_and_liminal	T0				7		a taboo on food
+Fairy tale: The Red Ettin	Fairy tale	dreams_fairy_tales_and_liminal	T0				7		a creature tale; a giant is a size question
+Fairy tale: Tom Thumb	Fairy tale	dreams_fairy_tales_and_liminal	T0				7		a very small person is a biology question
+Fairy tale: Sinbad's Roc and Old Man of the Sea	Fairy tale	dreams_fairy_tales_and_liminal	T0				7		a clinging parasite person
+Skinwalker Ranch	Fortean	creepypasta|horror	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Banshee	Ghosts	folklore|horror|weirdfiction	T0				1		Wail as omen and sound; belief in lineage.
+Valkyrie	Gods and psychopomps	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Carmilla	Gothic tropes	weirdfiction	T0				1		Hidden predator with social grooming; no extra physics.
+The Monk	Gothic tropes	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+The Phantom Coach	Gothic tropes	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Wild Hunt	Gothic tropes	bestiaries|folklore|weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Nyogtha	Great Old Ones	weirdfiction	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Shudde M'ell	Great Old Ones	weirdfiction	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Tsathoggua	Great Old Ones	horror|weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Y'golonac	Great Old Ones	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Yig	Great Old Ones	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Grimm: The Boots of Buffalo Leather	Grimm	dreams_fairy_tales_and_liminal	T0				7		a bargain with a trickster, ordinary society
+Grimm: The Devil's Sooty Brother	Grimm	dreams_fairy_tales_and_liminal	T0				7		a service contract
+Grimm: The Singing Bone	Grimm	dreams_fairy_tales_and_liminal	T0				7		a flute of bone and a guilty conscience
+Grimm: Mother Trudy	Grimm	dreams_fairy_tales_and_liminal	T0				7		a hostile witch
+Grimm: The Nixie of the Mill-Pond	Grimm	dreams_fairy_tales_and_liminal	T0				7		a kidnapper
+Grimm: One-Eye Two-Eyes Three-Eyes	Grimm	dreams_fairy_tales_and_liminal	T0				7		a mutation and a food tree
+Grimm: Thumbling	Grimm	dreams_fairy_tales_and_liminal	T0				7		a very small person is a biology question
+Grimm: Rumpelstiltskin name-power	Grimm	dreams_fairy_tales_and_liminal	T0				7		a name as knowledge in a social pact
+Zombi (loa)	Haiti	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+The Boats of the Glen Carrig	Hodgson	weirdfiction	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Zashiki-warashi	House spirits	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Vanara	India	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Yaksha	India	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Vampirization	Infection	superpowers	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Bakeneko/Nekomata	Japan	folklore	T0				1		Aged cat folklore; powers are story.
+Tengu	Japan	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Tsuchigumo	Japan	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Yamata no Orochi	Japan	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Yamauba	Japan	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Ōmukade	Japan	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Teke Teke	Japanese legends	creepypasta	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Turbo granny	Japanese legends	creepypasta	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Ziz	Jewish	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Tentacled monster	Kaiju	horror	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Destoroyah	Kaiju	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Self-replicating or oxygen-consuming agents are chemistry or machines, if fictional in scale.
+Daimajin	Kaiju	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Ordinary biology, implants or lore; no field needed.
+MUTO (Monsterverse Titans)	Kaiju	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Ordinary biology, implants or lore; no field needed.
+The Temple	Lovecraft concepts	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+The Transition of Juan Romero	Lovecraft concepts	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Serpent Men	Lovecraft races	weirdfiction	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+The Ash-tree	M. R. James	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+The Novel of the Black Seal	Machen	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Penanggalan	Malay	folklore|horror	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Pontianak	Malay	folklore	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Vibranium	Matter and energy tech	scifi	T0			-	4		Metamaterial vibration absorbers exist.
+Minovsky particle	Mecha	cyberpunk_transhumanism_postapoc_mecha	T0			-	6	R4	Body or field as source steered by A1, with effects ordinary physics could reach.
+Maschinenmensch (Metropolis)	Mecha	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Camouflage by skin, material or display is ordinary optics and biology.
+Great Door (Metro)	Metro phenomena	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		A door with a legend is ordinary architecture.
+Marian apparition	Miracles	mythology_pantheons_religion	T0			-	5	R4	Steered field energy on bodies or induced percepts; claims otherwise ordinary.
+Pentecost	Miracles	mythology_pantheons_religion	T0			-	5	R4	Steered field energy on bodies or induced percepts; claims otherwise ordinary.
+Padre Pio	Miracles	mythology_pantheons_religion	T0			-	5	R4	Steered field energy on bodies or induced percepts; claims otherwise ordinary.
+Annunciation	Miracles	mythology_pantheons_religion	T0			-	5	R4	Steered field energy on bodies or induced percepts; claims otherwise ordinary.
+Mind flayer	Monsters	videogame_mechanics_and_loops	T0				7	R4	a brain-eating predator is biology; reading minds is only weak sensing of fields
+Nodens' servants	Mythos concepts	weirdfiction	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Star-spawn	Mythos concepts	weirdfiction	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Yuggoth	Mythos places	weirdfiction	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Vodyanoy	Nature spirits	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Tiki	Oceania	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Ubbo-Sathla	Outer Gods	weirdfiction	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Sigbin	Philippines	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Tikbalang	Philippines	folklore	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Faro Plague	Post-apocalypse	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Self-replicating machines are ordinary technology in principle.
+Memory erasure	Reality	creepypasta	T0				2	R4	Place or object pattern acts on a mind through induced percepts and entrainment.
+Theophany	Religion	mythology_pantheons_religion	T0			-	6	R4	Induced percept written through the weak field-on-mind coupling; beliefs are not written.
+Stallo	Sami	folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Changeling	Shapeshift	folklore|horror	T0				1		Swapped child is folklore for illness or substitution.
+Rougarou / Loogaroo	Shapeshift	horror	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Destruction of the Moon	Society and genre settings	scifi	T0				1	R4	Needs planet-scale energy; no law broken, impractical.
+Dyson tree	Society and genre settings	scifi	T0				1		Plants in vacuum need sealed biology.
+Prime Radiant	Society and genre settings	scifi	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Psychohistory	Society and genre settings	scifi	T0				3		statistical models of mass behaviour exist but predictions fail at scale
+Charm condition	Status effects	videogame_mechanics_and_loops	T0			-	6		Persuasion or drugs change choices; no field needed.
+Dracula	Stoker	weirdfiction	T0				1		Predator with hidden identity; drain is ordinary predation.
+Tomb World	Technology (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Dormant machines are ordinary technology.
+Phi Krasue	Thailand	folklore	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Cyborg (Neil Harbisson antenna)	Transhumanism	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Ordinary biology, implants or lore; no field needed.
+Vampire (European)	Undead	folklore|horror	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Vampire invitation threshold	Undead	horror	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Nightkin	Wasteland creatures (Fallout)	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Ordinary biology, implants or lore; no field needed.
+Perk: Solar Powered	Wasteland perks (Fallout)	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Ordinary biology, implants or lore; no field needed.
+Rokurokubi	Yokai	folklore|horror	T0				3		elongated neck is body plan or contortion
+Sadako (Ring)	Yokai	horror	T0				3		a curse spread by being known is a rumour
+Hell slime	Zone literature	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		A dense unusual substance is a material property.
+Bloodsucker (STALKER)	Zone mutants (STALKER)	cyberpunk_transhumanism_postapoc_mecha	T0			-	6		Camouflage by skin, material or display is ordinary optics and biology.
+Sedacthy, sarcovalt, verdorite	aberration	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Seugathi, shoony, vescavor	aberration	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+SCP-2303 Inkblot	amorphous	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+SCP-999 The Tickle Monster	amorphous/tickle	scp	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+SCP-6217 The Emergence	apollyon/contagion	scp	T0				3		a replicating contagion is ordinary microbiology
+SCP-169 The Leviathan	aquatic/kaiju	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+SCP-2678 A City All of Blood	auditory/biological	scp	T0				3		a flesh city with a sung hymn is biology and sound
+SCP-847 The Mannequin	biological/predictive	scp	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Pegasus and hippocampus	celestial	bestiaries	T0				3		mounts with ordinary bodies
+SCP-6094 How To Spell Lorem Ipsum	cognito/electronic	scp	T0				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+Poppet	construct	bestiaries	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+SCP-6004 The Rainbow Serpent	deity/kaiju	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Barrage, mocking and whisper dragons	dragon	bestiaries	T0				1		Sound-themed dragon body.
+Elemental dragons (cloud, sky, sea, underworld, magma, crystal, forest, umbral, rime, cinder, bog, coral, brine, adamantine, mirage, stormcrown, phase)	dragon	bestiaries	T0				1		Body template by habitat; breath is chemical.
+Shadow dragon	dragon	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+SCP-469 Many-Winged Angel	ectoentropic/humanoid	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Wisp and scamp	elemental	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Xorn and azer, magmin, salamander	elemental	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+SCP-2213 Cat People	extradimensional	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+SCP-4863 Sol	extraterr/sun	scp	T0				3		a sun-sized object with intense light is stellar physics
+SCP-6959 A Very Strange Fumo	extraterr/toy	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Skelm, twigjack, bloodseeker	fey	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Sluagh, noppera-bo, biloko	fey	bestiaries	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+Tooth fairy	fey	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Titan	giant	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Orc raiders and wyvernsting orcs	humanoid	bestiaries	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Planar scion and geniekin	humanoid	bestiaries	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Serpentfolk	humanoid	bestiaries	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+SCP-682 Hard-to-Destroy Reptile	indestructible reptile	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+SCP-5391 Anastasis	kaiju/apollyon	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+SCP-5031 Yet Another Murder Monster	keter/mobile	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+SCP-5340 The Backyard Memeticist 😎	memetic/antimemetic	scp	T0				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-4381 Moccus Meme	memetic/visual	scp	T0				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+Spawn of Rovagug	monstrosity	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Sphinx (andro, gyno)	monstrosity	bestiaries|folklore	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Tarrasque	monstrosity	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Winter wolf and worg	monstrosity	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+Ochre jelly	ooze	bestiaries	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Sinspawn, sinsludge	ooze	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+SCP-007 Abdominal Planet	planet/alive	scp	T0				3		a planet-size organism is a mass-bank problem, not new physics
+Treant	plant	bestiaries	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+SCP-8331 Giving Tree	plant/sarkic	scp	T0			-	4		Organism or behaviour within ordinary biology and ecology.
+SCP-737 Hungry Train	toy/vehicle	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Risen runelord and necrohulk	undead	bestiaries	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+Vilderavn, strix and kin	undead	bestiaries	T0			-	4		Social, cultural or psychological phenomenon; no new physics needed.
+SCP-7871 Cracked at Fortnite	weapon/tactile	scp	T0				3		creature or entity pack; body and culture are ordinary, any special power is judged separately
+AT 400 supernatural wife	AT index	dreams_fairy_tales_and_liminal	T1		A1		7	R4	a bound body shape tied to a skin object
+Skeletonization	Absence	superpowers	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Bultungin	Africa	folklore	T1		A1		1	R4	Human-animal shape change by guided regrowth within mass budget.
+Elixir of life	Alchemy	folklore	T1		A1		1	R4	Elixir guides regeneration within a budget.
+Nahual	Americas	folklore	T1		A1		2	R4	Learned field control of force, heat and light plus entrainment of nearby minds; no belief writing.
+Skin-walker	Americas	folklore	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Andersen: The Little Mermaid	Andersen	dreams_fairy_tales_and_liminal	T1		A1		7	R4	slow guided body remodelling with pain cost
+Andersen: Ole Lukøje	Andersen	dreams_fairy_tales_and_liminal	T1		A1		7	R4	entrainment induces sleep and dream content only weakly
+Tupilak	Arctic	folklore	T1		A1	-	4	R4	Force, energy or heat delivered at a distance by the A1 field on ordinary matter.
+Dispositive FAX	Backrooms objects	dreams_fairy_tales_and_liminal	T1		A1		7	R4	a charged device sending information
+Amazing Tape	Backrooms objects	dreams_fairy_tales_and_liminal	T1		A1		7	R4	a charged tape device
+Soaring Isles Sect	BoC sects	litrpg_cultivation	T1		A1	-	5	R4	Land lifted by field momentum, at a large energy cost.
+Spooks	BoC spirit animals	litrpg_cultivation	T1		A1	-	5	R4	Animal that stores and uses field energy.
+Spirit Animals	BoC spirit animals	litrpg_cultivation	T1		A1	-	5	R4	Animal that stores and uses field energy.
+Dragon Physiology	Body	superpowers	T1		A1		1	R4	Dragon body with field-aided breath.
+Werewolf Physiology	Body	superpowers	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Soucouyant	Caribbean	folklore	T1		A1	-	4	R4	Force, energy or heat delivered at a distance by the A1 field on ordinary matter.
+The Mask	Chambers	weirdfiction	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Sun Wukong	China	folklore	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Familiar (wizard)	Class features	videogame_mechanics_and_loops	T1		A1		7	R2	sharing a sense with an animal mind needs direct mind-to-mind coupling beyond weak synchrony
+SCP-173 style statue	Creepypasta	horror	T1		A1		3	R4	a statue with A1 sensing of gazes and A1 force to move
+Slender Man	Creepypasta	creepypasta|horror	T1		A1	-	4	R4	The field acts weakly on minds (felt sense, induced percepts, stuns); beliefs are never written.
+Familiar (witch's animal)	Cross-motif	folklore	T1		A1		1	R2	Animal bonded by link needs mind-field coupling.
+Skinwalker	Cryptid	creepypasta|horror	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Sword intent	Cultivation concepts	litrpg_cultivation	T1		A1	-	5	R4	Trained control focusing field effects along an edge.
+Beast contract	Cultivation concepts	litrpg_cultivation	T1		A1	-	5	R4	Bond through synchrony of brains.
+Blood contract	Cultivation concepts	litrpg_cultivation	T1		A1	-	5	R4	Bond through synchrony of brains.
+Tetsuo: The Iron Man	Cyberpunk	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R4	Turning bodies into metal needs transmutation with a real nuclear energy budget.
+Lazarus Achievement	DCC achievements	litrpg_cultivation	T1		A1	-	4	R4	Guided regeneration of the body's own tissue, powered through A1.
+NecroBard Class	DCC classes	litrpg_cultivation	T1		A1	-	5	R4	Field force on dead tissue; music only carries the control signal.
+Scroll of Upgrade	DCC items	litrpg_cultivation	T1		A1	-	4	R4	Charged matter carries the field pattern.
+Scroll of Water Breathing	DCC items	litrpg_cultivation	T1		A1	-	4	R4	Guided regeneration of the body's own tissue, powered through A1.
+Shrink Wand	DCC items	litrpg_cultivation	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Potion of Invisibility	DCC items	litrpg_cultivation	T1		A1	-	5	R4	Binding-portal energy shifts alter optical properties of skin or air.
+Size-Up Potion	DCC items	litrpg_cultivation	T1		A1	-	5	R4	Field-driven tissue and mass rebuild from stock; energy and mass booked.
+Skellie	DCC mobs	litrpg_cultivation	T1		A1	-	5	R4	Dead tissue moved by field forces under a control pattern.
+Succubus	DCC mobs	litrpg_cultivation,mythology_pantheons_religion	T1		A1	-	5	R4	Energy drain across a bond via energy exchange plus ordinary seduction.
+Incubus	DCC mobs	litrpg_cultivation	T1		A1	-	5	R4	Energy drain across a bond via energy exchange plus ordinary seduction.
+Mongo	DCC pets	litrpg_cultivation	T1		A1	-	5	R2	Haunting needs ghost patterns in the field.
+Pets & Dungeon Familiars	DCC pets	litrpg_cultivation	T1		A1	-	5	R4	Animal bond through synchrony coupling of brains.
+Doppelgänger	DCC races	litrpg_cultivation	T1		A1	-	5	R4	Rough look-alike by shaping matter with information; exact copies of people impossible.
+Smoke Form Spell	DCC spells	litrpg_cultivation	T1		A1	-	4	R4	Body into gas and back needs full information and real energy cost.
+Petrified	DCC status effects	litrpg_cultivation	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Muted Debuff	DCC status effects	litrpg_cultivation	T1		A1	-	4	R4	Force, energy or heat delivered at a distance by the A1 field on ordinary matter.
+Undead curse (cannot die, mind decays)	Death and persistence	videogame_mechanics_and_loops	T1		A1		7	R4	healing keeps a body going while the mind decays by ordinary degeneration
+Succubus / incubus	Demons	bestiaries|horror	T1		A1	-	4	R2	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Dream eaters (tapir/Baku)	Dream fiction	dreams_fairy_tales_and_liminal	T1		A1		7	R4	a creature drawing on sleeper fields by coupling
+Inception (film)	Dream fiction	dreams_fairy_tales_and_liminal	T1		A1		7	R2	nested dream scenes need strongly coupled minds
+Paprika (anime)	Dream fiction	dreams_fairy_tales_and_liminal	T1		A1		7	R2	nested dream scenes need strongly coupled minds
+Shared dream	Dream phenomena	dreams_fairy_tales_and_liminal	T1		A1		7	R2	linking two sleepers into one scene needs a strong mind coupling
+Dream invasion	Dream phenomena	dreams_fairy_tales_and_liminal	T1		A1		7	R2	entering a mind needs direct mind-to-mind contact
+Dream sharing machine	Dream phenomena	dreams_fairy_tales_and_liminal	T1		A1		7	R2	a device coupling sleepers needs the strong coupling to carry content
+Living dungeon (megadungeon as creature)	Dungeons	videogame_mechanics_and_loops	T1		A1		7	R4	a huge organism or building grown by guided growth, slowly
+Fairy tale: Firebird	Fairy tale	dreams_fairy_tales_and_liminal	T1		A1		7	R4	an animal with an evolved field organ
+Fairy tale: Jack and the Beanstalk	Fairy tale	dreams_fairy_tales_and_liminal	T1		A1		7	R4	guided fast growth fed by water and soil mass
+Werewolf	Gothic tropes	folklore|horror|weirdfiction	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Cthugha	Great Old Ones	weirdfiction	T1		A1		1	R4	Plasma entity sustained by a fed field.
+Grimm: Sleeping Beauty	Grimm	dreams_fairy_tales_and_liminal	T1		A1		7	R4	induced torpor by guided metabolism, bounded in time
+Grimm: Snow White	Grimm	dreams_fairy_tales_and_liminal	T1		A1		7	R4	a field information store and sleep poison
+Grimm: The Water of Life	Grimm	dreams_fairy_tales_and_liminal	T1		A1		7	R4	a store of healing energy guiding regeneration
+Highlander (immortals who revive)	Immortals	videogame_mechanics_and_loops	T1		A1	-	6	R4	Fast regeneration powered by a store, guided by A1, within real energy cost.
+Cheat skill	Isekai concepts	litrpg_cultivation	T1		A1	-	5	R4	One strong field-coupled ability.
+Appraisal skill	Isekai concepts	litrpg_cultivation	T1		A1	-	5	R4	Sensing measurable quantities; symbolic stats are a readout.
+Monster evolution	Isekai concepts	litrpg_cultivation	T1		A1	-	5	R4	Species absorbs field energy and mutates.
+Raijū	Japan	folklore	T1		A1		3	R4	a charge store discharging as a bolt
+Unhealing	Life and death	superpowers	T1		A1	-	4	R4	Repair is inhibited by a field or drug.
+Soulbound item	LitRPG mechanics	litrpg_cultivation	T1		A1	-	5	R4	Bond via synchrony with an item's charge pattern.
+Dunwich Horror	Lovecraft concepts	weirdfiction	T1		A1		1	R4	Invisible body shown by dust.
+The Music of Erich Zann	Lovecraft concepts	weirdfiction	T1		A1	-	4	R4	Sound as a field pattern that blocks entry.
+Astral space	Magic (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R2	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Domination	Mind	superpowers	T1		A1		1	R2	Imposed drives need the field coupled to the mind.
+B600 Marriage to animal	Motif B	folklore	T1		A1		1	R4	Shape-changing partner by guided growth under a mass budget.
+C900 Punishment for breaking taboo (pillar of salt)	Motif C	folklore	T1		A1		1	R4	Body turned to salt-like matter by transformation.
+D100 Man to bird, fish, beast	Motif D	folklore	T1		A1		1	R4	As D0; wings need real lift.
+D2100 Magic wealth	Motif D	folklore	T1		A1		1	R4	Wealth from transformed matter at nuclear cost.
+Cintamani	Mythological objects	mythology_pantheons_religion	T1		A1	-	5	R2	Wish link to intent needs strong mind-field coupling.
+Dollification	Offence	superpowers	T1		A1		1	R4	Body altered toward doll form by guided change.
+Punishment	Offence	superpowers	T1		A1		3	R4	a sensor-triggered effect on a rule violation is a trigger over A1 fields
+Weaponization	Offence	superpowers	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Yidhra	Outer Gods	weirdfiction	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Bird Box	Post-apocalypse	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R2	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Psyker	Psykers (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R4	A strong field channel in a person and its risks are A1 coupling with the body.
+Perils of the Warp	Psykers (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R4	A strong field channel in a person and its risks are A1 coupling with the body.
+Navigator	Psykers (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R4	A strong field channel in a person and its risks are A1 coupling with the body.
+Astronomican	Psykers (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R4	A field beacon sensed at a distance.
+Dominate person	RPG mechanics	litrpg_cultivation,videogame_mechanics_and_loops	T1		A1	-	5	R2	Control of a host needs strong mind-field coupling.
+Level drain	RPG mechanics	litrpg_cultivation	T1		A1	-	5	R4	Dial reduction by field drain.
+Superman death and return	Resurrection	videogame_mechanics_and_loops	T1		A1	-	6	R4	Fast regeneration powered by a store, guided by A1, within real energy cost.
+Aswang	Shapeshift	folklore|horror	T1		A1		1	R4	Shape imitation by guided tissue plus ordinary stalking.
+Fantasy shape-changing dragon	Shapeshift	horror	T1		A1		1	R4	Body change within a mass budget.
+Selkie	Shapeshift	folklore|horror	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+The Thing	Shapeshift	horror	T1		A1	-	4	R4	Cell-level copying of a body needs the original's information.
+Shrinking	Society and genre settings	scifi	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Expansion	Space	superpowers	T1		A1		1	R4	Object grows from nearby matter with mass booked.
+Feeblemind	Spells	videogame_mechanics_and_loops	T1		A1		7	R4	field pulses or heating can damage neural tissue; graded loss is ordinary lesion physics, no belief is written
+Bless and Bane	Spells	videogame_mechanics_and_loops	T1		A1		7	R4	at most weak entrainment of arousal; beliefs are never written, so effects are small
+Super speed (time perception slowed)	Time manipulation	videogame_mechanics_and_loops	T1		A1	-	6	R4	Faster nervous activity and body momentum by A1 within metabolic limits.
+Slow motion bullet time	Time manipulation	videogame_mechanics_and_loops	T1		A1	-	6	R4	Faster nervous activity and body momentum by A1 within metabolic limits.
+Rewind time (Tracer recall)	Time manipulation	videogame_mechanics_and_loops	T1		A1	-	6	R4	Returning a body to an earlier state is repair guided by information that still exists.
+Black Lantern / necro-plague	Undead	horror	T1		A1		1	R4	Puppeted corpses by field from one store.
+Dracula-style aristocrat vampire	Undead	horror	T1		A1		1	R4	Charm by field entrainment of neural signals.
+Draugr	Undead	folklore|horror	T1		A1		1	R4	Corpse driven by stored will; strong by body.
+Necrons	Xenos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R4	Self-repair of machine bodies at a distance-powered level is nearer craft than magic; A1 may supply energy.
+Drukhari (pain feeding)	Xenos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R4	Energy exchange pairs from dissipation could feed on distress; weak and speculative.
+Controller	Zone mutants (STALKER)	cyberpunk_transhumanism_postapoc_mecha	T1		A1	-	6	R2	Direct control or merging of minds goes beyond weak entrainment and needs a strong mind-field coupling.
+Beholder-type floating eyes (not in SRD 5.1)	aberration	bestiaries	T1		A1		1	R4	Eyes fire field-delivered energy beams.
+SCP-7390 Grimsley Trudge	antimemetic/gravity	scp	T1		A1		3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-2571 Cragglewood Park	antimemetic/transfig	scp	T1		A1		3	R5	a place that erases memories selectively has no channel in A1 alone
+SCP-1128 Aquatic Horror	cognito/aquatic	scp	T1		A1		3	R2	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-8031 Teat	cognito/parasitic	scp	T1		A1		3	R2	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-096 The \"Shy Guy\"	cognito/visual	scp	T1		A1		3	R2	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-4133 The Pinup That Doesn't Exist	cognitohazard/visual	scp	T1		A1		3	R2	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-531 Paired Brass Guard Cats	feline/transfig	scp	T1		A1		3	R4	a self-copy with feedstock needs real matter and the original's information
+Werewolf, wererat, werebear, wereboar, weretiger	humanoid	bestiaries	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+SCP-4921 Please STOP Reading!	infohazard	scp	T1		A1		3	R2	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+Kraken	monstrosity	bestiaries|folklore	T1		A1		2	R4	Field-driven pressure and wind effects at a distance.
+Awakened shrub and tree	plant	bestiaries	T1		A1		1	R4	Slow plant nervous system guided by field; real plants already signal.
+SCP-8066 Phobophobia: The Only Thing to Fear	reality/indestructible	scp	T1		A1		3	R2	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-8814 The Racist's Hammer	resurrection/ritual	scp	T1		A1	-	4	R4	Revival works only while brain information survives; the body's own repair is guided.
+SCP-841 Reverse Mirror Voodoo Doll Stick Puppet	rewrite/toy	scp	T1		A1	-	4	R4	Field coupling through brains steered at a person via an object carrying tuned information.
+Blight, blightburn genies	spirit	bestiaries	T1		A1		1	R4	Corrupting field pollutant.
+Dream and nightmare creatures	spirit	bestiaries	T1		A1		1	R2	Link into a sleeper needs A7.
+SCP-664 The Floor to Nowhere	temporal/rewrite	scp	T1		A1		3	R4	a local rewind of parts that are still together is guided regeneration
+SCP-914 The Clockworks	transfiguration	scp	T1		A1	-	4	R4	Matter rebuilt into another form under A1 control at real chemical or nuclear cost.
+Colour Out of Space	Lovecraft concepts	horror|weirdfiction	T2		A1,A5		1		Light or field outside known states, self-sustaining and spreading, needs field self-interaction.
+Ghroth	Outer Gods	weirdfiction	T2		A1,A5		2		A self-sustaining organised packet needs field self-interaction.
+Reality glitch	Reality	creepypasta	T2		A1,A5		3		a local zone with different effective constants needs a self-interacting field state
+The Beams (Dark Tower)	Weird West	cyberpunk_transhumanism_postapoc_mecha	T2		A1,A5	-	6		Lines or beings of self-sustaining field structure need field self-interaction.
+Crimson King	Weird West	cyberpunk_transhumanism_postapoc_mecha	T2		A1,A5	-	6		Lines or beings of self-sustaining field structure need field self-interaction.
+Fire elemental	elemental	bestiaries	T2		A1,A5		2		A self-sustaining organised packet needs field self-interaction.
+Fumecrux, living fumes	spirit	bestiaries	T2		A1,A5		2		A self-sustaining organised packet needs field self-interaction.
+Energy beings	Aliens and bio	scifi	T2		A1,A5,A7		1	R2	A matterless self-sustaining pattern with a mind needs field self-interaction and A7.
+Sentient sword (intelligent item)	Items	videogame_mechanics_and_loops	T2		A1,A5,A7		7	R2	a mind in an object needs the mind partly made of a field packet
+The Warp (Immaterium)	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2		A1,A5,A8	-	6		Field self-interaction and a doorway-like region give field storms and gates.
+Warp storm	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2		A1,A5,A8	-	6		Field self-interaction and a doorway-like region give field storms and gates.
+Devil/Pact-maker	Abrahamic	folklore	T2		A1,A6		1		Pact curse as stable pattern with drain.
+This House Has People in It	Analog horror	creepypasta	T2		A1,A6	-	4		The field remembers: a lasting imprint makes a place or object hold a replayable record.
+Andersen: The Travelling Companion	Andersen	dreams_fairy_tales_and_liminal	T2		A1,A6		7		a ghost helper needs a lasting imprint
+Phoenix	Birds	folklore	T2		A1,A6		3		rebuilding from ash needs the pattern kept as information in the field
+Crossroads pact	Cross-motif	folklore	T2		A1,A6		1		Site that holds a bargain needs lasting imprints.
+Swan maiden / feather robe	Cross-motif	folklore	T2		A1,A6	-	4		A robe holds a form pattern as an imprint.
+Immortalized	DCC status effects	litrpg_cultivation	T2		A1,A6	-	4		Preserved state after death needs a stored imprint.
+Corpse run (Souls bloodstain)	Death and persistence	videogame_mechanics_and_loops	T2		A1,A6	-	6		Lasting records or imprints in the field need A6; the field remembers.
+Ghost of a former player	Death and persistence	videogame_mechanics_and_loops	T2		A1,A6		7		a lasting imprint of a person memory needs the field to remember (R5)
+Devil's bargain	Demons	creepypasta|weirdfiction	T2		A1,A6		1		Pact as stored condition.
+Devil's pact	Demons	horror	T2		A1,A6		1		Pact curse as stable pattern with drain.
+Picture of Dorian Gray	Gothic tropes	weirdfiction	T2		A1,A6		3		a portrait holding wear needs a lasting imprint linked to a body
+Grimm: The Juniper Tree	Grimm	dreams_fairy_tales_and_liminal	T2		A1,A6		7		a child returning needs a lasting imprint of a person
+Grimm: The Shroud	Grimm	dreams_fairy_tales_and_liminal	T2		A1,A6		7		a returning grief imprint needs the field to remember
+Daruma On'na	Japanese legends	creepypasta	T2		A1,A6		1		Place pattern of a ghost.
+Self-Resurrection	Life and death	superpowers	T2		A1,A6	-	4		Stored imprint of the body's own pattern guides regeneration after death.
+The Moon-Bog	Lovecraft concepts	weirdfiction	T2		A1,A6	-	4		The field remembers: a lasting imprint makes a place or object hold a replayable record.
+The Shunned House	Lovecraft concepts	weirdfiction	T2		A1,A6	-	4		The field remembers: a lasting imprint makes a place or object hold a replayable record.
+The Tomb	Lovecraft concepts	weirdfiction	T2		A1,A6	-	4		The field remembers: a lasting imprint makes a place or object hold a replayable record.
+A Warning to the Curious	M. R. James	weirdfiction	T2		A1,A6		1		A guardian bond tied to a buried object needs lasting imprint.
+The Tractate Middoth	M. R. James	weirdfiction	T2		A1,A6	-	4		The field remembers: a lasting imprint makes a place or object hold a replayable record.
+Background count	Magic (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T2		A1,A6	-	6		Lasting records or imprints in the field need A6; the field remembers.
+Nagornaya Phantoms	Metro phenomena	cyberpunk_transhumanism_postapoc_mecha	T2		A1,A6	-	6		Lasting records or imprints in the field need A6; the field remembers.
+The Figure in the Mirror	Mirror horror	creepypasta	T2		A1,A6	-	4		The field remembers: a lasting imprint makes a place or object hold a replayable record.
+C0 Taboo about supernatural beings	Motif C	folklore	T2		A1,A6		1		Conditional bond on perceived acts.
+C300 Looking taboo (forbidden room, looking back)	Motif C	folklore	T2		A1,A6		1		Breach trigger bound on perception.
+C400 Speaking taboo / naming	Motif C	folklore	T2		A1,A6		1		Name link as stored condition.
+D300 Disenchantment (kiss, act, burning skin)	Motif D	folklore	T2		A1,A6		1		Release predicate on an imprint.
+D500 Transformation by magic power or curse	Motif D	folklore	T2		A1,A6		1		Bond with condition.
+D700 Disenchantment motifs	Motif D	folklore	T2		A1,A6		1		Bond with condition.
+Psychometry	Time	superpowers	T2		A1,A6		3	R4	forensic reading of residues is sensing; memories stored in objects would be A6
+Crybaby Bridge	Urban legend	creepypasta	T2		A1,A6		1		Death memory held at a site.
+The Theater	Video games	creepypasta	T2		A1,A6	-	4		The field remembers: a lasting imprint makes a place or object hold a replayable record.
+Witch (Roadside Picnic mosquito mange)	Zone literature	cyberpunk_transhumanism_postapoc_mecha	T2		A1,A6	-	6	R4	A local lasting field patch acting on bodies and minds.
+Archons	celestial	bestiaries	T2		A1,A6		1		Oath-tied cost is a stored condition on a person (A6).
+Fae bargains (fey pacts)	fey	bestiaries	T2		A1,A6		1		Wording-bound curses as stored conditions.
+Devils (lemure, imp, bearded, barbed, chain, bone, horned, ice, pit fiend)	fiend	bestiaries	T2		A1,A6		1		Pact curse as stable pattern with drain.
+Erinyes	fiend	bestiaries	T2		A1,A6		1		Avenger bound to a contract.
+Doppelgeist	Absorb	superpowers	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Ghost memory copy of a living person.
+El Silbón	Americas	folklore	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Whistling ghost curse.
+BEN Drowned	Cursed media	creepypasta|horror	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Mind-like pattern bound to an object controlling a hosted world.
+Blank Book	Cursed objects	creepypasta	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Object that takes readers.
+Damnification	Divine	superpowers	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Pact curse over a soul pattern.
+Boggart / bugbear	Folk	horror	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Household pattern tied to a place.
+Ecto-Telekinesis	Force	superpowers	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Ghost memories pushing objects.
+Vengeful ghost	Ghosts	horror	T2	A7-or-T0 (owner)	A1,A6,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Black dog (spectral)	Ghosts and omens	folklore	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Spectral animal as remembered pattern or rumour-held omen.
+Cursed paintings	Haunted objects	creepypasta	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Pigment pattern drawing on a viewer.
+Dybbuk box	Haunted objects	creepypasta	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Box with a patron pattern.
+The Hound	Lovecraft concepts	weirdfiction	T2	A7-or-T0 (owner)	A1,A6,A7	-	4	R3	The field remembers: a lasting imprint makes a place or object hold a replayable record.
+Canon Alberic's Scrap-Book	M. R. James	weirdfiction	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Demon bound in a picture.
+Casting the Runes	M. R. James	weirdfiction	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Rune-carried curse with a demon.
+E200 Malevolent return from the dead	Motif E	folklore	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Ghost memory with drive.
+E300 Friendly return from the dead	Motif E	folklore	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Ghost memory with attachment.
+E400 Ghosts and revenants: miscellaneous	Motif E	folklore	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Ghost memory loops at places.
+E600 Reincarnation	Motif E	folklore	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Mind-like pattern re-seating needs imprint and A7.
+F400 Spirits of earth, water, etc.	Motif F	folklore	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Place-bound spirit as imprint plus mind pattern.
+The Oval Portrait	Poe	weirdfiction	T2	A7-or-T0 (owner)	A1,A6,A7	-	4	R3	The field remembers: a lasting imprint makes a place or object hold a replayable record.
+Candyman ritual	Rituals	creepypasta	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Ritual summons a vengeful pattern.
+Wiedergaenger	Undead	horror	T2	A7-or-T0 (owner)	A1,A6,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Tsukumogami	Yokai	folklore|horror	T2	A7-or-T0 (owner)	A1,A6,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Banshee, beheaded, phantom	undead	bestiaries	T2	A7-or-T0 (owner)	A1,A6,A7		1	R3	Voice-based remembered pattern needs imprints and A7.
+After Life	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A6,A8	yes: a pocket place with imprints	7	R1	a separate place needs a doorway
+Level 255 The After	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A6,A8	yes: a pocket place with imprints	7	R1	a separate place needs a doorway
+Home (Backrooms)	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A6,A8	yes: a pocket place with imprints	7	R1	a separate place needs a doorway
+C200 Eating taboo (fairy food)	Motif C	folklore	T2		A1,A6,A8		1		Binding a guest to another place needs imprint plus doorway.
+Angel (messenger)	Abrahamic	bestiaries|folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Believer-linked patron beings.
+The Monument Mythos	Analog horror	creepypasta	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+The Walten Files	Analog horror	creepypasta	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Andersen: The Shadow	Andersen	dreams_fairy_tales_and_liminal	T2	A7-or-T0 (owner)	A1,A7		7	R3	a shadow taking over a person needs strong coupling
+Seraph	Angels and demons	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Michael (archangel)	Angels and demons	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Guardian angel	Angels and demons	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Fallen angel	Angels and demons	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Heavenly host	Angels and demons	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Massed beings partly made of field need A7.
+Barong/Rangda	Bali	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Ritual patron needs A7.
+Blackwood Nature spirits	Blackwood	weirdfiction	T2	A7-or-T0 (owner)	A1,A7		1	R3	Places with vast awareness.
+Shen Bu	BoC demons	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	Named powerful patron being needs field-based mind or substrate.
+Lu Ban	BoC demons	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	Named powerful patron being needs field-based mind or substrate.
+Yulong	BoC demons	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	Named powerful patron being needs field-based mind or substrate.
+Wicked Blade	BoC spirit animals	litrpg_cultivation	T2		A1,A7	-	5	R2	A weapon with a mind of its own needs the mind partly made of field.
+Angel Physiology	Body	superpowers	T2	A7-or-T0 (owner)	A1,A7		1	R3	Faith-substrate body.
+Demon Physiology	Body	superpowers	T2	A7-or-T0 (owner)	A1,A7		1	R3	Demon body and patron link.
+Cailleach	Celtic	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Weather patron tied to believers needs A7.
+Cat Sìth	Celtic	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Soul stealing needs A7.
+Sluagh	Celtic	folklore	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Evocation	Ceremonial magic	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Bornless Ritual	Ceremonial magic	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Elemental	Ceremonial magic	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Choronzon	Ceremonial magic	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Aiwass	Ceremonial magic	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+The Yellow Sign	Chambers	weirdfiction	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Chaos (Khorne Nurgle Tzeentch Slaanesh)	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Khorne	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Nurgle	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Tzeentch	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Slaanesh	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Daemon (Warhammer 40,000)	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Daemon Prince	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Daemonic possession	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Possessed (Chaos)	Chaos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Chinese dragon	China	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Weather patron tied to ritual needs A7.
+Divine intervention	Class features	videogame_mechanics_and_loops	T2	A7-or-T0 (owner)	A1,A7		7	R3	a being acting through believers would need minds partly made of the field
+Warlock pact (patron)	Class features	videogame_mechanics_and_loops	T2	A7-or-T0 (owner)	A1,A7		7	R3	possession of a host needs a strong mind-field coupling
+Astral projection	Computers, AI, minds	scifi	T2	A7-or-T0 (owner)	A1,A7		1	R3	Mind pattern leaving body.
+Body swap	Computers, AI, minds	scifi	T2		A1,A7		1	R2	Swapping minds needs strong coupling; copies impossible.
+Cthulhu	Cosmic	horror|weirdfiction	T2	A7-or-T0 (owner)	A1,A7		1	R3	Vast sleeping mind reached through coupling.
+Cult of an old god	Cosmic	creepypasta	T2	A7-or-T0 (owner)	A1,A7		1	R3	Believers' patterns support a being.
+Ghede fly	Critters (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	An insect tied to a spirit needs a field-mind link.
+Wild Hunt (Shadowrun)	Critters (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Soul theft (sleep, picture)	Cross-motif	folklore	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	Removing a mind's pattern needs a mind part made of the field.
+Soul devouring	Cultivation concepts	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	Linked patterns or spirits in minds need strong mind-field coupling.
+Seizing a body	Cultivation concepts	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	Linked patterns or spirits in minds need strong mind-field coupling.
+Nascent soul escape	Cultivation concepts	litrpg_cultivation	T2		A1,A7	-	5	R2	Linked patterns or spirits in minds need strong mind-field coupling.
+Nascent soul	Cultivation realms	litrpg_cultivation	T2		A1,A7	-	5	R2	A pattern able to leave the body needs strong mind-field coupling.
+Emberus	DCC deities	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A being partly made of the field and sustained by believers needs strong mind-field coupling.
+Sekhmet	DCC deities	litrpg_cultivation,mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A being partly made of the field and sustained by believers needs strong mind-field coupling.
+Lamashtu	DCC deities	litrpg_cultivation,mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A being partly made of the field and sustained by believers needs strong mind-field coupling.
+Celestial	DCC races	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A being partly made of the field and sustained by believers needs strong mind-field coupling.
+Bill Cipher (dream demon)	Demons	horror	T2	A7-or-T0 (owner)	A1,A7		1	R3	Dream-bond outsider.
+Demon (Abrahamic)	Demons	folklore|horror	T2	A7-or-T0 (owner)	A1,A7		1	R3	Outsider with large substrate.
+Djinn / Jinn	Demons	horror	T2	A7-or-T0 (owner)	A1,A7		1	R3	Spirit patterns with societies.
+Divinity	Divine	superpowers	T2	A7-or-T0 (owner)	A1,A7		1	R3	Vast believer substrate.
+Faithifery	Divine	superpowers	T2	A7-or-T0 (owner)	A1,A7		1	R3	Faith pool coupled through minds.
+The Sandman (Gaiman)	Dream fiction	dreams_fairy_tales_and_liminal	T2	A7-or-T0 (owner)	A1,A7		7	R3	a being whose substrate is all dreamers needs a strong coupling
+Dream entity	Dreams	creepypasta	T2	A7-or-T0 (owner)	A1,A7		1	R3	Entity acts on sleeping minds.
+The Gods of Pegana	Dunsany	weirdfiction	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Ammit	Egypt	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Soul-devourer.
+Fairy tale: Aladdin's lamp	Fairy tale	dreams_fairy_tales_and_liminal	T2	A7-or-T0 (owner)	A1,A7		7	R3	a bound being with a master needs a mind partly in the field
+Toyol	Folk	folklore|horror	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Dybbuk	Ghosts	folklore|horror	T2	A7-or-T0 (owner)	A1,A7		1	R3	Possession of a host by a pattern.
+Poltergeist	Ghosts	creepypasta|folklore|horror|weirdfiction	T2	A7-or-T0 (owner)	A1,A7		3	R3	a spirit that pushes objects needs a field-mind pattern; the force itself is A1
+Shade	Ghosts	horror	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Spectrophilia / ghost lover	Ghosts	horror	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Dullahan	Ghosts and omens	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Headless rider as a pattern.
+Huītzilōpōchtli	Gods: Aztec	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Ra	Gods: Egyptian	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Eye of Ra	Gods: Egyptian	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A hunting spirit sent against victims needs minds made partly of the field.
+Zeus	Gods: Greek	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron whose force tracks a believer substrate needs strong mind-field coupling.
+Ares	Gods: Greek	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Tritopatores	Gods: Greek	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	Ghost memories need strong mind-field coupling.
+Shiva	Gods: Hindu	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Vishnu	Gods: Hindu	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Dakini	Gods: Hindu	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Shinigami	Gods: Japanese	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron or death spirit driven by believers or a substrate needs strong mind-field coupling.
+Tenjin (kami)	Gods: Japanese	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Marduk	Gods: Mesopotamian	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron or death spirit driven by believers or a substrate needs strong mind-field coupling.
+The Horla	Gothic tropes	weirdfiction	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Byatis	Great Old Ones	weirdfiction	T2	A7-or-T0 (owner)	A1,A7		1	R3	Patron pack needs mind-field coupling.
+Chaugnar Faugn	Great Old Ones	weirdfiction	T2	A7-or-T0 (owner)	A1,A7		1	R3	Drain-feeding patron needs mind-field coupling.
+Cthylla	Great Old Ones	weirdfiction	T2	A7-or-T0 (owner)	A1,A7		1	R3	Patron pack needs mind-field coupling.
+Dagon	Great Old Ones	horror|weirdfiction	T2	A7-or-T0 (owner)	A1,A7		1	R3	Cult patron needs mind-field coupling.
+Zhar	Great Old Ones	weirdfiction	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Zoth-Ommog	Great Old Ones	weirdfiction	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Grimm: The Blue Light	Grimm	dreams_fairy_tales_and_liminal	T2	A7-or-T0 (owner)	A1,A7		7	R3	a bound spirit from a light item needs a mind partly in the field
+Grimm: The Spirit in the Bottle	Grimm	dreams_fairy_tales_and_liminal	T2	A7-or-T0 (owner)	A1,A7		7	R3	a bound spirit granting power needs a mind partly in the field
+Baron Samedi	Haiti	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Death patron needs A7.
+Annabelle	Haunted objects	creepypasta|horror	T2	A7-or-T0 (owner)	A1,A7		1	R3	Doll with spirit pattern.
+The Ghost Pirates	Hodgson	weirdfiction	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Boggart	House spirits	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Poltergeist moves objects as a pattern.
+Asura	India	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Vast believer substrate.
+Brahmarakshasa	India	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Learned ghost.
+Churel	India	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Ghost of a dead woman.
+Iblis	Jinn	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Hantu Raya	Jinn	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Pelesit	Jinn	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Polong	Jinn	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Al-Jinn	Jinn	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	A patron, spirit or familiar driven by minds or substrate needs strong mind-field coupling.
+Reincarnation	Life and death	superpowers	T2	A7-or-T0 (owner)	A1,A7		3	R3	memory continuity across death needs a persisting field-mind pattern
+Beyond the Wall of Sleep	Lovecraft concepts	weirdfiction	T2	A7-or-T0 (owner)	A1,A7		1	R3	Possession and link.
+The Haunter of the Dark	Lovecraft concepts	weirdfiction	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+The Thing on the Doorstep	Lovecraft concepts	weirdfiction	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Count Magnus	M. R. James	weirdfiction	T2	A7-or-T0 (owner)	A1,A7		1	R3	Follower bound by pact.
+Dweller on the Threshold	Magic (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Free spirit	Magic (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	A free spirit is a field-mind needing A7.
+Nature spirit	Magic (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Toxic spirit	Magic (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Insect spirit	Magic (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Totem (mentor spirit)	Magic (Shadowrun)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Human Instrumentality Project	Mecha	cyberpunk_transhumanism_postapoc_mecha	T2		A1,A7	-	6	R2	Direct control or merging of minds goes beyond weak entrainment and needs a strong mind-field coupling.
+Metro ghosts	Metro phenomena	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Soul-Puppetry	Mind	superpowers	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+A100 Gods of sky, sea, earth	Motif A	folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Believer-linked beings need minds coupled through the field (A7).
+E700 The soul as bird/insect/breath	Motif E	folklore	T2		A1,A7		1	R2	Mind pattern in a small carrier.
+E710 External soul (Koschei, heart hidden)	Motif E	folklore	T2		A1,A7		1	R2	Life store outside the body.
+Exorcism	Negation	creepypasta|horror|superpowers	T2	A7-or-T0 (owner)	A1,A7		1	R3	Breaking a mind-field link.
+Chucky (killer doll)	Object	horror	T2		A1,A7		1	R2	Stored mind pattern placed in a body needs A7.
+Slappy the Dummy	Object	horror	T2		A1,A7	-	4	R2	A mind inside a doll needs the mind partly made of the field.
+Demonomancy	Occult	superpowers	T2	A7-or-T0 (owner)	A1,A7		1	R3	Pact links to outsiders.
+Poltergeization	Occult	superpowers	T2	A7-or-T0 (owner)	A1,A7		3	R3	ghost-driven force needs a field-mind pattern
+Nightmarchers (huaka'i pō)	Oceania	folklore	T2	A7-or-T0 (owner)	A1,A7		3	R3	ghost procession needs persisting patterns in the field; the taboo is social
+Shub-Niggurath	Outer Gods	horror|weirdfiction	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Poltergeist child (Carol Anne)	Possession	horror	T2	A7-or-T0 (owner)	A1,A7		3	R3	a spirit using a child needs a field-mind pattern
+Golden Throne	Psykers (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2		A1,A7	-	6	R2	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Soul eating monster	RPG mechanics	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	Linked patterns or spirits in minds need strong mind-field coupling.
+Pet Sematary (burial revival)	Resurrection	videogame_mechanics_and_loops	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Ritual of summoning	Rituals	creepypasta	T2	A7-or-T0 (owner)	A1,A7		3	R3	a link to a patron needs a field-mind pattern; the rite itself is social
+Pyramid Head	Slasher	horror	T2	A7-or-T0 (owner)	A1,A7		3	R3	a guilt-projecting entity tied to a place needs a field-mind pattern
+Fuji (planchette writing)	Taoist practices (Wikipedia Xianxia links)	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	Linked patterns or spirits in minds need strong mind-field coupling.
+Soul flight	Taoist practices (Wikipedia Xianxia links)	litrpg_cultivation	T2	A7-or-T0 (owner)	A1,A7	-	5	R3	Linked patterns or spirits in minds need strong mind-field coupling.
+Defiler (Daemon engine)	Technology (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Forgefiend	Technology (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Soul Grinder	Technology (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Heldrake	Technology (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Deadites	Undead	horror	T2	A7-or-T0 (owner)	A1,A7		1	R3	Possession by a spirit pattern.
+Vetala	Undead	folklore|horror	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Jonah Hex	Weird West	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Deadlands (Reckoners, fear fuel)	Weird West	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Harrowed (Deadlands)	Weird West	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Wynonna Earp	Weird West	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Revenant (Weird West)	Weird West	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Dust devil (Dust Devil film)	Weird West	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+Hellsing (Alucard)	Weird West	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+C'tan	Xenos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T2	A7-or-T0 (owner)	A1,A7	-	6	R3	Ghosts, spirits, possession or entities partly made of field need A7, the mind partly made of the field.
+SCP-6766 To Know All Stones	antimemetic/ghost	scp	T2	A7-or-T0 (owner)	A1,A7		3	R3	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+Azata	celestial	bestiaries	T2	A7-or-T0 (owner)	A1,A7		1	R3	Planar beings with patterns.
+Couatl	celestial	bestiaries	T2	A7-or-T0 (owner)	A1,A7		1	R3	Mediator with a believer pool needs A7.
+Deva, planetar, solar (angels)	celestial	bestiaries	T2	A7-or-T0 (owner)	A1,A7		1	R3	Substrate of believers.
+SCP-3000 Anantashesha	deity/kaiju	scp	T2	A7-or-T0 (owner)	A1,A7		3	R3	a being whose dream is a world needs a mind made largely of the field
+Wyrmwraith	dragon	bestiaries	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Air elemental	elemental	bestiaries	T2	A7-or-T0 (owner)	A1,A7		1	R3	Mind-made body of air needs A7.
+Earth elemental	elemental	bestiaries	T2	A7-or-T0 (owner)	A1,A7		1	R3	Mind-made body of earth needs A7.
+Dryad	fey	bestiaries|folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Tree-bound mind pattern.
+Barghest	monstrosity	bestiaries|folklore	T2	A7-or-T0 (owner)	A1,A7		1	R3	Soul drain on a host.
+Daemon	outsider	bestiaries	T2	A7-or-T0 (owner)	A1,A7		1	R3	Soul-eating outsiders.
+Nindoru	outsider	bestiaries	T2	A7-or-T0 (owner)	A1,A7		3	R3	a spirit of guilt acting on minds needs a field-mind pattern
+Shadow and specter	undead	bestiaries	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Soul-eater (soul stealing)	undead	bestiaries	T2		A1,A7	-	4	R2	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Visitant, soulrider	undead	bestiaries	T2	A7-or-T0 (owner)	A1,A7	-	4	R3	A mind partly made of the field persists or couples directly, beyond ordinary brains.
+Astral plane	Ceremonial magic	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7,A8	-	5	R3	A realm of ghost patterns needs field-based minds plus a doorway join.
+Hades	Gods: Greek	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7,A8	-	5	R3	A realm of ghost patterns needs field-based minds plus a doorway join.
+Hel (being)	Gods: Norse	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7,A8	-	5	R3	A realm of ghost patterns needs field-based minds plus a doorway join.
+Valhalla	Gods: Norse	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7,A8	-	5	R3	A realm of ghost patterns needs field-based minds plus a doorway join.
+Gallu	Jinn	mythology_pantheons_religion	T2	A7-or-T0 (owner)	A1,A7,A8	-	5	R3	A realm of ghost patterns needs field-based minds plus a doorway join.
+Demons (dretch, vrock, hezrou, glabrezu, nalfeshnee, marilith, balor)	fiend	bestiaries	T2	A7-or-T0 (owner)	A1,A7,A8		1	R3	Another plane with mind-like inhabitants needs doorway plus mind-field coupling.
+No Through Road	Analog horror	creepypasta	T2		A1,A8		3		a looped road is a wrapped region, a join with bad matching
+Buffet Infinity	Analog horror	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a doorway to a large larder	7	R1	endless food is creation from nothing; a stocked larder is lawful
+Andersen: The Tinderbox	Andersen	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: dogs arriving through a doorway	7	R1	creatures from nowhere need a doorway
+The End	Backrooms	creepypasta	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Needs a flux-carrying doorway joining places, with booked energy and momentum.
+Phenomenon 35	Backrooms entities	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a local doorway event	7	R1	a place-wide event needs a doorway or plane law
+Phenomenon 88	Backrooms entities	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a local doorway event	7	R1	a place-wide event needs a doorway or plane law
+Level 6 Lights Out	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 7 Thalassophobia	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 8 Cave System	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 9 The Suburbs	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 10 The Bumper Crop	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 11 The Endless City	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 13 The Infinite Apartments	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 14 Paradise	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 17	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 19 Attic	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 20	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 52	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 188 The Courtyard	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 666	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 999	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 1000	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 0.1	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 0.66	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 1.01	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 2.1	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 37.1	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 38	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 55	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 64	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 100	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 134	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 200	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 300	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 404	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 500	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Level 601 Exit	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place behind a doorway	7	R1	a separate place reached through doors is a doorway
+Absolute Infinity of the Unknown	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a very large finite pocket	7	R1	an unbounded plane needs unbounded space; a big finite pocket is lawful
+Beyond the Absolute Limit	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a very large finite pocket	7	R1	an unbounded plane needs unbounded space; a big finite pocket is lawful
+Fragmentation	Backrooms levels	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a pocket with a rearranging join	7	R1	a split plane needs changing joins
+The Willows	Blackwood	weirdfiction	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Needs a flux-carrying doorway joining places, with booked energy and momentum.
+Tuatha Dé Danann	Celtic	folklore	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Needs a flux-carrying doorway joining places, with booked energy and momentum.
+Void refinement	Cultivation realms	litrpg_cultivation	T2		A1,A8	-	5		Control reaching space means a doorway join.
+Potion of Phase Through Wall	DCC items	litrpg_cultivation	T2		A1,A8	yes: doorway-linked path through a wall	5	R1	Matter cannot interpenetrate; only a booked doorway join can bypass a wall.
+Extra life (1-up)	Death and persistence	videogame_mechanics_and_loops	T2		A1,A8	yes: revival only while the body is intact within a window	6	R1	Rebuilding a person from a stored pattern needs an exact copy; healing of an intact body is lawful.
+Lives counter	Death and persistence	videogame_mechanics_and_loops	T2		A1,A8	yes: revival only while the body is intact within a window	6	R1	Rebuilding a person from a stored pattern needs an exact copy; healing of an intact body is lawful.
+Respawn point	Death and persistence	videogame_mechanics_and_loops	T2		A1,A8	yes: revival only while the body is intact within a window	6	R1	Rebuilding a person from a stored pattern needs an exact copy; healing of an intact body is lawful.
+Summoning a demon	Demons	creepypasta	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Needs a flux-carrying doorway joining places, with booked energy and momentum.
+Dream Cycle (Lovecraft)	Dream fiction	dreams_fairy_tales_and_liminal	T2		A1,A8		7	R2	a persistent shared dream place needs strongly coupled minds
+Dreamlands (Dream Cycle setting)	Dream fiction	dreams_fairy_tales_and_liminal	T2		A1,A8		7	R2	a shared place built from belief needs strongly coupled minds
+Dreamwalker	Dream fiction	dreams_fairy_tales_and_liminal	T2		A1,A8		7	R2	entering other minds needs direct coupling
+Neverland	Dream fiction	dreams_fairy_tales_and_liminal	T2		A1,A8	partial: a sealed place with strong healing	7	R1	a place with no ageing needs a pocket and heavy regeneration
+Coraline Other World	Dream fiction	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a finite pocket place run by a mind	7	R1	a separate world needs a doorway
+The Other Mother	Dream fiction	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a captor and a pocket place	7	R1	a trapping place needs a doorway
+Dungeon core as monster	Dungeons	videogame_mechanics_and_loops	T2		A1,A8	yes: a store plus a finite pocket	7	R1	a place-maker needs a doorway
+Mystery dungeon (reshuffles each entry)	Dungeons	videogame_mechanics_and_loops	T2		A1,A8	yes: a pocket re-laid from a stored plan when empty	7	R1	a place that rearranges itself on entry is a doorway plus rebuild
+The King of Elfland's Daughter	Dunsany	weirdfiction	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Needs a flux-carrying doorway joining places, with booked energy and momentum.
+Spore drive	FTL and spacetime	scifi	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Needs a flux-carrying doorway joining places, with booked energy and momentum.
+Fairy (Aos Sí)	Fae	folklore	T2		A1,A8		1		Beings from another plane.
+Fairy ring	Fairies	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a doorway with time dilation	7	R1	a time-warped join is a doorway
+Fairy time dilation	Fairies	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a pocket with dilated clock	7	R1	a different clock rate for a place is dilation behind a doorway
+Fairy tale: Tam Lin	Fairy tale	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a place of captors reached by a doorway	7	R1	abduction to another place needs a doorway
+Fairy tale: Thomas the Rhymer	Fairy tale	dreams_fairy_tales_and_liminal	T2		A1,A8	yes: a place with a different clock	7	R1	time passing differently is a pocket plus dilation
+Mictlāntēcutli	Gods: Aztec	mythology_pantheons_religion	T2		A1,A8	-	5		A distant underworld region reached by a doorway join.
+Cronus	Gods: Greek	mythology_pantheons_religion	T2		A1,A8	-	5		A distant underworld region reached by a doorway join.
+Yama	Gods: Hindu	mythology_pantheons_religion	T2		A1,A8	-	5		A distant underworld region reached by a doorway join.
+Izanagi	Gods: Japanese	mythology_pantheons_religion	T2		A1,A8	-	5		A distant underworld region reached by a doorway join.
+Ereshkigal	Gods: Mesopotamian	mythology_pantheons_religion	T2		A1,A8	-	5		A distant underworld region reached by a doorway join.
+Dumuzid	Gods: Mesopotamian	mythology_pantheons_religion	T2		A1,A8	-	5		A distant underworld region reached by a doorway join.
+Orpheus	Heroes	mythology_pantheons_religion	T2		A1,A8	-	5		A distant underworld region reached by a doorway join.
+Deck of Many Things	Items	videogame_mechanics_and_loops	T2		A1,A8	yes: displacement through a doorway or death by pulse	7	R1	erasing a person from existence breaks conservation; a doorway or a lethal pulse is the lawful form
+Dungeon instance	LitRPG mechanics	litrpg_cultivation	T2		A1,A8	yes: a sealed region per party, not a copy	5	R1	Copying places is impossible; separate joined regions are lawful.
+Dream-Quest of Unknown Kadath	Lovecraft concepts	weirdfiction	T2		A1,A8		1	R2	Another plane with mind-like inhabitants needs doorway plus mind-field coupling.
+Silver Key	Lovecraft concepts	weirdfiction	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Needs a flux-carrying doorway joining places, with booked energy and momentum.
+Jinn	Middle East	folklore	T2		A1,A8	yes: doorway to another place	2	R1	Another plane maps to a doorway.
+Harrowing of Hell	Miracles	mythology_pantheons_religion	T2		A1,A8	-	5		A distant underworld region reached by a doorway join.
+F100 Journey to the land of the dead	Motif F	folklore	T2		A1,A8		1		Plane pack with its own laws.
+F200 Fairies and elves	Motif F	folklore	T2		A1,A8		1		Plane dwellers.
+F700 Extraordinary places	Motif F	folklore	T2		A1,A8		1		Extraordinary places on planes.
+Dreamlands	Mythos places	weirdfiction	T2		A1,A8		1	R2	Another plane with mind-like inhabitants needs doorway plus mind-field coupling.
+Silent Hill fog town	Place	horror	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Needs a flux-carrying doorway joining places, with booked energy and momentum.
+Existence Switching	Reality	superpowers	T2		A1,A8		1		Planes swapped by doorway.
+Monkey's Paw (bargain revival)	Resurrection	videogame_mechanics_and_loops	T2		A1,A8	yes: revival only while the body is intact within a window	6	R1	Rebuilding a person from a stored pattern needs an exact copy; healing of an intact body is lawful.
+Rondo of Blood revive-the-maiden	Resurrection	videogame_mechanics_and_loops	T2		A1,A8	yes: revival only while the body is intact within a window	6	R1	Rebuilding a person from a stored pattern needs an exact copy; healing of an intact body is lawful.
+Shadow of the Colossus (bargain revive)	Resurrection	videogame_mechanics_and_loops	T2		A1,A8	yes: revival only while the body is intact within a window	6	R1	Rebuilding a person from a stored pattern needs an exact copy; healing of an intact body is lawful.
+The Returned (dead walk back)	Resurrection	videogame_mechanics_and_loops	T2		A1,A8	yes: revival only while the body is intact within a window	6	R1	Rebuilding a person from a stored pattern needs an exact copy; healing of an intact body is lawful.
+Dying and returning Jack Harkness	Resurrection	videogame_mechanics_and_loops	T2		A1,A8	yes: revival only while the body is intact within a window	6	R1	Rebuilding a person from a stored pattern needs an exact copy; healing of an intact body is lawful.
+Blip (half vanish and return)	Resurrection	videogame_mechanics_and_loops	T2		A1,A8	yes: storage in a doorway pocket and later return	6	R1	Removing and returning many people needs a pocket place with booked budgets.
+Dreamscape	Space	superpowers	T2		A1,A8		1	R2	Another plane with mind-like inhabitants needs doorway plus mind-field coupling.
+Phasing	Space	superpowers	T2		A1,A8		3	R5	passing through matter needs the body's contact repulsion switched off, a binding shift with no listed fit
+Space Compression	Space	superpowers	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Metric change is not available; shortened paths via doorways are.
+Timescape	Time	superpowers	T2		A1,A8	yes: bounded doorway with booked energy	4	R1	Needs a flux-carrying doorway joining places, with booked energy and momentum.
+Timeline branching	Time manipulation	videogame_mechanics_and_loops	T2		A1,A8	yes: a doorway to a separate world, not a branch	6	R1	Branching timelines are not physical; a separate world through a doorway is.
+SCP-1181 Interactive Kaleidoscope	ectoentropic/location	scp	T2		A1,A8		3		a room that copies itself can be a doorway to a matched region
+SCP-1765 Sisters	spatial/temporal	scp	T2		A1,A8	yes: doorway pair, no time travel	3	R1	linking places is A8; linking times breaks causality
+Ethereal wildlife	spirit	bestiaries	T2		A1,A8		1		Overlapping plane via doorway.
+Andersen: The Galoshes of Fortune	Andersen	dreams_fairy_tales_and_liminal	T3			yes: a finite-power wish agent	7		granting wishes is omnipotence; a bounded version is lawful
+Mogwai (Chinese culture)	Chinese folklore beasts (Wikipedia Xianxia links)	litrpg_cultivation	T3			yes: rough guided shape change	5		Instant full shape change needs an exact rebuild of the body.
+Infomorph	Computers, AI, minds	scifi	T3			yes: gradual single-instance transfer	2		Uploading is a copy; copy of a person is impossible, only continuous transfer.
+Mind transfer (body swap)	Computers, AI, minds	scifi	T3			yes: same-time mind swap by coupling	2		Mind transfer needs original information; exact copies of persons impossible.
+Mind uploading	Computers, AI, minds	scifi	T3			yes: gradual single-instance transfer	2		Uploading is a copy; copy of a person is impossible, only continuous transfer.
+Mind uploading in fiction	Computers, AI, minds	scifi	T3			yes: gradual single-instance transfer	2		Uploading is a copy; copy of a person is impossible, only continuous transfer.
+Neurohacking	Computers, AI, minds	scifi	T3				3	R5	direct write to a nervous system exceeds the weak back-action; beliefs are never written
+Weeping Angels	Creepypasta	horror	T3			no: no lawful bounded version	4		Breaks a time or creation law; no lawful form exists.
+Soul search	Cultivation concepts	litrpg_cultivation	T3			-	5	R5	Brain readout needs strong coupling; only coarse states, not true thoughts.
+Heavenly Dao oath	Cultivation concepts	litrpg_cultivation	T3			yes: bond with bounded stun penalty	5		No world-enforcer exists; only a mind-coupled bond can punish.
+Transmigration	Cultivation concepts	litrpg_cultivation	T3			yes: possession by coupling only	5		Exact copy of a mind is impossible.
+Braindance (recorded experience)	Cyberpunk	cyberpunk_transhumanism_postapoc_mecha	T3			-	6	R4	Reading or writing neural signals at a distance is sensing and induced percepts by A1; memory or beliefs are not written.
+Strange Days (SQUID recording)	Cyberpunk	cyberpunk_transhumanism_postapoc_mecha	T3			-	6	R4	Reading or writing neural signals at a distance is sensing and induced percepts by A1; memory or beliefs are not written.
+Simstim (simulated stimulus)	Cyberpunk	cyberpunk_transhumanism_postapoc_mecha	T3			-	6	R4	Reading or writing neural signals at a distance is sensing and induced percepts by A1; memory or beliefs are not written.
+Nothing	DCC locations	litrpg_cultivation	T3			yes: a sealed vacuum region	5		Nothing at all is not a state of matter; only an emptied region exists.
+Dark Souls bonfire and hollowing	Death and persistence	videogame_mechanics_and_loops	T3			no: restoring a person is a copy; hollowing is ordinary mind decay	7		a binding store cannot restore a person without full information
+Loop Hero style ever-repeating path	Dungeons	videogame_mechanics_and_loops	T3			partial: a sealed pocket reset from a recorded state	7		a world that forgets is a rewind; only a reset of a sealed pocket is lawful
+Fairy tale: Cinderella	Fairy tale	dreams_fairy_tales_and_liminal	T3			yes: coach built from stock matter at cost, time-limited	7		creation from a pumpkin to a coach needs mass; transmutation is costly
+Fairy tale: Koschei the Deathless	Fairy tale	dreams_fairy_tales_and_liminal	T3			no: a mind cannot be stored outside the body	7		a soul in a distant store is a mind copy outside the brain
+Resurrection in fairy tales	Fairy-tale elements	dreams_fairy_tales_and_liminal	T3			yes: revival within minutes of arrest only	7		general resurrection is not allowed
+Loki	Gods: Norse	mythology_pantheons_religion	T3			yes: rough guided shape change	5		Instant full shape change needs an exact rebuild of the body.
+Grimm: The Three Snake-Leaves	Grimm	dreams_fairy_tales_and_liminal	T3			yes: reviving a body within minutes of arrest	7		raising the dead is not a state ordinary physics reaches generally; recent arrest is reversible
+Circe	Heroes	mythology_pantheons_religion	T3			yes: rough guided shape change	5		Instant full shape change needs an exact rebuild of the body.
+Immortal by phylactery	Immortals	videogame_mechanics_and_loops	T3			yes: a stored imprint cannot hold a whole person, only a trace	6		Storing a full mind needs an exact copy, which is impossible; only partial traces are lawful.
+Dungeon core	Isekai concepts	litrpg_cultivation	T3			yes: slow growth from stocked material	5		Spawning creatures from nothing breaks conservation.
+Chuanyue	Isekai concepts (Wikipedia Isekai links)	litrpg_cultivation	T3			no	5		Time transfer breaks causality; only a distant doorway is lawful.
+The System	LitRPG mechanics	litrpg_cultivation	T3			yes: an institution with sensors	5		A world-wide authority assigning stats is omniscient.
+Great Race of Yith	Lovecraft races	weirdfiction	T3			yes: same-time mind swap by coupling	2		Mind transfer needs original information; exact copies of persons impossible.
+Ice-nine	Matter and energy tech	scifi	T3			yes: local high-pressure ice seeded by cold	2		A room-temperature stable ice would break known thermodynamics.
+Inertial dampening	Matter and energy tech	scifi	T3			yes: cushioning force on charged tissue	2		True inertial cancelling is not available.
+Matter transmitter	Matter and energy tech	scifi	T3			yes: matter moves as flux, no person copy	2		Destroy-and-rebuild of a person needs a copy.
+Neuralyzer	Matter and energy tech	scifi	T3				3	R5	selective memory erasure needs more than a weak field acting on a brain
+Geass (mind-command eye)	Mecha	cyberpunk_transhumanism_postapoc_mecha	T3			-	6	R5	Direct control or merging of minds goes beyond weak entrainment and needs a strong mind-field coupling.
+Clairtelepathy	Mind	superpowers	T3				1	R5	Hearing thoughts needs a coupling to another brain.
+Tarnhelm	Mythological objects	mythology_pantheons_religion	T3			yes: rough guided shape change	5		Instant full shape change needs an exact rebuild of the body.
+Tablet of Destinies	Mythological objects	mythology_pantheons_religion	T3			yes: a symbol of authority	5		Rule of the cosmos is omnipotence.
+Cornucopia	Mythological objects	mythology_pantheons_religion	T3			yes: slow synthesis from stocked material	5		Endless matter from nothing breaks conservation.
+Akshaya Patra	Mythological objects	mythology_pantheons_religion	T3			yes: slow synthesis from stocked material	5		Endless matter from nothing breaks conservation.
+Facts in the Case of M. Valdemar	Poe	weirdfiction	T3			yes: life support only, no true life after death	1		Holding the dead in life breaks biology; support machinery is bounded.
+Polymorph	RPG mechanics	litrpg_cultivation,videogame_mechanics_and_loops	T3			yes: slow guided regrowth into a rough shape	5		Body rebuild with mass budget exceeds regeneration speed.
+Detect thoughts	RPG mechanics	litrpg_cultivation,videogame_mechanics_and_loops	T3			-	5	R5	Brain readout needs strong coupling; only coarse states, not true thoughts.
+Commune and Contact Other Plane	Spells	videogame_mechanics_and_loops	T3			yes: only the caster's own trance or guess	7		a true oracle answer is information from nowhere; a trance gives only inference from what the caster knows
+Time loop as pocket plane replay	Time loops	videogame_mechanics_and_loops	T3			yes: a closed pocket reset by a copy at booked cost	6		Resetting a region to a snapshot reverses entropy; a closed doorway pocket can fake it.
+Heaven Sent (death each loop)	Time loops	videogame_mechanics_and_loops	T3			yes: a closed pocket reset by a copy at booked cost	6		Resetting a region to a snapshot reverses entropy; a closed doorway pocket can fake it.
+Cyclic reset by a cosmic outsider	Time loops	videogame_mechanics_and_loops	T3			yes: a closed pocket reset by a copy at booked cost	6		Resetting a region to a snapshot reverses entropy; a closed doorway pocket can fake it.
+Whole brain emulation	Transhumanism	cyberpunk_transhumanism_postapoc_mecha	T3			yes: approximate emulation without exactness	6		An exact brain copy is impossible; a lossy model is lawful.
+Eldar soulstone	Xenos (Warhammer 40,000)	cyberpunk_transhumanism_postapoc_mecha	T3			yes: a stored imprint cannot hold a whole person, only a trace	6		Storing a full mind needs an exact copy, which is impossible; only partial traces are lawful.
+SCP-2510 Got A Secret, Can You Keep It?	antimemetic	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-3393 For Your Eyes Only	antimemetic	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-4668 Since I Left Me	antimemetic	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-2358 I've seen this somewhere before…	antimemetic/cognito	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-5401 Thing	antimemetic/dream	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-7924 The Goat that Kept on Gifting	antimemetic/hostile	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-055	antimemetic/infohazard	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-4780 Shrunk	apollyon/weapon	scp	T3			yes: shed mass and transmute at energy cost	3		shrinking with mass conserved needs nuclear-density matter
+SCP-1889 Calculus Trap	cognito/mathematical	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-7783 Dissolve Your Body Today!	cognito/semiotics	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-7549 C A C H E	electronic/infohazard	scp	T3			no: planet-scale copying	3		copying a planet needs unbounded matter and information
+SCP-5563 A Free Trial of Knowledge Hoard	electronic/memory	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-2838 Stellar Reincarnation Column	extraterr/cadaver	scp	T3			no: reincarnation across stars is narrative	3		no conservation-respecting channel carries a mind between stars
+SCP-2521 ●●|●●●●●|●●|●	infohazard/keter	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-1466 A Canary	keter/infohazard	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-4999 Someone to Watch Over Us	keter/teleport	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-7179 E is for Eternity	noosphere/temporal	scp	T3			no: editing timelines	3		a being editing long timelines breaks causality
+SCP-7350 Kancra Bodas	probability	scp	T3			yes: nudge chaotic systems	3		probability manipulation is unbounded
+SCP-7859 The Death Dealing	reality/cognito	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-5519 A Dark Timeline	reality/fungus	scp	T3			no: alternate timeline	3		a dark timeline is an alternate history
+SCP-5335 The Freudian Split	reality/memetic	scp	T3				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-1384 Taker of Turns	reality/temporal	scp	T3			no: reordering turns of time	3		affecting the order of events breaks causality
+SCP-5802 Pollution and Industry	reality/toxic	scp	T3			no: space-time toxicity	3		poison acting on time and space has no physical channel
+SCP-5746 The Time Stitcher	temporal/mechanical	scp	T3			no: stitching time	3		time-stitching breaks causality
+Backrooms: Redacted Entities	Backrooms entities	dreams_fairy_tales_and_liminal	X				7		a redacted listing, unread
+Boss Box	DCC system mechanics	litrpg_cultivation	X			-	4		Narrative, genre or game-mechanic label, not a physical effect.
+Loot Boxes	DCC system mechanics	litrpg_cultivation	X			-	4		Narrative, genre or game-mechanic label, not a physical effect.
+SCP-4422 O Tempestas, O Mores	artifact/temporal	scp	X				3		a safe artifact with a temporal flavour; no effect stated
+SCP-5000 Why?	broken-god	scp	X				3		a machine whose function is narrative
+SCP-8660 The Empty Birdcage	mythological/probability	scp	X			-	4		Narrative, genre or game-mechanic label, not a physical effect.
+Entity 5-A	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 6	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 7	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 8	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 9	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 12	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 16	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 19	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 20	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 22	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 26	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 27	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 30	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 31	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 32	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 34	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 37	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 38	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 42	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 46	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 47	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 49	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 52	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 55	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 57	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 58	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 60	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 62	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 69	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 70	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 73	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 77	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 81	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 83	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 90	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 94	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 98	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 99	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 122	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 150	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 163	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 196	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 224	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 301	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 333	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 379	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 404	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 444	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 500	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Entity 700	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an entity with unspecified anomalous traits, classed by its likely field organ or doorway
+Juju Man	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Perfect Emptiness	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Tagapabalita	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Radiophobia (entity)	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+The Voidpeople	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Blood Eagles	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Children of the Empyrean Sea	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Leftovers	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+AMARANTH	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+The Halloween Demon	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+The Night	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+The Wanderer	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+The Umbra	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Backrooms: Howlers	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Backrooms: Clumps	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Backrooms: Windows entity	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Backrooms: Sirens	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+Backrooms: Dollmakers	Backrooms entities	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+M.E.G. Object 1	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 10	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 13	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 17	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 20	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 25	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 32	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 101	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 200	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 201	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+Object 300	Backrooms objects	dreams_fairy_tales_and_liminal	U				7	R4	an unspecified anomalous object, likely a charged device
+BASILISK (Backrooms)	Backrooms objects	dreams_fairy_tales_and_liminal	U				7		an unspecified anomalous entity
+SCP-5462 Misery is the State of Every Soul Burdened by Mortality.	antimemetic/mythological	scp	U				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-3801 Based on a True Story	memory/thaumiel	scp	U				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone
+SCP-4830 Head Like a Hole	noosphere/memetic	scp	U				3	R5	a universal stimulus-triggered or content-selective memory/neural effect has no channel in A1 alone

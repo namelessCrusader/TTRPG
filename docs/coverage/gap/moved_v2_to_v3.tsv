@@ -1,0 +1,93 @@
+entry	family	rules	tier_v2	tier_v3	needs_v2	needs_v3	A7class_v2	A7class_v3	note3
+Annabelle	Haunted objects	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Astral projection	Computers, AI, minds	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+BEN Drowned	Cursed media	M1	T2	T2	A1,A6,A7	A1,A6,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Beyond the Wall of Sleep	Lovecraft concepts	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Bilocation	Space	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Brahmarakshasa	India	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Churel	India	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Cortical stack and re-sleeving	Computers, AI, minds	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Deadites	Undead	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Doppelgeist	Absorb	M1	T2	T2	A1,A6,A7	A1,A6,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Dream and nightmare creatures	spirit	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Duplicate Merging	Absorb	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Dybbuk	Ghosts	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Dybbuk box	Haunted objects	M1	T2	T2	A1,A6,A7	A1,A6,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+E200 Malevolent return from the dead	Motif E	M1	T2	T2	A1,A6,A7	A1,A6,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+E300 Friendly return from the dead	Motif E	M1	T2	T2	A1,A6,A7	A1,A6,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+E600 Reincarnation	Motif E	M1	T2	T2	A1,A6,A7	A1,A6,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Familiar (witch's animal)	Cross-motif	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Freddy Krueger	Slasher	M2;M1	T1	T2	A1	A1,A7		strict	M2 and M1: its own reason names a persisting mind (a dead killer that thinks inside sleepers): T2 A7, bounded = lossy
+Great Race of Yith	Lovecraft races	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Hantu, hantu-like vengeance spirits	undead	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Haunted clockwork and wyrwood	construct	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Human possession in science fiction	Computers, AI, minds	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Hungry ghost	Ghosts	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Infomorph	Computers, AI, minds	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Kitsunetsuki	Possession	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Ligeia	Poe	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Lost Hearts	M. R. James	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Majora's Mask	Cursed media	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Matter transmitter	Matter and energy tech	M3	T3	T2		A1,A8			M3 with R1: bounded lawful version is an A8 doorway, so T2; the unbounded version stays T3
+Mind Control	Mind	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Mind transfer (body swap)	Computers, AI, minds	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Mind uploading	Computers, AI, minds	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Mind uploading in fiction	Computers, AI, minds	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Morella	Poe	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Multi-Possession	Mind	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Onryō	Japan	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Possession	Mind	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Possession by a demon	Demons	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Reincarnation	Life and death	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Robert the Doll	Haunted objects	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Rusalka	Nature spirits	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+SCP-035 Possessive Mask	possessive mask	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+SCP-2113 Haunted Liopleurodon Skull	ghost/reptile	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+SCP-2571 Cragglewood Park	antimemetic/transfig	M4	T1	T3	A1				M4 with R5: a place that makes strangers forget selectively is content-selective erasure, T3 (was T1)
+SCP-4161 METEMPSYCHOSIS.	cadaver/electronic	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+SCP-6766 To Know All Stones	antimemetic/ghost	M4	T2	T3	A1,A7		owner		M4 with R5: content-selective memory erasure of strangers is T3; it was a ghost (owner) row
+Soul theft (sleep, picture)	Cross-motif	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Soul-Puppetry	Mind	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Succubus / incubus	Demons	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+The Ghost Pirates	Hodgson	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+The Horla	Gothic tropes	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+The Shadow out of Time	Lovecraft concepts	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+The Thing on the Doorstep	Lovecraft concepts	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Toyol	Folk	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Uploaded mind horror	Tech	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Vengeful ghost	Ghosts	M1	T2	T2	A1,A6,A7	A1,A6,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Vetala	Undead	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Visitant, soulrider	undead	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Wiedergaenger	Undead	M1	T2	T2	A1,A6,A7	A1,A6,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Mongo	DCC pets	M2	T1	T2	A1	A1,A6			M2: its own reason names ghost patterns held in the field (A6), so T2 A6
+Seizing a body	Cultivation concepts	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Transmigration	Cultivation concepts	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Dominate person	RPG mechanics	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Soul flight	Taoist practices (Wikipedia Xianxia links)	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Chuanyue	Isekai concepts (Wikipedia Isekai links)	M3	T3	T2		A1,A8			M3 with R1: bounded lawful version is an A8 doorway, so T2; the unbounded version stays T3
+Cintamani	Mythological objects	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Controller	Zone mutants (STALKER)	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Astral space	Magic (Shadowrun)	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Daemonic possession	Chaos (Warhammer 40,000)	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Possessed (Chaos)	Chaos (Warhammer 40,000)	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Eldar soulstone	Xenos (Warhammer 40,000)	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Soulkiller (engram upload that kills)	Cyberpunk	M3;M1	T3	T2		A1,A7,A8		strict	M3 with R1 and M1: lawful bounded version = lossy mind record (A7) plus the original body moved through a flux-carrying doorway (A8); exact copy or perfect transfer is the T3 version
+Relic engram (Johnny Silverhand)	Cyberpunk	M3;M1	T3	T2		A1,A7,A8		strict	M3 with R1 and M1: lawful bounded version = lossy mind record (A7) plus the original body moved through a flux-carrying doorway (A8); exact copy or perfect transfer is the T3 version
+Agent Smith	Cyberpunk	M3;M1	T3	T2		A1,A7,A8		strict	M3 with R1 and M1: lawful bounded version = lossy mind record (A7) plus the original body moved through a flux-carrying doorway (A8); exact copy or perfect transfer is the T3 version
+Puppet Master (Ghost in the Shell)	Cyberpunk	M3;M1	T3	T2		A1,A7,A8		strict	M3 with R1 and M1: lawful bounded version = lossy mind record (A7) plus the original body moved through a flux-carrying doorway (A8); exact copy or perfect transfer is the T3 version
+Altered Carbon (stacks and sleeves)	Cyberpunk	M3;M1	T3	T2		A1,A7,A8		strict	M3 with R1 and M1: lawful bounded version = lossy mind record (A7) plus the original body moved through a flux-carrying doorway (A8); exact copy or perfect transfer is the T3 version
+Digital immortality	Transhumanism	M3;M1	T3	T2		A1,A7,A8		strict	M3 with R1 and M1: lawful bounded version = lossy mind record (A7) plus the original body moved through a flux-carrying doorway (A8); exact copy or perfect transfer is the T3 version
+Whole brain emulation	Transhumanism	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Teletransportation paradox	Transhumanism	M3;M1	T3	T2		A1,A7,A8		strict	M3 with R1 and M1: lawful bounded version = lossy mind record (A7) plus the original body moved through a flux-carrying doorway (A8); exact copy or perfect transfer is the T3 version
+Bird Box	Post-apocalypse	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Revenant (Weird West)	Weird West	M1	T2	T2	A1,A7	A1,A7	owner	strict	M1: owner row moved to strict: a disembodied or carried mind that persists, moves or acts outside its brain; bounded = lossy
+Immortal by phylactery	Immortals	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Familiar (wizard)	Class features	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Reincarnation with memory	LitRPG	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Shared dream	Dream phenomena	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Dream sharing machine	Dream phenomena	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Dream Cycle (Lovecraft)	Dream fiction	M2	T2	T2	A1,A8	A1,A7,A8		coupling	M2: its reason names strongly coupled minds (as Inception does), so A7 joins A8
+Inception (film)	Dream fiction	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Paprika (anime)	Dream fiction	M2	T1	T2	A1	A1,A7		coupling	M2: its own reason names A7 (strong coupling or mind-field link beyond A1's ports), so T2 A7; the observable effect is a coupling, not a mind outside its brain
+Andersen: The Snowman	Andersen	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one
+Fairy tale: Koschei the Deathless	Fairy tale	M1	T3	T2		A1,A7		strict	M1: mind upload, transfer, merging, stored mind or thinking object: T2 A7 with bounded = lossy; the exact or perfect version is the T3 one

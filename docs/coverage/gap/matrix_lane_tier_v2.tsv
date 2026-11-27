@@ -1,0 +1,14 @@
+key	rows	T0	T1	T2	T3	X	U	owner_A7_or_T0	T1+T2	share_T0	share_T1+T2
+bestiaries	260	159	55	38	5	3	0	19	93	0.612	0.358
+creepypasta	277	200	8	58	5	6	0	19	66	0.722	0.238
+cyberpunk_transhumanism_postapoc_mecha	452	290	89	46	21	6	0	30	135	0.642	0.299
+dreams_fairy_tales_and_liminal	390	151	50	67	13	29	80	5	117	0.387	0.3
+folklore	411	255	72	68	8	8	0	37	140	0.62	0.341
+horror	292	183	38	56	7	8	0	29	94	0.627	0.322
+litrpg_cultivation	337	125	96	34	20	62	0	12	130	0.371	0.386
+mythology_pantheons_religion	345	178	62	43	21	41	0	34	105	0.516	0.304
+scifi	285	185	50	15	21	14	0	2	65	0.649	0.228
+scp	311	126	63	60	41	18	3	16	123	0.405	0.395
+superpowers	392	160	141	41	37	13	0	17	182	0.408	0.464
+videogame_mechanics_and_loops	325	117	85	34	30	59	0	3	119	0.36	0.366
+weirdfiction	235	130	28	57	10	10	0	26	85	0.553	0.362
