@@ -10,6 +10,43 @@ Started with the owner on 2026-11-23. This is the working method for turning MAR
 - Where a law can be simulated, test it in a small lab PROTOTYPE before it enters the engine.
 - Record decisions here with dates, and mirror them in the decisions log.
 - The case bank grows over time. The owner wants it very extensive: everyday life, crafts, combat, culture, abuse and exploits, and the fiction tropes in docs/coverage/*.tsv (4,128 rows) are a ready source.
+- RECORDS (2026-11-27): every axiom, decision, hypothesis, library answer and lab result has one record in docs/magic-records.yaml (statement, what it rests on, its computed label, status, entrenchment, the cases it decides, what each rejected option fails, its cost, what would reopen it, whether it was re-derived under FQ1, and its history). The doc stays the narrative; the file is the bookkeeping. A change here is mirrored there.
+- ENTRENCHMENT ORDER, from first kept to first given up (adopted 2026-11-27 from the library's workflow survey, suggestion 1 and 2):
+  1. AXIOMS (A1-A8).
+  2. R0, the target list (section 10).
+  3. LAB-BACKED decisions and lab results (a lab verdict never changes to fit a decision).
+  4. LIBRARY-BACKED decisions and library answers.
+  5. OWNER CHOICES among lawful options.
+  6. WORKING HYPOTHESES (H1, H2 and the rivals).
+  7. PROVISIONAL CASE EXPECTATIONS (the case bank).
+  - Every reopening names the level it gave up. Giving up a higher level when a lower one could absorb the conflict needs a stated reason.
+  - Case expectations change only through the CONFLICT LOG (section 4). A conflict is answered by revising the law, revising the case, moving the case to a pack, a domain clause, a lemma-incorporation, or an open surrender.
+  - Every decision names the cost of its chosen option, and a case that each rejected option fails. If there is no such case, the record says "owner preference".
+  - A decision made before FQ1 is marked needs-recheck in the records if the root (an emergent medium, H2) may change it. It is not wrong; it is not yet re-derived.
+  - Records have a status: settled, provisional, needs-recheck, superseded, refuted, or open (a question not yet decided; it has no entrenchment rank). Entrenchment ranks the kind of record, not its dependencies; the details are in the header of docs/magic-records.yaml.
+  - NEXT-WORK ORDER: rank a question or prototype by (chance it flips a decision) x (records whose label contains it) x (UNCLEAR cases it decides) / cost. Build first into the engine what holds across every surviving medium.
+  - QOC (question, options, criteria) lists are kept only for the poorly understood questions: FQ1-FQ3, RQ1-RQ4 and Q10. Each lists the options, the criteria (A2, A6, R0 targets, cost) and what each option scores. For numeric questions we write a PASS RULE (a number and a tolerance, fixed before the run) instead.
+  - QOC for the root questions (what the doc records; "unknown" where it does not say):
+
+| question | options | criteria and what is known |
+|---|---|---|
+| FQ1 the root | (a)-(c) unknown; (d) why the field exists (chosen) | chosen for bottom-up realism; a least-action or gauge root alone was not enough because it fixes no content (unknown details) |
+| RQ1 where the substrate lives | (a) a hidden medium everywhere (working); (b) a mode of hidden matter property; (c) a sparse background of special particles | (a) fits MS2, Q4.2, ley lines; (b) would make empty space dead; (c) density varies by place; to be compared in the toy-model stage |
+| RQ2 classical or quantum | classical; quantum; (c) both in roles (chosen) | classical is simulable; quantum is where emergent light is known; R2.1 shows classical confinement fails exactly, so (c) is needed |
+| RQ3 what kind of medium | rule-following magnet; string-net; superfluid; elastic solid; hybridising; topological; fractional charges; induced-only | judged against R0 and the case bank; the expected consequence is a mix (H1, H2) |
+| RQ4 which charges | electric only; electric and magnetic; charge-1 only; charge-2 pairing; non-Abelian | electric only fails theta and dyons (H1 missed them); charge-1 only fails sharp borders (T10); non-Abelian kept as a rival |
+| Q10 beyond the One Change | doorways and teleport; rewind; conjure; planes | A6 limits all; bounded versions now, unbounded after a playable MVP, creation off; still open |
+
+  - PASS RULES for numeric questions (the numbers are the doc's own; a rule is fixed before the run):
+
+| question | pass rule |
+|---|---|
+| Q2.1 coherence | coherent sources add as N and random as sqrt(N); a synchronous group beats the rest once it exceeds sqrt(N_total), about 0.3% (Nunez); anaesthesia must not cast |
+| Q4.2 speed | an explicit 5 cm, 25 ms update is stable only up to about 1.15 m/s; light-like speed needs a quasi-static solve plus ray-marched pulses or an implicit solve |
+| Q6 holder heat | 1 MJ of overhead warms a 70 kg body about 4 C; large effects must show this limit |
+| Q1.2 dynamo | 25-65 microtesla; westward drift about 0.2 degrees a year; about 2.2 reversals per million years |
+| Q0 bits | kT ln 2 = 2.87 zJ per bit at 300 K; 1 kJ needs 3.5e23 bits |
+| R2.x lab runs | waves and masses within 1%; confinement claims need string tension above 0.005 (the R2.1 error); each run lists SUPPORTS and REFUTES lines first |
 
 ## 1. Axioms (settled)
 
@@ -206,9 +243,14 @@ Three axes: SUBSTANCE (what magic is), ACCESS (how it is reached), SPECIFICATION
 - NEW INGREDIENTS this needs beyond what is decided: (i) the V3 FEEDBACK LOOP (the mind's own field and the ambient field act back on thought), needed for the inner sense, subconscious access, belief bending the field, and spirits; (ii) self-sustaining computing field patterns (only for field-native beings, later).
 - MYSTICISM lives in KNOWLEDGE AND COMPLEXITY, not in the laws: exact in the engine, known to no one in the world (cultures hold competing, partly wrong theories, MC2; characters see only what they could know, MC7); access is subconscious, so it feels like intuition; the loop of minds, beliefs and field is chaotic; the deepest layer is a brute fact (why the field exists), with layers no culture has found yet. Explainable, but not explained to anyone in the world.
 
-## 3b. Dependency map (to build)
+## 3b. Dependency map (built 2026-11-27: docs/magic-records.yaml)
 
-The tree above gives the ORDER; the owner noted that decisions are interconnected. Each decision will list the earlier decisions it RELIES ON, so a changed answer shows at once which others move. To fill in when Q3.5 is settled.
+The tree above gives the ORDER; the owner noted that decisions are interconnected. The dependency map is docs/magic-records.yaml: one record per axiom, decision, hypothesis, library answer and lab result, each with what it rests on, its computed label (the base set it depends on), its status and entrenchment, and its history. Three things come out of it.
+
+- THE QUERY: "what moves if X is reopened" is every record whose label contains X; they go to needs-recheck and are never deleted.
+- THE NOGOOD LIST: combinations known impossible, each with its evidence. Today: a scalar field with A2; classical continuous-E compact U(1) with electric confinement (R2.1, exact); charge-1 condensing matter with three sharp phases; chameleon screening by bulk density; radiated push holding 50 kg at modest power; an explicit update at light-like speed on 5 cm voxels; an uncorrelated returned catalyst; raw synchrony as coupling; classical emergent light with a derived speed; the 3+1 vortex-charge duality; V2 with A2; belief making reality with A5; true creation with A6; an exact copy of a person; planting beliefs in strangers; a monthly forecast; information bits as an energy budget. A proposal is checked against it first.
+- THE COUPLED BLOCKS (a design structure matrix): B1 root (METHOD-CHANGE, FQ1-3, RQ1-4, Q1.0, H1, H2, R2.1); B2 field and matter (Q1.1, Q1.2, Q1.3, MS2, MS4, MS5, Q2.2, Q4.2, Q5.5); B3 mind coupling (MS1, Q2.1, Q2.3-Q2.6, Q3.2-Q3.5); B4 ledger (Q0, Q4.1, Q6, Q10); B5 channels, grammar and sensing (Q3.1, MS3, FM1, Q4.3, Q5.1, Q5.2); B6 effects on minds and life (Q5.3, Q5.4); B7 interfaces and culture (Q7, Q8.4, Q9). Each block marks the dependency I guessed as PROVISIONAL: B1 that the root is a hidden medium; B2 that carriers are bound defects of it, that the field is a vector and that c is a design parameter; B3 that a brain's coupling is carrier-based; B4 that Q0 holds unchanged in H2; B5 that Q5.1's routes are the medium's three portals; B7 that its links are my reading of the tree.
+- NEEDS-RECHECK (decided before FQ1; the root may change them): Q1.1, Q1.2, Q2.2, MS2, Q3.3, Q4.2 (light-like speed is a design parameter), Q5.1, Q5.2, Q5.5 (paused). Nothing else has been re-derived under FQ1 yet.
 
 ## 4. The case bank (first 26; expectations are PROVISIONAL until the questions they test are settled)
 
@@ -350,6 +392,36 @@ The tree above gives the ORDER; the owner noted that decisions are interconnecte
 | C135 | Two resonators set to feed each other | Grow until they drain the local field, then stop | Q6 |
 | C29 | A thunderstorm passes | The local field rises for a while (MC5), and casting is easier during and after | Q1.2 |
 
+**Derivation convention (2026-11-27).** The tests column names the DECISIONS the expected outcome is derived from; a failing case points to the first named step that broke. Existing case rows are left as written (nothing changes silently). PROPOSED additions to the tests column, each waiting for the owner's OK: FM1 for C04, C05, C06, C08, C09 (symbols work by meaning or geometry); MS5 for C15; MS2 for C20 and C98 (the index); Q0 for C126 and C127 (the template is information). Notes on ids that are not decisions in this doc: C25 names Q7 and MC6, C23 and C59 name Q9 (the sub-questions Q7.1-Q7.3 and Q9.1-Q9.3 are still open, so the broad id stays); C30 names Q1.3, which was folded into Q1.1 (b), so C27 and C30-C32 derive from Q1.1 (b). MC1-MC8 and R5 are not decisions in this doc: a case naming them (C25, C67, C73) is derived from them as named design items.
+
+## 4b. The conflict log (2026-11-27)
+
+A case expectation, a decision or a hypothesis may clash. Every clash is logged here with the response. A lab result is never changed to fit a decision. The responses are: revise the law; revise the case; move to a pack; a domain clause (the law stands, with a stated region where it holds); lemma-incorporation (the corrected result is folded into the law); surrender (given up or paused openly). The share settled by packs is reported below.
+
+| date | case or target | decision | response |
+|---|---|---|---|
+| 2026-11-23 | the first Q0 answer (checklist) against "more complete for now" | Q0 | revise the law: (f) five layers; the checklist is layer 1's default setting |
+| 2026-11-23 | C24 teleport with no doorway | A6, Q10 | move to a pack: a doorway pack with energy and momentum booked |
+| 2026-11-23 | C05 a recording of a chant | FM1, Q8.4 | move to a pack: a resonant-sound pack |
+| 2026-11-24 | C04 a parrot recites a spell (earlier text not kept: unknown) | Q3.5 | revise the case: rote sound moves only the body's small carrier share |
+| 2026-11-24 | C44 deep anaesthesia: raw synchrony rises but structure is destroyed | Q2.1 | revise the law: coupling is structured coherence, not raw amplitude (and the case) |
+| 2026-11-24 | C18 calming a frightened horse (earlier text not kept: unknown) | Q5.3 | revise the case: calming works through a port, a command does not, resistance and consent |
+| 2026-11-24 | C33 loading dice: 1 kJ needs 3.5e23 bits | Q0 layer 2 | revise the case: information governs order and luck, never energy budgets |
+| 2026-11-24 | C17 and the "force bolt": holding 50 kg by radiated push needs about 5 GW | Q5.5 | revise the law: radiated push is weak at light-like speed; Q5.5 paused, the static grip is field stress (T9) |
+| 2026-11-24 | the scalar field against A2 | Q1.1 | revise the law: the field is a vector (spin-1) field |
+| 2026-11-24 | chameleon-type screening against A2 | A2, Q1.1 (c), MS2 | domain clause: screening is kept only for field walls and the density-dependent index |
+| 2026-11-24 | a catalyst that returns unchanged enables nothing | A6 | lemma-incorporation: the pattern's wear or correlation pays (arXiv:2306.00798) |
+| 2026-11-24 | light-like speed on 5 cm voxels at 25 ms | Q4.2 | domain clause: holds only with a quasi-static solve plus ray-marched pulses or an implicit solve; c is a design parameter in the classical model |
+| 2026-11-24 | "best arousal rises with stress" against the original Yerkes-Dodson data | Q3.4 | revise the law: the best arousal falls as the task gets harder, so intricate spells need calm |
+| 2026-11-24 | C124 planting a false memory in a stranger | Q5.3, Q0 | move to a pack: content-level mind magic needs a model of that brain's code |
+| 2026-11-24 | C102 a slow-magic world | Q4.2 | move to a pack: slow air, visible bolts, real recoil |
+| 2026-11-24 | C131 raising the dead | Q5.4 | move to a pack |
+| 2026-11-24 | Q5.5 options judged shallow by the owner | Q5.5 | surrender (open): paused, and the METHOD CHANGE starts |
+| 2026-11-24 | H1's classical confined phase against R2.1 (string tension 0 within 0.005) | H1, RQ2 | domain clause: strings only as Higgs-phase flux tubes, from charge-2 matter, or imported as quantum phase data; the lab verdict is not changed |
+
+- SHARE SETTLED BY PACKS: 5 of 18 entries (28%): C24, C05, C124, C102, C131. The share is reported with every new batch of entries. A rising share warns that the default world is staying clean by exclusion.
+- Revisions of C04, C44, C18 and C33 are also mirrored in the records file (case_revisions).
+
 ## 5. Research to request (library)
 
 - Q4.1: information thermodynamics (Maxwell's demon, Szilard, Landauer, Bennett; feedback control at the thermodynamic limit).
@@ -365,6 +437,13 @@ The tree above gives the ORDER; the owner noted that decisions are interconnecte
 - P1 a toy field: a 2D grid of M with sources, leak and diffusion, and ray-marched pulses through a per-material index (C11, C14, C20).
 - P2 a pattern as a valve: a pattern of k bits steering a flow, with a Landauer cost per bit (Q4.1).
 - P3 completing an intent: a pattern with unspecified slots filled from a learned prior or from noise, measuring efficiency and wildness (C02, C03, Q3.3).
+- R2.2 (named in RQ4): charge-2 matter with quantised electric flux (Villain or Z_n). COULD FLIP: RQ4 (2), H2, R0 T10. Its pass rule preregisters RQ4's predictions (section 9).
+- R2.3 (named in RQ4): magnetic monopoles as matter. COULD FLIP: RQ4 (1), H2's confinement and theta claims.
+- FIRST ORDER (a guess; chance and cost to be set when each is taken up): R2.2, R2.3, P2, P1, P3, by the rule in "How we work".
+- COULD FLIP, P1: Q4.2 (speed by medium and frequency), MS2 (the index), Q1.2 (leak and refill).
+- COULD FLIP, P2: Q4.1 (the three routes), Q0 layers 2 and 4, Q6 (limits from booking).
+- COULD FLIP, P3: Q3.2 (intent as a goal with an inverse model), Q3.3 (the line from noise), Q2.5.
+- MUTATION-TEST RULE: once a law is lab code, run deliberate breaks and check that some case fails each. Breaks to run: a scalar for the vector field; sqrt(N) for N in Q2.1 (or the reverse); no Landauer term; zero mixing (the portal off); and any other break the case bank might miss. Wherever a break passes every case, add a case that catches it, with its tests column naming the law. Not run yet: no law is lab code.
 
 ## 7. Revisits: richer answers to consider later (owner, 2026-11-23: "keep these in mind, we will consider them later")
 
@@ -378,6 +457,16 @@ The tree above gives the ORDER; the owner noted that decisions are interconnecte
 - R8 (Q1.1) SELF-SUSTAINING PACKETS: a non-linear field holds stable lumps that persist (will-o'-the-wisps, standing spells).
 - R9 (MS3) A PERSONAL ACCENT: signatures identify the caster; a skilled caster can forge another's.
 - R10 (MS4) SYMPATHY FROM SHARED MODES: objects with similar mode sets are linked, a physical basis for "like affects like".
+- REVISIT CONDITION, R1: when P2 or the budget law is built as lab code (it is folded into Q0 layer 2 if adopted).
+- REVISIT CONDITION, R2: when the coupling law of Q2.1 is built, or a second kind of transducer is about to be added.
+- REVISIT CONDITION, R3: when Q1.2's coarse twin or R0 T7 (sources and large-scale structure) is taken up.
+- REVISIT CONDITION, R4: when P2 tests the luck cases (C33) or Q0's budget is coded.
+- REVISIT CONDITION, R5: when Q2.4 (c), the mind partly made of the field, is weighed, or when field memory is chosen from the wanted-not-required list (C73).
+- REVISIT CONDITION, R6: when gods or worship as a source is taken up under Q9, with a perpetual-motion guard written first.
+- REVISIT CONDITION, R7: when P1 or the engine needs materials beyond one index per material (prisms, birefringence).
+- REVISIT CONDITION, R8: when Q2.4 (c) or spirits are weighed, or a lab run (R2.x) shows stable lumps such as vortices or solitons.
+- REVISIT CONDITION, R9: when MS3's signatures or Q4.3's forensics are built.
+- REVISIT CONDITION, R10: when MS4's resonances are simulated as mode sets.
 
 Also reframed by the owner (2026-11-23): **Q1.3 is not "matter stores the field".** Physics never stores a field in a material; particles carry their own charge or moment and emit their own field (magnets, charges, excited states). So Q1.3 becomes: WHAT CARRIES THE FIELD'S CHARGE, and what absorbing the field does to those carriers. This reopens Q1.1-Q1.3 at the depth of the revised Q0.
 
@@ -428,6 +517,20 @@ What H1 already explains: Q1.1 (c) stable field states (= phases); dead zones an
 What H1 does not yet say: why the medium has these couplings (the brute fact moves one level down); which phase each place is in; how organised matter, minds included, binds and aligns carriers; the numbers.
 
 **Testing H1:** a library survey of the phases, dualities and dynamics of these media (and anything H1 misses); toy simulations of a classical compact U(1) lattice gauge theory with matter and inertia (Monte Carlo for phases, Hamiltonian dynamics for waves), measuring phases, the force law, waves and flux tubes; then the target list R0 and the case bank.
+
+### H1 to H2: what each change predicts (2026-11-27)
+
+H2 is H1 restated with RQ4. For each change, three columns keep the move honest: a NOVEL prediction that was preregistered, whether it is CORROBORATED, and whether the change ONLY ABSORBS a failure. A change that only absorbs a failure is a rescue, not progress.
+
+| change from H1 to H2 | novel prediction preregistered | corroborated | only absorbs a failure |
+|---|---|---|---|
+| (1) electric AND magnetic charges (dyons); theta term | Witten effect: monopoles pick up electric charge where theta is nonzero; magnetoelectric cross-effects in dead zones. Region type set by what condenses where | no (R2.3 not run) | partly: H1 missed theta terms and dyons (library correction 7) |
+| (2) charge-2 pairing that depends on conditions | sharp Z2 borders; half-quantum threads; Aharonov-Bohm sensing from a distance; engravings that pin and steer threads; borders that melt and re-form | no (R2.1 used charge-1 matter; R2.2 not run) | partly: sharp borders restore R0 T10, which H1's charge-1 matter could not give; the other three are novel |
+| (3) magnetic condensation gives strings (dual superconductor) | string tension above zero only where monopoles condense, scaling with their density | no: R2.1 shows monopole proliferation but zero string tension for static charge in the classical model | YES until R2.3 shows otherwise: R2.1 refuted the classical electric form, so this survives only as a quantum effect |
+| (4) non-Abelian symmetry | none preregistered | no | no: kept as a rival, not part of H2 |
+
+- R2.2'S PASS RULE MUST PREREGISTER RQ4's predictions as SUPPORTS and REFUTES lines before the run, one pair for each: sharp Z2 borders (SUPPORTS: a distinct screened phase with an order parameter and a sharp border for charge-2 matter; REFUTES: only a crossover); half-quantum threads (SUPPORTS: flux tubes at half the unit quantum in a charge-2 condensate; REFUTES: only whole quanta); Aharonov-Bohm sensing (SUPPORTS: a probe far from a thread reads a phase shift from its enclosed flux; REFUTES: no phase shift outside the core); borders that melt and re-form (SUPPORTS: a border vanishes above a pairing temperature and returns on cooling; REFUTES: no reversible melt). The thresholds and the tolerance are set when R2.2 restarts; these lines are the drafts to be fixed then.
+- Each outcome is recorded against H2 in the records file; a REFUTES result moves H2 to refuted for that change, and the lab verdict is not changed to fit.
 
 ## 10. R0: the target list (2026-11-24)
 

@@ -1,0 +1,1132 @@
+# MARK1 magic science: records (a truth-maintenance table for docs/magic-science.md)
+# Created 2026-11-27 from the doc only. Schema from the Library survey
+# surveys/2026-11-25-mark1-workflow-frameworks.md (S1, "the section 3b schema").
+# Nothing here is a new decision. Where the doc does not say, the value is "unknown".
+#
+# CONVENTIONS
+# - rests_on: written by hand from what the doc says each record uses.
+# - label: the TRANSITIVE closure of rests_on (the base set it depends on), excluding the record itself.
+#   Axioms with no rests_on have an empty label. If a record in a label is reopened, every record
+#   that carries it in its label goes to needs-recheck (never deleted).
+# - status: settled | provisional | needs-recheck | superseded | refuted | open.
+#   "provisional" means a tentative decision; "open" means not decided yet (see below).
+# - history: the key events of each record. The FULL record of case-level conflicts (pack moves,
+#   domain clauses, surrenders) is the conflict log in docs/magic-science.md section 4b; a record's
+#   history does not repeat every log entry.
+# - entrenchment (1 = kept longest, 7 = given up first), the order in docs/magic-science.md "How we work":
+#   1 axioms; 2 R0 targets; 3 lab results; 4 library-backed (library answers, and decisions whose main
+#   support or correction came from the library); 5 owner choices among lawful options;
+#   6 working hypotheses; 7 provisional case expectations (the case bank, not recorded here).
+#   LEVELS WERE ASSIGNED FROM THE DOC TEXT, not by the owner: the owner may correct any of them.
+# - discriminates: for each rejected option, a case it fails. The doc seldom lists the rejected options
+#   of an early decision, so most say "unknown" or "owner preference"; "inferred" marks my reading.
+# - needs-recheck means: decided before FQ1 (the root: an emergent medium, H2) and the medium may
+#   change it. It does not mean the decision is wrong.
+# - Open questions that are not decided yet are recorded too, with status "open" and entrenchment null
+#   (a fixed sixth status, added 2026-11-27 after a check: "provisional" means a tentative DECISION).
+#   Q5.5 is open and paused, so it keeps needs-recheck.
+# - ENTRENCHMENT RANKS THE KIND OF RECORD, not the dependency. R0 (level 2) is a target list that the owner
+#   fixed; its rests_on lists the decisions its lines were written under. A record never gets more
+#   entrenched than what it rests on in practice: if a level-5 record under R0 is reopened, R0's affected
+#   line goes to needs-recheck, and the reopening is logged with the level given up.
+# - Level 4 versus 5: a decision whose numbers or mechanism came from a library answer or a lab check is 4;
+#   a decision the owner chose among options that all passed the same checks is 5. Where a decision has both,
+#   I took the lower number only when the doc says the library answer was decisive. Not set by the owner.
+# - reconstructed: true marks a record with no entry of its own in the doc (an earlier answer, a claim
+#   inside H1, or a library or lab source). It was split out for the truth-maintenance table only.
+# - Case rows in the doc cite ids that have no record here (MC1-MC8, Q7, Q9, Q1.3). They are left as
+#   written; see the derivation convention in section 4 of the doc.
+
+meta:
+  created: 2026-11-27
+  source_doc: docs/magic-science.md
+  library_survey: "Library surveys/2026-11-25-mark1-workflow-frameworks.md (read only)"
+  case_bank: "C01-C142 (the doc's table lists the cases up to C135 plus C29; C136-C142: unknown, not in the table read)"
+
+records:
+
+# ---------------------------------------------------------------- AXIOMS
+- id: A1
+  kind: axiom
+  statement: "The One Change: a patterned structure moves energy and momentum at a distance through a finite, conserved, out-of-equilibrium field M; it steers a flow and makes no energy."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 1
+  decides: [unknown]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "unknown (stated in magic-design section 1; no reopening condition in this doc)"
+  rederived_under_FQ1: "partly: FQ1 asks where the field comes from, and RQ1 (a) makes the field a collective mode of a hidden medium; A1's finite field M is then a property of the medium"
+  history: [{date: unknown, change: "stated (magic-design section 1)"}]
+
+- id: A2
+  kind: axiom
+  statement: "Arrangement, not bulk: the field couples only through structures whose effect depends on their arrangement, never as a bulk force on ordinary matter."
+  rests_on: [LIB-principles]
+  label: [LIB-principles]
+  status: settled
+  entrenchment: 1
+  decides: [C32]
+  discriminates: {"a scalar field (one sign for all matter)": "C32 and the whole of everyday physics (it would already be detected)", "chameleon-type bulk-density screening": "owner: A2 rejects it, except for field walls and the density-dependent index"}
+  cost: "everything that couples must be organised matter; a neutral disordered bulk is silent (R0 T4)"
+  would_reopen_if: "unknown; the doc keeps A2 as a fixed point (V2, the mind shaping the field directly, would loosen it and is a pack)"
+  rederived_under_FQ1: "partly: the medium is where carriers cancel in bulk; H2 keeps neutral matter silent but the explanation (cancellation in a medium) has not been derived"
+  history:
+    - {date: 2026-11-23, change: "stated, from the library (Carroll, arXiv:2101.07884)"}
+    - {date: 2026-11-24, change: "CORRECTED: the field must be a vector field; chameleon-type screening is kept only for field walls", trigger: LIB-frameworks}
+
+- id: A3
+  kind: axiom
+  statement: "Every joule booked: magic hands off to the existing laws, and a magic joule acts like any other joule."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 1
+  decides: [C26, C91]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "partly: R0 T12 requires energy and momentum conserved including the medium; not yet shown for H2"
+  history: [{date: unknown, change: "stated"}]
+
+- id: A4
+  kind: axiom
+  statement: "A spell is a mechanism on existing fields (for example isolate a gas at x and spark it at t); never 'the mana bar went down, the enemy went boom'."
+  rests_on: [A1]
+  label: [A1]
+  status: settled
+  entrenchment: 1
+  decides: [C10]
+  discriminates: {}
+  cost: "no bare-effect spells; every effect needs a lawful route"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: a statement about spells, independent of the medium's inner nature"
+  history: [{date: unknown, change: "stated; repeated as MS3 (the doc records it with MS3)"}]
+
+- id: A5
+  kind: axiom
+  statement: "Realism by default; game rules as packs."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 1
+  decides: [unknown]
+  discriminates: {"pure model 5 (belief makes reality)": "breaks A5 (section 3a)"}
+  cost: "game limits (mana, cooldowns, spell slots) exist only in packs"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: independent of the medium"
+  history: [{date: unknown, change: "stated"}]
+
+- id: A6
+  kind: axiom
+  statement: "Magic only allows change that could exist without it: every end state is lawful and some ordinary process could reach it; magic changes which lawful change happens, where, when and how fast."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 1
+  decides: [C24]
+  discriminates: {"true creation of mass": "ruled out by A6", "teleport in the base world": "C24 (no ordinary path is instant, so a pack doorway)"}
+  cost: "teleport and true creation are packs or impossible"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "partly: R0 T13 asks for only lawful end states with wear or correlation as the payment; to be shown for H2"
+  history:
+    - {date: 2026-11-23, change: "stated by the owner, with Q0; follows from Q0 layers 1-2 (a consistency, not a dependency)"}
+    - {date: 2026-11-24, change: "RESTATED: a perfectly returned uncorrelated catalyst enables nothing under exact conservation (arXiv:2306.00798); the pattern's WEAR pays for what it enables", trigger: LIB-frameworks}
+
+- id: A7
+  kind: axiom
+  statement: "Cases emerge and are never coded: the case bank is a set of emergence tests with no case-specific code."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 1
+  decides: [all]
+  discriminates: {}
+  cost: "every case must come from the laws; failures send us back to the laws, never to a patch"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: a method axiom"
+  history: [{date: 2026-11-23, change: "stated by the owner"}]
+
+- id: A8
+  kind: axiom
+  statement: "The zero-magic limit: with M = 0 or no coupling every law reduces exactly to the engine's non-magic laws; with magic off, mind tests and golden traces are bit for bit unchanged."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 1
+  decides: [C75, C79]
+  discriminates: {}
+  cost: "a mind with no carriers is magically deaf (C79)"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "partly: library emergent-media correction 5 says kinetic mixing is small and never forbidden, so the zero-magic limit is a PARAMETER CHOICE in the medium, not a symmetry"
+  history: [{date: 2026-11-24, change: "stated, with Q2.5"}]
+
+# ---------------------------------------------------------------- R0 (TARGETS)
+- id: R0
+  kind: target
+  statement: "The target list T1-T16: every candidate medium must reproduce them in its effective limit; T16 is every case in the case bank."
+  rests_on: [A2, A3, A6, A7, A8, Q0, Q1.1, Q1.2, Q3.3, Q4.2, Q5.1, Q5.5, MS2, LIB-frameworks]
+  label: [A1, A2, A3, A4, A6, A7, A8, MS2, MS3, Q0, Q1.1, Q1.2, Q2.1, Q3.1, Q3.3, Q4.1, Q4.2, Q5.1, Q5.5, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 2
+  decides: [all]
+  discriminates: {"a candidate that fails one target": "wrong or incomplete, or the target is reopened explicitly"}
+  cost: "every medium must meet 16 targets; known gaps T5, T7, T8, T13, T14 (confined phase), T10 needs q >= 2"
+  would_reopen_if: "a target proves impossible in every candidate (then it is reopened explicitly)"
+  rederived_under_FQ1: "yes: R0 was written as the test for the FQ1 program"
+  notes: "T2 and T10 also cite H1 as the source; that is a citation, not a dependency (it would make a cycle through RQ3)."
+  history: [{date: 2026-11-24, change: "written"}]
+
+# ---------------------------------------------------------------- DECISIONS: MS, FM1
+- id: MS1
+  kind: decision
+  statement: "Practice raises efficiency; skill has an intrinsic part and an explicit part; layers run field, interfaces and notations, spells; the default history has gods giving compiled thematic spells."
+  rests_on: [A1]
+  label: [A1]
+  status: settled
+  entrenchment: 5
+  decides: [C71, C82]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "unfamiliar patterns waste more heat"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: mind and culture side; independent of the medium"
+  history: [{date: unknown, change: "decided (magic-design addendum)"}]
+
+- id: MS2
+  kind: decision
+  statement: "A magic index per material (Snell, partial reflection, waveguides, lenses); density-dependent index later."
+  rests_on: [A1]
+  label: [A1]
+  status: needs-recheck
+  entrenchment: 5
+  decides: [C20, C98]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "every material needs index data; R7 (direction- and frequency-dependent indexes) is deferred"
+  would_reopen_if: "the medium (H2) gives an index that is not a per-material constant (R0 T5 is a known gap)"
+  rederived_under_FQ1: "no: T5 (material classes from how carriers respond) is still a gap for every candidate medium"
+  history: [{date: unknown, change: "decided (magic-design addendum)"}]
+
+- id: MS3
+  kind: decision
+  statement: "Signatures ride whichever channel carries the tell; the tell and waste go to any physical channel; spells are mechanisms (A4)."
+  rests_on: [A3, A4]
+  label: [A1, A3, A4]
+  status: settled
+  entrenchment: 5
+  decides: [C111]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "unknown"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: stated at the level of channels"
+  history: [{date: unknown, change: "decided (magic-design addendum)"}]
+
+- id: MS4
+  kind: decision
+  statement: "Every object resonates by its real body; no object is a focus by type; nobody needs a staff."
+  rests_on: [A1]
+  label: [A1]
+  status: settled
+  entrenchment: 5
+  decides: [unknown]
+  discriminates: {"focus objects by type": "unknown; owner preference"}
+  cost: "antennas and staffs help only through real geometry"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no"
+  history: [{date: unknown, change: "decided (magic-design addendum)"}]
+
+- id: MS5
+  kind: decision
+  statement: "Engravings are multiplexed by wavelength; crosstalk later."
+  rests_on: [MS2]
+  label: [A1, MS2]
+  status: settled
+  entrenchment: 5
+  decides: [C15]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "crosstalk deferred"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no"
+  history: [{date: unknown, change: "decided (magic-design addendum)"}]
+
+- id: FM1
+  kind: decision
+  statement: "(b) by default: minds work by meaning, shaped matter by geometry, voice and gesture are channels for a mind; (c) sounds and gestures that work by physical form is open (Q8.4)."
+  rests_on: [A2, MS4]
+  label: [A1, A2, MS4, LIB-principles]
+  status: settled
+  entrenchment: 5
+  decides: [C04, C05, C06, C08, C09]
+  discriminates: {"pure model 3 (linguistic: correct symbols work)": "C08 (translation) and C04 (parrot), section 3a", "(c) resonant sounds by default": "C05 is left to a pack (Q8.4)"}
+  cost: "recordings and parrots do nothing in the default world"
+  would_reopen_if: "Q8.4 adopts physically resonant sound and gesture as default"
+  rederived_under_FQ1: "no: about interfaces, not the medium"
+  history: [{date: 2026-11-23, change: "decided (b) by default"}]
+
+# ---------------------------------------------------------------- DECISIONS: Q0 to Q1.x
+- id: Q0
+  kind: decision
+  statement: "(f) FIVE LAYERS: symmetries decide what is conserved; a thermodynamic budget (information as fuel) decides whether it is affordable; causal reach decides whether it can get there; computation decides what the thinking costs; the One Change is how it happens."
+  rests_on: [A1, A3, A6, LIB-principles, LIB-science, LIB-frameworks]
+  label: [A1, A3, A6, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [C24, C33, C34, C35, C55, C85, C90, C100, C116, C124]
+  discriminates: {"the first answer, a conservation checklist": "inferred: C33, C34, C35 (a checklist has no price for bits of bias, search or forecast); the owner's reason was 'more complete for now'"}
+  cost: "five layers to simulate or bound; layer 2 needs a mutual-information term; layer 4 needs a complexity limit"
+  would_reopen_if: "unknown; the layer-2 form W_in >= dF - kT * I_used was corrected by the library and may be corrected again"
+  rederived_under_FQ1: "partly: Q0 is a resource or constructor-theoretic statement, independent of the medium; R0 T12 and T13 must hold for H2"
+  history:
+    - {date: 2026-11-23, change: "first answer (a conservation checklist)"}
+    - {date: 2026-11-23, change: "REVISED to (f), five layers; the checklist becomes layer 1's default setting; supersedes Q0-v1"}
+    - {date: 2026-11-24, change: "CORRECTED: layer 2 exact form with mutual information; erasing the record costs at least kT * I", trigger: LIB-frameworks}
+
+- id: Q0-v1
+  kind: decision
+  reconstructed: true  # no entry of its own in the doc; split out from the text that mentions it
+  statement: "First answer to Q0: a conservation checklist."
+  rests_on: [A3, A6]
+  label: [A3, A6]
+  status: superseded
+  entrenchment: 5
+  decides: []
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "never retried unless Q0's layers fail a case (it is now layer 1's default setting)"
+  rederived_under_FQ1: "no"
+  history:
+    - {date: 2026-11-23, change: "decided"}
+    - {date: 2026-11-23, change: "SUPERSEDED by Q0 (f)", trigger: "owner: 'more complete for now'"}
+
+- id: Q1.0
+  kind: decision
+  statement: "(b) AN EFFECTIVE THEORY PLUS A WRITTEN DEEPER THEORY: simulate at the engine's level; a generating theory is written once and checked for consistency, never run each tick, and produces the effective numbers."
+  rests_on: [Q0, A5]
+  label: [A1, A3, A5, A6, Q0, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [unknown]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "a deeper theory must be written and kept consistent; a pack may swap it"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "partly: FQ1 and RQ1-RQ4 are the program that writes the deeper theory Q1.0 asked for"
+  history: [{date: 2026-11-24, change: "decided (b)"}]
+
+- id: Q1.1
+  kind: decision
+  statement: "(b) NOW, (c) LATER: carriers with a small magic charge or moment, built like electromagnetism (A2 explained by cancellation), organised carriers couple; charged materials emit their own field; later stable field states."
+  rests_on: [A1, A2, MS2, Q0, LIB-science, LIB-frameworks]
+  label: [A1, A2, A3, A6, MS2, Q0, LIB-principles, LIB-science, LIB-frameworks]
+  status: needs-recheck
+  entrenchment: 5
+  decides: [C14, C36, C37, C38, C62]
+  discriminates: {"a scalar energy field": "C32 / A2 (one sign for all matter), library", "the first answer (energy with a phase)": "unknown; merged into (b)"}
+  cost: "carriers must exist, point every which way in bulk, and be organised by life or craft; heat erases the charge of charged materials"
+  would_reopen_if: "H2 gives a different carrier picture; (c) stable field states are now the phases of H1/H2 (R0 T10 needs q >= 2)"
+  rederived_under_FQ1: "no: written as a carrier model; the emergent medium (RQ1 (a)) should supply carriers and phases"
+  history:
+    - {date: 2026-11-23, change: "first answer (energy with a phase)"}
+    - {date: 2026-11-23, change: "REVISED to (b) now, (c) later; merged with the reframed Q1.3"}
+    - {date: 2026-11-24, change: "CORRECTED: the field must be a vector (spin-1) field, the scalar is to be replaced", trigger: LIB-frameworks}
+    - {date: 2026-11-24, change: "charged-material numbers added (coercivity, Curie points)", trigger: LIB-science}
+
+- id: Q1.1-v1
+  kind: decision
+  reconstructed: true  # no entry of its own in the doc; split out from the text that mentions it
+  statement: "First answer to Q1.1: the field is energy with a phase, kept as the waves' property."
+  rests_on: [A1]
+  label: [A1]
+  status: superseded
+  entrenchment: 5
+  decides: []
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "never retried; its content is kept as the waves' property in Q1.1 (b)"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "decided"}, {date: 2026-11-23, change: "SUPERSEDED by Q1.1 (b), merged with the reframed Q1.3"}]
+
+- id: Q1.2
+  kind: decision
+  statement: "(d): the field is made wherever carriers move or organise, above all by the planet's churning core (a dynamo); cheap estimate (a fixed share of dissipation) for far regions; ancient deposits are lodestones; inflow from other worlds is a pack."
+  rests_on: [A3, Q1.1, LIB-science]
+  label: [A1, A2, A3, A6, MS2, Q0, Q1.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: needs-recheck
+  entrenchment: 5
+  decides: [C11, C27, C28, C29, C39, C40, C41]
+  discriminates: {"the first answer (natural flows, deposits, inflow as a pack)": "unknown; kept, each part given a physical cause"}
+  cost: "a planetary dynamo and its drift and reversals must be simulated or tabled; field comes from taking energy from each process"
+  would_reopen_if: "the medium's own dynamics (H2) change how field is made, or R0 T7 (sources, large-scale structure) fails for it"
+  rederived_under_FQ1: "no: R0 T7 is a known gap"
+  history:
+    - {date: 2026-11-23, change: "first answer"}
+    - {date: 2026-11-23, change: "REVISED to (d), each part given a physical cause"}
+    - {date: 2026-11-24, change: "dynamo numbers added", trigger: LIB-science}
+
+- id: Q1.3
+  kind: decision
+  statement: "Reframed: not 'matter stores the field' but WHAT CARRIES THE FIELD'S CHARGE and what absorbing the field does to the carriers; folded into Q1.1 (b)."
+  rests_on: [A2, Q1.1]
+  label: [A1, A2, A3, A6, MS2, Q0, Q1.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: superseded
+  entrenchment: 5
+  decides: [C27, C30, C31, C32]
+  discriminates: {"matter stores the field": "owner reframing: physics never stores a field in a material"}
+  cost: "reopened Q1.1-Q1.3 at the depth of the revised Q0"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "REFRAMED by the owner; SUPERSEDED by Q1.1 (b)"}]
+
+# ---------------------------------------------------------------- Q2
+- id: Q2.1
+  kind: decision
+  statement: "(d) A BLEND: neural synchrony as the core, plus a little coupling from the body; beasts evolve organs; humans have natural variation in carrier density and geometry. REDEFINED: coupling uses band-limited structured coherence, not raw amplitude."
+  rests_on: [A2, Q1.1, LIB-science]
+  label: [A1, A2, A3, A6, MS2, Q0, Q1.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 4
+  decides: [C01, C04, C08, C38, C42, C43, C44, C45]
+  discriminates: {"raw synchrony amplitude as the measure": "C44 (anaesthesia raises raw amplitude but destroys structure, so it would cast)", "a special organ in humans": "C38 / owner (no special organ, natural variation)"}
+  cost: "a structured-coherence measure per mind; coherent sources add as N and random as sqrt(N); needs a mind model with a synchrony variable"
+  would_reopen_if: "a result showing raw amplitude, not structure, sets coupling; or H2's coupling to a brain is not carrier-based"
+  rederived_under_FQ1: "no: depends on carriers (Q1.1) existing in brains"
+  history:
+    - {date: 2026-11-23, change: "decided (d), coupling = carrier count x geometry x synchrony"}
+    - {date: 2026-11-24, change: "REDEFINED to structured coherence; C44 revised", trigger: LIB-science}
+
+- id: Q2.2
+  kind: decision
+  statement: "(d) ALL THREE: material classes like electronics (conductors, insulators, magnets, switchables); an engraving is a real circuit; charging writes a pattern of aligned carriers; living matter couples better than dead and fades after death unless cured."
+  rests_on: [A2, Q1.1, A7, LIB-science]
+  label: [A1, A2, A3, A6, A7, MS2, Q0, Q1.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: needs-recheck
+  entrenchment: 5
+  decides: [C06, C07, C09, C22, C45, C46, C47, C48, C49, C87, C97, C105, C123, C134]
+  discriminates: {"(options)": "unknown; owner preference ('all three')"}
+  cost: "four material classes with data; remanence needs a critical temperature and a coercivity; engravings need purity and Q data"
+  would_reopen_if: "H2's material classes (R0 T5, a known gap) are not these four"
+  rederived_under_FQ1: "no: T5 is a known gap"
+  history: [{date: 2026-11-23, change: "decided (d)"}, {date: 2026-11-24, change: "charged-material law (stored state lasts tau0 exp(E/kT); one erasure law, three routes) added", trigger: LIB-science}]
+
+- id: Q2.3
+  kind: decision
+  statement: "(b) LIKE REAL HUMAN APTITUDES: moderate heritability over many genes, rare large-effect variants, plasticity in childhood, practice with diminishing returns (grows with the log of practice hours)."
+  rests_on: [Q2.1, LIB-science]
+  label: [A1, A2, A3, A6, MS2, Q0, Q1.1, Q2.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 4
+  decides: [C21, C50, C51, C52, C53, C74]
+  discriminates: {"a flag or class": "C23 and C38 (differences must come from culture, priors, plasticity, not a flag)"}
+  cost: "uses the genetics layer; bloodlines show only statistically"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: biology side"
+  history: [{date: 2026-11-23, change: "decided (b)"}, {date: 2026-11-24, change: "training law (log hours; some never learn) added", trigger: LIB-science}]
+
+- id: Q2.4
+  kind: decision
+  statement: "(d): a weak feedback loop for every coupled mind (like ephaptic coupling), mostly subconscious and trainable, plus an optional evolved sense organ; the mind partly made of the field (c) is a later extension."
+  rests_on: [Q1.1, Q2.1, LIB-science]
+  label: [A1, A2, A3, A6, MS2, Q0, Q1.1, Q2.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 4
+  decides: [C68, C69, C70, C71, C72, C73, C74, C96, C112, C119]
+  discriminates: {"V2 (the mind shapes the field directly)": "A2 and Q2.1 (it would loosen A2; a pack)", "(c) the mind partly made of the field, now": "deferred with R5 and R8"}
+  cost: "a frequency penalty (0.74 mV/mm at 1 Hz, 5.58 mV/mm at 30 Hz); a stun needs several V/m"
+  would_reopen_if: "R5 or R8 is adopted (then (c) opens)"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-24, change: "decided (d)"}, {date: 2026-11-24, change: "numbers added", trigger: LIB-science}]
+
+- id: Q2.5
+  kind: decision
+  statement: "(b) ONLY THE MIND'S EXISTING GENERIC PORTS: sense (one more channel), act (one more act family), body state (arousal, noise, precision, plus one new variable, synchrony), others (casting seen through its tells); no field-to-reward link."
+  rests_on: [Q2.1, Q2.4, Q3.2, A8]
+  label: [A1, A2, A3, A4, A6, A8, MS1, MS2, MS3, Q0, Q1.1, Q2.1, Q2.4, Q3.1, Q3.2, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [C76, C77, C78, C79, C80, C122]
+  discriminates: {"a field-to-reward link or direct belief writing": "C77, C80, C122 (fear, node-seeking and liking must emerge, not be coded)"}
+  cost: "the mind gains one variable (synchrony) and one sense channel"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: rests on ports, not the medium's inside"
+  history: [{date: 2026-11-24, change: "decided (b)"}]
+
+- id: Q2.6
+  kind: decision
+  statement: "(d) THREE LAYERS: physics (all organised matter couples a little), biology (evolution tuned it), culture (interfaces are technologies built on that capacity, by selection)."
+  rests_on: [Q2.1, Q2.3, MS1]
+  label: [A1, A2, A3, A6, MS1, MS2, Q0, Q1.1, Q2.1, Q2.3, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [C93, C94, C95, C96, C97]
+  discriminates: {"a special magic language": "C94 (an isolated people finds a different working interface)"}
+  cost: "culture must be simulated for interfaces to improve"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-24, change: "decided (d)"}]
+
+# ---------------------------------------------------------------- Q3
+- id: Q3.1
+  kind: decision
+  statement: "(c) BOTH LEVELS: grammar is how minds compose a spell; what acts is a designed waveform meeting carriers (selects by resonance, pushes by momentum, heats by absorption, senses by reflection). The sim runs the grammar with costs and errors from wave physics."
+  rests_on: [Q0, Q1.1, MS2, MS3]
+  label: [A1, A2, A3, A4, A6, MS2, MS3, Q0, Q1.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [C54, C55, C56, C57, C108]
+  discriminates: {"grammar only (code) or waveform only": "unknown; owner's statement 'the grammar happens by sentient thought, but what moves is pure wave physics'"}
+  cost: "each substance needs magic absorption lines; errors land on the nearest resonance"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "decided (c)"}]
+
+- id: Q3.2
+  kind: decision
+  statement: "(d): intent is a goal; a learned inverse model turns it into a pattern; explicit overrides are MS1's explicit skill; culture supplies ready-made models; noise fills the rest."
+  rests_on: [MS1, Q3.1, LIB-science]
+  label: [A1, A2, A3, A4, A6, MS1, MS2, MS3, Q0, Q1.1, Q3.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 4
+  decides: [C02, C03, C58, C59, C60]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "needs the mind's learned model of its own acts (the same machinery as Q2.5)"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "decided (d)"}, {date: 2026-11-24, change: "STRENGTHENED: motor noise grows with command size, minimal intervention", trigger: LIB-science}]
+
+- id: Q3.3
+  kind: decision
+  statement: "(c) THE LINE COMES FROM NOISE: coupling is continuous; every effect must beat the thermal noise of the matter it acts on; no hand-set threshold; ritual works by synchrony."
+  rests_on: [Q0, Q1.1, Q2.1]
+  label: [A1, A2, A3, A6, MS2, Q0, Q1.1, Q2.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: needs-recheck
+  entrenchment: 5
+  decides: [C02, C61, C62, C63, C69, C107]
+  discriminates: {"a hand-set threshold": "owner preference (no threshold by decision); inferred: C63 (daydreams) would need a coded line"}
+  cost: "every absorber must also emit noise at its temperature (R0 T8, a known gap)"
+  would_reopen_if: "H2 cannot give one friction for absorption and noise (T8)"
+  rederived_under_FQ1: "no: T8 is a known gap"
+  history: [{date: 2026-11-23, change: "decided (c)"}]
+
+- id: Q3.4
+  kind: decision
+  statement: "(c) for INTRINSIC magic: any strong goal casts, conscious or not; accidental magic in children and strongly coupled adults; fades through adolescence; practised patterns become reflexes; dreams stay below the noise."
+  rests_on: [Q3.3, Q2.1, LIB-science]
+  label: [A1, A2, A3, A6, MS2, Q0, Q1.1, Q2.1, Q3.3, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 4
+  decides: [C01, C19, C64, C65, C66, C67]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "emotional control must mature in the mind model"
+  would_reopen_if: "unknown; the owner's open conflict (how a goal like 'escape' maps onto fields) was taken up as Q3.5"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "decided (c)"}, {date: 2026-11-24, change: "CORRECTED: the best arousal FALLS as the task gets harder (Yerkes-Dodson), so intricate spells need calm", trigger: LIB-science}]
+
+- id: Q3.5
+  kind: decision
+  statement: "(b) THE IMPLICIT MODEL IS ENOUGH; EXPLICIT THEORY EXTENDS REACH; no wishes; new effects by exploration or theory; the owner's addition: pattern-matching symbols without understanding has some effect (drawn, traced, or held in mind)."
+  rests_on: [Q2.1, Q2.2, Q2.5, Q3.2, MS1, Q3.4]
+  label: [A1, A2, A3, A4, A6, A7, A8, MS1, MS2, MS3, Q0, Q1.1, Q2.1, Q2.2, Q2.4, Q2.5, Q3.1, Q3.2, Q3.3, Q3.4, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [C04, C81, C82, C83, C84, C85, C86, C87]
+  discriminates: {"V2 (the mind shapes the field directly)": "A2 and Q2.1; a pack", "V3 as an addition to V1": "taken up as Q2.4 (b)", "explicit theory required": "C81 (an illiterate healer excels within her practice)"}
+  cost: "two kinds of mage must emerge; a gesture believed necessary can work only through confidence (C84)"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: mind side; V1 is the current position and choosing it reopens nothing"
+  history:
+    - {date: 2026-11-23, change: "opened as OPEN, with V1 to V3"}
+    - {date: 2026-11-24, change: "decided (b); C04 revised (rote sound moves only the body's small carrier share)"}
+
+# ---------------------------------------------------------------- Q4
+- id: Q4.1
+  kind: decision
+  statement: "(d) ONE ACCOUNTING OF THREE ROUTES: valve (uphill, from a store), triggers (downhill, from the world's metastable stores), demon (sorting by information, paid in bits and Landauer heat)."
+  rests_on: [Q0, A3, A4, LIB-principles, LIB-science]
+  label: [A1, A3, A4, A6, Q0, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [C10, C17, C88, C89, C90, C91, C92, C115, C130, C132]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "a mage must know where the world stores energy; bits and heat must be booked"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: a thermodynamic statement independent of the medium"
+  history: [{date: 2026-11-24, change: "decided (d)"}]
+
+- id: Q4.2
+  kind: decision
+  statement: "(c) SPEED SET BY MEDIUM AND FREQUENCY (dispersion); light-like in air at typical casting frequencies in the default world; waves slow in dense coupled matter; recoil = energy over speed; a pack may make air slow."
+  rests_on: [Q1.1, MS2, LIB-frameworks]
+  label: [A1, A2, A3, A6, MS2, Q0, Q1.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: needs-recheck
+  entrenchment: 5
+  decides: [C14, C20, C37, C98, C99, C100, C101, C102]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "'light-like in air' holds only with a quasi-static field solve plus ray-marched pulses, or an implicit solver (an explicit update on 5 cm voxels at 25 ms is stable only up to about 1.15 m/s)"
+  would_reopen_if: "the classical medium model fixes c as a design parameter, and emergent light is quantum only (c about 1-50 m/s in real quantum spin ices); so light-like speed is a chosen number, not derived"
+  rederived_under_FQ1: "no: library emergent-media correction 4 says c is a design parameter in the classical model"
+  history: [{date: 2026-11-24, change: "decided (c)"}, {date: 2026-11-24, change: "CORRECTED: stability limit and solver requirement", trigger: LIB-frameworks}, {date: 2026-11-24, change: "FLAGGED: c is a design parameter under the classical model", trigger: LIB-emergent-media}]
+
+- id: Q4.3
+  kind: decision
+  statement: "(b) PASSIVE AND ACTIVE SENSING, WITH RECIPROCITY: passive is silent; active pings are tells; detection limited by noise (Q3.3); quiet casting trades reach for stealth; forensics from faint patterns written into magnet-class materials."
+  rests_on: [Q3.3, Q4.2, Q2.2, LIB-science]
+  label: [A1, A2, A3, A6, A7, MS2, Q0, Q1.1, Q2.1, Q2.2, Q3.3, Q4.2, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [C56, C103, C104, C105, C106, C107]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "unknown"
+  would_reopen_if: "Q2.2 (needs-recheck) changes the magnet-class materials the forensics rely on"
+  rederived_under_FQ1: "partly: Aharonov-Bohm sensing from distance is a new H2 sensing route (RQ4) not yet in this decision"
+  history: [{date: 2026-11-24, change: "decided (b)"}]
+
+# ---------------------------------------------------------------- Q5
+- id: Q5.1
+  kind: decision
+  statement: "(c) CARRIER RESONANCES PLUS A WEAK LINK TO ELECTROMAGNETISM: heat, push, light, chemistry and sound each have a physical route; one tiny mixing constant (sparks, stun, lightning, compass twitch)."
+  rests_on: [Q1.1, Q3.1, Q4.1, MS3]
+  label: [A1, A2, A3, A4, A6, MS2, MS3, Q0, Q1.1, Q3.1, Q4.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: needs-recheck
+  entrenchment: 5
+  decides: [C10, C108, C109, C110, C111, C112]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "one mixing constant, tiny so A2 holds; packs may change it"
+  would_reopen_if: "the medium's three portals (binding, mixing, energy exchange) do not match these routes; the phase decides which portal is strong"
+  rederived_under_FQ1: "partly: RQ3 names the same three portals as the only ways the medium touches ordinary physics, which agrees; the numbers are not derived"
+  history: [{date: 2026-11-24, change: "decided (c)"}]
+
+- id: Q5.2
+  kind: decision
+  statement: "(b) THE NUCLEUS TOO, AT ITS REAL COST AND HAZARDS: conjuring is gathering; an exact copy costs the original's information; transmutation is lawful but about a million times the energy of chemistry and radioactive."
+  rests_on: [A6, Q0, Q4.1, Q5.1]
+  label: [A1, A2, A3, A4, A6, MS2, MS3, Q0, Q1.1, Q3.1, Q4.1, Q5.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: needs-recheck
+  entrenchment: 5
+  decides: [C17, C113, C114, C115, C116, C117]
+  discriminates: {"(options)": "unknown; owner preference"}
+  cost: "the mechanism of nuclear reach is unknown to the owner; a candidate is nuclear resonance at gamma-like frequencies"
+  would_reopen_if: "the deeper theory (the medium) gives a nuclear route, or none"
+  rederived_under_FQ1: "no: the doc says the mechanism belongs to the deeper theory (Q1.0), which FQ1 is writing"
+  history: [{date: 2026-11-24, change: "decided (b)"}]
+
+- id: Q5.3
+  kind: decision
+  statement: "(b) PRECISE, BUT ONLY THROUGH THE PORTS: calm or agitation, drowsiness, focus, induced percepts; beliefs change only through perception and learning; content-level magic is out of reach for strangers (a pack); resistance and consent fall out of forced synchrony."
+  rests_on: [Q0, Q2.4, Q2.5, Q5.1]
+  label: [A1, A2, A3, A4, A6, A8, MS1, MS2, MS3, Q0, Q1.1, Q2.1, Q2.4, Q2.5, Q3.1, Q3.2, Q4.1, Q5.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [C18, C118, C119, C120, C121, C122, C123, C124]
+  discriminates: {"content-level magic by default (planting beliefs, commands)": "C124 (a false memory in a stranger needs a model of that brain's code: Q0 information layer)"}
+  cost: "content-level effects exist only in a pack"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no: rests on ports"
+  history: [{date: 2026-11-24, change: "decided (b)"}]
+
+- id: Q5.4
+  kind: decision
+  statement: "(c) ROUTE 1 PLUS ROUTE 2 AS PATTERN GUIDANCE: feed the body's own repair, and guide regeneration with positional signals; the template must come from real information; the dead stay dead."
+  rests_on: [Q0, Q4.1, Q5.1]
+  label: [A1, A2, A3, A4, A6, MS2, MS3, Q0, Q1.1, Q3.1, Q4.1, Q5.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [C16, C60, C125, C126, C127, C128, C129, C130, C131]
+  discriminates: {"forcing growth without a pattern": "C129 (a disordered, tumour-like lump)", "raising the dead by default": "C131 (a pack)"}
+  cost: "food, time and a template; speed capped by cell division"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-24, change: "decided (c); refines healing-design HL4"}]
+
+- id: Q5.5
+  kind: decision
+  statement: "OPEN, PAUSED: force at a distance. The owner found the options (radiated push, magnet-like static grip, slow-magic packs) shallow: mechanism stories patched one at a time."
+  rests_on: [Q4.2, Q5.1, LIB-frameworks]
+  label: [A1, A2, A3, A4, A6, MS2, MS3, Q0, Q1.1, Q3.1, Q4.1, Q4.2, Q5.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: needs-recheck
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [C17]
+  discriminates: {"radiated push as a light-like force bolt": "C17 (holding 50 kg would take about 5 GW: force = power / speed)"}
+  cost: "paused; a light-like force bolt acts through heat or a gas blast"
+  would_reopen_if: "the library's correction applies: a static grip is field stress (setup energy and losses), not radiated power; R0 T9 asks for it"
+  rederived_under_FQ1: "no: paused before FQ1; the METHOD CHANGE was made because of it"
+  history:
+    - {date: 2026-11-24, change: "PAUSED by the owner"}
+    - {date: 2026-11-24, change: "CORRECTION recorded: radiated push is weak at light-like speeds (5 GW for 50 kg)"}
+    - {date: 2026-11-24, change: "CAN REOPEN: a static grip is field stress", trigger: LIB-frameworks}
+
+- id: Q6
+  kind: decision
+  statement: "(a) NO EXPLICIT LIMITS BY DEFAULT; (b) GAME LIMITS AS PACKS: the library's cost laws and guards are consequences; the one visible limit is the holder's own heat (1 MJ warms a 70 kg body about 4 C); mana, cooldowns and spell slots exist only in packs."
+  rests_on: [Q0, Q1.2, Q4.1, LIB-principles]
+  label: [A1, A2, A3, A4, A6, MS2, Q0, Q1.1, Q1.2, Q4.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 4
+  decides: [C11, C26, C28, C132, C133, C134, C135]
+  discriminates: {"hand-set mana and cooldowns": "inferred: C132 and C133 (heat and running cost already limit them); owner: packs only"}
+  cost: "limits must emerge from booking; if they do not, a case fails"
+  would_reopen_if: "a case shows a missing limit that no law produces"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-24, change: "decided (a) plus (b)"}]
+
+# ---------------------------------------------------------------- METHOD AND ROOT
+- id: METHOD-CHANGE
+  kind: decision
+  statement: "Stop inventing mechanisms; choose a ROOT FRAMEWORK first, then re-derive the earlier decisions as its consequences (candidates in section 8)."
+  rests_on: [Q5.5]
+  label: [A1, A2, A3, A4, A6, MS2, MS3, Q0, Q1.1, Q3.1, Q4.1, Q4.2, Q5.1, Q5.5, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [unknown]
+  discriminates: {"patching mechanism stories one at a time": "Q5.5 (the owner's reason)"}
+  cost: "earlier decisions become needs-recheck until re-derived (this is the cost recorded by rederived_under_FQ1)"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "yes: it is the origin of FQ1"
+  history: [{date: 2026-11-24, change: "owner method change"}]
+
+- id: FQ1
+  kind: decision
+  statement: "(d) WHY THE FIELD EXISTS IS THE ROOT: magic is made real from the bottom up as a large research project; the field EMERGES from an underlying substrate; the generic root becomes the derived effective layer the engine runs."
+  rests_on: [Q1.0, METHOD-CHANGE, LIB-frameworks]
+  label: [A1, A2, A3, A4, A5, A6, MS2, MS3, Q0, Q1.0, Q1.1, Q3.1, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [unknown]
+  discriminates: {"(a)-(c) other roots (a least-action or gauge-principle root, etc.)": "unknown; the doc names the candidates (section 8) but not what failed"}
+  cost: "a large research program: substrate research, toy-model simulations, coarse-graining, and the consequences the effective theory misses"
+  would_reopen_if: "unknown; library-backed lab results may show no substrate fits R0"
+  rederived_under_FQ1: "yes: it is FQ1"
+  history: [{date: 2026-11-24, change: "decided (d), by the owner"}]
+
+- id: FQ2
+  kind: decision
+  statement: "OPEN: which other frameworks become tools or consequences of the root."
+  rests_on: [FQ1]
+  label: [A1, A2, A3, A4, A5, A6, MS2, MS3, Q0, Q1.0, Q1.1, Q3.1, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, LIB-principles, LIB-science, LIB-frameworks]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [unknown]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "yes: asked under FQ1"
+  history: [{date: 2026-11-24, change: "named, not yet taken up"}]
+
+- id: FQ3
+  kind: decision
+  statement: "OPEN: does the gauge principle give the field's why."
+  rests_on: [FQ1]
+  label: [A1, A2, A3, A4, A5, A6, MS2, MS3, Q0, Q1.0, Q1.1, Q3.1, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, LIB-principles, LIB-science, LIB-frameworks]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [unknown]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "yes: asked under FQ1"
+  history: [{date: 2026-11-24, change: "named, not yet taken up"}]
+
+- id: RQ1
+  kind: decision
+  statement: "(a) A HIDDEN MEDIUM FILLING ALL OF SPACE (working hypothesis); rivals kept: (b) a collective mode of a hidden property of ordinary matter; (c) a sparse background of special particles."
+  rests_on: [FQ1]
+  label: [A1, A2, A3, A4, A5, A6, MS2, MS3, Q0, Q1.0, Q1.1, Q3.1, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, LIB-principles, LIB-science, LIB-frameworks]
+  status: provisional
+  entrenchment: 5
+  decides: [unknown]
+  discriminates: {"(b) and (c)": "unknown; kept as rivals to be compared in the toy-model stage"}
+  cost: "a medium everywhere; fits MS2, Q4.2 and ley lines"
+  would_reopen_if: "the toy models favour (b) or (c)"
+  rederived_under_FQ1: "yes"
+  history: [{date: 2026-11-24, change: "decided (a) as a working hypothesis"}]
+
+- id: RQ2
+  kind: decision
+  statement: "(c) BOTH, IN ROLES: the written deeper theory is quantum (spin ice, string-net); the research and simulation model is classical with inertia, tested against what the quantum theory says should emerge; the classical model is the macro interpretation."
+  rests_on: [FQ1, RQ1, Q1.0]
+  label: [A1, A2, A3, A4, A5, A6, MS2, MS3, Q0, Q1.0, Q1.1, Q3.1, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, RQ1, LIB-principles, LIB-science, LIB-frameworks]
+  status: settled
+  entrenchment: 5
+  decides: [unknown]
+  discriminates: {"(a) classical only; (b) quantum only": "unknown; owner chose both in roles (R2.1 later shows a classical model cannot confine electric charge)"}
+  cost: "disagreements between the two are findings; an effect needing the quantum substrate is rarer and stranger in the world"
+  would_reopen_if: "the classical model fails R0 targets that only the quantum theory meets (T15)"
+  rederived_under_FQ1: "yes"
+  history: [{date: 2026-11-24, change: "decided (c)"}, {date: 2026-11-24, change: "first experiment R2.1 set"}]
+
+- id: RQ3
+  kind: decision
+  statement: "(b) THE FIRST RESEARCH COMPARISON, with (c) A MIX OF MEDIA AS ITS EXPECTED CONSEQUENCE: compare the kinds of medium by library survey and toy simulation against R0 and the case bank; the first attempt at the mix is H1. Working assumption: three portals; charges free and bound where the medium allows."
+  rests_on: [RQ2, R0]
+  label: [A1, A2, A3, A4, A5, A6, A7, A8, MS2, MS3, Q0, Q1.0, Q1.1, Q1.2, Q2.1, Q3.1, Q3.3, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, RQ1, RQ2, R0, LIB-principles, LIB-science, LIB-frameworks]
+  status: provisional
+  entrenchment: 5
+  decides: [unknown]
+  discriminates: {"a single medium chosen up front": "owner: 'the correct answer is some mix of all that exists'"}
+  cost: "writing down a mix is hard in the first go"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "yes"
+  history: [{date: 2026-11-24, change: "decided (b) with (c) as the expected consequence"}]
+
+- id: RQ4
+  kind: decision
+  statement: "A COMBINATION THAT STAYS WITHIN REAL PHYSICS: (1) electric and magnetic charges both exist ('t Hooft classification; Witten effect); (2) charge-2 pairing that depends on conditions (sharp borders, half-quantum threads, Aharonov-Bohm sensing, borders that melt and re-form); (3) non-Abelian symmetry is a rival for later. Tests R2.2 and R2.3. H2 = H1 restated with these."
+  rests_on: [RQ3, H1, LIB-emergent-media, LAB-R2.1]
+  label: [A1, A2, A3, A4, A5, A6, A7, A8, MS2, MS3, Q0, Q1.0, Q1.1, Q1.2, Q2.1, Q3.1, Q3.3, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, RQ1, RQ2, RQ3, R0, H1, LAB-R2.1, LIB-emergent-media, LIB-principles, LIB-science, LIB-frameworks]
+  status: provisional
+  entrenchment: 5
+  decides: [unknown]
+  discriminates: {"charge-1 condensing matter only": "R0 T10 and the library's Fradkin-Shenker watch (three sharp phases need charge 2 or higher)", "electric charge only": "H1's missing theta term and dyons (library correction 7)"}
+  cost: "H2 has more parts (two charge types, a pairing temperature, possibly a non-Abelian rival); new tests R2.2 and R2.3"
+  would_reopen_if: "R2.2 or R2.3 refutes the predictions in section 9 (see the SUPPORTS and REFUTES lines)"
+  rederived_under_FQ1: "yes"
+  history: [{date: 2026-11-24, change: "decided; H2 stated"}]
+
+# ---------------------------------------------------------------- OPEN QUESTIONS (not decided)
+- id: Q7.1
+  kind: decision
+  statement: "OPEN: media as channels (rate, noise, tell)."
+  rests_on: [Q3.1]
+  label: [A1, A2, A3, A4, A6, MS2, MS3, Q0, Q1.1, Q3.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [unknown]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "listed in the question tree"}]
+
+- id: Q7.2
+  kind: decision
+  statement: "OPEN, partly sourced: notations and working memory (about 4 chunks per level; notation is external storage and adds no power); many notations compiling to one grammar."
+  rests_on: [Q3.5, LIB-science]
+  label: [A1, A2, A3, A4, A6, A7, A8, MS1, MS2, MS3, Q0, Q1.1, Q2.1, Q2.2, Q2.4, Q2.5, Q3.1, Q3.2, Q3.3, Q3.4, Q3.5, LIB-principles, LIB-science, LIB-frameworks]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [C08]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-24, change: "working-memory numbers added", trigger: LIB-science}]
+
+- id: Q7.3
+  kind: decision
+  statement: "OPEN: engravings and devices as circuits (MS5)."
+  rests_on: [Q2.2, MS5]
+  label: [A1, A2, A3, A6, A7, MS2, MS5, Q0, Q1.1, Q2.2, LIB-principles, LIB-science, LIB-frameworks]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [C06, C07, C15, C22, C48]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "listed in the question tree"}]
+
+- id: Q8.4
+  kind: decision
+  statement: "OPEN: FM1 (c): are physically resonant sounds and gestures in the default world, or a pack?"
+  rests_on: [FM1]
+  label: [A1, A2, MS4, FM1, LIB-principles]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [C04, C05]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "opened with FM1"}]
+
+- id: Q9.1
+  kind: decision
+  statement: "OPEN: skill, intrinsic and explicit (MS1)."
+  rests_on: [MS1, Q2.3, Q2.5]
+  label: [A1, A2, A3, A4, A6, A8, MS1, MS2, MS3, Q0, Q1.1, Q2.1, Q2.3, Q2.4, Q2.5, Q3.1, Q3.2, LIB-principles, LIB-science, LIB-frameworks]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [C03, C78]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "listed in the question tree"}]
+
+- id: Q9.2
+  kind: decision
+  statement: "OPEN: gifted spells and taking them apart (MS1's cultural path)."
+  rests_on: [MS1]
+  label: [A1, MS1]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [C12, C13]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "listed in the question tree"}]
+
+- id: Q9.3
+  kind: decision
+  statement: "OPEN: how magical knowledge spreads, errs and is lost (the knowledge design); the scholar prototype of in-world science belongs here."
+  rests_on: [MS1, Q2.6]
+  label: [A1, A2, A3, A6, MS1, MS2, Q0, Q1.1, Q2.1, Q2.3, Q2.6, LIB-principles, LIB-science, LIB-frameworks]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [unknown]
+  discriminates: {}
+  cost: "unknown"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "listed in the question tree"}]
+
+- id: Q10
+  kind: decision
+  statement: "OPEN: beyond the One Change (doorways and teleport, rewind, conjure, planes). Earlier owner decisions apply: bounded versions now, unbounded after a playable MVP, true creation off by default."
+  rests_on: [A6, Q0, Q5.2]
+  label: [A1, A2, A3, A4, A6, MS2, MS3, Q0, Q1.1, Q3.1, Q4.1, Q5.1, Q5.2, LIB-principles, LIB-science, LIB-frameworks]
+  status: open
+  entrenchment: null  # open: nothing decided, so no rank yet
+  decides: [C24]
+  discriminates: {}
+  cost: "doorways carry energy and momentum"
+  would_reopen_if: "not decided yet"
+  rederived_under_FQ1: "no"
+  history: [{date: 2026-11-23, change: "listed in the question tree"}]
+
+# ---------------------------------------------------------------- HYPOTHESES
+- id: H1
+  kind: hypothesis
+  statement: "The medium filling space is a compact U(1) lattice gauge theory coupled to charged matter at a spacing far below the voxels; its phases (Coulomb, confined, Higgs or screened) are the kinds of magic region; the other media are dual descriptions or limits."
+  rests_on: [RQ3, Q1.1, LIB-emergent-media, LAB-R2.1]
+  label: [A1, A2, A3, A4, A5, A6, A7, A8, MS2, MS3, Q0, Q1.0, Q1.1, Q1.2, Q2.1, Q3.1, Q3.3, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, RQ1, RQ2, RQ3, R0, LAB-R2.1, LIB-emergent-media, LIB-principles, LIB-science, LIB-frameworks]
+  status: superseded
+  entrenchment: 6
+  decides: [unknown]
+  discriminates: {}
+  cost: "three-phase table belongs to the quantum 4D theory; the classical thermal ensemble has no electric confinement"
+  would_reopen_if: "kept as the base text of H2; reopened if H2 is dropped"
+  rederived_under_FQ1: "yes: it is the first FQ1 attempt"
+  history:
+    - {date: 2026-11-24, change: "first attempt written (draft, to be stress-tested)"}
+    - {date: 2026-11-24, change: "MAJOR CAVEAT and CORRECTIONS 1-7 added", trigger: LIB-emergent-media}
+    - {date: 2026-11-24, change: "R2.1 result added; classical confinement refuted", trigger: LAB-R2.1}
+    - {date: 2026-11-24, change: "SUPERSEDED by H2 (RQ4); the text is kept", trigger: RQ4}
+
+- id: H1-classical-confinement
+  kind: hypothesis
+  reconstructed: true  # no entry of its own in the doc; split out from the text that mentions it
+  statement: "Claim inside H1: the classical medium has a confined (string) phase for static electric charge."
+  rests_on: [LAB-R2.1, RQ2]
+  label: [A1, A2, A3, A4, A5, A6, MS2, MS3, Q0, Q1.0, Q1.1, Q3.1, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, RQ1, RQ2, LAB-R2.1, LIB-principles, LIB-science, LIB-frameworks]
+  status: refuted
+  entrenchment: 6
+  decides: []
+  discriminates: {}
+  cost: "n/a"
+  would_reopen_if: "never in the classical model (exact argument); a quantum 4D control does confine, so the claim lives only in the quantum theory"
+  rederived_under_FQ1: "yes"
+  history: [{date: 2026-11-24, change: "REFUTED EXACTLY (string tension 0 within 0.005; the Gauss-law part of E has zero curl)", trigger: LAB-R2.1}]
+
+- id: H2
+  kind: hypothesis
+  statement: "H1 restated with RQ4: electric and magnetic charges, conditional charge-2 pairing giving sharp dead-zone borders where conditions allow, a non-Abelian rival for later."
+  rests_on: [H1, RQ4]
+  label: [A1, A2, A3, A4, A5, A6, A7, A8, MS2, MS3, Q0, Q1.0, Q1.1, Q1.2, Q2.1, Q3.1, Q3.3, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, RQ1, RQ2, RQ3, R0, H1, RQ4, LAB-R2.1, LIB-emergent-media, LIB-principles, LIB-science, LIB-frameworks]
+  status: provisional
+  entrenchment: 6
+  decides: [unknown]
+  discriminates: {"H1 (charge-1 only)": "R0 T10 (distinct stable regions with boundaries) and the library watch"}
+  cost: "more parts; the pairing temperature is a new dial; R2.2 and R2.3 untested"
+  would_reopen_if: "R2.2 or R2.3 refutes the preregistered predictions (section 9)"
+  rederived_under_FQ1: "yes"
+  history: [{date: 2026-11-24, change: "stated with RQ4; no run yet"}]
+
+# ---------------------------------------------------------------- LIBRARY ANSWERS USED AS EVIDENCE
+- id: LIB-principles
+  kind: library
+  reconstructed: true  # no entry of its own in the doc; split out from the text that mentions it
+  statement: "Survey of about 50 magic principles; the eight cost laws and five guards; the Carroll argument (arXiv:2101.07884) behind A2."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 4
+  decides: []
+  discriminates: {}
+  cost: "n/a"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "n/a"
+  history: [{date: 2026-11-23, change: "received (Library surveys/2026-11-23-magic-principles.md; requests/2026-11-23-library-mark1-magic-principles.md)"}]
+
+- id: LIB-science
+  kind: library
+  reconstructed: true  # no entry of its own in the doc; split out from the text that mentions it
+  statement: "Science answer (responses/2026-11-23-mark1-magic-science-foundations.md): EEG coherence law, training laws, organs, charged materials, dynamo numbers, information thermodynamics, working memory, arousal."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 4
+  decides: []
+  discriminates: {}
+  cost: "n/a"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "n/a"
+  history: [{date: 2026-11-24, change: "received; refinements applied to Q2.1, Q2.3, Q2.4, Q3.2, Q3.4, Q7.2, Q1.1, Q1.2, Q2.2 and C44"}]
+
+- id: LIB-frameworks
+  kind: library
+  reconstructed: true  # no entry of its own in the doc; split out from the text that mentions it
+  statement: "Foundational frameworks answer (responses/2026-11-24-mark1-foundational-frameworks.md S5): Q0 layer-2 exact form, A6 wear, chameleon screening limited, field must be a vector, Q4.2 stability limit, Q5.5 can reopen."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 4
+  decides: []
+  discriminates: {}
+  cost: "n/a"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "n/a"
+  history: [{date: 2026-11-24, change: "received; corrections recorded"}]
+
+- id: LIB-emergent-media
+  kind: library
+  reconstructed: true  # no entry of its own in the doc; split out from the text that mentions it
+  statement: "Emergent-media answer (responses/2026-11-24-mark1-emergent-media.md), with L1 and L3: no classical electric confinement; charge-1 matter has one phase; three sharp phases need q >= 2; c is a design parameter classically; three portals; grip by pinning; what H1 misses; and the tested recipe (photon dispersion, Higgs mass, Debye screening within stated errors)."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 4
+  decides: []
+  discriminates: {}
+  cost: "n/a"
+  would_reopen_if: "unknown; the Fradkin-Shenker charge-1 point was marked 'to be confirmed' when first cited"
+  rederived_under_FQ1: "n/a"
+  history: [{date: 2026-11-24, change: "received; corrections 1-7 added to H1"}]
+
+- id: LIB-workflow-frameworks
+  kind: library
+  reconstructed: true  # no entry of its own in the doc; split out from the text that mentions it
+  statement: "Workflow survey (surveys/2026-11-25-mark1-workflow-frameworks.md): record schema, nogoods, entrenchment order, QOC for root questions, conflict log, mutation tests; the owner adopted its suggestions 1-9."
+  rests_on: []
+  label: []
+  status: settled
+  entrenchment: 4
+  decides: []
+  discriminates: {}
+  cost: "bookkeeping only; no study tests these on a human design team"
+  would_reopen_if: "unknown"
+  rederived_under_FQ1: "n/a"
+  history: [{date: 2026-11-25, change: "received; suggestions 1-9 adopted (10, the scholar prototype, left for Q9.3)"}]
+
+# ---------------------------------------------------------------- LAB RESULT
+- id: LAB-R2.1
+  kind: lab
+  reconstructed: true  # no entry of its own in the doc; split out from the text that mentions it
+  statement: "R2.1 (magic lab, verified; lab/results/magicL/R2_1/report.txt): SUPPORTED linear waves c = sqrt(K cos theta_p) within 1%, field mass m^2 = J cos d within 1%, Yukawa screening 1/sqrt(chi), four flux quanta give four vortices, monopoles proliferate at strong coupling; REFUTED EXACTLY classical confinement of static charge (string tension 0 within 0.005); a 4D quantum-type control does confine; UNCLEAR regime boundaries are crossovers up to 16^3."
+  rests_on: [RQ2]
+  label: [A1, A2, A3, A4, A5, A6, MS2, MS3, Q0, Q1.0, Q1.1, Q3.1, Q4.1, Q4.2, Q5.1, Q5.5, METHOD-CHANGE, FQ1, RQ1, RQ2, LIB-principles, LIB-science, LIB-frameworks]
+  tests: [H1]
+  status: settled
+  entrenchment: 3
+  decides: [unknown]
+  discriminates: {}
+  cost: "n/a"
+  would_reopen_if: "a larger lattice (above 16^3) or a corrected run shows an error; a lab verdict is never changed to fit a decision"
+  rederived_under_FQ1: "yes: run for FQ1/RQ2"
+  history: [{date: 2026-11-24, change: "result recorded against H1 (an R2.1 'pass rule' anticipated the exact argument and the 4D control)"}]
+
+# ---------------------------------------------------------------- NOGOODS
+nogoods:
+  - combination: [scalar field M, A2]
+    evidence: "LIB-frameworks: a scalar (spin-0) field couples to all matter with one sign; the formal write-up's scalar is to be replaced by a vector."
+  - combination: [classical continuous-E compact U(1) medium, electric confinement of static charge]
+    evidence: "LAB-R2.1, exact: the Gauss-law part of E has zero curl, so the force is Coulomb or Yukawa in every phase (string tension 0 within 0.005). A 4D quantum-type control does confine."
+  - combination: [charge-1 condensing matter, three sharp phases (Coulomb, confined, Higgs distinct)]
+    evidence: "LIB-emergent-media correction 2 (Fradkin-Shenker): confined and Higgs are one phase; three sharp phases need q >= 2 with Z_q order. H1 must state q."
+  - combination: [chameleon-type screening by bulk density, A2]
+    evidence: "LIB-frameworks: A2 rejects it; kept only for field walls and the density-dependent index."
+  - combination: [radiated push at light-like speed, holding 50 kg at modest power]
+    evidence: "Q5.5 correction: force = power / speed, about 5 GW. A static grip is field stress, a different mechanism."
+  - combination: [explicit field update on 5 cm voxels at 25 ms, light-like speed in air]
+    evidence: "LIB-frameworks: stable only up to about 1.15 m/s; needs a quasi-static solve plus ray-marched pulses, or an implicit solver (R0 T14)."
+  - combination: [perfectly returned uncorrelated catalyst, an enabled change, exact conservation]
+    evidence: "LIB-frameworks (arXiv:2306.00798); A6 restated: the pattern's wear or its correlation pays."
+  - combination: [raw synchrony amplitude as the coupling measure, anaesthesia or deep sleep cannot cast]
+    evidence: "LIB-science: these states raise raw amplitude while destroying structure (C44)."
+  - combination: [emergent light in the classical medium, derived speed]
+    evidence: "LIB-emergent-media correction 4: emergent light is quantum only (c about 1-50 m/s in real quantum spin ices); in the classical model c is a design parameter."
+  - combination: [vortex-charge duality as exact in 3+1 dimensions, superfluid picture of this medium]
+    evidence: "LIB-emergent-media correction 3: exact only in 2+1; in 3+1 a superfluid is dual to a two-form field. Fracton-elasticity is a 2D tensor theory, not a limit of this medium."
+  - combination: [V2 (the mind shapes the field directly), A2 and Q2.1]
+    evidence: "Q3.5 text: V2 would reopen Q1.1 and Q2.1 and loosen A2; it suits a pack."
+  - combination: [pure model 5 (belief makes reality), A5]
+    evidence: "section 3a: breaks A5 (reality depends on opinion). Belief acts only through synchrony of minds (3c)."
+  - combination: [true creation of mass, A6]
+    evidence: "A6 and Q5.2: conjuring is gathering; creation is ruled out."
+  - combination: [exact copy of a person, finite information budget]
+    evidence: "Q5.2 and C116: an exact copy costs the original's full information; impossible for a person."
+  - combination: [planting beliefs or memories in a stranger, only the mind's ports]
+    evidence: "Q5.3 and C124: needs a model of that specific brain's code (Q0 information layer); out of reach for strangers."
+  - combination: [weather forecast a month ahead, any power]
+    evidence: "Q0 layer 4 and C35: chaos and computation."
+  - combination: [information bits as an energy budget, kJ-scale effects]
+    evidence: "LIB-science and C33: 1 kJ would need 3.5e23 bits; information governs order and luck, never energy budgets."
+
+# ---------------------------------------------------------------- COUPLED BLOCKS (design structure matrix)
+# Every decision record sits in exactly one block. A block is a set whose members depend on each
+# other; "guessed" marks the dependency I (not the owner) assumed, to be treated as provisional.
+coupled_blocks:
+  - block: B1-root
+    members: [METHOD-CHANGE, FQ1, FQ2, FQ3, RQ1, RQ2, RQ3, RQ4, Q1.0, R0, H1, H2, LAB-R2.1]
+    internal: "RQ1 to RQ4 each narrow the previous; H1 and H2 write the mix; R2.x test it; R0 judges it."
+    depends_on_blocks: [B2, B4]
+    guessed_dependency: "PROVISIONAL: that the root is a hidden medium (RQ1 (a)) whose effective layer replaces B2's carrier model. RQ1 (b) and (c) are alive."
+    status: provisional
+  - block: B2-field-and-matter
+    members: [Q1.1, Q1.1-v1, Q1.2, Q1.3, MS2, MS4, MS5, Q2.2, Q4.2, Q5.5]
+    internal: "carriers (Q1.1) make materials (Q2.2, MS2) and set the speed (Q4.2); sources (Q1.2) feed the field; Q5.5 waits on the field's stress."
+    depends_on_blocks: [B1, B4]
+    guessed_dependency: "PROVISIONAL: that carriers are bound defects of the medium (RQ3 working assumption) and that the field is a vector field; that c is a design parameter (Q4.2)."
+    status: needs-recheck
+  - block: B3-mind-coupling
+    members: [MS1, Q2.1, Q2.3, Q2.4, Q2.5, Q2.6, Q3.2, Q3.3, Q3.4, Q3.5]
+    internal: "coupling (Q2.1) sets noise lines (Q3.3), the loop (Q2.4) and the ports (Q2.5); intent (Q3.2, Q3.5) uses the learned model."
+    depends_on_blocks: [B2, B4]
+    guessed_dependency: "PROVISIONAL: that a brain's coupling to the field is carrier-based, whatever the medium (an assumption this block makes about B2)."
+    status: settled
+  - block: B4-ledger
+    members: [Q0, Q4.1, Q6, Q10]
+    internal: "Q0's budget fixes what Q4.1's routes and Q6's limits can be; Q10 doorways are checked against Q0."
+    depends_on_blocks: []
+    guessed_dependency: "PROVISIONAL: that Q0's layers hold unchanged in H2 (R0 T12 and T13 untested there)."
+    status: settled
+  - block: B5-channels-grammar-sensing
+    members: [Q3.1, MS3, FM1, Q4.3, Q5.1, Q5.2]
+    internal: "the waveform (Q3.1) picks the channels (Q5.1, MS3); sensing (Q4.3) reads the same channels; Q5.2 is the deepest channel."
+    depends_on_blocks: [B2, B4]
+    guessed_dependency: "PROVISIONAL: that Q5.1's routes are the medium's three portals (binding, mixing, energy exchange)."
+    status: needs-recheck
+  - block: B6-effects-on-minds-and-life
+    members: [Q5.3, Q5.4]
+    internal: "both act through ports and existing repair or mind laws."
+    depends_on_blocks: [B3, B4, B5]
+    guessed_dependency: "none beyond the ports; the template information of Q5.4 rests on Q0."
+    status: settled
+  - block: B7-interfaces-and-culture
+    members: [Q7.1, Q7.2, Q7.3, Q8.4, Q9.1, Q9.2, Q9.3]
+    internal: "interfaces (Q7) are what culture (Q9) refines; Q8.4 is FM1's open half."
+    depends_on_blocks: [B2, B3, B5]
+    guessed_dependency: "PROVISIONAL: all open; their dependencies are my reading of the tree."
+    status: provisional
+
+# NEEDS-RECHECK (honest list; decided before FQ1, the root may change them)
+# Q1.1 (carrier picture, (c) states = phases), Q1.2 (sources, T7 gap), Q2.2 and MS2 (material classes, T5 gap),
+# Q3.3 (one friction for noise, T8 gap), Q4.2 (light-like speed is a design parameter, not derived),
+# Q5.1 (portals), Q5.2 (the nuclear mechanism belongs to the deeper theory), Q5.5 (paused).
+# Every record whose label contains one of these is affected only if that record is actually reopened.
+
+# CASE REVISIONS (cases are not records; their revisions are logged in the doc's section 4 conflict log)
+case_revisions:
+  - {case: C04, date: 2026-11-24, change: "parrot: revised with Q3.5 (rote sound moves only the body's small carrier share); the earlier text is not kept in the doc (unknown)", trigger: Q3.5}
+  - {case: C44, date: 2026-11-24, change: "anaesthesia: revised: raw synchrony rises but structured coherence is destroyed", trigger: LIB-science}
+  - {case: C18, date: 2026-11-24, change: "horse: expectation fixed by Q5.3's port rule; the earlier text is not kept (unknown)", trigger: Q5.3}
+  - {case: C33, date: 2026-11-24, change: "dice: caution that information governs order and luck, never energy budgets", trigger: LIB-science}
