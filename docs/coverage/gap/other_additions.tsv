@@ -1,5 +1,5 @@
-group	rows	v1	v3
-A9 content-selective neural effect	30	T2 needing A9	T0 3, T1 7, T3 17, U 3 (A9 needs 0 rows)
-A10 selective contact decoupling (Phasing)	1	T2 needing A10	T2 A8 (local doorway that travels with the body)
+group	rows	v3	v4
+A9 content-selective neural effect (E9 not adopted)	30	T0 3, T1 7, T3 17, U 3 (needs 0 rows)	unchanged; no row needs it
+A10 selective contact decoupling (Phasing)	1	T2 A8	Phasing: primary tier T3 (Pauli, R4.3-5); bounded version T2 E1+E8
 U unspecified anomalous entity	69	U	U (unchanged)
-transmutation at nuclear cost	2	T1	T1 (unchanged)
+transmutation at nuclear cost	2	T1	T1 with a nuclear-scale cost note (R4.3-6)

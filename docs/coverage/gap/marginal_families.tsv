@@ -1,0 +1,92 @@
+family	wanted_rows	rows_on_rung_3_or_4	share_of_family_resting_on_rung_3_4	share_of_those_low_confidence	examples
+Technology (Warhammer 40,000)	4	4	1.0	1.0	Defiler (Daemon engine); Forgefiend; Soul Grinder; Heldrake
+BoC demons	3	3	1.0	1.0	Shen Bu; Lu Ban; Yulong
+Angels and demons	3	3	1.0	1.0	Seraph; Michael (archangel); Fallen angel
+Transhumanism	3	3	1.0	0.33	Digital immortality; Whole brain emulation; Teletransportation paradox
+Egypt	2	2	1.0	0.5	Ammit; Ka and Ba
+Motif A	1	1	1.0	1.0	A100 Gods of sky, sea, earth
+Soul-external	1	1	1.0	0.0	Koschei the Deathless
+Nature spirits	1	1	1.0	0.0	Rusalka
+possessive mask	1	1	1.0	0.0	SCP-035 Possessive Mask
+ghost/reptile	1	1	1.0	0.0	SCP-2113 Haunted Liopleurodo
+artifact/ritual	1	1	1.0	0.0	SCP-2121 Gods' Noose
+deity/kaiju	1	1	1.0	1.0	SCP-3000 Anantashesha
+cadaver/electronic	1	1	1.0	0.0	SCP-4161 METEMPSYCHOSIS.
+cadaver/indestructible	1	1	1.0	0.0	SCP-4966 Tubbioca: Devourer 
+DCC deities	1	1	1.0	1.0	Emberus
+Chaos (Warhammer 40,000)	12	9	0.75	1.0	Chaos (Khorne Nurgle Tzeentc; Khorne; Nurgle; Tzeentch
+Great Old Ones	8	6	0.75	1.0	Byatis; Chaugnar Faugn; Cthylla; Dagon
+Cursed media	3	2	0.67	0.5	BEN Drowned; Majora's Mask
+Dream phenomena	3	2	0.67	1.0	Shared dream; Dream sharing machine
+Motif E	8	5	0.62	1.0	E200 Malevolent return from ; E300 Friendly return from th; E600 Reincarnation; E700 The soul as bird/insect
+Haunted objects	5	3	0.6	0.67	Annabelle; Dybbuk box; Robert the Doll
+India	5	3	0.6	1.0	Asura; Brahmarakshasa; Churel
+Cosmic	5	3	0.6	0.67	Cthulhu; Cult of an old god; Lovecraftian cosmic entity
+Cyberpunk	9	5	0.56	0.0	Soulkiller (engram upload th; Relic engram (Johnny Silverh; Agent Smith; Puppet Master (Ghost in the 
+celestial	6	3	0.5	1.0	Azata; Couatl; Deva, planetar, solar (angel
+Object	6	3	0.5	0.67	Chucky (killer doll); Possessed car (Christine); Slappy the Dummy
+Poe	4	2	0.5	0.0	Ligeia; Morella
+Abrahamic	2	1	0.5	1.0	Angel (messenger)
+Divine	2	1	0.5	1.0	Divinity
+Aliens and bio	2	1	0.5	1.0	Energy beings
+Slasher	2	1	0.5	0.0	Freddy Krueger
+Lovecraft races	2	1	0.5	1.0	Great Race of Yith
+DCC races	2	1	0.5	1.0	Celestial
+Computers, AI, minds	17	8	0.47	0.75	Astral projection; Body swap; Cortical stack and re-sleevi; Human possession in science 
+Gods: Hindu	5	2	0.4	1.0	Shiva; Vishnu
+Gods: Japanese	5	2	0.4	1.0	Shinigami; Tenjin (kami)
+Undead	16	6	0.38	0.5	Deadites; Jikininki; Lich; Revenant
+Demons	13	5	0.38	0.8	Bill Cipher (dream demon); Demon (Abrahamic); Djinn / Jinn; Possession by a demon
+Absorb	6	2	0.33	0.5	Doppelgeist; Duplicate Merging
+Analog horror	6	2	0.33	1.0	The Monument Mythos; The Walten Files
+RPG mechanics	6	2	0.33	1.0	Dominate person; Soul eating monster
+Jinn	6	2	0.33	1.0	Iblis; Gallu
+Dunsany	3	1	0.33	1.0	The Gods of Pegana
+Middle East	3	1	0.33	0.0	Qareen
+Possession	3	1	0.33	0.0	Kitsunetsuki
+Omni	3	1	0.33	0.0	Multipresence
+BoC spirit animals	3	1	0.33	1.0	Wicked Blade
+Taoist practices (Wikipedia Xianxia links)	3	1	0.33	1.0	Soul flight
+Gods: Mesopotamian	3	1	0.33	1.0	Marduk
+Post-apocalypse	3	1	0.33	1.0	Bird Box
+Immortals	3	1	0.33	1.0	Immortal by phylactery
+Mind	13	4	0.31	0.25	Mind Control; Multi-Possession; Possession; Soul-Puppetry
+Gods: Greek	10	3	0.3	1.0	Zeus; Hades; Ares
+Xenos (Warhammer 40,000)	7	2	0.29	1.0	C'tan; Eldar soulstone
+Dream fiction	16	4	0.25	1.0	Dream Cycle (Lovecraft); The Sandman (Gaiman); Inception (film); Paprika (anime)
+Cross-motif	8	2	0.25	1.0	Familiar (witch's animal); Soul theft (sleep, picture)
+spirit	4	1	0.25	1.0	Dream and nightmare creature
+Hodgson	4	1	0.25	1.0	The Ghost Pirates
+Outer Gods	4	1	0.25	1.0	Shub-Niggurath
+Gods: Aztec	4	1	0.25	1.0	Huītzilōpōchtli
+Class features	4	1	0.25	1.0	Familiar (wizard)
+Weird West	9	2	0.22	1.0	Harrowed (Deadlands); Revenant (Weird West)
+Ghosts	14	3	0.21	0.67	Dybbuk; Hungry ghost; Vengeful ghost
+undead	15	3	0.2	0.67	Hantu, hantu-like vengeance ; Soul-eater (soul stealing); Visitant, soulrider
+M. R. James	10	2	0.2	0.5	Count Magnus; Lost Hearts
+Folk	5	1	0.2	1.0	Toyol
+Tech	5	1	0.2	0.0	Uploaded mind horror
+Gods: Norse	5	1	0.2	1.0	Hel (being)
+Zone mutants (STALKER)	5	1	0.2	1.0	Controller
+Body	16	3	0.19	0.67	Angel Physiology; Demon Physiology; Ghost Physiology
+Lovecraft concepts	17	3	0.18	0.67	Beyond the Wall of Sleep; The Shadow out of Time; The Thing on the Doorstep
+Fairy tale	11	2	0.18	1.0	Fairy tale: Koschei the Deat; Fairy tale: Aladdin's lamp
+Ceremonial magic	12	2	0.17	1.0	Choronzon; Aiwass
+Andersen	12	2	0.17	0.5	Andersen: The Shadow; Andersen: The Snowman
+outsider	6	1	0.17	1.0	Daemon
+fiend	6	1	0.17	1.0	Demons (dretch, vrock, hezro
+Gods: Egyptian	6	1	0.17	1.0	Ra
+Japan	7	1	0.14	0.0	Onryō
+Cultivation realms	7	1	0.14	1.0	Nascent soul
+Psykers (Warhammer 40,000)	7	1	0.14	1.0	Golden Throne
+LitRPG	7	1	0.14	0.0	Reincarnation with memory
+Cultivation concepts	32	4	0.12	1.0	Soul devouring; Seizing a body; Nascent soul escape; Transmigration
+Mecha	8	1	0.12	1.0	Human Instrumentality Projec
+Gothic tropes	9	1	0.11	1.0	The Horla
+Items	9	1	0.11	1.0	Sentient sword (intelligent 
+Grimm	20	2	0.1	1.0	Grimm: The Blue Light; Grimm: The Spirit in the Bot
+construct	10	1	0.1	0.0	Haunted clockwork and wyrwoo
+Life and death	12	1	0.08	1.0	Reincarnation
+Space	14	1	0.07	0.0	Bilocation
+Mythological objects	16	1	0.06	1.0	Cintamani
+Magic (Shadowrun)	25	1	0.04	1.0	Astral space

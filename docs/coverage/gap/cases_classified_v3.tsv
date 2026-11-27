@@ -1,0 +1,136 @@
+id	case	tier	needs	confidence	flag	reason	doc_outcome
+C01	A frightened 6-year-old cornered by a dog	T1	A1	medium		an untrained coupled mind gives a crude unaimed field release, then fatigue	If the child couples at all: a big, crude, unaimed release (the curtains catch, or the dog is thrown back), then exhaustion
+C02	An untrained adult thinks "fire" hard	T1	A1	medium		a weak wasteful flicker from poor control of the field	Usually nothing; with some coupling, a weak, wasteful, wild flicker
+C03	A trained mage thinks "fire"	T1	A1	high		practised control steers energy into a known effect efficiently	Works, efficiently, for the practised case only
+C04	A parrot recites a spell perfectly	T0	-	high		rote sound moves only the body's small carrier share, nothing measurable	Nothing measurable: a parrot couples weakly, and rote sound moves only the body's small carrier share (revised with Q3.5)
+C05	A recording of a chant is played	T0	-	high	doc outcome conditional or provisional	a recording has no coupled mind, so no field control	Nothing in the default world; perhaps something in a resonant-sound pack
+C06	An illiterate mason copies a ward rune precisely	T1	A1	high		a precise pattern in conductive matter works as a ward	The ward works
+C07	A scholar copies the same rune sloppily	T1	A1	high		a sloppy pattern shifts the resonance to a neighbouring pattern	It fails, or misfires as a neighbouring pattern
+C08	A spellbook is translated into another language	T1	A1	medium		meaning carries through a reader's mind; translation loses fidelity	Works for a reader who understands it; ambiguity in translation costs reliability
+C09	English words are carved in stone	T0	-	high		carved words in plain stone carry no organised charge	Nothing
+C10	A fireball made by gathering gas and sparking it	T0	-	high		chemical combustion of gathered gas limited by oxygen, no magic needed	The energy is chemical and limited by the oxygen there. Small cast cost, smoke, waste heat, a visible tell
+C11	A big spell cast inside a drained crater	T1	A1	medium		a drained region weakens the energy source so draw comes from farther	Weak, or fails; draws from farther away; the hole refills slowly
+C12	A gifted (compiled) spell used in an odd situation	T1	A1	high		a stored compiled pattern runs as built and cannot adapt	Works as its maker built it, poorly matched; cannot be adapted on the spot
+C13	A scholar takes a gifted spell apart over years	T1	A1	medium		reverse engineering a pattern reveals dials that can then be varied	Learns its dials, and can then vary it
+C14	Two casters race a spell and its counterspell	T1	A1	medium		counter patterns interfere and need phase information	Interference needs phase knowledge; timing and speed decide
+C15	A ward's hidden second function is found by probing at another frequency	T1	A1	medium		probing at other frequencies finds a hidden function	Discoverable by systematic probing (MS5)
+C16	Healing a deep cut	T1	A1	high		guides the body's own regeneration within limits and costs	Speeds the body's own repair laws within their limits; costs the body and the caster
+C17	Telekinesis lifts a 50 kg rock	T1	A1	high		a field force lifts the rock with the reaction booked to ground or caster	The reaction is booked to the ground or the caster; holding it costs
+C18	Calming a frightened horse	T1	A1	medium		entrainment of arousal in an animal; a command is a belief write and fails	Works (arousal is a port); a command does not; resisted by a strong state; consent lowers the cost for people
+C19	A sleeping person casts in a dream	T1	A1	low		dream casting is undecided and may need strong mind coupling (v2: under R2 the dreamer's own brain makes the percepts; no mind outside a brain) (v2: under R2 the dreamer's own brain makes the percepts; no mind outside a brain) (v2: under R2 the dreamer's own brain makes the percepts; no mind outside a brain) (v2: under R2 the dreamer's own brain makes the percepts; no mind outside a brain) (v2: under R2 the dreamer's own brain makes the percepts; no mind outside a brain)	To be decided (Q3.4)
+C20	Casting from a lead-lined room, or underwater	T1	A1	high		lead and water attenuate and absorb the field by their index and loss	Attenuated by the materials' index and loss (MS2)
+C21	A beast evolved an M organ (like an eel's electric organ)	T1	A1	high		an evolved field organ with costs paid by the body	It couples by biology, with costs paid by its body
+C22	A non-mage uses an engraved battery-and-trigger device	T1	A1	high		engraved matter holds the store and a trigger; no mind is needed	Works, because matter couples and the store holds the energy
+C23	A child raised by mages against one raised without magic	T0	-	medium		culture, priors and plasticity, not a new physics	Different abilities from culture, priors and plasticity, not from a flag
+C24	Someone tries to teleport with no doorway	T3	A8	high	needs doorway pack (Q10): design open	teleport needs a doorway; bounded version with booked energy exists	Impossible in the base world; with a doorway pack, potential energy and momentum are conserved
+C25	A villager is sure a charm works, and it does nothing physical	T0	-	high		a placebo effect only; belief writes nothing into the field	Only a placebo effect, unless they cast, when belief lowers their noise (MC6)
+C26	A novice tries a 0.9 GJ effect from the body alone	T1	A1	high		the body supplies limited energy and is harmed beyond it	Delivers only what the body supplies (about 0.37 GJ of fat at most), and harms the body
+C27	A sealed cave with no sources	T1	A1	high		without sources the field leaks to heat and fades	The field slowly leaks away to heat, and magic fades there
+C28	A city over-uses its region's field for generations	T1	A1	high		over-use depletes the regional field, a commons problem	Regional depletion, a tragedy of the commons; people go farther, or mine deposits
+C29	A thunderstorm passes	T1	A1	high		a storm raises the local field and eases casting	The local field rises for a while (MC5), and casting is easier during and after
+C30	A natural philosopher carries a fine thermometer along a ley line	T1	A1	medium	doc outcome conditional or provisional	field losses show as a small warm anomaly, found by thermometer	(provisional, Q1.3) a small, consistent warm anomaly, so the field can be found by science
+C31	A wild magical surge in an empty desert, and the same near a crystal grove	T1	A1	medium	doc outcome conditional or provisional	surge energy dissipates as heat or light depending on materials	(provisional) only warmth in the desert; light and effects near the grove
+C32	A skeptic tests a mage with ordinary instruments	T1	A1	high		ordinary instruments see only the effects, not the field	Finds nothing directly, only the effects (heat, motion, light)
+C33	A gambler loads dice by magic	T1	A1	medium		biasing dice costs energy per bit of information gained	Possible, at a minimum energy per bit of bias; heavy bias over many throws costs a lot
+C34	Finding one hidden person in a city by divination	T1	A1	high		locating one person costs the bits needed; a link cuts the cost	Costs the bits needed to single them out; a link, a name or a trace cuts the cost
+C35	Forecasting the weather a month ahead by magic	T3	-	high		weather a month ahead is beyond chaos and computation at any power	Out of reach at any power (chaos and computation)
+C36	A charged crystal is heated in a forge	T1	A1	high		heating scrambles the charge carriers past a critical temperature	It loses its charge past a critical temperature (its carriers scramble)
+C37	A cage of a material whose carriers move freely	T1	A1	high		free carriers cancel the field like a Faraday cage	Blocks spells, like a Faraday cage
+C38	Why one person couples strongly and another barely	T0	-	medium		how a brain organises its carriers is biology, development and practice	How well a brain can organise its own carriers: biology, development and practice, not a flag
+C39	A lodestone crystal on a pivot	T1	A1	high		a charged crystal aligns with the field like a compass	Points along the field: a magical compass for navigation
+C40	A famous ley line over centuries	T1	A1	medium		slow drift of the background field over centuries	Drifts off its ancient temples; the offset dates them
+C41	A global field reversal	T1	A1	medium		a global reversal of the background field	A rare, world-scale upheaval in magic
+C42	A mage with a head injury	T1	A1	high		brain damage disturbs the geometry of coupling, leaving power but not control	Keeps power but loses fine control (damaged geometry)
+C43	Months of meditation-style training	T1	A1	medium		synchrony is trainable biology	Coupling rises (synchrony is trainable)
+C44	A mage under deep anaesthesia	T1	A1	high		anaesthesia destroys structured coherence in the brain	Cannot cast: raw synchrony rises but structured coherence is destroyed (revised with the library's science answer)
+C45	A crystal-circuit machine with organised currents tries to cast	T1	A1	low	doc outcome conditional or provisional	a device with organised currents might couple; undecided	Possible in principle; to be decided with Q2.2 and devices
+C46	A correct rune cut into plain granite, and the same rune inlaid with conductor ore	T1	A1	high		conductive material holds organised charge, granite does not	The granite one does nothing; the inlaid one works
+C47	A dragon-bone wand over decades	T1	A1	medium		stored charge or order decays unless the material is cured	Weakens unless it was cured
+C48	A switchable crystal in an engraving	T1	A1	high		a switchable crystal is a logic element in charged matter	Acts as a logic gate
+C49	A strong magical pulse near written enchantments	T1	A1	high		a strong pulse erases stored charge patterns like a tape	Wipes them, like erasing a tape
+C50	Children of two strong mages	T0	-	high		heredity of a quantitative trait	Above average on the whole, widely spread; some ordinary
+C51	A gifted child born to non-mage parents	T0	-	high		a rare large-effect variant	Happens rarely (a large-effect variant)
+C52	Someone who starts training as an adult	T0	-	high		plasticity declines with age	Reaches less than someone trained from childhood
+C53	An eel-like beast's field organ	T0	-	medium		species biology with costs paid by the body (C21)	Species data from ordinary laws and materials, paid by its body
+C54	Isolating one gas from a mix of similar gases	T1	A1	medium		resonance-based selection errs toward the nearest resonance	Errors grab the gas with the nearest resonance
+C55	A caster tries to target a substance they have never studied	T1	A1	high		selection needs the substance's signature learned first	Cannot, until they learn its signature
+C56	Probing a sealed jar's resonances	T1	A1	high		active probing of resonances identifies contents	Identifies what is inside: magical spectroscopy
+C57	Two substances with identical resonances	T1	A1	high		identical resonances cannot be told apart, a lawful limit	Cannot be separated by magic, a lawful limit
+C58	A skilled caster overrides their habitual fireball's timing	T1	A1	medium		overriding habit costs effort	Works, at an effort cost
+C59	Someone taught "light" tries "dim light"	T1	A1	medium		control is learned per pattern	Easy light, but dim light needs new learning
+C60	A caster aims at a goal they cannot picture (curing an illness they do not understand)	T1	A1	high		an unpictured goal has no usable pattern and fails	Fails or goes astray
+C61	A crowd each silently wishes for rain	T1	A1	high		each drive is below the noise and out of phase	Nothing (each drive is below the noise and out of phase)
+C62	A hundred people chant in unison	T1	A1	medium		synchronous drives add into a small effect	A small effect none could reach alone
+C63	One person daydreams	T0	-	high		a daydream is below the noise	No measurable effect
+C64	A strongly coupled untrained adult in a rage	T1	A1	medium		a strong rage drives a rare flare by an untrained coupled mind	A rare flare
+C65	A trained mage is startled	T1	A1	medium		reflex raises a trained ward	Raises a ward before thinking
+C66	A child's accidental magic through adolescence	T1	A1	medium		control matures with emotional regulation	Fades as emotional control matures
+C67	A mage on calming herbs	T1	A1	medium		sedatives reduce leakage and drive	Leaks less and casts more weakly
+C68	A sensitive near a powerful node	T1	A1	medium		the field acts weakly back on a mind as a felt sense	Feels uneasy without knowing why
+C69	Two mages work side by side	T1	A1	medium		minds couple by synchrony	They fall into step; group casting gets easier
+C70	A sensitive in a dead zone	T1	A1	medium		a dead zone changes the felt sense	Feels flat or dull
+C71	Years of training	T1	A1	medium		training turns the vague sense into a directional one	The vague feeling becomes a conscious, directional sense
+C72	A powerful caster's raw pulse	T1	A1	medium		a strong pulse stuns by acting on brains	Stuns or disorders the people nearby
+C73	A widow feels her dead husband's presence at home	T0	-	high	doc outcome conditional or provisional	grief and memory by default; an imprint would need A6	Grief and memory by default; a faint imprint only if R5 is adopted; real only under the later (c)
+C74	A beast with a field-sensing organ	T1	A1	high		an organ senses fields to track a mage	Tracks a mage by their field
+C75	A world with no magic	T0	-	high		without the magic laws minds behave as ordinary	Every mind behaves exactly as without the magic laws
+C76	A sensitive and a node that unsettles them	T0	-	high		learning from experience, no code	Learns to avoid it from experience, not code
+C77	A village that has seen mages cause harm	T0	-	high		social fear emerges from harm	Fear of mages emerges, with no coded prejudice
+C78	A child in a casting family	T1	A1	medium		learning to feel and cast through childhood learning	Learns to feel and cast through the same childhood learning as drinking
+C79	A person with no carriers	T0	-	high		no carriers means no coupling	Untouched by field nudges: magically deaf
+C80	People and nodes	T0	-	high	doc outcome conditional or provisional	node-seeking only if it serves a drive	Node-seeking emerges only if nodes serve a drive through the body
+C81	An illiterate village healer with decades of practice	T1	A1	medium		skill is local to practised cases	Excellent within her practice; fails on a new kind of injury
+C82	A scholar who has never cast designs a new effect on paper	T1	A1	medium		a first cast from a model works roughly and wastefully	The first cast works roughly and wastefully
+C83	A caster tries variations on a known spell	T1	A1	medium		variation learns slowly with mishaps	Slow progress toward a new effect, with occasional mishaps
+C84	A caster believes a gesture is necessary because it once coincided with success	T0	-	high		a gesture acts only through confidence	It does nothing, except through their confidence
+C85	A desperate parent wishes their child cured, with no model of the illness	T1	A1	medium		without a model the result is crude or harmful	Nothing useful, or something crude and harmful
+C86	An apprentice traces a master's symbol by rote	T1	A1	medium		rote tracing gives a weak imprecise pattern	A weak, imprecise version of the effect
+C87	A symbol drawn in sand versus inlaid in conductor ore	T1	A1	high		sand carries no organised charge; ore does	The sand copy does very little; the inlaid one works
+C88	Lighting a stove, and heating a room with no fuel	T1	A1	high		a trigger needs joules; the valve releases stored heat	A few joules (a trigger), against the full heat (the valve)
+C89	Tipping a poised boulder, and lifting it	T1	A1	high		tipping releases potential energy; lifting must supply it	Little, against its full potential energy
+C90	Freezing a cup of water by sorting its molecules	T1	A1	high		sorting molecules costs bits and the heat is dumped elsewhere	Possible; costs bits, and the heat must go somewhere
+C91	Cooling a room in a heat wave	T1	A1	high		heat is moved, never destroyed	The heat must be dumped elsewhere; it cannot be destroyed
+C92	A mage who knows where the gas line runs, against a stronger mage who does not	T1	A1	medium		information about the target decides the contest	The knowing mage wins
+C93	A spell notation refined over centuries, and its ancient form	T0	-	medium		notation refined by culture	The refined one works better
+C94	An isolated people discovers magic independently	T1	A1	medium		an independent interface fitted to its users	A very different interface that works as well for its users
+C95	An interface built for human minds, used by a non-human mind	T1	A1	medium		interfaces fit their users, so a mismatch works poorly	Works poorly; interfaces fit their users
+C96	Coupled people in a culture with no magic tradition	T0	-	medium		accidents are put down to luck or ghosts	Feel the vague sense and have occasional accidents, put down to ghosts or luck
+C97	A lost technique and an old carving that still works	T1	A1	medium		a pattern is recovered from a carving	The technique is rediscovered from the carving
+C98	A spell cast through a stone wall	T1	A1	high		a wall delays and attenuates the field	Arrives late and weakened
+C99	A complex spell and a simple one cast far	T1	A1	high		complex patterns smear over range	The complex one smears out; the simple one carries
+C100	Striking a target the caster cannot see	T1	A1	high		a link, name or trace is needed to target	Needs a link, a name or a trace
+C101	The same effect by touch and at 30 m	T1	A1	high		touch is efficient and range is lossy and visible	Touch is efficient and nearly undetectable; at range it is lossy and visible
+C102	A slow-magic pack	T1	A1	medium		a slow pack makes bolts dodgeable with a recoil	Bolts can be seen and dodged; a big one knocks its caster over
+C103	An active scan of a house where people hide	T1	A1	high		active scanning finds people and reveals the scanner	Finds them, and reveals the scanner to any sensitive among them
+C104	A careful mage crosses a guarded estate	T1	A1	high		passive sensing stays hidden	Senses only passively and stays hidden
+C105	Investigators at a crime scene weeks later	T1	A1	medium		a spell leaves a faint trace in iron, a lasting imprint of a weak kind	Read the faint trace a spell wrote into an iron gate
+C106	A mage casts quietly to stay hidden	T1	A1	high		quiet casting has a short range	Reaches only a few metres
+C107	A fugitive mage beside a ley line	T1	A1	high		background field hides tells	The background drowns out their tells
+C108	A spell on an iron lock in a wooden door	T1	A1	high		steered redox chemistry rusts the iron	Rusts the lock through by driving the iron-oxygen reaction; the wood is untouched
+C109	A strong pulse near copper wiring	T1	A1	high		induced currents spark wiring	The wiring sparks
+C110	A compass beside a powerful casting	T1	A1	high		a field changes a magnetised needle	The needle twitches
+C111	A mage makes light	T1	A1	medium		field to light through the mixing portal at limited efficiency	Light without heat, at a limited efficiency
+C112	Sensitives near a lightning strike	T1	A1	medium		a lightning strike disturbs the field and sensitives feel it	Feel a brief surge in the field
+C113	Turning lead into gold	T1	A1	medium		transmutation is lawful at nuclear cost with a large store; radioactive product	Lawful; needs an enormous store; the product is dangerously radioactive
+C114	A swindler's magical "gold"	T0	-	high		a gilded alloy exposed by a density test	A gilded alloy, exposed by a density test
+C115	Conjuring water from the air in a desert	T1	A1	medium		condensing humidity, limited by the air	Slow, limited by the humidity
+C116	An exact copy of a person, and a rough copy of a pure crystal	T3	-	high		an exact copy of a person is impossible; a rough crystal copy is T1	The first is impossible (information); the second is easy
+C117	An old alchemist who once truly transmuted metal	T1	A1	medium		transmutation fallout produces radiation sickness	Died of a wasting sickness nobody understood
+C118	Making a frightened horse obey a command	T1	A1	medium		entrainment calms but a command would write a belief	Calming works; the command does not
+C119	The same entrainment on a trained, focused mind and an untrained one	T1	A1	medium		a focused mind resists entrainment	The focused mind resists; the untrained one is overwhelmed
+C120	Calming a willing patient and an unwilling one	T1	A1	medium		consent lowers the energy cost	The willing one costs a fraction of the energy
+C121	A caster makes a flash appear in someone's vision	T1	A1	high		an induced percept; the target decides what it was	The target sees it and decides for themselves what it was
+C122	A mage who always induces calm when present	T0	-	medium		conditioning is ordinary psychology	Comes to be liked by conditioning, and loses it when found out
+C123	A cap of conducting material	T1	A1	high		conductive matter blocks the field	Blocks mind magic
+C124	Planting a false memory in a stranger	T3	-	high		writing a false memory writes beliefs, which the field never does	Out of reach
+C125	An intuitive healer speeds a small cut	T1	A1	high		guided regeneration without a template leaves a scar	It heals faster and still scars
+C126	A skilled healer closes a deep cut using the skin around it as the template	T1	A1	high		neighbouring skin is a template for scarless repair	Heals without a scar
+C127	Regrowing a lost finger	T1	A1	medium		regrowth needs food, time and a template	Weeks, plenty of food, and the matching finger as the template
+C128	A healer speeds a badly set break	T1	A1	high		faster healing sets a bad fracture faster	It heals crooked, faster
+C129	Forcing growth without a good pattern	T1	A1	high		growth without a pattern is a disordered lump	A disordered, tumour-like lump
+C130	A starving patient, healed by magic	T1	A1	high		healing needs food energy	Barely heals
+C131	Raising the dead	T3	-	medium	doc outcome conditional or provisional	raising the dead is not a state ordinary physics reaches	Impossible unless a pack adds it
+C132	A mage channels too much power through their own body	T1	A1	high		channelled power heats the body, a physiological limit	Collapses with heatstroke
+C133	Keeping a forge hot by magic	T1	A1	high		holding heat costs the full loss rate	Costs its full heat loss, continuously
+C134	A weak mage uses a carved battery-and-trigger device	T1	A1	high		a stored store releases power the body could not	Releases far more power than their body could handle
+C135	Two resonators set to feed each other	T1	A1	medium		mutual feedback grows until the local field drains	Grow until they drain the local field, then stop

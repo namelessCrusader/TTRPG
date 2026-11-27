@@ -1,0 +1,23 @@
+scenario	wanted_rows	families	best_set	total_bits	additions_bits	uncovered_families	sets_within_1.44_bits	other_tied_sets
+base (e=9.22, R0 hard)	1377	330	E1+E3+E8+EL	75.5	75.5	0.0	1	
+e=4.6 (x0.5)	1377	330	E1+E3+E8+EL	75.5	75.5	0.0	1	
+e=18.4 (x2)	1377	330	E1+E3+E8+EL	75.5	75.5	0.0	1	
+e=1.0	1377	330	E1+E3+E8+EL	75.5	75.5	0.0	1	
+e=0.2	1377	330	E1+E3	73.1	43.3	149.1	2	E3+E8
+e=0.1	1377	330	E1+E3	58.2	43.3	149.1	1	
+costs: every free number and tuning x2	1377	330	E1+E3+E8+EL	119.0	119.0	0.0	1	
+costs: every free number and tuning x0.5	1377	330	E1+E3+E8+EL	53.7	53.7	0.0	1	
+ranges doubled (+1 bit per real number)	1377	330	E1+E3+E8+EL	94.5	94.5	0.0	1	
+ranges halved (-1 bit per real number)	1377	330	E1+E3+E8+EL	56.5	56.5	0.0	1	
+mind-selective tuning x3 (30 bits)	1377	330	E1+E3+E8+EL	95.5	95.5	0.0	1	
+mind-selective tuning x0.3 (3 bits)	1377	330	E1+E3+E8+EL	68.5	68.5	0.0	1	
+doorway debts x3 (chronology etc.)	1377	330	E1+E3+E8+EL	87.5	87.5	0.0	1	
+R0 not hard (T10 dropped)	1377	330	E1+E8+EL	68.7	68.7	0.0	1	
+low-confidence rows removed	930	280	E1+E3+E8+EL	75.5	75.5	0.0	1	
+low-confidence rows removed, R0 not hard	930	280	E1+E8+EL	68.7	68.7	0.0	1	
+former owner rows read as belief (removed)	1232	307	E1+E3+E8+EL	75.5	75.5	0.0	1	
+ladder tops out at rung 2 (RQ5 low)	1377	330	E1+E3+E8+EL (ladder capped at rung 2; 38.8 families uncovered)	421.3	63.1	38.8	1	
+ladder tops out at rung 3	1377	330	E1+E3+E8+EL (ladder capped at rung 3; 11.9 families uncovered)	184.2	74.5	11.9	1	
+ladder rung 2, e=1.0	1377	330	E1+E3+E8+EL (ladder capped at rung 2; 38.8 uncovered)	101.9	63.1	38.8	1	
+ladder rung 2, owner rows removed, e=1.0	1232	307	E1+E3+E8+EL (ladder capped at rung 2; 23.3 uncovered)	86.3	63.1	23.3	1	
+high+medium confidence rows only	930	280	E1+E3+E8+EL	75.5	75.5	0.0	1	

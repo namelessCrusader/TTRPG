@@ -1,0 +1,120 @@
+family	wanted_rows	rows_needing_E8	share	share_low_confidence	examples
+Backrooms levels	37	37	1.0	1.0	Level 6 Lights Out; Level 7 Thalassophobia; Level 8 Cave System; Level 9 The Suburbs
+Backrooms	14	14	1.0	0.07	Level !; Level 0; Level 1 Habitable Zone; Level 2 Pipe Dreams
+Mythos places	5	5	1.0	0.2	Carcosa; Dreamlands; Kadath; Leng
+Liminal spaces	2	2	1.0	0.0	Lucid Blocks; Pools (game)
+extradimensional/hostile	2	2	1.0	0.0	SCP-076 \"Able\"; SCP-106 The Old Man
+portal/hostile	2	2	1.0	0.0	SCP-1983 Doorway to Nowhere; SCP-3008 A Perfectly Normal,
+reality/spatial	2	2	1.0	0.0	SCP-3301 THE FOUNDATION; SCP-8711 In the House of the
+Isekai concepts (Wikipedia Isekai links)	2	2	1.0	0.5	Portal fantasy; Chuanyue
+Meta	2	2	1.0	0.0	Drop-in co-op summon; Souls invasion (hostile summ
+Fae	1	1	1.0	1.0	Fairy (Aos Sí)
+spatial/location	1	1	1.0	0.0	SCP-087 The Stairwell
+ectoentropic/location	1	1	1.0	1.0	SCP-1181 Interactive Kaleido
+vehicle/extraterr	1	1	1.0	0.0	SCP-1480 Bus #64
+extradimensional/spatial	1	1	1.0	0.0	SCP-1730 What Happened to Si
+spatial/temporal	1	1	1.0	1.0	SCP-1765 Sisters
+autonomous/vehicle	1	1	1.0	0.0	SCP-1838 Bob
+extradimensional/esoteric	1	1	1.0	0.0	SCP-2062 Kronecker
+extradimensional/scarlet	1	1	1.0	0.0	SCP-2317 A Door to Another W
+portal/spatial	1	1	1.0	0.0	SCP-2745 Linda Perhacs
+portal/possessive	1	1	1.0	0.0	SCP-2935 O, Death
+neurological/spatial	1	1	1.0	0.0	SCP-3001 Red Reality
+portal/extraterr	1	1	1.0	0.0	SCP-3321 Edge of the Univers
+teleport/temporal	1	1	1.0	0.0	SCP-3326 The Threads of Fate
+ectoentropic/spatial	1	1	1.0	0.0	SCP-3506 The Reading of the 
+portal/liquid	1	1	1.0	0.0	SCP-354 The Red Pool
+language/spatial	1	1	1.0	0.0	SCP-3854 Belly of the Playwr
+esoteric/intangible	1	1	1.0	0.0	SCP-4096 The Ol' Switcheroo
+reality/scarlet	1	1	1.0	0.0	SCP-4231 The Montauk House
+extradimensional/mimetic	1	1	1.0	0.0	SCP-4615 Supper Memories '06
+feline/teleport	1	1	1.0	0.0	SCP-4660 The Cat Came Back
+archon/teleport	1	1	1.0	0.0	SCP-4751 Bed Angel
+portal/extradimensional	1	1	1.0	0.0	SCP-4823 The Whole World Has
+teleport	1	1	1.0	0.0	SCP-4888 The Sunrise Collect
+extradimensional/portal	1	1	1.0	0.0	SCP-5061 A Toast To Elizabet
+portal	1	1	1.0	0.0	SCP-5322 And The Road Stretc
+liquid/teleport	1	1	1.0	0.0	SCP-5619 A Couple of Cuppas
+language/reanimation	1	1	1.0	0.0	SCP-616 The Vessel and the G
+reality/portal	1	1	1.0	0.0	SCP-6600 Spidercon
+shadow/portal	1	1	1.0	0.0	SCP-675 Shadows Through the 
+faerie/spatial	1	1	1.0	0.0	SCP-7440 Nameless Bunker
+vehicle/teleport	1	1	1.0	0.0	SCP-7698 AMONICE
+gravity/pending	1	1	1.0	0.0	SCP-7789 Agent Vidal in upsi
+extraterr/planet	1	1	1.0	0.0	SCP-7917 The Worst Distance 
+spatial/reptile	1	1	1.0	0.0	SCP-8468 …I drive a Chevrole
+reality/teleport	1	1	1.0	0.0	SCP-8590 Dale
+Loot loops	1	1	1.0	0.0	Infinite pockets
+World model	1	1	1.0	0.0	Warp zone
+Motif F	6	5	0.83	0.6	F0 Otherworld journeys; F100 Journey to the land of ; F200 Fairies and elves; F251 Fairy time passes slowl
+FTL and spacetime	11	9	0.82	0.11	Faster-than-light travel; Hyperspace; Hyperspace bypass; Multiverse
+Dungeons	4	3	0.75	0.67	Endless dungeon (Dungeon of ; Dungeon core as monster; Mystery dungeon (reshuffles 
+Space	14	10	0.71	0.2	Apportation; Dreamscape; Enormous Interior; Event Horizon (hell dimensio
+DCC system mechanics	7	5	0.71	0.0	Inventory; Benefactor Box; Stairwells; Personal Space
+Resurrection	9	6	0.67	1.0	Monkey's Paw (bargain reviva; Rondo of Blood revive-the-ma; Shadow of the Colossus (barg; The Returned (dead walk back
+Dunsany	3	2	0.67	0.5	Idle Days on the Yann; The King of Elfland's Daught
+Middle East	3	2	0.67	0.5	Jinn; Marid
+Omni	3	2	0.67	0.0	Nigh-Omnipresence; Omnipotence
+Gods: Mesopotamian	3	2	0.67	1.0	Ereshkigal; Dumuzid
+Transhumanism	3	2	0.67	0.0	Digital immortality; Teletransportation paradox
+Backrooms entities	3	2	0.67	1.0	Phenomenon 35; Phenomenon 88
+Dream fiction	16	9	0.56	0.67	Dream Cycle (Lovecraft); Dreamlands (Dream Cycle sett; Dreamwalker; Through the Looking-Glass
+Cyberpunk	9	5	0.56	0.0	Soulkiller (engram upload th; Relic engram (Johnny Silverh; Agent Smith; Puppet Master (Ghost in the 
+outsider	6	3	0.5	0.0	Gibtas and shanrigol (planar; Protean; Qlippoth
+Analog horror	6	3	0.5	0.67	No Through Road; The Vanishing of S.S. Willie; Buffet Infinity
+Death and persistence	6	3	0.5	1.0	Extra life (1-up); Lives counter; Respawn point
+Fairies	4	2	0.5	1.0	Fairy ring; Fairy time dilation
+Backrooms objects	4	2	0.5	0.0	Interlevel Hyperlink; Backrooms: Black Door
+dream/reality	2	1	0.5	0.0	SCP-2603 Its Maiden Voyage
+Celtic	2	1	0.5	1.0	Tuatha Dé Danann
+Negation	7	3	0.43	0.0	Banishment; Sealing; Self-Banishment
+Reality	7	3	0.43	0.33	Existence Switching; Parallel universe; Rewriting reality
+Place	5	2	0.4	0.5	House of Leaves (larger insi; Silent Hill fog town
+Isekai concepts	5	2	0.4	0.0	Summoned hero; Isekai
+LitRPG mechanics	5	2	0.4	0.5	Fast travel; Dungeon instance
+Gods: Norse	5	2	0.4	1.0	Hel (being); Valhalla
+Items	9	3	0.33	0.33	Bag of holding; Portable hole; Deck of Many Things
+Summon	3	1	0.33	0.0	Summoning
+Creepypasta	3	1	0.33	0.0	Backrooms
+Mirror horror	3	1	0.33	0.0	Dark Mirrors
+Time	3	1	0.33	1.0	Timescape
+LitRPG	7	2	0.29	0.0	Isekai (summoned player); Inventory screen magic (pock
+Blackwood	4	1	0.25	1.0	The Willows
+spirit	4	1	0.25	1.0	Ethereal wildlife
+Hodgson	4	1	0.25	0.0	The House on the Borderland
+Japanese legends	4	1	0.25	0.0	Kisaragi Station
+Kaiju	4	1	0.25	0.0	Kaiju (Pacific Rim)
+Gods: Aztec	4	1	0.25	1.0	Mictlāntēcutli
+Demons	13	3	0.23	0.33	Cenobites (Hellraiser); Hell / Underworld place; Summoning a demon
+Weird West	9	2	0.22	0.0	The Dark Tower (Gunslinger); Todash space
+Gods: Greek	10	2	0.2	1.0	Hades; Cronus
+aberration	5	1	0.2	0.0	Hryngar, ikeshti, siktempora
+Motif C	5	1	0.2	1.0	C200 Eating taboo (fairy foo
+Gods: Hindu	5	1	0.2	1.0	Yama
+Gods: Japanese	5	1	0.2	1.0	Izanagi
+Heroes	5	1	0.2	1.0	Orpheus
+Lovecraft concepts	17	3	0.18	0.67	Dream-Quest of Unknown Kadat; Silver Key; The Dreams in the Witch Hous
+Fairy tale	11	2	0.18	1.0	Fairy tale: Tam Lin; Fairy tale: Thomas the Rhyme
+Chaos (Warhammer 40,000)	12	2	0.17	1.0	The Warp (Immaterium); Warp storm
+Andersen	12	2	0.17	0.5	Andersen: The Tinderbox; Andersen: The Garden of Para
+fiend	6	1	0.17	1.0	Demons (dretch, vrock, hezro
+Hybrids	6	1	0.17	0.0	Hellmouth
+Jinn	6	1	0.17	1.0	Gallu
+Time manipulation	6	1	0.17	1.0	Timeline branching
+DCC spells	14	2	0.14	0.0	Teleport Spell; Teleport to Stairwell Spell
+fey	7	1	0.14	0.0	Blink dog
+Cultivation realms	7	1	0.14	1.0	Void refinement
+Xenos (Warhammer 40,000)	7	1	0.14	0.0	Webway
+Cultivation concepts	32	4	0.12	0.0	Ascension to the immortal re; Immortal realm; Hidden realm; Spatial ring
+Zone anomalies (STALKER)	16	2	0.12	0.0	Teleport anomaly; Space anomaly
+monstrosity	8	1	0.12	0.0	Phase spider
+Grimm	20	2	0.1	0.0	Grimm: Frau Holle; Grimm: The Twelve Dancing Pr
+M. R. James	10	1	0.1	0.0	Number 13
+Miracles	10	1	0.1	1.0	Harrowing of Hell
+Spells	53	5	0.09	0.0	Teleport; Dimension Door; Gate (summon); Plane Shift
+Matter	13	1	0.08	0.0	Omnifabrication
+DCC items	12	1	0.08	1.0	Potion of Phase Through Wall
+Ceremonial magic	12	1	0.08	1.0	Astral plane
+Body	16	1	0.06	0.0	The Fly (teleport fusion)
+Magic (Shadowrun)	25	1	0.04	0.0	Metaplanes
+Matter and energy tech	30	1	0.03	1.0	Matter transmitter

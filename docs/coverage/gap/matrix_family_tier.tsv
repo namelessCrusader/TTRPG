@@ -1,599 +1,599 @@
-key	rows	T0	T1	T2	T3	X	U	owner_A7_or_T0	T1+T2	share_T0	share_T1+T2
-AI/cognito	1	0	1	0	0	0	0	0	1	0.0	1.0
-AI/neurological	1	1	0	0	0	0	0	0	0	1.0	0.0
-AI/probability	1	1	0	0	0	0	0	0	0	1.0	0.0
-AI/resurrection	1	1	0	0	0	0	0	0	0	1.0	0.0
-ARG	3	3	0	0	0	0	0	0	0	1.0	0.0
-AT index	10	8	1	0	0	1	0	0	1	0.8	0.1
-Abrahamic	3	1	0	2	0	0	0	1	2	0.333	0.667
-Absence	16	13	3	0	0	0	0	0	3	0.812	0.188
-Absorb	12	5	4	2	1	0	0	0	6	0.417	0.5
-Africa	16	14	2	0	0	0	0	0	2	0.875	0.125
-Alchemy	11	6	3	0	1	1	0	0	3	0.545	0.273
-Aliens and bio	45	39	1	1	0	4	0	0	2	0.867	0.044
-Americas	33	30	2	1	0	0	0	1	3	0.909	0.091
-Analog horror	28	17	0	6	0	5	0	2	6	0.607	0.214
-Andersen	25	10	7	5	1	2	0	1	12	0.4	0.48
-Angels and demons	21	11	0	5	1	4	0	5	5	0.524	0.238
-Aquatic	2	2	0	0	0	0	0	0	0	1.0	0.0
-Arctic	6	5	1	0	0	0	0	0	1	0.833	0.167
-Artificial	2	0	2	0	0	0	0	0	2	0.0	1.0
-Backrooms	16	2	0	14	0	0	0	0	14	0.125	0.875
-Backrooms Entities	7	7	0	0	0	0	0	0	0	1.0	0.0
-Backrooms entities	83	11	1	2	0	1	68	0	3	0.133	0.036
-Backrooms groups	4	4	0	0	0	0	0	0	0	1.0	0.0
-Backrooms levels	37	0	0	37	0	0	0	0	37	0.0	1.0
-Backrooms objects	19	3	2	2	0	0	12	0	4	0.158	0.211
-Bali	2	1	0	1	0	0	0	1	1	0.5	0.5
-Beasts	3	3	0	0	0	0	0	0	0	1.0	0.0
-Biology	5	5	0	0	0	0	0	0	0	1.0	0.0
-Birds	2	0	1	1	0	0	0	0	2	0.0	1.0
-Blackwood	7	3	1	3	0	0	0	1	4	0.429	0.571
-BoC characters	3	2	1	0	0	0	0	0	1	0.667	0.333
-BoC demons	3	0	0	3	0	0	0	3	3	0.0	1.0
-BoC events	3	0	0	0	0	3	0	0	0	0.0	0.0
-BoC organisations	5	5	0	0	0	0	0	0	0	1.0	0.0
-BoC places	3	2	1	0	0	0	0	0	1	0.667	0.333
-BoC sects	5	4	1	0	0	0	0	0	1	0.8	0.2
-BoC spirit animals	4	1	2	1	0	0	0	0	3	0.25	0.75
-Body	56	40	12	4	0	0	0	3	16	0.714	0.286
-Body horror	1	1	0	0	0	0	0	0	0	1.0	0.0
-Caribbean	3	2	1	0	0	0	0	0	1	0.667	0.333
-Celtic	6	2	0	4	0	0	0	3	4	0.333	0.667
-Ceremonial magic	22	5	8	6	0	3	0	6	14	0.227	0.636
-Chambers	5	3	1	1	0	0	0	1	2	0.6	0.4
-Chaos (Warhammer 40,000)	13	1	1	11	0	0	0	7	12	0.077	0.923
-China	17	14	2	1	0	0	0	1	3	0.824	0.176
-Chinese fantasy genre (Wikipedia Xianxia links)	1	0	0	0	0	1	0	0	0	0.0	0.0
-Chinese folklore beasts (Wikipedia Xianxia links)	2	1	0	0	1	0	0	0	0	0.5	0.0
-Class features	11	5	3	3	0	0	0	2	6	0.455	0.545
-Combat	13	11	0	0	0	2	0	0	0	0.846	0.0
-Computers	8	7	0	0	0	1	0	0	0	0.875	0.0
-Computers, AI, minds	49	30	9	8	1	1	0	0	17	0.612	0.347
-Cosmic	23	15	2	3	3	0	0	3	5	0.652	0.217
-Creature design	1	1	0	0	0	0	0	0	0	1.0	0.0
-Creepypasta	11	7	2	1	1	0	0	0	3	0.636	0.273
-Crime	2	2	0	0	0	0	0	0	0	1.0	0.0
-Critters (Shadowrun)	10	8	0	2	0	0	0	2	2	0.8	0.2
-Cross-motif	18	8	3	6	1	0	0	1	9	0.444	0.5
-Cryptid	24	23	1	0	0	0	0	0	1	0.958	0.042
-Cultivation concepts	47	10	23	8	6	0	0	1	31	0.213	0.66
-Cultivation institutions	5	5	0	0	0	0	0	0	0	1.0	0.0
-Cultivation realms	7	0	5	2	0	0	0	0	7	0.0	1.0
-Cursed media	17	13	0	4	0	0	0	1	4	0.765	0.235
-Cursed objects	1	0	0	1	0	0	0	1	1	0.0	1.0
-Curses	5	4	0	1	0	0	0	0	1	0.8	0.2
-Cyberpunk	62	45	4	5	7	1	0	0	9	0.726	0.145
-Cyberpunk subgenres	4	4	0	0	0	0	0	0	0	1.0	0.0
-Cyberware (Shadowrun)	7	7	0	0	0	0	0	0	0	1.0	0.0
-DCC achievements	6	0	1	0	0	5	0	0	1	0.0	0.167
-DCC benefits	5	2	2	0	1	0	0	0	2	0.4	0.4
-DCC bosses	5	4	0	0	0	1	0	0	0	0.8	0.0
-DCC classes	5	1	3	0	0	1	0	0	3	0.2	0.6
-DCC crafting	3	3	0	0	0	0	0	0	0	1.0	0.0
-DCC deities	3	0	0	3	0	0	0	3	3	0.0	1.0
-DCC events	5	2	0	0	0	3	0	0	0	0.4	0.0
-DCC factions	1	0	0	0	0	1	0	0	0	0.0	0.0
-DCC items	16	4	11	1	0	0	0	0	12	0.25	0.75
-DCC locations	4	3	0	0	1	0	0	0	0	0.75	0.0
-DCC mobs	10	7	3	0	0	0	0	0	3	0.7	0.3
-DCC pets	2	0	1	1	0	0	0	0	2	0.0	1.0
-DCC quests	3	0	0	0	0	3	0	0	0	0.0	0.0
-DCC races	6	4	1	1	0	0	0	1	2	0.667	0.333
-DCC skills	10	5	5	0	0	0	0	0	5	0.5	0.5
-DCC spells	14	0	12	2	0	0	0	0	14	0.0	1.0
-DCC status effects	9	6	2	1	0	0	0	0	3	0.667	0.333
-DCC system mechanics	28	16	2	5	0	5	0	0	7	0.571	0.25
-DCC tattoos	2	1	1	0	0	0	0	0	1	0.5	0.5
-DCC technology	2	2	0	0	0	0	0	0	0	1.0	0.0
-DCC traps	2	1	1	0	0	0	0	0	1	0.5	0.5
-DCC vehicles	1	1	0	0	0	0	0	0	0	1.0	0.0
-Dark fantasy	5	0	0	0	0	5	0	0	0	0.0	0.0
-Death and persistence	14	2	1	5	2	4	0	0	6	0.143	0.429
-Defense	10	3	4	0	3	0	0	0	4	0.3	0.4
-Demons	17	4	2	11	0	0	0	4	13	0.235	0.765
-Disappearances	2	2	0	0	0	0	0	0	0	1.0	0.0
-Divination	16	16	0	0	0	0	0	0	0	1.0	0.0
-Divine	6	1	1	3	0	1	0	3	4	0.167	0.667
-Dragons	3	3	0	0	0	0	0	0	0	1.0	0.0
-Dream fiction	33	12	4	12	0	5	0	1	16	0.364	0.485
-Dream phenomena	23	19	1	2	0	1	0	0	3	0.826	0.13
-Dreams	6	4	1	1	0	0	0	1	2	0.667	0.333
-Dungeons	15	7	1	3	1	3	0	0	4	0.467	0.267
-Dunsany	4	1	0	3	0	0	0	1	3	0.25	0.75
-Dystopia	27	24	2	0	1	0	0	0	2	0.889	0.074
-Egypt	4	2	0	2	0	0	0	1	2	0.5	0.5
-Elemental	9	1	8	0	0	0	0	0	8	0.111	0.889
-Encounters	8	7	1	0	0	0	0	0	1	0.875	0.125
-England	1	1	0	0	0	0	0	0	0	1.0	0.0
-English	1	1	0	0	0	0	0	0	0	1.0	0.0
-Europe	1	1	0	0	0	0	0	0	0	1.0	0.0
-Experiments	5	5	0	0	0	0	0	0	0	1.0	0.0
-FTL and spacetime	21	3	1	10	6	1	0	0	11	0.143	0.524
-Faceless stalkers	4	4	0	0	0	0	0	0	0	1.0	0.0
-Fae	8	7	0	1	0	0	0	0	1	0.875	0.125
-Fairies	12	8	2	2	0	0	0	0	4	0.667	0.333
-Fairy tale	30	16	7	4	2	1	0	1	11	0.533	0.367
-Fairy-tale elements	17	4	6	0	4	3	0	0	6	0.235	0.353
-Fan-fiction horror	1	1	0	0	0	0	0	0	0	1.0	0.0
-Festival beasts	2	2	0	0	0	0	0	0	0	1.0	0.0
-Folk	12	7	2	3	0	0	0	1	5	0.583	0.417
-Folklore	1	0	1	0	0	0	0	0	1	0.0	1.0
-Force	23	2	20	1	0	0	0	1	21	0.087	0.913
-Fortean	19	18	0	1	0	0	0	0	1	0.947	0.053
-Genetics	1	1	0	0	0	0	0	0	0	1.0	0.0
-Ghosts	22	8	1	13	0	0	0	5	14	0.364	0.636
-Ghosts and omens	6	4	0	2	0	0	0	2	2	0.667	0.333
-Giants and ogres	3	3	0	0	0	0	0	0	0	1.0	0.0
-Goblins	1	1	0	0	0	0	0	0	0	1.0	0.0
-Gods and psychopomps	2	1	0	0	1	0	0	0	0	0.5	0.0
-Gods: Aztec	9	5	2	2	0	0	0	1	4	0.556	0.444
-Gods: Celtic	6	6	0	0	0	0	0	0	0	1.0	0.0
-Gods: Egyptian	18	8	5	2	1	2	0	2	7	0.444	0.389
-Gods: Greek	23	5	5	5	2	6	0	4	10	0.217	0.435
-Gods: Hindu	17	10	2	4	1	0	0	3	6	0.588	0.353
-Gods: Japanese	12	7	2	3	0	0	0	2	5	0.583	0.417
-Gods: Mesopotamian	10	7	0	3	0	0	0	1	3	0.7	0.3
-Gods: Norse	12	3	3	2	3	1	0	2	5	0.25	0.417
-Gothic tropes	36	24	5	4	0	3	0	0	9	0.667	0.25
-Great Old Ones	23	15	2	6	0	0	0	6	8	0.652	0.348
-Grimm	60	36	14	6	4	0	0	2	20	0.6	0.333
-Grimoires	18	2	0	0	0	16	0	0	0	0.111	0.0
-Haiti	2	1	0	1	0	0	0	1	1	0.5	0.5
-Haunted objects	6	1	0	5	0	0	0	1	5	0.167	0.833
-Heroes	13	6	4	1	2	0	0	0	5	0.462	0.385
-Hodgson	6	2	2	2	0	0	0	0	4	0.333	0.667
-House spirits	7	6	0	1	0	0	0	1	1	0.857	0.143
-Hybrids	37	31	5	1	0	0	0	0	6	0.838	0.162
-Immortals	8	3	2	1	0	2	0	0	3	0.375	0.375
-India	11	6	2	3	0	0	0	1	5	0.545	0.455
-Infection	10	9	1	0	0	0	0	0	1	0.9	0.1
-Internet legends	12	11	0	0	0	1	0	0	0	0.917	0.0
-Isekai concepts	16	6	3	2	1	4	0	0	5	0.375	0.312
-Isekai concepts (Wikipedia Isekai links)	3	1	0	2	0	0	0	0	2	0.333	0.667
-Items	11	2	5	4	0	0	0	0	9	0.182	0.818
-Japan	25	18	6	1	0	0	0	0	7	0.72	0.28
-Japanese legends	24	20	1	3	0	0	0	0	4	0.833	0.167
-Jewish	3	3	0	0	0	0	0	0	0	1.0	0.0
-Jinn	15	8	1	6	0	0	0	6	7	0.533	0.467
-Kaiju	24	20	3	1	0	0	0	0	4	0.833	0.167
-Killer personas	5	4	0	1	0	0	0	1	1	0.8	0.2
-Korea	4	4	0	0	0	0	0	0	0	1.0	0.0
-Life and death	18	4	10	2	2	0	0	0	12	0.222	0.667
-Liminal aesthetics	18	13	0	0	0	5	0	0	0	0.722	0.0
-Liminal spaces	6	1	0	2	0	3	0	0	2	0.167	0.333
-LitRPG	8	1	4	3	0	0	0	0	7	0.125	0.875
-LitRPG concepts (Wikipedia LitRPG links)	2	1	1	0	0	0	0	0	1	0.5	0.5
-LitRPG mechanics	25	9	3	2	3	8	0	0	5	0.36	0.2
-Loops	2	1	0	0	0	1	0	0	0	0.5	0.0
-Loot loops	14	11	0	1	0	2	0	0	1	0.786	0.071
-Lovecraft concepts	36	15	5	12	2	2	0	2	17	0.417	0.472
-Lovecraft races	12	10	1	1	0	0	0	0	2	0.833	0.167
-M. R. James	14	2	1	11	0	0	0	4	12	0.143	0.857
-Machen	5	4	1	0	0	0	0	0	1	0.8	0.2
-Magic (Shadowrun)	26	1	16	9	0	0	0	6	25	0.038	0.962
-Magic mechanics	9	0	9	0	0	0	0	0	9	0.0	1.0
-Malay	2	2	0	0	0	0	0	0	0	1.0	0.0
-Matrix (Shadowrun)	2	1	1	0	0	0	0	0	1	0.5	0.5
-Matter	14	0	12	1	1	0	0	0	13	0.0	0.929
-Matter and energy tech	102	66	29	1	4	2	0	0	30	0.647	0.294
-Mecha	33	24	7	1	1	0	0	0	8	0.727	0.242
-Memes	1	1	0	0	0	0	0	0	0	1.0	0.0
-Memetic hazards	2	1	1	0	0	0	0	0	1	0.5	0.5
-Mesopotamia	6	4	1	0	1	0	0	0	1	0.667	0.167
-Meta	29	4	0	2	0	23	0	0	2	0.138	0.069
-Metro mutants	13	12	1	0	0	0	0	0	1	0.923	0.077
-Metro phenomena	4	2	0	2	0	0	0	1	2	0.5	0.5
-Metro systems	7	7	0	0	0	0	0	0	0	1.0	0.0
-Middle East	6	3	0	3	0	0	0	1	3	0.5	0.5
-Mind	25	10	9	4	2	0	0	0	13	0.4	0.52
-Miracles	34	22	9	1	1	1	0	0	10	0.647	0.294
-Mirror horror	8	4	1	2	1	0	0	0	3	0.5	0.375
-Monsters	5	3	2	0	0	0	0	0	2	0.6	0.4
-Motif A	9	3	0	1	1	4	0	1	1	0.333	0.111
-Motif B	6	4	2	0	0	0	0	0	2	0.667	0.333
-Motif C	6	1	1	4	0	0	0	0	5	0.167	0.833
-Motif D	21	0	15	3	3	0	0	0	18	0.0	0.857
-Motif E	8	0	2	6	0	0	0	1	8	0.0	1.0
-Motif F	11	5	0	6	0	0	0	1	6	0.455	0.545
-Motif G	7	4	3	0	0	0	0	0	3	0.571	0.429
-Motif H	3	3	0	0	0	0	0	0	0	1.0	0.0
-Motif J	1	1	0	0	0	0	0	0	0	1.0	0.0
-Motif K	6	6	0	0	0	0	0	0	0	1.0	0.0
-Motif M	4	2	1	0	1	0	0	0	1	0.5	0.25
-Motif N	3	2	0	0	0	1	0	0	0	0.667	0.0
-Motif P	1	1	0	0	0	0	0	0	0	1.0	0.0
-Motif Q	1	1	0	0	0	0	0	0	0	1.0	0.0
-Motif R	1	1	0	0	0	0	0	0	0	1.0	0.0
-Motif S	1	1	0	0	0	0	0	0	0	1.0	0.0
-Motif T	1	1	0	0	0	0	0	0	0	1.0	0.0
-Motif U	1	0	0	0	0	1	0	0	0	0.0	0.0
-Motif V	1	1	0	0	0	0	0	0	0	1.0	0.0
-Motif X	1	0	0	0	0	1	0	0	0	0.0	0.0
-Motif Z	1	0	0	0	0	1	0	0	0	0.0	0.0
-Movement	15	9	5	0	1	0	0	0	5	0.6	0.333
-Mythological objects	34	9	15	1	7	2	0	0	16	0.265	0.471
-Mythos concepts	10	7	0	1	0	2	0	0	1	0.7	0.1
-Mythos places	9	4	0	5	0	0	0	0	5	0.444	0.556
-Mythos tomes	5	3	2	0	0	0	0	0	2	0.6	0.4
-Nature spirits	6	5	0	1	0	0	0	0	1	0.833	0.167
-Negation	8	0	4	4	0	0	0	1	8	0.0	1.0
-Object	11	4	1	5	1	0	0	0	6	0.364	0.545
-Occult	46	21	14	6	0	5	0	3	20	0.457	0.435
-Occult practice	4	4	0	0	0	0	0	0	0	1.0	0.0
-Oceania	11	10	0	1	0	0	0	1	1	0.909	0.091
-Offence	26	11	14	0	0	1	0	0	14	0.423	0.538
-Omni	11	2	0	3	4	2	0	1	3	0.182	0.273
-Outer Gods	9	3	2	2	2	0	0	1	4	0.333	0.444
-Perception	10	5	3	0	2	0	0	0	3	0.5	0.3
-Persia	4	3	1	0	0	0	0	0	1	0.75	0.25
-Philippines	6	5	1	0	0	0	0	0	1	0.833	0.167
-Phone horror	2	2	0	0	0	0	0	0	0	1.0	0.0
-Physical enhancement	26	22	4	0	0	0	0	0	4	0.846	0.154
-Place	9	4	2	3	0	0	0	0	5	0.444	0.556
-Places	3	3	0	0	0	0	0	0	0	1.0	0.0
-Plants	2	2	0	0	0	0	0	0	0	1.0	0.0
-Play style	2	1	0	0	0	1	0	0	0	0.5	0.0
-Poe	20	12	1	3	1	3	0	1	4	0.6	0.2
-Possession	5	2	0	3	0	0	0	2	3	0.4	0.6
-Post-apocalypse	31	28	2	1	0	0	0	0	3	0.903	0.097
-Progression	10	7	0	0	0	3	0	0	0	0.7	0.0
-Psych	14	14	0	0	0	0	0	0	0	1.0	0.0
-Psykers (Warhammer 40,000)	8	1	6	1	0	0	0	0	7	0.125	0.875
-Quest structure	11	8	0	0	2	1	0	0	0	0.727	0.0
-RPG mechanics	15	3	4	2	5	1	0	1	6	0.2	0.4
-Reality	26	3	1	4	9	9	0	0	5	0.115	0.192
-Religion	10	10	0	0	0	0	0	0	0	1.0	0.0
-Reptiles	1	1	0	0	0	0	0	0	0	1.0	0.0
-Resurrection	11	1	2	7	1	0	0	1	9	0.091	0.818
-Rituals	7	5	0	2	0	0	0	2	2	0.714	0.286
-Rule-lists	1	1	0	0	0	0	0	0	0	1.0	0.0
-Sami	2	1	0	1	0	0	0	1	1	0.5	0.5
-Sea monsters	2	2	0	0	0	0	0	0	0	1.0	0.0
-Seasonal	1	1	0	0	0	0	0	0	0	1.0	0.0
-Senses	13	11	2	0	0	0	0	0	2	0.846	0.154
-Shapeshift	14	7	7	0	0	0	0	0	7	0.5	0.5
-Shelley	3	2	1	0	0	0	0	0	1	0.667	0.333
-Slasher	10	7	0	2	0	1	0	1	2	0.7	0.2
-Social	15	15	0	0	0	0	0	0	0	1.0	0.0
-Society and genre settings	55	42	6	0	1	6	0	0	6	0.764	0.109
-Soul-external	1	0	0	1	0	0	0	0	1	0.0	1.0
-Source works	23	0	0	0	0	23	0	0	0	0.0	0.0
-Space	25	8	3	12	2	0	0	0	15	0.32	0.6
-Spells	57	0	46	5	6	0	0	0	51	0.0	0.895
-Status effects	12	11	1	0	0	0	0	0	1	0.917	0.083
-Stealth	11	7	4	0	0	0	0	0	4	0.636	0.364
-Stoker	5	4	1	0	0	0	0	0	1	0.8	0.2
-Structure	4	1	0	0	1	2	0	0	0	0.25	0.0
-Subgenre	21	17	0	0	0	4	0	0	0	0.81	0.0
-Summon	3	0	2	1	0	0	0	0	3	0.0	1.0
-Survival	4	4	0	0	0	0	0	0	0	1.0	0.0
-Systems	11	2	0	0	0	9	0	0	0	0.182	0.0
-Taoist practices (Wikipedia Xianxia links)	7	1	2	2	0	2	0	1	4	0.143	0.571
-Tech	19	13	3	2	0	1	0	0	5	0.684	0.263
-Technology (Warhammer 40,000)	11	7	0	4	0	0	0	4	4	0.636	0.364
-Thailand	2	2	0	0	0	0	0	0	0	1.0	0.0
-Theology	1	0	0	0	1	0	0	0	0	0.0	0.0
-Time	14	1	1	2	10	0	0	0	3	0.071	0.214
-Time loops	12	0	1	0	10	1	0	0	1	0.0	0.083
-Time manipulation	6	0	3	1	2	0	0	0	4	0.0	0.667
-Transhumanism	20	16	0	3	0	1	0	0	3	0.8	0.15
-Undead	26	10	10	6	0	0	0	0	16	0.385	0.615
-Urban legend	14	10	0	3	1	0	0	0	3	0.714	0.214
-Video games	12	11	0	1	0	0	0	0	1	0.917	0.083
-Wasteland creatures (Fallout)	18	18	0	0	0	0	0	0	0	1.0	0.0
-Wasteland cryptids (Fallout)	7	7	0	0	0	0	0	0	0	1.0	0.0
-Wasteland perks (Fallout)	13	10	1	0	0	2	0	0	1	0.769	0.077
-Wasteland systems (Fallout)	15	15	0	0	0	0	0	0	0	1.0	0.0
-Water spirits	3	3	0	0	0	0	0	0	0	1.0	0.0
-Weird West	25	12	2	11	0	0	0	6	13	0.48	0.52
-Witches and sorcerers	1	0	1	0	0	0	0	0	1	0.0	1.0
-World model	17	11	0	1	0	5	0	0	1	0.647	0.059
-World structure	2	1	0	0	0	1	0	0	0	0.5	0.0
-Wuxia concepts	11	8	2	0	0	1	0	0	2	0.727	0.182
-Wuxia concepts (Wikipedia Wuxia links)	5	4	1	0	0	0	0	0	1	0.8	0.2
-Xenos (Warhammer 40,000)	18	10	4	3	1	0	0	1	7	0.556	0.389
-Yokai	9	4	2	3	0	0	0	1	5	0.444	0.556
-Zone anomalies (STALKER)	23	6	14	2	1	0	0	0	16	0.261	0.696
-Zone artifacts (STALKER)	19	1	18	0	0	0	0	0	18	0.053	0.947
-Zone literature	6	1	1	1	1	2	0	0	2	0.167	0.333
-Zone mutants (STALKER)	15	10	4	1	0	0	0	0	5	0.667	0.333
-aberration	15	10	4	1	0	0	0	0	5	0.667	0.333
-alive/liquid	1	1	0	0	0	0	0	0	0	1.0	0.0
-alive/safe	1	0	1	0	0	0	0	0	1	0.0	1.0
-alive/toy	1	1	0	0	0	0	0	0	0	1.0	0.0
-amorphous	2	1	0	0	0	1	0	0	0	0.5	0.0
-amorphous/parasitic	1	1	0	0	0	0	0	0	0	1.0	0.0
-amorphous/tickle	1	1	0	0	0	0	0	0	0	1.0	0.0
-animal/serpents-hand	1	1	0	0	0	0	0	0	0	1.0	0.0
-antimemetic	4	1	0	0	3	0	0	0	0	0.25	0.0
-antimemetic/cognito	1	0	0	0	1	0	0	0	0	0.0	0.0
-antimemetic/dream	1	0	0	0	1	0	0	0	0	0.0	0.0
-antimemetic/escapee	1	0	0	0	1	0	0	0	0	0.0	0.0
-antimemetic/ghost	1	0	0	0	1	0	0	0	0	0.0	0.0
-antimemetic/gravity	1	0	1	0	0	0	0	0	1	0.0	1.0
-antimemetic/hostile	2	1	0	0	1	0	0	0	0	0.5	0.0
-antimemetic/infohazard	1	0	0	0	1	0	0	0	0	0.0	0.0
-antimemetic/mythological	1	0	0	0	0	0	1	0	0	0.0	0.0
-antimemetic/transfig	1	0	0	0	1	0	0	0	0	0.0	0.0
-apollyon/contagion	1	1	0	0	0	0	0	0	0	1.0	0.0
-apollyon/memetic	1	1	0	0	0	0	0	0	0	1.0	0.0
-apollyon/neutralized	1	0	0	0	0	1	0	0	0	0.0	0.0
-apollyon/weapon	1	0	0	0	1	0	0	0	0	0.0	0.0
-aquatic/cadaver	1	1	0	0	0	0	0	0	0	1.0	0.0
-aquatic/clothing	1	1	0	0	0	0	0	0	0	1.0	0.0
-aquatic/cognito	1	0	1	0	0	0	0	0	1	0.0	1.0
-aquatic/immobile	1	1	0	0	0	0	0	0	0	1.0	0.0
-aquatic/kaiju	1	1	0	0	0	0	0	0	0	1.0	0.0
-aquatic/telekinetic	1	0	1	0	0	0	0	0	1	0.0	1.0
-archon/teleport	1	0	0	1	0	0	0	0	1	0.0	1.0
-artifact	2	0	2	0	0	0	0	0	2	0.0	1.0
-artifact/location	1	0	0	1	0	0	0	0	1	0.0	1.0
-artifact/mythological	1	1	0	0	0	0	0	0	0	1.0	0.0
-artifact/ritual	1	0	0	1	0	0	0	1	1	0.0	1.0
-artifact/temporal	1	0	0	0	0	1	0	0	0	0.0	0.0
-artifact/transfig	1	0	1	0	0	0	0	0	1	0.0	1.0
-auditory/biological	1	1	0	0	0	0	0	0	0	1.0	0.0
-auditory/hivemind	1	1	0	0	0	0	0	0	0	1.0	0.0
-autonomous/keter	1	1	0	0	0	0	0	0	0	1.0	0.0
-autonomous/vehicle	1	0	0	1	0	0	0	0	1	0.0	1.0
-bacteria/food	1	1	0	0	0	0	0	0	0	1.0	0.0
-bacteria/sensory	1	1	0	0	0	0	0	0	0	1.0	0.0
-bacteria/teleport	1	1	0	0	0	0	0	0	0	1.0	0.0
-beast	29	29	0	0	0	0	0	0	0	1.0	0.0
-biological/dream	1	1	0	0	0	0	0	0	0	1.0	0.0
-biological/predictive	1	1	0	0	0	0	0	0	0	1.0	0.0
-biological/reanimation	1	0	1	0	0	0	0	0	1	0.0	1.0
-biological/structure	1	1	0	0	0	0	0	0	0	1.0	0.0
-biological/transfig	1	0	1	0	0	0	0	0	1	0.0	1.0
-bird/ectoentropic	1	0	1	0	0	0	0	0	1	0.0	1.0
-bird/hostile	1	1	0	0	0	0	0	0	0	1.0	0.0
-bird/plant	1	0	1	0	0	0	0	0	1	0.0	1.0
-bird/ritual	1	0	0	1	0	0	0	1	1	0.0	1.0
-broken-god	1	0	0	0	0	1	0	0	0	0.0	0.0
-broken-god/biological	1	1	0	0	0	0	0	0	0	1.0	0.0
-broken-god/ritual	1	0	1	0	0	0	0	0	1	0.0	1.0
-broken-god/robotic	2	2	0	0	0	0	0	0	0	1.0	0.0
-broken-god/sarkic	1	1	0	0	0	0	0	0	0	1.0	0.0
-cadaver/electronic	1	0	0	1	0	0	0	0	1	0.0	1.0
-cadaver/hallucination	1	0	1	0	0	0	0	0	1	0.0	1.0
-cadaver/indestructible	1	0	0	1	0	0	0	1	1	0.0	1.0
-cadaver/plant	1	1	0	0	0	0	0	0	0	1.0	0.0
-cadaver/reanimation	1	0	1	0	0	0	0	0	1	0.0	1.0
-canine/predictive	1	1	0	0	0	0	0	0	0	1.0	0.0
-celestial	8	2	2	4	0	0	0	3	6	0.25	0.75
-clothing/indestructible	1	1	0	0	0	0	0	0	0	1.0	0.0
-cognito/aquatic	1	0	1	0	0	0	0	0	1	0.0	1.0
-cognito/deity	1	1	0	0	0	0	0	0	0	1.0	0.0
-cognito/electronic	1	1	0	0	0	0	0	0	0	1.0	0.0
-cognito/mathematical	1	0	0	0	1	0	0	0	0	0.0	0.0
-cognito/parasitic	1	0	1	0	0	0	0	0	1	0.0	1.0
-cognito/plant	1	1	0	0	0	0	0	0	0	1.0	0.0
-cognito/semiotics	1	0	0	0	1	0	0	0	0	0.0	0.0
-cognito/vehicle	1	0	1	0	0	0	0	0	1	0.0	1.0
-cognito/visual	1	0	1	0	0	0	0	0	1	0.0	1.0
-cognitohazard/meme	1	1	0	0	0	0	0	0	0	1.0	0.0
-cognitohazard/multi	1	1	0	0	0	0	0	0	0	1.0	0.0
-cognitohazard/structure	1	1	0	0	0	0	0	0	0	1.0	0.0
-cognitohazard/visual	1	0	1	0	0	0	0	0	1	0.0	1.0
-construct	14	4	9	1	0	0	0	0	10	0.286	0.714
-contagion/empathic	1	0	1	0	0	0	0	0	1	0.0	1.0
-contagion/rewrite	1	1	0	0	0	0	0	0	0	1.0	0.0
-cryptid	1	1	0	0	0	0	0	0	0	1.0	0.0
-deity/aquatic	1	1	0	0	0	0	0	0	0	1.0	0.0
-deity/kaiju	2	1	0	1	0	0	0	1	1	0.5	0.5
-deity/musical	1	1	0	0	0	0	0	0	0	1.0	0.0
-deity/probability	1	1	0	0	0	0	0	0	0	1.0	0.0
-deity/religious	1	1	0	0	0	0	0	0	0	1.0	0.0
-deity/sarkic	1	1	0	0	0	0	0	0	0	1.0	0.0
-demon/canine	1	1	0	0	0	0	0	0	0	1.0	0.0
-dragon	17	11	2	2	2	0	0	2	4	0.647	0.235
-dragon/reptile	1	0	1	0	0	0	0	0	1	0.0	1.0
-dream/hivemind	1	0	1	0	0	0	0	0	1	0.0	1.0
-dream/parasitic	1	1	0	0	0	0	0	0	0	1.0	0.0
-dream/reality	2	0	1	1	0	0	0	0	2	0.0	1.0
-dream/reanimation	1	1	0	0	0	0	0	0	0	1.0	0.0
-dream/telekinetic	1	0	1	0	0	0	0	0	1	0.0	1.0
-ectoentropic artifact	1	0	1	0	0	0	0	0	1	0.0	1.0
-ectoentropic toy	1	0	1	0	0	0	0	0	1	0.0	1.0
-ectoentropic/hostile	1	0	1	0	0	0	0	0	1	0.0	1.0
-ectoentropic/humanoid	1	1	0	0	0	0	0	0	0	1.0	0.0
-ectoentropic/liquid	1	0	0	1	0	0	0	0	1	0.0	1.0
-ectoentropic/location	1	0	0	1	0	0	0	0	1	0.0	1.0
-ectoentropic/planet	1	1	0	0	0	0	0	0	0	1.0	0.0
-ectoentropic/radioactive	1	1	0	0	0	0	0	0	0	1.0	0.0
-ectoentropic/spatial	1	0	0	1	0	0	0	0	1	0.0	1.0
-ectoentropic/toy	1	1	0	0	0	0	0	0	0	1.0	0.0
-electrical/esoteric	1	0	1	0	0	0	0	0	1	0.0	1.0
-electronic/infohazard	1	0	0	0	1	0	0	0	0	0.0	0.0
-electronic/k	1	0	1	0	0	0	0	0	1	0.0	1.0
-electronic/memory	1	0	0	0	1	0	0	0	0	0.0	0.0
-electronic/mimetic	1	1	0	0	0	0	0	0	0	1.0	0.0
-electronic/neurological	1	1	0	0	0	0	0	0	0	1.0	0.0
-elemental	12	2	5	4	1	0	0	2	9	0.167	0.75
-empathic	1	0	1	0	0	0	0	0	1	0.0	1.0
-esoteric/intangible	1	0	0	1	0	0	0	0	1	0.0	1.0
-explained	1	1	0	0	0	0	0	0	0	1.0	0.0
-extradimensional	1	1	0	0	0	0	0	0	0	1.0	0.0
-extradimensional/esoteric	1	0	0	1	0	0	0	0	1	0.0	1.0
-extradimensional/gravity	1	0	1	0	0	0	0	0	1	0.0	1.0
-extradimensional/hostile	2	0	0	2	0	0	0	0	2	0.0	1.0
-extradimensional/intangible	1	1	0	0	0	0	0	0	0	1.0	0.0
-extradimensional/mimetic	1	0	0	1	0	0	0	0	1	0.0	1.0
-extradimensional/portal	1	0	0	1	0	0	0	0	1	0.0	1.0
-extradimensional/scarlet	1	0	0	1	0	0	0	0	1	0.0	1.0
-extradimensional/spatial	1	0	0	1	0	0	0	0	1	0.0	1.0
-extraterr/cadaver	1	0	0	0	1	0	0	0	0	0.0	0.0
-extraterr/k-class	1	1	0	0	0	0	0	0	0	1.0	0.0
-extraterr/moon	1	1	0	0	0	0	0	0	0	1.0	0.0
-extraterr/planet	1	0	0	1	0	0	0	0	1	0.0	1.0
-extraterr/sun	2	2	0	0	0	0	0	0	0	1.0	0.0
-extraterr/toy	1	1	0	0	0	0	0	0	0	1.0	0.0
-extraterrestrial	1	1	0	0	0	0	0	0	0	1.0	0.0
-faerie/spatial	1	0	0	1	0	0	0	0	1	0.0	1.0
-faerie/vehicle	1	1	0	0	0	0	0	0	0	1.0	0.0
-feline/teleport	1	0	0	1	0	0	0	0	1	0.0	1.0
-feline/transfig	1	0	1	0	0	0	0	0	1	0.0	1.0
-fey	14	7	4	3	0	0	0	1	7	0.5	0.5
-fiend	7	1	2	4	0	0	0	2	6	0.143	0.857
-fire/noosphere	1	1	0	0	0	0	0	0	0	1.0	0.0
-folklore	1	1	0	0	0	0	0	0	0	1.0	0.0
-folklore/gas	1	0	0	1	0	0	0	1	1	0.0	1.0
-food/keter	1	1	0	0	0	0	0	0	0	1.0	0.0
-fungus	1	1	0	0	0	0	0	0	0	1.0	0.0
-fungus/parasitic	1	1	0	0	0	0	0	0	0	1.0	0.0
-fungus/religious	1	1	0	0	0	0	0	0	0	1.0	0.0
-fungus/thaumiel	1	1	0	0	0	0	0	0	0	1.0	0.0
-ghost	1	0	0	1	0	0	0	1	1	0.0	1.0
-ghost/auditory	1	0	0	1	0	0	0	1	1	0.0	1.0
-ghost/memory	1	0	0	1	0	0	0	1	1	0.0	1.0
-ghost/reptile	1	0	0	1	0	0	0	0	1	0.0	1.0
-ghost/sleep	1	0	0	1	0	0	0	1	1	0.0	1.0
-ghost/structure	1	0	0	1	0	0	0	1	1	0.0	1.0
-ghost/temporal	1	0	0	1	0	0	0	1	1	0.0	1.0
-giant	4	4	0	0	0	0	0	0	0	1.0	0.0
-gravity/pending	1	0	0	1	0	0	0	0	1	0.0	1.0
-hive/insect	1	1	0	0	0	0	0	0	0	1.0	0.0
-hostile	1	1	0	0	0	0	0	0	0	1.0	0.0
-humanoid	28	25	3	0	0	0	0	0	3	0.893	0.107
-humanoid person	1	1	0	0	0	0	0	0	0	1.0	0.0
-indestructible reptile	1	1	0	0	0	0	0	0	0	1.0	0.0
-infohazard	1	0	1	0	0	0	0	0	1	0.0	1.0
-infohazard/esoteric	1	0	0	0	0	1	0	0	0	0.0	0.0
-infohazard/keter	1	0	0	0	1	0	0	0	0	0.0	0.0
-insect	1	1	0	0	0	0	0	0	0	1.0	0.0
-insect/cognito	1	0	1	0	0	0	0	0	1	0.0	1.0
-joke	1	0	0	0	0	1	0	0	0	0.0	0.0
-k-class/liquid	1	0	1	0	0	0	0	0	1	0.0	1.0
-kaiju/apollyon	1	1	0	0	0	0	0	0	0	1.0	0.0
-kaiju/reanimation	1	0	1	0	0	0	0	0	1	0.0	1.0
-keter/feline	1	0	0	0	1	0	0	0	0	0.0	0.0
-keter/infohazard	1	0	0	0	1	0	0	0	0	0.0	0.0
-keter/mobile	1	1	0	0	0	0	0	0	0	1.0	0.0
-keter/teleport	1	0	0	0	1	0	0	0	0	0.0	0.0
-language/reanimation	1	0	0	1	0	0	0	0	1	0.0	1.0
-language/rewrite	1	0	1	0	0	0	0	0	1	0.0	1.0
-language/spatial	1	0	0	1	0	0	0	0	1	0.0	1.0
-liquid/teleport	1	0	0	1	0	0	0	0	1	0.0	1.0
-liquid/visual	1	1	0	0	0	0	0	0	0	1.0	0.0
-location/biological	1	1	0	0	0	0	0	0	0	1.0	0.0
-location/cadaver	1	0	1	0	0	0	0	0	1	0.0	1.0
-mechanical/electrical	1	1	0	0	0	0	0	0	0	1.0	0.0
-memetic/antimemetic	1	1	0	0	0	0	0	0	0	1.0	0.0
-memetic/keter	1	1	0	0	0	0	0	0	0	1.0	0.0
-memetic/probability	1	0	0	0	1	0	0	0	0	0.0	0.0
-memetic/religious	1	0	0	0	1	0	0	0	0	0.0	0.0
-memetic/transfig	1	0	1	0	0	0	0	0	1	0.0	1.0
-memetic/visual	1	1	0	0	0	0	0	0	0	1.0	0.0
-memory/temporal	1	0	0	0	1	0	0	0	0	0.0	0.0
-memory/thaumiel	1	0	0	0	0	0	1	0	0	0.0	0.0
-memory/vehicle	1	0	1	0	0	0	0	0	1	0.0	1.0
-meta	3	0	0	0	0	3	0	0	0	0.0	0.0
-metamorphic	1	0	1	0	0	0	0	0	1	0.0	1.0
-mimetic	1	1	0	0	0	0	0	0	0	1.0	0.0
-mimetic/auditory	1	1	0	0	0	0	0	0	0	1.0	0.0
-mind-affecting	1	0	1	0	0	0	0	0	1	0.0	1.0
-monstrosity	34	26	6	2	0	0	0	1	8	0.765	0.235
-musical/biological	1	0	1	0	0	0	0	0	1	0.0	1.0
-mythological/probability	1	0	0	0	0	1	0	0	0	0.0	0.0
-neurological/spatial	1	0	0	1	0	0	0	0	1	0.0	1.0
-noosphere/hostile	1	1	0	0	0	0	0	0	0	1.0	0.0
-noosphere/memetic	1	0	0	0	0	0	1	0	0	0.0	0.0
-noosphere/telepathic	1	0	1	0	0	0	0	0	1	0.0	1.0
-noosphere/temporal	1	0	0	0	1	0	0	0	0	0.0	0.0
-object-class	10	0	0	0	0	10	0	0	0	0.0	0.0
-ooze	5	5	0	0	0	0	0	0	0	1.0	0.0
-outsider	9	2	1	5	1	0	0	2	6	0.222	0.667
-parasitic	2	2	0	0	0	0	0	0	0	1.0	0.0
-plague doctor/contagion	1	0	1	0	0	0	0	0	1	0.0	1.0
-planet/alive	1	1	0	0	0	0	0	0	0	1.0	0.0
-plant	8	6	2	0	0	0	0	0	2	0.75	0.25
-plant/immobile	1	1	0	0	0	0	0	0	0	1.0	0.0
-plant/sarkic	1	1	0	0	0	0	0	0	0	1.0	0.0
-plant/telepathic	1	0	1	0	0	0	0	0	1	0.0	1.0
-portal	1	0	0	1	0	0	0	0	1	0.0	1.0
-portal/extradimensional	1	0	0	1	0	0	0	0	1	0.0	1.0
-portal/extraterr	1	0	0	1	0	0	0	0	1	0.0	1.0
-portal/hostile	2	0	0	2	0	0	0	0	2	0.0	1.0
-portal/liquid	1	0	0	1	0	0	0	0	1	0.0	1.0
-portal/possessive	1	0	0	1	0	0	0	0	1	0.0	1.0
-portal/spatial	1	0	0	1	0	0	0	0	1	0.0	1.0
-possessive mask	1	0	0	1	0	0	0	0	1	0.0	1.0
-predictive	1	0	0	0	1	0	0	0	0	0.0	0.0
-probability	2	0	0	0	2	0	0	0	0	0.0	0.0
-probability/electronic	1	0	0	0	1	0	0	0	0	0.0	0.0
-proposal	1	0	0	0	0	1	0	0	0	0.0	0.0
-radioactive/structure	1	1	0	0	0	0	0	0	0	1.0	0.0
-reality/broken	1	0	0	0	1	0	0	0	0	0.0	0.0
-reality/cognito	1	0	0	0	1	0	0	0	0	0.0	0.0
-reality/fungus	1	0	0	0	1	0	0	0	0	0.0	0.0
-reality/indestructible	1	0	1	0	0	0	0	0	1	0.0	1.0
-reality/infohazard	1	0	1	0	0	0	0	0	1	0.0	1.0
-reality/memetic	1	0	0	0	1	0	0	0	0	0.0	0.0
-reality/portal	1	0	0	1	0	0	0	0	1	0.0	1.0
-reality/radioactive	1	0	1	0	0	0	0	0	1	0.0	1.0
-reality/religious	1	1	0	0	0	0	0	0	0	1.0	0.0
-reality/scarlet	1	0	0	1	0	0	0	0	1	0.0	1.0
-reality/spatial	2	0	0	2	0	0	0	0	2	0.0	1.0
-reality/telekinetic	1	0	1	0	0	0	0	0	1	0.0	1.0
-reality/teleport	1	0	0	1	0	0	0	0	1	0.0	1.0
-reality/temporal	2	0	0	0	2	0	0	0	0	0.0	0.0
-reality/toxic	1	0	0	0	1	0	0	0	0	0.0	0.0
-reanimation/vehicle	1	0	1	0	0	0	0	0	1	0.0	1.0
-religious/robotic	1	1	0	0	0	0	0	0	0	1.0	0.0
-reptile/cadaver	1	1	0	0	0	0	0	0	0	1.0	0.0
-resurrection	1	1	0	0	0	0	0	0	0	1.0	0.0
-resurrection/ritual	1	0	1	0	0	0	0	0	1	0.0	1.0
-rewrite	1	0	0	0	1	0	0	0	0	0.0	0.0
-rewrite/toy	1	0	1	0	0	0	0	0	1	0.0	1.0
-ritual/scarlet-king	1	0	0	1	0	0	0	1	1	0.0	1.0
-robotic	1	1	0	0	0	0	0	0	0	1.0	0.0
-sarkic	1	1	0	0	0	0	0	0	0	1.0	0.0
-sarkic/autonomous	1	1	0	0	0	0	0	0	0	1.0	0.0
-satellite	1	1	0	0	0	0	0	0	0	1.0	0.0
-satellite/thaumiel	1	1	0	0	0	0	0	0	0	1.0	0.0
-scarlet-king	1	1	0	0	0	0	0	0	0	1.0	0.0
-self-replicating	1	1	0	0	0	0	0	0	0	1.0	0.0
-shadow/portal	1	0	0	1	0	0	0	0	1	0.0	1.0
-shadow/telekinetic	1	0	1	0	0	0	0	0	1	0.0	1.0
-simulacrum/temporal	1	1	0	0	0	0	0	0	0	1.0	0.0
-spatial/location	1	0	0	1	0	0	0	0	1	0.0	1.0
-spatial/reptile	1	0	0	1	0	0	0	0	1	0.0	1.0
-spatial/temporal	1	0	0	1	0	0	0	0	1	0.0	1.0
-spirit	4	0	1	3	0	0	0	0	4	0.0	1.0
-swarm	1	1	0	0	0	0	0	0	0	1.0	0.0
-swarm/mimetic	1	1	0	0	0	0	0	0	0	1.0	0.0
-telekinetic/telepathic	1	0	1	0	0	0	0	0	1	0.0	1.0
-teleport	1	0	0	1	0	0	0	0	1	0.0	1.0
-teleport/temporal	1	0	0	1	0	0	0	0	1	0.0	1.0
-temporal cadaver	1	0	1	0	0	0	0	0	1	0.0	1.0
-temporal k-class	1	0	0	0	1	0	0	0	0	0.0	0.0
-temporal travel	1	0	0	0	1	0	0	0	0	0.0	0.0
-temporal/extraterr	1	1	0	0	0	0	0	0	0	1.0	0.0
-temporal/mechanical	1	0	0	0	1	0	0	0	0	0.0	0.0
-temporal/rewrite	1	0	1	0	0	0	0	0	1	0.0	1.0
-temporal/thaumiel	1	0	0	0	1	0	0	0	0	0.0	0.0
-time-travel/k	1	0	0	0	1	0	0	0	0	0.0	0.0
-time-travel/vehicle	1	0	0	0	1	0	0	0	0	0.0	0.0
-toxic/prophecy	1	0	0	0	1	0	0	0	0	0.0	0.0
-toy/food	1	0	1	0	0	0	0	0	1	0.0	1.0
-toy/humanoid	1	0	1	0	0	0	0	0	1	0.0	1.0
-toy/vehicle	1	1	0	0	0	0	0	0	0	1.0	0.0
-transfiguration	1	0	1	0	0	0	0	0	1	0.0	1.0
-undead	24	9	10	5	0	0	0	2	15	0.375	0.625
-vampire	1	1	0	0	0	0	0	0	0	1.0	0.0
-vampire/liquid	1	0	1	0	0	0	0	0	1	0.0	1.0
-vampire/memetic	1	1	0	0	0	0	0	0	0	1.0	0.0
-vampire/structure	1	1	0	0	0	0	0	0	0	1.0	0.0
-vehicle	1	1	0	0	0	0	0	0	0	1.0	0.0
-vehicle/extraterr	1	0	0	1	0	0	0	0	1	0.0	1.0
-vehicle/religious	1	1	0	0	0	0	0	0	0	1.0	0.0
-vehicle/teleport	1	0	0	1	0	0	0	0	1	0.0	1.0
-virus/broken	1	1	0	0	0	0	0	0	0	1.0	0.0
-virus/food	1	1	0	0	0	0	0	0	0	1.0	0.0
-virus/k-class	1	1	0	0	0	0	0	0	0	1.0	0.0
-visual/uncontained	1	1	0	0	0	0	0	0	0	1.0	0.0
-weapon/clothing	1	1	0	0	0	0	0	0	0	1.0	0.0
-weapon/mechanical	1	1	0	0	0	0	0	0	0	1.0	0.0
-weapon/tactile	1	1	0	0	0	0	0	0	0	1.0	0.0
-zombie plague	1	1	0	0	0	0	0	0	0	1.0	0.0
+family	T0	T1	T2	T3	X-N	X-L	U
+AI/cognito	0	1	0	0	0	0	0
+AI/neurological	1	0	0	0	0	0	0
+AI/probability	1	0	0	0	0	0	0
+AI/resurrection	1	0	0	0	0	0	0
+ARG	3	0	0	0	0	0	0
+AT index	8	1	0	0	1	0	0
+Abrahamic	1	0	2	0	0	0	0
+Absence	13	3	0	0	0	0	0
+Absorb	5	4	2	1	0	0	0
+Africa	14	2	0	0	0	0	0
+Alchemy	6	3	0	1	1	0	0
+Aliens and bio	39	1	1	0	4	0	0
+Americas	30	2	1	0	0	0	0
+Analog horror	17	0	6	0	5	0	0
+Andersen	10	7	5	1	2	0	0
+Angels and demons	13	0	3	0	4	1	0
+Aquatic	2	0	0	0	0	0	0
+Arctic	5	1	0	0	0	0	0
+Artificial	0	2	0	0	0	0	0
+Backrooms	2	0	14	0	0	0	0
+Backrooms Entities	7	0	0	0	0	0	0
+Backrooms entities	11	1	2	0	1	0	68
+Backrooms groups	4	0	0	0	0	0	0
+Backrooms levels	0	0	37	0	0	0	0
+Backrooms objects	3	2	2	0	0	0	12
+Bali	2	0	0	0	0	0	0
+Beasts	3	0	0	0	0	0	0
+Biology	5	0	0	0	0	0	0
+Birds	0	1	1	0	0	0	0
+Blackwood	3	1	3	0	0	0	0
+BoC characters	2	1	0	0	0	0	0
+BoC demons	0	0	3	0	0	0	0
+BoC events	0	0	0	0	3	0	0
+BoC organisations	5	0	0	0	0	0	0
+BoC places	2	1	0	0	0	0	0
+BoC sects	4	1	0	0	0	0	0
+BoC spirit animals	1	2	1	0	0	0	0
+Body	40	12	4	0	0	0	0
+Body horror	1	0	0	0	0	0	0
+Caribbean	2	1	0	0	0	0	0
+Celtic	4	0	2	0	0	0	0
+Ceremonial magic	7	8	4	0	3	0	0
+Chambers	4	1	0	0	0	0	0
+Chaos (Warhammer 40,000)	1	1	11	0	0	0	0
+China	15	2	0	0	0	0	0
+Chinese fantasy genre (Wikipedia Xianxia links)	0	0	0	0	1	0	0
+Chinese folklore beasts (Wikipedia Xianxia links)	1	0	0	1	0	0	0
+Class features	7	3	1	0	0	0	0
+Combat	11	0	0	0	2	0	0
+Computers	7	0	0	0	1	0	0
+Computers, AI, minds	30	9	8	1	1	0	0
+Cosmic	15	2	3	3	0	0	0
+Creature design	1	0	0	0	0	0	0
+Creepypasta	7	2	1	1	0	0	0
+Crime	2	0	0	0	0	0	0
+Critters (Shadowrun)	8	0	2	0	0	0	0
+Cross-motif	9	3	5	1	0	0	0
+Cryptid	23	1	0	0	0	0	0
+Cultivation concepts	10	24	8	5	0	0	0
+Cultivation institutions	5	0	0	0	0	0	0
+Cultivation realms	0	5	2	0	0	0	0
+Cursed media	14	0	3	0	0	0	0
+Cursed objects	0	0	1	0	0	0	0
+Curses	4	0	1	0	0	0	0
+Cyberpunk	45	4	5	7	1	0	0
+Cyberpunk subgenres	4	0	0	0	0	0	0
+Cyberware (Shadowrun)	7	0	0	0	0	0	0
+DCC achievements	0	1	0	0	5	0	0
+DCC benefits	2	2	0	1	0	0	0
+DCC bosses	4	0	0	0	1	0	0
+DCC classes	1	3	0	0	1	0	0
+DCC crafting	3	0	0	0	0	0	0
+DCC deities	2	0	1	0	0	0	0
+DCC events	2	0	0	0	3	0	0
+DCC factions	0	0	0	0	1	0	0
+DCC items	4	11	1	0	0	0	0
+DCC locations	3	0	0	1	0	0	0
+DCC mobs	7	3	0	0	0	0	0
+DCC pets	0	1	1	0	0	0	0
+DCC quests	0	0	0	0	3	0	0
+DCC races	4	1	1	0	0	0	0
+DCC skills	5	5	0	0	0	0	0
+DCC spells	0	12	2	0	0	0	0
+DCC status effects	6	2	1	0	0	0	0
+DCC system mechanics	16	2	5	0	5	0	0
+DCC tattoos	1	1	0	0	0	0	0
+DCC technology	2	0	0	0	0	0	0
+DCC traps	1	1	0	0	0	0	0
+DCC vehicles	1	0	0	0	0	0	0
+Dark fantasy	0	0	0	0	5	0	0
+Death and persistence	2	1	5	2	4	0	0
+Defense	3	4	0	3	0	0	0
+Demons	4	2	11	0	0	0	0
+Disappearances	2	0	0	0	0	0	0
+Divination	16	0	0	0	0	0	0
+Divine	3	1	1	0	1	0	0
+Dragons	3	0	0	0	0	0	0
+Dream fiction	12	4	12	0	5	0	0
+Dream phenomena	19	1	2	0	1	0	0
+Dreams	4	1	1	0	0	0	0
+Dungeons	7	1	3	1	3	0	0
+Dunsany	1	0	3	0	0	0	0
+Dystopia	24	2	0	1	0	0	0
+Egypt	2	0	2	0	0	0	0
+Elemental	1	8	0	0	0	0	0
+Encounters	7	1	0	0	0	0	0
+England	1	0	0	0	0	0	0
+English	1	0	0	0	0	0	0
+Europe	1	0	0	0	0	0	0
+Experiments	5	0	0	0	0	0	0
+FTL and spacetime	3	1	10	6	1	0	0
+Faceless stalkers	4	0	0	0	0	0	0
+Fae	7	0	1	0	0	0	0
+Fairies	8	2	2	0	0	0	0
+Fairy tale	16	7	4	2	1	0	0
+Fairy-tale elements	4	6	0	4	3	0	0
+Fan-fiction horror	1	0	0	0	0	0	0
+Festival beasts	2	0	0	0	0	0	0
+Folk	7	2	3	0	0	0	0
+Folklore	0	1	0	0	0	0	0
+Force	2	20	1	0	0	0	0
+Fortean	18	0	1	0	0	0	0
+Genetics	1	0	0	0	0	0	0
+Ghosts	8	1	13	0	0	0	0
+Ghosts and omens	4	0	2	0	0	0	0
+Giants and ogres	3	0	0	0	0	0	0
+Goblins	1	0	0	0	0	0	0
+Gods and psychopomps	1	0	0	1	0	0	0
+Gods: Aztec	5	2	2	0	0	0	0
+Gods: Celtic	6	0	0	0	0	0	0
+Gods: Egyptian	9	5	1	1	2	0	0
+Gods: Greek	5	5	5	2	6	0	0
+Gods: Hindu	11	2	3	1	0	0	0
+Gods: Japanese	7	2	3	0	0	0	0
+Gods: Mesopotamian	7	0	3	0	0	0	0
+Gods: Norse	3	3	2	3	1	0	0
+Gothic tropes	24	5	4	0	3	0	0
+Great Old Ones	15	2	6	0	0	0	0
+Grimm	36	14	6	4	0	0	0
+Grimoires	2	0	0	0	16	0	0
+Haiti	2	0	0	0	0	0	0
+Haunted objects	1	0	5	0	0	0	0
+Heroes	6	4	1	2	0	0	0
+Hodgson	2	2	2	0	0	0	0
+House spirits	6	0	1	0	0	0	0
+Hybrids	31	5	1	0	0	0	0
+Immortals	3	2	1	0	2	0	0
+India	6	2	3	0	0	0	0
+Infection	9	1	0	0	0	0	0
+Internet legends	11	0	0	0	1	0	0
+Isekai concepts	6	3	2	1	4	0	0
+Isekai concepts (Wikipedia Isekai links)	1	0	2	0	0	0	0
+Items	2	5	4	0	0	0	0
+Japan	18	6	1	0	0	0	0
+Japanese legends	20	1	3	0	0	0	0
+Jewish	3	0	0	0	0	0	0
+Jinn	9	1	5	0	0	0	0
+Kaiju	20	3	1	0	0	0	0
+Killer personas	4	0	1	0	0	0	0
+Korea	4	0	0	0	0	0	0
+Life and death	4	10	2	2	0	0	0
+Liminal aesthetics	13	0	0	0	5	0	0
+Liminal spaces	1	0	2	0	3	0	0
+LitRPG	1	4	3	0	0	0	0
+LitRPG concepts (Wikipedia LitRPG links)	1	1	0	0	0	0	0
+LitRPG mechanics	9	3	2	3	8	0	0
+Loops	1	0	0	0	1	0	0
+Loot loops	11	0	1	0	2	0	0
+Lovecraft concepts	15	5	12	2	2	0	0
+Lovecraft races	10	1	1	0	0	0	0
+M. R. James	4	1	9	0	0	0	0
+Machen	4	1	0	0	0	0	0
+Magic (Shadowrun)	1	16	9	0	0	0	0
+Magic mechanics	0	9	0	0	0	0	0
+Malay	2	0	0	0	0	0	0
+Matrix (Shadowrun)	1	1	0	0	0	0	0
+Matter	0	12	1	1	0	0	0
+Matter and energy tech	66	29	1	4	2	0	0
+Mecha	24	7	1	1	0	0	0
+Memes	1	0	0	0	0	0	0
+Memetic hazards	1	1	0	0	0	0	0
+Mesopotamia	4	1	0	1	0	0	0
+Meta	4	0	2	0	23	0	0
+Metro mutants	12	1	0	0	0	0	0
+Metro phenomena	2	0	2	0	0	0	0
+Metro systems	7	0	0	0	0	0	0
+Middle East	3	0	3	0	0	0	0
+Mind	10	9	4	2	0	0	0
+Miracles	22	9	1	1	1	0	0
+Mirror horror	4	1	2	1	0	0	0
+Monsters	3	2	0	0	0	0	0
+Motif A	3	0	1	1	4	0	0
+Motif B	4	2	0	0	0	0	0
+Motif C	1	1	4	0	0	0	0
+Motif D	0	15	3	2	0	1	0
+Motif E	0	2	6	0	0	0	0
+Motif F	5	0	6	0	0	0	0
+Motif G	4	3	0	0	0	0	0
+Motif H	3	0	0	0	0	0	0
+Motif J	1	0	0	0	0	0	0
+Motif K	6	0	0	0	0	0	0
+Motif M	2	1	0	1	0	0	0
+Motif N	2	0	0	0	1	0	0
+Motif P	1	0	0	0	0	0	0
+Motif Q	1	0	0	0	0	0	0
+Motif R	1	0	0	0	0	0	0
+Motif S	1	0	0	0	0	0	0
+Motif T	1	0	0	0	0	0	0
+Motif U	0	0	0	0	1	0	0
+Motif V	1	0	0	0	0	0	0
+Motif X	0	0	0	0	1	0	0
+Motif Z	0	0	0	0	1	0	0
+Movement	9	5	0	1	0	0	0
+Mythological objects	9	15	1	7	2	0	0
+Mythos concepts	7	0	1	0	2	0	0
+Mythos places	4	0	5	0	0	0	0
+Mythos tomes	3	2	0	0	0	0	0
+Nature spirits	5	0	1	0	0	0	0
+Negation	1	4	3	0	0	0	0
+Object	4	1	5	1	0	0	0
+Occult	23	14	4	0	5	0	0
+Occult practice	4	0	0	0	0	0	0
+Oceania	10	0	1	0	0	0	0
+Offence	11	14	0	0	1	0	0
+Omni	2	0	3	4	2	0	0
+Outer Gods	3	2	2	2	0	0	0
+Perception	5	3	0	1	0	1	0
+Persia	3	1	0	0	0	0	0
+Philippines	5	1	0	0	0	0	0
+Phone horror	2	0	0	0	0	0	0
+Physical enhancement	22	4	0	0	0	0	0
+Place	4	2	3	0	0	0	0
+Places	3	0	0	0	0	0	0
+Plants	2	0	0	0	0	0	0
+Play style	1	0	0	0	1	0	0
+Poe	12	1	3	1	3	0	0
+Possession	2	0	3	0	0	0	0
+Post-apocalypse	28	2	1	0	0	0	0
+Progression	7	0	0	0	3	0	0
+Psych	14	0	0	0	0	0	0
+Psykers (Warhammer 40,000)	1	6	1	0	0	0	0
+Quest structure	8	0	0	1	1	1	0
+RPG mechanics	3	4	2	5	1	0	0
+Reality	3	3	4	7	9	0	0
+Religion	10	0	0	0	0	0	0
+Reptiles	1	0	0	0	0	0	0
+Resurrection	1	2	7	1	0	0	0
+Rituals	6	0	1	0	0	0	0
+Rule-lists	1	0	0	0	0	0	0
+Sami	2	0	0	0	0	0	0
+Sea monsters	2	0	0	0	0	0	0
+Seasonal	1	0	0	0	0	0	0
+Senses	11	2	0	0	0	0	0
+Shapeshift	7	7	0	0	0	0	0
+Shelley	2	1	0	0	0	0	0
+Slasher	7	0	2	0	1	0	0
+Social	15	0	0	0	0	0	0
+Society and genre settings	42	6	0	1	6	0	0
+Soul-external	0	0	1	0	0	0	0
+Source works	0	0	0	0	23	0	0
+Space	8	3	11	3	0	0	0
+Spells	0	48	5	6	0	0	0
+Status effects	11	1	0	0	0	0	0
+Stealth	7	4	0	0	0	0	0
+Stoker	4	1	0	0	0	0	0
+Structure	1	0	0	1	2	0	0
+Subgenre	17	0	0	0	4	0	0
+Summon	0	2	1	0	0	0	0
+Survival	4	0	0	0	0	0	0
+Systems	2	0	0	0	9	0	0
+Taoist practices (Wikipedia Xianxia links)	2	2	1	0	2	0	0
+Tech	13	3	2	0	1	0	0
+Technology (Warhammer 40,000)	7	0	4	0	0	0	0
+Thailand	2	0	0	0	0	0	0
+Theology	0	0	0	1	0	0	0
+Time	1	1	2	8	0	2	0
+Time loops	0	1	0	10	1	0	0
+Time manipulation	0	5	1	2	0	0	0
+Transhumanism	16	0	3	0	1	0	0
+Undead	10	10	6	0	0	0	0
+Urban legend	10	0	3	1	0	0	0
+Video games	11	0	1	0	0	0	0
+Wasteland creatures (Fallout)	18	0	0	0	0	0	0
+Wasteland cryptids (Fallout)	7	0	0	0	0	0	0
+Wasteland perks (Fallout)	10	1	0	0	2	0	0
+Wasteland systems (Fallout)	15	0	0	0	0	0	0
+Water spirits	3	0	0	0	0	0	0
+Weird West	16	2	7	0	0	0	0
+Witches and sorcerers	0	1	0	0	0	0	0
+World model	11	0	1	0	5	0	0
+World structure	1	0	0	0	1	0	0
+Wuxia concepts	8	2	0	0	1	0	0
+Wuxia concepts (Wikipedia Wuxia links)	4	1	0	0	0	0	0
+Xenos (Warhammer 40,000)	10	4	3	1	0	0	0
+Yokai	4	2	3	0	0	0	0
+Zone anomalies (STALKER)	6	14	2	1	0	0	0
+Zone artifacts (STALKER)	1	18	0	0	0	0	0
+Zone literature	1	1	1	1	2	0	0
+Zone mutants (STALKER)	10	4	1	0	0	0	0
+aberration	10	4	1	0	0	0	0
+alive/liquid	1	0	0	0	0	0	0
+alive/safe	0	1	0	0	0	0	0
+alive/toy	1	0	0	0	0	0	0
+amorphous	1	0	0	0	1	0	0
+amorphous/parasitic	1	0	0	0	0	0	0
+amorphous/tickle	1	0	0	0	0	0	0
+animal/serpents-hand	1	0	0	0	0	0	0
+antimemetic	1	0	0	3	0	0	0
+antimemetic/cognito	0	0	0	1	0	0	0
+antimemetic/dream	0	0	0	1	0	0	0
+antimemetic/escapee	0	0	0	1	0	0	0
+antimemetic/ghost	0	0	0	1	0	0	0
+antimemetic/gravity	0	1	0	0	0	0	0
+antimemetic/hostile	1	0	0	1	0	0	0
+antimemetic/infohazard	0	0	0	1	0	0	0
+antimemetic/mythological	0	0	0	0	0	0	1
+antimemetic/transfig	0	0	0	1	0	0	0
+apollyon/contagion	1	0	0	0	0	0	0
+apollyon/memetic	1	0	0	0	0	0	0
+apollyon/neutralized	0	0	0	0	1	0	0
+apollyon/weapon	0	0	0	1	0	0	0
+aquatic/cadaver	1	0	0	0	0	0	0
+aquatic/clothing	1	0	0	0	0	0	0
+aquatic/cognito	0	1	0	0	0	0	0
+aquatic/immobile	1	0	0	0	0	0	0
+aquatic/kaiju	1	0	0	0	0	0	0
+aquatic/telekinetic	0	1	0	0	0	0	0
+archon/teleport	0	0	1	0	0	0	0
+artifact	0	2	0	0	0	0	0
+artifact/location	0	0	1	0	0	0	0
+artifact/mythological	1	0	0	0	0	0	0
+artifact/ritual	0	0	1	0	0	0	0
+artifact/temporal	0	0	0	0	1	0	0
+artifact/transfig	0	1	0	0	0	0	0
+auditory/biological	1	0	0	0	0	0	0
+auditory/hivemind	1	0	0	0	0	0	0
+autonomous/keter	1	0	0	0	0	0	0
+autonomous/vehicle	0	0	1	0	0	0	0
+bacteria/food	1	0	0	0	0	0	0
+bacteria/sensory	1	0	0	0	0	0	0
+bacteria/teleport	1	0	0	0	0	0	0
+beast	29	0	0	0	0	0	0
+biological/dream	1	0	0	0	0	0	0
+biological/predictive	1	0	0	0	0	0	0
+biological/reanimation	0	1	0	0	0	0	0
+biological/structure	1	0	0	0	0	0	0
+biological/transfig	0	1	0	0	0	0	0
+bird/ectoentropic	0	1	0	0	0	0	0
+bird/hostile	1	0	0	0	0	0	0
+bird/plant	0	1	0	0	0	0	0
+bird/ritual	0	0	1	0	0	0	0
+broken-god	0	0	0	0	1	0	0
+broken-god/biological	1	0	0	0	0	0	0
+broken-god/ritual	0	1	0	0	0	0	0
+broken-god/robotic	2	0	0	0	0	0	0
+broken-god/sarkic	1	0	0	0	0	0	0
+cadaver/electronic	0	0	1	0	0	0	0
+cadaver/hallucination	0	1	0	0	0	0	0
+cadaver/indestructible	0	0	1	0	0	0	0
+cadaver/plant	1	0	0	0	0	0	0
+cadaver/reanimation	0	1	0	0	0	0	0
+canine/predictive	1	0	0	0	0	0	0
+celestial	2	2	4	0	0	0	0
+clothing/indestructible	1	0	0	0	0	0	0
+cognito/aquatic	0	1	0	0	0	0	0
+cognito/deity	1	0	0	0	0	0	0
+cognito/electronic	1	0	0	0	0	0	0
+cognito/mathematical	0	0	0	1	0	0	0
+cognito/parasitic	0	1	0	0	0	0	0
+cognito/plant	1	0	0	0	0	0	0
+cognito/semiotics	0	0	0	1	0	0	0
+cognito/vehicle	0	1	0	0	0	0	0
+cognito/visual	0	1	0	0	0	0	0
+cognitohazard/meme	1	0	0	0	0	0	0
+cognitohazard/multi	1	0	0	0	0	0	0
+cognitohazard/structure	1	0	0	0	0	0	0
+cognitohazard/visual	0	1	0	0	0	0	0
+construct	4	9	1	0	0	0	0
+contagion/empathic	0	1	0	0	0	0	0
+contagion/rewrite	1	0	0	0	0	0	0
+cryptid	1	0	0	0	0	0	0
+deity/aquatic	1	0	0	0	0	0	0
+deity/kaiju	1	0	1	0	0	0	0
+deity/musical	1	0	0	0	0	0	0
+deity/probability	1	0	0	0	0	0	0
+deity/religious	1	0	0	0	0	0	0
+deity/sarkic	1	0	0	0	0	0	0
+demon/canine	1	0	0	0	0	0	0
+dragon	11	2	2	2	0	0	0
+dragon/reptile	0	1	0	0	0	0	0
+dream/hivemind	0	1	0	0	0	0	0
+dream/parasitic	1	0	0	0	0	0	0
+dream/reality	0	1	1	0	0	0	0
+dream/reanimation	1	0	0	0	0	0	0
+dream/telekinetic	0	1	0	0	0	0	0
+ectoentropic artifact	0	1	0	0	0	0	0
+ectoentropic toy	0	1	0	0	0	0	0
+ectoentropic/hostile	0	1	0	0	0	0	0
+ectoentropic/humanoid	1	0	0	0	0	0	0
+ectoentropic/liquid	0	0	1	0	0	0	0
+ectoentropic/location	0	0	1	0	0	0	0
+ectoentropic/planet	1	0	0	0	0	0	0
+ectoentropic/radioactive	1	0	0	0	0	0	0
+ectoentropic/spatial	0	0	1	0	0	0	0
+ectoentropic/toy	1	0	0	0	0	0	0
+electrical/esoteric	0	1	0	0	0	0	0
+electronic/infohazard	0	0	0	1	0	0	0
+electronic/k	0	1	0	0	0	0	0
+electronic/memory	0	0	0	1	0	0	0
+electronic/mimetic	1	0	0	0	0	0	0
+electronic/neurological	1	0	0	0	0	0	0
+elemental	2	5	4	1	0	0	0
+empathic	0	1	0	0	0	0	0
+esoteric/intangible	0	0	1	0	0	0	0
+explained	1	0	0	0	0	0	0
+extradimensional	1	0	0	0	0	0	0
+extradimensional/esoteric	0	0	1	0	0	0	0
+extradimensional/gravity	0	1	0	0	0	0	0
+extradimensional/hostile	0	0	2	0	0	0	0
+extradimensional/intangible	1	0	0	0	0	0	0
+extradimensional/mimetic	0	0	1	0	0	0	0
+extradimensional/portal	0	0	1	0	0	0	0
+extradimensional/scarlet	0	0	1	0	0	0	0
+extradimensional/spatial	0	0	1	0	0	0	0
+extraterr/cadaver	0	0	0	1	0	0	0
+extraterr/k-class	1	0	0	0	0	0	0
+extraterr/moon	1	0	0	0	0	0	0
+extraterr/planet	0	0	1	0	0	0	0
+extraterr/sun	2	0	0	0	0	0	0
+extraterr/toy	1	0	0	0	0	0	0
+extraterrestrial	1	0	0	0	0	0	0
+faerie/spatial	0	0	1	0	0	0	0
+faerie/vehicle	1	0	0	0	0	0	0
+feline/teleport	0	0	1	0	0	0	0
+feline/transfig	0	1	0	0	0	0	0
+fey	7	4	3	0	0	0	0
+fiend	1	2	4	0	0	0	0
+fire/noosphere	1	0	0	0	0	0	0
+folklore	1	0	0	0	0	0	0
+folklore/gas	0	0	1	0	0	0	0
+food/keter	1	0	0	0	0	0	0
+fungus	1	0	0	0	0	0	0
+fungus/parasitic	1	0	0	0	0	0	0
+fungus/religious	1	0	0	0	0	0	0
+fungus/thaumiel	1	0	0	0	0	0	0
+ghost	0	0	1	0	0	0	0
+ghost/auditory	0	0	1	0	0	0	0
+ghost/memory	0	0	1	0	0	0	0
+ghost/reptile	0	0	1	0	0	0	0
+ghost/sleep	0	0	1	0	0	0	0
+ghost/structure	0	0	1	0	0	0	0
+ghost/temporal	0	0	1	0	0	0	0
+giant	4	0	0	0	0	0	0
+gravity/pending	0	0	1	0	0	0	0
+hive/insect	1	0	0	0	0	0	0
+hostile	1	0	0	0	0	0	0
+humanoid	25	3	0	0	0	0	0
+humanoid person	1	0	0	0	0	0	0
+indestructible reptile	1	0	0	0	0	0	0
+infohazard	0	1	0	0	0	0	0
+infohazard/esoteric	0	0	0	0	1	0	0
+infohazard/keter	0	0	0	1	0	0	0
+insect	1	0	0	0	0	0	0
+insect/cognito	0	1	0	0	0	0	0
+joke	0	0	0	0	1	0	0
+k-class/liquid	0	1	0	0	0	0	0
+kaiju/apollyon	1	0	0	0	0	0	0
+kaiju/reanimation	0	1	0	0	0	0	0
+keter/feline	0	0	0	1	0	0	0
+keter/infohazard	0	0	0	1	0	0	0
+keter/mobile	1	0	0	0	0	0	0
+keter/teleport	0	0	0	1	0	0	0
+language/reanimation	0	0	1	0	0	0	0
+language/rewrite	0	1	0	0	0	0	0
+language/spatial	0	0	1	0	0	0	0
+liquid/teleport	0	0	1	0	0	0	0
+liquid/visual	1	0	0	0	0	0	0
+location/biological	1	0	0	0	0	0	0
+location/cadaver	0	1	0	0	0	0	0
+mechanical/electrical	1	0	0	0	0	0	0
+memetic/antimemetic	1	0	0	0	0	0	0
+memetic/keter	1	0	0	0	0	0	0
+memetic/probability	0	0	0	1	0	0	0
+memetic/religious	0	0	0	1	0	0	0
+memetic/transfig	0	1	0	0	0	0	0
+memetic/visual	1	0	0	0	0	0	0
+memory/temporal	0	0	0	1	0	0	0
+memory/thaumiel	0	0	0	0	0	0	1
+memory/vehicle	0	1	0	0	0	0	0
+meta	0	0	0	0	3	0	0
+metamorphic	0	1	0	0	0	0	0
+mimetic	1	0	0	0	0	0	0
+mimetic/auditory	1	0	0	0	0	0	0
+mind-affecting	0	1	0	0	0	0	0
+monstrosity	26	6	2	0	0	0	0
+musical/biological	0	1	0	0	0	0	0
+mythological/probability	0	0	0	0	1	0	0
+neurological/spatial	0	0	1	0	0	0	0
+noosphere/hostile	1	0	0	0	0	0	0
+noosphere/memetic	0	0	0	0	0	0	1
+noosphere/telepathic	0	1	0	0	0	0	0
+noosphere/temporal	0	0	0	1	0	0	0
+object-class	0	0	0	0	10	0	0
+ooze	5	0	0	0	0	0	0
+outsider	2	1	5	1	0	0	0
+parasitic	2	0	0	0	0	0	0
+plague doctor/contagion	0	1	0	0	0	0	0
+planet/alive	1	0	0	0	0	0	0
+plant	6	2	0	0	0	0	0
+plant/immobile	1	0	0	0	0	0	0
+plant/sarkic	1	0	0	0	0	0	0
+plant/telepathic	0	1	0	0	0	0	0
+portal	0	0	1	0	0	0	0
+portal/extradimensional	0	0	1	0	0	0	0
+portal/extraterr	0	0	1	0	0	0	0
+portal/hostile	0	0	2	0	0	0	0
+portal/liquid	0	0	1	0	0	0	0
+portal/possessive	0	0	1	0	0	0	0
+portal/spatial	0	0	1	0	0	0	0
+possessive mask	0	0	1	0	0	0	0
+predictive	0	0	0	1	0	0	0
+probability	0	0	0	2	0	0	0
+probability/electronic	0	0	0	1	0	0	0
+proposal	0	0	0	0	1	0	0
+radioactive/structure	1	0	0	0	0	0	0
+reality/broken	0	0	0	1	0	0	0
+reality/cognito	0	0	0	1	0	0	0
+reality/fungus	0	0	0	1	0	0	0
+reality/indestructible	0	1	0	0	0	0	0
+reality/infohazard	0	1	0	0	0	0	0
+reality/memetic	0	0	0	1	0	0	0
+reality/portal	0	0	1	0	0	0	0
+reality/radioactive	0	1	0	0	0	0	0
+reality/religious	1	0	0	0	0	0	0
+reality/scarlet	0	0	1	0	0	0	0
+reality/spatial	0	0	2	0	0	0	0
+reality/telekinetic	0	1	0	0	0	0	0
+reality/teleport	0	0	1	0	0	0	0
+reality/temporal	0	0	0	2	0	0	0
+reality/toxic	0	0	0	1	0	0	0
+reanimation/vehicle	0	1	0	0	0	0	0
+religious/robotic	1	0	0	0	0	0	0
+reptile/cadaver	1	0	0	0	0	0	0
+resurrection	1	0	0	0	0	0	0
+resurrection/ritual	0	1	0	0	0	0	0
+rewrite	0	0	0	1	0	0	0
+rewrite/toy	0	1	0	0	0	0	0
+ritual/scarlet-king	1	0	0	0	0	0	0
+robotic	1	0	0	0	0	0	0
+sarkic	1	0	0	0	0	0	0
+sarkic/autonomous	1	0	0	0	0	0	0
+satellite	1	0	0	0	0	0	0
+satellite/thaumiel	1	0	0	0	0	0	0
+scarlet-king	1	0	0	0	0	0	0
+self-replicating	1	0	0	0	0	0	0
+shadow/portal	0	0	1	0	0	0	0
+shadow/telekinetic	0	1	0	0	0	0	0
+simulacrum/temporal	1	0	0	0	0	0	0
+spatial/location	0	0	1	0	0	0	0
+spatial/reptile	0	0	1	0	0	0	0
+spatial/temporal	0	0	1	0	0	0	0
+spirit	0	1	3	0	0	0	0
+swarm	1	0	0	0	0	0	0
+swarm/mimetic	1	0	0	0	0	0	0
+telekinetic/telepathic	0	1	0	0	0	0	0
+teleport	0	0	1	0	0	0	0
+teleport/temporal	0	0	1	0	0	0	0
+temporal cadaver	0	1	0	0	0	0	0
+temporal k-class	0	0	0	1	0	0	0
+temporal travel	0	0	0	1	0	0	0
+temporal/extraterr	1	0	0	0	0	0	0
+temporal/mechanical	0	0	0	1	0	0	0
+temporal/rewrite	0	1	0	0	0	0	0
+temporal/thaumiel	0	0	0	1	0	0	0
+time-travel/k	0	0	0	1	0	0	0
+time-travel/vehicle	0	0	0	1	0	0	0
+toxic/prophecy	0	0	0	1	0	0	0
+toy/food	0	1	0	0	0	0	0
+toy/humanoid	0	1	0	0	0	0	0
+toy/vehicle	1	0	0	0	0	0	0
+transfiguration	0	1	0	0	0	0	0
+undead	9	10	5	0	0	0	0
+vampire	1	0	0	0	0	0	0
+vampire/liquid	0	1	0	0	0	0	0
+vampire/memetic	1	0	0	0	0	0	0
+vampire/structure	1	0	0	0	0	0	0
+vehicle	1	0	0	0	0	0	0
+vehicle/extraterr	0	0	1	0	0	0	0
+vehicle/religious	1	0	0	0	0	0	0
+vehicle/teleport	0	0	1	0	0	0	0
+virus/broken	1	0	0	0	0	0	0
+virus/food	1	0	0	0	0	0	0
+virus/k-class	1	0	0	0	0	0	0
+visual/uncontained	1	0	0	0	0	0	0
+weapon/clothing	1	0	0	0	0	0	0
+weapon/mechanical	1	0	0	0	0	0	0
+weapon/tactile	1	0	0	0	0	0	0
+zombie plague	1	0	0	0	0	0	0

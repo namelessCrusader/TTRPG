@@ -1,0 +1,7 @@
+addition	rows_needing	families_needing	marginal_bits_given_chosen_set	standalone_bits_given_E1	shapley_6player	shapley_given_E1	shapley_given_E1_per_marginal_bit	families_unlocked	rao_stirling_disparity
+E1	1377	330	32.5	32.5	255.0	0		0	0
+E2	0	0	4.6	6.2	0.0	0.0	0.0	0	0
+E3	0	0	6.8	10.8	0.0	0.0	0.0	0	0
+E4	0	0	19.0	21.6	0.0	0.0	0.0	0	0
+EL	337	141	17.4	21.4	40.0	79.6	4.57	141	0.915
+E8	266	119	14.8	14.8	34.9	69.4	4.71	119	0.9

@@ -1,0 +1,49 @@
+entry	family	tier_v3	tier	needs_v3	needs	rung	xclass	v4_rule	v4_note
+Baron Samedi	Haiti	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Barong/Rangda	Bali	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Cailleach	Celtic	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Casting the Runes	M. R. James	T2	T0	A1,A6,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Cat Sìth	Celtic	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Chinese dragon	China	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+D1300 Magic mirror that answers truth	Motif D	T3	X-L				X-L	R4.3-1/2	R4.3 / Wolpert: answers any question truthfully (u)
+Damnification	Divine	T2	T0	A1,A6,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Demonomancy	Occult	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Exorcism	Negation	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Faithifery	Divine	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Luck	Reality	T3	T1		E1			R4.3-luck	R4.3 luck: bounded luck at a price per bit is T1; free unbounded biasing stays T3
+Luna Game	Cursed media	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Mediumship	Occult	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Noaidi's drum	Sami	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Oh Whistle and I'll Come to You	M. R. James	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Omniscience	Perception	T3	X-L				X-L	R4.3-1/2	R4.3 / Wolpert: claims knowing everything
+Pact with the Devil (Faust)	Cross-motif	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Phasing	Space	T2	T3	A1,A8				R4.3-5	R4.3-5: selective contact suppression is T3 (Pauli); bounded version T2 E1+E8 micro-doorways
+Precognition	Time	T3	X-L				X-L	R4.3-1/2	R4.3 / Wolpert: unqualified true future sight (u)
+Prescience	Time	T3	X-L				X-L	R4.3-1/2	R4.3 / Wolpert: unqualified true foreknowledge (u)
+Probability Manipulation	Reality	T3	T1		E1			R4.3-luck	R4.3 luck: bounded luck at a price per bit is T1; free unbounded biasing stays T3
+Ritual of summoning	Rituals	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+SCP-231 Special Personnel Requirements	ritual/scarlet-king	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+The Yellow Sign	Chambers	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Sekhmet	DCC deities	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Lamashtu	DCC deities	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Fortune and luck cultivators	Cultivation concepts	T3	T1		E1			R4.3-luck	R4.3 luck: bounded luck at a price per bit is T1; free unbounded biasing stays T3
+Fuji (planchette writing)	Taoist practices (Wikipedia Xianxia links)	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Guardian angel	Angels and demons	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Recording angel	Angels and demons	T3	X-L				X-L	R4.3-1/2	R4.3 / Wolpert: all-seeing record of all deeds
+Hantu Raya	Jinn	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Evocation	Ceremonial magic	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Bornless Ritual	Ceremonial magic	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Eye of Ra	Gods: Egyptian	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Dakini	Gods: Hindu	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Heavenly host	Angels and demons	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Jonah Hex	Weird West	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Deadlands (Reckoners, fear fuel)	Weird West	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Wynonna Earp	Weird West	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Hellsing (Alucard)	Weird West	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Time stop [a: perceptual speed-up]	Time manipulation	T3	T1		E1			R4.3-3	split from Time stop: faster thinking and acting; drag and heat bound it (about 1 GW at 1000x)
+Time stop [b: stasis by cooling]	Time manipulation	T3	T1		E1			R4.3-3	split from Time stop: cool the target to a standstill with heat booked to a sink
+Time Stop (spell) [a: perceptual speed-up]	Spells	T3	T1		E1			R4.3-3	split from Time Stop (spell): faster thinking and acting; drag and heat bound it (about 1 GW at 1000x)
+Time Stop (spell) [b: stasis by cooling]	Spells	T3	T1		E1			R4.3-3	split from Time Stop (spell): cool the target to a standstill with heat booked to a sink
+Divine intervention	Class features	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Warlock pact (patron)	Class features	T2	T0	A1,A7				QSG-demote	QSG: owner row fully belief or ritual; placed T0 (u)
+Prophecy (true foresight)	Quest structure	T3	X-L				X-L	R4.3-1/2	R4.3 / Wolpert: unqualified true foresight (u)
