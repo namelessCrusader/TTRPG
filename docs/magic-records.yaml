@@ -1035,6 +1035,62 @@ records:
   history: [{date: 2026-11-24, change: "result recorded against H1 (an R2.1 'pass rule' anticipated the exact argument and the 4D control)"}]
 
 # ---------------------------------------------------------------- NOGOODS
+  - id: QSG
+    statement: Spirits, ghosts and gods are a LADDER of self-sustaining field patterns (imprints, reactive patterns, mind fragments, full field minds) limited by their place's capacity; gods a mix (embodied
+      ancients, few vast field minds, worship-sustained ones).
+    rests_on:
+    - Q2.4
+    - Q1.1
+    - H2
+    - MS1
+    label:
+    - A1
+    - A2
+    - A3
+    - A4
+    - A5
+    - A6
+    - A7
+    - A8
+    - FQ1
+    - H1
+    - H2
+    - LAB-R2.1
+    - LIB-emergent-media
+    - LIB-frameworks
+    - LIB-principles
+    - LIB-science
+    - METHOD-CHANGE
+    - MS1
+    - MS2
+    - MS3
+    - Q0
+    - Q1.0
+    - Q1.1
+    - Q1.2
+    - Q2.1
+    - Q2.4
+    - Q3.1
+    - Q3.3
+    - Q4.1
+    - Q4.2
+    - Q5.1
+    - Q5.5
+    - R0
+    - RQ1
+    - RQ2
+    - RQ3
+    - RQ4
+    status: provisional
+    entrenchment: 5
+    decides:
+    - C73
+    discriminates: 'belief-only misses the owner''s gods (MS1) and the variety; minds everywhere fails minimality: owner preference with the gap analysis''s variety data'
+    cost: one addition (self-sustaining field patterns with a capacity limit); mind-selective tuning for the upper rungs
+    would_reopen_if: the toy simulations show the medium cannot hold complex self-maintaining structures (RQ5)
+    rederived_under_FQ1: partly
+    history:
+    - '2026-11-27: owner, ''somewhere in the middle'', then of the ladder ''it''s closer'' (working position, open to refinement)'
 nogoods:
   - combination: [scalar field M, A2]
     evidence: "LIB-frameworks: a scalar (spin-0) field couples to all matter with one sign; the formal write-up's scalar is to be replaced by a vector."
